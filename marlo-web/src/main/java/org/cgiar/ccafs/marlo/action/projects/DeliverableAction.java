@@ -40,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnerTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityAnswerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
@@ -59,6 +60,7 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndFillingTypeManager;
@@ -92,6 +94,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnerType;
+import org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
@@ -227,6 +230,8 @@ public class DeliverableAction extends BaseAction {
   private UserManager userManager;
   private DeliverableActivityManager deliverableActivityManager;
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
+  private ProjectOutcomeManager projectOutcomeManager;
+  private DeliverableProjectOutcomeManager deliverableProjectOutcomeManager;
 
   // Variables
   private List<DeliverableQualityAnswer> answers;
@@ -277,6 +282,7 @@ public class DeliverableAction extends BaseAction {
 
   private List<User> responsibleUsers;
   private Integer acceptationPercentage;
+  private List<ProjectOutcome> projectOutcomes;
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -311,7 +317,8 @@ public class DeliverableAction extends BaseAction {
     DeliverablePartnerTypeManager deliverablePartnerTypeManager, UserManager userManager,
     DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, DeliverableActivityManager deliverableActivityManager,
-    ProjectDeliverableSharedManager projectDeliverableSharedManager, PhaseManager phaseManager) {
+    ProjectDeliverableSharedManager projectDeliverableSharedManager, PhaseManager phaseManager,
+    ProjectOutcomeManager projectOutcomeManager, DeliverableProjectOutcomeManager deliverableProjectOutcomeManager) {
     super(config);
     this.activityManager = activityManager;
     this.deliverableManager = deliverableManager;
@@ -366,6 +373,8 @@ public class DeliverableAction extends BaseAction {
     this.deliverableActivityManager = deliverableActivityManager;
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
     this.phaseManager = phaseManager;
+    this.projectOutcomeManager = projectOutcomeManager;
+    this.deliverableProjectOutcomeManager = deliverableProjectOutcomeManager;
   }
 
   @Override
@@ -650,11 +659,9 @@ public class DeliverableAction extends BaseAction {
     return partnerPersons;
   }
 
-
   public List<ProjectPartner> getPartners() {
     return partners;
   }
-
 
   /**
    * @return an array of integers.
@@ -678,9 +685,11 @@ public class DeliverableAction extends BaseAction {
     return EMPTY_ARRAY;
   }
 
+
   public List<CrpProgramOutcome> getProgramOutcomes() {
     return programOutcomes;
   }
+
 
   public ArrayList<CrpProgram> getPrograms() {
     return programs;
@@ -696,6 +705,10 @@ public class DeliverableAction extends BaseAction {
 
   public List<ProjectOutcome> getProjectOutcome() {
     return projectOutcome;
+  }
+
+  public List<ProjectOutcome> getProjectOutcomes() {
+    return projectOutcomes;
   }
 
   public List<ProjectFocus> getProjectPrograms() {
@@ -1117,6 +1130,12 @@ public class DeliverableAction extends BaseAction {
           }
         }
 
+        // Deliverable Project Outcome list
+        if (deliverable.getDeliverableProjectOutcomes() != null) {
+          deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
+            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+        }
+
         // Expected Study Geographic Regions List
         if (deliverable.getDeliverableGeographicRegions() != null
           && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
@@ -1508,6 +1527,8 @@ public class DeliverableAction extends BaseAction {
             && dt.getDeliverableCategory().getId() == deliverableTypeParentId).collect(Collectors.toList()));
       }
 
+      projectOutcomes = new ArrayList<>();
+
       if (project.getProjectOutcomes() != null) {
         keyOutputs = new ArrayList<>();
         programOutcomes = new ArrayList<>();
@@ -1535,6 +1556,15 @@ public class DeliverableAction extends BaseAction {
             }
 
           }
+
+          // Fill projectOutcomes List
+          if (projectOutcome.getCrpProgramOutcome() != null
+            && projectOutcome.getCrpProgramOutcome().getComposedName() != null) {
+            projectOutcome.setComposedName(projectOutcome.getCrpProgramOutcome().getComposedName());
+          } else {
+            projectOutcome.setComposedName(projectOutcome.getId() + "");
+          }
+          projectOutcomes.add(projectOutcome);
 
         }
       }
@@ -1787,6 +1817,9 @@ public class DeliverableAction extends BaseAction {
           deliverable.getCrossCuttingMarkers().clear();
         }
 
+        if (deliverable.getProjectOutcomes() != null) {
+          deliverable.getProjectOutcomes().clear();
+        }
       }
 
       try {
@@ -1828,6 +1861,9 @@ public class DeliverableAction extends BaseAction {
 
       // Save Geographic Scope Data
       this.saveGeographicScope(deliverableManagedState, this.getActualPhase());
+
+      this.saveProjectOutcomes(deliverableDB, this.getActualPhase());
+
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -2048,7 +2084,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   public void saveCrps() {
     if (deliverable.getCrps() == null) {
       deliverable.setCrps(new ArrayList<>());
@@ -2084,6 +2119,7 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
+
 
   public void saveDataSharing() {
     if (deliverable.getFiles() == null) {
@@ -2791,6 +2827,51 @@ public class DeliverableAction extends BaseAction {
     // No need to call save as hibernate will detect the changes and auto flush.
   }
 
+  /**
+   * Save Deliverable Project Outcome Information
+   * 
+   * @param delivearble
+   * @param phase
+   */
+  public void saveProjectOutcomes(Deliverable deliverable, Phase phase) {
+
+    // Search and deleted form Information
+    if (deliverable.getDeliverableProjectOutcomes() != null && deliverable.getDeliverableProjectOutcomes().size() > 0) {
+
+      List<DeliverableProjectOutcome> outcomePrev = new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
+        .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (DeliverableProjectOutcome deliverableOutcome : outcomePrev) {
+        if (this.deliverable.getProjectOutcomes() == null
+          || !this.deliverable.getProjectOutcomes().contains(deliverableOutcome)) {
+          this.deliverableProjectOutcomeManager.deleteDeliverableProjectOutcome(deliverableOutcome.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.deliverable.getProjectOutcomes() != null) {
+      for (DeliverableProjectOutcome deliverableOutcome : this.deliverable.getProjectOutcomes()) {
+        if (deliverableOutcome.getId() == null) {
+          DeliverableProjectOutcome deliverableOutcomeSave = new DeliverableProjectOutcome();
+          deliverableOutcomeSave.setDeliverable(deliverable);
+          deliverableOutcomeSave.setPhase(phase);
+
+          if (deliverableOutcome.getProjectOutcome() != null
+            && deliverableOutcome.getProjectOutcome().getId() != null) {
+            ProjectOutcome outcome =
+              projectOutcomeManager.getProjectOutcomeById(deliverableOutcome.getProjectOutcome().getId());
+            deliverableOutcomeSave.setProjectOutcome(outcome);
+
+            this.deliverableProjectOutcomeManager.saveDeliverableProjectOutcome(deliverableOutcomeSave);
+            // This is to add studyCrpSave to generate correct auditlog.
+            this.deliverable.getDeliverableProjectOutcomes().add(deliverableOutcomeSave);
+          }
+        }
+      }
+    }
+  }
+
   public void saveProjects(Deliverable deliverableDB) {
 
     // Search and deleted form Information
@@ -3102,6 +3183,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setProjectOutcome(List<ProjectOutcome> projectOutcome) {
     this.projectOutcome = projectOutcome;
+  }
+
+  public void setProjectOutcomes(List<ProjectOutcome> projectOutcomes) {
+    this.projectOutcomes = projectOutcomes;
   }
 
   public void setProjectPrograms(List<ProjectFocus> projectPrograms) {
