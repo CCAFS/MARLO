@@ -5,13 +5,17 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>CLARISA</title>
   <link href="homepage/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="homepage/assets/vendor/icofont/icofont.min.css" rel="stylesheet">
   <link href="homepage/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="homepage/assets/vendor/animate.css/animate.min.css" rel="stylesheet">
-  <link href="homepage/assets/vendor/venobox/venobox.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/animate.css/animate.min.css" rel="stylesheet">  
   <link href="homepage/assets/vendor/owl.carousel/assets/owl.carousel.min.css" rel="stylesheet">
   <link href="homepage/assets/vendor/aos/aos.css" rel="stylesheet">
   <link href="homepage/assets/css/style.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  
   
 
  
@@ -31,12 +35,14 @@
   <script src="homepage/assets/vendor/jquery.easing/jquery.easing.min.js"></script>
   <script src="homepage/assets/vendor/php-email-form/validate.js"></script>
   <script src="homepage/assets/vendor/jquery-sticky/jquery.sticky.js"></script>
-  <script src="homepage/assets/vendor/venobox/venobox.min.js"></script>
   <script src="homepage/assets/vendor/waypoints/jquery.waypoints.min.js"></script>
   <script src="homepage/assets/vendor/counterup/counterup.min.js"></script>
   <script src="homepage/assets/vendor/owl.carousel/owl.carousel.min.js"></script>
   <script src="homepage/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script src="homepage/assets/vendor/aos/aos.js"></script>
+  <script src="homepage/assets/vendor/purecounter/purecounter.js"></script>
+  <script src="homepage/assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="homepage/assets/vendor/swiper/swiper-bundle.min.js"></script>
   
   
   <!-- Swagger JS Files -->
@@ -56,7 +62,7 @@
 </head>
 <body>
 <!-- ======= Navbar ======= -->
-  <header id="header">
+ <header id="header" class="d-flex align-items-center justify-content-end ">
    <nav class="navbar navbar-expand-lg">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -64,31 +70,30 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item active">
+      <li>
         <a class="nav-link" href="home.html">Home <span class="sr-only">(current)</span></a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="home.html#about">About CLARISA</a>
+      <li>
+        <a class="nav-link scrollto" href="home.html#about">About CLARISA</a>
       </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Services
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="api.html">Annual Report API Reference</a>
-          <a class="dropdown-item" href="generalListReference.html">General API Reference</a>
-          <a class="dropdown-item" href="additionalServices.html">Additional Services</a>
-          <a class="dropdown-item" href="financialoperation.html">One CGIAR Operation</a>
-        </div>
+       <li class="dropdown">
+            <a class="nav-link active" href="#">         
+              <span>Services</span> <i class="bi bi-chevron-down"></i>
+            </a>
+             <ul class="p-2">
+              <li><a class="nav-link active" href="api.html">Annual Report API Reference</a></li>
+              <li><a class="nav-link" href="generalListReference.html">One CGIAR Control List</a> </li>
+              <li><a class="nav-link" href="additionalServices.html">Additional Services</a></li>
+            </ul>
+       </li>
+      <li>
+        <a class="nav-link scrollto" href="home.html#faq">FAQ</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="faq.html">FAQ</a>
+      <li>
+        <a class="nav-link scrollto" href="home.html#partners">Lead Partners</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="home.html#partners">Lead Partners</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="home.html#contact">Contact Us</a>
+      <li>
+        <a class="nav-link scrollto" href="home.html#contact">Contact Us</a>
       </li>
     </ul>
   </div>
