@@ -255,7 +255,7 @@ public class CrpDeliverablesAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.canAccessSuperAdmin()) {
+    if (this.canAccessSuperAdmin() || this.canEditCrpAdmin()) {
       if (deliverableID != null && deliverableID != 0 && moveToSelection != null && !moveToSelection.isEmpty()) {
 
         switch (moveToSelection) {
