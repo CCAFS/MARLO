@@ -160,11 +160,11 @@ function attachEvents() {
       if (url.match(regex)) {
         res = "Valid URL";
         $(this).css('border', 'none');
-        console.log(res);
+        // console.log(res);
       } else {
         res = "Invalid URL";
         $(this).css('border', '1px solid red');
-        console.log(res);
+        // console.log(res);
       }
     }
 
