@@ -211,7 +211,7 @@
     <div class="col-md-3">[@customForm.yesNoInputDeliverableParticipants name="${customName}.hasParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" neutral=true  /] </div>  
   </div>
 
-  <div class="block-involveParticipants" style="display:${(hasParticipants == "true")?string('block','none')}">
+  <div class="block-involveParticipants" style="display:${((deliverable.deliverableParticipant.hasParticipants)!false)?string('block','none')}">
     <hr />
     [#-- Title Event/Activity --]
     <div class="form-group">
