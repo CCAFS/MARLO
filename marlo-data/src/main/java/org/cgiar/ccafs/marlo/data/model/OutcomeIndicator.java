@@ -23,13 +23,24 @@ package org.cgiar.ccafs.marlo.data.model;
 public class OutcomeIndicator extends MarloAuditableEntity implements java.io.Serializable {
 
   private static final long serialVersionUID = 1L;
+  private String smoCode;
+
   private String outcomeIndicatorStatement;
+
 
   public String getOutcomeIndicatorStatement() {
     return outcomeIndicatorStatement;
   }
 
+  public String getSmoCode() {
+    return smoCode;
+  }
+
   public void setOutcomeIndicatorStatement(String outcomeIndicatorStatement) {
     this.outcomeIndicatorStatement = outcomeIndicatorStatement;
+  }
+
+  public void setSmoCode(String smoCode) {
+    this.smoCode = smoCode;
   }
 }

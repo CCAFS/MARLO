@@ -29,8 +29,12 @@ public class ActionAreaOutcomeDTO {
   private String actionAreaName;
   @ApiModelProperty(notes = "Outcome ID", position = 3)
   private Long outcomeId;
-  @ApiModelProperty(notes = "Outcome Statement", position = 4)
+  @ApiModelProperty(notes = "Outcome SMO code", position = 4)
+  private String outcomeSMOcode;
+
+  @ApiModelProperty(notes = "Outcome Statement", position = 5)
   private String outcomeStatement;
+
 
   public Long getActionAreaId() {
     return actionAreaId;
@@ -42,6 +46,10 @@ public class ActionAreaOutcomeDTO {
 
   public Long getOutcomeId() {
     return outcomeId;
+  }
+
+  public String getOutcomeSMOcode() {
+    return outcomeSMOcode;
   }
 
   public String getOutcomeStatement() {
@@ -58,6 +66,10 @@ public class ActionAreaOutcomeDTO {
 
   public void setOutcomeId(Long outcomeId) {
     this.outcomeId = outcomeId;
+  }
+
+  public void setOutcomeSMOcode(String outcomeSMOcode) {
+    this.outcomeSMOcode = outcomeSMOcode;
   }
 
   public void setOutcomeStatement(String outcomeStatement) {
