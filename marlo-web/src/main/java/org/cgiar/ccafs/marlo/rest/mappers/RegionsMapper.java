@@ -19,15 +19,20 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Region;
+import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionsDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330", uses = {RegionTypeMapper.class, LocationMapper.class})
+@Mapper(componentModel = "jsr330", uses = {RegionTypeMapper.class})
 public interface RegionsMapper {
+
+  @Mappings({@Mapping(source = "isoNumeric", target = "code")})
+  public abstract CountryDTO locElementToOneCGIARCountryDTO(LocElement locElement);
 
   @Mappings({@Mapping(source = "iso_numeric", target = "id"), @Mapping(source = "acronym", target = "acronym")})
   public abstract OneCGIARRegionsDTO regionsToOneCGIARRegionsDTO(Region region);
