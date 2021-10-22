@@ -302,3 +302,12 @@ table {
 .toggleTxtGraphs {
     margin: 0 0 0 5px;
 }
+
+.loadingBlock {
+    width: 100%;        
+    min-height: 56px;
+    margin-top: 150px;
+    background: url(../../global/images/loading.gif) no-repeat 50%;
+    z-index: 99;
+    opacity: 0.3;
+}
