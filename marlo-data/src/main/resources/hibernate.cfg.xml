@@ -499,6 +499,7 @@
     <mapping resource="xmls/ActionAreaOutcomes.hbm.xml"/>
     <mapping resource="xmls/OutcomeIndicator.hbm.xml"/>
     <mapping resource="xmls/ActionAreaOutcomeIndicators.hbm.xml"/>
+    <mapping resource="xmls/OneCGIARScienceGroup.hbm.xml"/>
     
     <!-- Annual Report 2021 -->
     <mapping resource="xmls/ProjectExpectedStudyReferences.hbm.xml" />
