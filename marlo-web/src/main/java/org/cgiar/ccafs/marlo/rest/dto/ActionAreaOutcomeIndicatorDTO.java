@@ -29,31 +29,47 @@ public class ActionAreaOutcomeIndicatorDTO {
   private String actionAreaName;
   @ApiModelProperty(notes = "Outcome ID", position = 3)
   private Long outcomeId;
-  @ApiModelProperty(notes = "Outcome Statement", position = 4)
+  @ApiModelProperty(notes = "Outcome SMO code", position = 4)
+  private String outcomeSMOcode;
+  @ApiModelProperty(notes = "Outcome Statement", position = 5)
   private String outcomeStatement;
-  @ApiModelProperty(notes = "Outcome Indicator ID", position = 5)
+  @ApiModelProperty(notes = "Outcome Indicator ID", position = 6)
   private Long outcomeIndicatorId;
-  @ApiModelProperty(notes = "Outcome Indicator Statement", position = 6)
+  @ApiModelProperty(notes = "Outcome Indicator SMO code", position = 7)
+  private String outcomeIndicatorSMOcode;
+  @ApiModelProperty(notes = "Outcome Indicator Statement", position = 8)
   private String outcomeIndicatorStatement;
 
   public Long getActionAreaId() {
     return actionAreaId;
   }
 
+
   public String getActionAreaName() {
     return actionAreaName;
   }
+
 
   public Long getOutcomeId() {
     return outcomeId;
   }
 
+
   public Long getOutcomeIndicatorId() {
     return outcomeIndicatorId;
   }
 
+
+  public String getOutcomeIndicatorSMOcode() {
+    return outcomeIndicatorSMOcode;
+  }
+
   public String getOutcomeIndicatorStatement() {
     return outcomeIndicatorStatement;
+  }
+
+  public String getOutcomeSMOcode() {
+    return outcomeSMOcode;
   }
 
   public String getOutcomeStatement() {
@@ -76,8 +92,16 @@ public class ActionAreaOutcomeIndicatorDTO {
     this.outcomeIndicatorId = outcomeIndicatorId;
   }
 
+  public void setOutcomeIndicatorSMOcode(String outcomeIndicatorSMOcode) {
+    this.outcomeIndicatorSMOcode = outcomeIndicatorSMOcode;
+  }
+
   public void setOutcomeIndicatorStatement(String outcomeIndicatorStatement) {
     this.outcomeIndicatorStatement = outcomeIndicatorStatement;
+  }
+
+  public void setOutcomeSMOcode(String outcomeSMOcode) {
+    this.outcomeSMOcode = outcomeSMOcode;
   }
 
   public void setOutcomeStatement(String outcomeStatement) {

@@ -7,6 +7,9 @@
       <column name="id" />
       <generator class="identity" />
     </id>
+    <property name="smoCode" type="string" >
+      <column name="smocode" sql-type="TEXT" />
+    </property>
     <property name="outcomeIndicatorStatement" type="string" >
       <column name="outcome_indicator_statement" sql-type="TEXT" />
     </property>
