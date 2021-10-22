@@ -73,7 +73,8 @@ public class GlobalUnitItem<T> {
     return Optional.ofNullable(globalUnitEntity)
       .filter(c -> c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CRP
         || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CGIAR_CENTER_TYPE
-        || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM)
+        || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM
+        || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_APPLICATION)
       .map(this.globalUnitMapper::globalUnitToGlobalUnitDTO)
       // FIXME: Should change the way to compare which CRP/PTF/Center
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -94,7 +95,8 @@ public class GlobalUnitItem<T> {
             .filter(c -> c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CRP
               || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CGIAR_CENTER_TYPE
               || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM
-              || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_INITIATIVES)
+              || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_INITIATIVES
+              || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_APPLICATION)
             .sorted(Comparator.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
             .collect(Collectors.toList()));
       } else {
@@ -102,7 +104,8 @@ public class GlobalUnitItem<T> {
           .filter(c -> c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CRP
             || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CGIAR_CENTER_TYPE
             || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM
-            || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_INITIATIVES)
+            || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_INITIATIVES
+            || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_APPLICATION)
           .sorted(Comparator.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList());;
       }
