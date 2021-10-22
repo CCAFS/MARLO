@@ -1,1 +1,1 @@
-document.getElementById("inst-frame").src = "http://clarisatest.ciat.cgiar.org/apps/institutions/";
+document.getElementById("inst-frame").src = "https://clarisatest.ciat.cgiar.org/apps/institutions/";
