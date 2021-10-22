@@ -106,7 +106,7 @@ public class OneCGIARControlList {
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.ScienceGroup.all.value}",
     response = ScienceGroupDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/ScienceGroups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/scienceGroups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<ScienceGroupDTO>> findAllScienceGroup() {
 
     ResponseEntity<List<ScienceGroupDTO>> response = this.scienceGroupItem.getAll();

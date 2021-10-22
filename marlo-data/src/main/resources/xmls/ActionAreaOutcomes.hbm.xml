@@ -11,6 +11,9 @@
       class="org.cgiar.ccafs.marlo.data.model.ActionArea" fetch="select">
       <column name="action_area_id" />
     </many-to-one>  
+    <property name="smoCode" type="string" >
+      <column name="smocode" sql-type="TEXT" />
+    </property>
     <property name="outcomeStatement" type="string" >
       <column name="outcome_statement" sql-type="TEXT" />
     </property>
