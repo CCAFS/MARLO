@@ -176,6 +176,43 @@ setTimeout(() => {
 	});
 }
 
+
+function scienceGroups(){
+	$.ajax({
+		url: config.endpoint + '/scienceGroups',
+		type: "GET",
+		beforeSend: function () {
+			cleanModal();
+			manageSpinner(true,"sciencegroup");
+			destroyTable("scienceGroups");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"sciencegroup");
+			console.log(data);
+			let nameColumns = ['Code', 'Financial Code','Description','Parent']
+
+			$.each(data, function (index, item) {
+				
+				$('#list-print-sciencegroup').append(
+					'<tr>' + '<td >' + item['code'] + '</td>' + '<td>'
+					+ item['financialCode'] + '</td>' + '<td>'
+					+ item['description'] + '</td>' + '<td>'
+					+ (item['parent']==null? '':item['parent'].description)+ '</td>' +'</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("sciencegroup");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
 function sdgtarget(){
 	$.ajax({
 		url: config.endpoint + '/allSDGTargets',
