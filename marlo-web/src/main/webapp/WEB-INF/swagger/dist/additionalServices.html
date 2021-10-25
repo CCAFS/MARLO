@@ -11,6 +11,7 @@
 
   <!--  Vendor CSS Files -->
   <link href="homepage/assets/libraries/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="homepage/assets/vendor/icofont/icofont.min.css" rel="stylesheet">
   <link href="homepage/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
   <link href="homepage/assets/vendor/animate.css/animate.min.css" rel="stylesheet">
@@ -18,6 +19,10 @@
   <link href="homepage/assets/vendor/owl.carousel/assets/owl.carousel.min.css" rel="stylesheet">
   <link href="homepage/assets/vendor/aos/aos.css" rel="stylesheet">
   <link href="homepage/assets/css/style.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="homepage/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  
 
   <!-- Vendor JS Files -->
   <script src="homepage/assets/libraries/jquery/jquery-3.5.1.min.js"></script>
@@ -31,6 +36,10 @@
   <script src="homepage/assets/vendor/owl.carousel/owl.carousel.min.js"></script>
   <script src="homepage/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script src="homepage/assets/vendor/aos/aos.js"></script>
+  <script src="homepage/assets/vendor/purecounter/purecounter.js"></script>
+  <script src="homepage/assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="homepage/assets/vendor/swiper/swiper-bundle.min.js"></script>
+  
 
   <!-- Main JS File -->
   <script src="homepage/assets/js/main.js"></script>
@@ -55,7 +64,7 @@
 </head>
 <body>
   <!-- ======= Top Bar ======= -->
-  <header id="header">
+  <header id="header" class="d-flex align-items-center justify-content-end ">
     <nav class="navbar navbar-expand-lg">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,31 +73,30 @@
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item active">
+          <li>
             <a class="nav-link" href="home.html">Home <span class="sr-only">(current)</span></a>
           </li>
-          <li class="nav-item">
+          <li>
             <a class="nav-link" href="home.html#about">About CLARISA</a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false">
-              Services
+            <a class="dropdown nav-link active" href="#">         
+              <span>Services</span> <i class="bi bi-chevron-down"></i>
             </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="api.html">Annual Report API Reference</a>
-              <a class="dropdown-item" href="generalListReference.html">One CGIAR Control List</a>
-              <a class="dropdown-item" href="additionalServices.html">Additional Services</a>
-              <a class="dropdown-item" href="financialoperation.html">One CGIAR Operation</a>
-            </div>
+             <ul class="p-2">
+              <li><a class="nav-link" href="api.html">Annual Report API Reference</a></li>
+              <li><a class="nav-link" href="generalListReference.html">One CGIAR Control List</a> </li>
+              <li><a class="nav-link active" href="additionalServices.html">Additional Services</a></li>
+              <li ><a class="nav-link" href="financialoperation.html">One CGIAR Operation</a></li>
+            </ul>
           </li>
-          <li class="nav-item">
+          <li>
             <a class="nav-link" href="home.html#faq">FAQ</a>
           </li>
-          <li class="nav-item">
+          <li>
             <a class="nav-link" href="home.html#partners">Lead Partners</a>
           </li>
-          <li class="nav-item">
+          <li>
             <a class="nav-link" href="home.html#contact">Contact Us</a>
           </li>
         </ul>
@@ -128,7 +136,7 @@
                partners, and/or contributors. This list reflects the information consolidated by some of the CGIAR Management Information Systems 
                and external sources (i.e. MARLO and MEL). </div>
                 </div>
-                 <iframe id="inst-frame" src="" width="100%" height="1300px">
+                 <iframe id="inst-frame" src="" width="100%" height="1300px" sandbox="allow-same-origin allow-scripts allow-forms">
      </iframe>     
               </div>
               
@@ -189,7 +197,7 @@
                     <div class="container-c">
                      <div class="row">
                        <div class="col-12" style="margin-bottom: 20px;">
-                         <button onclick="mqapClean()" type="button"  data-toggle="modal" data-target="#exampleRequestModal1" class="btn getColorbackgroundExample btn-lg btn-block">Use Service</button>
+                         <button onclick="mqapClean()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal1" class="btn getColorbackgroundExample btn-lg btn-block w-100">Use Service</button>
                        </div>
                        <div class="col-12">
                          <div class="fragCode">
@@ -359,7 +367,7 @@
             
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
