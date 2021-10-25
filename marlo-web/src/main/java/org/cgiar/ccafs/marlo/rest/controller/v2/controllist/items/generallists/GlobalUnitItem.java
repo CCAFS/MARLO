@@ -96,7 +96,7 @@ public class GlobalUnitItem<T> {
               || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CGIAR_CENTER_TYPE
               || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM
               || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_INITIATIVES
-              || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_APPLICATION)
+              || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_OFFICES)
             .sorted(Comparator.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
             .collect(Collectors.toList()));
       } else {
@@ -105,7 +105,7 @@ public class GlobalUnitItem<T> {
             || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CGIAR_CENTER_TYPE
             || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM
             || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_INITIATIVES
-            || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_APPLICATION)
+            || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_OFFICES)
           .sorted(Comparator.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList());;
       }
