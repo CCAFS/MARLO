@@ -324,6 +324,8 @@ $(document).ready(function () {
   $('input[id^="innovation-"]').on('click', selectIndividualInnovations);
   $('#selectAllStudies').on('click', selectDeselectAllStudies);
   $('input[id^="study-"]').on('click', selectIndividualStudies);
+  $('#selectAllMelias').on('click', selectDeselectAllMelias);
+  $('input[id^="melia-"]').on('click', selectIndividualMelias);
 
   // Deliverable Geographic Scope
   $('select.elementType-repIndGeographicScope').on("addElement removeElement", function (event, id, name) {
@@ -501,11 +503,30 @@ function selectDeselectAllStudies() {
 }
 
 function selectIndividualStudies() {
-  console.log($('input[id^="study-"]').length, $('input[id^="study-"]:checked').length)
   if ($('input[id^="study-"]').length == $('input[id^="study-"]:checked').length) {
     $('#selectAllStudies').prop('checked', true);
   } else {
     $('#selectAllStudies').prop('checked', false);
+  }
+}
+
+function selectDeselectAllMelias() {
+  if ($(this).hasClass('checked')) {
+    $('input[id^="melia-"]').prop('checked', true);
+    $(this).removeClass('checked');
+    console.log("hasClass", $(this));
+  } else {
+    $('input[id^="melia-"]').prop('checked', false);
+    $(this).addClass('checked');
+    console.log("noClass", $(this));
+  }
+}
+
+function selectIndividualMelias() {
+  if ($('input[id^="melia-"]').length == $('input[id^="melia-"]:checked').length) {
+    $('#selectAllMelias').prop('checked', true);
+  } else {
+    $('#selectAllMelias').prop('checked', false);
   }
 }
 

@@ -5,7 +5,7 @@
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "select2", "trumbowyg", "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211025a",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js" 
 ] 
 /]
@@ -187,7 +187,9 @@
           [#if !expandedTable]
             <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table11.missingFields" /]</small>  </th>
             [#if PMU]
-              <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table10.includeAR" /]</small>  </th>
+              <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table10.includeAR" /]</small>
+              <button type="button" class="selectAllCheckMelias" id="selectAllMelias" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
+              </th>
               [#--  <th class="col-md-1 text-center">[@s.text name="${customLabel}.table10.QA" /]</th>  --]
             [/#if]
           [/#if]
@@ -248,7 +250,8 @@
                 [#if PMU]         
                   <td class="text-center">
                     [#local isChecked = ((!reportSynthesis.reportSynthesisMelia.studiesIds?seq_contains(item.id))!true) /]
-                    [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisMelia.plannedStudiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                    [@customForm.checkmark id="melia-${(item.id)!}" name="reportSynthesis.reportSynthesisMelia.plannedStudiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                    <div style="display: none">${isChecked?string('1','0')}</div>
                   </td>
                   [#--  <td class="text-center"></td>  --]
                 [/#if]
