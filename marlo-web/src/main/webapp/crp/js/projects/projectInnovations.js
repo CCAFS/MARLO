@@ -174,8 +174,11 @@ function validateEmptyLinks() {
 
 function stageValidations() {
   var isStageTwo = $('select[name="innovation.projectInnovationInfo.repIndStageInnovation.id"]').val() == 2;
+  var isStageThree = $('select[name="innovation.projectInnovationInfo.repIndStageInnovation.id"]').val() == 3;
   var isStageFour = $('select[name="innovation.projectInnovationInfo.repIndStageInnovation.id"]').val() == 4;
   var evidenceLinkTag = $('label[for="innovation.projectInnovationInfo.evidenceLink"]').find('.requiredTag');
+  var innovationGeneticNumber = $('input[name="innovation.projectInnovationInfo.innovationNumber"]');
+  var oldInnovationGeneticNumber = $('#oldInnovationNumber').html();
 
   if (isStageFour) {
     $('.stageFourBlock-true').slideDown();
@@ -189,6 +192,14 @@ function stageValidations() {
     $(evidenceLinkTag).show();
   } else {
     $(evidenceLinkTag).hide();
+  }
+
+  if (isStageThree || isStageFour) {
+    innovationGeneticNumber.val("1");
+    innovationGeneticNumber.prop('disabled', true);
+  } else {
+    innovationGeneticNumber.val(oldInnovationGeneticNumber);
+    innovationGeneticNumber.prop('disabled', false);
   }
 }
 
