@@ -2844,7 +2844,8 @@ public class DeliverableAction extends BaseAction {
       for (DeliverableProjectOutcome deliverableOutcome : outcomePrev) {
         if (this.deliverable.getProjectOutcomes() == null
           || !this.deliverable.getProjectOutcomes().contains(deliverableOutcome)) {
-          this.deliverableProjectOutcomeManager.deleteDeliverableProjectOutcome(deliverableOutcome.getId());
+          this.deliverableProjectOutcomeManager.deleteDeliverableProjectOutcome(deliverableOutcome.getId(),
+            this.getActualPhase().getId());
         }
       }
     }

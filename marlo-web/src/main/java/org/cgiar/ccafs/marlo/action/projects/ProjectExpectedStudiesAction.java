@@ -2104,7 +2104,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       for (ProjectExpectedStudyProjectOutcome studyOutcome : outcomePrev) {
         if (this.expectedStudy.getProjectOutcomes() == null
           || !this.expectedStudy.getProjectOutcomes().contains(studyOutcome)) {
-          this.projectExpectedStudyProjectOutcomeManager.deleteProjectExpectedStudyProjectOutcome(studyOutcome.getId());
+          this.projectExpectedStudyProjectOutcomeManager.deleteProjectExpectedStudyProjectOutcome(studyOutcome.getId(),
+            this.getActualPhase().getId());
         }
       }
     }
