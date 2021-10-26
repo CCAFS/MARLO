@@ -29,7 +29,7 @@
       <div class="simpleBox">
         <p>This privacy policy describes how <strong>Personal Data</strong> is being collected, stored and used by MARLO through its online resource. &nbsp;<strong>Personal Data</strong> is any information relating to an identified or identifiable natural person; an identifiable natural person is one who can be identified, directly or indirectly, in particular by reference to an identifier such as name, an identification number, location data, an online identifier, or to one or more factors specific to the physical, psychological, genetic, mental, economic, cultural, or social identify of that natural person.</p>
         <p>Please read our privacy policy carefully to get a clear understanding of how we collect, use, protect or otherwise handle your Personally Identifiable Information in our website.</p>
-        <p>The International Center for Tropical Agriculture (CIAT) - the legal entity administering MARLO- is an international organization with headquarters in Colombia. As such, it accepts and complies with the personal data protection norms contained in Colombian law and laws of other countries or regions such as the General Data Protection Regulation (GDPR) of the European Union by guaranteeing the protection of personal information provided by you and making every reasonable effort to handle collected information appropriately. Further, all information collected will be handled with care in accordance with CIAT&rsquo;s standards for integrity, transparency and equity.</p>
+        <p>The International Center for Tropical Agriculture (CIAT) on behalf of the Alliance of Bioversity International and the International Center for Tropical Agriculture (CIAT) (hereinafter “The Alliance”) is an international organization with headquarters in Colombia, and the legal entity administering MARLO. As such, it accepts and complies with the personal data protection norms contained in Colombian law and laws of other countries or regions such as the General Data Protection Regulation (GDPR) of the European Union by guaranteeing the protection of personal information provided by you and making every reasonable effort to handle collected information appropriately. Further, all information collected will be handled with care in accordance with Alliance&rsquo;s standards for integrity, transparency and equity.</p>
         
         <p><strong>What personal information do we collect from the people who visit our blog, website or app?</strong></p>
         <p>When registering or logging in on our site, as appropriate, you may be asked to enter your email address or other details, such as your name and institutional affiliation, ORCID number to help you with your experience. If you provide such information, you should do it voluntarily.</p>
@@ -69,7 +69,7 @@
         
         <p><strong>Third-party disclosure</strong></p>
         <p>We do not sell, trade, or otherwise transfer to outside parties your Personal Data unless we provide users with advance notice and you give your consent to it. This does not include website hosting partners and other parties who assist us in operating our website, conducting our business, or serving our users, so long as those parties agree to keep this information confidential.</p>
-        <p>We may also release information when it&rsquo;s appropriate to comply with the law, enforce our site policies, or protect ours or others' rights, property or safety. In this line, CIAT reserves the right to disclose Personal Data in the case of&nbsp; a national or international government authorities&rsquo; request and when it is necessary or appropriate to investigate illegal or fraudulent facts. Equally, CIAT may disclose or release Personal Data to establish or defend the rights of CIAT against fraud, legal action or in compliance with law; or if CIAT deems it necessary to investigate or act against fraud or illegal reports on this website.</p>
+        <p>We may also release information when it&rsquo;s appropriate to comply with the law, enforce our site policies, or protect ours or others' rights, property or safety. In this line, The Alliance reserves the right to disclose Personal Data in the case of&nbsp; a national or international government authorities&rsquo; request and when it is necessary or appropriate to investigate illegal or fraudulent facts. Equally, The Alliance may disclose or release Personal Data to establish or defend the rights of The Alliance against fraud, legal action or in compliance with law; or if The Alliance deems it necessary to investigate or act against fraud or illegal reports on this website.</p>
         <p><br />However, non-personally identifiable visitor information may be provided to other parties for marketing, advertising, or other uses.</p>
         
         <p><strong>Third-party links</strong></p>
@@ -86,8 +86,25 @@
         <p>We, along with third-party vendors such as Google, use first-party cookies (such as the Google Analytics cookies) and third-party cookies (such as the DoubleClick cookie) or other third-party identifiers together.</p>
          
         <p>We use them to compile data regarding user interactions.</p>
-         
-        <p><strong>How long do we retain Personal Data? </strong></p>
+        
+        <p><br /> <strong>Tawk.to</strong></p>
+        <p>As a third-party library supplier, it collects email and name information to interact with the online support chat that we have in place for MARLO in every page of the system.</p>
+        <p>MARLO does everything possible to avoid pushing email information of the user connected to Tawk.to but they, despite being a tool that tends to protect the data that receives from different users, are free to share the information with:</p>
+        <ul>
+          <li>Agents, consultants, and service providers</li>
+          <li>Company and Affiliates</li>
+          <li>Business transfer</li>
+          <li>Disclosures of national security or law enforcement</li>
+          <li>Legal requirements</li>
+        </ul>
+        <p>The purpose for sharing the information, is not for advertising as the information is encrypted, but to improve the quality of the service they provide.</p>
+        <p>For more information of the you can visit the following links:</p>
+        <ul>
+          <li><a href="https://www.tawk.to/privacy-policy/">https://www.tawk.to/privacy-policy/</a></li>
+          <li><a href="https://www.tawk.to/data-protection/">https://www.tawk.to/data-protection/</a></li>
+          <li><a href="https://www.tawk.to/terms-of-service/">https://www.tawk.to/terms-of-service/</a></li>
+        </ul>
+        <p><br /><strong>How long do we retain Personal Data? </strong></p>
         <p>In accordance with our data retention policy, we will retain your Personal Data only for as long as is reasonably necessary to achieve the purposes for which it is collected and for our legal entitlements and legitimate business interests.</p>
          
         <p>Information such as IP address, the one collected through cookies, the URL/domain name of any referring website, and so on is maintained indefinitely in aggregated form.</p>
@@ -108,26 +125,27 @@
         <p><a href="mailto:MARLOSupport@cgiar.org">MARLOSupport@cgiar.org</a></p>
         <p><br /> <strong>Availability of the privacy policy and updates </strong></p>
          
-        <p>This privacy policy is effective as of 14 February 2018, latest amended on 20 June 2018. It is available to you through our website at the URL <a href="https://marlo.cgiar.org/legalInformation.do">https://marlo.cgiar.org/legalInformation.do</a> for viewing, printing or downloading.</p>
-        <p>CIAT reserves the right to amend the terms of this policy at any time. We will post a note informing about any updates or amendments to our policy at our website.</p>
+        <p>This privacy policy is effective as of 20 June 2018, latest amended on 7 October 2021. It is available to you through our website at the URL <a href="https://aiccra.marlo.cgiar.org/legalInformation.do">https://aiccra.marlo.cgiar.org/legalInformation.do</a> for viewing, printing or downloading.</p>
+        <p>The Alliance reserves the right to amend the terms of this policy at any time. We will post a note informing about any updates or amendments to our policy at our website.</p>
          
-         
-        <p>Previous edit 2018-02-14</p>
-        <p>Latest edit on 2018-06-20</p>
+        <p>First edition: 2018-02-14</p> 
+        <p>Previous edit 2018-06-20</p>
+        <p>Latest edit on 2021-10-07</p>
       </div>
       
       <h3 id="termsConditions">Terms and Conditions</h3>
       <div class="simpleBox">
         <ol>
           <li><strong>Terms</strong>
-            <p>By accessing the website at <a href="https://marlo.cgiar.org">https://marlo.cgiar.org</a>, you are agreeing to be bound by these Terms and Conditions, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these Terms and Conditions, you are prohibited from using or accessing this site. The materials contained in this website are protected by applicable copyright and trademark law.</p>
+            <p>By accessing the website at <a href="https://aiccra.marlo.cgiar.org">https://aiccra.marlo.cgiar.org</a>, you are agreeing to be bound by these Terms and Conditions, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these Terms and Conditions, you are prohibited from using or accessing this site. The materials contained in this website are protected by applicable copyright and trademark law.</p>
           </li>
         </ol>
          
         <ol start="2">
           <li><strong>Copyright </strong>
-            <h5>Copyright&copy;2013-2018 International Center for Tropical Agriculture (CIAT)</h5>
-            <p>MARLO (Managing Agricultural Research for Learning and Outcomes) is an online platform initially conceive to assist CGIAR Research Programs and CGIAR Centers in their strategic results-based program planning to reporting and learning. MARLO has been developed under the CGIAR Research Program on Climate Change, Agriculture and Food Security (CCAFS), led by the International Center for Tropical Agriculture (CIAT) (http://ciat.cgiar.org/).</p>
+            <h5>Copyright&copy;2013-2019 International Center for Tropical Agriculture (CIAT) on behalf of The Alliance.</h5>
+            <p>MARLO (Managing Agricultural Research for Learning and Outcomes) is an online platform initially conceive to assist CGIAR Research Programs and CGIAR Centers in their strategic results-based program planning to reporting and learning. MARLO has been developed under the CGIAR Research Program on Climate Change, Agriculture and Food Security (CCAFS), led by the Technology Integration unit at The Alliance</p>
+            <p>Considering the nature of the platform and its adoption in the CGIAR through the CGIAR Research Programs, we decide to implement this version for this project funded by the World Bank called “Accelerating the Impact of the CGIAR Climate Research for Africa Project (AICCRA).” </p>
           </li>
         </ol>
          
@@ -156,14 +174,14 @@
               <li>disclose the source code and a modified version of the code if you distribute a modified version of it. &nbsp;</li>
             </ol>
              
-            <p>This license shall automatically terminate if you violate any of these restrictions and may be terminated by the International Center for Tropical Agriculture (CIAT) at any time. Upon terminating your viewing of these materials or upon the termination of this license, you must destroy any downloaded materials in your possession whether in electronic or printed format.</p>
+            <p>This license shall automatically terminate if you violate any of these restrictions and may be terminated by The Alliance at any time. Upon terminating your viewing of these materials or upon the termination of this license, you must destroy any downloaded materials in your possession whether in electronic or printed format.</p>
             
             <p><u>Content</u></p>
-            <p>Staff or personnel associated with CGIAR Research Programs and CGIAR Centers must acknowledge and agree that data and information or any other informational content uploaded in MARLO (hereinafter referred to as &ldquo;Contributions&rdquo;) could be used on public CGIAR Research Programs and/or CGIAR Centers&rsquo; websites and other knowledge sharing platforms.&nbsp;</p>
-            <p>Such Contributions, and for that matter, all informational products at CGIAR level are regulated by the <em>CGIAR Principles on the Management of Intellectual Assets</em> (<a href="https://www.cgiar.org/resources/cgiar-intellectual-asset-management/">https://www.cgiar.org/resources/cgiar-intellectual-asset-management/</a>) and the <em>CGIAR Open Access Policy</em> (https://www.cgiar.org/resources/open-access/).&nbsp;</p>
-            <p>In order to make a Contribution to the MARLO website, you must have a registered account. The owner of any Contribution retains copyright rights to such content, as applicable.&nbsp; If you make a contribution you must have the right to contribute such Contribution.&nbsp; Please make certain that any Contribution is consistent with these Terms and Conditions.</p>
-            <p>The International Center for Tropical Agriculture (CIAT) or the MARLO Team may, but is not obligated to, review your Contributions. CIAT or the MARLO Team may, in its sole discretion, terminate or suspend your registered account if your Contribution violates these Terms and Conditions. Acceptance of a Contribution does not constitute an endorsement or sponsorship of the Contribution by CIAT.</p>
-            <p>&nbsp;If you delete your Contribution, CIAT does not warrant that it will be able to or will take responsibility for removing deleted Contributions from the MARLO website, including but not limited to those outside of its reasonable control or those to whom you or others may have forwarded your Contribution.</p>
+            <p>Staff or personnel associated with  with the AICCRA Project and CGIAR Centers must acknowledge and agree that data and information or any other informational content uploaded in MARLO (hereinafter referred to as &ldquo;Contributions&rdquo;) could be used on public CGIAR Research Programs and/or CGIAR Centers&rsquo; websites and other knowledge sharing platforms.&nbsp;</p>
+            <p>Such Contributions, and for that matter, all informational products at CGIAR level are regulated by the <a href="https://www.cgiar.org/how-we-work/accountability/cgiar-intellectual-asset-management/"><em>CGIAR Principles on the Management of Intellectual Assets</em></a> and the <a href="https://hdl.handle.net/10568/113623"><em>CGIAR Open Access Policy</em></a>.&nbsp;</p>
+            <p>To make a Contribution to the MARLO website, you must have a registered account. The owner of any Contribution retains copyright rights to such content, as applicable.&nbsp; If you make a contribution you must have the right to contribute such Contribution.&nbsp; Please make certain that any Contribution is consistent with these Terms and Conditions.</p>
+            <p>The Alliance or the MARLO Team may, but is not obligated to, review your Contributions. The Alliance or the MARLO Team may, in its sole discretion, terminate or suspend your registered account if your Contribution violates these Terms and Conditions. Acceptance of a Contribution does not constitute an endorsement or sponsorship of the Contribution by The Alliance.</p>
+            <p>If you delete your Contribution, The Alliance does not warrant that it will be able to or will take responsibility for removing deleted Contributions from the MARLO website, including but not limited to those outside of its reasonable control or those to whom you or others may have forwarded your Contribution.</p>
           
           </li>
         </ol>
@@ -171,33 +189,33 @@
         <ol start="4">
           <li><strong>Disclaimer</strong>
             <ol>
-              <li>MARLO as a software and the materials on MARLO's website are provided on an 'as is' basis. The International Center for Tropical Agriculture (CIAT) makes no warranties, expressed or implied, including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, non-infringement of intellectual property rights or any other violation of rights.</li>
-              <li>Further, the International Center for Tropical Agriculture (CIAT) does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the source code or object code of the software, the data, information, content or any other materials on its website, or otherwise relating to such materials, or on any other sites or websites linked to this site.</li>
+              <li>MARLO as a software and the materials on MARLO's website are provided on an 'as is' basis. The Alliance makes no warranties, expressed or implied, including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, non-infringement of intellectual property rights or any other violation of rights.</li>
+              <li>Further, The Alliance does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the source code or object code of the software, the data, information, content or any other materials on its website, or otherwise relating to such materials, or on any other sites or websites linked to this site.</li>
             </ol>
           </li>
         </ol>
          
         <ol start="5">
           <li><strong>Limitations</strong>
-            <p>Except as prohibited by law, in no event shall the International Center for Tropical Agriculture (CIAT) or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the MARLO website and the content or any other materials on MARLO's website, even if the International Center for Tropical Agriculture (CIAT) authorized representative has been notified orally or in writing of the possibility of such damage.</p>
+            <p>Except as prohibited by law, in no event shall Alliance or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the MARLO website and the content or any other materials on MARLO's website, even if The Alliance authorized representative has been notified orally or in writing of the possibility of such damage.</p>
           </li>
         </ol>
          
         <ol start="6">
           <li><strong>Accuracy of materials</strong>
-            <p>The data, information, content and any other materials appearing on MARLO&rsquo;s website could include technical, typographical, or photographic errors. The International Center for Tropical Agriculture (CIAT) does not warrant that any of such data, information, content and any other materials on its website are accurate, complete or current. The MARLO team may make changes to the data, information, content and any materials contained on its website at any time without notice. However the International Center for Tropical Agriculture (CIAT) does not make any commitment to update the materials. Authorized users of the MARLO website are completely responsible for the accuracy of the content uploaded by them.</p>
+            <p>The data, information, content and any other materials appearing on MARLO&rsquo;s website could include technical, typographical, or photographic errors. The Alliance does not warrant that any of such data, information, content and any other materials on its website are accurate, complete or current. The MARLO team may make changes to the data, information, content and any materials contained on its website at any time without notice. However The Alliance does not make any commitment to update the materials. Authorized users of the MARLO website are completely responsible for the accuracy of the content uploaded by them.</p>
           </li>
         </ol>
          
         <ol start="7">
           <li><strong>Links</strong>
-            <p>The International Center for Tropical Agriculture (CIAT) may link MARLO website to material hosted by third parties on independent sites and services on the internet. CIAT is not responsible or liable for the contents or quality of such material. CIAT has not reviewed the material on such third party sites, and makes no warranties or representations about the material, information, products, or services offered by third parties. Further, the inclusion of any links does not imply endorsement or sponsorship by the International Center for Tropical Agriculture (CIAT) of the site. Use of any such linked website is at the user's own risk.</p>
+            <p>The Alliance may link MARLO website to material hosted by third parties on independent sites and services on the internet. The Alliance is not responsible or liable for the contents or quality of such material. The Alliance has not reviewed the material on such third party sites, and makes no warranties or representations about the material, information, products, or services offered by third parties. Further, the inclusion of any links does not imply endorsement or sponsorship by The Alliance of the site. Use of any such linked website is at the user's own risk.</p>
           </li>
         </ol>
          
         <ol start="8">
           <li><strong>Modifications</strong>
-            <p>The International Center for Tropical Agriculture (CIAT) may revise the Terms and Conditions for the MARLO website at any time without notice. The most current version of the Terms and Conditions can be reviewed by clicking on the link or links located on the MARLO site. Please check these Terms and Conditions periodically to see whether they have changed. By using this website you are agreeing to be bound by the then current version of these Terms and Conditions.</p>
+            <p>The Alliance may revise the Terms and Conditions for the MARLO website at any time without notice. The most current version of the Terms and Conditions can be reviewed by clicking on the link or links located on the MARLO site. Please check these Terms and Conditions periodically to see whether they have changed. By using this website you are agreeing to be bound by the then current version of these Terms and Conditions.</p>
           </li>
         </ol>
          
