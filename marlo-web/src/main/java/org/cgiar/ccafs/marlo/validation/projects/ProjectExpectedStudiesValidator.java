@@ -180,8 +180,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
     // validate Milestones
     if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
-      && baseAction.getActualPhase().getName() != null && baseAction.getActualPhase().getName().contains("AR")
-      && isOicr) {
+      && baseAction.isSelectedPhaseAR2021() && isOicr) {
       if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
         && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == null) {
         action.addMessage(action.getText("hasMilestones"));
@@ -192,8 +191,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
 
     if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
-      && baseAction.getActualPhase().getName() != null && baseAction.getActualPhase().getName().contains("AR")
-      && isOicr) {
+      && baseAction.isSelectedPhaseAR2021() && isOicr) {
       if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
         && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == null) {
 
@@ -204,11 +202,9 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       } else {
 
         // Validate milestones
-        if (projectExpectedStudy.getMilestones() != null
-          && (projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() != null
-            && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == true
-            && !projectExpectedStudy.getMilestones().isEmpty())) {
-          if (!action.isSelectedPhaseAR2021()) {
+        if (projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() != null
+          && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == true) {
+          if (action.isNotEmpty(projectExpectedStudy.getMilestones())) {
             int count = 0;
             for (ProjectExpectedStudyMilestone studyMilestone : projectExpectedStudy.getMilestones()) {
               if (studyMilestone.getPrimary() != null && studyMilestone.getPrimary()) {
@@ -222,6 +218,11 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
               action.getInvalidFields().put("list-expectedStudy.milestones",
                 action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"milestones"}));
             }
+          } else {
+            action.addMessage(action.getText("milestones"));
+            action.addMissingField("expectedStudy.milestones");
+            action.getInvalidFields().put("list-expectedStudy.milestones",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
           }
         }
       }
