@@ -2,7 +2,7 @@
 [#macro studyMacro element name index=-1 template=false fromProject=true ]
   [#local customName = "${name}"/]
   [#local customId = "study-${template?string('template',index)}" /]
-  [#local isOutcomeCaseStudy = ((element.projectExpectedStudyInfo.studyType.id == 1)!false) && (reportingActive || upKeepActive)/]
+  [#local isOutcomeCaseStudy = ((element.projectExpectedStudyInfo.studyType.id == 1)!false)/]
   [#local isNew = (action.isEvidenceNew(element.id))!false /]
   
   [#local isPolicy = ((element.projectExpectedStudyInfo.isContribution)!false) ]
@@ -330,7 +330,7 @@
       [#-- Milestones --]
         [#--[#if isOutcomeCaseStudy]  --]
         <div class="form-group">          
-          <label for="">[@s.text name="study.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.milestones.help" showIcon=false editable=editable/]</label>
+          <label for="">[@s.text name="study.outcomes" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.outcomes.help" showIcon=false editable=editable/]</label>
           [#assign studyMilestoneLink = "studyMilestoneLink"]
           [#assign showMilestoneIndicator = (expectedStudy.projectExpectedStudyInfo.hasMilestones?string)!"" /]
           [@customForm.radioFlat id="${studyMilestoneLink}-yes" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
@@ -345,7 +345,7 @@
         --]
        <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
           [@customForm.elementsListComponent name="${customName}.projectOutcomes" elementType="projectOutcome" elementList=(element.projectOutcomes)![] label="study.outcomes"  listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName"/]
-          <div class="note">[@s.text name="study.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+          <div class="note">[@s.text name="study.outcomes.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
          <br/>      
         </div>
         
