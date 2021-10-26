@@ -274,13 +274,14 @@
       <thead>
         <tr>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.id" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.deliverable" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.article" /] </th>
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.author" /](s) </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.date" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.journal" /] </th>
           [/#if]
-          <th class="text-center" > [@s.text name="${customLabel}.${name}.directLink" /] </th>
+          <th class="col-md-2 text-center" > [@s.text name="${customLabel}.${name}.directLink" /] </th>
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.volume" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.issue" /] </th>
@@ -290,7 +291,7 @@
             <th class="text-center"> [@s.text name="${customLabel}.${name}.category" /] </th>
           [/#if]
           
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
+          <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.${isGrey?string('altmetricScore','isi')}" /] </th>
           [#if allowPopups]
             [#if !isGrey]
@@ -318,17 +319,11 @@
             [/#if]
             <tr>
               <td> <a href="${url}" target="_blank" >D${(item.id)!""}</a>  </td>
-              [#-- Title --]
+              [#-- Deliverable Title --]
               <td  style="max-width: 100px;">
-                [#local publicationTitle = (item.getMetadataValue(1))!""]
-                [#if !(publicationTitle?has_content) ]
-                  [#local publicationTitle = (item.deliverableInfo.title)!"" ]
-                [/#if]
-                
+                [#local publicationTitle = (item.deliverableInfo.title)!"" ]
                 [@utils.tableText value=publicationTitle /]
-                
                 [#if isFromProject]<br /> <small>(From Project P${item.project.id})</small> [/#if]
-                
                 [#if PMU]
                 <br />
                 <div class="form-group">
@@ -337,8 +332,11 @@
                   [/#list]
                 </div>
                 [/#if]
-                
-                
+              </td>
+              [#-- Disseminated Title --]
+              <td  style="max-width: 100px;">
+                [#local publicationTitle = (item.getMetadataValue(1))!"" ]
+                [@utils.tableText value=publicationTitle /]
               </td>
               [#if !allowPopups]
               [#-- Authors --]
