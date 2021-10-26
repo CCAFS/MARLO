@@ -239,7 +239,7 @@
               <div class="tab-content ">          
                 [#-- Progress tab --]  
                   <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade">
-                    [#if action.isAiccra()  && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
+                    [#if action.isAiccra()  && projectOutcomeLastPhase?has_content && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
                       [#-- 
                       && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content
                       --]
