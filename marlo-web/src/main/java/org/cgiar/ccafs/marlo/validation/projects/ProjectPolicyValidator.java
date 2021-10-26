@@ -270,34 +270,49 @@ public class ProjectPolicyValidator extends BaseValidator {
       }
     }
 
-    // Validate Milestones
-    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null
-      && projectPolicy.getProjectPolicyInfo().getHasMilestones() == null) {
-      action.addMessage(action.getText("milestoneList"));
-      action.addMissingField("policy.milestones");
-      action.getInvalidFields().put("list-policy.milestones",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+    // validate Milestones
+    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null && baseAction.isSelectedPhaseAR2021()) {
+      if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null
+        && projectPolicy.getProjectPolicyInfo().getHasMilestones() == null) {
+        action.addMessage(action.getText("milestoneList"));
+        action.addMissingField("policy.milestones");
+        action.getInvalidFields().put("list-policy.milestones",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+      }
     }
 
-    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null
-      && projectPolicy.getProjectPolicyInfo().getHasMilestones() != null
-      && projectPolicy.getProjectPolicyInfo().getHasMilestones() == true && projectPolicy.getMilestones() != null
-      && !projectPolicy.getMilestones().isEmpty()) {
-      if (!action.isSelectedPhaseAR2021()) {
-        int countPrimaries = 0;
-        for (PolicyMilestone policyMilestone : projectPolicy.getMilestones()) {
-          if (policyMilestone != null && policyMilestone.getCrpMilestone() != null
-            && policyMilestone.getCrpMilestone().getId() != null && policyMilestone.getPrimary() != null
-            && policyMilestone.getPrimary().booleanValue() == true) {
-            countPrimaries++;
-          }
-        }
+    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null && baseAction.isSelectedPhaseAR2021()) {
+      if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null
+        && projectPolicy.getProjectPolicyInfo().getHasMilestones() == null) {
 
-        if (countPrimaries != 1) {
-          action.addMessage(action.getText("milestoneList"));
-          action.addMissingField("policy.milestones");
-          action.getInvalidFields().put("list-policy.milestones",
-            action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"milestones"}));
+        action.addMessage(action.getText("milestoneList"));
+        action.addMissingField("policy.milestones");
+        action.getInvalidFields().put("list-policy.milestones",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+      } else {
+        // Validate milestones
+        if (projectPolicy.getProjectPolicyInfo().getHasMilestones() != null
+          && projectPolicy.getProjectPolicyInfo().getHasMilestones() == true) {
+          if (action.isNotEmpty(projectPolicy.getMilestones())) {
+            int count = 0;
+            for (PolicyMilestone policyMilestone : projectPolicy.getMilestones()) {
+              if (policyMilestone.getPrimary() != null && policyMilestone.getPrimary()) {
+                count++;
+              }
+            }
+
+            if (count != 1) {
+              action.addMessage(action.getText("milestoneList"));
+              action.addMissingField("policy.milestones");
+              action.getInvalidFields().put("list-policy.milestones",
+                action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"milestones"}));
+            }
+          } else {
+            action.addMessage(action.getText("milestoneList"));
+            action.addMissingField("policy.milestones");
+            action.getInvalidFields().put("list-policy.milestones",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+          }
         }
       }
     }
