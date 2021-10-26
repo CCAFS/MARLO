@@ -6,8 +6,8 @@
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs","flag-icon-css"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js?20211015a"
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210421C" ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210316"] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211026a" ] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20211026a"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -167,6 +167,7 @@
      <br>
       
       <div class="collapse crpProgressflagships col-md-3" id="collapseExample-${index}">
+      <button type="button" class="fpPopupClose close btnClose-${element.id}" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <ul class="nav nav-tabs insertHtmlSlo-tabs-${element.id}" role="tablist">
         </ul>
         <div class="tab-content insertHtmlSlo-tabpanel-${element.id}">
