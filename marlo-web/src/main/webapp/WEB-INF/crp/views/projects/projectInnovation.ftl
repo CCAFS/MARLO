@@ -4,11 +4,11 @@
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20211022A",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20211025A",
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20210924a"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20211025a"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
 
@@ -100,6 +100,7 @@
               <div class="form-group numberInnovations-block" style="display:${isGenetic?string('block','none')}">
                   [@customForm.input name="innovation.projectInnovationInfo.innovationNumber" type="number" i18nkey="projectInnovations.innovationNumber" editable=editable /]   
                   <i class="helpLabel" style="position: absolute; text-align: justify; margin-right: 15px;">[@s.text name="projectInnovations.innovationNumber.help" /]</i>
+                  <span id="oldInnovationNumber" style="display: none;">${innovation.projectInnovationInfo.innovationNumber!"-1"}</span>
               </div>
             </div>
           </div>
