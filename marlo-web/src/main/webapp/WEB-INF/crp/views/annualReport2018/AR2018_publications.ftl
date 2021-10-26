@@ -338,7 +338,7 @@
               [#-- Disseminated Title --]
               [#if !isGrey]
                 <td  style="max-width: 100px;">
-                  [#local publicationTitle = (item.getMetadataValue(1))!"" ]
+                  [#local publicationTitle = (action.getArticleTitle(item.id))!"" ]
                   [@utils.tableText value=publicationTitle /]
                 </td>
               [/#if]
