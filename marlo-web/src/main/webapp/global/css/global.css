@@ -7117,7 +7117,7 @@ li.currentSection#bi::before{
   top: 95px;
   z-index: 9999;
   left: 0;
-  transition: all 0.5s ease;
+  /* transition: all 0.5s ease; */
 }
 
 .crpProgressflagships.collapsing {
@@ -7192,9 +7192,9 @@ li.currentSection#bi::before{
   }
 }
 
-@media (max-width: 1500px) {
+/* @media (max-width: 1500px) {
   .crpProgressflagships {
     width: 25%;
     left: 28px;
   }
-}
+} */

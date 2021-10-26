@@ -1,5 +1,4 @@
-var caseStudiesName;
-var $elementsBlock;
+var caseStudiesName, $elementsBlock, multiInputStudies;
 
 $(document).ready(init);
 
@@ -42,6 +41,8 @@ function init() {
 
   $('.oicrContributingCRP select').on('change', checkContributingCRP);
   checkContributingCRP();
+  multiInputStudies = $('.multiInput').find('span input[name*="link"]');
+  checkHyperlinks();
 }
 
 function checkContributingCRP() {
@@ -56,6 +57,32 @@ function checkContributingCRP() {
       $(item).find('.removeElement').css('display', 'none');
     }
   });
+}
+
+function checkHyperlinks() {
+  multiInputStudies.each((index, item) => {
+    validateURL(item);
+  });
+}
+
+function validateURL(item) {
+  var url = item.value;
+  var expression = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/i;
+  var regex = new RegExp(expression);
+  var res = "";
+  if (url) {
+    if (url.match(regex)) {
+      res = "Valid URL";
+      $(item).css('border', 'none');
+      // console.log(res);
+    } else {
+      res = "Invalid URL";
+      $(item).css('border', '1px solid red');
+      // console.log(res);
+    }
+  } else {
+    $(item).css('border', '1px solid red');
+  }
 }
 
 function attachEvents() {
@@ -171,6 +198,9 @@ function attachEvents() {
     // Events
     $('.addButtonLink').on('click', addItem);
     $('.removeLink.links').on('click', removeItem);
+    $('.multiInput').find('span input[name*="link"]').on('input', function () {
+      validateURL(this);
+    });
 
     // Functions
     function addItem() {
