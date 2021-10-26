@@ -97,7 +97,8 @@ public class GeneralStatusManagerImpl implements GeneralStatusManager {
   public List<GeneralStatus> findByTable(String tableName) {
     List<GeneralStatusTable> statusTableList = this.generalStatusTableManager.findAll();
     List<GeneralStatus> statusList = statusTableList.stream().filter(c -> c.getTableName().equalsIgnoreCase(tableName))
-      .map(result -> result.getGeneralStatus()).collect(Collectors.toList());
+      .map(result -> result.getGeneralStatus()).filter(res -> res != null && res.getId() != null)
+      .sorted((s1, s2) -> s1.getId().compareTo(s2.getId())).collect(Collectors.toList());
     return statusList;
   }
 
