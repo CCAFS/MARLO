@@ -785,10 +785,16 @@ public class ProjectOutcomeAction extends BaseAction {
           crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcomeLastPhase.getCrpProgramOutcome().getId()));
       }
 
-      projectOutcomeLastPhase.getCrpProgramOutcome()
-        .setIndicators(projectOutcomeLastPhase.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream()
+      if (projectOutcomeLastPhase.getCrpProgramOutcome() != null
+        && projectOutcomeLastPhase.getCrpProgramOutcome().getCrpProgramOutcomeIndicators() != null
+        && projectOutcomeLastPhase.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream()
           .filter(c -> c.isActive()).sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator())))
-          .collect(Collectors.toList()));
+          .collect(Collectors.toList()) != null) {
+        projectOutcomeLastPhase.getCrpProgramOutcome()
+          .setIndicators(projectOutcomeLastPhase.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream()
+            .filter(c -> c.isActive()).sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator())))
+            .collect(Collectors.toList()));
+      }
 
       /*
        * List<CrpProgramOutcomeIndicator> indicators = new ArrayList<>();
