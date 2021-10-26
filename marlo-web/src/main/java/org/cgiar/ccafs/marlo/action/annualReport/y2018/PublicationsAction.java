@@ -537,6 +537,7 @@ public class PublicationsAction extends BaseAction {
         || d.getDeliverableInfo(actualPhase) == null && d.getDeliverableInfo(actualPhase).getId() == null
         || d.getDeliverableInfo(actualPhase)
           .getStatus() == null /* || d.getDeliverableInfo(actualPhase).getStatus() != 3 */);
+      deliverables.forEach(d -> d.getMetadataElements(this.getActualPhase()));
 
       // List for gray literature
       if (!this.isSelectedPhaseAR2021()) {
