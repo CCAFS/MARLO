@@ -275,7 +275,9 @@
         <tr>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.id" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.deliverable" /] </th>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.article" /] </th>
+          [#if !isGrey]
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.article" /] </th>
+          [/#if]
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.author" /](s) </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.date" /] </th>
@@ -334,10 +336,12 @@
                 [/#if]
               </td>
               [#-- Disseminated Title --]
-              <td  style="max-width: 100px;">
-                [#local publicationTitle = (item.getMetadataValue(1))!"" ]
-                [@utils.tableText value=publicationTitle /]
-              </td>
+              [#if !isGrey]
+                <td  style="max-width: 100px;">
+                  [#local publicationTitle = (action.getArticleTitle(item.id))!"" ]
+                  [@utils.tableText value=publicationTitle /]
+                </td>
+              [/#if]
               [#if !allowPopups]
               [#-- Authors --]
               <td>
