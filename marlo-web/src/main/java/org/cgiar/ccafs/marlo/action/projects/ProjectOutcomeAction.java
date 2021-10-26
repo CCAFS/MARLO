@@ -785,7 +785,7 @@ public class ProjectOutcomeAction extends BaseAction {
           crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcomeLastPhase.getCrpProgramOutcome().getId()));
       }
 
-      if (projectOutcomeLastPhase.getCrpProgramOutcome() != null
+      if (projectOutcomeLastPhase != null && projectOutcomeLastPhase.getCrpProgramOutcome() != null
         && projectOutcomeLastPhase.getCrpProgramOutcome().getCrpProgramOutcomeIndicators() != null
         && projectOutcomeLastPhase.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream()
           .filter(c -> c.isActive()).sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator())))
