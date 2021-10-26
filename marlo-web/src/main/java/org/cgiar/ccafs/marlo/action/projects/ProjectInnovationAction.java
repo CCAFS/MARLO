@@ -1851,7 +1851,8 @@ public class ProjectInnovationAction extends BaseAction {
       for (ProjectInnovationProjectOutcome innovationOutcome : outcomePrev) {
         if (this.innovation.getProjectOutcomes() == null
           || !this.innovation.getProjectOutcomes().contains(innovationOutcome)) {
-          this.projectInnovationProjectOutcomeManager.deleteProjectInnovationProjectOutcome(innovationOutcome.getId());
+          this.projectInnovationProjectOutcomeManager.deleteProjectInnovationProjectOutcome(innovationOutcome.getId(),
+            this.getActualPhase().getId());
         }
       }
     }

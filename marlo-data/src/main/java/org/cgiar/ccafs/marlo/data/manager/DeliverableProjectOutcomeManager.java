@@ -32,7 +32,7 @@ public interface DeliverableProjectOutcomeManager {
    * @param deliverableProjectOutcomeId is the deliverableProjectOutcome identifier.
    * @return true if the deliverableProjectOutcome was successfully deleted, false otherwise.
    */
-  public void deleteDeliverableProjectOutcome(long deliverableProjectOutcomeId);
+  public void deleteDeliverableProjectOutcome(long deliverableProjectOutcomeId, long phaseId);
 
 
   /**
@@ -63,8 +63,10 @@ public interface DeliverableProjectOutcomeManager {
   /**
    * This method saves the information of the given deliverableProjectOutcome
    * 
-   * @param deliverableProjectOutcome - is the deliverableProjectOutcome object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableProjectOutcome was
+   * @param deliverableProjectOutcome - is the deliverableProjectOutcome object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         deliverableProjectOutcome was
    *         updated
    *         or -1 is some error occurred.
    */

@@ -32,7 +32,7 @@ public interface ProjectExpectedStudyProjectOutcomeManager {
    * @param projectExpectedStudyProjectOutcomeId is the projectExpectedStudyProjectOutcome identifier.
    * @return true if the projectExpectedStudyProjectOutcome was successfully deleted, false otherwise.
    */
-  public void deleteProjectExpectedStudyProjectOutcome(long projectExpectedStudyProjectOutcomeId);
+  public void deleteProjectExpectedStudyProjectOutcome(long projectExpectedStudyProjectOutcomeId, long phaseId);
 
 
   /**
@@ -53,22 +53,27 @@ public interface ProjectExpectedStudyProjectOutcomeManager {
 
 
   /**
-   * This method gets a projectExpectedStudyProjectOutcome object by a given projectExpectedStudyProjectOutcome identifier.
+   * This method gets a projectExpectedStudyProjectOutcome object by a given projectExpectedStudyProjectOutcome
+   * identifier.
    * 
    * @param projectExpectedStudyProjectOutcomeID is the projectExpectedStudyProjectOutcome identifier.
    * @return a ProjectExpectedStudyProjectOutcome object.
    */
-  public ProjectExpectedStudyProjectOutcome getProjectExpectedStudyProjectOutcomeById(long projectExpectedStudyProjectOutcomeID);
+  public ProjectExpectedStudyProjectOutcome
+    getProjectExpectedStudyProjectOutcomeById(long projectExpectedStudyProjectOutcomeID);
 
   /**
    * This method saves the information of the given projectExpectedStudyProjectOutcome
    * 
-   * @param projectExpectedStudyProjectOutcome - is the projectExpectedStudyProjectOutcome object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyProjectOutcome was
+   * @param projectExpectedStudyProjectOutcome - is the projectExpectedStudyProjectOutcome object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyProjectOutcome was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectExpectedStudyProjectOutcome saveProjectExpectedStudyProjectOutcome(ProjectExpectedStudyProjectOutcome projectExpectedStudyProjectOutcome);
+  public ProjectExpectedStudyProjectOutcome
+    saveProjectExpectedStudyProjectOutcome(ProjectExpectedStudyProjectOutcome projectExpectedStudyProjectOutcome);
 
 
 }

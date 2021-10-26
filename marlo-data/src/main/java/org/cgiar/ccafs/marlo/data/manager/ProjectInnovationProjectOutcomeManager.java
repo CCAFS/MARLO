@@ -32,7 +32,7 @@ public interface ProjectInnovationProjectOutcomeManager {
    * @param projectInnovationProjectOutcomeId is the projectInnovationProjectOutcome identifier.
    * @return true if the projectInnovationProjectOutcome was successfully deleted, false otherwise.
    */
-  public void deleteProjectInnovationProjectOutcome(long projectInnovationProjectOutcomeId);
+  public void deleteProjectInnovationProjectOutcome(long projectInnovationProjectOutcomeId, long phaseId);
 
 
   /**
@@ -63,12 +63,15 @@ public interface ProjectInnovationProjectOutcomeManager {
   /**
    * This method saves the information of the given projectInnovationProjectOutcome
    * 
-   * @param projectInnovationProjectOutcome - is the projectInnovationProjectOutcome object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationProjectOutcome was
+   * @param projectInnovationProjectOutcome - is the projectInnovationProjectOutcome object with the new information to
+   *        be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectInnovationProjectOutcome was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectInnovationProjectOutcome saveProjectInnovationProjectOutcome(ProjectInnovationProjectOutcome projectInnovationProjectOutcome);
+  public ProjectInnovationProjectOutcome
+    saveProjectInnovationProjectOutcome(ProjectInnovationProjectOutcome projectInnovationProjectOutcome);
 
 
 }
