@@ -239,7 +239,7 @@
               <div class="tab-content ">          
                 [#-- Progress tab --]  
                   <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade">
-                    [#if action.isAiccra()  && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
+                    [#if action.isAiccra()  && projectOutcomeLastPhase?has_content && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
                       [#-- 
                       && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content
                       --]
@@ -522,7 +522,7 @@
         </div>
         
         <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isYearRequired(milestoneYear) className="limitWords-100" editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
+          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isYearRequired(milestoneYear) className="limitWords-100" editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false/]
         </div>
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
