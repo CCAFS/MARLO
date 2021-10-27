@@ -314,6 +314,8 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyCenters)";
   public static final String PROJECT_EXPECTED_STUDIES_MILESTONE_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyMilestones)";
+  public static final String PROJECT_EXPECTED_STUDIES_PROJECT_OUTCOME_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyProjectOutcomes)";
 
   public static final String PROJECT_INDICATOR_PHASE_PREVIOUS_NAME = "AR";
 
@@ -461,6 +463,8 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationMilestones)";
   public static final String PROJECT_INNOVATION_SUB_IDO =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationSubIdos)";
+  public static final String PROJECT_INNOVATION_PROJECT_OUTCOMES =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationProjectOutcomes)";
 
   // Project Policies Relations
   public static final String PROJECT_POLICY_INFOS_RELATION =

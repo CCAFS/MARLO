@@ -134,6 +134,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   private Set<ProjectExpectedStudyMilestone> projectExpectedStudyMilestones =
     new HashSet<ProjectExpectedStudyMilestone>(0);
 
+  private List<ProjectExpectedStudyProjectOutcome> projectOutcomes;
+  private Set<ProjectExpectedStudyProjectOutcome> projectExpectedStudyProjectOutcomes =
+    new HashSet<ProjectExpectedStudyProjectOutcome>(0);
+
   // clarisa field
   private String pdfLink;
 
@@ -354,6 +358,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return projectExpectedStudyPolicies;
   }
 
+  public Set<ProjectExpectedStudyProjectOutcome> getProjectExpectedStudyProjectOutcomes() {
+    return projectExpectedStudyProjectOutcomes;
+  }
+
   public Set<ProjectExpectedStudyQuantification> getProjectExpectedStudyQuantifications() {
     return projectExpectedStudyQuantifications;
   }
@@ -368,6 +376,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   public Set<ProjectExpectedStudySubIdo> getProjectExpectedStudySubIdos() {
     return projectExpectedStudySubIdos;
+  }
+
+  public List<ProjectExpectedStudyProjectOutcome> getProjectOutcomes() {
+    return projectOutcomes;
   }
 
   public List<ExpectedStudyProject> getProjects() {
@@ -594,6 +606,11 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.projectExpectedStudyPolicies = projectExpectedStudyPolicies;
   }
 
+  public void setProjectExpectedStudyProjectOutcomes(
+    Set<ProjectExpectedStudyProjectOutcome> projectExpectedStudyProjectOutcomes) {
+    this.projectExpectedStudyProjectOutcomes = projectExpectedStudyProjectOutcomes;
+  }
+
   public void setProjectExpectedStudyQuantifications(
     Set<ProjectExpectedStudyQuantification> projectExpectedStudyQuantifications) {
     this.projectExpectedStudyQuantifications = projectExpectedStudyQuantifications;
@@ -609,6 +626,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   public void setProjectExpectedStudySubIdos(Set<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos) {
     this.projectExpectedStudySubIdos = projectExpectedStudySubIdos;
+  }
+
+  public void setProjectOutcomes(List<ProjectExpectedStudyProjectOutcome> projectOutcomes) {
+    this.projectOutcomes = projectOutcomes;
   }
 
   public void setProjects(List<ExpectedStudyProject> projects) {

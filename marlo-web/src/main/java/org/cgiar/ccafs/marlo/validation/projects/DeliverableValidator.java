@@ -407,12 +407,18 @@ public class DeliverableValidator extends BaseValidator {
         }
 
         // Validate Deliverable Participant
-        if (deliverable.getDeliverableInfo(action.getActualPhase()) != null
-          && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
-          && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == 145
-          && deliverable.getDeliverableParticipant() != null
-          && deliverable.getDeliverableParticipant().getHasParticipants() != null
-          && deliverable.getDeliverableParticipant().getHasParticipants()) {
+
+        /*
+         * if (deliverable.getDeliverableInfo(action.getActualPhase()) != null
+         * && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
+         * && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == 145
+         * && deliverable.getDeliverableParticipant() != null
+         * && deliverable.getDeliverableParticipant().getHasParticipants() != null
+         * && deliverable.getDeliverableParticipant().getHasParticipants()) {
+         * this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
+         * }
+         */
+        if (deliverable.getDeliverableParticipant() != null) {
           this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
         } else {
           action.addMessage("hasParticipants");
@@ -519,19 +525,22 @@ public class DeliverableValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (deliverable.getDeliverableInfo(action.getActualPhase()) != null
-      && deliverable.getDeliverableInfo(action.getActualPhase()).getCrpProgramOutcome() != null
-      && deliverable.getDeliverableInfo(action.getActualPhase()).getCrpProgramOutcome().getId() != null
-      && deliverable.getDeliverableInfo(action.getActualPhase()).getCrpProgramOutcome().getId() == -1) {
-
-      if (action.isAiccra()) {
-        action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-        action.getInvalidFields().put("input-deliverable.deliverableInfo.crpProgramOutcome.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-      deliverable.getDeliverableInfo(action.getActualPhase()).setCrpProgramOutcome(null);
-
+    /*
+     * if (deliverable.getDeliverableInfo(action.getActualPhase()) != null
+     * && deliverable.getDeliverableInfo(action.getActualPhase()).getCrpProgramOutcome() != null
+     * && deliverable.getDeliverableInfo(action.getActualPhase()).getCrpProgramOutcome().getId() != null
+     * && deliverable.getDeliverableInfo(action.getActualPhase()).getCrpProgramOutcome().getId() == -1) {
+     * if (action.isAiccra()) {
+     * action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
+     * action.getInvalidFields().put("input-deliverable.deliverableInfo.crpProgramOutcome.id",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * deliverable.getDeliverableInfo(action.getActualPhase()).setCrpProgramOutcome(null);
+     * }
+     */
+    if (deliverable.getProjectOutcomes() == null || deliverable.getProjectOutcomes().isEmpty()) {
+      action.addMessage(action.getText("deliverable.projectOutcomes"));
+      action.getInvalidFields().put("input-deliverable.projectOutcomes", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (!action.isCenterGlobalUnit()) {
