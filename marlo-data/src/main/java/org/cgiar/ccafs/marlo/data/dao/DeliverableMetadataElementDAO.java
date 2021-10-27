@@ -16,10 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
-import org.cgiar.ccafs.marlo.data.model.MetadataElement;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -63,8 +60,8 @@ public interface DeliverableMetadataElementDAO {
    * @param metadataElement
    * @return a DeliverableMetadataElement object.
    */
-  public DeliverableMetadataElement findMetadataElementByPhaseAndDeliverable(Phase phase, Deliverable deliverable,
-    MetadataElement metadataElement);
+  public DeliverableMetadataElement findMetadataElementByPhaseAndDeliverable(long phaseId, long deliverableId,
+    long metadataElementId);
 
   /**
    * This method saves the information of the given deliverableMetadataElement
