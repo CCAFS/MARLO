@@ -489,7 +489,7 @@
         
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
           <div class="col-md-4">
-            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=editable && isYearRequired(milestoneYear) /]
+            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) /]
           </div>
           
           <div class="col-md-4">
