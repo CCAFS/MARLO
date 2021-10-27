@@ -166,7 +166,7 @@
 
       </td>
       <td>
-        [#if !isTemplate][@popUps.relationsMacro element=projectOutcome labelText=false /]</div>[/#if]
+        [#if !isTemplate][@popUps.relationsMacro element=projectOutcome labelText=true /]</div>[/#if]
       </td>
       [#-- Contribution Status --]
       <td class="text-center">
