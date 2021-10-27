@@ -160,7 +160,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
     // validate Milestones
     if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
-      && baseAction.getActualPhase().getName() != null && baseAction.getActualPhase().getName().contains("AR")
+      && baseAction.getActualPhase().getName() != null
       && projectExpectedStudy.getProjectExpectedStudyInfo().getStudyType() != null
       && projectExpectedStudy.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1) {
       if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
@@ -173,7 +173,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
 
     if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
-      && baseAction.getActualPhase().getName() != null && baseAction.getActualPhase().getName().contains("AR")
+      && baseAction.getActualPhase().getName() != null
       && projectExpectedStudy.getProjectExpectedStudyInfo().getStudyType() != null
       && projectExpectedStudy.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1) {
       if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
