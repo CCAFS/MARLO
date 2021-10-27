@@ -17,10 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableMetadataElementDAO;
-import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
-import org.cgiar.ccafs.marlo.data.model.MetadataElement;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -75,14 +72,14 @@ public class DeliverableMetadataElementMySQLDAO extends AbstractMarloDAO<Deliver
 
 
   @Override
-  public DeliverableMetadataElement findMetadataElementByPhaseAndDeliverable(Phase phase, Deliverable deliverable,
-    MetadataElement metadataElement) {
+  public DeliverableMetadataElement findMetadataElementByPhaseAndDeliverable(long phaseId, long deliverableId,
+    long metadataElementId) {
     String query = "select distinct dm from DeliverableMetadataElement dm where phase.id = :phaseId "
       + "and deliverable.id= :deliverableId and metadataElement.id = :metadataElementId";
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
-    createQuery.setParameter("phaseId", phase.getId());
-    createQuery.setParameter("deliverableId", deliverable.getId());
-    createQuery.setParameter("metadataElementId", metadataElement.getId());
+    createQuery.setParameter("phaseId", phaseId);
+    createQuery.setParameter("deliverableId", deliverableId);
+    createQuery.setParameter("metadataElementId", metadataElementId);
 
     Object findSingleResult = super.findSingleResult(DeliverableMetadataElement.class, createQuery);
     DeliverableMetadataElement deliverableMetadataElementResult = (DeliverableMetadataElement) findSingleResult;
