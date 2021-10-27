@@ -116,6 +116,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableTypeRule;
@@ -963,12 +964,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
 
           for (Deliverable deliverable : projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase())) {
-            if (deliverable.getDeliverableInfo() != null
-              && deliverable.getDeliverableInfo().getCrpProgramOutcome() != null && deliverable.getDeliverableInfo()
-                .getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
+            if (deliverable.getDeliverableProjectOutcomes() != null) {
+              deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
+                .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+            }
+            if (deliverable != null && deliverable.getProjectOutcomes() != null
+              && !deliverable.getProjectOutcomes().isEmpty()) {
+              if (deliverable != null && deliverable.getProjectOutcomes() != null
+                && !deliverable.getProjectOutcomes().isEmpty()) {
+                for (DeliverableProjectOutcome deliverableProjectOutcome : deliverable.getProjectOutcomes()) {
+                  if (deliverableProjectOutcome != null && deliverableProjectOutcome.getProjectOutcome() != null
+                    && deliverableProjectOutcome.getProjectOutcome().getId() != null
+                    && deliverableProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
 
-              canDelete = false;
-              break;
+                    canDelete = false;
+                    break;
+                  }
+                }
+              }
             }
           }
 
@@ -2756,11 +2769,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           deliverables = new ArrayList<>();
           ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
 
+          /*
+           * Commented for implement the new relationship deliverable_project_outcomes
+           * for (Deliverable deliverable : projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase())) {
+           * if (deliverable.getDeliverableInfo() != null
+           * && deliverable.getDeliverableInfo().getCrpProgramOutcome() != null && deliverable.getDeliverableInfo()
+           * .getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
+           * deliverables.add(deliverable);
+           * }
+           * }
+           */
+
+          // New method for new relationship deliverable_project_outcomes table
           for (Deliverable deliverable : projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase())) {
-            if (deliverable.getDeliverableInfo() != null
-              && deliverable.getDeliverableInfo().getCrpProgramOutcome() != null && deliverable.getDeliverableInfo()
-                .getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
-              deliverables.add(deliverable);
+            if (deliverable.getDeliverableProjectOutcomes() != null) {
+              deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
+                .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+            }
+            if (deliverable != null && deliverable.getProjectOutcomes() != null
+              && !deliverable.getProjectOutcomes().isEmpty()) {
+              for (DeliverableProjectOutcome deliverableProjectOutcome : deliverable.getProjectOutcomes()) {
+                if (deliverableProjectOutcome != null && deliverableProjectOutcome.getProjectOutcome() != null
+                  && deliverableProjectOutcome.getProjectOutcome().getId() != null
+                  && deliverableProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+                  deliverables.add(deliverable);
+                }
+              }
             }
           }
 
