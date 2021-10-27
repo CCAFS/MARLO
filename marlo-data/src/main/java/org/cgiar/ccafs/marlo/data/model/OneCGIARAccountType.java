@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
+ * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,23 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import java.io.Serializable;
 
-public class OneCGIARAccountType {
+public class OneCGIARAccountType extends MarloAuditableEntity implements Serializable {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -298267617036222045L;
+  private String name;
+
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }
