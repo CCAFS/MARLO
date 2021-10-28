@@ -75,6 +75,13 @@ public class DeliverableMetadataElementManagerImpl implements DeliverableMetadat
   }
 
   @Override
+  public DeliverableMetadataElement findMetadataElementByPhaseAndDeliverable(Phase phase, Deliverable deliverable,
+    long metadataElementId) {
+    return this.deliverableMetadataElementDAO.findMetadataElementByPhaseAndDeliverable(phase.getId(),
+      deliverable.getId(), metadataElementId);
+  }
+
+  @Override
   public DeliverableMetadataElement getDeliverableMetadataElementById(long deliverableMetadataElementID) {
 
     return deliverableMetadataElementDAO.find(deliverableMetadataElementID);
@@ -115,8 +122,8 @@ public class DeliverableMetadataElementManagerImpl implements DeliverableMetadat
     Deliverable deliverable, Long phaseID) {
     Phase phase = phaseDAO.find(phaseID);
     DeliverableMetadataElement deliverableMetadataElementPhase =
-      deliverableMetadataElementDAO.findMetadataElementByPhaseAndDeliverable(phase,
-        deliverableMetadataResult.getDeliverable(), deliverableMetadataResult.getMetadataElement());
+      deliverableMetadataElementDAO.findMetadataElementByPhaseAndDeliverable(phase.getId(),
+        deliverableMetadataResult.getDeliverable().getId(), deliverableMetadataResult.getMetadataElement().getId());
 
     if (deliverableMetadataElementPhase != null) {
       this.cloneDeliverableMetadata(deliverableMetadataResult, deliverableMetadataElementPhase, phase);
@@ -132,6 +139,5 @@ public class DeliverableMetadataElementManagerImpl implements DeliverableMetadat
     }
 
   }
-
 
 }
