@@ -57,6 +57,8 @@ function updateQualityAssessmentStatusData(data) {
       case 'quality_assessed':
         status = 'Quality Assessed';
         iconSrc = baseURL + '/global/images/quality-assessed-icon.svg';
+        $(`#policy-${x[0]}`).prop('disabled', true);
+        $(`#policy-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
         break;
     
       default:
