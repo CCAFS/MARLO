@@ -21,6 +21,8 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 public class OneCGIARAccountType extends MarloAuditableEntity implements Serializable {
 
   /**
@@ -30,12 +32,47 @@ public class OneCGIARAccountType extends MarloAuditableEntity implements Seriali
   private String name;
 
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+
+    OneCGIARAccountType other = (OneCGIARAccountType) obj;
+
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+
+    return true;
+  }
+
   public String getName() {
     return name;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+    return result;
+  }
+
   public void setName(String name) {
     this.name = name;
+  }
+
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this).append("id", this.getId()).append("name", this.getName()).toString();
   }
 
 }
