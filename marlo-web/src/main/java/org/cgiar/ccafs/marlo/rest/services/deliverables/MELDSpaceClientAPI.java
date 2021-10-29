@@ -227,7 +227,7 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
 
     String handleUrl = DSPACE_HANDLE.replace("{0}", this.getId());
     Element elementHandle = xmlReaderConnectionUtil.getXmlRestClient(handleUrl);
-    this.setId(elementHandle.element("id").getStringValue());
+    this.setId(elementHandle.element("UUID").getStringValue());
     String linkRest = (REST_URL.replace("{0}", this.getId()));
     return linkRest;
   }
