@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlCdn}/global/js/utils.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211022A",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211029A",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210924a"] /]
@@ -487,26 +487,29 @@
     </div>
     
     [#-- Links to evidence --]
+    <span id="actualPhaseAR2021" style="display: none;">${action.isSelectedPhaseAR2021()?c}</span>
     <div class="form-group linksToEvidence">
       <span id="warningEmptyLinksTag" class="errorTag glyphicon glyphicon-info-sign" style="display: none; position: relative; left: 730px;" title="" aria-describedby="ui-id-5"></span>
       [@customForm.textArea name="${customName}.evidenceLink" value="${(annualReportElement.evidenceLink)!}" i18nkey="${customLabel}.milestoneEvidenceLink" help="${customLabel}.milestoneEvidenceLink.help" helpIcon=false display=true required=false editable=editable  /]
       [#--  <span>${annualReportElement.id}</span>
       <span>${customName}</span>   --]
-      <div class="linksBlock ">
-        <div class="linksList">
-          [#list (annualReportElement.links)![{}] as link]
-            [@customForm.multiInput name="${customName}.links" element=link index=link_index class="links" placeholder="global.webSiteLink.placeholder" /]
-          [/#list]
-        </div>
-        [#if editable]
-        <div class="addButtonLink button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Link </div>
-        <div class="clearfix"></div>
+      [#if action.isSelectedPhaseAR2021()]
+        <div class="linksBlock ">
+          <div class="linksList">
+            [#list (annualReportElement.links)![{}] as link]
+              [@customForm.multiInput name="${customName}.links" element=link index=link_index class="links" placeholder="global.webSiteLink.placeholder" /]
+            [/#list]
+          </div>
+          [#if editable]
+          <div class="addButtonLink button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Link </div>
+          <div class="clearfix"></div>
+          [/#if]
+          </div>
+            [#-- Element item Template --]
+          <div style="display:none">
+            [@customForm.multiInput name="${customName}.links" element={} index=-1 template=true class="links" placeholder="global.webSiteLink.placeholder" /]
+          </div>
         [/#if]
-        </div>
-          [#-- Element item Template --]
-        <div style="display:none">
-          [@customForm.multiInput name="${customName}.links" element={} index=-1 template=true class="links" placeholder="global.webSiteLink.placeholder" /]
-        </div>
     </div>
       
     <div class="form-group milestonesEvidence" style="width: 100%; display:${((milestoneStatus == 4) || (milestoneStatus == 5) || (milestoneStatus == 6))?string('block', 'none')}">
