@@ -103,6 +103,6 @@ public class OneCGIARAccount extends MarloAuditableEntity implements Serializabl
     return new ToStringBuilder(this).append("id", this.getId()).append("description", this.getDescription())
       .append("financialCode", this.getFinancialCode())
       .append("parentAccount", (this.getParentAccount() != null ? this.getParentAccount().getId() : null))
-      .append("accountType", this.getFinancialCode()).toString();
+      .append("accountType", (this.getAccountType() != null ? this.getAccountType().getId() : null)).toString();
   }
 }
