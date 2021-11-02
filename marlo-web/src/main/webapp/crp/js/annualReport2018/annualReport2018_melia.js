@@ -14,7 +14,9 @@ function init() {
 }
 
 function attachEvents() {
-  loadQualityAssessmentStatus(meliasAjaxURL, meliasArrName);
+  if ($('#actualPhase').html() == 'true') {
+    loadQualityAssessmentStatus(meliasAjaxURL, meliasArrName);
+  }
 
   // Add a program collaboration
   $('.addEvaluation').on('click', addEvaluation);
@@ -57,6 +59,7 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
 
 function updateQualityAssessmentStatusData(data) {
   data.map(function (x) {
+    var isCheckedAR = $(`#isCheckedAR-${x[0]}`).html();
     var element = document.getElementById(`QAStatusIcon-${x[0]}`);
     var status, iconSrc;
 
@@ -80,7 +83,7 @@ function updateQualityAssessmentStatusData(data) {
         break;
     }
 
-    if (element) {
+    if (element && isCheckedAR == '1') {
       var imgTag = document.createElement('img');
       var br = document.createElement('br');
       var spanTag = document.createElement('span');
