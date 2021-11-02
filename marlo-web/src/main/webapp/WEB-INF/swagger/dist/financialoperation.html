@@ -1812,7 +1812,126 @@
       </div>
         <div class="section" id="section4">
         <h1 class="title" data-aos="fade-up">CGIAR Units</h1>
-        <h2 class="title">Coming Soon</h2>
+         <div class="bshadow" data-aos="fade-up">
+          <div class="container">
+            <div class="row">
+              <div class="col-12">
+                <h2 class="title">Summary</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Method 4.1 -->
+         <div class="bshadow" data-aos="fade-up" id="section3-item1">
+                  <div class="getColorbackground contEndpoint">
+                    <button type="button" class="btn getColorbackground">GET</button> <span
+                      class="endpointTitle">/units</span>
+                  </div>
+                  <div class="parameters">
+                    <h3>Functionality</h3>
+                    <div>
+                    </div>
+                    <h3>Parameters</h3>
+                    <div>No parameters</div>
+                    <table style="width: 70%">
+                    <thead>
+                      <tr>
+                        <th></th>     
+                      </tr>
+                    </thead>
+                    <tbody>        
+                      <tr>
+                        <td colspan="2">
+                          <div>
+                            <p><span><Strong>Request URL: </Strong></span></p>
+                            <div class="URLendpoint">
+                              <div class="fragCode">
+                                <p><span class="endpoint"></span>/units</p>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  </div>
+                  <div class="container-c">
+                    <div class="row">
+                      <div class="col-12" style="margin-bottom: 20px;">
+                        <button onclick="units()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal5" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
+                      </div>
+                      <div class="col-12">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="greenCode">200</span>: <span class="blueCode">OK</span> </p>
+                          </div>
+                          <pre><code>
+<span class="yellowCode">[</span>
+  <span class="yellowCode">{</span>
+    <span class="blueCode">"code"</span><span class="WhiteCode"> : 0,</span>
+    <span class="blueCode">"financialCode"</span><span class="WhiteCode"> : "string",</span>
+    <span class="blueCode">"description"</span><span class="WhiteCode"> : "string",</span>
+    <span class="blueCode">"unitType"</span><span class="yellowCode"> : {</span>
+      <span class="blueCode">"code"</span><span class="WhiteCode"> : 0,</span>
+      <span class="blueCode">"acronym"</span><span class="WhiteCode"> : "string",</span>   
+      <span class="blueCode">"description"</span><span class="WhiteCode"> : "string"</span>      
+    <span class="yellowCode">}</span> 
+    <span class="blueCode">"parent"</span><span class="yellowCode"> : {</span>
+      <span class="blueCode">"code"</span><span class="WhiteCode"> : 0,</span>
+      <span class="blueCode">"description"</span><span class="WhiteCode"> : "string"</span>      
+    <span class="yellowCode">}</span>
+    <span class="blueCode">"scienceGroup"</span><span class="yellowCode"> : {</span>
+      <span class="blueCode">"code"</span><span class="WhiteCode"> : 0,</span>
+      <span class="blueCode">"description"</span><span class="WhiteCode"> : "string"</span>      
+    <span class="yellowCode">}</span>  
+  <span class="yellowCode">}</span>
+<span class="yellowCode">]</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">400</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Bad Request</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">401</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Unauthorized</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">403</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Forbidden</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">404</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Not Found</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
       </div>
       <div class="section" id="section5">
         <h1 class="title" data-aos="fade-up">Funding Sources</h1>
@@ -2121,7 +2240,7 @@
   </div>
 </div>
 
-
+<!-- Units Modal  -->
 <div class="modal fade" id="exampleRequestModal5" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-xl">
     <div class="modal-content">
@@ -2132,25 +2251,25 @@
         </button>
       </div> -->
       <div class="modal-body" >
-        <table class="table dataTable" id="institutions" >
+        <table class="table dataTable" id="units" >
           <thead class="thead-dark">
             <tr id="#list-print-columns-name">
               <td>Code</td>
-              <td>Acronym</td>
-               <td>Institution Type</td>
-              <td>Office Location</td>             
-              <td>Name</td>
-              <td>Website</td>
+              <td>Description</td>
+              <td>Unit Type</td>
+              <td>Science Group</td>             
+              <td>Parent</td>
+             
             </tr>
           </thead>
-          <tbody id="list-print-institutions">
+          <tbody id="list-print-units">
 
           </tbody>
         </table>
 
 
         <div class="text-center">
-          <div class="spinner-general" id="spinner_institutions">
+          <div class="spinner-general" id="spinner_units">
             <div class="spinner-border   text-success" role="status">
               <span class="sr-only">Loading...</span>
             </div>
@@ -2161,14 +2280,14 @@
 
       </div>
       <div  class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
   </div>
 </div>
 
-
+<!-- Action areas Modal  -->
 <div class="modal fade" id="exampleRequestModal6" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-xl">
     <div class="modal-content">      
@@ -2232,7 +2351,7 @@
     </div>
   </div>
 </div>
-
+<!-- Impact area indicators Modal  -->
 <div class="modal fade" id="exampleRequestModal8" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-xl">
     <div class="modal-content">      
@@ -2268,7 +2387,7 @@
     </div>
   </div>
 </div>
-
+<!-- SDG Modal  -->
 <div class="modal fade" id="exampleRequestModal9" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-xl">
     <div class="modal-content">      
@@ -2300,7 +2419,7 @@
     </div>
   </div>
 </div>
-
+<!-- SDG targets Modal  -->
 <div class="modal fade" id="exampleRequestModal10" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-xl">
     <div class="modal-content">      
@@ -2334,7 +2453,7 @@
     </div>
   </div>
 </div>
-
+<!-- SDG indicators Modal  -->
 <div class="modal fade" id="exampleRequestModal11" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-xl">
     <div class="modal-content">      

@@ -20,70 +20,42 @@
 package org.cgiar.ccafs.marlo.rest.dto;
 
 
-public class UnitDTO {
+public class UnitTypeDTO {
 
   private Long code;
 
+  private String acronym;
+
   private String description;
 
-  private String financialCode;
+  public String getAcronym() {
+    return acronym;
+  }
 
-  private UnitTypeDTO unitType;
-
-
-  private ParentDTO scienceGroup;
-
-
-  private ParentDTO parent;
 
   public Long getCode() {
     return code;
   }
+
 
   public String getDescription() {
     return description;
   }
 
 
-  public String getFinancialCode() {
-    return financialCode;
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
   }
 
-  public ParentDTO getParent() {
-    return parent;
-  }
-
-  public ParentDTO getScienceGroup() {
-    return scienceGroup;
-  }
-
-  public UnitTypeDTO getUnitType() {
-    return unitType;
-  }
 
   public void setCode(Long code) {
     this.code = code;
   }
 
+
   public void setDescription(String description) {
     this.description = description;
   }
 
-
-  public void setFinancialCode(String financialCode) {
-    this.financialCode = financialCode;
-  }
-
-  public void setParent(ParentDTO parent) {
-    this.parent = parent;
-  }
-
-  public void setScienceGroup(ParentDTO scienceGroup) {
-    this.scienceGroup = scienceGroup;
-  }
-
-  public void setUnitType(UnitTypeDTO unitType) {
-    this.unitType = unitType;
-  }
 
 }
