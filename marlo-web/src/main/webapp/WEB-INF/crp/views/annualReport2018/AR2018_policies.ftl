@@ -9,7 +9,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200311",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211028a",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210806a"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
@@ -46,6 +46,7 @@
         [#include "/WEB-INF/crp/views/annualReport2018/messages-AR2018.ftl" /]
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+          <span id="actualCrpID" style="display: none;">${(action.getCurrentCrp().id)!-1}</span>
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
@@ -212,7 +213,7 @@
             <br>
             <button type="button" class="selectAllCheckPolicies" id="selectAllPolicies" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
             </th>
-            [#--  <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.QA" /]</th>  --]
+            <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.QA" /]</th>
           [/#if]
         [/#if]        
       </tr>
@@ -316,12 +317,18 @@
               [/#if]   
             </td>
             [#if PMU]
+              [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
               <td class="text-center">
-                [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
                 [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
                 <div style="display: none">${isChecked?string('1','0')}</div>
               </td>
-              [#--  <td class="text-center"></td>  --]
+              <td id="QAStatusIcon-${item.id}" class="text-center">
+                [#if isChecked]
+                  <i style="font-weight: normal;opacity:0.8;"><nobr>[@s.text name="global.notDefined"/]</nobr></i>
+                [#else]
+                  <i style="font-weight: normal;opacity:0.8;">[@s.text name="annualReport2018.policies.table2.notInluded"/]</i>
+                [/#if]
+              </td>
             [/#if]
           [/#if]
         </tr>

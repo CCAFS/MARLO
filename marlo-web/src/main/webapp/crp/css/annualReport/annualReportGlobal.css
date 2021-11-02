@@ -430,7 +430,7 @@ li#menu-oicr {
 /* Bootstrap Tabs */
 .tab-content {
   background: #fff;
-  border-radius: 5px;
+  /* border-radius: 5px; */
   display: block;
   padding: 13px 27px;
   border-bottom: 1px solid #ddd;
@@ -443,6 +443,7 @@ li#menu-oicr {
 
 .nav-tabs {
   border-bottom: 1px solid #dedede;
+  background: #F5F5F5;
 }
 
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
@@ -464,6 +465,7 @@ li#menu-oicr {
   padding: 14px 22px !important;
   border: 1px solid #dedede;
   height: 48px;
+  background: white;
 }
 
 
@@ -613,6 +615,12 @@ div#chart13 {
   align-items: center;
   font-size: 2rem;
   margin: 0.8rem 0 0 0;
+}
+
+.fpPopupClose {
+  background: #d9534f !important;
+  color: white !important;
+  opacity: 1 !important;
 }
 
 /*textarea[name^="reportSynthesis.reportSynthesisFlagshipProgress.outcomeList"] {

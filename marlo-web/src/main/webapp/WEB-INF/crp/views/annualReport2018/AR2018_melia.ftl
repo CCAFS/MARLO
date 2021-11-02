@@ -5,8 +5,8 @@
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "select2", "trumbowyg", "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js" 
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211025a",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211028a" 
 ] 
 /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
@@ -44,6 +44,7 @@
         [#include "/WEB-INF/crp/views/annualReport2018/messages-AR2018.ftl" /]
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+          <span id="actualCrpID" style="display: none;">${(action.getCurrentCrp().id)!-1}</span>
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="">
@@ -187,8 +188,10 @@
           [#if !expandedTable]
             <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table11.missingFields" /]</small>  </th>
             [#if PMU]
-              <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table10.includeAR" /]</small>  </th>
-              [#--  <th class="col-md-1 text-center">[@s.text name="${customLabel}.table10.QA" /]</th>  --]
+              <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table10.includeAR" /]</small>
+              <button type="button" class="selectAllCheckMelias" id="selectAllMelias" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
+              </th>
+              <th class="col-md-1 text-center">[@s.text name="${customLabel}.table10.QA" /]</th>
             [/#if]
           [/#if]
         </tr>
@@ -246,11 +249,18 @@
                   [/#if]   
                 </td>
                 [#if PMU]         
+                  [#local isChecked = ((!reportSynthesis.reportSynthesisMelia.studiesIds?seq_contains(item.id))!true) /]
                   <td class="text-center">
-                    [#local isChecked = ((!reportSynthesis.reportSynthesisMelia.studiesIds?seq_contains(item.id))!true) /]
-                    [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisMelia.plannedStudiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                    [@customForm.checkmark id="melia-${(item.id)!}" name="reportSynthesis.reportSynthesisMelia.plannedStudiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                    <div style="display: none">${isChecked?string('1','0')}</div>
                   </td>
-                  [#--  <td class="text-center"></td>  --]
+                  <td id="QAStatusIcon-${item.id}" class="text-center">
+                    [#if isChecked]
+                      <i style="font-weight: normal;opacity:0.8;"><nobr>[@s.text name="global.notDefined"/]</nobr></i>
+                    [#else]
+                      <i style="font-weight: normal;opacity:0.8;">[@s.text name="annualReport2018.policies.table2.notInluded"/]</i>
+                    [/#if]
+                  </td>
                 [/#if]
               [/#if]
             </tr>
