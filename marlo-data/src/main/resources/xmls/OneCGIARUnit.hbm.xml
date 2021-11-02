@@ -22,5 +22,9 @@
       class="org.cgiar.ccafs.marlo.data.model.OneCGIARUnit" fetch="select">
       <column name="parent_id" />
     </many-to-one>
+    <many-to-one name="oneCGIARUnitType"
+      class="org.cgiar.ccafs.marlo.data.model.OneCGIARUnitTypes" fetch="select">
+      <column name="unit_type_id" />
+    </many-to-one>
   </class>
 </hibernate-mapping>

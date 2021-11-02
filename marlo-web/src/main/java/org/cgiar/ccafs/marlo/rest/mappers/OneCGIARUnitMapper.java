@@ -20,8 +20,10 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.OneCGIARUnit;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARUnitTypes;
 import org.cgiar.ccafs.marlo.rest.dto.ParentDTO;
 import org.cgiar.ccafs.marlo.rest.dto.UnitDTO;
+import org.cgiar.ccafs.marlo.rest.dto.UnitTypeDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -30,18 +32,15 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330", uses = {OneCGIARScienceGorupMapper.class})
 public interface OneCGIARUnitMapper {
 
-  /*
-   * @Mappings({@Mapping(target = "active", ignore = true), @Mapping(target = "activeSince", ignore = true),
-   * @Mapping(target = "createdBy", ignore = true), @Mapping(target = "modificationJustification", ignore = true),
-   * @Mapping(target = "modifiedBy", ignore = true), @Mapping(source = "code", target = "id"),
-   * @Mapping(source = "parent", target = "parentAccount")})
-   * public abstract OneCGIARAccount accountDTOToOneCGIARAccount(AccountsDTO accountDTO);
-   */
 
   @Mapping(source = "id", target = "code")
   public abstract ParentDTO oneCGIARUnitToParentDTO(OneCGIARUnit oneCGIARUnit);
 
-  @Mappings({@Mapping(source = "id", target = "code"), @Mapping(source = "parentUnit", target = "parent")})
+  @Mappings({@Mapping(source = "id", target = "code"), @Mapping(source = "parentUnit", target = "parent"),
+    @Mapping(source = "oneCGIARUnitType", target = "unitType")})
   public abstract UnitDTO oneCGIARUnitToUnitDTO(OneCGIARUnit oneCGIARUnit);
+
+  @Mapping(source = "id", target = "code")
+  public abstract UnitTypeDTO oneCGIARUnitTypesToUnitTypeDTO(OneCGIARUnitTypes unitType);
 
 }

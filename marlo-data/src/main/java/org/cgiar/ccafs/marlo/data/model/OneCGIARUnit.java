@@ -32,9 +32,14 @@ public class OneCGIARUnit extends MarloAuditableEntity implements Serializable {
 
   private String financialCode;
   private String description;
+  private OneCGIARUnitTypes oneCGIARUnitType;
+
 
   private OneCGIARUnit parentUnit;
+
+
   private OneCGIARScienceGroup scienceGroup;
+
 
   @Override
   public boolean equals(Object obj) {
@@ -66,6 +71,11 @@ public class OneCGIARUnit extends MarloAuditableEntity implements Serializable {
     return financialCode;
   }
 
+
+  public OneCGIARUnitTypes getOneCGIARUnitType() {
+    return oneCGIARUnitType;
+  }
+
   public OneCGIARUnit getParentUnit() {
     return parentUnit;
   }
@@ -86,8 +96,14 @@ public class OneCGIARUnit extends MarloAuditableEntity implements Serializable {
     this.description = description;
   }
 
+
   public void setFinancialCode(String financialCode) {
     this.financialCode = financialCode;
+  }
+
+
+  public void setOneCGIARUnitType(OneCGIARUnitTypes oneCGIARUnitType) {
+    this.oneCGIARUnitType = oneCGIARUnitType;
   }
 
   public void setParentUnit(OneCGIARUnit parentUnit) {

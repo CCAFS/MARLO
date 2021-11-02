@@ -408,6 +408,44 @@ setTimeout(() => {
 	});
 }
 
+function units() {
+	$.ajax({
+		url: config.endpoint + '/units',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"units");
+			destroyTable("units");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"units");
+			console.log(data);
+			let nameColumns = ['Code', 'Description','Unit type','Science Group','Parent']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-units').append(
+					'<tr>' + '<td >' + (item['unitType'].acronym +'-'+item['financialCode']) + '</td>' + '<td>'
+					+ item['description'] + '</td>'+ '<td>'
+					+ (item['unitType'].acronym +' '+item['unitType'].description)+ '</td>'+ '<td>'
+					+ (item['scienceGroup']==null? '':item['scienceGroup'].description) + '</td>' + '<td>'
+					+ (item['parent']==null? '':item['parent'].description) + '</td>' +'</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("units");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
 function all_initiatives() {
 	$.ajax({
 		url: config.endpoint + '/allInitiatives',
