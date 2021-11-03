@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
+import org.cgiar.ccafs.marlo.utils.Patterns;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -447,7 +448,8 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           boolean validReferences = true;
           for (int i = 0; i < projectExpectedStudy.getReferences().size(); i++) {
             ProjectExpectedStudyReference reference = projectExpectedStudy.getReferences().get(i);
-            if (reference == null || !this.isValidString(reference.getReference())) {
+            if (reference == null || !this.isValidString(reference.getReference()) || reference.getLink() == null
+              || !Patterns.WEB_URL.matcher(reference.getLink()).find()) {
               validReferences = false;
             }
           }
