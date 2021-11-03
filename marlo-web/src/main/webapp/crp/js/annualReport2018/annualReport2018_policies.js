@@ -27,16 +27,18 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
       url: baseURL + finalAjaxURL,
       async: false,
       success: function (data) {
-        var newData = data[arrName].map(function (x) {
-          var arr = [];
-
-          arr.push(x.id);
-          arr.push(x.assessmentStatus);
-          arr.push(x.updatedAt);
-
-          return arr;
-        });
-        updateQualityAssessmentStatusData(newData);
+        if (data && data.length != 0 && data.length != undefined) {
+          var newData = data[arrName].map(function (x) {
+            var arr = [];
+  
+            arr.push(x.id);
+            arr.push(x.assessmentStatus);
+            arr.push(x.updatedAt);
+  
+            return arr;
+          });
+          updateQualityAssessmentStatusData(newData);
+        }
       }
     });
   }
