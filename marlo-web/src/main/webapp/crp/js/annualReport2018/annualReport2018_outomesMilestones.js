@@ -213,24 +213,26 @@ function attachEvents() {
 
 function loadQualityAssessmentStatus(ajaxURL, arrName) {
   var currentCrpID = $('#actualCrpID').html();
-  
+
   if (currentCrpID != '-1') {
     var finalAjaxURL = ajaxURL + currentCrpID;
-  
+
     $.ajax({
       url: baseURL + finalAjaxURL,
       async: false,
       success: function (data) {
-        var newData = data[arrName].map(function (x) {
-          var arr = [];
+        if (data && data.length != 0 && data.length != undefined) {
+          var newData = data[arrName].map(function (x) {
+            var arr = [];
 
-          arr.push(x.id);
-          arr.push(x.assessmentStatus);
-          arr.push(x.updatedAt);
+            arr.push(x.id);
+            arr.push(x.assessmentStatus);
+            arr.push(x.updatedAt);
 
-          return arr;
-        });
-        updateQualityAssessmentStatusData(newData);
+            return arr;
+          });
+          updateQualityAssessmentStatusData(newData);
+        }
       }
     });
   }
@@ -257,7 +259,7 @@ function updateQualityAssessmentStatusData(data) {
         $(`#study-${x[0]}`).prop('disabled', true);
         $(`#study-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
         break;
-    
+
       default:
         break;
     }
@@ -267,7 +269,7 @@ function updateQualityAssessmentStatusData(data) {
       var br = document.createElement('br');
       var spanTag = document.createElement('span');
       var text = document.createTextNode(status);
-      
+
       element.innerHTML = '';
       imgTag.style.width = '25px';
       imgTag.src = iconSrc;
