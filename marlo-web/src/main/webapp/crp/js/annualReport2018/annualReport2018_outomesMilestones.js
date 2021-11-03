@@ -126,6 +126,7 @@ function attachEvents() {
     $('.addButtonLink').on('click', addItem);
     $('.removeLink.links').on('click', removeItem);
     $('.multiInput').find('span input').on('input', validateURL);
+    validateEmptyLinks();
 
     // Functions
     function addItem() {
@@ -155,10 +156,17 @@ function attachEvents() {
       });
     }
     function updateIndexes(list) {
-      $(list).parent('.linksBlock').find('.linksList').find('.multiInput').each(function (i, element) {
+      var linksList = $(list).parent('.linksBlock').find('.linksList');
+      linksList.find('.multiInput').each(function (i, element) {
         $(element).find('.indexTag').text(i + 1);
         $(element).setNameIndexes(3, i);
       });
+      if (linksList.children().length != 0) {
+        $('#warningEmptyLinksTag').hide();
+        validateEmptyLinks();
+      } else {
+        $('#warningEmptyLinksTag').show();
+      }
     }
     function validateURL() {
       var url = this.value;
@@ -168,12 +176,21 @@ function attachEvents() {
       if (url.match(regex)) {
         res = "Valid URL";
         $(this).css('border', 'none');
-        // console.log(res);
+        $('#warningEmptyLinksTag').hide();
       } else {
         res = "Invalid URL";
         $(this).css('border', '1px solid red');
-        // console.log(res);
+        $('#warningEmptyLinksTag').show();
       }
+    }
+    function validateEmptyLinks() {
+      $('.linksList').find('.multiInput span input').map((index, item) => {
+        if (item.value != '') {
+          $('#warningEmptyLinksTag').hide();
+        } else {
+          $('#warningEmptyLinksTag').show();
+        }
+      });
     }
 
   })();
