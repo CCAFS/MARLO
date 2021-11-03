@@ -418,14 +418,15 @@ public class DeliverableValidator extends BaseValidator {
          * this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
          * }
          */
-        if (deliverable.getDeliverableParticipant() != null) {
-          this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
-        } else {
-          action.addMessage("hasParticipants");
-          action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
-            InvalidFieldsMessages.EMPTYFIELD);
+        if (!action.isPOWB()) {
+          if (deliverable.getDeliverableParticipant() != null) {
+            this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
+          } else {
+            action.addMessage("hasParticipants");
+            action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
-
       }
 
       // Validate Status if the extended year is greater than the current phase year
@@ -540,7 +541,8 @@ public class DeliverableValidator extends BaseValidator {
      */
     if (deliverable.getProjectOutcomes() == null || deliverable.getProjectOutcomes().isEmpty()) {
       action.addMessage(action.getText("deliverable.projectOutcomes"));
-      action.getInvalidFields().put("input-deliverable.projectOutcomes", InvalidFieldsMessages.EMPTYFIELD);
+      action.addMissingField("deliverable.projectOutcomes");
+      action.getInvalidFields().put("list-deliverable.projectOutcomes", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (!action.isCenterGlobalUnit()) {
