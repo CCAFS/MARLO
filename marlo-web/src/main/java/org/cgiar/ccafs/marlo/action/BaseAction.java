@@ -149,10 +149,12 @@ import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -983,6 +985,61 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 }
               }
             }
+          }
+
+
+          try {
+            for (ProjectExpectedStudy expectedStudy : projectOutcome.getProject().getProjectExpectedStudies().stream()
+              .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+                && ps.getProjectExpectedStudyInfo(this.getActualPhase()).isActive())
+              .collect(Collectors.toList())) {
+              if (expectedStudy.getProjectExpectedStudyProjectOutcomes() != null) {
+                expectedStudy.setProjectOutcomes(new ArrayList<>(expectedStudy.getProjectExpectedStudyProjectOutcomes()
+                  .stream().filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
+                  .collect(Collectors.toList())));
+              }
+              if (expectedStudy != null && expectedStudy.getProjectOutcomes() != null
+                && !expectedStudy.getProjectOutcomes().isEmpty()) {
+                for (ProjectExpectedStudyProjectOutcome expectedStudyProjectOutcome : expectedStudy
+                  .getProjectOutcomes()) {
+                  if (expectedStudyProjectOutcome != null && expectedStudyProjectOutcome.getProjectOutcome() != null
+                    && expectedStudyProjectOutcome.getProjectOutcome().getId() != null
+                    && expectedStudyProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+                    canDelete = false;
+                    break;
+                  }
+                }
+              }
+            }
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+
+          try {
+            for (ProjectInnovation innovation : projectOutcome.getProject().getProjectInnovations().stream()
+              .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(this.getActualPhase()) != null
+                && ps.getProjectInnovationInfo(this.getActualPhase()).isActive())
+              .collect(Collectors.toList())) {
+              if (innovation.getProjectInnovationProjectOutcomes() != null) {
+                innovation.setProjectOutcomes(new ArrayList<>(innovation.getProjectInnovationProjectOutcomes().stream()
+                  .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
+                  .collect(Collectors.toList())));
+              }
+              if (innovation != null && innovation.getProjectOutcomes() != null
+                && !innovation.getProjectOutcomes().isEmpty()) {
+                for (ProjectInnovationProjectOutcome innovationStudyProjectOutcome : innovation.getProjectOutcomes()) {
+                  if (innovationStudyProjectOutcome != null && innovationStudyProjectOutcome.getProjectOutcome() != null
+                    && innovationStudyProjectOutcome.getProjectOutcome().getId() != null
+                    && innovationStudyProjectOutcome.getProjectOutcome().getId()
+                      .compareTo(projectOutcome.getId()) == 0) {
+                    canDelete = false;
+                    break;
+                  }
+                }
+              }
+            }
+          } catch (Exception e) {
+            e.printStackTrace();
           }
 
           return canDelete;
@@ -2950,6 +3007,37 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.differences;
   }
 
+  public List<ProjectExpectedStudy> getexpectedProjectOutcomes(Long id) {
+    List<ProjectExpectedStudy> expectedStudies = new ArrayList<>();
+    ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
+
+    try {
+      for (ProjectExpectedStudy expectedStudy : projectOutcome.getProject().getProjectExpectedStudies().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+          && ps.getProjectExpectedStudyInfo(this.getActualPhase()).isActive())
+        .collect(Collectors.toList())) {
+        if (expectedStudy.getProjectExpectedStudyProjectOutcomes() != null) {
+          expectedStudy
+            .setProjectOutcomes(new ArrayList<>(expectedStudy.getProjectExpectedStudyProjectOutcomes().stream()
+              .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+        }
+        if (expectedStudy != null && expectedStudy.getProjectOutcomes() != null
+          && !expectedStudy.getProjectOutcomes().isEmpty()) {
+          for (ProjectExpectedStudyProjectOutcome expectedStudyProjectOutcome : expectedStudy.getProjectOutcomes()) {
+            if (expectedStudyProjectOutcome != null && expectedStudyProjectOutcome.getProjectOutcome() != null
+              && expectedStudyProjectOutcome.getProjectOutcome().getId() != null
+              && expectedStudyProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+              expectedStudies.add(expectedStudy);
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return expectedStudies;
+  }
+
   public List<Integer> getExpectedStudiesYears(Long expectedStudy) {
     List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList =
       this.projectExpectedStudyInfoManager.findAll().stream()
@@ -3082,6 +3170,36 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return false;
+  }
+
+  public List<ProjectInnovation> getInnovationProjectOutcomes(Long id) {
+    List<ProjectInnovation> innovations = new ArrayList<>();
+    ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
+
+    try {
+      for (ProjectInnovation innovation : projectOutcome.getProject().getProjectInnovations().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(this.getActualPhase()) != null
+          && ps.getProjectInnovationInfo(this.getActualPhase()).isActive())
+        .collect(Collectors.toList())) {
+        if (innovation.getProjectInnovationProjectOutcomes() != null) {
+          innovation.setProjectOutcomes(new ArrayList<>(innovation.getProjectInnovationProjectOutcomes().stream()
+            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+        }
+        if (innovation != null && innovation.getProjectOutcomes() != null
+          && !innovation.getProjectOutcomes().isEmpty()) {
+          for (ProjectInnovationProjectOutcome innovationStudyProjectOutcome : innovation.getProjectOutcomes()) {
+            if (innovationStudyProjectOutcome != null && innovationStudyProjectOutcome.getProjectOutcome() != null
+              && innovationStudyProjectOutcome.getProjectOutcome().getId() != null
+              && innovationStudyProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+              innovations.add(innovation);
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return innovations;
   }
 
   public SectionStatus getInnovationStatus(long innovationID) {
