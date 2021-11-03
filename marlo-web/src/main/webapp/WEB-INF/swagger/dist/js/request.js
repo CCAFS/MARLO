@@ -139,6 +139,53 @@ function cgiar_entities() {
 	});
 }
 
+function onecgiar_entities() {
+
+	$.ajax({
+		url: config.endpoint + '/onecgiar-entities',
+		type: "GET",
+		beforeSend: function () {
+			manageSpinner(true,"onecgiar-entities");
+			// hideFilter();
+			cleanModal();
+			destroyTable("onecgiar-entities");
+		},
+		success: function (data) {
+			manageSpinner(false,"onecgiar-entities");
+			// ********************************************* */
+			// print data
+			// console.log(data);
+			let nameColumns = ['Code', 'Name', 'Acronym',
+				'CGIAR Entity Type']
+
+			// $.each(nameColumns, function (index, name) {
+			// $('#list-print-columns-name').append(
+			// '<th >' + name + '</th>')
+			// });
+
+			$.each(data, function (index, item) {
+				$('#list-print-onecgiar-entities').append(
+					'<tr>' + '<td >' + item['code'] + '</td>'
+					+ '<td>' + (item['financialCode']==null? '':item['financialCode']) + '</td>'
+					+ '<td>' + item['name'] + '</td>'
+					+ '<td>' + item['acronym'] + '</td>'
+					+ '<td>' + '<strong>Code:</strong> '
+					+ item['cgiarEntityTypeDTO'].code
+					+ ' - <strong>Name:</strong> '
+					+ item['cgiarEntityTypeDTO'].name
+					+ '</td>' + '</tr>')
+			});
+			updateDataTable("onecgiar-entities");
+
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
 function sdg(){
 	$.ajax({
 		url: config.endpoint + '/allSDG',
@@ -435,6 +482,79 @@ function units() {
 			});
 setTimeout(() => {
 	updateDataTable("units");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function accounts() {
+	$.ajax({
+		url: config.endpoint + '/accounts',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"accounts");
+			destroyTable("accounts");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"accounts");
+			console.log(data);
+			let nameColumns = ['Code', 'Description','Financial Code','Account Type','Parent']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-accounts').append(
+					'<tr>' + '<td >' + item['code'] + '</td>' 
+					+ '<td >' + item['description']+ '</td>' + '<td>'
+					+ item['financialCode'] + '</td>'+ '<td>'
+					+ item['accountType'].name + '</td>'+ '<td>'					
+					+ (item['parent']==null? '':item['parent'].description) + '</td>' +'</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("accountTypes");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function accountTypes() {
+	$.ajax({
+		url: config.endpoint + '/accountTypes',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"accountTypes");
+			destroyTable("accountTypes");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"accountTypes");
+			console.log(data);
+			let nameColumns = ['Code', 'Description','Financial Code','Account Type','Parent']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-accountTypes').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' 
+					+ '<td >' + item['name']+ '</td>'+'</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("accountTypes");
 }, 1000);
 			
 			// end print Data
