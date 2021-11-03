@@ -138,22 +138,12 @@
   [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]
     <div class="form-group">
       [#if action.isAiccra()]
-        [@customForm.select name="deliverable.deliverableInfo.crpProgramOutcome.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="programOutcomes" keyFieldName="id"  displayFieldName="description"  multiple=false required=true  className="CrpProgramOutcome" editable=editable/]
-        <div class="note left">
-          <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-            <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.keyOutputNotice" /]
-          </a>
-        </div>
-        [#if action.canAccessSuperAdmin()]
-        <br>
-        *Module visible just for Superadmin users*
         [@customForm.elementsListComponent name="deliverable.projectOutcomes" elementType="projectOutcome" elementList=(deliverable.projectOutcomes)![] label="project.deliverable.generalInformation.keyOutput" listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName" required=true maxLimit=1/]
         <div class="note left">
           <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
             <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.keyOutputNotice" /]
           </a>
         </div>
-        [/#if]
       [#else]
         [#if !(keyOutcomes?has_content) && editable]
           <p class="note">The Performance Indicators list come from the Project Indicators you choose in ‘[@s.text name="projects.menu.contributionsCrpList" /]’, once the project is contributing, this deliverable can be mapped to a specific Performance indicator.</p>
