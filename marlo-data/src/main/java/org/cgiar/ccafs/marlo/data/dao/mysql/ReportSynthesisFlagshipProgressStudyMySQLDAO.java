@@ -64,7 +64,7 @@ public class ReportSynthesisFlagshipProgressStudyMySQLDAO extends
 
   @Override
   public List<ReportSynthesisFlagshipProgressStudy> findAll() {
-    String query = "from " + ReportSynthesisFlagshipProgressStudy.class.getName() + " where is_active=1";
+    String query = "from " + ReportSynthesisFlagshipProgressStudy.class.getName();
     List<ReportSynthesisFlagshipProgressStudy> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
