@@ -5,8 +5,8 @@
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "select2", "trumbowyg", "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211025a",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211102a" 
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211103a",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211103a" 
 ] 
 /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
