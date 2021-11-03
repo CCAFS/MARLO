@@ -562,7 +562,7 @@ public class ProjectListAction extends BaseAction {
       phase = phaseManager.getPhaseById(phase.getId());
     }
 
-    this.updateProjectFocuses();
+    // this.updateProjectFocuses();
 
     if (projectManager.findAll() != null && phase != null && phase.getProjectPhases() != null) {
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
