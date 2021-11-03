@@ -20,24 +20,26 @@ function attachEvents() {
 
 function loadQualityAssessmentStatus(ajaxURL, arrName) {
   var currentCrpID = $('#actualCrpID').html();
-  
+
   if (currentCrpID != '-1') {
     var finalAjaxURL = ajaxURL + currentCrpID;
-  
+
     $.ajax({
       url: baseURL + finalAjaxURL,
       async: false,
       success: function (data) {
-        var newData = data[arrName].map(function (x) {
-          var arr = [];
+        if (data && data.length != 0 && data.length != undefined) {
+          var newData = data[arrName].map(function (x) {
+            var arr = [];
 
-          arr.push(x.id);
-          arr.push(x.assessmentStatus);
-          arr.push(x.updatedAt);
+            arr.push(x.id);
+            arr.push(x.assessmentStatus);
+            arr.push(x.updatedAt);
 
-          return arr;
-        });
-        updateQualityAssessmentStatusData(newData);
+            return arr;
+          });
+          updateQualityAssessmentStatusData(newData);
+        }
       }
     });
   }
@@ -70,7 +72,7 @@ function updateQualityAssessmentStatusData(data) {
         $(`#deliverable-${x[0]}`).prop('disabled', true);
         $(`#deliverable-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Automatically Validated');
         break;
-    
+
       default:
         break;
     }
@@ -80,7 +82,7 @@ function updateQualityAssessmentStatusData(data) {
       var br = document.createElement('br');
       var spanTag = document.createElement('span');
       var text = document.createTextNode(status);
-      
+
       element.innerHTML = '';
       imgTag.style.width = '25px';
       imgTag.src = iconSrc;
@@ -96,59 +98,59 @@ function setGoogleCharts() {
 
   // Chart #10 - Number of peer reviewed articles by Open Access status
   createGooglePieChart('#chart10', {
-      title: 'Number of peer reviewed articles by Open Access status',
-      titleTextStyle: {
-          color: '#5f5e5e',
-          fontName: 'Roboto',
-          fontSize: 16,
-          bold: false
+    title: 'Number of peer reviewed articles by Open Access status',
+    titleTextStyle: {
+      color: '#5f5e5e',
+      fontName: 'Roboto',
+      fontSize: 16,
+      bold: false
+    },
+    pieHole: 0.4,
+    chartArea: {
+      top: 70,
+      width: '100%'
+    },
+    colors: '#e67e22',
+    legend: {
+      alignment: 'center'
+    },
+    slices: {
+      0: {
+        color: '#f68212'
       },
-      pieHole: 0.4,
-      chartArea: {
-          top: 70,
-          width: '100%'
-      },
-      colors: '#e67e22',
-      legend: {
-        alignment: 'center'
-      },
-      slices: {
-          0: {
-            color: '#f68212'
-          },
-          1: {
-            color: '#999fa3'
-          }
+      1: {
+        color: '#999fa3'
       }
+    }
   });
 
   // Chart #11 - Number of peer reviewed articles by ISI status
   createGooglePieChart('#chart11', {
-      title: 'Number of peer reviewed articles by ISI status',
-      titleTextStyle: {
-          color: '#5f5e5e',
-          fontName: 'Roboto',
-          fontSize: 16,
-          bold: false,
-          alignment: 'center'
+    title: 'Number of peer reviewed articles by ISI status',
+    titleTextStyle: {
+      color: '#5f5e5e',
+      fontName: 'Roboto',
+      fontSize: 16,
+      bold: false,
+      alignment: 'center'
+    },
+    pieHole: 0.4,
+    chartArea: {
+      top: 70,
+      width: '100%'
+    },
+    colors: '#e67e22',
+    legend: {
+      alignment: 'center'
+    },
+    slices: {
+      0: {
+        color: '#16a085'
       },
-      pieHole: 0.4,
-      chartArea: {
-          top: 70,
-          width: '100%'
-      },
-      colors: '#e67e22',
-      legend: {
-        alignment: 'center'
-      },
-      slices: {
-          0: {
-            color: '#16a085'
-          },
-          1: {
-            color: '#999fa3'
-          }
+      1: {
+        color: '#999fa3'
       }
+    }
   });
 
 };
