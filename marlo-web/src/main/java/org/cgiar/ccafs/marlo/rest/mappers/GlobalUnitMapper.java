@@ -44,6 +44,7 @@ public interface GlobalUnitMapper {
     @Mapping(source = "globalUnitType", target = "cgiarEntityTypeDTO")})
   public CGIAREntityDTO globalUnitToGlobalUnitDTO(GlobalUnit globalUnit);
 
+
   @Mappings({@Mapping(source = "globalUnit.smoCode", target = "code"),
     @Mapping(source = "globalUnit.name", target = "name"), @Mapping(source = "globalUnit.acronym", target = "acronym"),
     @Mapping(source = "globalUnit.globalUnitType", target = "cgiarEntityTypeDTO"),})

@@ -86,7 +86,7 @@ public class OneCGIARControlList {
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Accounts.all.value}",
     response = AccountsDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/OneCGIARAccounts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/accounts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<AccountsDTO>> findAllAccounts() {
     try {
       ResponseEntity<List<AccountsDTO>> response = this.accountsItem.getAll();
@@ -103,8 +103,7 @@ public class OneCGIARControlList {
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.AccountTypes.all.value}",
     response = AccountTypeDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/OneCGIARAccountTypes", method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/accountTypes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<AccountTypeDTO>> findAllAccountTypes() {
     try {
       ResponseEntity<List<AccountTypeDTO>> response = this.accountTypesItem.getAll();
