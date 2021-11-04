@@ -49,6 +49,10 @@
 		<property name="smoCode" type="string">
       <column name="smo_code" sql-type="TEXT" />
     </property>
+    <property name="financialCode" type="string">
+      <column name="financial_code" sql-type="TEXT" not-null="true" />
+    </property>
+   
 		<set name="centerLeaders" table="center_leaders" inverse="true"
 			lazy="true" fetch="select">
 			<key>
