@@ -53,11 +53,11 @@ function validateURL(item) {
     if (url.match(regex)) {
       res = "Valid URL";
       $(item).css('border', 'none');
-      console.log(res);
+      // console.log(res);
     } else {
       res = "Invalid URL";
       $(item).css('border', '1px solid red');
-      console.log(res);
+      // console.log(res);
     }
   } else {
     $(item).css('border', '1px solid red');

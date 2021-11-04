@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
@@ -36,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
@@ -45,13 +47,21 @@ import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.PhaseComparator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -67,7 +77,7 @@ public class ProjectListAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
 
-  private final Logger logger = LoggerFactory.getLogger(ProjectListAction.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectListAction.class);
 
   private GlobalUnit loggedCrp;
 
@@ -78,18 +88,15 @@ public class ProjectListAction extends BaseAction {
   // Managers
   private ProjectManager projectManager;
   private ProjectBudgetManager projectBudgetManager;
-
   private ProjectInfoManager projectInfoManager;
   private GlobalUnitManager crpManager;
-
   private GlobalUnitProjectManager globalUnitProjectManager;
   private PhaseManager phaseManager;
   private ProjectPhaseManager projectPhaseManager;
-
   private LiaisonUserManager liaisonUserManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
-
   private ProjectPartnerManager projectPartnerManager;
+  private ProjectFocusManager projectFocusManager;
 
   // Front-end
   private List<Project> myProjects;
@@ -103,7 +110,8 @@ public class ProjectListAction extends BaseAction {
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
     ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager, ProjectInfoManager projectInfoManager,
     ProjectBudgetManager projectBudgetManager, GlobalUnitProjectManager globalUnitProjectManager,
-    SectionStatusManager sectionStatusManager, ProjectPartnerManager projectPartnerManager) {
+    SectionStatusManager sectionStatusManager, ProjectPartnerManager projectPartnerManager,
+    ProjectFocusManager projectFocusManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -116,6 +124,7 @@ public class ProjectListAction extends BaseAction {
     this.projectBudgetManager = projectBudgetManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.projectPartnerManager = projectPartnerManager;
+    this.projectFocusManager = projectFocusManager;
   }
 
   public String addAdminProject() {
@@ -413,7 +422,7 @@ public class ProjectListAction extends BaseAction {
           this.addActionMessage(
             "message:" + this.getText("deleting.successProject", new String[] {this.getText("project").toLowerCase()}));
         } catch (Exception e) {
-          logger.error("Unable to delete project", e);
+          LOG.error("Unable to delete project", e);
           this.addActionError(this.getText("deleting.problem", new String[] {this.getText("project").toLowerCase()}));
           /**
            * Assume we don't need to re-throw the exception as this transaction is limited
@@ -552,6 +561,8 @@ public class ProjectListAction extends BaseAction {
     if (phase != null && phase.getId() != null && phaseManager.getPhaseById(phase.getId()) != null) {
       phase = phaseManager.getPhaseById(phase.getId());
     }
+
+    // this.updateProjectFocuses();
 
     if (projectManager.findAll() != null && phase != null && phase.getProjectPhases() != null) {
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
@@ -719,6 +730,63 @@ public class ProjectListAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  private void updateProjectFocuses() {
+    Comparator<Phase> phaseComparator = PhaseComparator.getInstance();
+
+    Map<Project, SortedSet<Phase>> ar2021AndBeyond = this.projectFocusManager.findAll().stream()
+      .filter(pf -> pf != null && pf.getId() != null && pf.getPhase() != null && pf.getPhase().getId() != null
+        && pf.getPhase().getCrp() != null && pf.getPhase().getCrp().getId() != null && pf.getProject() != null
+        && pf.getProject().getId() != null)
+      .collect(Collectors.groupingBy(ProjectFocus::getProject, Collectors.mapping(ProjectFocus::getPhase,
+        Collectors.toCollection(() -> new TreeSet<Phase>(phaseComparator)))));
+
+    Map<GlobalUnit, Set<Project>> projectsPerCrp = this.projectFocusManager.findAll().stream()
+      .filter(pf -> pf != null && pf.getId() != null && pf.getPhase() != null && pf.getPhase().getId() != null
+        && pf.getPhase().getCrp() != null && pf.getPhase().getCrp().getId() != null && pf.getProject() != null
+        && pf.getProject().getId() != null)
+      .collect(Collectors.groupingBy(pf -> ar2021AndBeyond.get(pf.getProject()).first().getCrp(),
+        Collectors.mapping(ProjectFocus::getProject,
+          Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingLong(Project::getId))))));
+
+    List<String> inserts = new ArrayList<>();
+    for (Entry<GlobalUnit, Set<Project>> entry : projectsPerCrp.entrySet()) {
+      GlobalUnit crp = entry.getKey();
+      Long crpId = crp.getId();
+      for (Project project : entry.getValue()) {
+        Long projectInnovationId = project.getId();
+        Set<Phase> allPhasesWithRows = ar2021AndBeyond.get(project);
+        Map<Phase, Set<CrpProgram>> projectLinkedCrpsPerPhase = project.getProjectFocuses().stream()
+          .filter(pic -> pic != null && pic.getId() != null && pic.getCrpProgram() != null
+            && pic.getCrpProgram().getId() != null && pic.getPhase() != null && pic.getPhase().getId() != null
+            && pic.getPhase().getCrp() != null && pic.getPhase().getCrp().getId() != null)
+          .collect(Collectors.groupingBy(pic -> pic.getPhase(), () -> new TreeMap<>(phaseComparator),
+            Collectors.mapping(ProjectFocus::getCrpProgram, Collectors.toSet())));
+        for (Phase phase : allPhasesWithRows) {
+          Long phaseId = phase.getId();
+          if (!projectLinkedCrpsPerPhase.getOrDefault(phase, Collections.emptySet()).contains(crp)) {
+            StringBuilder insert =
+              new StringBuilder("INSERT INTO project_focuses(project_id, program_id, id_phase) VALUES (");
+            insert =
+              insert.append(projectInnovationId).append(",").append(crpId).append(",").append(phaseId).append(");");
+            inserts.add(insert.toString());
+          }
+        }
+      }
+    }
+
+    LOG.info("test");
+
+    /*
+     * Path fileSuccess = Paths.get("D:\\misc\\insert-icrps.txt");
+     * try {
+     * Files.write(fileSuccess, inserts, StandardCharsets.UTF_8);
+     * } catch (IOException e) {
+     * LOG.error("rip");
+     * e.printStackTrace();
+     * }
+     */
   }
 
   @Override

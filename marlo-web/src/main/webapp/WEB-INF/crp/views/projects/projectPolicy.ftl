@@ -192,7 +192,7 @@
           
     [#-- Innovations  --]
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="policy.innovations" helpIcon=false listName="innovationList" keyFieldName="id" displayFieldName="composedNameAlternative" required=true /]
+      [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="policy.innovations" helpIcon=false listName="innovationList" keyFieldName="id" displayFieldName="composedNameAlternative" required=false /]
       <div class="note">[@s.text name="policy.innovations.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/innovationsList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
     </div>
 
