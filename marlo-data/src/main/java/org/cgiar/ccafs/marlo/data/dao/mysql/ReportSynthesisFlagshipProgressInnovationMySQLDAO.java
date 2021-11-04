@@ -65,7 +65,7 @@ public class ReportSynthesisFlagshipProgressInnovationMySQLDAO
 
   @Override
   public List<ReportSynthesisFlagshipProgressInnovation> findAll() {
-    String query = "from " + ReportSynthesisFlagshipProgressInnovation.class.getName() + " where is_active=1";
+    String query = "from " + ReportSynthesisFlagshipProgressInnovation.class.getName();
     List<ReportSynthesisFlagshipProgressInnovation> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
