@@ -426,6 +426,18 @@ public class GeneralLists {
     return this.globalUnitTypeItem.getAllGlobalUnitTypes();
   }
 
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @ApiOperation(value = "${GeneralLists.cgiar-entities.all.value}", response = CGIAREntityDTO.class,
+    responseContainer = "List")
+  @RequestMapping(value = "/onecgiar-entities", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<CGIAREntityDTO>> getAllOneCGIARGlobalUnits() {
+    ResponseEntity<List<CGIAREntityDTO>> response = this.globalUnitItem.getAllCGIAREntities();
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("GeneralLists.cgiar-entities.all.404"));
+    }
+    return response;
+  }
+
   /**
    * Get All the Region items *
    * 

@@ -500,6 +500,10 @@
     <mapping resource="xmls/OutcomeIndicator.hbm.xml"/>
     <mapping resource="xmls/ActionAreaOutcomeIndicators.hbm.xml"/>
     <mapping resource="xmls/OneCGIARScienceGroup.hbm.xml"/>
+    <mapping resource="xmls/OneCGIARAccountType.hbm.xml"/>
+    <mapping resource="xmls/OneCGIARAccount.hbm.xml"/>
+    <mapping resource="xmls/OneCGIARUnitType.hbm.xml"/>    
+    <mapping resource="xmls/OneCGIARUnit.hbm.xml"/>
     
     <!-- Annual Report 2021 -->
     <mapping resource="xmls/ProjectExpectedStudyReferences.hbm.xml" />

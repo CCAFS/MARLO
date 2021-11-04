@@ -19,12 +19,18 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.AccountTypesItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.AccountsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.RegionTypesItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.RegionsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.ScienceGroupItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.UnitsItem;
+import org.cgiar.ccafs.marlo.rest.dto.AccountTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.AccountsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ScienceGroupDTO;
+import org.cgiar.ccafs.marlo.rest.dto.UnitDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -57,18 +63,58 @@ public class OneCGIARControlList {
   private RegionsItem<OneCGIARControlList> regionsItem;
   private RegionTypesItem<OneCGIARControlList> regionTypesItem;
   private ScienceGroupItem<OneCGIARControlList> scienceGroupItem;
-
+  private AccountsItem<OneCGIARControlList> accountsItem;
+  private AccountTypesItem<OneCGIARControlList> accountTypesItem;
+  private UnitsItem<OneCGIARControlList> unitsItem;
 
   @Autowired
   private Environment env;
 
   @Inject
-  public OneCGIARControlList(RegionsItem<OneCGIARControlList> regionsItem,
-    RegionTypesItem<OneCGIARControlList> regionTypesItem, ScienceGroupItem<OneCGIARControlList> scienceGroupItem) {
+  public OneCGIARControlList(RegionsItem<OneCGIARControlList> regionsItem, UnitsItem<OneCGIARControlList> unitsItem,
+    RegionTypesItem<OneCGIARControlList> regionTypesItem, ScienceGroupItem<OneCGIARControlList> scienceGroupItem,
+    AccountTypesItem<OneCGIARControlList> accountTypesItem, AccountsItem<OneCGIARControlList> accountsItem) {
     super();
     this.regionsItem = regionsItem;
     this.regionTypesItem = regionTypesItem;
     this.scienceGroupItem = scienceGroupItem;
+    this.accountTypesItem = accountTypesItem;
+    this.accountsItem = accountsItem;
+    this.unitsItem = unitsItem;
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Accounts.all.value}",
+    response = AccountsDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/accounts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<AccountsDTO>> findAllAccounts() {
+    try {
+      ResponseEntity<List<AccountsDTO>> response = this.accountsItem.getAll();
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Accounts.code.404"));
+      }
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.AccountTypes.all.value}",
+    response = AccountTypeDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/accountTypes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<AccountTypeDTO>> findAllAccountTypes() {
+    try {
+      ResponseEntity<List<AccountTypeDTO>> response = this.accountTypesItem.getAll();
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("CGIARControlList.AccountsType.code.404"));
+      }
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Regions.all.value}",
@@ -86,7 +132,6 @@ public class OneCGIARControlList {
       e.printStackTrace();
       return null;
     }
-
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.RegionTypes.all.value}",
@@ -114,5 +159,22 @@ public class OneCGIARControlList {
       throw new NotFoundException("404", this.env.getProperty("CGIARControlList.ScienceGroup.code.404"));
     }
     return response;
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.all.value}",
+    response = UnitDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/units", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<UnitDTO>> findAllUnits() {
+    try {
+      ResponseEntity<List<UnitDTO>> response = this.unitsItem.getAll();
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Units.code.404"));
+      }
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 }
