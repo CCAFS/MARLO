@@ -27,7 +27,7 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
       url: baseURL + finalAjaxURL,
       async: false,
       success: function (data) {
-        if (data && data.length != 0 && data.length != undefined) {
+        if (data && Object.keys(data).length != 0) {
           var newData = data[arrName].map(function (x) {
             var arr = [];
 
