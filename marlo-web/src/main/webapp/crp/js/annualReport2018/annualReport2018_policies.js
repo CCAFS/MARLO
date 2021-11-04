@@ -88,9 +88,9 @@ function updateQualityAssessmentStatusData(data) {
 }
 
 function setGoogleCharts() {
-  // Chart #7 - Policies Level of maturity
+  // Chart #7 - Policies Stage of Maturity
   createGoogleBarChart('#chart7', {
-      title: 'Policies Level of Maturity',
+      title: 'Policies Stage of Maturity',
       titleTextStyle: {
           color: '#5f5e5e',
           fontName: 'Roboto',

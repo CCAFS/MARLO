@@ -299,9 +299,9 @@ function updateQualityAssessmentStatusData(data) {
 }
 
 function setGoogleCharts() {
-  // Chart #14  - OICRs Level of maturity
+  // Chart #14  - OICRs Stage of maturity
   createGoogleBarChart('#chart14', {
-    title: 'OICRs Level of Maturity',
+    title: 'OICRs Stage of Maturity',
     titleTextStyle: {
       color: '#5f5e5e',
       fontName: 'Roboto',

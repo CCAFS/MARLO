@@ -9,7 +9,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_outomesMilestones.js?20211103a",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_outomesMilestones.js?20211104a",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211103a" 
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
@@ -162,7 +162,7 @@
       <thead>
         <tr>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.outcomeTitle" /] </th>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.maturityLevel" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.maturityStage" /] </th>
           [#-- Removed for AR 2020 --]
           [#--<th class="text-center"> [@s.text name="${customLabel}.${name}.status" /] </th>--]
           [#if expanded]
