@@ -85,6 +85,39 @@ public class GlobalUnitItem<T> {
    * 
    * @return a List of global units
    */
+  public ResponseEntity<List<CGIAREntityDTO>> getAllCGIAREntities() {
+
+    List<GlobalUnit> globalUnits;
+    if (this.globalUnitManager.findAll() != null) {
+
+      globalUnits = this.globalUnitManager.findAll().stream()
+        .filter(c -> c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CRP
+          || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CGIAR_CENTER_TYPE
+          || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM
+          || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_INITIATIVES
+          || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_OFFICES)
+        .sorted(Comparator.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
+        .collect(Collectors.toList());;
+
+      List<CGIAREntityDTO> globalUnitDTOs =
+        globalUnits.stream().map(globalUnitEntity -> this.globalUnitMapper.globalUnitToGlobalUnitDTO(globalUnitEntity))
+          .collect(Collectors.toList());
+      if (globalUnitDTOs == null || globalUnitDTOs.size() == 0) {
+        return new ResponseEntity<List<CGIAREntityDTO>>(HttpStatus.NOT_FOUND);
+      } else {
+        return new ResponseEntity<List<CGIAREntityDTO>>(globalUnitDTOs, HttpStatus.OK);
+      }
+
+    } else {
+      return new ResponseEntity<List<CGIAREntityDTO>>(HttpStatus.NOT_FOUND);
+    }
+  }
+
+  /**
+   * Get All the Global units
+   * 
+   * @return a List of global units
+   */
   public ResponseEntity<List<CGIAREntityDTO>> getAllGlobaUnits(Long typeId) {
 
     List<GlobalUnit> globalUnits;
