@@ -81,9 +81,12 @@ public class DeliverableMetadataElementMySQLDAO extends AbstractMarloDAO<Deliver
     createQuery.setParameter("deliverableId", deliverableId);
     createQuery.setParameter("metadataElementId", metadataElementId);
 
-    Object findSingleResult = super.findSingleResult(DeliverableMetadataElement.class, createQuery);
-    DeliverableMetadataElement deliverableMetadataElementResult = (DeliverableMetadataElement) findSingleResult;
-    return deliverableMetadataElementResult;
+    List<DeliverableMetadataElement> result = super.findAll(createQuery);
+    if (result != null && !result.isEmpty()) {
+      return result.get(0);
+    }
+
+    return null;
   }
 
   @Override
