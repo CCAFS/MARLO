@@ -64,7 +64,7 @@
                     <li>
                       <span></span>
                       [#list (reportSynthesisStudiesByRepIndStageStudyDTOs)![] as data]
-                        [#if data.repIndStageStudy.name?contains("Level")]    
+                        [#if data.repIndStageStudy.name?contains("Stage")]    
                             <span>${data.repIndStageStudy.name}</span>
                             <span class="json">{"role":"annotation"}</span> 
                         [/#if]                    
@@ -73,7 +73,7 @@
                     <li>
                       <span></span>
                       [#list (reportSynthesisStudiesByRepIndStageStudyDTOs)![] as data]
-                        [#if data.repIndStageStudy.name?contains("Level")]
+                        [#if data.repIndStageStudy.name?contains("Stage")]
                           <span class="number">${data.projectStudies?size}</span>
                           <span>${data.projectStudies?size}</span>
                         [/#if]  
