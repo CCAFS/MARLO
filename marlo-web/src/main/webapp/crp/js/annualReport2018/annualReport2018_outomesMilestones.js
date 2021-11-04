@@ -116,7 +116,9 @@ function disabledUncheckedCheckmarkColor() {
 }
 
 function attachEvents() {
-  loadQualityAssessmentStatus(oicrsAjaxURL, oicrsArrName);
+  if ($('#actualPhase').html() == 'true') {
+    loadQualityAssessmentStatus(oicrsAjaxURL, oicrsArrName);
+  }
 
   // Links Component
   (function () {
@@ -124,6 +126,7 @@ function attachEvents() {
     $('.addButtonLink').on('click', addItem);
     $('.removeLink.links').on('click', removeItem);
     $('.multiInput').find('span input').on('input', validateURL);
+    validateEmptyLinks();
 
     // Functions
     function addItem() {
@@ -153,10 +156,17 @@ function attachEvents() {
       });
     }
     function updateIndexes(list) {
-      $(list).parent('.linksBlock').find('.linksList').find('.multiInput').each(function (i, element) {
+      var linksList = $(list).parent('.linksBlock').find('.linksList');
+      linksList.find('.multiInput').each(function (i, element) {
         $(element).find('.indexTag').text(i + 1);
         $(element).setNameIndexes(3, i);
       });
+      if (linksList.children().length != 0) {
+        $('#warningEmptyLinksTag').hide();
+        validateEmptyLinks();
+      } else {
+        $('#warningEmptyLinksTag').show();
+      }
     }
     function validateURL() {
       var url = this.value;
@@ -166,12 +176,21 @@ function attachEvents() {
       if (url.match(regex)) {
         res = "Valid URL";
         $(this).css('border', 'none');
-        // console.log(res);
+        $('#warningEmptyLinksTag').hide();
       } else {
         res = "Invalid URL";
         $(this).css('border', '1px solid red');
-        // console.log(res);
+        $('#warningEmptyLinksTag').show();
       }
+    }
+    function validateEmptyLinks() {
+      $('.linksList').find('.multiInput span input').map((index, item) => {
+        if (item.value != '') {
+          $('#warningEmptyLinksTag').hide();
+        } else {
+          $('#warningEmptyLinksTag').show();
+        }
+      });
     }
 
   })();
@@ -211,24 +230,26 @@ function attachEvents() {
 
 function loadQualityAssessmentStatus(ajaxURL, arrName) {
   var currentCrpID = $('#actualCrpID').html();
-  
+
   if (currentCrpID != '-1') {
     var finalAjaxURL = ajaxURL + currentCrpID;
-  
+
     $.ajax({
       url: baseURL + finalAjaxURL,
       async: false,
       success: function (data) {
-        var newData = data[arrName].map(function (x) {
-          var arr = [];
+        if (data && data.length != 0 && data.length != undefined) {
+          var newData = data[arrName].map(function (x) {
+            var arr = [];
 
-          arr.push(x.id);
-          arr.push(x.assessmentStatus);
-          arr.push(x.updatedAt);
+            arr.push(x.id);
+            arr.push(x.assessmentStatus);
+            arr.push(x.updatedAt);
 
-          return arr;
-        });
-        updateQualityAssessmentStatusData(newData);
+            return arr;
+          });
+          updateQualityAssessmentStatusData(newData);
+        }
       }
     });
   }
@@ -236,6 +257,7 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
 
 function updateQualityAssessmentStatusData(data) {
   data.map(function (x) {
+    var isCheckedAR = $(`#isCheckedAR-${x[0]}`).html();
     var element = document.getElementById(`QAStatusIcon-${x[0]}`);
     var status, iconSrc;
 
@@ -254,17 +276,17 @@ function updateQualityAssessmentStatusData(data) {
         $(`#study-${x[0]}`).prop('disabled', true);
         $(`#study-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
         break;
-    
+
       default:
         break;
     }
 
-    if (element) {
+    if (element && isCheckedAR == '1') {
       var imgTag = document.createElement('img');
       var br = document.createElement('br');
       var spanTag = document.createElement('span');
       var text = document.createTextNode(status);
-      
+
       element.innerHTML = '';
       imgTag.style.width = '25px';
       imgTag.src = iconSrc;
@@ -277,9 +299,9 @@ function updateQualityAssessmentStatusData(data) {
 }
 
 function setGoogleCharts() {
-  // Chart #14  - OICRs Level of maturity
+  // Chart #14  - OICRs Stage of maturity
   createGoogleBarChart('#chart14', {
-    title: 'OICRs Level of Maturity',
+    title: 'OICRs Stage of Maturity',
     titleTextStyle: {
       color: '#5f5e5e',
       fontName: 'Roboto',

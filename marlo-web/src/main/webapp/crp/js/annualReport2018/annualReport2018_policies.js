@@ -12,7 +12,9 @@ function init() {
 }
 
 function attachEvents() {
-  loadQualityAssessmentStatus(policiesAjaxURL, policiesArrName);
+  if ($('#actualPhase').html() == 'true') {
+    loadQualityAssessmentStatus(policiesAjaxURL, policiesArrName);
+  }
 }
 
 function loadQualityAssessmentStatus(ajaxURL, arrName) {
@@ -25,16 +27,18 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
       url: baseURL + finalAjaxURL,
       async: false,
       success: function (data) {
-        var newData = data[arrName].map(function (x) {
-          var arr = [];
-
-          arr.push(x.id);
-          arr.push(x.assessmentStatus);
-          arr.push(x.updatedAt);
-
-          return arr;
-        });
-        updateQualityAssessmentStatusData(newData);
+        if (data && data.length != 0 && data.length != undefined) {
+          var newData = data[arrName].map(function (x) {
+            var arr = [];
+  
+            arr.push(x.id);
+            arr.push(x.assessmentStatus);
+            arr.push(x.updatedAt);
+  
+            return arr;
+          });
+          updateQualityAssessmentStatusData(newData);
+        }
       }
     });
   }
@@ -42,6 +46,7 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
 
 function updateQualityAssessmentStatusData(data) {
   data.map(function (x) {
+    var isCheckedAR = $(`#isCheckedAR-${x[0]}`).html();
     var element = document.getElementById(`QAStatusIcon-${x[0]}`);
     var status, iconSrc;
 
@@ -65,7 +70,7 @@ function updateQualityAssessmentStatusData(data) {
         break;
     }
 
-    if (element) {
+    if (element && isCheckedAR == '1') {
       var imgTag = document.createElement('img');
       var br = document.createElement('br');
       var spanTag = document.createElement('span');
@@ -83,9 +88,9 @@ function updateQualityAssessmentStatusData(data) {
 }
 
 function setGoogleCharts() {
-  // Chart #7 - Policies Level of maturity
+  // Chart #7 - Policies Stage of Maturity
   createGoogleBarChart('#chart7', {
-      title: 'Policies Level of Maturity',
+      title: 'Policies Stage of Maturity',
       titleTextStyle: {
           color: '#5f5e5e',
           fontName: 'Roboto',
