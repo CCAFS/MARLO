@@ -42,9 +42,11 @@
   </script>
 [/#if]
 
-<div id="loadingScreen" style="position: absolute; width: 100%; height: 200vw; background: white; z-index: 999">
-  <div class="loadingBlock"></div>
-</div>
+[#if (action.canAcessCrpAdmin() || action.isRole("DM") || action.isRole("FPL") || action.isRole("FPM") || action.isRole("ML") || action.isRole("PMU") || action.isRole("RPL") || action.isRole("RPM") || action.canAccessSuperAdmin())!false]
+  <div id="loadingScreen" style="position: absolute; width: 100%; height: 200vw; background: white; z-index: 999">
+    <div class="loadingBlock"></div>
+  </div>
+[/#if]
 <section class="marlo-content">
   <div class="container">
 

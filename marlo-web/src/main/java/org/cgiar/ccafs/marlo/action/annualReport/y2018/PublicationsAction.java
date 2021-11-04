@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
@@ -32,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -52,8 +54,11 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -62,6 +67,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andrés Valencia - CIAT/CCAFS
@@ -69,6 +76,7 @@ import org.apache.commons.lang3.StringUtils;
 public class PublicationsAction extends BaseAction {
 
   private static final long serialVersionUID = 3381503750646285390L;
+  private static final Logger LOG = LoggerFactory.getLogger(PublicationsAction.class);
 
   // Managers
   private GlobalUnitManager crpManager;
@@ -84,6 +92,7 @@ public class PublicationsAction extends BaseAction {
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressDeliverableManager reportSynthesisFlagshipProgressDeliverableManager;
   private SectionStatusManager sectionStatusManager;
+  private DeliverableMetadataElementManager deliverableMetadataElementManager;
 
   // Variables
   private String transaction;
@@ -94,6 +103,7 @@ public class PublicationsAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<Deliverable> deliverables;
+  private Map<Long, String> deliverableTitles;
 
   // List for gray literature
   private List<Deliverable> deliverablesNotPublications;
@@ -115,7 +125,7 @@ public class PublicationsAction extends BaseAction {
     CrpProgramManager crpProgramManager, DeliverableManager deliverableManager, ProjectFocusManager projectFocusManager,
     ProjectManager projectManager, ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressDeliverableManager reportSynthesisFlagshipProgressDeliverableManager,
-    SectionStatusManager sectionStatusManager) {
+    SectionStatusManager sectionStatusManager, DeliverableMetadataElementManager deliverableMetadataElementManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -130,6 +140,7 @@ public class PublicationsAction extends BaseAction {
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFlagshipProgressDeliverableManager = reportSynthesisFlagshipProgressDeliverableManager;
     this.sectionStatusManager = sectionStatusManager;
+    this.deliverableMetadataElementManager = deliverableMetadataElementManager;
 
   }
 
@@ -144,6 +155,10 @@ public class PublicationsAction extends BaseAction {
     return liaisonInstitutionId;
   }
 
+
+  public String getArticleTitle(long deliverableId) {
+    return this.deliverableTitles.get(deliverableId);
+  }
 
   public void getAuthorsFromClarisa() {
 
@@ -161,6 +176,7 @@ public class PublicationsAction extends BaseAction {
     return deliverables;
   }
 
+
   public List<Deliverable> getDeliverablesNotPublications() {
     return deliverablesNotPublications;
   }
@@ -169,7 +185,6 @@ public class PublicationsAction extends BaseAction {
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
-
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -201,6 +216,21 @@ public class PublicationsAction extends BaseAction {
     }
     return missingFieldsText;
   }
+
+
+  /**
+   * 
+   */
+  private void getPublicationTitles() {
+    for (Deliverable deliverable : deliverables) {
+      DeliverableMetadataElement deliverableMetadataElement =
+        this.deliverableMetadataElementManager.findMetadataElementByPhaseAndDeliverable(actualPhase, deliverable, 1L);
+      String title = (deliverableMetadataElement != null && deliverableMetadataElement.getId() != null)
+        ? deliverableMetadataElement.getElementValue() : null;
+      this.deliverableTitles.put(deliverable.getId(), title);
+    }
+  }
+
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -236,7 +266,6 @@ public class PublicationsAction extends BaseAction {
     return totalNoIsis;
   }
 
-
   public Integer getTotalOpenAccess() {
     return totalOpenAccess;
   }
@@ -259,7 +288,6 @@ public class PublicationsAction extends BaseAction {
     }
     return isFP;
   }
-
 
   @Override
   public boolean isPMU() {
@@ -370,7 +398,7 @@ public class PublicationsAction extends BaseAction {
         }
 
         if (deliverable.getMetadataElements(this.getActualPhase()) != null
-          && !deliverable.getMetadataElements().isEmpty()) {
+          && !deliverable.getMetadataElements(this.getActualPhase()).isEmpty()) {
           // Handle
           if (link == null
             && !StringUtils.startsWithIgnoreCase(StringUtils.stripToNull(deliverable.getMetadataValue(35)), "Not")) {
@@ -385,14 +413,12 @@ public class PublicationsAction extends BaseAction {
 
 
           // Date of Publication
-          if ((deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(17).isEmpty())
-            && (deliverable.getMetadataValue(16) == null || deliverable.getMetadataValue(16).isEmpty())) {
+          if (deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(17).isEmpty()) {
             emptyFields.add("Date of Publication");
             count++;
           }
           // Article Title
-          if ((deliverable.getMetadataValue(1) == null || deliverable.getMetadataValue(1).isEmpty())
-            && (deliverable.getMetadataValue(0) == null || deliverable.getMetadataValue(0).isEmpty())) {
+          if (deliverable.getMetadataValue(1) == null || deliverable.getMetadataValue(1).isEmpty()) {
             emptyFields.add("Article Title");
             count++;
           }
@@ -409,6 +435,7 @@ public class PublicationsAction extends BaseAction {
         count++;
       }
 
+      LOG.debug(Arrays.toString(emptyFields.toArray()));
 
       if (count == 0) {
         return true;
@@ -440,6 +467,7 @@ public class PublicationsAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -537,6 +565,8 @@ public class PublicationsAction extends BaseAction {
         || d.getDeliverableInfo(actualPhase) == null && d.getDeliverableInfo(actualPhase).getId() == null
         || d.getDeliverableInfo(actualPhase)
           .getStatus() == null /* || d.getDeliverableInfo(actualPhase).getStatus() != 3 */);
+      deliverableTitles = new TreeMap<>();
+      this.getPublicationTitles();
 
       // List for gray literature
       if (!this.isSelectedPhaseAR2021()) {

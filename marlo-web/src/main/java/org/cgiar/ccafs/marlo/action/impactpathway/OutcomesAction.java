@@ -633,7 +633,8 @@ public class OutcomesAction extends BaseAction {
     }
 
     // General Status List
-    generalStatuses = generalStatusManager.findAllGeneralUse();
+    generalStatuses =
+      generalStatusManager.findByTable(APConstants.REPORT_SYNTHESYS_FLAGSHIPS_PROGRESS_MILESTONES_TABLE);
 
     /** POWB 2019 List */
     assessmentRisks = powbIndAssesmentRiskManager.findAll();
@@ -813,8 +814,8 @@ public class OutcomesAction extends BaseAction {
       programOutcomeIncoming.setCrpProgram(this.getSelectedProgram());
       crpProgramOutcome.copyFields(programOutcomeIncoming);
 
-      //crpProgramOutcome.setModifiedBy(this.getCurrentUser());
-      //crpProgramOutcome.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
+      // crpProgramOutcome.setModifiedBy(this.getCurrentUser());
+      // crpProgramOutcome.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
 
       crpProgramOutcome = crpProgramOutcomeManager.saveCrpProgramOutcome(crpProgramOutcome);
 
@@ -986,8 +987,8 @@ public class OutcomesAction extends BaseAction {
 
         milestone.copyFields(incomingMilestone);
 
-        //milestone.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
-        //milestone.setModifiedBy(this.getCurrentUser());
+        // milestone.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
+        // milestone.setModifiedBy(this.getCurrentUser());
 
         milestone.setPhaseCreated(this.getActualPhase());
         milestone.setCrpProgramOutcome(programOutcomeOld);
