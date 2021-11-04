@@ -17,61 +17,31 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.data.model;
 
 
-public class AccountsDTO {
+public class OneCGIARUnitTypes extends MarloAuditableEntity implements java.io.Serializable {
 
-  private Long code;
+  private static final long serialVersionUID = 2071137314799462986L;
 
+  private String acronym;
   private String description;
 
-  private String financialCode;
-
-  private AccountTypeDTO accountType;
-
-  private ParentDTO parent;
-
-
-  public AccountTypeDTO getAccountType() {
-    return accountType;
-  }
-
-  public Long getCode() {
-    return code;
+  public String getAcronym() {
+    return acronym;
   }
 
   public String getDescription() {
     return description;
   }
 
-  public String getFinancialCode() {
-    return financialCode;
-  }
-
-  public ParentDTO getParent() {
-    return parent;
-  }
-
-
-  public void setAccountType(AccountTypeDTO accountType) {
-    this.accountType = accountType;
-  }
-
-  public void setCode(Long code) {
-    this.code = code;
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
   }
 
   public void setDescription(String description) {
     this.description = description;
   }
 
-  public void setFinancialCode(String financialCode) {
-    this.financialCode = financialCode;
-  }
-
-  public void setParent(ParentDTO parent) {
-    this.parent = parent;
-  }
 
 }
