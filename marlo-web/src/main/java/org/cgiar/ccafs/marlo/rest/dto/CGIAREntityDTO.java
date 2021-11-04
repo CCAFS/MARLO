@@ -37,8 +37,14 @@ public class CGIAREntityDTO implements Serializable {
   @NotNull
   private String acronym;
 
+  @ApiModelProperty(notes = "Finacial Code of CGIAR")
+  @NotNull
+  private String financialCode;
+
+
   @ApiModelProperty(notes = "CGIAR entity type")
   private CGIAREntityTypeDTO cgiarEntityTypeDTO;
+
 
   public String getAcronym() {
     return this.acronym;
@@ -50,6 +56,10 @@ public class CGIAREntityDTO implements Serializable {
 
   public String getCode() {
     return this.code;
+  }
+
+  public String getFinancialCode() {
+    return financialCode;
   }
 
   public String getName() {
@@ -66,6 +76,10 @@ public class CGIAREntityDTO implements Serializable {
 
   public void setCode(String code) {
     this.code = code;
+  }
+
+  public void setFinancialCode(String financialCode) {
+    this.financialCode = financialCode;
   }
 
   public void setName(String name) {

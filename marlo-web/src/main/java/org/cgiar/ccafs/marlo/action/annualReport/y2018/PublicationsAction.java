@@ -54,6 +54,7 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andrés Valencia - CIAT/CCAFS
@@ -73,6 +76,7 @@ import org.apache.commons.lang3.StringUtils;
 public class PublicationsAction extends BaseAction {
 
   private static final long serialVersionUID = 3381503750646285390L;
+  private static final Logger LOG = LoggerFactory.getLogger(PublicationsAction.class);
 
   // Managers
   private GlobalUnitManager crpManager;
@@ -318,21 +322,22 @@ public class PublicationsAction extends BaseAction {
       if (deliverable != null) {
         deliverable.setCrps(deliverable.getDeliverableCrps().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+        deliverable.setMetadataElements(deliverable.getMetadataElements(this.getActualPhase()));
         /*
          * if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
          * emptyFields.add("CRP");
          * countB++;
          * }
          */
-        if (deliverable.getPublication() != null) {
+        if (deliverable.getPublication(this.getActualPhase()) != null) {
 
           // Is publication
-          if (deliverable.getPublication().getIsiPublication() == null) {
+          if (deliverable.getPublication(this.getActualPhase()).getIsiPublication() == null) {
             emptyFields.add("null ISI");
             countB++;
           }
 
-          if (StringUtils.isBlank(deliverable.getPublication().getJournal())) {
+          if (StringUtils.isBlank(deliverable.getPublication(this.getActualPhase()).getJournal())) {
             emptyFields.add("Journal name");
           }
 
@@ -360,22 +365,24 @@ public class PublicationsAction extends BaseAction {
          */
 
         if (deliverable.getDissemination(this.getActualPhase()) != null) {
-          if (deliverable.getDissemination().getIsOpenAccess() == null) {
+          if (deliverable.getDissemination(this.getActualPhase()).getIsOpenAccess() == null) {
             emptyFields.add("null OpenAccess");
             countB++;
           }
 
-          if (link == null && deliverable.getDissemination().getHasDOI() != null
-            && deliverable.getDissemination().getHasDOI().booleanValue() && !StringUtils
-              .startsWithIgnoreCase(StringUtils.stripToNull(deliverable.getDissemination().getArticleUrl()), "Not")) {
+          if (link == null && deliverable.getDissemination(this.getActualPhase()).getHasDOI() != null
+            && deliverable.getDissemination(this.getActualPhase()).getHasDOI().booleanValue()
+            && !StringUtils.startsWithIgnoreCase(
+              StringUtils.stripToNull(deliverable.getDissemination(this.getActualPhase()).getArticleUrl()), "Not")) {
             // emptyFields.add("empty ArticleURL");
-            link = StringUtils.stripToNull(deliverable.getDissemination().getArticleUrl());
+            link = StringUtils.stripToNull(deliverable.getDissemination(this.getActualPhase()).getArticleUrl());
           }
         }
 
         int countAuthors = 0;
         // Authors
-        if (deliverable.getUsers() == null || deliverable.getUsers().isEmpty()) {
+        if (deliverable.getUsers(this.getActualPhase()) == null
+          || deliverable.getUsers(this.getActualPhase()).isEmpty()) {
           countAuthors++;
         }
         if (deliverable.getMetadata() != null) {
@@ -394,7 +401,7 @@ public class PublicationsAction extends BaseAction {
         }
 
         if (deliverable.getMetadataElements(this.getActualPhase()) != null
-          && !deliverable.getMetadataElements().isEmpty()) {
+          && !deliverable.getMetadataElements(this.getActualPhase()).isEmpty()) {
           // Handle
           if (link == null
             && !StringUtils.startsWithIgnoreCase(StringUtils.stripToNull(deliverable.getMetadataValue(35)), "Not")) {
@@ -409,14 +416,12 @@ public class PublicationsAction extends BaseAction {
 
 
           // Date of Publication
-          if ((deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(17).isEmpty())
-            && (deliverable.getMetadataValue(16) == null || deliverable.getMetadataValue(16).isEmpty())) {
+          if (deliverable.getMetadataValue(17) == null || deliverable.getMetadataValue(17).isEmpty()) {
             emptyFields.add("Date of Publication");
             count++;
           }
           // Article Title
-          if ((deliverable.getMetadataValue(1) == null || deliverable.getMetadataValue(1).isEmpty())
-            && (deliverable.getMetadataValue(0) == null || deliverable.getMetadataValue(0).isEmpty())) {
+          if (deliverable.getMetadataValue(1) == null || deliverable.getMetadataValue(1).isEmpty()) {
             emptyFields.add("Article Title");
             count++;
           }
@@ -433,6 +438,7 @@ public class PublicationsAction extends BaseAction {
         count++;
       }
 
+      LOG.debug(Arrays.toString(emptyFields.toArray()));
 
       if (count == 0) {
         return true;
