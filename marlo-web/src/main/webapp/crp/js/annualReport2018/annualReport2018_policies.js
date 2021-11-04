@@ -21,13 +21,15 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
   var currentCrpID = $('#actualCrpID').html();
   
   if (currentCrpID != '-1') {
+    
     var finalAjaxURL = ajaxURL + currentCrpID;
-  
+    
     $.ajax({
       url: baseURL + finalAjaxURL,
       async: false,
       success: function (data) {
-        if (data && data.length != 0 && data.length != undefined) {
+        if (data && Object.keys(data).length != 0) {
+          console.log('hola')
           var newData = data[arrName].map(function (x) {
             var arr = [];
   
@@ -37,6 +39,7 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
   
             return arr;
           });
+          console.log(newData)
           updateQualityAssessmentStatusData(newData);
         }
       }
