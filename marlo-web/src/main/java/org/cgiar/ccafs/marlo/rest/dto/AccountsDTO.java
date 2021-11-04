@@ -24,6 +24,8 @@ public class AccountsDTO {
 
   private Long code;
 
+  private String description;
+
   private String financialCode;
 
   private AccountTypeDTO accountType;
@@ -35,16 +37,17 @@ public class AccountsDTO {
     return accountType;
   }
 
-
   public Long getCode() {
     return code;
   }
 
+  public String getDescription() {
+    return description;
+  }
 
   public String getFinancialCode() {
     return financialCode;
   }
-
 
   public ParentDTO getParent() {
     return parent;
@@ -55,16 +58,17 @@ public class AccountsDTO {
     this.accountType = accountType;
   }
 
-
   public void setCode(Long code) {
     this.code = code;
   }
 
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
   public void setFinancialCode(String financialCode) {
     this.financialCode = financialCode;
   }
-
 
   public void setParent(ParentDTO parent) {
     this.parent = parent;

@@ -72,7 +72,8 @@ public class RepIndStageProcessManagerImpl implements RepIndStageProcessManager 
     List<ReportSynthesisPoliciesByRepIndStageProcessDTO> reportSynthesisPoliciesByRepIndStageProcessDTOs =
       new ArrayList<>();
     List<RepIndStageProcess> stageProcess =
-      this.findAll().stream().sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
+      this.findAll().stream().filter(o -> o != null && o.getId() != null && o.getRepIndStageStudy() != null)
+        .sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
     if (stageProcess != null) {
       for (RepIndStageProcess repIndStageProcess : stageProcess) {
         ReportSynthesisPoliciesByRepIndStageProcessDTO reportSynthesisPoliciesByRepIndStageProcessDTO =

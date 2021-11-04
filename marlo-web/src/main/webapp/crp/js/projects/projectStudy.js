@@ -74,11 +74,9 @@ function validateURL(item) {
     if (url.match(regex)) {
       res = "Valid URL";
       $(item).css('border', 'none');
-      // console.log(res);
     } else {
       res = "Invalid URL";
       $(item).css('border', '1px solid red');
-      // console.log(res);
     }
   } else {
     $(item).css('border', '1px solid red');
@@ -265,6 +263,7 @@ function attachEvents() {
     // Events
     $('.addButtonReference').on('click', addItem);
     $('.removeLink.references').on('click', removeItem);
+    validateEmptyLinks();
 
     // Functions
     function addItem() {
@@ -295,32 +294,49 @@ function attachEvents() {
       });
     }
     function updateIndexes(list) {
-      $(list).parent('.referenceBlock').find('.referenceList').find('.multiInput').each(function(i,element) {
+      var linksList = $(list).parent('.referenceBlock').find('.referenceList');
+      linksList.find('.multiInput').each(function(i,element) {
         $(element).find('.indexTag').text(i + 1);
         $(element).setNameIndexes(1, i);
+      });
+      console.log(linksList.children().length - 1)
+      if ((linksList.children().length - 1) != 0) {
+        $('#warningEmptyReferencesTag').hide();
+        validateEmptyLinks();
+      } else {
+        $('#warningEmptyReferencesTag').show();
+      }
+    }
+    function validateEmptyLinks() {
+      $('.referenceList').find('.multiInput span input').map((index, item) => {
+        if (item.value != '') {
+          $('#warningEmptyReferencesTag').hide();
+        } else {
+          $('#warningEmptyReferencesTag').show();
+        }
       });
     }
 
   })();
 
-  validateEmptyReferences();
-  $('.addButtonReference').on('click', validateEmptyReferences);
-  $('.removeLink.references').on('click', validateEmptyReferences);
+  // validateEmptyReferences();
+  // $('.addButtonReference').on('click', validateEmptyReferences);
+  // $('.removeLink.references').on('click', validateEmptyReferences);
 
-  function validateEmptyReferences() {
-    var referenceList = $('.referenceList').children('div').length;
-
-    if ($(this).hasClass('removeElement')) {
-      referenceList -= 1;
-    } else {
-      referenceList = referenceList;
-    }
-    if ( referenceList > 0) {
-      $('#warningEmptyReferencesTag').hide();
-    } else {
-      $('#warningEmptyReferencesTag').show();
-    }
-  }
+  // function validateEmptyReferences() {
+  //   var referenceList = $('.referenceList').children('div').length;
+  //   console.log(referenceList)
+  //   if ($(this).hasClass('removeElement')) {
+  //     referenceList -= 1;
+  //   } else {
+  //     referenceList = referenceList;
+  //   }
+  //   if ( referenceList > 0) {
+  //     $('#warningEmptyReferencesTag').hide();
+  //   } else {
+  //     $('#warningEmptyReferencesTag').show();
+  //   }
+  // }
 
   /**
    * Qualification Component
