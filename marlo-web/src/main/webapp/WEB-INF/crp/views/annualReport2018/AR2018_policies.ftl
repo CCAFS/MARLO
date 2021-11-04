@@ -9,7 +9,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211103a",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211104a",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211103a"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
@@ -64,7 +64,7 @@
                   <label for="">[@s.text name="${customLabel}.indicatorI1.totalPolicies" /]</label><br />
                   <span class="totalNumber">${(((total)!0)?number?string(",##0"))!0}</span>
                 </div>
-                [#-- Chart 7 - Level of maturity --][#--
+                [#-- Chart 7 - Stage of Maturity --][#--
                 <div  class="chartBox simpleBox">
                 Policies Level of Maturity
                 <center><img src="${baseUrlCdn}/global/images/ComingSoon-charts.png" height="130"></center>
@@ -74,7 +74,7 @@
                     <li>
                       <span></span>
                       [#list (policiesByRepIndStageProcessDTOs)![] as data]
-                        [#if data.repIndStageProcess.name?contains("Level")]    
+                        [#if data.repIndStageProcess.name?contains("Stage")]    
                             <span>${data.repIndStageProcess.name}</span>
                             <span class="json">{"role":"annotation"}</span> 
                         [/#if]                    
@@ -83,8 +83,8 @@
                     <li>
                       <span></span>
                       [#list (policiesByRepIndStageProcessDTOs)![] as data]
-                        [#if data.repIndStageProcess.name?contains("Level")]
-                          <span class="number">${data.projectPolicies?size}</span>
+                        [#if data.repIndStageProcess.name?contains("Stage")]
+                          <span class="number">${data.projectPolicies?size}</span> 
                           <span>${data.projectPolicies?size}</span>
                         [/#if]  
                       [/#list]
@@ -384,7 +384,7 @@
                     <tr>
                       <th id="ids">[@s.text name="${customLabel}.table2.policiesOicrs.id" /]</th>
                       <th id="policyTitles">[@s.text name="${customLabel}.table2.policiesOicrs.oicrName" /]</th>
-                      <th id="policyMaturityLevel">[@s.text name="${customLabel}.table2.policiesOicrs.maturityLevel" /]</th>
+                      <th id="policyMaturityLevel">[@s.text name="${customLabel}.table2.policiesOicrs.maturityStage" /]</th>
                       <th></th>
                     </tr>
                   </thead>
