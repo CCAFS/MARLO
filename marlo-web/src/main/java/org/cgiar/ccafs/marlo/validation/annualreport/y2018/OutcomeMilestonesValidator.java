@@ -21,7 +21,6 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
-import org.cgiar.ccafs.marlo.data.model.DeliverableStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -31,8 +30,10 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestoneLink;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
+import org.cgiar.ccafs.marlo.utils.Patterns;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -324,8 +325,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     if ((!(this.isValidString(milestone.getEvidence())))
       || (milestone.getEvidence() == null || milestone.getEvidence().isEmpty())) {
       if (!action.isSelectedPhaseAR2021() || (action.isSelectedPhaseAR2021() && milestone.getMilestonesStatus() != null
-        && milestone.getMilestonesStatus().getId() != null
-        && (DeliverableStatusEnum.COMPLETE.getStatus().equalsIgnoreCase(milestone.getMilestonesStatus().getName())))) {
+        && milestone.getMilestonesStatus().getId() != null && milestone.getMilestonesStatus().getId() == 3L)) {
         action.addMessage(action.getText("Evidence"));
         action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
           + "].milestones[" + j + "].evidence");
@@ -334,12 +334,10 @@ public class OutcomeMilestonesValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-
       if (this.wordCount(this.removeHtmlTags(milestone.getEvidence())) > 200) {
         if (!action.isSelectedPhaseAR2021()
           || (action.isSelectedPhaseAR2021() && milestone.getMilestonesStatus() != null
-            && milestone.getMilestonesStatus().getId() != null && !(DeliverableStatusEnum.COMPLETE.getStatus()
-              .equalsIgnoreCase(milestone.getMilestonesStatus().getName())))) {
+            && milestone.getMilestonesStatus().getId() != null && milestone.getMilestonesStatus().getId() != 3L)) {
           action.addMessage(action.getText("Evidence"));
           action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
             + "].milestones[" + j + "].evidence");
@@ -350,24 +348,16 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     }
 
     // Validate Milestone Evidence Link
-    if ((!(this.isValidString(milestone.getEvidenceLink())))
-      || (milestone.getEvidence() == null || milestone.getEvidenceLink().isEmpty())) {
-      if (!action.isSelectedPhaseAR2021() || (action.isSelectedPhaseAR2021() && milestone.getMilestonesStatus() != null
-        && milestone.getMilestonesStatus().getId() != null
-        && (DeliverableStatusEnum.COMPLETE.getStatus().equalsIgnoreCase(milestone.getMilestonesStatus().getName())
-          || milestone.getMilestonesStatus().getId() == 6L))) {
+    if (!action.isSelectedPhaseAR2021()) {
+      if ((!(this.isValidString(milestone.getEvidenceLink())))
+        || (milestone.getEvidence() == null || milestone.getEvidenceLink().isEmpty())) {
         action.addMessage(action.getText("Evidence Link"));
         action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
           + "].milestones[" + j + "].evidenceLink");
         action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
           + "].milestones[" + j + "].evidenceLink", InvalidFieldsMessages.EMPTYFIELD);
-      }
-    } else {
-      if (this.wordCount(this.removeHtmlTags(milestone.getEvidence())) > 200) {
-        if (!action.isSelectedPhaseAR2021() || (action.isSelectedPhaseAR2021()
-          && milestone.getMilestonesStatus() != null && milestone.getMilestonesStatus().getId() != null
-          && (DeliverableStatusEnum.COMPLETE.getStatus().equalsIgnoreCase(milestone.getMilestonesStatus().getName())
-            || milestone.getMilestonesStatus().getId() == 6L))) {
+      } else {
+        if (this.wordCount(this.removeHtmlTags(milestone.getEvidence())) > 200) {
           action.addMessage(action.getText("Evidence Link"));
           action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
             + "].milestones[" + j + "].evidenceLink");
@@ -375,8 +365,33 @@ public class OutcomeMilestonesValidator extends BaseValidator {
             + "].milestones[" + j + "].evidenceLink", InvalidFieldsMessages.EMPTYFIELD);
         }
       }
-    }
+    } else {
+      if (milestone.getMilestonesStatus() != null && milestone.getMilestonesStatus().getId() != null
+        && (milestone.getMilestonesStatus().getId() == 3L || milestone.getMilestonesStatus().getId() == 6L)) {
+        if (action.isNotEmpty(milestone.getLinks())) {
+          boolean validLinks = true;
+          for (ReportSynthesisFlagshipProgressOutcomeMilestoneLink link : milestone.getLinks()) {
+            if (link == null || link.getLink() == null || !Patterns.WEB_URL.matcher(link.getLink()).find()) {
+              validLinks = false;
+            }
+          }
 
+          if (!validLinks) {
+            action.addMessage(action.getText("Evidence Link"));
+            action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
+              + "].milestones[" + j + "].evidenceLink");
+            action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
+              + "].milestones[" + j + "].evidenceLink", InvalidFieldsMessages.WRONGVALUE);
+          }
+        } else {
+          action.addMessage(action.getText("Evidence Link"));
+          action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
+            + "].milestones[" + j + "].evidenceLink");
+          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
+            + "].milestones[" + j + "].evidenceLink", InvalidFieldsMessages.EMPTYLIST);
+        }
+      }
+    }
 
     // Validate Cross Cutting
     if (milestone.getMarkers() == null || milestone.getMarkers().isEmpty()) {

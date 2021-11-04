@@ -39,28 +39,31 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
   @Expose
   private Institution institution;
 
+  private String financialCode;
+
+
   private Set<CenterLeader> centerLeaders = new HashSet<CenterLeader>(0);
 
-  private Set<CrpProgram> crpPrograms = new HashSet<CrpProgram>(0);
 
+  private Set<CrpProgram> crpPrograms = new HashSet<CrpProgram>(0);
 
   private Set<CrpTargetUnit> crpTargetUnits = new HashSet<CrpTargetUnit>(0);
 
   private Set<CenterArea> centerAreas = new HashSet<CenterArea>(0);
 
-  private Set<DeliverableType> deliverableTypes = new HashSet<DeliverableType>(0);
 
+  private Set<DeliverableType> deliverableTypes = new HashSet<DeliverableType>(0);
 
   private Set<LocElementType> locElementTypes = new HashSet<LocElementType>(0);
 
   private Set<LocElement> locElements = new HashSet<LocElement>(0);
+
 
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
 
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
 
   private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
-
 
   private Set<CenterObjective> centerObjectives = new HashSet<CenterObjective>(0);
 
@@ -79,7 +82,6 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
 
   private Set<CustomParameter> customParameters = new HashSet<CustomParameter>(0);
 
-
   private Set<LiaisonUser> liasonUsers = new HashSet<LiaisonUser>(0);
 
 
@@ -91,12 +93,12 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
 
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
 
+
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
 
 
   // Variables add for Crp Class
   private boolean hasRegions; // Used by CrpAdminManagmentAction
-
 
   private List<UserRole> programManagmenTeam; // Used by CrpAdminManagmentAction
 
@@ -106,7 +108,9 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
 
   private List<LocElementType> locationElementTypes; // Used by CrpLocationsAction
 
+
   private List<CustomLevelSelect> customLevels; // Used by CrpLocationsAction
+
 
   private List<CrpPpaPartner> crpInstitutionsPartners; // Used by CrpPpaPartnersAction
 
@@ -190,7 +194,6 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
     return crpPpaPartners;
   }
 
-
   public Set<CrpProgram> getCrpPrograms() {
     return crpPrograms;
   }
@@ -198,6 +201,7 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
   public Set<CrpsSiteIntegration> getCrpsSitesIntegrations() {
     return crpsSitesIntegrations;
   }
+
 
   public Set<CrpSubIdosContribution> getCrpSubIdosContributions() {
     return crpSubIdosContributions;
@@ -229,6 +233,10 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
 
   public Set<DeliverableType> getDeliverableTypes() {
     return deliverableTypes;
+  }
+
+  public String getFinancialCode() {
+    return financialCode;
   }
 
   public Set<FundingSource> getFundingSources() {
@@ -302,7 +310,6 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
     return siteIntegrations;
   }
 
-
   public String getSmoCode() {
     return smoCode;
   }
@@ -311,6 +318,7 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
   public List<TargetUnitSelect> getTargetUnits() {
     return targetUnits;
   }
+
 
   @Override
   public int hashCode() {
@@ -357,28 +365,28 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
     this.centerAreas = centerAreas;
   }
 
-
   public void setCenterLeaders(Set<CenterLeader> centerLeaders) {
     this.centerLeaders = centerLeaders;
   }
+
 
   public void setCenterObjectives(Set<CenterObjective> centerObjectives) {
     this.centerObjectives = centerObjectives;
   }
 
-
   public void setCenterProjectFundingSources(Set<CenterProjectFundingSource> centerProjectFundingSources) {
     this.centerProjectFundingSources = centerProjectFundingSources;
   }
+
 
   public void setCrpInstitutionsPartners(List<CrpPpaPartner> crpInstitutionsPartners) {
     this.crpInstitutionsPartners = crpInstitutionsPartners;
   }
 
-
   public void setCrpLocElementTypes(Set<CrpLocElementType> crpLocElementTypes) {
     this.crpLocElementTypes = crpLocElementTypes;
   }
+
 
   public void setCrpPpaPartners(Set<CrpPpaPartner> crpPpaPartners) {
     this.crpPpaPartners = crpPpaPartners;
@@ -420,9 +428,13 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
     this.deliverablesList = deliverablesList;
   }
 
-
   public void setDeliverableTypes(Set<DeliverableType> deliverableTypes) {
     this.deliverableTypes = deliverableTypes;
+  }
+
+
+  public void setFinancialCode(String financialCode) {
+    this.financialCode = financialCode;
   }
 
   public void setFundingSources(Set<FundingSource> fundingSources) {

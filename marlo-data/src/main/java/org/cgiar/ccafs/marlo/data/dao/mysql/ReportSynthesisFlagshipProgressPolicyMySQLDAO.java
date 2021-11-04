@@ -64,7 +64,7 @@ public class ReportSynthesisFlagshipProgressPolicyMySQLDAO extends
 
   @Override
   public List<ReportSynthesisFlagshipProgressPolicy> findAll() {
-    String query = "from " + ReportSynthesisFlagshipProgressPolicy.class.getName() + " where is_active=1";
+    String query = "from " + ReportSynthesisFlagshipProgressPolicy.class.getName();
     List<ReportSynthesisFlagshipProgressPolicy> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
