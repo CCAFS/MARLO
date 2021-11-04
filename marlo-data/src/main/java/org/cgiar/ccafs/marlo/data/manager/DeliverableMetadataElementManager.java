@@ -14,7 +14,9 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -51,6 +53,15 @@ public interface DeliverableMetadataElementManager {
    */
   public List<DeliverableMetadataElement> findAll();
 
+
+  /**
+   * This method gets a deliverableMetadataElement object by a given phase, deliverable and metadata identifier
+   * 
+   * @param metadataElement
+   * @return a DeliverableMetadataElement object.
+   */
+  public DeliverableMetadataElement findMetadataElementByPhaseAndDeliverable(Phase phase, Deliverable deliverable,
+    long metadataElementId);
 
   /**
    * This method gets a deliverableMetadataElement object by a given deliverableMetadataElement identifier.

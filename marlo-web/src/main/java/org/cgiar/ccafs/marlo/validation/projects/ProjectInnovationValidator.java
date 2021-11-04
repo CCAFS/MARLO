@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
+import org.cgiar.ccafs.marlo.utils.Patterns;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -232,7 +233,7 @@ public class ProjectInnovationValidator extends BaseValidator {
             if (action.isNotEmpty(projectInnovation.getInnovationLinks())) {
               for (int i = 0; i < projectInnovation.getInnovationLinks().size(); i++) {
                 ProjectInnovationEvidenceLink link = projectInnovation.getInnovationLinks().get(i);
-                if (link == null || !this.isValidString(link.getLink())) {
+                if (link == null || link.getLink() == null || !Patterns.WEB_URL.matcher(link.getLink()).find()) {
                   if (struts) {
                     // Does not work. On load there is not an specific way we can know the links are going to
                     // be loaded in the same order they were saved

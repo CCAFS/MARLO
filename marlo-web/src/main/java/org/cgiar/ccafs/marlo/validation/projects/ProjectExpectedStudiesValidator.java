@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
+import org.cgiar.ccafs.marlo.utils.Patterns;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -180,8 +181,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
     // validate Milestones
     if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
-      && baseAction.getActualPhase().getName() != null && baseAction.getActualPhase().getName().contains("AR")
-      && isOicr) {
+      && baseAction.isSelectedPhaseAR2021() && isOicr) {
       if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
         && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == null) {
         action.addMessage(action.getText("hasMilestones"));
@@ -192,8 +192,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
 
     if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
-      && baseAction.getActualPhase().getName() != null && baseAction.getActualPhase().getName().contains("AR")
-      && isOicr) {
+      && baseAction.isSelectedPhaseAR2021() && isOicr) {
       if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
         && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == null) {
 
@@ -204,11 +203,9 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       } else {
 
         // Validate milestones
-        if (projectExpectedStudy.getMilestones() != null
-          && (projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() != null
-            && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == true
-            && !projectExpectedStudy.getMilestones().isEmpty())) {
-          if (!action.isSelectedPhaseAR2021()) {
+        if (projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() != null
+          && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == true) {
+          if (action.isNotEmpty(projectExpectedStudy.getMilestones())) {
             int count = 0;
             for (ProjectExpectedStudyMilestone studyMilestone : projectExpectedStudy.getMilestones()) {
               if (studyMilestone.getPrimary() != null && studyMilestone.getPrimary()) {
@@ -222,6 +219,11 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
               action.getInvalidFields().put("list-expectedStudy.milestones",
                 action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"milestones"}));
             }
+          } else {
+            action.addMessage(action.getText("milestones"));
+            action.addMissingField("expectedStudy.milestones");
+            action.getInvalidFields().put("list-expectedStudy.milestones",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
           }
         }
       }
@@ -446,7 +448,8 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           boolean validReferences = true;
           for (int i = 0; i < projectExpectedStudy.getReferences().size(); i++) {
             ProjectExpectedStudyReference reference = projectExpectedStudy.getReferences().get(i);
-            if (reference == null || !this.isValidString(reference.getReference())) {
+            if (reference == null || !this.isValidString(reference.getReference()) || reference.getLink() == null
+              || !Patterns.WEB_URL.matcher(reference.getLink()).find()) {
               validReferences = false;
             }
           }
