@@ -422,10 +422,18 @@ function setStatusByBack() {
 
 function selectDeselectAll() {
   if ($(this).hasClass('checked')) {
-    $('input[id^="deliverable-"]').prop('checked', true);
+    $('input[id^="deliverable-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', true);
+      }
+    });
     $(this).removeClass('checked');
   } else {
-    $('input[id^="deliverable-"]').prop('checked', false);
+    $('input[id^="deliverable-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', false);
+      }
+    });
     $(this).addClass('checked');
   }
 }
@@ -440,10 +448,18 @@ function selectIndividual() {
 
 function selectDeselectAllGrey() {
   if ($(this).hasClass('checked')) {
-    $('input[id^="deliverableGrey"]').prop('checked', true);
+    $('input[id^="deliverableGrey"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', true);
+      }
+    });
     $(this).removeClass('checked');
   } else {
-    $('input[id^="deliverableGrey"]').prop('checked', false);
+    $('input[id^="deliverableGrey"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', false);
+      }
+    });
     $(this).addClass('checked');
   }
 }
@@ -458,10 +474,18 @@ function selectIndividualGrey() {
 
 function selectDeselectAllPolicies() {
   if ($(this).hasClass('checked')) {
-    $('input[id^="policy-"]').prop('checked', true);
+    $('input[id^="policy-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', true);
+      }
+    });
     $(this).removeClass('checked');
   } else {
-    $('input[id^="policy-"]').prop('checked', false);
+    $('input[id^="policy-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', false);
+      }
+    });
     $(this).addClass('checked');
   }
 }
@@ -476,10 +500,18 @@ function selectIndividualPolicies() {
 
 function selectDeselectAllInnovations() {
   if ($(this).hasClass('checked')) {
-    $('input[id^="innovation-"]').prop('checked', true);
+    $('input[id^="innovation-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', true);
+      }
+    });
     $(this).removeClass('checked');
   } else {
-    $('input[id^="innovation-"]').prop('checked', false);
+    $('input[id^="innovation-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', false);
+      }
+    });
     $(this).addClass('checked');
   }
 }
@@ -494,13 +526,19 @@ function selectIndividualInnovations() {
 
 function selectDeselectAllStudies() {
   if ($(this).hasClass('checked')) {
-    $('input[id^="study-"]').prop('checked', true);
+    $('input[id^="study-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', true);
+      }
+    });
     $(this).removeClass('checked');
-    console.log("hasClass", $(this));
   } else {
-    $('input[id^="study-"]').prop('checked', false);
+    $('input[id^="study-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', false);
+      }
+    });
     $(this).addClass('checked');
-    console.log("noClass", $(this));
   }
 }
 
@@ -514,13 +552,19 @@ function selectIndividualStudies() {
 
 function selectDeselectAllMelias() {
   if ($(this).hasClass('checked')) {
-    $('input[id^="melia-"]').prop('checked', true);
+    $('input[id^="melia-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', true);
+      }
+    });
     $(this).removeClass('checked');
-    console.log("hasClass", $(this));
   } else {
-    $('input[id^="melia-"]').prop('checked', false);
+    $('input[id^="melia-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', false);
+      }
+    });
     $(this).addClass('checked');
-    console.log("noClass", $(this));
   }
 }
 
