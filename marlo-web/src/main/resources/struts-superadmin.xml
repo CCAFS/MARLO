@@ -154,7 +154,7 @@
 		</action>
 
 		<action name="projectsReplication"
-			class="org.cgiar.ccafs.marlo.action.superadmin.ProjectBudgetByPartnersReplicationAction">
+			class="org.cgiar.ccafs.marlo.action.superadmin.ProjectReplicationAction">
 			<interceptor-ref name="superAdminStack" />
 			<result name="input">/WEB-INF/global/views/superadmin/marloBulkReplication.ftl
 			</result>
