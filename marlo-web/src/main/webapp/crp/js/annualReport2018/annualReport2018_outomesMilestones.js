@@ -116,7 +116,7 @@ function disabledUncheckedCheckmarkColor() {
 }
 
 function attachEvents() {
-  if ($('#actualPhase').html() == 'true') {
+  if ($('#actualPhase').html() == 'true' && $('#isSubmitted').html() == 'true') {
     loadQualityAssessmentStatus(oicrsAjaxURL, oicrsArrName);
   }
 
