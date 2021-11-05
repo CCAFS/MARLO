@@ -13,7 +13,7 @@ function init() {
 }
 
 function attachEvents() {
-  if ($('#actualPhase').html() == 'true') {
+  if ($('#actualPhase').html() == 'true' && $('#isSubmitted').html() == 'true') {
     loadQualityAssessmentStatus(publicationsAjaxURL, publicationsArrName);
   }
 }

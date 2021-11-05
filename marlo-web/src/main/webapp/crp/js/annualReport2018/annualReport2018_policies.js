@@ -12,7 +12,7 @@ function init() {
 }
 
 function attachEvents() {
-  if ($('#actualPhase').html() == 'true') {
+  if ($('#actualPhase').html() == 'true' && $('#isSubmitted').html() == 'true') {
     loadQualityAssessmentStatus(policiesAjaxURL, policiesArrName);
   }
 }
@@ -29,7 +29,6 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
       async: false,
       success: function (data) {
         if (data && Object.keys(data).length != 0) {
-          console.log('hola')
           var newData = data[arrName].map(function (x) {
             var arr = [];
   
@@ -39,7 +38,6 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
   
             return arr;
           });
-          console.log(newData)
           updateQualityAssessmentStatusData(newData);
         }
       }
