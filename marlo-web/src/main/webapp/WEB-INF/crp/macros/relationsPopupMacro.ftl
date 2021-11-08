@@ -1,5 +1,5 @@
 [#ftl]
-[#macro relationsMacro element labelText=true ]
+[#macro relationsMacro element labelText=true  tag=""]
   [#local className = ((element.class.name)?split('.')?last)!''/]
   [#local composedID = "${className}-${(element.id)!}"]
   [#local deliverablesProject = (action.getDeliverableRelationsProject(element.id, element.class.name,(element.project.id)!-1))! /]
@@ -8,7 +8,7 @@
 
   [#if className == "ProjectPartner"]
     [#local deliverables = deliverablesPartner /]
-  [#elseif (className == "ProjectOutcome") || (className == "ProjectBudget")]
+  [#elseif ((className == "ProjectOutcome") && (tag == "")) || (className == "ProjectBudget")]
     [#local deliverables = deliverablesProject /]
   [#else]
     [#local deliverables = ((deliverablesImpact)!deliverablesPartner)! /]
@@ -19,6 +19,13 @@
   [#local policies = (action.getPolicyContributingByPartner(element.id))![] /]
   [#local innovations = (action.getInnovationContributingByPartner(element.id))![] /]
   [#local evidencies = (action.getStudyContributingByPartner(element.id))![] /]
+  
+  [#if tag == "expectedOutcomes"]
+    [#local evidencies = (action.getexpectedProjectOutcomes(element.id))![] /]
+  [/#if]
+  [#if tag == "innovationOutcomes"]
+    [#local innovations = (action.getInnovationProjectOutcomes(element.id))![] /]
+  [/#if]
   [#-- News buttons --]
 
   [#local elementTitle = (element.keyOutput)!((element.title)!((element.description)!'')) /]
@@ -279,7 +286,7 @@
     [#if evidencies?has_content]
       [#-- Button --]
       <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-evidencies-${composedID}">
-        <span class="icon-20 evidences"></span> <strong>${evidencies?size}</strong> [#if labelText] Evidence(s)[/#if]
+        <span class="icon-20 evidences"></span> <strong>${evidencies?size}</strong> [#if labelText] OICRs / MELIAs[/#if]
       </button>
 
       [#-- Modal --]

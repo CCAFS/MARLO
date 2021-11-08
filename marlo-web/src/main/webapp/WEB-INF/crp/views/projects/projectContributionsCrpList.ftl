@@ -167,6 +167,8 @@
       </td>
       <td>
         [#if !isTemplate][@popUps.relationsMacro element=projectOutcome labelText=true /]</div>[/#if]
+        [#if !isTemplate][@popUps.relationsMacro element=projectOutcome tag="expectedOutcomes" labelText=true /]</div>[/#if]
+        [#if !isTemplate][@popUps.relationsMacro element=projectOutcome tag="innovationOutcomes" labelText=true /]</div>[/#if]
       </td>
       [#-- Contribution Status --]
       <td class="text-center">
@@ -187,7 +189,7 @@
             <img src="${baseUrlCdn}/global/images/trash.png" />
           </a>
         [#else]
-          <img src="${baseUrlCdn}/global/images/trash_disable.png" title="To remove this indicator mapping from this cluster, ensure there are no deliverables mapped to this indicator" />
+          <img src="${baseUrlCdn}/global/images/trash_disable.png" title="To remove this indicator mapping from this cluster, ensure there are no Deliverables, OICRs & MELIAs or Innovations mapped to this indicator" />
         [/#if]
       </td>
   </tr>
