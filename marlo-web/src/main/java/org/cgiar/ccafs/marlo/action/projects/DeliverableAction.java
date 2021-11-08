@@ -2268,7 +2268,8 @@ public class DeliverableAction extends BaseAction {
           DeliverableUserPartnership deliverableUserPartnershipSave =
             deliverableUserPartnershipManager.getDeliverableUserPartnershipById(deliverableUserPartnership.getId());
 
-          if (deliverableUserPartnership.getInstitution().getId() != null) {
+          if (deliverableUserPartnership.getInstitution() != null
+            && deliverableUserPartnership.getInstitution().getId() != null) {
             if (deliverableUserPartnership.getInstitution().getId() != -1) {
               Institution institution =
                 institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
