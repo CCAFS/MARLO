@@ -164,7 +164,8 @@
                   <div class="" id="baseline">
                     <div class="form-group text-right">
                       [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                        <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="Download document" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
+                        <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a>
+                        [#-- (projectOutcome.crpProgramOutcome.file.fileName)! --] 
                       [#else]
                         <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
                       [/#if]
@@ -253,7 +254,7 @@
                               <div class="" id="baseline">
                                 <div class="form-group text-right">
                                   [#if (projectOutcomeLastPhase.crpProgramOutcome.file.fileName??)!false]
-                                    <a href="${action.getBaseLineFileURL((projectOutcomeLastPhase.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcomeLastPhase.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" /> ${ (projectOutcomeLastPhase.crpProgramOutcome.file.fileName)!}</a> 
+                                    <a href="${action.getBaseLineFileURL((projectOutcomeLastPhase.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcomeLastPhase.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a> 
                                   [#else]
                                     <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
                                   [/#if]
@@ -287,7 +288,7 @@
                                 <div class="" id="baseline">
                                   <div class="form-group text-right">
                                     [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                                      <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
+                                      <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a> 
                                     [#else]
                                       <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
                                     [/#if]
@@ -326,7 +327,8 @@
                               <div class="form-group text-left">
                                 [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
                                   <p><b>Baseline Instructions:</b></p>
-                                  <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a>
+                                  <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a>
+                                  [#-- ${ (projectOutcome.crpProgramOutcome.file.fileName)!} --]
                                   <p><br></p> 
                                 [#else]
                                   <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>

@@ -123,7 +123,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     // Validate Title
     if ((!this.isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTitle()))
       || this
-        .wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTitle()) > 25) {
+        .wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTitle()) > 30) {
       action.addMessage(action.getText("Title"));
       action.addMissingField("study.title");
       action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.title",
@@ -328,15 +328,17 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
          * }
          */
         // Validate Comunications Material
-        if ((!this.isValidString(
-          projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getComunicationsMaterial()))
-          || this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-            .getComunicationsMaterial()) > 400) {
-          action.addMessage(action.getText("Outcome story for communications"));
-          action.addMissingField("study.comunicationsMaterial");
-          action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.comunicationsMaterial",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
+        /*
+         * if ((!this.isValidString(
+         * projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getComunicationsMaterial()))
+         * || this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+         * .getComunicationsMaterial()) > 400) {
+         * action.addMessage(action.getText("Outcome story for communications"));
+         * action.addMissingField("study.comunicationsMaterial");
+         * action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.comunicationsMaterial",
+         * InvalidFieldsMessages.EMPTYFIELD);
+         * }
+         */
 
         // Validate CGIAR Innovation
         if (!this.isValidString(
