@@ -1,0 +1,3 @@
+alter table report_synthesis_flagship_progress_outcome_milestones add is_qa_included tinyint(1);
+alter table report_synthesis_srf_progress_targets_cases add is_qa_included tinyint(1);
+alter table report_synthesis_cross_cutting_dimensions add is_qa_included tinyint(1);
