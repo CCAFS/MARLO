@@ -487,6 +487,8 @@ public class CrossCuttingDimensionAction extends BaseAction {
         reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesShortTermFemale());
       crossCuttingDimensionDB
         .setTraineesShortTermMale(reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesShortTermMale());
+      crossCuttingDimensionDB
+        .setIsQAIncluded(reportSynthesis.getReportSynthesisCrossCuttingDimension().getIsQAIncluded());
 
       crossCuttingDimensionDB =
         reportSynthesisCrossCuttingDimensionManager.saveReportSynthesisCrossCuttingDimension(crossCuttingDimensionDB);
