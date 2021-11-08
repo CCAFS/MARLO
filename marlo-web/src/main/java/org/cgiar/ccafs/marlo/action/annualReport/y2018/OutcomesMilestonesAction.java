@@ -1404,6 +1404,7 @@ public class OutcomesMilestonesAction extends BaseAction {
         flagshipProgressMilestoneNew.setEvidence(flagshipProgressMilestoneIncoming.getEvidence());
         flagshipProgressMilestoneNew.setEvidenceLink(flagshipProgressMilestoneIncoming.getEvidenceLink());
         flagshipProgressMilestoneNew.setCrpMilestone(flagshipProgressMilestoneOld.getCrpMilestone());
+        flagshipProgressMilestoneNew.setIsQAIncluded(flagshipProgressMilestoneOld.getIsQAIncluded());
         flagshipProgressMilestoneNew = reportSynthesisFlagshipProgressOutcomeMilestoneManager
           .saveReportSynthesisFlagshipProgressOutcomeMilestone(flagshipProgressMilestoneNew);
 
