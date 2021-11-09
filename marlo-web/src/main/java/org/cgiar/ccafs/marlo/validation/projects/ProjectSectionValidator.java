@@ -653,6 +653,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
+      // Expected Study References List
+      if (innovation.getProjectInnovationEvidenceLinks() != null) {
+        innovation.setInnovationLinks(new ArrayList<>(innovation.getProjectInnovationEvidenceLinks().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
       // Innovation clear lead
       if (innovation != null && innovation.getProjectInnovationInfo(phase) != null) {
         if (innovation.getProjectInnovationInfo(phase).getClearLead() == null
