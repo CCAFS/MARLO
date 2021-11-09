@@ -2805,7 +2805,7 @@ public class DeliverableAction extends BaseAction {
         } else {
           participant.setEstimateAfrican(false);
         }
-        participant.setAfrican(deliverable.getDeliverableParticipant().getYouth());
+        participant.setYouth(deliverable.getDeliverableParticipant().getYouth());
         if (deliverable.getDeliverableParticipant().getEstimateYouth() != null) {
           participant.setEstimateYouth(deliverable.getDeliverableParticipant().getEstimateYouth());
         } else {
