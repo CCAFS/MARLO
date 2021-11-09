@@ -2268,7 +2268,8 @@ public class DeliverableAction extends BaseAction {
           DeliverableUserPartnership deliverableUserPartnershipSave =
             deliverableUserPartnershipManager.getDeliverableUserPartnershipById(deliverableUserPartnership.getId());
 
-          if (deliverableUserPartnership.getInstitution().getId() != null) {
+          if (deliverableUserPartnership.getInstitution() != null
+            && deliverableUserPartnership.getInstitution().getId() != null) {
             if (deliverableUserPartnership.getInstitution().getId() != -1) {
               Institution institution =
                 institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
@@ -2750,6 +2751,8 @@ public class DeliverableAction extends BaseAction {
 
       if (participant.getHasParticipants()) {
         participant.setEventActivityName(deliverable.getDeliverableParticipant().getEventActivityName());
+        participant.setFocus(deliverable.getDeliverableParticipant().getFocus());
+        participant.setLikelyOutcomes(deliverable.getDeliverableParticipant().getLikelyOutcomes());
         if (deliverable.getDeliverableParticipant().getRepIndTypeActivity() != null
           && deliverable.getDeliverableParticipant().getRepIndTypeActivity().getId() != -1) {
           RepIndTypeActivity repIndTypeActivity = repIndTypeActivityManager
@@ -2796,6 +2799,18 @@ public class DeliverableAction extends BaseAction {
         } else {
           participant.setRepIndTypeParticipant(null);
         }
+        participant.setAfrican(deliverable.getDeliverableParticipant().getAfrican());
+        if (deliverable.getDeliverableParticipant().getEstimateAfrican() != null) {
+          participant.setEstimateAfrican(deliverable.getDeliverableParticipant().getEstimateAfrican());
+        } else {
+          participant.setEstimateAfrican(false);
+        }
+        participant.setAfrican(deliverable.getDeliverableParticipant().getYouth());
+        if (deliverable.getDeliverableParticipant().getEstimateYouth() != null) {
+          participant.setEstimateYouth(deliverable.getDeliverableParticipant().getEstimateYouth());
+        } else {
+          participant.setEstimateYouth(false);
+        }
 
         participant.setActive(true);
       } else {
@@ -2809,10 +2824,14 @@ public class DeliverableAction extends BaseAction {
         participant.setDontKnowFemale(null);
         participant.setRepIndTypeParticipant(null);
         participant.setRepIndTrainingTerm(null);
+        participant.setAfrican(null);
+        participant.setEstimateAfrican(null);
+        participant.setYouth(null);
+        participant.setEstimateYouth(null);
+        participant.setFocus(null);
+        participant.setLikelyOutcomes(null);
       }
-
       deliverableParticipantManager.saveDeliverableParticipant(participant);
-
     }
   }
 
