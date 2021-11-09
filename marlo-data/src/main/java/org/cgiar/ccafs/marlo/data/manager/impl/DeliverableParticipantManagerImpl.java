@@ -63,6 +63,14 @@ public class DeliverableParticipantManagerImpl implements DeliverableParticipant
     newDeliverableParticipantPhase.setDontKnowFemale(deliverableParticipant.getDontKnowFemale());
     newDeliverableParticipantPhase.setRepIndTypeParticipant(deliverableParticipant.getRepIndTypeParticipant());
     newDeliverableParticipantPhase.setRepIndTrainingTerm(deliverableParticipant.getRepIndTrainingTerm());
+    newDeliverableParticipantPhase.setAfrican(deliverableParticipant.getAfrican());
+    newDeliverableParticipantPhase.setEstimateAfrican(deliverableParticipant.getEstimateAfrican());
+    newDeliverableParticipantPhase.setAfricanPercentage(deliverableParticipant.getAfricanPercentage());
+    newDeliverableParticipantPhase.setYouth(deliverableParticipant.getYouth());
+    newDeliverableParticipantPhase.setEstimateYouth(deliverableParticipant.getEstimateYouth());
+    newDeliverableParticipantPhase.setYouthPercentage(deliverableParticipant.getYouthPercentage());
+    newDeliverableParticipantPhase.setFocus(deliverableParticipant.getFocus());
+    newDeliverableParticipantPhase.setLikelyOutcomes(deliverableParticipant.getLikelyOutcomes());
   }
 
   @Override
