@@ -1154,6 +1154,7 @@ public class SrfProgressAction extends BaseAction {
               srfTargetSave.setBriefSummary(srfTarget.getBriefSummary());
               srfTargetSave.setAdditionalContribution(srfTarget.getAdditionalContribution());
               srfTargetSave.setActive(true);
+              srfTargetSave.setIsQAIncluded(srfTarget.getIsQAIncluded());
               ReportSynthesisSrfProgressTargetCases targetTemp = new ReportSynthesisSrfProgressTargetCases();
               targetTemp =
                 reportSynthesisSrfProgressTargetCasesManager.saveReportSynthesisSrfProgressTargetCases(srfTargetSave);
@@ -1168,6 +1169,7 @@ public class SrfProgressAction extends BaseAction {
                 srfTargetPrev.setBriefSummary(srfTarget.getBriefSummary());
                 srfTargetPrev.setAdditionalContribution(srfTarget.getAdditionalContribution());
                 srfTargetPrev.setActive(true);
+                srfTargetPrev.setIsQAIncluded(srfTarget.getIsQAIncluded());
                 reportSynthesisSrfProgressTargetCasesManager.saveReportSynthesisSrfProgressTargetCases(srfTargetPrev);
               }
             }
