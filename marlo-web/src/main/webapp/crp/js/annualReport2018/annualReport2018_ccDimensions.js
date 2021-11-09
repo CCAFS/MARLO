@@ -1,4 +1,7 @@
 var capdevTabLoaded;
+var capDevAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=6&crpID=';
+var capDevArrName = 'fullItemsAssessmentStatus';
+
 $(document).ready(function() {
   capdevTabLoaded = ($('input[name="indexTab"]').val() == 3);
 
@@ -11,7 +14,93 @@ $(document).ready(function() {
   if(capdevTabLoaded) {
     loadCapdev();
   }
+
+  attachEvents();
 });
+
+function attachEvents() {
+  if ($('#actualPhase').html() == 'true') {
+    loadQualityAssessmentStatus(capDevAjaxURL, capDevArrName);
+  }
+}
+
+function loadQualityAssessmentStatus(ajaxURL, arrName) {
+  var currentCrpID = $('#actualCrpID').html();
+
+  if (currentCrpID != '-1') {
+    var finalAjaxURL = ajaxURL + currentCrpID;
+
+    $.ajax({
+      url: baseURL + finalAjaxURL,
+      async: false,
+      success: function (data) {
+        if (data && Object.keys(data).length != 0) {
+          var newData = data[arrName].map(function (x) {
+            var arr = [];
+
+            arr.push(x.id);
+            arr.push(x.assessmentStatus);
+            arr.push(x.updatedAt);
+
+            return arr;
+          });
+          updateQualityAssessmentStatusData(newData);
+        }
+      }
+    });
+  }
+}
+
+function updateQualityAssessmentStatusData(data) {
+  data.map(function (x) {
+    var isCheckedAR = $('#isCheckedAR').html();
+    var element = document.getElementById('containerQAStatus');
+    var date, status, statusClass;
+
+    switch (x[1]) {
+      case 'pending':
+        status = 'Pending assessment';
+        statusClass = 'pending-mode';
+        break;
+      case 'in_progress':
+        status = 'Quality Assessed (Requires 2nd assessment)';
+        statusClass = 'qualityAssessed-mode';
+        break;
+      case 'quality_assessed':
+        date = new Date((x[2].split('T')[0])).toDateString();
+        status = 'Capacity Development was Quality Assessed on ' + date;
+        statusClass = 'qualityAssessed-mode';
+        break;
+
+      default:
+        break;
+    }
+
+    if (element && isCheckedAR == 'true') {
+      var pTag = document.createElement('p');
+      var text = document.createTextNode(status);
+
+      element.innerHTML = '';
+      element.classList.remove('pendingForReview-mode');
+      element.classList.add(statusClass);
+      pTag.appendChild(text);
+      element.appendChild(pTag);
+
+      if (x[1] == 'quality_assessed') {
+        var container = document.getElementsByClassName('containerTitleStatusMessage')[0];
+        var removeARBtn = document.getElementsByClassName('removeARButton')[0];
+        var pMessageTag = document.createElement('p');
+        var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+
+        container.style.width = '79%';
+        removeARBtn.style.display = 'none';
+        pMessageTag.classList.add('messageQAInfo');
+        pMessageTag.appendChild(textMessage);
+        container.appendChild(pMessageTag);
+      } 
+    }
+  });
+}
 
 function loadCapdev() {
   // Redraw table
