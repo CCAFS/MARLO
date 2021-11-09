@@ -766,6 +766,32 @@ public class DeliverableValidator extends BaseValidator {
             InvalidFieldsMessages.EMPTYFIELD);
         }
       }
+      if (deliverableParticipant.getAfrican() == null
+        || !this.isValidNumber(deliverableParticipant.getAfrican().toString())
+        || deliverableParticipant.getAfrican() < 0) {
+        action.addMessage(action.getText("involveParticipants.african"));
+        action.getInvalidFields().put("input-deliverable.deliverableParticipant.african",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (deliverableParticipant.getYouth() == null || !this.isValidNumber(deliverableParticipant.getYouth().toString())
+        || deliverableParticipant.getYouth() < 0) {
+        action.addMessage(action.getText("involveParticipants.youth"));
+        action.getInvalidFields().put("input-deliverable.deliverableParticipant.youth",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      if (!this.isValidString(deliverableParticipant.getFocus())) {
+        action.addMessage(action.getText("involveParticipants.focus"));
+        action.getInvalidFields().put("input-deliverable.deliverableParticipant.focus",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      if (!this.isValidString(deliverableParticipant.getLikelyOutcomes())) {
+        action.addMessage(action.getText("involveParticipants.likelyOutcomes"));
+        action.getInvalidFields().put("input-deliverable.deliverableParticipant.likelyOutcomes",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
       if (deliverableParticipant.getRepIndTypeParticipant() == null
         || deliverableParticipant.getRepIndTypeParticipant().getId() == -1) {
         action.addMessage(action.getText("involveParticipants.participantsType"));

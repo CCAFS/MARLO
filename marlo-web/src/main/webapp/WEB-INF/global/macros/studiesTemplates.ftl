@@ -167,7 +167,7 @@
 
       [#-- 1. Title (up to 25 words) --]
       <div class="form-group">
-        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className="limitWords-25" helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
+        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className="limitWords-30" helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
       </div>
       
       [#-- Who is commissioning this study --]
@@ -187,10 +187,11 @@
       [#-- 3. Outcome story for communications use. REPLACED "comunicationsMaterial" --]
       [#if isOutcomeCaseStudy]
       <div class="form-group">
+      [#--  
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.comunicationsMaterial" i18nkey="study.outcomestory" help="study.outcomestory.help" className="limitWords-400" helpIcon=false required=true editable=editable /]
       
         <br />
-        
+        --]
         <label for="">[@s.text name="study.outcomestoryLinks" /]:
           [@customForm.req required=false /]
           [@customForm.helpLabel name="study.outcomestoryLinks.help" paramText="<a href='https://hdl.handle.net/10568/99384' target='_blank'>Personal data use authorization form</a>" showIcon=false editable=editable/]

@@ -189,7 +189,7 @@
             <img src="${baseUrlCdn}/global/images/trash.png" />
           </a>
         [#else]
-          <img src="${baseUrlCdn}/global/images/trash_disable.png" title="To remove this indicator mapping from this cluster, ensure there are no deliverables, OICRs & MELIA or innovations mapped to this indicator" />
+          <img src="${baseUrlCdn}/global/images/trash_disable.png" title="To remove this indicator mapping from this cluster, ensure there are no Deliverables, OICRs & MELIAs or Innovations mapped to this indicator" />
         [/#if]
       </td>
   </tr>
