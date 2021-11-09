@@ -2,9 +2,6 @@ var capdevTabLoaded;
 var capDevAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=6&crpID=';
 var capDevArrName = 'fullItemsAssessmentStatus';
 
-/* Overwritten event from global.js */
-yesnoEvent = yesnoEventLocations;
-
 $(document).ready(function() {
   capdevTabLoaded = ($('input[name="indexTab"]').val() == 3);
 
@@ -25,14 +22,27 @@ function attachEvents() {
   if ($('#actualPhase').html() == 'true' && $('#isSubmitted').html() == 'true') {
     loadQualityAssessmentStatus(capDevAjaxURL, capDevArrName);
   }
+  
+  $('#qaStatus-button').on('click', function(){
+    updateQAStatus($(this));
+  });
+}
 
-  // Include/Remove AR
-  $('.yes-button-label').on('click', function() {
-    yesnoEventLocations(true, $(this));
-  });
-  $('.no-button-label').on('click', function() {
-    yesnoEventLocations(false, $(this));
-  });
+function updateQAStatus(element){
+  let $stat = $('input.onoffswitch-radio');
+  console.log('entra evento', $stat.val());
+  if($stat.val() == 'true'){
+    element.removeClass('includeARButton');
+    element.addClass('removeARButton');
+    element.html('Remove from AR');
+    $stat.val('false');
+  } else {
+    element.removeClass('removeARButton');
+    element.addClass('includeARButton');
+    element.html('Include in AR');
+    $stat.val('true');
+  }
+  console.log('fin evento', $stat.val());
 }
 
 function loadQualityAssessmentStatus(ajaxURL, arrName) {
@@ -125,38 +135,6 @@ function loadCapdev() {
   setGoogleCharts();
 
   capdevTabLoaded = true;
-}
-
-function yesnoEventLocations(value,item) {
-  var $t = item.parent().find('input.onoffswitch-radio');
-  // AHORA
-  if(value == true) {
-    item.siblings().removeClass('radio-checked');
-    item.addClass('radio-checked');
-    $t.val(value);
-    $(".yes-button-label").hide();
-    $(".no-button-label").show();
-  } else {
-    $("#dialog-confirm").dialog({
-        resizable: false,
-        height: 120,
-        closeText: "",
-        modal: true,
-        buttons: {
-            "Yes": function() {
-              item.siblings().removeClass('radio-checked');
-              item.addClass('radio-checked');
-              $t.val(value);
-              $(".yes-button-label").show();
-              $(".no-button-label").hide();
-              $(this).dialog("close");
-            },
-            Cancel: function() {
-              $(this).dialog("close");
-            }
-        }
-    });
-  }
 }
 
 function setGoogleCharts() {
