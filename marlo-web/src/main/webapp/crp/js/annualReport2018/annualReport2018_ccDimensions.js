@@ -19,7 +19,7 @@ $(document).ready(function() {
 });
 
 function attachEvents() {
-  if ($('#actualPhase').html() == 'true') {
+  if ($('#actualPhase').html() == 'true' && $('#isSubmitted').html() == 'true') {
     loadQualityAssessmentStatus(capDevAjaxURL, capDevArrName);
   }
 }
@@ -87,13 +87,16 @@ function updateQualityAssessmentStatusData(data) {
       element.appendChild(pTag);
 
       if (x[1] == 'quality_assessed') {
+        var containerElements = document.getElementsByClassName('containerTitleElements')[0];
         var container = document.getElementsByClassName('containerTitleStatusMessage')[0];
         var removeARBtn = document.getElementsByClassName('removeARButton')[0];
         var pMessageTag = document.createElement('p');
         var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
 
+        containerElements.style.marginBottom = '0';
         container.style.width = '79%';
         removeARBtn.style.display = 'none';
+        element.style.backgroundPosition = '555px';
         pMessageTag.classList.add('messageQAInfo');
         pMessageTag.appendChild(textMessage);
         container.appendChild(pMessageTag);

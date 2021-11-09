@@ -7132,6 +7132,7 @@ li.currentSection#bi::before{
   flex-flow: row;
   align-items: center;
   justify-content: center;
+  margin-bottom: 10px
 }
 
 .containerTitleMessage {
@@ -7148,6 +7149,10 @@ li.currentSection#bi::before{
   flex-flow: column;
   align-items: center;
   margin: 0 10px;
+}
+
+.includeARButton {
+  margin-bottom: 10px;
 }
 
 .removeARButton {
