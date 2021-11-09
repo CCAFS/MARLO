@@ -768,13 +768,13 @@ public class DeliverableValidator extends BaseValidator {
       }
       if (deliverableParticipant.getAfrican() == null
         || !this.isValidNumber(deliverableParticipant.getAfrican().toString())
-        || deliverableParticipant.getAfrican() < 0) {
+        || deliverableParticipant.getAfrican() <= 0) {
         action.addMessage(action.getText("involveParticipants.african"));
         action.getInvalidFields().put("input-deliverable.deliverableParticipant.african",
           InvalidFieldsMessages.EMPTYFIELD);
       }
       if (deliverableParticipant.getYouth() == null || !this.isValidNumber(deliverableParticipant.getYouth().toString())
-        || deliverableParticipant.getYouth() < 0) {
+        || deliverableParticipant.getYouth() <= 0) {
         action.addMessage(action.getText("involveParticipants.youth"));
         action.getInvalidFields().put("input-deliverable.deliverableParticipant.youth",
           InvalidFieldsMessages.EMPTYFIELD);
