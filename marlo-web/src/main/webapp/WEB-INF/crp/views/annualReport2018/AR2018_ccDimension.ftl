@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210422A",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20210422A" 
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211109A" 
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210823a"] /]
 
@@ -48,6 +48,9 @@
         [#include "/WEB-INF/crp/views/annualReport2018/messages-AR2018.ftl" /]
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+          <span id="actualCrpID" style="display: none;">${(action.getCurrentCrp().id)!-1}</span>
+          <span id="actualPhase" style="display: none;">${(action.isSelectedPhaseAR2021())?c}</span>
+          [#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="">
@@ -180,6 +183,24 @@
                   </div>
                   
                   [#if PMU]
+                    [#if actualPhaseAR2021]
+                      [#assign isARBtnActive = (reportSynthesis.reportSynthesisCrossCuttingDimension.isQAIncluded)!false]
+                      <span id="isCheckedAR" style="display: none;">${isARBtnActive?c}</span>
+                      [#if !isARBtnActive]
+                        <button class="includeARButton" checked="${isARBtnActive?c}">Include in AR</button>
+                      [#else]
+                        <div class="containerTitleElements">
+                          <button class="removeARButton" checked="${isARBtnActive?c}">Remove from AR</button>
+                          <div class="containerTitleStatusMessage">
+                            <div id="containerQAStatus" class="pendingForReview-mode text-center animated flipInX">
+                              <p>
+                                [@s.text name="annualReport2018.policies.table2.pendingForReview"][/@s.text]
+                              </p>
+                            </div> 
+                          </div>
+                        </div>
+                      [/#if]
+                    [/#if]
                     [#-- Table 7: Participants in CapDev Activities  --]
                     <div class="form-group">
                       [#-- Word Document Tag --]
