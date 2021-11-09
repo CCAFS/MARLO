@@ -189,6 +189,11 @@
                   [#if PMU]
                     [#if actualPhaseAR2021 && submission]
                       [#assign isARBtnActive = (reportSynthesis.reportSynthesisCrossCuttingDimension.isQAIncluded)!false]
+                      [@customForm.yesNoInput name="reportSynthesis.reportSynthesisCrossCuttingDimension.isQAIncluded" editable=editable inverse=true value="${((reportSynthesis.reportSynthesisCrossCuttingDimension.isQAIncluded)!false)?string}" cssClass="text-left" yesLabel="Include in AR" noLabel="Remove from AR" /]
+                      [#-- confirm popup --]
+                      <div id="dialog-confirm"  style="display:none;">
+                        <p><span class="glyphicon glyphicon-warning-sign" style="float:left; margin:0 7px 20px 0;"></span><strong> Are you sure?</strong></p>
+                      </div>
                       <span id="isCheckedAR" style="display: none;">${isARBtnActive?c}</span>
                       [#if !isARBtnActive]
                         <input type="checkbox" name="reportSynthesis.reportSynthesisCrossCuttingDimension.isQAIncluded" value="${(!isARBtnActive)?c}" style="display: none;">
