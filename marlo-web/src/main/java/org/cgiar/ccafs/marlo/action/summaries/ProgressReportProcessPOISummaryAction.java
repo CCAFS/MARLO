@@ -474,8 +474,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     Boolean bold = true;
     POIField[] sHeader = {new POIField(this.getText("2023"), ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(this.getText("2023"), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(this.getText("2021"), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(this.getText("2021"), ParagraphAlignment.CENTER, bold, blackColor)};
+      new POIField(this.getSelectedPhase().getYear() + "", ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(this.getSelectedPhase().getYear() + "", ParagraphAlignment.CENTER, bold, blackColor)};
 
     bold = true;
     POIField[] sHeader2 = {
@@ -529,8 +529,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     Boolean bold = true;
     POIField[] sHeader = {new POIField(this.getText("2023"), ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(this.getText("2023"), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(this.getText("2021"), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(this.getText("2021"), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(this.getSelectedPhase().getYear() + "", ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(this.getSelectedPhase().getYear() + "", ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(this.getText(""), ParagraphAlignment.CENTER, bold, blackColor)};
 
     bold = false;
