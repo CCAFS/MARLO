@@ -10,11 +10,11 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210422A",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211109C" 
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211110A" 
 ] /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210823a",
-  "${baseUrlCdn}/global/css/global.css?20211109a"
+  "${baseUrlCdn}/global/css/global.css?20211110a"
 ] /]
 
 [#assign breadCrumb = [
@@ -189,20 +189,20 @@
                   [#if PMU]
                     [#if actualPhaseAR2021 && submission]
                       [#assign qaIncluded = (!(reportSynthesis.reportSynthesisCrossCuttingDimension.isQAIncluded))!false]
-                      <span id="isCheckedAR" style="display: none;">${(qaIncluded)?c}</span>
-                      <button type="button" class="${qaIncluded?then('removeARButton', 'includeARButton')}" id="qaStatus-button">${qaIncluded?then('Remove from AR', 'Include in AR')}</button>
-                      <input type="hidden" name="${customName}.isQAIncluded" id="qaStatus-value" class="onoffswitch-radio"  value="${(!qaIncluded)?c}" />
-                      [#if qaIncluded]
-                        <div class="containerTitleElements">
-                          <div class="containerTitleStatusMessage">
-                            <div id="containerQAStatus" class="pendingForReview-mode text-center animated flipInX">
-                              <p>
-                                [@s.text name="annualReport2018.policies.table2.pendingForReview"][/@s.text]
-                              </p>
-                            </div> 
-                          </div>
-                        </div>
-                      [/#if]
+                      <div class="containerTitleElements">
+                        <span id="isCheckedAR" style="display: none;">${(qaIncluded)?c}</span>
+                        <button type="button" class="${qaIncluded?then('removeARButton', 'includeARButton')}" id="qaStatus-button">${qaIncluded?then('Remove from AR', 'Include in AR')}</button>
+                        <input type="hidden" name="${customName}.isQAIncluded" id="qaStatus-value" class="onoffswitch-radio"  value="${(!qaIncluded)?c}" />
+                        [#if qaIncluded]
+                            <div class="containerTitleStatusMessage">
+                              <div id="containerQAStatus" class="pendingForReview-mode text-center animated flipInX">
+                                <p>
+                                  [@s.text name="annualReport2018.policies.table2.pendingForReview"][/@s.text]
+                                </p>
+                              </div> 
+                            </div>
+                        [/#if]
+                      </div>
                     [/#if]
                     [#-- Table 7: Participants in CapDev Activities  --]
                     <div class="form-group">

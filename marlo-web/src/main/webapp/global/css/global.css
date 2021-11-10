@@ -7131,28 +7131,19 @@ li.currentSection#bi::before{
   display: flex;
   flex-flow: row;
   align-items: center;
-  justify-content: center;
   margin-bottom: 10px
 }
 
-.containerTitleMessage {
+.containerTitleStatusMessage {
   width: 79%;
   display: flex;
   flex-flow: column;
   align-items: center;
-  margin: 0 10px;
-}
-
-.containerTitleStatusMessage {
-  width: 75%;
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  margin: 0 10px;
+  margin-left: 10px;
 }
 
 .includeARButton {
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
 }
 
 .removeARButton {
