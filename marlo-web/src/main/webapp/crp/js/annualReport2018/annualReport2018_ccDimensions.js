@@ -32,21 +32,20 @@ function attachEvents() {
 
 function updateQAStatus(element){
   let $stat = $('input.onoffswitch-radio');
-  // console.log('entra evento', $stat.val());
+  
   if($stat.val() == 'true'){
     element.removeClass('includeARButton');
     element.addClass('removeARButton');
-    element.html('Remove from AR');
+    element.html('Remove from QA');
     $stat.val('false');
     container.style.width = '79%';
   } else {
     element.removeClass('removeARButton');
     element.addClass('includeARButton');
-    element.html('Include in AR');
+    element.html('Include in QA');
     $stat.val('true');
     container.style.width = '81.8%';
   }
-  // console.log('fin evento', $stat.val());
 }
 
 function loadQualityAssessmentStatus(ajaxURL, arrName) {
