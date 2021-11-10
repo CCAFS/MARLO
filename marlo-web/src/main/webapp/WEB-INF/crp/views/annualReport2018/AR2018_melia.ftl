@@ -6,7 +6,7 @@
 [#assign pageLibs = [ "select2", "trumbowyg", "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211103a",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211105a" 
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211110a" 
 ] 
 /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
