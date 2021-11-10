@@ -19,7 +19,7 @@
   [#-- PROJECT REPORTS --]
   { "slug": "projects", "active": true, "title":"summaries.board.options.projects", "reportsList": [
     { "active": true,
-      "available": !centerGlobalUnit,
+      "available": false,
       "title": "summaries.board.report.projectPortfolio", 
       "description": "summaries.board.report.projectPortfolio.description",
       "namespace": "/projects",
