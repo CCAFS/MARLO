@@ -86,6 +86,10 @@ function updateQualityAssessmentStatusData(data) {
         status = 'Pending assessment';
         statusClass = 'pending-mode';
         break;
+      case 'pending_crp':
+        status = 'Pending CRP response';
+        statusClass = 'pending-mode';
+        break;
       case 'in_progress':
         status = 'Quality Assessed (Requires 2nd assessment)';
         statusClass = 'qualityAssessed-mode';
