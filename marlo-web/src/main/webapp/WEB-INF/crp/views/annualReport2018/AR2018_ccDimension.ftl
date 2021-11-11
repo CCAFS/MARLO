@@ -10,11 +10,11 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210422A",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211110B" 
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211111A" 
 ] /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210823a",
-  "${baseUrlCdn}/global/css/global.css?20211110a"
+  "${baseUrlCdn}/global/css/global.css?20211111a"
 ] /]
 
 [#assign breadCrumb = [
@@ -191,7 +191,7 @@
                       [#assign qaIncluded = (!(reportSynthesis.reportSynthesisCrossCuttingDimension.isQAIncluded))!false]
                       <div class="containerTitleElements">
                         <span id="isCheckedAR" style="display: none;">${(qaIncluded)?c}</span>
-                        <button type="button" class="${qaIncluded?then('removeARButton', 'includeARButton')}" id="qaStatus-button">${qaIncluded?then('Remove from AR', 'Include in AR')}</button>
+                        <button type="button" class="${qaIncluded?then('removeARButton', 'includeARButton')}" id="qaStatus-button">${qaIncluded?then('Remove from QA', 'Include in QA')}</button>
                         <input type="hidden" name="${customName}.isQAIncluded" id="qaStatus-value" class="onoffswitch-radio"  value="${(!qaIncluded)?c}" />
                         [#if qaIncluded]
                             <div class="containerTitleStatusMessage">
