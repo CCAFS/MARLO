@@ -1,15 +1,20 @@
 [#ftl]
 [#assign title = "Cluster Contribution to Indicators" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2"] /]
+[#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20211014", 
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20211110", 
   "${baseUrlCdn}/global/js/autoSave.js", 
-  "${baseUrlCdn}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/fieldsValidation.js",
+  "https://www.gstatic.com/charts/loader.js",
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js"
   ] 
 /] 
 [#assign customCSS = [ 
-  "${baseUrlMedia}/css/projects/projectContributionCrp.css"
+  "${baseUrlMedia}/css/projects/projectContributionCrp.css",
+  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20211110"
   ] 
 /]
 [#assign currentSection = "projects" /]
@@ -184,7 +189,7 @@
              [/#if]
             
           </div>
-          
+                    
           [#-- Project Milestones and Communications contributions per year--]
           <h4 class="headTitle"> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
           
@@ -208,8 +213,7 @@
               [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone${reportingActive?string('.reporting', '')}"  listName="" keyFieldName="id" displayFieldName="title" className="" value="" /]
             </div>
             [/#if]
-          </div>
-          
+          </div>        
           
           [#-- Communications --]
           [#if reportingActive && action.hasSpecificities('crp_show_project_outcome_communications') ]  
@@ -348,7 +352,92 @@
                       </div>           
                 </div>
             [/#if]
-          [/#if]          
+          [/#if]        
+          
+          [#-- capdev --]
+          [#if totalParticipants?number > 0]
+          <h4 class="headTitle"> Capacity Development</h4>
+          <div class="borderBox">
+                   [#-- CapDevCharts--]
+                    <div class="form-group row">
+                      <div class="col-md-4">
+                        <div id="" class="simpleBox numberBox">
+                            <label for="">Total of Participants</label><br />
+                            <span>${(totalParticipants?number?string(",##0"))!0}</span>
+                         </div>
+                         [#--  
+                         <div id="" class="simpleBox numberBox">
+                            <label for="">Participants in [@s.text name="totalParticipantFormalTraining" /]</label><br />
+                            <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
+                         </div>
+                         --]
+                      </div>
+                      <div class="col-md-8">
+                        [#-- Trainees in Short-Term --]
+                        <div id="chart12" class="chartBox simpleBox">
+                          [#assign chartData = [
+                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
+                            {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
+                          ] /] 
+                          <ul class="chartData" style="display:none">
+                            <li>
+                              <span>[@s.text name="{customLabel}" /]</span>
+                              <span>[@s.text name="Short-Term" /]</span>
+                              <span class="json">{"role":"annotation"}</span>
+                            </li>
+                            [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
+                              [#list chartData as data]
+                                <li>
+                                  <span>${data.name}</span>
+                                  <span class="number">${data.value}</span>
+                                  <span>${data.value}</span>
+                                </li>
+                              [/#list]
+                            [/#if]
+                          </ul>
+                        </div>
+                        <br />
+                        [#-- Trainees in Long-Term --]
+                        <div id="chart13" class="chartBox simpleBox">
+                          [#assign chartData = [
+                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
+                            {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
+                          ] /] 
+                          <ul class="chartData" style="display:none">
+                            <li>
+                              <span>[@s.text name="chart13" /]</span>
+                              <span>[@s.text name="Long-Term" /]</span>
+                              <span class="json">{"role":"annotation"}</span>
+                              <span>[@s.text name="PhD" /]</span>
+                              <span class="json">{"role":"annotation"}</span>
+                            </li>
+                            [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
+                              [#list chartData as data]
+                                <li><span>${data.name}</span>
+                                <span class="number">${data.value}</span>
+                                <span>${data.value}</span>
+                                <span class="number">${data.valuePhD}</span>
+                                <span>${data.valuePhD}</span></li>
+                              [/#list]
+                            [/#if]
+                          </ul>
+                         </div>
+                      </div>
+                    </div>
+                    
+                    [#-- Deliverables Participants & Trainees --]
+                    <div class="form-group">
+                      <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Deliverables Participants & Trainees" /]</h4>
+                      <div class="viewMoreSyntesis-block">
+                      
+                      <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
+                        [@tableParticipantsTrainingsMacro list=(deliverableParticipants)![] /]
+                      </div>
+                      
+                     </div>
+                    </div> 
+          </div>  
+          [/#if]
           
           [#-- Next Users --]
           [#-- For A4NH CRP, nextusers aren't required --]
@@ -680,6 +769,99 @@
       </div>
 
   </div>
+[/#macro]
+
+[#macro tableParticipantsTrainingsMacro list]
+  <table id="tableParticipantsTrainingsMacro" class="annual-report-table table-border">
+    <thead>
+      <tr class="subHeader">
+        <th id="tb-id">[@s.text name="Activity Event" /]</th>
+        <th id="tb-title">[@s.text name="Activity Type" /]</th>        
+        <th id="tb-organization-type">[@s.text name="Participants Type" /]</th>
+        <th id="tb-type">[@s.text name="Males" /]</th>
+        <th id="tb-type">[@s.text name="Females" /]</th>
+        <th id="tb-type">[@s.text name="Africans" /]</th>
+        <th id="tb-type">[@s.text name="Youth" /]</th>
+        <th id="tb-type">[@s.text name="total Participants" /]</th>
+        <th id="tb-training-period">[@s.text name="Training Period" /]</th>
+        <th id="tb-training-period">[@s.text name="Event Focus" /]</th>
+        <th id="tb-training-period">[@s.text name="Likely Outcomes" /]</th>
+      </tr>
+    </thead>
+    <tbody>
+    [#-- Loading --]
+    [#if list?has_content]
+      [#list list as item]
+        [#local URL][@s.url namespace="/clusters" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${(item.deliverable.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        <tr>
+          [#-- Title of Innovation --]
+          <td class="">
+            [@utils.tableText value=(item.eventActivityName)!"" /] 
+            [#-- Deliverable ID --]
+            <br /><i style="opacity:0.5"><small>(From D${(item.deliverable.id)!''})</small></i>
+            <a href="${URL}" target="_blank" class="pull-right"> <span class="glyphicon glyphicon-new-window"></span> </a>
+          </td>
+          [#-- Activity Type --]
+          <td class="">
+            <small>[@utils.tableText value=(item.repIndTypeActivity.name)!"" /]</small>
+          </td>          
+          [#-- Type of participants --]
+          <td class="text-center">
+            [@utils.tableText value=(item.repIndTypeParticipant.name)!"" /]
+          </td>          
+          [#assign knowFemale = (item.dontKnowFemale)!false]
+          [#assign hasFemale = (item.females?has_content)!false]
+          [#-- Total Participants --]
+          <td class="text-center">
+            [#if knowFemale && !hasFemale ]
+              <i><small>Not specified</small></i>
+              [#else]
+              ${(item.males?number?string(",##0"))!0}
+            [/#if]
+          </td>
+          [#-- Number of females --]
+          <td class="text-center">
+          [#if knowFemale && !hasFemale ]
+            <i><small>Not specified</small></i>
+            [#else]
+            ${(item.females?number?string(",##0"))!0}
+          [/#if]
+          </td>
+          [#-- Number of african --]
+          <td class="text-center">
+            ${(item.african?number?string(",##0"))!0}
+          </td>
+          [#-- Number of african --]
+          <td class="text-center">
+            ${(item.youth?number?string(",##0"))!0}
+          </td>
+          [#-- Total Participants --]
+          <td class="text-center">
+            ${(item.participants?number?string(",##0"))!0}
+          </td>
+          [#-- Training period of time --]
+          <td class="text-center">
+            [@utils.tableText value=(item.repIndTrainingTerm.name)!"" /]
+          </td>
+          [#-- Training period of time --]
+          <td class="text-center">
+            [@utils.tableText value=(item.focus)!"" /]
+          </td>
+          [#-- Training period of time --]
+          <td class="text-center">
+            [@utils.tableText value=(item.likelyOutcomes)!"" /]
+          </td>
+        </tr>
+      [/#list]
+    [#else]
+      <tr>
+        <td class="text-center" colspan="5">
+          <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+        </td>
+      </tr>
+    [/#if]
+    </tbody>
+  </table>
 [/#macro]
 
 [#-- Get if the year is required--]

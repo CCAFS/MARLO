@@ -134,6 +134,37 @@ public class DeliverableParticipantMySQLDAO extends AbstractMarloDAO<Deliverable
   }
 
   @Override
+  public List<DeliverableParticipant> getDeliverableParticipantByPhaseAndProject(Phase phase, long projectID) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("dp.id as id ");
+    query.append("FROM ");
+    query.append("deliverable_participants AS dp ");
+    query.append("INNER JOIN deliverables AS d ON d.id = dp.deliverable_id ");
+    query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");
+    query.append("WHERE dp.is_active = 1 AND ");
+    query.append("dp.has_participants = 1 AND ");
+    query.append("dp.`phase_id` =" + phase.getId() + " AND ");
+    query.append("d.is_active = 1 AND ");
+    query.append("d.project_id = " + projectID + " AND ");
+    query.append("di.is_active = 1 AND ");
+    query.append("di.`id_phase` =" + phase.getId());
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<DeliverableParticipant> deliverableParticipants = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        DeliverableParticipant deliverableParticipant = this.find(Long.parseLong(map.get("id").toString()));
+        deliverableParticipants.add(deliverableParticipant);
+      }
+    }
+
+    return deliverableParticipants.stream()
+      .sorted((p1, p2) -> p1.getEventActivityName().compareTo(p2.getEventActivityName())).collect(Collectors.toList());
+  }
+
+  @Override
   public DeliverableParticipant save(DeliverableParticipant deliverableParticipant) {
     if (deliverableParticipant.getId() == null) {
       super.saveEntity(deliverableParticipant);
