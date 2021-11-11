@@ -1141,7 +1141,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     switch (typeCodification) {
       // Standar identifier
       case Project.EMAIL_SUBJECT_IDENTIFIER:
-        result.append("P" + this.getId());
+        result.append("C" + this.getId());
         break;
 
       default:
