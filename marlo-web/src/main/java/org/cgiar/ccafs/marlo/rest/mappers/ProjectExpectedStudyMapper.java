@@ -35,7 +35,8 @@ import org.mapstruct.Mappings;
     ProjectExpectedStudyFlagshipMapper.class, GeographicScopeMapper.class, LocationMapper.class,
     ProjectExpectedStudyPolicyMapper.class, ProjectExpectedStudyInnovationMapper.class,
     ProjectExpectedStudyLinkMapper.class, ProjectExpectedStudyQuantificationMapper.class,
-    ProjectExpectedStudyMilestoneMapper.class, DefaultFieldMapper.class, DefaultFieldPrimaryMapper.class})
+    ProjectExpectedStudyMilestoneMapper.class, DefaultFieldMapper.class, DefaultFieldPrimaryMapper.class,
+    ReferenceCitedMapper.class})
 public interface ProjectExpectedStudyMapper {
 
   @Mappings({@Mapping(source = "projectExpectedStudy.subIdos", target = "srfSubIdoList"),
@@ -52,7 +53,9 @@ public interface ProjectExpectedStudyMapper {
     @Mapping(source = "projectExpectedStudy.links", target = "links"),
     @Mapping(source = "projectExpectedStudy.projectExpectedStudyInfo", target = "projectExpectedEstudyInfo"),
     @Mapping(source = "projectExpectedStudy.quantifications", target = "quantificationList"),
-    @Mapping(source = "projectExpectedStudy.milestones", target = "milestonesList")})
+    @Mapping(source = "projectExpectedStudy.milestones", target = "milestonesList"),
+    @Mapping(source = "projectExpectedStudy.references", target = "referenceList"),
+    @Mapping(source = "projectExpectedStudy.projectExpectedStudyInfo.scopeComments", target = "scopeComment")})
   public abstract ProjectExpectedStudiesARDTO
     projectExpectedStudyToProjectExpectedStudyARDTO(ProjectExpectedStudy projectExpectedStudy);
 
@@ -72,7 +75,9 @@ public interface ProjectExpectedStudyMapper {
     @Mapping(source = "projectExpectedStudy.links", target = "links"),
     @Mapping(source = "projectExpectedStudy.projectExpectedStudyInfo", target = "projectExpectedEstudyInfo"),
     @Mapping(source = "projectExpectedStudy.quantifications", target = "quantificationList"),
-    @Mapping(source = "projectExpectedStudy.milestones", target = "milestonesList")})
+    @Mapping(source = "projectExpectedStudy.milestones", target = "milestonesList"),
+    @Mapping(source = "projectExpectedStudy.references", target = "referenceList"),
+    @Mapping(source = "projectExpectedStudy.projectExpectedStudyInfo.scopeComments", target = "scopeComments")})
 
   public abstract ProjectExpectedStudyDTO
     projectExpectedStudyToProjectExpectedStudyDTO(ProjectExpectedStudy projectExpectedStudy);

@@ -46,11 +46,17 @@ public class ProjectExpectedStudyDTO {
   @ApiModelProperty(notes = "Geographic Scope List", position = 5)
   private List<GeographicScopeDTO> geographicScopes;
 
+  @ApiModelProperty(notes = "Geographic Scope Comments", position = 5)
+  private String scopeComments;
+
+
   @ApiModelProperty(notes = "Contributing Flagship List", position = 8)
   private List<CrpProgramDTO> flagshipsList;
 
+
   @ApiModelProperty(notes = "Contributing External Partners List", position = 9)
   private List<InstitutionDTO> institutionsList;
+
 
   @ApiModelProperty(notes = "Contributing CRP/Plataform List", position = 7)
   private List<CGIAREntityDTO> projectExpectedStudiesCrp;
@@ -67,28 +73,30 @@ public class ProjectExpectedStudyDTO {
   @ApiModelProperty(notes = "Contributing innovations list", position = 10)
   private List<ProjectExpectedStudyInnovationDTO> innovationCodeList;
 
-
   @ApiModelProperty(notes = "Contributing policies list", position = 3)
   private List<ProjectExpectedStudyPolicyDTO> policiesCodeList;
 
   @ApiModelProperty(notes = "Aditional link list", position = 4)
   private List<ProjectExpectedStudyLinkDTO> links;
 
+
   @ApiModelProperty(notes = "Contributing milestone list", position = 13)
   private List<ProjectExpectedStudyMilestoneDTO> milestonesList;
-
 
   @ApiModelProperty(notes = "phase (POWB, AR, UpKeep)", position = 14)
   private PhaseDTO phase;
 
-
   @ApiModelProperty(notes = "phase id", position = 14)
   private Long phaseID;
+
+  @ApiModelProperty(notes = "Reference Cited List", position = 16)
+  private List<ReferenceCitedDTO> referenceList;
 
 
   public List<CountryDTO> getCountries() {
     return countries;
   }
+
 
   public List<CrpProgramDTO> getFlagshipsList() {
     return flagshipsList;
@@ -107,16 +115,13 @@ public class ProjectExpectedStudyDTO {
     return innovationCodeList;
   }
 
-
   public List<InstitutionDTO> getInstitutionsList() {
     return institutionsList;
   }
 
-
   public List<ProjectExpectedStudyLinkDTO> getLinks() {
     return links;
   }
-
 
   public List<ProjectExpectedStudyMilestoneDTO> getMilestonesList() {
     return milestonesList;
@@ -158,8 +163,18 @@ public class ProjectExpectedStudyDTO {
   }
 
 
+  public List<ReferenceCitedDTO> getReferenceList() {
+    return referenceList;
+  }
+
+
   public List<RegionDTO> getRegions() {
     return regions;
+  }
+
+
+  public String getScopeComments() {
+    return scopeComments;
   }
 
 
@@ -248,8 +263,18 @@ public class ProjectExpectedStudyDTO {
   }
 
 
+  public void setReferenceList(List<ReferenceCitedDTO> referenceList) {
+    this.referenceList = referenceList;
+  }
+
+
   public void setRegions(List<RegionDTO> regions) {
     this.regions = regions;
+  }
+
+
+  public void setScopeComments(String scopeComments) {
+    this.scopeComments = scopeComments;
   }
 
 
