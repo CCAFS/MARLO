@@ -320,11 +320,11 @@
   [#if !PMU] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
   [#if PMU]
     [#if actualPhaseAR2021 && submission]
-      [#assign qaIncluded = (!(reportSynthesis.reportSynthesisSrfProgress.isQAIncluded))!false]
+      [#assign qaIncluded = (!(element.isQAIncluded))!false]
       <div class="containerTitleElements">
         <span id="isCheckedAR" style="display: none;">${(qaIncluded)?c}</span>
-        <button type="button" class="${qaIncluded?then('removeARButton', 'includeARButton')}" id="qaStatus-button">${qaIncluded?then('Remove from QA', 'Include in QA')}</button>
-        <input type="hidden" name="${customName}.isQAIncluded" id="qaStatus-value" class="onoffswitch-radio"  value="${(!qaIncluded)?c}" />
+        <button type="button" class="${qaIncluded?then('removeARButton', 'includeARButton')} qaStatus-button" id="${ccname}-button">${qaIncluded?then('Remove from QA', 'Include in QA')}</button>
+        <input type="hidden" name="${ccname}.isQAIncluded" id="qaStatus-value" class="onoffswitch-radio"  value="${(!qaIncluded)?c}" />
         [#if qaIncluded]
           <div class="containerTitleStatusMessage">
             <div id="containerQAStatus" class="pendingForReview-mode text-center animated flipInX">
