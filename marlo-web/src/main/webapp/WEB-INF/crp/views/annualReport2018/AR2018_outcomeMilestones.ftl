@@ -233,15 +233,15 @@
                     [@utils.tableText value=(milestoneReportSynthesis.milestonesStatus.name)!"" emptyText="global.prefilledByFlagship" /]
                   </td>
                   [#if PMU]
-                    [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.milestoneIds?seq_contains(item.id))!true) /]
+                    [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.milestoneIds?seq_contains(milestone.id))!true) /]
                     <td class="text-center">
                       <div data-toggle="tooltip" [#if isChecked]title="[@s.text name="annualReport2018.oicr.table3.cannotBeRemoved" /]"[/#if]>
-                        [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.milestonesValue" value="${(item.id)!''}" checked=isChecked editable=(editable) centered=true/] 
+                        [@customForm.checkmark id="study-${(milestone.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.milestonesValue" value="${(milestone.id)!''}" checked=isChecked editable=(editable) centered=true/] 
                       </div>
-                      <div id="isCheckedAR-${(item.id)!}" style="display: none">${isChecked?string('1','0')}</div>
+                      <div id="isCheckedAR-${(milestone.id)!}" style="display: none">${isChecked?string('1','0')}</div>
                     </td>
                     [#if actualPhaseAR2021 && submission]
-                      <td id="QAStatusIcon-${(item.id)!}" class="text-center">
+                      <td id="QAStatusIcon-${(milestone.id)!}" class="text-center">
                         [#if isChecked]
                           <i style="font-weight: normal;opacity:0.8;">[@s.text name="annualReport2018.policies.table2.pendingForReview"/]</i>
                         [#else]
