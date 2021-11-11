@@ -110,6 +110,11 @@ public class DeliverableParticipantManagerImpl implements DeliverableParticipant
   }
 
   @Override
+  public List<DeliverableParticipant> getDeliverableParticipantByPhaseAndProject(Phase phase, long projectID) {
+    return deliverableParticipantDAO.getDeliverableParticipantByPhaseAndProject(phase, projectID);
+  }
+
+  @Override
   public DeliverableParticipant saveDeliverableParticipant(DeliverableParticipant deliverableParticipant) {
     DeliverableParticipant deliverableParticipantResult = deliverableParticipantDAO.save(deliverableParticipant);
 

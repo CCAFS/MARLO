@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCommunicationManager;
@@ -33,6 +34,9 @@ import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
+import org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -94,6 +98,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager;
   private CrpMilestoneManager crpMilestoneManager;
   private PhaseManager phaseManager;
+  private DeliverableParticipantManager deliverableParticipantManager;
 
   // Front-end
   private long projectID;
@@ -111,6 +116,17 @@ public class ProjectOutcomeAction extends BaseAction {
   private ProjectOutcome projectOutcomeDB;
   private boolean editOutcomeExpectedValue;
   private boolean editMilestoneExpectedValue;
+  private List<DeliverableParticipant> deliverableParticipants;
+
+  // capdev component
+  private Double totalParticipants = new Double(0);
+  private Double totalParticipantFormalTraining = new Double(0);
+  private Double totalParticipantFormalTrainingShortMale = new Double(0);
+  private Double totalParticipantFormalTrainingLongMale = new Double(0);
+  private Double totalParticipantFormalTrainingPhdMale = new Double(0);
+  private Double totalParticipantFormalTrainingShortFemale = new Double(0);
+  private Double totalParticipantFormalTrainingLongFemale = new Double(0);
+  private Double totalParticipantFormalTrainingPhdFemale = new Double(0);
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -119,7 +135,7 @@ public class ProjectOutcomeAction extends BaseAction {
     ProjectCommunicationManager projectCommunicationManager, AuditLogManager auditLogManager,
     CrpMilestoneManager crpMilestoneManager, ProjectNextuserManager projectNextuserManager,
     ProjectOutcomeValidator projectOutcomeValidator, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager,
-    PhaseManager phaseManager) {
+    PhaseManager phaseManager, DeliverableParticipantManager deliverableParticipantManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -134,6 +150,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.projectOutcomeValidator = projectOutcomeValidator;
     this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
     this.phaseManager = phaseManager;
+    this.deliverableParticipantManager = deliverableParticipantManager;
   }
 
   public void addAllCrpMilestones() {
@@ -347,6 +364,10 @@ public class ProjectOutcomeAction extends BaseAction {
     return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
   }
 
+  public List<DeliverableParticipant> getDeliverableParticipants() {
+    return deliverableParticipants;
+  }
+
   public int getIndexCommunication(int year) {
 
     int i = 0;
@@ -436,12 +457,12 @@ public class ProjectOutcomeAction extends BaseAction {
     return milestones;
   }
 
+
   public List<CrpMilestone> getMilestonesbyYear(int year) {
     List<CrpMilestone> milestoneList =
       milestones.stream().filter(c -> c.getYear() >= year).collect(Collectors.toList());
     return milestoneList;
   }
-
 
   public List<CrpMilestone> getMilestonesProject() {
     return milestonesProject;
@@ -495,6 +516,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
@@ -503,7 +525,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
   }
-
 
   public long getProjectOutcomeID() {
     return projectOutcomeID;
@@ -537,6 +558,40 @@ public class ProjectOutcomeAction extends BaseAction {
     return targetUnits;
   }
 
+  public Double getTotalParticipantFormalTraining() {
+    return totalParticipantFormalTraining;
+  }
+
+  public Double getTotalParticipantFormalTrainingLongFemale() {
+    return totalParticipantFormalTrainingLongFemale;
+  }
+
+
+  public Double getTotalParticipantFormalTrainingLongMale() {
+    return totalParticipantFormalTrainingLongMale;
+  }
+
+  public Double getTotalParticipantFormalTrainingPhdFemale() {
+    return totalParticipantFormalTrainingPhdFemale;
+  }
+
+  public Double getTotalParticipantFormalTrainingPhdMale() {
+    return totalParticipantFormalTrainingPhdMale;
+  }
+
+  public Double getTotalParticipantFormalTrainingShortFemale() {
+    return totalParticipantFormalTrainingShortFemale;
+  }
+
+  public Double getTotalParticipantFormalTrainingShortMale() {
+    return totalParticipantFormalTrainingShortMale;
+  }
+
+
+  public Double getTotalParticipants() {
+    return totalParticipants;
+  }
+
   public String getTransaction() {
     return transaction;
   }
@@ -548,7 +603,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public boolean isEditOutcomeExpectedValue() {
     return editOutcomeExpectedValue;
   }
-
 
   public boolean isExpectedValueEditable(Long milestoneId) {
     boolean editable = false;
@@ -581,6 +635,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return editable;
   }
 
+
   public ProjectCommunication loadProjectCommunication(int year) {
 
     List<ProjectCommunication> projectCommunications =
@@ -605,6 +660,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -822,6 +878,93 @@ public class ProjectOutcomeAction extends BaseAction {
     }
 
     /*
+     * Deliverable Participants list - capdev
+     */
+
+    deliverableParticipants = new ArrayList<>();
+
+    /*
+     * Check deliverables mapped to this indicator and add the deliverable participants to deliverableParticipants list
+     */
+    for (Deliverable deliverable : projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase())) {
+      if (deliverable.getDeliverableProjectOutcomes() != null) {
+        deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
+          .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+
+        // Set deliverable participants
+        if (deliverable.getDeliverableParticipants() != null) {
+          List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+          if (deliverableParticipants.size() > 0) {
+            deliverable.setDeliverableParticipant(
+              deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipants.get(0).getId()));
+          }
+        }
+      }
+      if (deliverable.getDeliverableParticipant() != null
+        && deliverable.getDeliverableParticipant().getHasParticipants() != null
+        && deliverable.getDeliverableParticipant().getHasParticipants()) {
+        if (deliverable != null && deliverable.getProjectOutcomes() != null
+          && !deliverable.getProjectOutcomes().isEmpty()) {
+          if (deliverable != null && deliverable.getProjectOutcomes() != null
+            && !deliverable.getProjectOutcomes().isEmpty()) {
+            for (DeliverableProjectOutcome deliverableProjectOutcome : deliverable.getProjectOutcomes()) {
+              if (deliverableProjectOutcome != null && deliverableProjectOutcome.getProjectOutcome() != null
+                && deliverableProjectOutcome.getProjectOutcome().getId() != null
+                && deliverableProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+
+                // Graphs
+
+                // Total Participants
+                Double numberParticipant = 0.0;
+                if (deliverable.getDeliverableParticipant().getParticipants() != null) {
+                  numberParticipant = deliverable.getDeliverableParticipant().getParticipants();
+                }
+
+                totalParticipants += numberParticipant;
+
+                // Total Formal Training
+                if (deliverable.getDeliverableParticipant().getRepIndTypeActivity() != null
+                  && deliverable.getDeliverableParticipant().getRepIndTypeActivity().getIsFormal()) {
+                  totalParticipantFormalTraining += numberParticipant;
+
+                  // Total Female and Male per terms
+                  if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm() != null) {
+                    Double numberFemales = 0.0;
+                    if (deliverable.getDeliverableParticipant().getFemales() != null) {
+                      numberFemales = deliverable.getDeliverableParticipant().getFemales();
+                    }
+                    if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                      .equals(APConstants.REP_IND_TRAINING_TERMS_SHORT)) {
+                      totalParticipantFormalTrainingShortFemale += numberFemales;
+                      totalParticipantFormalTrainingShortMale += (numberParticipant - numberFemales);
+                    }
+                    if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                      .equals(APConstants.REP_IND_TRAINING_TERMS_LONG)) {
+                      totalParticipantFormalTrainingLongFemale += numberFemales;
+                      totalParticipantFormalTrainingLongMale += (numberParticipant - numberFemales);
+                    }
+                    if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                      .equals(APConstants.REP_IND_TRAINING_TERMS_PHD)) {
+                      totalParticipantFormalTrainingPhdFemale += numberFemales;
+                      totalParticipantFormalTrainingPhdMale += (numberParticipant - numberFemales);
+                    }
+
+                  }
+                }
+
+                // Add deliverable participant to list
+                deliverableParticipants.add(deliverable.getDeliverableParticipant());
+              }
+            }
+          }
+        }
+      }
+    }
+
+
+    /*
      * Loading basic List
      */
     targetUnits = srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -1007,6 +1150,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
+
   public void saveIndicators(ProjectOutcome projectOutcomeDB) {
 
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeDB.getProjectOutcomeIndicators().stream()
@@ -1062,6 +1206,7 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
   }
+
 
   private void saveMilestones(ProjectOutcome projectOutcomeDB) {
 
@@ -1266,6 +1411,9 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+  public void setDeliverableParticipants(List<DeliverableParticipant> deliverableParticipants) {
+    this.deliverableParticipants = deliverableParticipants;
+  }
 
   public void setEditMilestoneExpectedValue(boolean editMilestoneExpectedValue) {
     this.editMilestoneExpectedValue = editMilestoneExpectedValue;
@@ -1275,7 +1423,6 @@ public class ProjectOutcomeAction extends BaseAction {
     this.editOutcomeExpectedValue = editOutcomeExpectedValue;
   }
 
-
   public void setMilestones(List<CrpMilestone> milestones) {
     this.milestones = milestones;
   }
@@ -1284,16 +1431,13 @@ public class ProjectOutcomeAction extends BaseAction {
     this.milestonesProject = milestonesProject;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
 
-
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
-
 
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
@@ -1309,6 +1453,38 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public void setTargetUnits(List<SrfTargetUnit> targetUnits) {
     this.targetUnits = targetUnits;
+  }
+
+  public void setTotalParticipantFormalTraining(Double totalParticipantFormalTraining) {
+    this.totalParticipantFormalTraining = totalParticipantFormalTraining;
+  }
+
+  public void setTotalParticipantFormalTrainingLongFemale(Double totalParticipantFormalTrainingLongFemale) {
+    this.totalParticipantFormalTrainingLongFemale = totalParticipantFormalTrainingLongFemale;
+  }
+
+  public void setTotalParticipantFormalTrainingLongMale(Double totalParticipantFormalTrainingLongMale) {
+    this.totalParticipantFormalTrainingLongMale = totalParticipantFormalTrainingLongMale;
+  }
+
+  public void setTotalParticipantFormalTrainingPhdFemale(Double totalParticipantFormalTrainingPhdFemale) {
+    this.totalParticipantFormalTrainingPhdFemale = totalParticipantFormalTrainingPhdFemale;
+  }
+
+  public void setTotalParticipantFormalTrainingPhdMale(Double totalParticipantFormalTrainingPhdMale) {
+    this.totalParticipantFormalTrainingPhdMale = totalParticipantFormalTrainingPhdMale;
+  }
+
+  public void setTotalParticipantFormalTrainingShortFemale(Double totalParticipantFormalTrainingShortFemale) {
+    this.totalParticipantFormalTrainingShortFemale = totalParticipantFormalTrainingShortFemale;
+  }
+
+  public void setTotalParticipantFormalTrainingShortMale(Double totalParticipantFormalTrainingShortMale) {
+    this.totalParticipantFormalTrainingShortMale = totalParticipantFormalTrainingShortMale;
+  }
+
+  public void setTotalParticipants(Double totalParticipants) {
+    this.totalParticipants = totalParticipants;
   }
 
   public void setTransaction(String transaction) {
