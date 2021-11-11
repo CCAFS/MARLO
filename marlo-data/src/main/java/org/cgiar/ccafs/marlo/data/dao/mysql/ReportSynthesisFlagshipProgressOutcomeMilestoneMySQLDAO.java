@@ -80,6 +80,24 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneMySQLDAO
   }
 
   @Override
+  public List<ReportSynthesisFlagshipProgressOutcomeMilestone> getAllFlagshipProgressOutcomeMilestones(long phaseId) {
+    String query = "SELECT fpom.* FROM report_synthesis_flagship_progress_outcome_milestones fpom "
+      + "left join report_synthesis_flagship_progress_outcomes fpo on fpom.report_synthesis_outcome_id = fpo.id "
+      + "left join report_synthesis rs on fpo.report_synthesis_flagship_progress_id = rs.id and rs.is_active "
+      + "left join liaison_institutions li on rs.liaison_institution_id = li.id and li.crp_program is not null "
+      + "where rs.id_phase = :phaseId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createSQLQuery(query)
+      .addEntity(ReportSynthesisFlagshipProgressOutcomeMilestone.class);
+
+    createQuery.setParameter("phaseId", phaseId);
+
+    List<ReportSynthesisFlagshipProgressOutcomeMilestone> findAll = super.findAll(createQuery);
+
+    return findAll;
+  }
+
+  @Override
   public ReportSynthesisFlagshipProgressOutcomeMilestone getMilestoneId(long progressID, long outcomeID) {
     StringBuilder query = new StringBuilder();
     query.append("SELECT id as markerId FROM report_synthesis_flagship_progress_outcome_milestones ");
