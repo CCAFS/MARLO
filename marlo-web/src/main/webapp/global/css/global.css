@@ -7135,7 +7135,7 @@ li.currentSection#bi::before{
 }
 
 .containerTitleStatusMessage {
-  width: 79%;
+  width: 78.6%;
   display: flex;
   flex-flow: column;
   align-items: center;

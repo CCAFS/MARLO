@@ -32,19 +32,19 @@ function attachEvents() {
 
 function updateQAStatus(element){
   let $stat = $('input.onoffswitch-radio');
-  
+
   if($stat.val() == 'true'){
     element.removeClass('includeARButton');
     element.addClass('removeARButton');
     element.html('Remove from QA');
     $stat.val('false');
-    container.style.width = '79%';
+    container.style.width = '78.6%';
   } else {
     element.removeClass('removeARButton');
     element.addClass('includeARButton');
     element.html('Include in QA');
     $stat.val('true');
-    container.style.width = '81.8%';
+    container.style.width = '81.6%';
   }
 }
 
