@@ -3,6 +3,8 @@ $(document).ready(init);
 var markers, inputMilestoneStatus;
 var oicrsAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=4&crpID=';
 var oicrsArrName = 'fullItemsAssessmentStatus';
+var milestoneAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=7&crpID=';
+var milestoneArrName = 'fullItemsAssessmentStatus';
 
 function init() {
 
@@ -117,7 +119,11 @@ function disabledUncheckedCheckmarkColor() {
 
 function attachEvents() {
   if ($('#actualPhase').html() == 'true' && $('#isSubmitted').html() == 'true') {
-    loadQualityAssessmentStatus(oicrsAjaxURL, oicrsArrName);
+    if ($('#isOICR').html() == 'true') {
+      loadQualityAssessmentStatus(oicrsAjaxURL, oicrsArrName);
+    } else {
+      loadQualityAssessmentStatus(milestoneAjaxURL, milestoneArrName);
+    }
   }
 
   // Links Component
