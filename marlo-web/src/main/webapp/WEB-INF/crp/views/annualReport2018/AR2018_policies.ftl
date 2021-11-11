@@ -9,8 +9,8 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200311",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210806a"
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211104b",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211103a"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
@@ -46,6 +46,9 @@
         [#include "/WEB-INF/crp/views/annualReport2018/messages-AR2018.ftl" /]
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+          <span id="actualCrpID" style="display: none;">${(action.getCurrentCrp().id)!-1}</span>
+          <span id="actualPhase" style="display: none;">${(action.isSelectedPhaseAR2021())?c}</span>
+          [#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
@@ -61,7 +64,7 @@
                   <label for="">[@s.text name="${customLabel}.indicatorI1.totalPolicies" /]</label><br />
                   <span class="totalNumber">${(((total)!0)?number?string(",##0"))!0}</span>
                 </div>
-                [#-- Chart 7 - Level of maturity --][#--
+                [#-- Chart 7 - Stage of Maturity --][#--
                 <div  class="chartBox simpleBox">
                 Policies Level of Maturity
                 <center><img src="${baseUrlCdn}/global/images/ComingSoon-charts.png" height="130"></center>
@@ -71,7 +74,7 @@
                     <li>
                       <span></span>
                       [#list (policiesByRepIndStageProcessDTOs)![] as data]
-                        [#if data.repIndStageProcess.name?contains("Level")]    
+                        [#if data.repIndStageProcess.name?contains("Stage")]    
                             <span>${data.repIndStageProcess.name}</span>
                             <span class="json">{"role":"annotation"}</span> 
                         [/#if]                    
@@ -80,8 +83,8 @@
                     <li>
                       <span></span>
                       [#list (policiesByRepIndStageProcessDTOs)![] as data]
-                        [#if data.repIndStageProcess.name?contains("Level")]
-                          <span class="number">${data.projectPolicies?size}</span>
+                        [#if data.repIndStageProcess.name?contains("Stage")]
+                          <span class="number">${data.projectPolicies?size}</span> 
                           <span>${data.projectPolicies?size}</span>
                         [/#if]  
                       [/#list]
@@ -212,7 +215,9 @@
             <br>
             <button type="button" class="selectAllCheckPolicies" id="selectAllPolicies" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
             </th>
-            [#--  <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.QA" /]</th>  --]
+            [#if actualPhaseAR2021]
+             <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.QA" /]</th>
+            [/#if]
           [/#if]
         [/#if]        
       </tr>
@@ -316,12 +321,20 @@
               [/#if]   
             </td>
             [#if PMU]
+              [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
               <td class="text-center">
-                [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
                 [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
-                <div style="display: none">${isChecked?string('1','0')}</div>
+                <div id="isCheckedAR-${item.id}" style="display: none">${isChecked?string('1','0')}</div>
               </td>
-              [#--  <td class="text-center"></td>  --]
+              [#if actualPhaseAR2021]
+                <td id="QAStatusIcon-${item.id}" class="text-center">
+                  [#if isChecked]
+                    <i style="font-weight: normal;opacity:0.8;"><nobr>[@s.text name="global.notDefined"/]</nobr></i>
+                  [#else]
+                    <i style="font-weight: normal;opacity:0.8;">[@s.text name="annualReport2018.policies.table2.notInluded"/]</i>
+                  [/#if]
+                </td>
+              [/#if]
             [/#if]
           [/#if]
         </tr>
@@ -371,7 +384,7 @@
                     <tr>
                       <th id="ids">[@s.text name="${customLabel}.table2.policiesOicrs.id" /]</th>
                       <th id="policyTitles">[@s.text name="${customLabel}.table2.policiesOicrs.oicrName" /]</th>
-                      <th id="policyMaturityLevel">[@s.text name="${customLabel}.table2.policiesOicrs.maturityLevel" /]</th>
+                      <th id="policyMaturityLevel">[@s.text name="${customLabel}.table2.policiesOicrs.maturityStage" /]</th>
                       <th></th>
                     </tr>
                   </thead>

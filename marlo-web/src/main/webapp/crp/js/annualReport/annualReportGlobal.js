@@ -3,6 +3,7 @@ var tableDatatableViewmore, tableDataProgressTableViewmore, tableDatatableTableG
 var pageName;
 var googleChartsLoaded = false;
 var isActive = false;
+var isBtnClose = false;
 
 function getContributionListComponentValue(contributionData) {
 
@@ -106,6 +107,7 @@ function contributionListComponentInsertHTML(data, id) {
   var activeFP = false;
 
   $(`.flagshipBtn-${id}`).on('click', changeButtonText);
+  $(`.btnClose-${id}`).on('click', closePopup);
 
   data.sources.forEach((item, index) => {
     if (item.contribution.length == 0) {
@@ -324,6 +326,8 @@ $(document).ready(function () {
   $('input[id^="innovation-"]').on('click', selectIndividualInnovations);
   $('#selectAllStudies').on('click', selectDeselectAllStudies);
   $('input[id^="study-"]').on('click', selectIndividualStudies);
+  $('#selectAllMelias').on('click', selectDeselectAllMelias);
+  $('input[id^="melia-"]').on('click', selectIndividualMelias);
 
   // Deliverable Geographic Scope
   $('select.elementType-repIndGeographicScope').on("addElement removeElement", function (event, id, name) {
@@ -418,10 +422,18 @@ function setStatusByBack() {
 
 function selectDeselectAll() {
   if ($(this).hasClass('checked')) {
-    $('input[id^="deliverable-"]').prop('checked', true);
+    $('input[id^="deliverable-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', true);
+      }
+    });
     $(this).removeClass('checked');
   } else {
-    $('input[id^="deliverable-"]').prop('checked', false);
+    $('input[id^="deliverable-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', false);
+      }
+    });
     $(this).addClass('checked');
   }
 }
@@ -436,10 +448,18 @@ function selectIndividual() {
 
 function selectDeselectAllGrey() {
   if ($(this).hasClass('checked')) {
-    $('input[id^="deliverableGrey"]').prop('checked', true);
+    $('input[id^="deliverableGrey"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', true);
+      }
+    });
     $(this).removeClass('checked');
   } else {
-    $('input[id^="deliverableGrey"]').prop('checked', false);
+    $('input[id^="deliverableGrey"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', false);
+      }
+    });
     $(this).addClass('checked');
   }
 }
@@ -454,10 +474,18 @@ function selectIndividualGrey() {
 
 function selectDeselectAllPolicies() {
   if ($(this).hasClass('checked')) {
-    $('input[id^="policy-"]').prop('checked', true);
+    $('input[id^="policy-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', true);
+      }
+    });
     $(this).removeClass('checked');
   } else {
-    $('input[id^="policy-"]').prop('checked', false);
+    $('input[id^="policy-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', false);
+      }
+    });
     $(this).addClass('checked');
   }
 }
@@ -472,10 +500,18 @@ function selectIndividualPolicies() {
 
 function selectDeselectAllInnovations() {
   if ($(this).hasClass('checked')) {
-    $('input[id^="innovation-"]').prop('checked', true);
+    $('input[id^="innovation-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', true);
+      }
+    });
     $(this).removeClass('checked');
   } else {
-    $('input[id^="innovation-"]').prop('checked', false);
+    $('input[id^="innovation-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', false);
+      }
+    });
     $(this).addClass('checked');
   }
 }
@@ -490,22 +526,53 @@ function selectIndividualInnovations() {
 
 function selectDeselectAllStudies() {
   if ($(this).hasClass('checked')) {
-    $('input[id^="study-"]').prop('checked', true);
+    $('input[id^="study-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', true);
+      }
+    });
     $(this).removeClass('checked');
-    console.log("hasClass", $(this));
   } else {
-    $('input[id^="study-"]').prop('checked', false);
+    $('input[id^="study-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', false);
+      }
+    });
     $(this).addClass('checked');
-    console.log("noClass", $(this));
   }
 }
 
 function selectIndividualStudies() {
-  console.log($('input[id^="study-"]').length, $('input[id^="study-"]:checked').length)
   if ($('input[id^="study-"]').length == $('input[id^="study-"]:checked').length) {
     $('#selectAllStudies').prop('checked', true);
   } else {
     $('#selectAllStudies').prop('checked', false);
+  }
+}
+
+function selectDeselectAllMelias() {
+  if ($(this).hasClass('checked')) {
+    $('input[id^="melia-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', true);
+      }
+    });
+    $(this).removeClass('checked');
+  } else {
+    $('input[id^="melia-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', false);
+      }
+    });
+    $(this).addClass('checked');
+  }
+}
+
+function selectIndividualMelias() {
+  if ($('input[id^="melia-"]').length == $('input[id^="melia-"]:checked').length) {
+    $('#selectAllMelias').prop('checked', true);
+  } else {
+    $('#selectAllMelias').prop('checked', false);
   }
 }
 
@@ -644,6 +711,7 @@ function changeButtonText() {
     $(`.highlightedTitle-${theNum}`).css('background', '#71b2ff');
     $(`.highlightedTitle-${theNum}`).css('color', 'white');
     isActive = true;
+    isBtnClose = false;
   } else {
     $(this).text('Show flagships information');
     $(`.highlightedTitle-${theNum}`).css('background', 'none');
@@ -663,18 +731,47 @@ function changeButtonText() {
   appearDisappearFlagshipsTable(isActive, theNum);
 }
 
+function closePopup() {
+  var className = $(this).attr('class');
+  var theNum = className.match(/\d/g).join('');
+
+  if (isBtnClose) {
+    $(`.highlightedTitle-${theNum}`).css('background', '#71b2ff');
+    $(`.highlightedTitle-${theNum}`).css('color', 'white');
+    isActive = true;
+    isBtnClose = false;
+  } else {
+    $(`.highlightedTitle-${theNum}`).css('background', 'none');
+    $(`.highlightedTitle-${theNum}`).css('color', '#5f5e5e');
+    isActive = false;
+    isBtnClose = true;
+  }
+
+  if (isBtnClose) {
+    $('button[class*="flagshipBtn"]').not($(`flagshipBtn-${theNum}`)).prop('ariaExpanded', "false");
+    $('button[class*="flagshipBtn"]').not($(`flagshipBtn-${theNum}`)).addClass('collapsed');
+    $('div[class*="crpProgressflagships"]').removeClass('in');
+    $('button[class*="flagshipBtn"]').not($(`flagshipBtn-${theNum}`)).text('Show flagships information');
+    $('span[class*="highlightedTitle"]').not($(`.highlightedTitle-${theNum}`)).css('background', 'none');
+    $(`span[class*="highlightedTitle"]`).not($(`.highlightedTitle-${theNum}`)).css('color', '#5f5e5e');
+  }
+
+  appearDisappearFlagshipsTable(isActive, theNum);
+}
+
 function appearDisappearFlagshipsTable(isActive, theNum) {
   window.onscroll = function () {
     let yScroll = window.scrollY;
 
     if (isActive) {
-      if (yScroll <= 1444) {
-        $(`#collapseExample-${theNum - 1}`).css('opacity', 0);
-        $(`#collapseExample-${theNum - 1}`).removeClass('in');
-      } else {
-        $(`#collapseExample-${theNum - 1}`).css('opacity', 1);
-        $(`#collapseExample-${theNum - 1}`).addClass('in');
-      }
+      // if (yScroll <= 1444) {
+      //   $(`#collapseExample-${theNum - 1}`).css('opacity', 0);
+      //   $(`#collapseExample-${theNum - 1}`).removeClass('in');
+      // } else {
+      //   $(`#collapseExample-${theNum - 1}`).css('opacity', 1);
+      //   $(`#collapseExample-${theNum - 1}`).addClass('in');
+      // }
+      $(`#collapseExample-${theNum - 1}`).draggable();
     }
   }
 }

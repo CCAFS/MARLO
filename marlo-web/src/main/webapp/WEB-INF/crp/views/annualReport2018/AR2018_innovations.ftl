@@ -9,8 +9,8 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20200310",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210806a"
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211104a",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211103a"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
 
@@ -46,6 +46,9 @@
         [#include "/WEB-INF/crp/views/annualReport2018/messages-AR2018.ftl" /]
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+          <span id="actualCrpID" style="display: none;">${(action.getCurrentCrp().id)!-1}</span>
+          <span id="actualPhase" style="display: none;">${(action.isSelectedPhaseAR2021())?c}</span>
+          [#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
@@ -188,7 +191,9 @@
               <button type="button" class="selectAllCheckInnovations" id="selectAllInnovations" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
               [#--  <span class="selectAllCheckInnovations">[@customForm.checkmark id="selectAllInnovations" name="selectAllInnovations" value="false" checked=false editable=editable centered=true/]</span>  --]
               </th>
-              [#--  <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.QA" /]</th>  --]
+              [#if actualPhaseAR2021]
+                <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.QA" /]</th>
+              [/#if]
             [/#if]
           [/#if]
         </tr>
@@ -294,16 +299,24 @@
               </td>
               [#-- 12. Included in AR? --]
               [#if PMU]
+                [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
                 <td class="text-center">
-                  [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
                   [#--local canBeAddedToAR = ((action.canBeAddedToAR(item.id, actualPhase.id))!false)]
                   <div data-toggle="tooltip" [#if !canBeAddedToAR]title="[@s.text name="annualReport2018.innovations.table4.cannotBeAddedToAR" /]"[/#if]>
                     [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=(editable&&canBeAddedToAR) centered=true/]
                   </div>--]
                   [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
-                  <div style="display: none">${isChecked?string('1','0')}</div>
+                  <div id="isCheckedAR-${item.id}" style="display: none">${isChecked?string('1','0')}</div>
                 </td>
-                [#--  <td class="text-center"></td>  --]
+                [#if actualPhaseAR2021]
+                  <td id="QAStatusIcon-${item.id}" class="text-center">
+                    [#if isChecked]
+                      <i style="font-weight: normal;opacity:0.8;"><nobr>[@s.text name="global.notDefined"/]</nobr></i>
+                    [#else]
+                      <i style="font-weight: normal;opacity:0.8;">[@s.text name="annualReport2018.policies.table2.notInluded"/]</i>
+                    [/#if]
+                  </td>
+                [/#if]
               [/#if]
             [/#if]
           </tr>

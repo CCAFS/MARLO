@@ -1,5 +1,4 @@
-var caseStudiesName;
-var $elementsBlock;
+var caseStudiesName, $elementsBlock, multiInputStudies;
 
 $(document).ready(init);
 
@@ -42,6 +41,8 @@ function init() {
 
   $('.oicrContributingCRP select').on('change', checkContributingCRP);
   checkContributingCRP();
+  multiInputStudies = $('.multiInput').find('span input[name*="link"]');
+  checkHyperlinks();
 }
 
 function checkContributingCRP() {
@@ -56,6 +57,30 @@ function checkContributingCRP() {
       $(item).find('.removeElement').css('display', 'none');
     }
   });
+}
+
+function checkHyperlinks() {
+  multiInputStudies.each((index, item) => {
+    validateURL(item);
+  });
+}
+
+function validateURL(item) {
+  var url = item.value;
+  var expression = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/i;
+  var regex = new RegExp(expression);
+  var res = "";
+  if (url) {
+    if (url.match(regex)) {
+      res = "Valid URL";
+      $(item).css('border', 'none');
+    } else {
+      res = "Invalid URL";
+      $(item).css('border', '1px solid red');
+    }
+  } else {
+    $(item).css('border', '1px solid red');
+  }
 }
 
 function attachEvents() {
@@ -171,6 +196,9 @@ function attachEvents() {
     // Events
     $('.addButtonLink').on('click', addItem);
     $('.removeLink.links').on('click', removeItem);
+    $('.multiInput').find('span input[name*="link"]').on('input', function () {
+      validateURL(this);
+    });
 
     // Functions
     function addItem() {
@@ -235,6 +263,7 @@ function attachEvents() {
     // Events
     $('.addButtonReference').on('click', addItem);
     $('.removeLink.references').on('click', removeItem);
+    validateEmptyLinks();
 
     // Functions
     function addItem() {
@@ -265,32 +294,49 @@ function attachEvents() {
       });
     }
     function updateIndexes(list) {
-      $(list).parent('.referenceBlock').find('.referenceList').find('.multiInput').each(function(i,element) {
+      var linksList = $(list).parent('.referenceBlock').find('.referenceList');
+      linksList.find('.multiInput').each(function(i,element) {
         $(element).find('.indexTag').text(i + 1);
         $(element).setNameIndexes(1, i);
+      });
+      console.log(linksList.children().length - 1)
+      if ((linksList.children().length - 1) != 0) {
+        $('#warningEmptyReferencesTag').hide();
+        validateEmptyLinks();
+      } else {
+        $('#warningEmptyReferencesTag').show();
+      }
+    }
+    function validateEmptyLinks() {
+      $('.referenceList').find('.multiInput span input').map((index, item) => {
+        if (item.value != '') {
+          $('#warningEmptyReferencesTag').hide();
+        } else {
+          $('#warningEmptyReferencesTag').show();
+        }
       });
     }
 
   })();
 
-  validateEmptyReferences();
-  $('.addButtonReference').on('click', validateEmptyReferences);
-  $('.removeLink.references').on('click', validateEmptyReferences);
+  // validateEmptyReferences();
+  // $('.addButtonReference').on('click', validateEmptyReferences);
+  // $('.removeLink.references').on('click', validateEmptyReferences);
 
-  function validateEmptyReferences() {
-    var referenceList = $('.referenceList').children('div').length;
-
-    if ($(this).hasClass('removeElement')) {
-      referenceList -= 1;
-    } else {
-      referenceList = referenceList;
-    }
-    if ( referenceList > 0) {
-      $('#warningEmptyReferencesTag').hide();
-    } else {
-      $('#warningEmptyReferencesTag').show();
-    }
-  }
+  // function validateEmptyReferences() {
+  //   var referenceList = $('.referenceList').children('div').length;
+  //   console.log(referenceList)
+  //   if ($(this).hasClass('removeElement')) {
+  //     referenceList -= 1;
+  //   } else {
+  //     referenceList = referenceList;
+  //   }
+  //   if ( referenceList > 0) {
+  //     $('#warningEmptyReferencesTag').hide();
+  //   } else {
+  //     $('#warningEmptyReferencesTag').show();
+  //   }
+  // }
 
   /**
    * Qualification Component
