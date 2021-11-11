@@ -31,26 +31,27 @@ function attachEvents() {
     loadQualityAssessmentStatus(sloAjaxURL, sloArrName);
   }
 
-  $('#qaStatus-button').on('click', function(){
+  $('.qaStatus-button').on('click', function(){
     updateQAStatus($(this));
   });
 }
 
 function updateQAStatus(element){
-  let $stat = $('input.onoffswitch-radio');
+  let $stat = element.siblings('#qaStatus-value');
+  console.log($stat);
 
   if($stat.val() == 'true'){
     element.removeClass('includeARButton');
     element.addClass('removeARButton');
     element.html('Remove from QA');
     $stat.val('false');
-    container.style.width = '76.4%';
+    //container.style.width = '76.4%';
   } else {
     element.removeClass('removeARButton');
     element.addClass('includeARButton');
     element.html('Include in QA');
     $stat.val('true');
-    container.style.width = '79.5%';
+    //container.style.width = '79.5%';
   }
 }
 
