@@ -46,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
@@ -836,8 +837,20 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 poiSummary.pageLeftHeader(document, projectInfo.getTitle());
               }
             }
-            poiSummary.pageLeftHeader(document,
-              this.getText("summaries.progressReport2020.header1") + " " + this.getSelectedPhase().getYear());
+
+            if (this.getSelectedPhase().getUpkeep()) {
+              // UpKeep
+              poiSummary.pageLeftHeader(document,
+                this.getText("summaries.progressReport2020.header1") + " " + this.getSelectedPhase().getYear());
+            } else if (this.getSelectedPhase().isReporting()) {
+              // AR
+              poiSummary.pageLeftHeader(document,
+                this.getText("summaries.progressReport2020.header3") + " " + this.getSelectedPhase().getYear());
+            } else {
+              // POWB - APWB
+              poiSummary.pageLeftHeader(document,
+                this.getText("summaries.progressReport2020.header2") + " " + this.getSelectedPhase().getYear());
+            }
 
             // Get datetime
             ZonedDateTime timezone = ZonedDateTime.now();
@@ -966,6 +979,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           if (projectOutcomes != null && !projectOutcomes.isEmpty()) {
 
             for (ProjectOutcome projectOutcome : projectOutcomes) {
+
               if (projectOutcome.getCrpProgramOutcome() != null
                 && projectOutcome.getCrpProgramOutcome().getDescription() != null) {
                 paragraph = document.createParagraph();
@@ -1044,7 +1058,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 if (milestoneNarrativeTarget != null) {
                   poiSummary.textLineBreak(document, 1);
                   poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
-                    this.getText("summaries.progressReport2020.projectMilestone.narrativeTarget") + ":");
+                    this.getText("summaries.progressReport2020.projectMilestone.narrativeTarget") + " "
+                      + this.getSelectedPhase().getYear() + ":");
 
                   paragraph = document.createParagraph();
                   run = paragraph.createRun();
@@ -1121,17 +1136,53 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 }
                 // Deliverables Table
                 List<Deliverable> deliverables = new ArrayList<>();
-                deliverables =
-                  deliverableManager.getDeliverablesByProjectAndPhase(this.getSelectedPhase().getId(), projectID);
+
+                /*
+                 * Get mapped deliverables
+                 */
+                try {
+                  for (Deliverable deliverable : projectOutcome.getProject()
+                    .getCurrentDeliverables(this.getActualPhase())) {
+                    if (deliverable.getDeliverableProjectOutcomes() != null) {
+                      deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes()
+                        .stream().filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
+                        .collect(Collectors.toList())));
+                    }
+                    if (deliverable != null && deliverable.getProjectOutcomes() != null
+                      && !deliverable.getProjectOutcomes().isEmpty()) {
+                      if (deliverable != null && deliverable.getProjectOutcomes() != null
+                        && !deliverable.getProjectOutcomes().isEmpty()) {
+                        for (DeliverableProjectOutcome deliverableProjectOutcome : deliverable.getProjectOutcomes()) {
+                          if (deliverableProjectOutcome != null && deliverableProjectOutcome.getProjectOutcome() != null
+                            && deliverableProjectOutcome.getProjectOutcome().getId() != null
+                            && deliverableProjectOutcome.getProjectOutcome().getId()
+                              .compareTo(projectOutcome.getId()) == 0) {
+                            deliverables.add(deliverable);
+                          }
+                        }
+                      }
+                    }
+                  }
+                } catch (Exception e) {
+
+                }
+                /*
+                 * 
+                 */
+
+                /*
+                 * deliverables =
+                 * deliverableManager.getDeliverablesByProjectAndPhase(this.getSelectedPhase().getId(), projectID);
+                 */
                 if (deliverables != null && !deliverables.isEmpty()) {
-
-                  deliverables = deliverables.stream()
-                    .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()).isActive()
-                      && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome() != null
-                      && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome().getId()
-                        .equals(projectOutcome.getCrpProgramOutcome().getId()))
-                    .collect(Collectors.toList());
-
+                  /*
+                   * deliverables = deliverables.stream()
+                   * .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()).isActive()
+                   * && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome() != null
+                   * && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome().getId()
+                   * .equals(projectOutcome.getCrpProgramOutcome().getId()))
+                   * .collect(Collectors.toList());
+                   */
                   if (deliverables != null && !deliverables.isEmpty()) {
                     poiSummary.textLineBreak(document, 1);
                     poiSummary.textParagraphFontCalibri(document.createParagraph(),
@@ -1240,7 +1291,17 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       }
     }
 
-    fileName.append("Progress Report_");
+    if (this.getSelectedPhase().getUpkeep()) {
+      // UpKeep
+      fileName.append("Progress Report_");
+    } else if (this.getSelectedPhase().isReporting()) {
+      // AR
+      fileName.append("AR Year Report_");
+    } else {
+      // POWB - APWB
+      fileName.append("APWB Year Report_");
+    }
+
 
     /*
      * if (this.getCurrentCycleYear() != 0) {
