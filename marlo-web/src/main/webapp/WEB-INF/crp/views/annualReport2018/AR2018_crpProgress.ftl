@@ -5,9 +5,12 @@
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs","flag-icon-css"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js?20211015a"
+  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js?20211111a"
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211026a" ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20211026a"] /]
+[#assign customCSS = [
+  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20211026a",
+  "${baseUrlCdn}/global/css/global.css?20211110a"
+] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -46,6 +49,10 @@
         [#include "/WEB-INF/crp/views/annualReport2018/messages-AR2018.ftl" /]
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+          <span id="actualCrpID" style="display: none;">${(action.getCurrentCrp().id)!-1}</span>
+          <span id="actualPhase" style="display: none;">${(action.isSelectedPhaseAR2021())?c}</span>
+          <span id="isSubmitted" style="display: none;">${submission?c}</span>
+          [#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
@@ -311,6 +318,25 @@
     <div class="btn-removeEvidence removeElement sm" title="Remove Evidence"></div>
   [/#if]
   [#if !PMU] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
+  [#if PMU]
+    [#if actualPhaseAR2021 && submission]
+      [#assign qaIncluded = (!(reportSynthesis.reportSynthesisSrfProgress.isQAIncluded))!false]
+      <div class="containerTitleElements">
+        <span id="isCheckedAR" style="display: none;">${(qaIncluded)?c}</span>
+        <button type="button" class="${qaIncluded?then('removeARButton', 'includeARButton')}" id="qaStatus-button">${qaIncluded?then('Remove from QA', 'Include in QA')}</button>
+        <input type="hidden" name="${customName}.isQAIncluded" id="qaStatus-value" class="onoffswitch-radio"  value="${(!qaIncluded)?c}" />
+        [#if qaIncluded]
+          <div class="containerTitleStatusMessage">
+            <div id="containerQAStatus" class="pendingForReview-mode text-center animated flipInX">
+              <p>
+                [@s.text name="annualReport2018.policies.table2.pendingForReview"][/@s.text]
+              </p>
+            </div> 
+          </div>
+        [/#if]
+    </div>
+    [/#if]
+  [/#if]
   [@arMacros.deliverableGeographicScope name="${ccname}" element=element /]
   <hr>
   [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
