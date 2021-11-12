@@ -1,5 +1,6 @@
 var sloAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=8&crpID=';
 var sloArrName = 'fullItemsAssessmentStatus';
+var container;
 
 $(document).ready(init);
 
@@ -16,6 +17,7 @@ function init() {
 }
 
 function attachEvents() {
+  container = document.getElementsByClassName('containerTitleStatusMessage')[0];
   if ($('#actualPhase').html() == 'true') {
     var additionalContribution = $('.TA_additionalContribution');
     additionalContribution.css('display', 'none');
@@ -40,18 +42,21 @@ function updateQAStatus(element){
   let $stat = element.siblings('#qaStatus-value');
   console.log($stat);
 
+  console.log($stat.val());
   if($stat.val() == 'true'){
+    console.log($stat.val());
     element.removeClass('includeARButton');
     element.addClass('removeARButton');
     element.html('Remove from QA');
     $stat.val('false');
-    //container.style.width = '76.4%';
+    container.style.width = '76.4%';
   } else {
+    console.log($stat.val());
     element.removeClass('removeARButton');
     element.addClass('includeARButton');
     element.html('Include in QA');
     $stat.val('true');
-    //container.style.width = '79.5%';
+    container.style.width = '79.5%';
   }
 }
 
@@ -75,6 +80,7 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
 
             return arr;
           });
+          console.log(newData)
           updateQualityAssessmentStatusData(newData);
         }
       }
@@ -84,8 +90,8 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
 
 function updateQualityAssessmentStatusData(data) {
   data.map(function (x) {
-    var isCheckedAR = $('#isCheckedAR').html();
-    var element = document.getElementById('containerQAStatus');
+    var isCheckedAR = $(`#isCheckedAR-${x[0]}`).html();
+    var element = document.getElementById(`containerQAStatus-${x[0]}`);
     var date, status, statusClass;
 
     switch (x[1]) {
@@ -115,7 +121,7 @@ function updateQualityAssessmentStatusData(data) {
       var pTag = document.createElement('p');
       var text = document.createTextNode(status);
       
-      
+      container.style.width = '76.4%';
       element.innerHTML = '';
       element.classList.remove('pendingForReview-mode');
       element.classList.add(statusClass);
