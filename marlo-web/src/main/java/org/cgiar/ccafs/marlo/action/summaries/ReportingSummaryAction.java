@@ -2010,7 +2010,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       for (Deliverable deliverable : deliverables) {
         String delivType = null, delivSubType = null, delivYear = null, keyOutput = "", leader = null,
           institution = null, fundingSources = "", deliv_description = null, otherPartner = "";
-//        String delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
+        // String delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
         String delivStatus =
           deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getSelectedPhase());
         String delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
@@ -2784,7 +2784,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
         }
         Boolean isExtended = false;
-//        String delivDescription = null;
+        // String delivDescription = null;
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null) {
           delivSubType = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getName();
           if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
@@ -3226,7 +3226,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         LinkedHashSet<String> studyProjectSet = new LinkedHashSet<>();
         if (studyProjectList != null && studyProjectList.size() > 0) {
           for (ExpectedStudyProject studyProject : studyProjectList) {
-            studyProjectSet.add("P" + studyProject.getProject().getId());
+            studyProjectSet.add("C" + studyProject.getProject().getId());
           }
         }
 
@@ -3261,9 +3261,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
 
     StringBuffer fileName = new StringBuffer();
-    fileName.append("FullProjectReportSummary-");
+    fileName.append("FullClusterReportSummary-");
     fileName.append(globalUnitProject.getGlobalUnit().getAcronym() + "-");
-    fileName.append("P" + projectID + "-");
+    fileName.append("C" + projectID + "-");
     fileName.append(this.getSelectedCycle() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
@@ -3802,7 +3802,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
       }
     }
-    title += "P" + Long.toString(projectID);
+    title += "C" + Long.toString(projectID);
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -3854,10 +3854,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
     centerURL = globalUnitProject.getGlobalUnit().getAcronym();
     Boolean isAdministrative = false;
-    String type = "Research Project";
+    String type = "Research Cluster";
     if (projectInfo != null && projectInfo.getAdministrative() != null) {
       if (projectInfo.getAdministrative() == true) {
-        type = "Management Project";
+        type = "Management Cluster";
       }
       isAdministrative = projectInfo.getAdministrative();
     } else {
@@ -5350,7 +5350,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         Set<String> studyProjectSet = new HashSet<>();
         if (studyProjectList != null && studyProjectList.size() > 0) {
           for (ExpectedStudyProject studyProject : studyProjectList) {
-            studyProjectSet.add("P" + studyProject.getProject().getId());
+            studyProjectSet.add("C" + studyProject.getProject().getId());
           }
         }
         if (studyProjectSet != null && !studyProjectSet.isEmpty()) {
