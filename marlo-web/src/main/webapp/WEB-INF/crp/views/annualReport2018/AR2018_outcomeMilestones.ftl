@@ -152,7 +152,7 @@
           <th rowspan="2"> Status</th>
           <th rowspan="2" class="col-md-1 text-center">Include in QA 
             <br>
-            <button type="button" class="selectAllCheckMilestones" id="selectAllMilestones" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
+            <button type="button" class="selectAllCheckMilestones" id="selectAllMilestones" style="display: none; color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
           </th>
           [#if actualPhaseAR2021 && submission]
             <th rowspan="2"> QA Status</th>
