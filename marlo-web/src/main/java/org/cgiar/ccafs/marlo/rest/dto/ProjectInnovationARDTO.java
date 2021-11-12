@@ -81,8 +81,13 @@ public class ProjectInnovationARDTO {
   @ApiModelProperty(notes = "Evidence Link", position = 130)
   private String evidenceLink;
 
+  @ApiModelProperty(notes = "Evidence Link", position = 131)
+  private List<EvidenceLinkDTO> evidenceLinkList;
+
+
   @ApiModelProperty(notes = "Contributing CRPs/Platforms", position = 140)
   private List<DefaultFieldStringDTO> contributingCGIAREntities;
+
 
   @ApiModelProperty(notes = "Contributing milestone list", position = 142)
   private List<MilestoneNameDTO> milestonesList;
@@ -90,10 +95,8 @@ public class ProjectInnovationARDTO {
   @ApiModelProperty(notes = "CGIAR Sub-IDOs List", position = 143)
   private List<DefaultFieldPrimaryDTO> srfSubIdoList;
 
-
   @ApiModelProperty(notes = "OCIR List", position = 144)
   private List<ProjectExpectedStudyNameDTO> projectExpetedStudyList;
-
 
   public List<DefaultFieldStringDTO> getContributingCGIAREntities() {
     return contributingCGIAREntities;
@@ -122,6 +125,11 @@ public class ProjectInnovationARDTO {
 
   public String getEvidenceLink() {
     return evidenceLink;
+  }
+
+
+  public List<EvidenceLinkDTO> getEvidenceLinkList() {
+    return evidenceLinkList;
   }
 
 
@@ -232,6 +240,11 @@ public class ProjectInnovationARDTO {
 
   public void setEvidenceLink(String evidenceLink) {
     this.evidenceLink = evidenceLink;
+  }
+
+
+  public void setEvidenceLinkList(List<EvidenceLinkDTO> evidenceLinkList) {
+    this.evidenceLinkList = evidenceLinkList;
   }
 
 
