@@ -7142,6 +7142,14 @@ li.currentSection#bi::before{
   margin-left: 10px;
 }
 
+.sloContainerTitleStatusMessage {
+  width: 76.4%;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  margin-left: 10px;
+}
+
 .includeARButton {
   /* margin-bottom: 10px; */
 }

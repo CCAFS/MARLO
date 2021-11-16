@@ -1,5 +1,6 @@
 var sloAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=8&crpID=';
 var sloArrName = 'fullItemsAssessmentStatus';
+var container;
 
 $(document).ready(init);
 
@@ -38,6 +39,7 @@ function attachEvents() {
 
 function updateQAStatus(element){
   let $stat = element.siblings('#qaStatus-value');
+  container = element.siblings('.sloContainerTitleStatusMessage');
   console.log($stat);
 
   if($stat.val() == 'true'){
@@ -45,13 +47,13 @@ function updateQAStatus(element){
     element.addClass('removeARButton');
     element.html('Remove from QA');
     $stat.val('false');
-    //container.style.width = '76.4%';
+    container.css('width', '76.4%');
   } else {
     element.removeClass('removeARButton');
     element.addClass('includeARButton');
     element.html('Include in QA');
     $stat.val('true');
-    //container.style.width = '79.5%';
+    container.css('width', '79.5%');
   }
 }
 
@@ -84,8 +86,11 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
 
 function updateQualityAssessmentStatusData(data) {
   data.map(function (x) {
-    var isCheckedAR = $('#isCheckedAR').html();
-    var element = document.getElementById('containerQAStatus');
+    var isCheckedARComponent = document.getElementById(`isCheckedAR-${x[0]}`);
+    var isCheckedAR = isCheckedARComponent.innerHTML;
+    var element = document.getElementById(`containerQAStatus-${x[0]}`);
+    var containerElements = isCheckedARComponent.parentElement;
+    var removeARBtn = isCheckedARComponent.nextElementSibling;
     var date, status, statusClass;
 
     switch (x[1]) {
@@ -103,7 +108,7 @@ function updateQualityAssessmentStatusData(data) {
         break;
       case 'quality_assessed':
         date = new Date((x[2].split('T')[0])).toDateString();
-        status = 'Capacity Development was Quality Assessed on ' + date;
+        status = 'SLO Target was Quality Assessed on ' + date;
         statusClass = 'qualityAssessed-mode';
         break;
 
@@ -121,19 +126,18 @@ function updateQualityAssessmentStatusData(data) {
       element.classList.add(statusClass);
       pTag.appendChild(text);
       element.appendChild(pTag);
+      element.style.backgroundPosition = '442px';
       
       if (x[1] == 'quality_assessed') {
-        var containerElements = document.getElementsByClassName('containerTitleElements')[0];
-        
-        var removeARBtn = document.getElementsByClassName('removeARButton')[0];
         var pMessageTag = document.createElement('p');
         var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+        container = element.parentElement;
 
         containerElements.style.marginBottom = '0';
         containerElements.style.justifyContent = 'center';
         container.style.marginLeft = '0';
         removeARBtn.style.display = 'none';
-        element.style.backgroundPosition = '555px';
+        element.style.backgroundPosition = '485px';
         pMessageTag.classList.add('messageQAInfo');
         pMessageTag.appendChild(textMessage);
         container.appendChild(pMessageTag);
