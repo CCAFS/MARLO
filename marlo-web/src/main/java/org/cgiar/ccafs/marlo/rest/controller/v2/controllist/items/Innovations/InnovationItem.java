@@ -275,10 +275,19 @@ public class InnovationItem<T> {
         newInnovationDTO.getInnovationType() + " is an invalid innovation type code"));
     } else {
       if (newInnovationDTO.getInnovationType().getCode() == 1) {
-        if (newInnovationDTO.getInnovationNumber() == null
-          || (newInnovationDTO.getInnovationNumber() != null && newInnovationDTO.getInnovationNumber() == 0)) {
-          fieldErrors.add(
-            new FieldErrorDTO("createInnovation", "InnovationNumber", "Number of innovations need to be more than 0"));
+        if (RepIndStageInnovation != null) {
+          if (RepIndStageInnovation.getId() == 1 || RepIndStageInnovation.getId() == 2) {
+            if (newInnovationDTO.getInnovationNumber() == null
+              || (newInnovationDTO.getInnovationNumber() != null && newInnovationDTO.getInnovationNumber() == 0)) {
+              fieldErrors.add(new FieldErrorDTO("createInnovation", "InnovationNumber",
+                "Number of innovations need to be more than 0"));
+            }
+          } else {
+            newInnovationDTO.setInnovationNumber(new Long(1));
+          }
+        } else {
+          fieldErrors
+            .add(new FieldErrorDTO("createInnovation", "Stage of Innovation", "Stage of innovation code is required"));
         }
       }
     }
@@ -309,8 +318,9 @@ public class InnovationItem<T> {
       projectInnovationInfo.setRepIndInnovationType(repIndInnovationType);
       projectInnovationInfo.setEvidenceLink(newInnovationDTO.getEvidenceLink());
       projectInnovationInfo.setClearLead(newInnovationDTO.getEquitativeEffort());
-      projectInnovationInfo
-        .setInnovationNumber(repIndInnovationType.getId() == 1 ? newInnovationDTO.getInnovationNumber() : 1);
+      projectInnovationInfo.setInnovationNumber((repIndInnovationType.getId() == 1
+        && (newInnovationDTO.getDescriptionStage().equals("1") || newInnovationDTO.getDescriptionStage().equals("2")))
+          ? newInnovationDTO.getInnovationNumber() : 1);
 
 
       // SAVE innovation CRP
@@ -756,6 +766,8 @@ public class InnovationItem<T> {
             .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
           innovation.setInnovationLinks(innovation.getProjectInnovationEvidenceLinks().stream()
             .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+          innovation.setStudies(innovation.getProjectExpectedStudyInnovations().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
           projectInnovationList.add(innovation);
         }
       }
@@ -944,10 +956,19 @@ public class InnovationItem<T> {
           newInnovationDTO.getInnovationType() + " is an invalid innovation type code"));
       } else {
         if (newInnovationDTO.getInnovationType().getCode() == 1) {
-          if (newInnovationDTO.getInnovationNumber() == null
-            || (newInnovationDTO.getInnovationNumber() != null && newInnovationDTO.getInnovationNumber() == 0)) {
-            fieldErrors.add(new FieldErrorDTO("updateInnovation", "InnovationNumber",
-              "Number of innovations need to be more than 0"));
+          if (RepIndStageInnovation != null) {
+            if (RepIndStageInnovation.getId() == 1 || RepIndStageInnovation.getId() == 2) {
+              if (newInnovationDTO.getInnovationNumber() == null
+                || (newInnovationDTO.getInnovationNumber() != null && newInnovationDTO.getInnovationNumber() == 0)) {
+                fieldErrors.add(new FieldErrorDTO("updateInnovation", "InnovationNumber",
+                  "Number of innovations need to be more than 0"));
+              }
+            } else {
+              newInnovationDTO.setInnovationNumber(new Long(1));
+            }
+          } else {
+            fieldErrors.add(
+              new FieldErrorDTO("updateInnovation", "Stage of Innovation", "Stage of innovation code is required"));
           }
         }
       }
@@ -977,8 +998,9 @@ public class InnovationItem<T> {
         projectInnovationInfo.setRepIndInnovationType(repIndInnovationType);
         projectInnovationInfo.setEvidenceLink(newInnovationDTO.getEvidenceLink());
         projectInnovationInfo.setClearLead(newInnovationDTO.getEquitativeEffort());
-        projectInnovationInfo
-          .setInnovationNumber(repIndInnovationType.getId() == 1 ? newInnovationDTO.getInnovationNumber() : 1);
+        projectInnovationInfo.setInnovationNumber((repIndInnovationType.getId() == 1
+          && (newInnovationDTO.getDescriptionStage().equals("1") || newInnovationDTO.getDescriptionStage().equals("2")))
+            ? newInnovationDTO.getInnovationNumber() : 1);
 
 
         // let's check Organizations
