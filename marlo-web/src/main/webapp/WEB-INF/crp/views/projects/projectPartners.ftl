@@ -14,11 +14,19 @@
 [#assign currentStage = "partners" /]
 [#assign hideJustification = true /]
 
-[#assign breadCrumb = [
-  {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
-  {"text":"P${project.id}", "nameSpace":"/projects", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
-  {"label":"projectPartners", "nameSpace":"/projects", "action":""}
-] /]
+[#if !action.isAiccra()]
+  [#assign breadCrumb = [
+    {"label":"projectsList", "nameSpace":"projects", "action":"${(crpSession)!}/projectsList"},
+    {"text":"P${project.id}", "nameSpace":"projects", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
+    {"label":"projectPartners", "nameSpace":"projects", "action":""}
+  ] /]
+[#else]
+  [#assign breadCrumb = [
+    {"label":"projectsList", "nameSpace":"clusters", "action":"${(crpSession)!}/projectsList"},
+    {"text":"C${project.id}", "nameSpace":"clusters", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
+    {"label":"projectPartners", "nameSpace":"clusters", "action":""}
+  ] /]
+[/#if]
 
 [#assign partnerRespRequired = action.hasSpecificities('crp_nonPPAPartner_resp_required') ]
 
@@ -348,8 +356,12 @@
           <div class="form-group">
             [@customForm.select name="" showTitle=false i18nkey="location.select.country" listName="${name}.institution.locations" header=true keyFieldName="locElement.isoAlpha2" displayFieldName="composedName" value="id" placeholder="Select a country..." className="countriesList"/]
             <div class="note">
-              If you don't find the country office you are looking for, request to have it added by
-              <a href="#" class="" data-toggle="modal" data-target="#requestModal">clicking here</a>
+              If you don't find the country office you're looking for,request to have it added by
+              [#if !action.isAiccra()]
+                <a href="#" class="" data-toggle="modal" data-target="#requestModal">clicking here</a>
+              [#else]
+                mailing MARLOSupport@cgiar.org
+              [/#if]
             </div>
           </div>
         [/#if]
