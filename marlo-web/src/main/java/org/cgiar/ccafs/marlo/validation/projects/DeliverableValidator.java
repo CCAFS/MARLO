@@ -218,10 +218,12 @@ public class DeliverableValidator extends BaseValidator {
 
         }
 
-        if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {
-          action.addMessage(action.getText("project.deliverable.fundingSource.readText"));
-          action.getInvalidFields().put("list-deliverable.fundingSources",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
+        if (action.hasSpecificities(APConstants.CRP_DELIVERABLE_FUNDING_REQUIRED)) {
+          if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {
+            action.addMessage(action.getText("project.deliverable.fundingSource.readText"));
+            action.getInvalidFields().put("list-deliverable.fundingSources",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
+          }
         }
       }
 
