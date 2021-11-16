@@ -79,13 +79,14 @@ public class Policies {
     @ApiParam(value = "${Policy.policies.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${Policy.policies.POST.param.policy}",
       required = true) @Valid @RequestBody NewProjectPolicyDTO newProjectPolicyDTO) {
-    Long policyId = this.policyItem.createPolicy(newProjectPolicyDTO, CGIAREntity, this.getCurrentUser());
 
+    Long policyId = this.policyItem.createPolicy(newProjectPolicyDTO, CGIAREntity, this.getCurrentUser());
     ResponseEntity<Long> response = new ResponseEntity<Long>(policyId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("Policy.policies.GET.id.404"));
     }
     return response;
+
   }
 
   @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.DELETE.id.value}",

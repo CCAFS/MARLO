@@ -313,6 +313,22 @@ public class PolicyItem<T> {
               projectPolicyCrpList.add(projectPolicyCrp);
             }
           }
+          // validate if owner CRP was included
+          boolean exist = false;
+          for (CGIAREntityDTO contributingCRP : newPolicyDTO.getProjectPolicyCrpDTO()) {
+            GlobalUnit crp = this.globalUnitManager.findGlobalUnitBySMOCode(globalUnitEntity.getSmoCode());
+            if (crp.getAcronym().equals(globalUnitEntity.getAcronym())) {
+              exist = true;
+            }
+          }
+          if (!exist) {
+            GlobalUnit crp = this.globalUnitManager.findGlobalUnitBySMOCode(globalUnitEntity.getSmoCode());
+            ProjectPolicyCrp projectPolicyCrp = new ProjectPolicyCrp();
+            projectPolicyCrp.setGlobalUnit(crp);
+            projectPolicyCrp.setPhase(phase);
+            projectPolicyCrp.setProjectPolicy(projectPolicy);
+            projectPolicyCrpList.add(projectPolicyCrp);
+          }
         }
         // validate sub-IDO
         if (newPolicyDTO.getSrfSubIdoList() != null && newPolicyDTO.getSrfSubIdoList().size() > 0) {
@@ -1188,7 +1204,9 @@ public class PolicyItem<T> {
         // verify deleted policycrps
         for (ProjectPolicyCrp obj : projectPolicyCrpListDB) {
           if (!existingProjectPolicyList.contains(obj)) {
-            projectPolicyCrpManager.deleteProjectPolicyCrp(obj.getId());
+            if (!obj.getGlobalUnit().getAcronym().equals(globalUnitEntity.getAcronym())) {
+              projectPolicyCrpManager.deleteProjectPolicyCrp(obj.getId());
+            }
           }
         }
 
