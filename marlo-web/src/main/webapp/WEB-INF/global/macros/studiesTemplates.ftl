@@ -191,12 +191,13 @@
       [/#if]
       
       [#-- 3. Outcome story for communications use. REPLACED "comunicationsMaterial" --]
+      [#assign isAR2021 = action.isSelectedPhaseAR2021()!false]
       [#if isOutcomeCaseStudy]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.comunicationsMaterial" i18nkey="study.outcomestory" help="study.outcomestory.help" className="limitWords-400" helpIcon=false required=false editable=editable /]
-      
-        <br />
-        
+        [#if !isAR2021]
+          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.comunicationsMaterial" i18nkey="study.outcomestory" help="study.outcomestory.help" className="limitWords-400" helpIcon=false required=false editable=editable /]
+          <br />
+        [/#if]
         
         <label for="">[@s.text name="study.outcomestoryLinks" /]:
           [@customForm.req required=false /]
@@ -355,7 +356,7 @@
           [@customForm.radioFlat id="${studyMilestoneLink}-yes" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == true) cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
           [@customForm.radioFlat id="${studyMilestoneLink}-no" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == false) cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
       </div>
-      [#--  [#assign isAR2021 = !(action.isSelectedPhaseAR2021())]  --]
+      
        <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == true)?string('block','none')}">
           [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="study.milestones"  listName="milestones" keyFieldName="id" displayFieldName="composedNameWithFlagship" hasPrimary=true required=true/]
           <div class="note">[@s.text name="study.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
