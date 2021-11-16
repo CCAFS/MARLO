@@ -5,11 +5,11 @@
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs","flag-icon-css"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js?20211111a"
+  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js?20211116a"
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211026a" ] /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20211026a",
-  "${baseUrlCdn}/global/css/global.css?20211110a"
+  "${baseUrlCdn}/global/css/global.css?20211116a"
 ] /]
 
 [#assign breadCrumb = [
@@ -322,12 +322,12 @@
     [#if actualPhaseAR2021 && submission]
       [#assign qaIncluded = (!(element.isQAIncluded))!false]
       <div class="containerTitleElements">
-        <span id="isCheckedAR" style="display: none;">${(qaIncluded)?c}</span>
-        <button type="button" class="${qaIncluded?then('removeARButton', 'includeARButton')} qaStatus-button" id="${ccname}-button">${qaIncluded?then('Remove from QA', 'Include in QA')}</button>
+        <span id="isCheckedAR-${(element.id)!''}" style="display: none;">${(qaIncluded)?c}</span>
+        <button type="button" class="${qaIncluded?then('removeARButton', 'includeARButton')} qaStatus-button" name="${ccname}-button">${qaIncluded?then('Remove from QA', 'Include in QA')}</button>
         <input type="hidden" name="${ccname}.isQAIncluded" id="qaStatus-value" class="onoffswitch-radio"  value="${(!qaIncluded)?c}" />
         [#if qaIncluded]
-          <div class="containerTitleStatusMessage">
-            <div id="containerQAStatus" class="pendingForReview-mode text-center animated flipInX">
+          <div class="sloContainerTitleStatusMessage">
+            <div id="containerQAStatus-${(element.id)!''}" class="pendingForReview-mode text-center animated flipInX">
               <p>
                 [@s.text name="annualReport2018.policies.table2.pendingForReview"][/@s.text]
               </p>
