@@ -1039,7 +1039,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         if (deliverable.getDeliverableUserPartnerships() != null) {
 
           List<DeliverableUserPartnership> deList = deliverable.getDeliverableUserPartnerships().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(phase.getId())
+            .filter(dp -> dp != null && dp.getId() != null && dp.isActive() && dp.getInstitution() != null
+              && dp.getInstitution().getId() != null && dp.getPhase().getId().equals(phase.getId())
               && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
             .collect(Collectors.toList());
 
