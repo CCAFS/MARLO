@@ -1245,8 +1245,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         this.fillSubreport((SubReport) hm.get("Regions"), "description_regions", args);
         if (this.getSelectedCycle().equals("Planning")) {
           // Description CoAs
-          args.clear();
-          this.fillSubreport((SubReport) hm.get("Description_CoAs"), "description_coas", args);
+          // args.clear();
+          // this.fillSubreport((SubReport) hm.get("Description_CoAs"), "description_coas", args);
         }
         // Subreport Partners
         this.fillSubreport((SubReport) hm.get("partners"), "partners_count", args);
