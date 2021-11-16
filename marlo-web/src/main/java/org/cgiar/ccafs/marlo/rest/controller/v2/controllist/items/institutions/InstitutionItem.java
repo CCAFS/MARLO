@@ -397,6 +397,9 @@ public class InstitutionItem<T> {
     subject = this.getText("marloRequestInstitution.clarisa.email.subject",
       new String[] {entityAcronym.toUpperCase(), institutionName});
     String ccEmail = user.getEmail();
+    if (partnerRequest.getExternalUserMail() != null) {
+      ccEmail = partnerRequest.getExternalUserMail();
+    }
     // Message content
     message.append(partnerRequest.getExternalUserName() == null ? (user.getFirstName() + " " + user.getLastName() + " ")
       : partnerRequest.getExternalUserName());
@@ -427,8 +430,7 @@ public class InstitutionItem<T> {
       message.append(" </br>");
     }
     message.append(" </br></br>");
-    message.append("This request was sent through CLARISA logged as " + user.getFirstName() + " " + user.getLastName()
-      + " (" + user.getEmail() + ")  </br>");
+    message.append("This request was sent through CLARISA API  </br>");
     message.append("</br>");
     try {
       GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(partnerRequest.getCrp().getId());
@@ -475,8 +477,7 @@ public class InstitutionItem<T> {
     message.append(this.getText("email.dear", new String[] {userName}));
     message.append(this.getText("marloRequestInstitution.reject.email",
       new String[] {partnerRequest.getPartnerInfo(), justification}));
-    message.append("This request was sent through CLARISA logged as " + user.getFirstName() + " " + user.getLastName()
-      + " (" + user.getEmail() + ")  </br>");
+    message.append("This request was sent through CLARISA API  </br>");
 
     GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(partnerRequest.getCrp().getId());
     CustomParameter parameter = customParameterManager
