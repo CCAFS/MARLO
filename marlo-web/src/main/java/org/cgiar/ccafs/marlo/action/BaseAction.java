@@ -3693,6 +3693,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         returnValue = true;
         break;
 
+      case IMPACTS:
+        sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
+          this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+        if (sectionStatus != null) {
+          if (sectionStatus.getMissingFields().length() == 0) {
+            return true;
+          }
+        } else {
+          if (!this.hasSpecificities(APConstants.CRP_COVID_REQUIRED)) {
+            return true;
+          }
+        }
+
+        break;
+
       case CASESTUDIES:
         project = this.projectManager.getProjectById(projectID);
         List<CaseStudyProject> caseStudies =
@@ -3808,7 +3823,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         }
 
-        returnValue = true;
+        returnValue = this.isNotEmpty(project.getDeliverables()) && this.isNotEmpty(deliverables);
 
         break;
 

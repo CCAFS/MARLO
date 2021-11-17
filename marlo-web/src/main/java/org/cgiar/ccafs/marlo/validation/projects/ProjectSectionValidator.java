@@ -1000,13 +1000,15 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
       List<DeliverableInfo> infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
       deliverables = new ArrayList<>();
-      if (infos != null && !infos.isEmpty()) {
+      if (action.isNotEmpty(infos)) {
         for (DeliverableInfo deliverableInfo : infos) {
           Deliverable deliverable = deliverableInfo.getDeliverable();
           deliverable.setDeliverableInfo(deliverableInfo);
           deliverables.add(deliverable);
         }
       }
+
+      deliverableValidator.validate(action, project, action.isNotEmpty(deliverables));
 
       for (Deliverable deliverable : deliverables) {
 
@@ -1214,9 +1216,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         }
         deliverableValidator.validate(action, deliverable, false);
       }
+    } else {
+      deliverableValidator.validate(action, project, false);
     }
-
-
   }
 
   public void validateProjectDescription(BaseAction action, Long projectID) {
@@ -1507,8 +1509,10 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
 
+    projectOutcomeValidator.validate(action, project, action.isNotEmpty(projectOutcomes));
 
     project.setOutcomes(projectOutcomes);
+
     for (ProjectOutcome projectOutcome : project.getOutcomes()) {
       projectOutcome.setMilestones(
         projectOutcome.getProjectMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
