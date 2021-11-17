@@ -83,15 +83,21 @@ public class StatusPlannedOutcomes {
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${StatusPlannedOutcomes.milestones.POST.param.statusPlannedMilestone}",
       required = true) @Valid @RequestBody NewStatusPlannedMilestoneDTO newStatusPlanneMilestoneDTO) {
-    Long reportSythesisProgressOutcomesID = this.statusPlannedMilestonesItem
-      .createStatusPlannedMilestone(newStatusPlanneMilestoneDTO, CGIAREntity, this.getCurrentUser());
+    try {
+      Long reportSythesisProgressOutcomesID = this.statusPlannedMilestonesItem
+        .createStatusPlannedMilestone(newStatusPlanneMilestoneDTO, CGIAREntity, this.getCurrentUser());
 
 
-    ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
-    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.milestones.POST.id.404"));
+      ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.milestones.POST.id.404"));
+      }
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
     }
-    return response;
+
   }
 
   @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
@@ -218,14 +224,20 @@ public class StatusPlannedOutcomes {
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${StatusPlannedOutcomes.milestones.PUT.param.statusPlannedMilestone}",
       required = true) @Valid @RequestBody NewStatusPlannedMilestoneDTO newStatusPlanneMilestoneDTO) {
-    Long reportSythesisProgressOutcomesID = this.statusPlannedMilestonesItem
-      .updateStatusPlannedMilestone(newStatusPlanneMilestoneDTO, CGIAREntity, this.getCurrentUser());
+    try {
+      Long reportSythesisProgressOutcomesID = this.statusPlannedMilestonesItem
+        .updateStatusPlannedMilestone(newStatusPlanneMilestoneDTO, CGIAREntity, this.getCurrentUser());
 
-    ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
-    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.milestones.PUT.id.404"));
+      ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.milestones.PUT.id.404"));
+      }
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
     }
-    return response;
+
   }
 
   @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
