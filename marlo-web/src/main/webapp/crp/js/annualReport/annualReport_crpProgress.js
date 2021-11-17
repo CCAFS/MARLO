@@ -38,9 +38,8 @@ function attachEvents() {
 }
 
 function updateQAStatus(element){
-  let $stat = element.siblings('#qaStatus-value');
+  let $stat = element.siblings('.onoffswitch-radio');
   container = element.siblings('.sloContainerTitleStatusMessage');
-  console.log($stat);
 
   if($stat.val() == 'true'){
     element.removeClass('includeARButton');
