@@ -846,7 +846,6 @@ public class BaseValidator {
     action.getMissingFields().setLength(0);
   }
 
-
   /**
    * This method saves the missing fields into the database for a section at project Outcome level.
    * 
@@ -919,6 +918,7 @@ public class BaseValidator {
     sectionStatusManager.saveSectionStatus(status);
   }
 
+
   /**
    * This method saves the missing fields into the database for a section at ImpactPathway.
    * 
@@ -949,6 +949,35 @@ public class BaseValidator {
     }
 
     sectionStatusManager.saveSectionStatus(status);
+  }
+
+  /**
+   * This method saves the missing fields into the database for a section.
+   * 
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
+   * @param sectionName is the name of the section inside deliverables.
+   */
+  protected void saveMissingFieldsIndicator(Project project, String cycle, int year, Boolean upkeep, String sectionName,
+    BaseAction action) {
+    // Reporting missing fields into the database.
+
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByIndicator(cycle, year, upkeep, sectionName, project.getId());
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setUpkeep(upkeep);
+      status.setSectionName(sectionName);
+      status.setProject(project);
+    }
+
+    status.setMissingFields(action.getMissingFields().toString());
+    status = this.sectionStatusManager.saveSectionStatus(status);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
   }
 
   /**
