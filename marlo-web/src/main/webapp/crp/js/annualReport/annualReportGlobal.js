@@ -324,6 +324,8 @@ $(document).ready(function () {
   $('input[id^="policy-"]').on('click', selectIndividualPolicies);
   $('#selectAllInnovations').on('click', selectDeselectAllInnovations);
   $('input[id^="innovation-"]').on('click', selectIndividualInnovations);
+  $('#selectAllMilestones').on('click', selectDeselectAllMilestones);
+  $('input[id^="milestone-"]').on('click', selectIndividualMilestones);
   $('#selectAllStudies').on('click', selectDeselectAllStudies);
   $('input[id^="study-"]').on('click', selectIndividualStudies);
   $('#selectAllMelias').on('click', selectDeselectAllMelias);
@@ -521,6 +523,32 @@ function selectIndividualInnovations() {
     $('#selectAllInnovations').prop('checked', true);
   } else {
     $('#selectAllInnovations').prop('checked', false);
+  }
+}
+
+function selectDeselectAllMilestones() {
+  if ($(this).hasClass('checked')) {
+    $('input[id^="milestone-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', true);
+      }
+    });
+    $(this).removeClass('checked');
+  } else {
+    $('input[id^="milestone-"]').map((index, item) => {
+      if($(item).prop('disabled') == false) {
+        $(item).prop('checked', false);
+      }
+    });
+    $(this).addClass('checked');
+  }
+}
+
+function selectIndividualMilestones() {
+  if ($('input[id^="milestone-"]').length == $('input[id^="milestone-"]:checked').length) {
+    $('#selectAllMilestones').prop('checked', true);
+  } else {
+    $('#selectAllMilestones').prop('checked', false);
   }
 }
 

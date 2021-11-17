@@ -47,14 +47,19 @@ public class ProjectExpectedStudiesARDTO {
   @ApiModelProperty(notes = "Geographic Scope List", position = 5)
   private List<DefaultFieldDTO> geographicScopes;
 
+  @ApiModelProperty(notes = "Geographic Scope Comment", position = 5)
+  private String scopeComment;
+
   @ApiModelProperty(notes = "Contributing Flagship List", position = 8)
   private List<DefaultFieldStringDTO> flagshipsList;
 
   @ApiModelProperty(notes = "Contributing External Partners List", position = 9)
   private List<DefaultFieldDTO> institutionsList;
 
+
   @ApiModelProperty(notes = "Contributing CRP/Plataform List", position = 7)
   private List<DefaultFieldStringDTO> projectExpectedStudiesCrp;
+
 
   @ApiModelProperty(notes = "Regions", position = 6)
   private List<DefaultFieldDTO> regions;
@@ -68,10 +73,8 @@ public class ProjectExpectedStudiesARDTO {
   @ApiModelProperty(notes = "Contributing innovations list", position = 10)
   private List<DefaultFieldDTO> innovationCodeList;
 
-
   @ApiModelProperty(notes = "Contributing policies list", position = 14)
   private List<DefaultFieldDTO> policiesCodeList;
-
 
   @ApiModelProperty(notes = "Aditional link list", position = 15)
   private List<ProjectExpectedStudyLinkDTO> links;
@@ -81,10 +84,13 @@ public class ProjectExpectedStudiesARDTO {
   private List<MilestoneNameDTO> milestonesList;
 
 
+  @ApiModelProperty(notes = "Reference Cited List", position = 16)
+  private List<ReferenceCitedDTO> referenceList;
+
+
   public List<DefaultFieldDTO> getCountries() {
     return countries;
   }
-
 
   public List<DefaultFieldStringDTO> getFlagshipsList() {
     return flagshipsList;
@@ -146,8 +152,18 @@ public class ProjectExpectedStudiesARDTO {
   }
 
 
+  public List<ReferenceCitedDTO> getReferenceList() {
+    return referenceList;
+  }
+
+
   public List<DefaultFieldDTO> getRegions() {
     return regions;
+  }
+
+
+  public String getScopeComment() {
+    return scopeComment;
   }
 
 
@@ -226,8 +242,18 @@ public class ProjectExpectedStudiesARDTO {
   }
 
 
+  public void setReferenceList(List<ReferenceCitedDTO> referenceList) {
+    this.referenceList = referenceList;
+  }
+
+
   public void setRegions(List<DefaultFieldDTO> regions) {
     this.regions = regions;
+  }
+
+
+  public void setScopeComment(String scopeComment) {
+    this.scopeComment = scopeComment;
   }
 
   public void setSrfSloTargetList(List<DefaultFieldDTO> srfSloTargetList) {

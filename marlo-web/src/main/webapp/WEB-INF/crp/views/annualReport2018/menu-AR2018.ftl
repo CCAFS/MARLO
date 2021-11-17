@@ -137,7 +137,7 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Project Submit JS --]
-[#assign customJS = customJS  + [  "${baseUrlMedia}/js/annualReport/annualReportSubmit.js", "${baseUrlCdn}/global/js/fieldsValidation.js"]
+[#assign customJS = customJS  + [  "${baseUrlMedia}/js/annualReport/annualReportSubmit.js?20211111a", "${baseUrlCdn}/global/js/fieldsValidation.js"]
 /]
 
 [#macro menuItem item]

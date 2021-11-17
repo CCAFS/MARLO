@@ -182,7 +182,7 @@
           
           [#-- Top Five Contributing Organizations --]
           <div class="form-group top-five-contributing">
-            [@customForm.elementsListComponent name="innovation.contributingOrganizations" i18nkey="innovation.contributingOrganizations" maxLimit=5 elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations"  listName="institutions" keyFieldName="id" displayFieldName="composedName" /]
+            [@customForm.elementsListComponent name="innovation.contributingOrganizations" i18nkey="innovation.contributingOrganizations" maxLimit=5 elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations" help="projectInnovations.contributingOrganizations.help" listName="institutions" keyFieldName="id" displayFieldName="composedName" /]
           </div>
           
           [#-- Novel or Adaptive research --]
