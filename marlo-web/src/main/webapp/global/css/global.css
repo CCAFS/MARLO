@@ -7131,15 +7131,32 @@ li.currentSection#bi::before{
   display: flex;
   flex-flow: row;
   align-items: center;
-  justify-content: center;
+  margin-bottom: 10px
 }
 
-.containerTitleMessage {
-  width: 79%;
+.containerTitleStatusMessage {
+  width: 78.6%;
   display: flex;
   flex-flow: column;
   align-items: center;
-  margin: 0 10px;
+  margin-left: 10px;
+}
+
+.sloContainerTitleStatusMessage {
+  width: 76.4%;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.includeARButton {
+  /* margin-bottom: 10px; */
+}
+
+.removeARButton {
+  background: #D5504C;
+  border-bottom: 3px solid #bf4644;
 }
 
 #qualityAssessedIcon {
@@ -7163,6 +7180,40 @@ li.currentSection#bi::before{
   border-radius: 4px;
   font-weight: lighter;
   margin: 0 10px;
+  background-image: url(../../global/images/quality-assessed-icon.svg);
+  background-repeat: no-repeat;
+  background-position: 510px;
+  background-size: 30px 30px;
+}
+
+.pendingForReview-mode {
+  width: 100%;
+  height: 33px;
+  color: #5F5E5E;
+  padding: 5px 0;
+  background-color: #F4F4F4;
+  border: 1px solid #efeaea;
+  font-size: 1.2em;
+  border-radius: 4px;
+  font-weight: lighter;
+  margin: 0 10px;
+}
+
+.pending-mode {
+  width: 100%;
+  height: 33px;
+  color: #D4B34B;
+  padding: 5px 0;
+  background-color: #FFF8E3;
+  border: 1px solid #fff4d6;
+  font-size: 1.2em;
+  border-radius: 4px;
+  font-weight: lighter;
+  margin: 0 10px;
+  background-image: url(../../global/images/pending-icon.svg);
+  background-repeat: no-repeat;
+  background-position: 510px;
+  background-size: 27px 27px;
 }
 
 .qualityAssessed-mode p {

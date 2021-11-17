@@ -50,10 +50,11 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
   @Expose
   private String otherReason;
 
+  @Expose
+  private Boolean isQAIncluded;
 
   public ReportSynthesisFlagshipProgressOutcomeMilestone() {
   }
-
 
   public CrpMilestone getCrpMilestone() {
     return this.crpMilestone;
@@ -69,14 +70,19 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
     return evidenceLink;
   }
 
+
   public Integer getExtendedYear() {
     return extendedYear;
+  }
+
+
+  public Boolean getIsQAIncluded() {
+    return isQAIncluded;
   }
 
   public List<ReportSynthesisFlagshipProgressOutcomeMilestoneLink> getLinks() {
     return links;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -84,6 +90,7 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   public List<ReportSynthesisFlagshipProgressCrossCuttingMarker> getMarkers() {
     return this.markers;
@@ -93,7 +100,6 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
     return milestonesStatus;
   }
 
-
   public String getOtherReason() {
     return this.otherReason;
   }
@@ -102,6 +108,7 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
   public RepIndMilestoneReason getReason() {
     return this.reason;
   }
+
 
   public Set<ReportSynthesisFlagshipProgressCrossCuttingMarker>
     getReportSynthesisFlagshipProgressCrossCuttingMarkers() {
@@ -139,7 +146,6 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
     return "";
   }
 
-
   public void setCrpMilestone(CrpMilestone crpMilestone) {
     this.crpMilestone = crpMilestone;
   }
@@ -157,6 +163,11 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
 
   public void setExtendedYear(Integer extendedYear) {
     this.extendedYear = extendedYear;
+  }
+
+
+  public void setIsQAIncluded(Boolean isQAIncluded) {
+    this.isQAIncluded = isQAIncluded;
   }
 
 

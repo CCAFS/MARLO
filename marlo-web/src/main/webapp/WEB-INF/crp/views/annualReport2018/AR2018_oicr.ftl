@@ -9,7 +9,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_outomesMilestones.js?20211105a",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_outomesMilestones.js?20211111a",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211103a" 
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210225"] /]
@@ -49,6 +49,7 @@
           <span id="actualCrpID" style="display: none;">${(action.getCurrentCrp().id)!-1}</span>
           <span id="actualPhase" style="display: none;">${(action.isSelectedPhaseAR2021())?c}</span>
           <span id="isSubmitted" style="display: none;">${submission?c}</span>
+          <span id="isOICR" style="display: none;">true</span>
           [#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>

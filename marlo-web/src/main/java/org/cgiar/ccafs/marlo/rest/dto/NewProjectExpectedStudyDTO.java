@@ -47,13 +47,19 @@ public class NewProjectExpectedStudyDTO {
   // private List<GeographicScopeDTO> geographicScopes;
   private List<String> geographicScopes;
 
+  @ApiModelProperty(notes = "Geographic Scope comment box", position = 5)
+  private String geographicScopeComment;
+
+
   @ApiModelProperty(notes = "Contributing Flagship SMO code List", position = 8)
   // private List<CrpProgramDTO> flagshipsList;
   private List<String> flagshipsList;
 
+
   @ApiModelProperty(notes = "Contributing External Partners code List", position = 9)
   // private List<InstitutionDTO> institutionsList;
   private List<String> institutionsList;
+
 
   @ApiModelProperty(notes = "Contributing CRP/Plataform SMO code List", position = 7)
   // private List<CGIAREntityDTO> projectExpectedStudiesCrpDTO;
@@ -89,6 +95,10 @@ public class NewProjectExpectedStudyDTO {
   private List<NewMilestonesDTO> milestonesCodeList;
 
 
+  @ApiModelProperty(notes = "Reference Cited list", position = 13)
+  private List<ReferenceCitedDTO> referenceCitedList;
+
+
   public List<String> getCountries() {
     return countries;
   }
@@ -102,24 +112,27 @@ public class NewProjectExpectedStudyDTO {
     return flagshipsList;
   }
 
+  public String getGeographicScopeComment() {
+    return geographicScopeComment;
+  }
+
+
   public List<String> getGeographicScopes() {
     return geographicScopes;
   }
+
 
   public List<String> getInnovationCodeList() {
     return innovationCodeList;
   }
 
-
   public List<String> getInstitutionsList() {
     return institutionsList;
   }
 
-
   public List<String> getLinks() {
     return links;
   }
-
 
   public List<NewMilestonesDTO> getMilestonesCodeList() {
     return milestonesCodeList;
@@ -156,6 +169,11 @@ public class NewProjectExpectedStudyDTO {
   }
 
 
+  public List<ReferenceCitedDTO> getReferenceCitedList() {
+    return referenceCitedList;
+  }
+
+
   public List<String> getRegions() {
     return regions;
   }
@@ -183,6 +201,11 @@ public class NewProjectExpectedStudyDTO {
 
   public void setFlagshipsList(List<String> flagshipsList) {
     this.flagshipsList = flagshipsList;
+  }
+
+
+  public void setGeographicScopeComment(String geographicScopeComment) {
+    this.geographicScopeComment = geographicScopeComment;
   }
 
 
@@ -238,6 +261,11 @@ public class NewProjectExpectedStudyDTO {
 
   public void setQuantificationList(List<QuantificationDTO> quantificationList) {
     this.quantificationList = quantificationList;
+  }
+
+
+  public void setReferenceCitedList(List<ReferenceCitedDTO> referenceCitedList) {
+    this.referenceCitedList = referenceCitedList;
   }
 
 

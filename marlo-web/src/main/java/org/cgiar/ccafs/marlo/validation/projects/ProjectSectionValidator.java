@@ -653,6 +653,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
+      // Expected Study References List
+      if (innovation.getProjectInnovationEvidenceLinks() != null) {
+        innovation.setInnovationLinks(new ArrayList<>(innovation.getProjectInnovationEvidenceLinks().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
       // Innovation clear lead
       if (innovation != null && innovation.getProjectInnovationInfo(phase) != null) {
         if (innovation.getProjectInnovationInfo(phase).getClearLead() == null
@@ -1033,7 +1039,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         if (deliverable.getDeliverableUserPartnerships() != null) {
 
           List<DeliverableUserPartnership> deList = deliverable.getDeliverableUserPartnerships().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(phase.getId())
+            .filter(dp -> dp != null && dp.getId() != null && dp.isActive() && dp.getInstitution() != null
+              && dp.getInstitution().getId() != null && dp.getPhase().getId().equals(phase.getId())
               && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
             .collect(Collectors.toList());
 
@@ -1061,7 +1068,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         if (deliverable.getDeliverableUserPartnerships() != null) {
 
           List<DeliverableUserPartnership> deList = deliverable.getDeliverableUserPartnerships().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(phase.getId())
+            .filter(dp -> dp != null && dp.getId() != null && dp.isActive() && dp.getInstitution() != null
+              && dp.getInstitution().getId() != null && dp.getPhase().getId().equals(phase.getId())
               && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER))
             .collect(Collectors.toList());
 

@@ -149,6 +149,9 @@
     <property name="evidenceLink" type="string">
       <column name="evidence_link" sql-type="TEXT" />
     </property>
+    <property name="isQAIncluded" type="boolean">
+            <column name="is_qa_included" />
+        </property>
 
   </class>
 </hibernate-mapping>

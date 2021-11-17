@@ -827,6 +827,8 @@ public final class APConstants {
   public static final String FP_COLORS = "fpColors";
   public static final String STATUS_COLORS = "statusColors";
 
+  public static final String CRP_DELIVERABLE_FUNDING_REQUIRED = "deliverable_funding";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }
