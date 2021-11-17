@@ -372,6 +372,16 @@ public class DeliverableValidator extends BaseValidator {
 
   }
 
+  public void validate(BaseAction action, Project project, boolean hasDeliverables) {
+    if (project != null && project.getId() != null) {
+      action.addMissingField(hasDeliverables ? "" : APConstants.STATUS_EMPTY_DELIVERABLE_LIST);
+      this.saveMissingFieldsIndicator(project, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
+
+    }
+  }
+
   private void validateDeliverableInfo(DeliverableInfo deliverableInfo, Deliverable deliverable, Project project,
     BaseAction action) {
     if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getTitle())

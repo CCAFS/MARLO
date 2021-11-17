@@ -64,7 +64,6 @@ public interface SectionStatusManager {
   public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
-
   public SectionStatus getSectionStatusByCrpIndicators(long liaisonInstitutionID, String cycle, int year,
     Boolean upkeep, String sectionName);
 
@@ -77,6 +76,7 @@ public interface SectionStatusManager {
    */
   public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName, String cylce, int year,
     Boolean upkeep);
+
 
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
@@ -97,6 +97,14 @@ public interface SectionStatusManager {
    * @return a SectionStatus object.
    */
   public SectionStatus getSectionStatusById(long sectionStatusID);
+
+  /**
+   * This method gets a sectionStatus object by a given sectionStatus identifier.
+   * 
+   * @return a SectionStatus object.
+   */
+  public SectionStatus getSectionStatusByIndicator(String cycle, int year, Boolean upkeep, String sectionName,
+    long projectId);
 
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.

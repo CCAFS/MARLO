@@ -829,6 +829,9 @@ public final class APConstants {
 
   public static final String CRP_DELIVERABLE_FUNDING_REQUIRED = "deliverable_funding";
 
+  public static final String STATUS_EMPTY_DELIVERABLE_LIST = "No data: Deliverables";
+  public static final String STATUS_EMPTY_OUTCOME_LIST = "No data: ProjectOutcomes";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }
