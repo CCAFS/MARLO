@@ -88,6 +88,18 @@ public class ProjectOutcomeValidator extends BaseValidator {
     }
   }
 
+  public void validate(BaseAction action, Project project, boolean hasOutcomes) {
+    if (project != null && project.getId() != null) {
+      if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
+        && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
+        action.addMissingField(hasOutcomes ? "" : APConstants.STATUS_EMPTY_OUTCOME_LIST);
+        this.saveMissingFieldsIndicator(project, action.getActualPhase().getDescription(),
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+          ProjectSectionStatusEnum.OUTCOMES.getStatus(), action);
+      }
+    }
+  }
+
   public void validate(BaseAction action, ProjectOutcome projectOutcome, boolean saving) {
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
