@@ -5,7 +5,7 @@
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs","flag-icon-css"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js?20211116a"
+  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js?20211117a"
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211026a" ] /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20211026a",
@@ -324,7 +324,7 @@
       <div class="containerTitleElements">
         <span id="isCheckedAR-${(element.id)!''}" style="display: none;">${(qaIncluded)?c}</span>
         <button type="button" class="${qaIncluded?then('removeARButton', 'includeARButton')} qaStatus-button" name="${ccname}-button">${qaIncluded?then('Remove from QA', 'Include in QA')}</button>
-        <input type="hidden" name="${ccname}.isQAIncluded" id="qaStatus-value" class="onoffswitch-radio"  value="${(!qaIncluded)?c}" />
+        <input type="hidden" name="${ccname}.isQAIncluded" class="onoffswitch-radio"  value="${(!qaIncluded)?c}" />
         [#if qaIncluded]
           <div class="sloContainerTitleStatusMessage">
             <div id="containerQAStatus-${(element.id)!''}" class="pendingForReview-mode text-center animated flipInX">
