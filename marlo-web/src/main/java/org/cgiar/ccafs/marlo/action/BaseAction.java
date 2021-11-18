@@ -68,6 +68,10 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressDeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
@@ -157,6 +161,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.QAIndicator;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
@@ -511,6 +516,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private ReportSynthesisManager reportSynthesisManager;
   @Inject
   private MarloMessageManager marloMessageManager;
+
+  @Inject
+  private ReportSynthesisFlagshipProgressDeliverableManager flagshipProgressDeliverableManager;
+  @Inject
+  private ReportSynthesisFlagshipProgressInnovationManager flagshipProgressInnovationManager;
+  @Inject
+  private ReportSynthesisFlagshipProgressPolicyManager flagshipProgressPolicyManager;
+  @Inject
+  private ReportSynthesisFlagshipProgressStudyManager flagshipProgressStudyManager;
+
 
   private StringBuilder validationMessage = new StringBuilder();
 
@@ -3693,6 +3708,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         returnValue = true;
         break;
 
+      case IMPACTS:
+        sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
+          this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+        if (sectionStatus != null) {
+          if (sectionStatus.getMissingFields().length() == 0) {
+            return true;
+          }
+        } else {
+          if (!this.hasSpecificities(APConstants.CRP_COVID_REQUIRED)) {
+            return true;
+          }
+        }
+
+        break;
+
       case CASESTUDIES:
         project = this.projectManager.getProjectById(projectID);
         List<CaseStudyProject> caseStudies =
@@ -3808,7 +3838,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         }
 
-        returnValue = true;
+        returnValue = this.isNotEmpty(project.getDeliverables()) && this.isNotEmpty(deliverables);
 
         break;
 
@@ -5914,6 +5944,77 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return null;
 
+  }
+
+  /**
+   * Convenience method for AR2021 to check if an indicator has been already included for QA
+   * 
+   * @param indicatorName the indicator name (ex. policy, deliverable)
+   * @param indicatorId the indicator id (ex. policyId, deliverableId)
+   * @param phaseId the current phase id
+   * @return is synthesis ready for QA and indicator has been included for QA
+   */
+  public boolean isIndicatorIncludedInQA(String indicatorName, Long indicatorId, Long phaseId) {
+    if (StringUtils.isNotBlank(indicatorName) && indicatorId != null && indicatorId > 0 && phaseId != null
+      && phaseId > 0) {
+      Phase phase = this.phaseManager.getPhaseById(phaseId);
+      LiaisonInstitution liaisonInstitution = null;
+      ReportSynthesis reportSynthesis = null;
+
+      if (phase != null) {
+        while (phase.isReporting() != null && phase.isReporting() == false) {
+          phase = phase.getNext();
+        }
+
+        liaisonInstitution = this.liaisonInstitutionManager.findByAcronymAndCrp("PMU", this.getCrpID());
+        if (liaisonInstitution != null) {
+          reportSynthesis = this.reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+          if (reportSynthesis != null) {
+            MarloAuditableEntity synthesisEntity = null;
+            switch (QAIndicator.getByName(indicatorName)) {
+              case DELIVERABLE:
+                synthesisEntity = this.flagshipProgressDeliverableManager
+                  .getByFlagshipProgressAndDeliverable(indicatorId, reportSynthesis.getId());
+                break;
+              case INNOVATION:
+                synthesisEntity = this.flagshipProgressInnovationManager
+                  .getReportSynthesisFlagshipProgressInnovationByInnovationAndFlagshipProgress(indicatorId,
+                    reportSynthesis.getId());
+                break;
+              case MELIA:
+              case OICR:
+                synthesisEntity =
+                  this.flagshipProgressStudyManager.getReportSynthesisFlagshipProgressStudyByStudyAndFlagshipProgress(
+                    indicatorId, reportSynthesis.getId());
+                break;
+              case POLICY:
+                synthesisEntity = this.flagshipProgressPolicyManager
+                  .getReportSynthesisFlagshipProgressPolicyByPolicyAndFlagshipProgress(indicatorId,
+                    reportSynthesis.getId());
+                break;
+              default:
+                break;
+            }
+
+            boolean isQASumbitted = this.isAr2018Submitted(reportSynthesis.getId());
+
+            return isQASumbitted && (synthesisEntity == null || synthesisEntity.isActive() == false);
+          }
+
+          LOG.debug("null report synthesis");
+          return false;
+        }
+
+        LOG.debug("null liaison");
+        return false;
+      }
+
+      LOG.debug("null phase");
+      return false;
+    }
+
+    LOG.debug("Check the paramenters");
+    return false;
   }
 
   /**
