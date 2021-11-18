@@ -20,6 +20,8 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestoneLink;
+import org.cgiar.ccafs.marlo.rest.dto.EvidenceLinkDTO;
 import org.cgiar.ccafs.marlo.rest.dto.StatusPlannedMilestonesDTO;
 
 import org.mapstruct.AfterMapping;
@@ -42,9 +44,14 @@ public abstract class StatusPlannedMilestonesMapper {
 
   @Mappings({@Mapping(source = "crpMilestone", target = "milestone"),
     @Mapping(source = "markers", target = "crossCuttingMarkerList"),
+    @Mapping(source = "links", target = "evidenceLinkList"),
     @Mapping(source = "milestonesStatus", target = "reportedStatus"),
     @Mapping(source = "extendedYear", target = "reportedExtendedYear")})
   public abstract StatusPlannedMilestonesDTO
     reportSynthesisFlagshipProgressOutcomeMilestoneToStatusPlannedMilestonesDTO(
       ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone);
+
+  public abstract EvidenceLinkDTO
+    ReportSynthesisOutcomesMilestonesLinkToEvidenceLinkDTO(ReportSynthesisFlagshipProgressOutcomeMilestoneLink link);
 }
+

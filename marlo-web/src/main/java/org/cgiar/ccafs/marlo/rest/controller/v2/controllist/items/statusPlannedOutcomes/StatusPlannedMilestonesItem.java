@@ -688,6 +688,8 @@ public class StatusPlannedMilestonesItem<T> {
             } else {
               List<ReportSynthesisFlagshipProgressCrossCuttingMarker> markersList =
                 new ArrayList<ReportSynthesisFlagshipProgressCrossCuttingMarker>();
+              List<ReportSynthesisFlagshipProgressOutcomeMilestoneLink> evidenceLinks =
+                new ArrayList<ReportSynthesisFlagshipProgressOutcomeMilestoneLink>();
               reportSynthesisFlagshipProgressOutcomeMilestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager
                 .getReportSynthesisFlagshipProgressOutcomeMilestoneById(
                   reportSynthesisFlagshipProgressOutcomeMilestone.getId());
@@ -698,7 +700,15 @@ public class StatusPlannedMilestonesItem<T> {
                   .getReportSynthesisFlagshipProgressCrossCuttingMarkerById(marker.getId());
                 markersList.add(marker);
               }
+              for (ReportSynthesisFlagshipProgressOutcomeMilestoneLink link : reportSynthesisFlagshipProgressOutcomeMilestone
+                .getReportSynthesisFlagshipProgressOutcomeMilestoneLinks().stream().filter(c -> c.isActive())
+                .collect(Collectors.toList())) {
+                link = reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager
+                  .getReportSynthesisFlagshipProgressOutcomeMilestoneLinkById(link.getId());
+                evidenceLinks.add(link);
+              }
               reportSynthesisFlagshipProgressOutcomeMilestone.setMarkers(markersList);
+              reportSynthesisFlagshipProgressOutcomeMilestone.setLinks(evidenceLinks);
             }
           }
         }

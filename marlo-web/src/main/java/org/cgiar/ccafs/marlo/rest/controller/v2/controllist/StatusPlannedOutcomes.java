@@ -83,20 +83,14 @@ public class StatusPlannedOutcomes {
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${StatusPlannedOutcomes.milestones.POST.param.statusPlannedMilestone}",
       required = true) @Valid @RequestBody NewStatusPlannedMilestoneDTO newStatusPlanneMilestoneDTO) {
-    try {
-      Long reportSythesisProgressOutcomesID = this.statusPlannedMilestonesItem
-        .createStatusPlannedMilestone(newStatusPlanneMilestoneDTO, CGIAREntity, this.getCurrentUser());
 
-
-      ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
-      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-        throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.milestones.POST.id.404"));
-      }
-      return response;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
+    Long reportSythesisProgressOutcomesID = this.statusPlannedMilestonesItem
+      .createStatusPlannedMilestone(newStatusPlanneMilestoneDTO, CGIAREntity, this.getCurrentUser());
+    ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.milestones.POST.id.404"));
     }
+    return response;
 
   }
 
@@ -224,19 +218,15 @@ public class StatusPlannedOutcomes {
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${StatusPlannedOutcomes.milestones.PUT.param.statusPlannedMilestone}",
       required = true) @Valid @RequestBody NewStatusPlannedMilestoneDTO newStatusPlanneMilestoneDTO) {
-    try {
-      Long reportSythesisProgressOutcomesID = this.statusPlannedMilestonesItem
-        .updateStatusPlannedMilestone(newStatusPlanneMilestoneDTO, CGIAREntity, this.getCurrentUser());
 
-      ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
-      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-        throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.milestones.PUT.id.404"));
-      }
-      return response;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
+    Long reportSythesisProgressOutcomesID = this.statusPlannedMilestonesItem
+      .updateStatusPlannedMilestone(newStatusPlanneMilestoneDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.milestones.PUT.id.404"));
     }
+    return response;
 
   }
 
@@ -252,8 +242,6 @@ public class StatusPlannedOutcomes {
       required = true) @Valid @RequestBody NewStatusPlannedOutcomeDTO newStatusPlannedOutcomeDTO) {
     Long reportSythesisProgressOutcomesID = this.statusPlannedOutcomesItem
       .updateStatusPlannedOutcome(newStatusPlannedOutcomeDTO, CGIAREntity, this.getCurrentUser());
-
-
     ResponseEntity<Long> response = new ResponseEntity<Long>(reportSythesisProgressOutcomesID, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.outcomes.PUT.id.404"));
