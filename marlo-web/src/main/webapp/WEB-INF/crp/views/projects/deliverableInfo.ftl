@@ -153,7 +153,7 @@
   [#-- Funding Source --]
   [#if !phaseOne]
   <div class="panel tertiary">
-   <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.fundingSource" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+   <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.fundingSource" readText=!editable /]:[@customForm.req required=(editable&&action.hasSpecificities('deliverable_funding')) /]</label></div>
     <div id="fundingSourceList" class="panel-body" listname="deliverable.fundingSources"> 
       <ul class="list">
       [#if deliverable.fundingSources?has_content]
