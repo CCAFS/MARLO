@@ -146,6 +146,24 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   }
 
   @Override
+  public SectionStatus getSectionStatusByIndicator(String cycle, int year, Boolean upkeep, String sectionName,
+    long projectId) {
+    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and project_id=" + projectId
+      + " and deliverable_id is null and project_outcome_id is null and case_study_id is null and highlight_id is null "
+      + "and ip_program_id is null and ip_liaison_id is null and funding_source_id is null "
+      + "and powb_synthesis_id is null and project_expected_id is null and project_innovation_id is null "
+      + "and report_synthesis_id is null and project_policy_id is null "
+      + "and project_lp6_contribution_id is null and project_impact_id is null";
+    List<SectionStatus> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+
+  @Override
   public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, Boolean upkeep,
     String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
@@ -170,7 +188,6 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     return null;
   }
 
-
   @Override
   public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, Boolean upkeep,
     String sectionName) {
@@ -183,6 +200,7 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     return null;
   }
 
+
   @Override
   public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, Boolean upkeep,
     String sectionName) {
@@ -194,7 +212,6 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     }
     return null;
   }
-
 
   @Override
   public SectionStatus getSectionStatusByProjectContributionToLP6(long projectLp6ContributionID, String cycle, int year,
