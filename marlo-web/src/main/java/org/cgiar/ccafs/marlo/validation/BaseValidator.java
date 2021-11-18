@@ -52,7 +52,7 @@ public class BaseValidator {
   @Inject
   protected APConfig config;
   @Inject
-  private SectionStatusManager sectionStatusManager;
+  protected SectionStatusManager sectionStatusManager;
   @Inject
   private ICenterSectionStatusManager centerSectionStatusManager;
 
