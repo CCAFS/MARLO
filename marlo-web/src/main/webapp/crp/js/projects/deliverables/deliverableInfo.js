@@ -765,7 +765,10 @@ var deliverablePartnersModule = (function () {
             status = 'Deliverable was Quality Assessed on ' + date;
             statusClass = 'qualityAssessed-mode';
             break;
-  
+          case 'automatically_validated':
+            status = 'Automatically Validated';
+            statusClass = 'autoValidated-mode';
+            break;
           default:
             break;
         }
