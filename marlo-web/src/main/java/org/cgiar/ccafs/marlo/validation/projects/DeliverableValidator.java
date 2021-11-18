@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -374,11 +375,19 @@ public class DeliverableValidator extends BaseValidator {
 
   public void validate(BaseAction action, Project project, boolean hasDeliverables) {
     if (project != null && project.getId() != null) {
-      action.addMissingField(hasDeliverables ? "" : APConstants.STATUS_EMPTY_DELIVERABLE_LIST);
-      this.saveMissingFieldsIndicator(project, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-        ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
-
+      if (hasDeliverables == false) {
+        action.addMissingField(APConstants.STATUS_EMPTY_DELIVERABLE_LIST);
+        this.saveMissingFieldsIndicator(project, action.getActualPhase().getDescription(),
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+          ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
+      } else {
+        SectionStatus sectionStatus =
+          this.sectionStatusManager.getSectionStatusByIndicator(action.getCurrentCycle(), action.getCurrentCycleYear(),
+            action.isUpKeepActive(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), project.getId());
+        if (sectionStatus != null) {
+          this.sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
+      }
     }
   }
 
