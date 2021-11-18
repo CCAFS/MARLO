@@ -1,4 +1,7 @@
+
 var $statuses, $statusDescription;
+var deliverableAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=3&crpID=';
+var deliverableArrName = 'fullItemsAssessmentStatus';
 
 $(document).ready(init);
 function hideOrShowCheckBoxIsOtherUrl(value) {
@@ -697,12 +700,98 @@ var deliverablePartnersModule = (function () {
   }
 
   function attachEvents() {
+    if ($('#actualPhase').html() == 'true') {
+      loadQualityAssessmentStatus(deliverableAjaxURL, deliverableArrName);
+    }
+
     // On change institution
     $('select.partnerInstitutionID').on('change', changePartnerInstitution);
     // On remove a deliverable partner item
     $('.removePartnerItem').on('click', removePartnerItem);
     // On add a new deliverable partner Item
     $('.addPartnerItem').on('click', addPartnerItem);
+  }
+
+  function loadQualityAssessmentStatus(ajaxURL, arrName) {
+    var currentCrpID = $('#actualCrpID').html();
+  
+    if (currentCrpID != '-1') {
+  
+      var finalAjaxURL = ajaxURL + currentCrpID;
+  
+      $.ajax({
+        url: baseURL + finalAjaxURL,
+        async: false,
+        success: function (data) {
+          if (data && Object.keys(data).length != 0) {
+            var newData = data[arrName].map(function (x) {
+              var arr = [];
+  
+              arr.push(x.id);
+              arr.push(x.assessmentStatus);
+              arr.push(x.updatedAt);
+  
+              return arr;
+            });
+            updateQualityAssessmentStatusData(newData);
+          }
+        }
+      });
+    }
+  }
+  
+  function updateQualityAssessmentStatusData(data) {
+    data.map(function (x) {
+      if (x[0] == $('#deliverableID').html()) {
+        var container = document.getElementsByClassName('containerTitleElementsProject')[0];
+        var element = document.getElementById('qualityAssessedIcon');
+        var date, status, statusClass;
+  
+        switch (x[1]) {
+          case 'pending':
+            status = 'Pending assessment';
+            statusClass = 'pending-mode';
+            break;
+          case 'pending_crp':
+            status = 'Pending CRP response';
+            statusClass = 'pending-mode';
+            break;
+          case 'in_progress':
+            status = 'Quality Assessed (Requires 2nd assessment)';
+            statusClass = 'qualityAssessed-mode';
+            break;
+          case 'quality_assessed':
+            date = new Date((x[2].split('T')[0])).toDateString();
+            status = 'Deliverable was Quality Assessed on ' + date;
+            statusClass = 'qualityAssessed-mode';
+            break;
+  
+          default:
+            break;
+        }
+  
+        if (element) {
+          var pTag = document.createElement('p');
+          var text = document.createTextNode(status);
+  
+          element.innerHTML = '';
+          element.classList.remove('pendingForReview-mode');
+          element.classList.add(statusClass);
+          pTag.style.margin = '0';
+          pTag.appendChild(text);
+          element.appendChild(pTag);
+  
+          if (x[1] == 'quality_assessed') {
+            var pMessageTag = document.createElement('p');
+            var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+  
+            pMessageTag.classList.add('messageQAInfo');
+            pMessageTag.appendChild(textMessage);
+            container.appendChild(pMessageTag);
+          }
+        }
+      }
+    });
   }
 
   function addPartnerItem() {
