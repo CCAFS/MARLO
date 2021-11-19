@@ -197,6 +197,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -220,6 +221,7 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
@@ -5971,26 +5973,61 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           reportSynthesis = this.reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
           if (reportSynthesis != null) {
             MarloAuditableEntity synthesisEntity = null;
+            final Long synthesisId = reportSynthesis.getId();
             switch (QAIndicator.getByName(indicatorName)) {
               case DELIVERABLE:
-                synthesisEntity = this.flagshipProgressDeliverableManager
-                  .getByFlagshipProgressAndDeliverable(indicatorId, reportSynthesis.getId());
+                synthesisEntity = CollectionUtils.emptyIfNull(this.flagshipProgressDeliverableManager.findAll())
+                  .stream()
+                  .filter(fpd -> fpd != null && fpd.getId() != null && fpd.getReportSynthesisFlagshipProgress() != null
+                    && fpd.getReportSynthesisFlagshipProgress().getId() != null
+                    && fpd.getReportSynthesisFlagshipProgress().getId().equals(synthesisId)
+                    && fpd.getDeliverable() != null && fpd.getDeliverable().getId() != null
+                    && fpd.getDeliverable().getId().equals(indicatorId) && fpd.getActiveSince() != null)
+                  .sorted(
+                    (d1, d2) -> Comparator.comparing(MarloAuditableEntity::getActiveSince).reversed().compare(d1, d2))
+                  .findFirst().orElse(null);
+                // this.flagshipProgressDeliverableManager.getByFlagshipProgressAndDeliverable(indicatorId,
+                // reportSynthesis.getId());
                 break;
               case INNOVATION:
-                synthesisEntity = this.flagshipProgressInnovationManager
-                  .getReportSynthesisFlagshipProgressInnovationByInnovationAndFlagshipProgress(indicatorId,
-                    reportSynthesis.getId());
+                synthesisEntity = CollectionUtils.emptyIfNull(this.flagshipProgressInnovationManager.findAll()).stream()
+                  .filter(fpd -> fpd != null && fpd.getId() != null && fpd.getReportSynthesisFlagshipProgress() != null
+                    && fpd.getReportSynthesisFlagshipProgress().getId() != null
+                    && fpd.getReportSynthesisFlagshipProgress().getId().equals(synthesisId)
+                    && fpd.getProjectInnovation() != null && fpd.getProjectInnovation().getId() != null
+                    && fpd.getProjectInnovation().getId().equals(indicatorId) && fpd.getActiveSince() != null)
+                  .sorted(
+                    (d1, d2) -> Comparator.comparing(MarloAuditableEntity::getActiveSince).reversed().compare(d1, d2))
+                  .findFirst().orElse(null);
+                // this.flagshipProgressInnovationManager.getReportSynthesisFlagshipProgressInnovationByInnovationAndFlagshipProgress(indicatorId,
+                // reportSynthesis.getId());
                 break;
               case MELIA:
               case OICR:
-                synthesisEntity =
-                  this.flagshipProgressStudyManager.getReportSynthesisFlagshipProgressStudyByStudyAndFlagshipProgress(
-                    indicatorId, reportSynthesis.getId());
+                synthesisEntity = CollectionUtils.emptyIfNull(this.flagshipProgressStudyManager.findAll()).stream()
+                  .filter(fpd -> fpd != null && fpd.getId() != null && fpd.getReportSynthesisFlagshipProgress() != null
+                    && fpd.getReportSynthesisFlagshipProgress().getId() != null
+                    && fpd.getReportSynthesisFlagshipProgress().getId().equals(synthesisId)
+                    && fpd.getProjectExpectedStudy() != null && fpd.getProjectExpectedStudy().getId() != null
+                    && fpd.getProjectExpectedStudy().getId().equals(indicatorId) && fpd.getActiveSince() != null)
+                  .sorted(
+                    (d1, d2) -> Comparator.comparing(MarloAuditableEntity::getActiveSince).reversed().compare(d1, d2))
+                  .findFirst().orElse(null);
+                // this.flagshipProgressStudyManager.getReportSynthesisFlagshipProgressStudyByStudyAndFlagshipProgress(
+                // indicatorId, reportSynthesis.getId());
                 break;
               case POLICY:
-                synthesisEntity = this.flagshipProgressPolicyManager
-                  .getReportSynthesisFlagshipProgressPolicyByPolicyAndFlagshipProgress(indicatorId,
-                    reportSynthesis.getId());
+                synthesisEntity = CollectionUtils.emptyIfNull(this.flagshipProgressPolicyManager.findAll()).stream()
+                  .filter(fpd -> fpd != null && fpd.getId() != null && fpd.getReportSynthesisFlagshipProgress() != null
+                    && fpd.getReportSynthesisFlagshipProgress().getId() != null
+                    && fpd.getReportSynthesisFlagshipProgress().getId().equals(synthesisId)
+                    && fpd.getProjectPolicy() != null && fpd.getProjectPolicy().getId() != null
+                    && fpd.getProjectPolicy().getId().equals(indicatorId) && fpd.getActiveSince() != null)
+                  .sorted(
+                    (d1, d2) -> Comparator.comparing(MarloAuditableEntity::getActiveSince).reversed().compare(d1, d2))
+                  .findFirst().orElse(null);
+                // this.flagshipProgressPolicyManager.getReportSynthesisFlagshipProgressPolicyByPolicyAndFlagshipProgress(indicatorId,
+                // reportSynthesis.getId());
                 break;
               default:
                 break;
