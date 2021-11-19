@@ -54,7 +54,8 @@
           <span id="studyID" style="display: none;">${(expectedStudy.id)!-1}</span>
           <span id="isSubmitted" style="display: none;">${submission?c}</span>
           [#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
-          [#assign isQAIncluded = action.isIndicatorIncludedInQA("deliverable", (deliverable.id)!-1, (action.getActualPhase().id)!-1)!false]
+          [#assign isOutcomeCaseStudy = (((expectedStudy.projectExpectedStudyInfo.studyType.id == 1)!false) && (reportingActive || upKeepActive))!false]
+          [#assign isQAIncluded = action.isIndicatorIncludedInQA(isOutcomeCaseStudy?then('oicr', 'melia'), (expectedStudy.id)!-1, (action.getActualPhase().id)!-1)!false]
 
           [#if actualPhaseAR2021 && isQAIncluded]
             <div class="containerTitleElementsProject">
