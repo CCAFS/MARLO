@@ -45,8 +45,9 @@
       <span id="innovationID" style="display: none;">${(innovation.id)!-1}</span>
       <span id="isSubmitted" style="display: none;">${submission?c}</span>
       [#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
+      [#assign isQAIncluded = action.isIndicatorIncludedInQA("innovation", (innovation.id)!-1, (action.getActualPhase().id)!-1)!false]
 
-      [#if actualPhaseAR2021]
+      [#if actualPhaseAR2021 && isQAIncluded]
         <div class="containerTitleElementsProject">
           <div class="containerTitleMessage">
             <div id="qualityAssessedIcon" class="pendingForReview-mode text-center animated flipInX" style="height: auto;">
