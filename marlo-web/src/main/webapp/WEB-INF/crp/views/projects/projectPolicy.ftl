@@ -50,8 +50,7 @@
           [#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
           [#assign isQAIncluded = action.isIndicatorIncludedInQA("policy", (policy.id)!-1, (action.getActualPhase().id)!-1)!false]
 
-          <span>${(isQAIncluded)?c}</span>
-          [#if actualPhaseAR2021]
+          [#if actualPhaseAR2021 && isQAIncluded]
             <div class="containerTitleElementsProject">
               <div class="containerTitleMessage">
                 <div id="qualityAssessedIcon" class="pendingForReview-mode text-center animated flipInX" style="height: auto;">
