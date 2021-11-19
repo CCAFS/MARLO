@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20211118A",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20211118B",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20210908B", 
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20200205",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
@@ -56,8 +56,9 @@
         <span id="deliverableID" style="display: none;">${(deliverable.id)!-1}</span>
         <span id="isSubmitted" style="display: none;">${submission?c}</span>
         [#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
+        [#assign isQAIncluded = action.isIndicatorIncludedInQA("deliverable", (deliverable.id)!-1, (action.getActualPhase().id)!-1)!false]
 
-        [#if actualPhaseAR2021]
+        [#if actualPhaseAR2021 && isQAIncluded]
           <div class="containerTitleElementsProject">
             <div class="containerTitleMessage">
               <div id="qualityAssessedIcon" class="pendingForReview-mode text-center animated flipInX" style="height: auto;">
