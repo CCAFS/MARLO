@@ -1,4 +1,8 @@
 var caseStudiesName, $elementsBlock, multiInputStudies;
+var oicrAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=4&crpID=';
+var oicrArrName = 'fullItemsAssessmentStatus';
+var meliaAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=5&crpID=';
+var meliaArrName = 'fullItemsAssessmentStatus';
 
 $(document).ready(init);
 
@@ -11,7 +15,7 @@ function init() {
   addSelect2();
 
   // Add Geographic Scope
-  $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(event,id,name) {
+  $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function (event, id, name) {
     setGeographicScope(this);
   });
   setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
@@ -28,11 +32,11 @@ function init() {
   // Numeric field
   $('input.numericInput').numericInput();
 
-  $('.ccRelevanceBlock input:radio').on('change', function() {
+  $('.ccRelevanceBlock input:radio').on('change', function () {
     var $commentBox = $(this).parents('.ccRelevanceBlock').find('.ccCommentBox');
     var id = this.value;
     console.log("CC", id);
-    if((id == "1") || (id == "4")) {
+    if ((id == "1") || (id == "4")) {
       $commentBox.slideUp();
     } else {
       $commentBox.slideDown();
@@ -47,12 +51,12 @@ function init() {
 
 function checkContributingCRP() {
   var actualContributingCRP = $('.oicrContributingCRP').find('.list .relationElement');
-  
+
   actualContributingCRP.each((index, item) => {
     actualContributingCRPSpan = $(item).find('span.elementName').html();
-    var crpName = actualContributingCRPSpan.substr(0,actualContributingCRPSpan.indexOf(' '));
+    var crpName = actualContributingCRPSpan.substr(0, actualContributingCRPSpan.indexOf(' '));
     var actualCRP = $('#actualCRP').html();
-    
+
     if (crpName == actualCRP) {
       $(item).find('.removeElement').css('display', 'none');
     }
@@ -85,26 +89,22 @@ function validateURL(item) {
 
 function attachEvents() {
   if ($('#actualPhase').html() == 'true') {
-    // var outcomeStory = $('textarea[id*="comunicationsMaterial"]');
-    // var outcomeStoryTrimmed;
-    // if (outcomeStory.html() != undefined) {
-    //   outcomeStoryTrimmed = outcomeStory.html().trim();
-    // } else {
-    //   outcomeStoryTrimmed = outcomeStory.html();
-    // }
+    if ($('#isOICR').html() == 'true') {
+      loadQualityAssessmentStatus(oicrAjaxURL, oicrArrName);
+    } else {
+      loadQualityAssessmentStatus(meliaAjaxURL, meliaArrName);
+    }
+  }
 
-    // if (outcomeStoryTrimmed == undefined || outcomeStoryTrimmed == '') {
-    //   outcomeStory.prop('disabled', true);
-    // }
-    
+  if ($('#actualPhase').html() == 'true') {
     $('select.statusSelect option[value="1"]').prop('disabled', true);
     $('select.statusSelect option[value="4"]').prop('disabled', true);
   }
 
   //Expected Year
-  $('select.statusSelect').on('change', function() {
+  $('select.statusSelect').on('change', function () {
     console.log(this.value);
-    if(this.value == 4) {
+    if (this.value == 4) {
       $('.block-extendedYear').slideDown();
       $('.block-year').slideUp();
     } else {
@@ -114,7 +114,7 @@ function attachEvents() {
   });
 
   // On change studyType
-  $('select.studyType').on('change', function() {
+  $('select.studyType').on('change', function () {
 
     // Clean indicator #3 option
     $('input.radioType-studyIndicatorThree:checked').prop('checked', false).trigger('change');
@@ -124,9 +124,9 @@ function attachEvents() {
   $('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
   // On change policyInvestimentTypes
-  $('select.policyInvestimentTypes').on('change', function() {
+  $('select.policyInvestimentTypes').on('change', function () {
     console.log(this.value);
-    if(this.value == 3) {
+    if (this.value == 3) {
       $('.block-budgetInvestment').slideDown();
     } else {
       $('.block-budgetInvestment').slideUp();
@@ -134,11 +134,11 @@ function attachEvents() {
   });
 
   // On change stage of process
-  $('select.stageProcess, input.radioType-studyIndicatorThree').on('change', function() {
+  $('select.stageProcess, input.radioType-studyIndicatorThree').on('change', function () {
     var isPolicy = $('input.radioType-studyIndicatorThree:checked').val() == "true";
     var stageProcessOne = ($('select.stageProcess').val() == 1);
 
-    if(isPolicy && stageProcessOne) {
+    if (isPolicy && stageProcessOne) {
       // $('.stageProcessOne span.requiredTag').slideUp();
     } else {
       // $('.stageProcessOne span.requiredTag').slideDown();
@@ -146,9 +146,9 @@ function attachEvents() {
   });
 
   // SRF Targets validation
-  $('input.radioType-targetsOption').on('change', function() {
+  $('input.radioType-targetsOption').on('change', function () {
     var showComponent = $(this).val() == "targetsOptionYes";
-    if(showComponent) {
+    if (showComponent) {
       $('.srfTargetsComponent').slideDown(); // Show
     } else {
       $('.srfTargetsComponent').slideUp(); // Hide
@@ -156,9 +156,9 @@ function attachEvents() {
   });
 
   // Other CrossCutting Component validation
-  $('input.radioType-otherCrossCuttingOption').on('change', function() {
+  $('input.radioType-otherCrossCuttingOption').on('change', function () {
     var showComponent = $(this).val() == "Yes";
-    if(showComponent) {
+    if (showComponent) {
       // $('.otherCrossCuttingOptionsComponent').slideDown(); // Show
     } else {
       // $('.otherCrossCuttingOptionsComponent').slideUp(); // Hide
@@ -166,9 +166,9 @@ function attachEvents() {
   });
 
   // Public link
-  $('input.radioType-optionPublic').on('change', function() {
+  $('input.radioType-optionPublic').on('change', function () {
     var showComponent = $(this).val() == "true";
-    if(showComponent) {
+    if (showComponent) {
       $('.optionPublicComponent').slideDown(); // Show
     } else {
       $('.optionPublicComponent').slideUp(); // Hide
@@ -176,13 +176,13 @@ function attachEvents() {
   });
 
   // Copy URL Button event
-  $('.copyButton').on('click', function() {
+  $('.copyButton').on('click', function () {
     var $parent = $(this).parents(".optionPublicComponent");
     var $input = $parent.find('.urlInput');
     var $message = $parent.find('.message');
     $input.select();
-    if(document.execCommand("copy")) {
-      $message.fadeIn(400, function() {
+    if (document.execCommand("copy")) {
+      $message.fadeIn(400, function () {
         $message.fadeOut(300);
       });
     }
@@ -192,7 +192,7 @@ function attachEvents() {
   /**
    * Links Component
    */
-  (function() {
+  (function () {
     // Events
     $('.addButtonLink').on('click', addItem);
     $('.removeLink.links').on('click', removeItem);
@@ -205,23 +205,23 @@ function attachEvents() {
       var $list = $(this).parent('.linksBlock').find('.linksList');
       var $element = $('#multiInput-links-template').clone(true).removeAttr("id");
       var $listLength = $list.children().length;
-      
+
       if ($listLength <= 9) {
         // Remove template tag
-        $element.find('input, textarea').each(function(i,e) {
+        $element.find('input, textarea').each(function (i, e) {
           e.name = (e.name).replace("_TEMPLATE_", "");
           e.id = (e.id).replace("_TEMPLATE_", "");
         });
         // Show the element
         $element.appendTo($list).hide().show(350);
         // Update indexes
-        updateIndexes(this); 
+        updateIndexes(this);
       }
     }
     function removeItem() {
       var $parent = $(this).parent('.multiInput.links');
       var $addBtn = $(this).parent().parent().parent().find('.addButtonLink');
-      $parent.hide(500, function() {
+      $parent.hide(500, function () {
         // Remove DOM element
         $parent.remove();
         // Update indexes
@@ -229,7 +229,7 @@ function attachEvents() {
       });
     }
     function updateIndexes(list) {
-      $(list).parent('.linksBlock').find('.linksList').find('.multiInput').each(function(i,element) {
+      $(list).parent('.linksBlock').find('.linksList').find('.multiInput').each(function (i, element) {
         $(element).find('.indexTag').text(i + 1);
         $(element).setNameIndexes(1, i);
       });
@@ -243,13 +243,13 @@ function attachEvents() {
 
   function validateEmptyLinks() {
     var linksList = $('.linksList').children('div').length;
-  
+
     if ($(this).hasClass('removeElement')) {
       linksList -= 1;
     } else {
       linksList = linksList;
     }
-    if ( linksList > 0) {
+    if (linksList > 0) {
       $('#warningEmptyLinksTag').hide();
     } else {
       $('#warningEmptyLinksTag').show();
@@ -259,7 +259,7 @@ function attachEvents() {
   /**
    * References Component
    */
-   (function() {
+  (function () {
     // Events
     $('.addButtonReference').on('click', addItem);
     $('.removeLink.references').on('click', removeItem);
@@ -270,23 +270,23 @@ function attachEvents() {
       var $list = $(this).parent('.referenceBlock').find('.referenceList');
       var $element = $('#multiInput-references-template').clone(true).removeAttr("id");
       var $listLength = $list.children().length;
-      
+
       if ($listLength <= 9) {
         // Remove template tag
-        $element.find('input, textarea').each(function(i,e) {
+        $element.find('input, textarea').each(function (i, e) {
           e.name = (e.name).replace("_TEMPLATE_", "");
           e.id = (e.id).replace("_TEMPLATE_", "");
         });
         // Show the element
         $element.appendTo($list).hide().show(350);
         // Update indexes
-        updateIndexes(this); 
+        updateIndexes(this);
       }
     }
     function removeItem() {
       var $parent = $(this).parent('.multiInput.references');
       var $addBtn = $(this).parent().parent().parent().find('.addButtonReference');
-      $parent.hide(500, function() {
+      $parent.hide(500, function () {
         // Remove DOM element
         $parent.remove();
         // Update indexes
@@ -295,7 +295,7 @@ function attachEvents() {
     }
     function updateIndexes(list) {
       var linksList = $(list).parent('.referenceBlock').find('.referenceList');
-      linksList.find('.multiInput').each(function(i,element) {
+      linksList.find('.multiInput').each(function (i, element) {
         $(element).find('.indexTag').text(i + 1);
         $(element).setNameIndexes(1, i);
       });
@@ -341,7 +341,7 @@ function attachEvents() {
   /**
    * Qualification Component
    */
-  (function() {
+  (function () {
     // Events
     $('.addStudyQualification').on('click', addItem);
     $('.removeQuantification').on('click', removeItem);
@@ -351,7 +351,7 @@ function attachEvents() {
       var $list = $(this).parents('.quantificationsBlock').find('.quantificationsList');
       var $element = $('#quantification-template').clone(true).removeAttr("id");
       // Remove template tag
-      $element.find('input, textarea').each(function(i,e) {
+      $element.find('input, textarea').each(function (i, e) {
         e.name = (e.name).replace("_TEMPLATE_", "");
         e.id = (e.id).replace("_TEMPLATE_", "");
       });
@@ -362,7 +362,7 @@ function attachEvents() {
     }
     function removeItem() {
       var $parent = $(this).parents('.quantification');
-      $parent.hide(500, function() {
+      $parent.hide(500, function () {
         // Remove DOM element
         $parent.remove();
         // Update indexes
@@ -370,12 +370,12 @@ function attachEvents() {
       });
     }
     function updateIndexes() {
-      $('.quantificationsList').find('.quantification').each(function(i,element) {
+      $('.quantificationsList').find('.quantification').each(function (i, element) {
         $(element).find('span.index').text(i + 1);
         $(element).setNameIndexes(1, i);
 
         // Update Radios
-        $(element).find('.radioFlat ').each(function(j,item) {
+        $(element).find('.radioFlat ').each(function (j, item) {
           var radioName = 'quantificationRadio-' + i + '-' + j;
           $(item).find('input').attr('id', radioName);
           $(item).find('label').attr('for', radioName);
@@ -385,14 +385,100 @@ function attachEvents() {
     }
 
   })();
-	//On change radio buttons
-	$('input[class*="radioType-"]').on('change', onChangeRadioButton);
+  //On change radio buttons
+  $('input[class*="radioType-"]').on('change', onChangeRadioButton);
+}
+
+function loadQualityAssessmentStatus(ajaxURL, arrName) {
+  var currentCrpID = $('#actualCrpID').html();
+
+  if (currentCrpID != '-1') {
+
+    var finalAjaxURL = ajaxURL + currentCrpID;
+
+    $.ajax({
+      url: baseURL + finalAjaxURL,
+      async: false,
+      success: function (data) {
+        if (data && Object.keys(data).length != 0) {
+          var newData = data[arrName].map(function (x) {
+            var arr = [];
+
+            arr.push(x.id);
+            arr.push(x.assessmentStatus);
+            arr.push(x.updatedAt);
+
+            return arr;
+          });
+          updateQualityAssessmentStatusData(newData);
+        }
+      }
+    });
+  }
+}
+
+function updateQualityAssessmentStatusData(data) {
+  data.map(function (x) {
+    if (x[0] == $('#studyID').html()) {
+      var container = document.getElementsByClassName('containerTitleElementsProject')[0];
+      var element = document.getElementById('qualityAssessedIcon');
+      var date, status, statusClass;
+  
+      switch (x[1]) {
+        case 'pending':
+          status = 'Pending assessment';
+          statusClass = 'pending-mode';
+          break;
+        case 'pending_crp':
+          status = 'Pending CRP response';
+          statusClass = 'pending-mode';
+          break;
+        case 'in_progress':
+          status = 'Quality Assessed (Requires 2nd assessment)';
+          statusClass = 'qualityAssessed-mode';
+          break;
+        case 'quality_assessed':
+          date = new Date((x[2].split('T')[0])).toDateString();
+          if ($('#isOICR').html() == 'true') {
+            status = 'OICR was Quality Assessed on ' + date;
+          } else {
+            status = 'MELIA was Quality Assessed on ' + date;
+          }
+          statusClass = 'qualityAssessed-mode';
+          break;
+  
+        default:
+          break;
+      }
+  
+      if (element) {
+        var pTag = document.createElement('p');
+        var text = document.createTextNode(status);
+  
+        element.innerHTML = '';
+        element.classList.remove('pendingForReview-mode');
+        element.classList.add(statusClass);
+        pTag.style.margin = '0';
+        pTag.appendChild(text);
+        element.appendChild(pTag);
+  
+        if (x[1] == 'quality_assessed') {
+          var pMessageTag = document.createElement('p');
+          var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+  
+          pMessageTag.classList.add('messageQAInfo');
+          pMessageTag.appendChild(textMessage);
+          container.appendChild(pMessageTag);
+        }
+      }
+    }
+  });
 }
 
 function onChangeRadioButton() {
   var thisValue = this.value === "true";
   var radioType = $(this).classParam('radioType');
-  if(thisValue) {
+  if (thisValue) {
     $('.block-' + radioType).slideDown();
   } else {
     $('.block-' + radioType).slideUp();
@@ -404,7 +490,7 @@ function addSelect2() {
   var isNew = $('.evidenceBlock').classParam('isNew') == "true";
   var hasEvidenceTag = $('input.radioType-tags:checked').val();
 
-  if(isNew) {
+  if (isNew) {
     // Adjust status
     // it was disable in 6/11/2019
     // $('select.statusSelect option[value="4"]').prop('disabled', true); //
@@ -413,7 +499,7 @@ function addSelect2() {
     // Cancelled
 
     // Suggest Evidence tag
-    if(!hasEvidenceTag) {
+    if (!hasEvidenceTag) {
       $('input.radioType-tags[value="1"]').prop("checked", true); // New
       // tag
     }
@@ -421,7 +507,7 @@ function addSelect2() {
 
   }
 
-  if(reportingActive) {
+  if (reportingActive) {
     // Adjust status
 
   } else {
@@ -437,13 +523,13 @@ function addSelect2() {
 }
 
 function onChangeRadioButton() {
-	  var thisValue = this.value === "true";
-	  var radioType = $(this).classParam('radioType');
-	  if (thisValue) {
-	    $('.block-' + radioType).slideDown();
-	  } else {
-	    $('.block-' + radioType).slideUp();
-	  }
+  var thisValue = this.value === "true";
+  var radioType = $(this).classParam('radioType');
+  if (thisValue) {
+    $('.block-' + radioType).slideDown();
+  } else {
+    $('.block-' + radioType).slideUp();
+  }
 }
 
 /**
@@ -456,53 +542,53 @@ function setFileUploads() {
   var $fileUpload = $uploadBlock.find('.upload');
 
   $fileUpload.fileupload({
-      dataType: 'json',
-      start: function(e) {
+    dataType: 'json',
+    start: function (e) {
+      var $ub = $(e.target).parents(containerClass);
+      $ub.addClass('blockLoading');
+    },
+    stop: function (e) {
+      var $ub = $(e.target).parents(containerClass);
+      $ub.removeClass('blockLoading');
+    },
+    done: function (e, data) {
+      var r = data.result;
+      console.log(r);
+      if (r.saved) {
         var $ub = $(e.target).parents(containerClass);
-        $ub.addClass('blockLoading');
-      },
-      stop: function(e) {
-        var $ub = $(e.target).parents(containerClass);
-        $ub.removeClass('blockLoading');
-      },
-      done: function(e,data) {
-        var r = data.result;
-        console.log(r);
-        if(r.saved) {
-          var $ub = $(e.target).parents(containerClass);
-          $ub.find('.textMessage .contentResult').html(r.fileFileName);
-          $ub.find('.textMessage').show();
-          $ub.find('.fileUpload').hide();
-          // Set file ID
-          $ub.find('input.fileID').val(r.fileID);
-          // Set file URL
-          $ub.find('.fileUploaded a').attr('href', r.path + '/' + r.fileFileName)
-        }
-      },
-      fail: function(e,data) {
-        var $ub = $(e.target).parents(containerClass);
-        $ub.animateCss('shake');
-      },
-      progressall: function(e,data) {
-        var $ub = $(e.target).parents(containerClass);
-        var progress = parseInt(data.loaded / data.total * 100, 10);
-        $ub.find('.progress').fadeIn(100);
-        $ub.find('.progress .progress-bar').width(progress + '%');
-        if(progress == 100) {
-          $ub.find('.progress').fadeOut(1000, function() {
-            $ub.find('.progress .progress-bar').width(0);
-          });
-        }
+        $ub.find('.textMessage .contentResult').html(r.fileFileName);
+        $ub.find('.textMessage').show();
+        $ub.find('.fileUpload').hide();
+        // Set file ID
+        $ub.find('input.fileID').val(r.fileID);
+        // Set file URL
+        $ub.find('.fileUploaded a').attr('href', r.path + '/' + r.fileFileName)
       }
+    },
+    fail: function (e, data) {
+      var $ub = $(e.target).parents(containerClass);
+      $ub.animateCss('shake');
+    },
+    progressall: function (e, data) {
+      var $ub = $(e.target).parents(containerClass);
+      var progress = parseInt(data.loaded / data.total * 100, 10);
+      $ub.find('.progress').fadeIn(100);
+      $ub.find('.progress .progress-bar').width(progress + '%');
+      if (progress == 100) {
+        $ub.find('.progress').fadeOut(1000, function () {
+          $ub.find('.progress .progress-bar').width(0);
+        });
+      }
+    }
   });
 
   // Prepare data
-  $fileUpload.bind('fileuploadsubmit', function(e,data) {
+  $fileUpload.bind('fileuploadsubmit', function (e, data) {
 
   });
 
   // Remove file event
-  $uploadBlock.find('.removeIcon').on('click', function() {
+  $uploadBlock.find('.removeIcon').on('click', function () {
     var $ub = $(this).parents(containerClass);
     $ub.find('.textMessage .contentResult').html("");
     $ub.find('.textMessage').hide();
