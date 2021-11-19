@@ -568,7 +568,9 @@ public class ProjectListAction extends BaseAction {
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
         myProjects = new ArrayList<>();
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-          if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
+          if (projectPhase != null && projectPhase.getProject() != null && projectPhase.getProject().getId() != null
+            && projectPhase.getProject().isActive()
+            && projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
             myProjects.add(projectPhase.getProject());
           }
         }
@@ -576,7 +578,9 @@ public class ProjectListAction extends BaseAction {
       } else {
         allProjects = new ArrayList<>();
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-          if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
+          if (projectPhase != null && projectPhase.getProject() != null && projectPhase.getProject().getId() != null
+            && projectPhase.getProject().isActive()
+            && projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
             allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
           }
         }
