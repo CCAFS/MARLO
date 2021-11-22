@@ -227,20 +227,20 @@
                 [#-- Milestone --]
                 [#if milestone.isActive()]
                   <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
+                  [#local milestoneReportSynthesis=(action.getReportSynthesisMilestone(fp, outcome.id, milestone.id))!]
                   [#-- Milestone Status --]
                   <td class="text-center"> 
-                    [#local milestoneReportSynthesis=(action.getReportSynthesisMilestone(fp, outcome.id, milestone.id))!]
                     [@utils.tableText value=(milestoneReportSynthesis.milestonesStatus.name)!"" emptyText="global.prefilledByFlagship" /]
                   </td>
                   [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.milestoneIds?seq_contains(milestone.id))!true) /]
                   <td class="text-center">
                     <div data-toggle="tooltip" [#if isChecked]title="[@s.text name="annualReport2018.oicr.table3.cannotBeRemoved" /]"[/#if]>
-                      [@customForm.checkmark id="milestone-${(milestone.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.milestonesValue" value="${(milestone.id)!''}" checked=isChecked editable=(editable) centered=true/] 
+                      [@customForm.checkmark id="milestone-${(milestoneReportSynthesis.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.milestonesValue" value="${(milestone.id)!''}" checked=isChecked editable=(editable) centered=true/] 
                     </div>
-                    <div id="isCheckedAR-${(milestone.id)!}" style="display: none">${isChecked?string('1','0')}</div>
+                    <div id="isCheckedAR-${(milestoneReportSynthesis.id)!}" style="display: none">${isChecked?string('1','0')}</div>
                   </td>
                   [#if actualPhaseAR2021 && submission]
-                    <td id="QAStatusIcon-${(milestone.id)!}" class="text-center">
+                    <td id="QAStatusIcon-${(milestoneReportSynthesis.id)!}" class="text-center">
                       [#if isChecked]
                         <i style="font-weight: normal;opacity:0.8;">[@s.text name="annualReport2018.policies.table2.pendingForReview"/]</i>
                       [#else]
@@ -538,7 +538,7 @@
         [/#if]
     </div>
       
-    <div class="form-group milestonesEvidence" style="width: 100%; display:${((milestoneStatus == 4) || (milestoneStatus == 5) || (milestoneStatus == 6))?string('block', 'none')}">
+    <div class="form-group milestonesEvidence" style="width: 100%; display:${((milestoneStatus == 4) || (milestoneStatus == 5) || (milestoneStatus == 6) || (milestoneStatus == 7))?string('block', 'none')}">
       [#-- Extendend, cancelled or changed milestones - Main reason --]
       <div class="form-group">
         [@customForm.select name="${customName}.reason.id"  value="${(annualReportElement.reason.id)!}"label=""  i18nkey="${customLabel}.milestoneMainReason" listName="reasons" keyFieldName="id"  displayFieldName="name"   required=true  className="milestoneMainReasonSelect" editable=editable/]
