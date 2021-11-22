@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInnovationManager;
@@ -61,6 +62,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetPantentTypeE
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
+import org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
@@ -114,6 +116,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
+import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
@@ -250,6 +253,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final ProjectPolicySubIdoManager projectPolicySubIdoManager;
   private final ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager;
   private final ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager;
+  private ProjectMilestoneManager projectMilestoneManager;
+
 
   @Inject
   public ReportingSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
@@ -272,7 +277,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager,
     ProjectPolicySubIdoManager projectPolicySubIdoManager,
     ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager,
-    ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager) {
+    ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
+    ProjectMilestoneManager projectMilestoneManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
@@ -301,6 +307,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.projectPolicySubIdoManager = projectPolicySubIdoManager;
     this.projectExpectedStudyGeographicScopeManager = projectExpectedStudyGeographicScopeManager;
     this.projectExpectedStudyQuantificationManager = projectExpectedStudyQuantificationManager;
+    this.projectMilestoneManager = projectMilestoneManager;
   }
 
   /**
@@ -1238,8 +1245,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         this.fillSubreport((SubReport) hm.get("Regions"), "description_regions", args);
         if (this.getSelectedCycle().equals("Planning")) {
           // Description CoAs
-          args.clear();
-          this.fillSubreport((SubReport) hm.get("Description_CoAs"), "description_coas", args);
+          // args.clear();
+          // this.fillSubreport((SubReport) hm.get("Description_CoAs"), "description_coas", args);
         }
         // Subreport Partners
         this.fillSubreport((SubReport) hm.get("partners"), "partners_count", args);
@@ -2805,14 +2812,45 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           isExtended = true;
         }
 
-        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput() != null) {
-          keyOutput += "● ";
-          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput().getCrpClusterOfActivity()
-            .getCrpProgram() != null) {
-            keyOutput += deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput()
-              .getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
+        /*
+         * if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput() != null) {
+         * keyOutput += "● ";
+         * if
+         * (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput().getCrpClusterOfActivity()
+         * .getCrpProgram() != null) {
+         * keyOutput += deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput()
+         * .getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
+         * }
+         * keyOutput += deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput().getKeyOutput();
+         * }
+         */
+
+        try {
+          if (deliverable.getDeliverableProjectOutcomes() != null) {
+            deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
+              .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
           }
-          keyOutput += deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput().getKeyOutput();
+
+          if (deliverable.getProjectOutcomes() != null && !deliverable.getProjectOutcomes().isEmpty()) {
+            for (DeliverableProjectOutcome projectOutcome : deliverable.getProjectOutcomes()) {
+
+              // Fill projectOutcomes List
+              if (projectOutcome.getProjectOutcome().getCrpProgramOutcome() != null
+                && projectOutcome.getProjectOutcome().getCrpProgramOutcome().getComposedName() != null) {
+                projectOutcome.getProjectOutcome()
+                  .setComposedName(projectOutcome.getProjectOutcome().getCrpProgramOutcome().getComposedName());
+              } else {
+                projectOutcome.getProjectOutcome().setComposedName(projectOutcome.getId() + "");
+              }
+
+              if (projectOutcome.getProjectOutcome().getComposedName() != null) {
+                keyOutput += "● " + projectOutcome.getProjectOutcome().getComposedName() + "\n";
+              }
+
+            }
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
         }
 
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()) != null
@@ -3055,6 +3093,21 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           crossCutting += "● Capacity Development <br>";
         }
       }
+      if (projectInfo != null && projectInfo.getCrossCuttingGender() != null) {
+        if (projectInfo.getCrossCuttingGender() == true) {
+          crossCutting += "● Gender<br>";
+        }
+      }
+      if (projectInfo != null && projectInfo.getCrossCuttingYouth() != null) {
+        if (projectInfo.getCrossCuttingYouth() == true) {
+          crossCutting += "● Youth<br>";
+        }
+      }
+      if (projectInfo != null && projectInfo.getCrossCuttingCapacity() != null) {
+        if (projectInfo.getCrossCuttingCapacity() == true) {
+          crossCutting += "● Capacity Development <br>";
+        }
+      }
 
       if (crossCutting.isEmpty()) {
         crossCutting = null;
@@ -3292,6 +3345,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     if (!project.getProjectOutcomes().isEmpty()) {
       for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
         .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+        .sorted((c1, c2) -> c1.getOrder().toString().compareTo(c2.getOrder().toString()))
         .collect(Collectors.toList())) {
         String expValue = null;
         String expUnit = null;
@@ -3303,6 +3357,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String crossCutting = "";
         String ach_unit = null, ach_value = null, ach_narrative = null;
         String communications = null;
+
         if (projectOutcome.getCrpProgramOutcome() != null) {
           outYear = "" + projectOutcome.getCrpProgramOutcome().getYear();
           outValue = "" + projectOutcome.getCrpProgramOutcome().getValue();
@@ -3940,13 +3995,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private TypedTableModel getOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"exp_value", "narrative", "outcome_id", "out_fl", "out_year", "out_value", "out_statement",
-        "out_unit", "cross_cutting", "exp_unit"},
+        "out_unit", "cross_cutting", "exp_unit", "milestones"},
       new Class[] {Long.class, String.class, Long.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class},
       0);
     if (!project.getProjectOutcomes().isEmpty()) {
       for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
         .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+        .sorted((c1, c2) -> c1.getOrder().toString().compareTo(c2.getOrder().toString()))
         .collect(Collectors.toList())) {
         String expValue = null;
         String expUnit = null;
@@ -3956,6 +4012,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String outStatement = null;
         String outUnit = null;
         String crossCutting = "";
+        String milestones = "";
         if (projectOutcome.getCrpProgramOutcome() != null) {
           outYear = "" + projectOutcome.getCrpProgramOutcome().getYear();
           outValue = "" + projectOutcome.getCrpProgramOutcome().getValue();
@@ -3988,8 +4045,68 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (crossCutting.isEmpty()) {
           crossCutting = null;
         }
+
+        /*
+         * Project Milestones
+         */
+        String overall2023 = "", expected2023 = "", expected2021 = "", progress2021 = "";
+        String milestoneNarrativeTarget = "";
+        List<Long> ids = new ArrayList<>();
+        List<String> text = new ArrayList<>();
+        List<ProjectMilestone> projectMilestones = new ArrayList<>();
+        projectMilestones = projectMilestoneManager.findAll().stream()
+          .filter(m -> m.isActive() && m.getYear() == this.getSelectedPhase().getYear() && m.getProjectOutcome() != null
+            && m.getProjectOutcome().isActive() && m.getProjectOutcome().getId() != null
+            && m.getProjectOutcome().getId().equals(projectOutcome.getId()))
+          .collect(Collectors.toList());
+
+
+        if (projectMilestones != null && !projectMilestones.isEmpty()) {
+          projectOutcome.setMilestones(projectMilestones);
+          projectMilestones = projectOutcome.getMilestones().stream()
+            .filter(c -> c != null && c.isActive() && c.getYear() == this.getSelectedPhase().getYear())
+            .collect(Collectors.toList());
+          for (ProjectMilestone milestone : projectMilestones) {
+            if (milestone.getExpectedValue() == null) {
+              expected2021 = "<Not provided>";
+            } else {
+              expected2021 = Math.round(milestone.getExpectedValue()) + "";
+            }
+            if (milestone.getAchievedValue() == null) {
+              progress2021 = "<Not provided>";
+            } else {
+              progress2021 = milestone.getAchievedValue() + "";
+            }
+
+            if (milestone.getNarrativeTarget() != null) {
+              milestoneNarrativeTarget = milestone.getNarrativeTarget();
+            }
+            if (milestone.getCrpMilestone() != null && milestone.getCrpMilestone().getComposedName() != null) {
+              if (milestone.getCrpMilestone().getId() != null) {
+
+                if ((ids == null || ids.isEmpty()
+                  || ((ids != null || !ids.isEmpty()) && !ids.contains(milestone.getCrpMilestone().getId())))
+                  && (text == null || text.isEmpty()
+                    || ((text != null || !text.isEmpty()) && !text.contains(milestone.getNarrativeTarget())))) {
+
+                  milestones += "● Intermediate Target for " + milestone.getYear() + "\n <br>"
+                    + milestone.getCrpMilestone().getComposedName() + "\n <br>";
+
+                  if (milestone.getNarrativeTarget() != null) {
+                    milestones += "Narrative target: " + milestone.getNarrativeTarget() + "\n <br><br>";
+                  }
+                } else {
+                  ids.add(milestone.getCrpMilestone().getId());
+                  text.add(milestone.getNarrativeTarget());
+                }
+
+              }
+            }
+          }
+
+        }
         model.addRow(new Object[] {expValue, projectOutcome.getNarrativeTarget(), projectOutcome.getId(), outFl,
-          outYear, outValue, outStatement, outUnit, crossCutting, expUnit});
+          outYear, outValue, outStatement, outUnit, crossCutting, expUnit, milestones});
       }
     }
     return model;
