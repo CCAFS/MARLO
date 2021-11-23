@@ -9,7 +9,8 @@
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
-  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js"
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_ccDimensions.js?2021123a" 
   ] 
 /] 
 [#assign customCSS = [ 
@@ -51,7 +52,6 @@
         
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-          
           [#-- Back --]
           <small class="pull-right">
             <a href="[@s.url action='${crpSession}/contributionsCrpList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
@@ -364,6 +364,14 @@
                         <div id="" class="simpleBox numberBox">
                             <label for="">Total of Participants</label><br />
                             <span>${(totalParticipants?number?string(",##0"))!0}</span>
+                         </div>
+                        <div id="" class="simpleBox numberBox">
+                            <label for="">Total of Females</label><br />
+                            <span>${(totalFemales?number?string(",##0"))!0}</span>
+                         </div>
+                        <div id="" class="simpleBox numberBox">
+                            <label for="">Total of Africans</label><br />
+                            <span>${(totalAfricans?number?string(",##0"))!0}</span>
                          </div>
                          [#--  
                          <div id="" class="simpleBox numberBox">
@@ -811,6 +819,10 @@
           </td>          
           [#assign knowFemale = (item.dontKnowFemale)!false]
           [#assign hasFemale = (item.females?has_content)!false]
+          [#assign isEstimateTotalParticipants = (item.estimateParticipants?has_content)!false]
+          [#assign isEstimateFemales = (item.estimateFemales?has_content)!false]
+          [#assign isEstimateAfricans = (item.estimateAfrican?has_content)!false]
+          [#assign isEstimateYouth = (item.estimateYouth?has_content)!false]
           [#-- Total Participants --]
           <td class="text-center">
             [#if knowFemale && !hasFemale ]
@@ -825,19 +837,31 @@
             <i><small>Not specified</small></i>
             [#else]
             ${(item.females?number?string(",##0"))!0}
+            [#if isEstimateFemales ]
+              <i><small> (Estimated value)</small></i>
+            [/#if]
           [/#if]
           </td>
           [#-- Number of african --]
           <td class="text-center">
             ${(item.african?number?string(",##0"))!0}
+            [#if isEstimateAfricans ]
+              <i><small> (Estimated value)</small></i>
+            [/#if]
           </td>
-          [#-- Number of african --]
+          [#-- Number of youth --]
           <td class="text-center">
             ${(item.youth?number?string(",##0"))!0}
+            [#if isEstimateYouth ]
+              <i><small> (Estimated value)</small></i>
+            [/#if]
           </td>
           [#-- Total Participants --]
           <td class="text-center">
             ${(item.participants?number?string(",##0"))!0}
+            [#if isEstimateTotalParticipants ]
+              <i><small> (Estimated value)</small></i>
+            [/#if]
           </td>
           [#-- Training period of time --]
           <td class="text-center">
