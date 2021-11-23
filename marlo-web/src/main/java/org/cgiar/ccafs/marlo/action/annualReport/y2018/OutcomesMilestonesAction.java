@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.DeliverableStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -1407,7 +1408,7 @@ public class OutcomesMilestonesAction extends BaseAction {
               flagshipProgressMilestoneNew.setExtendedYear(null);
             }
 
-            if (StringUtils.containsIgnoreCase(status.getName(), "omplete")) {
+            if (DeliverableStatusEnum.getValue(status.getId().intValue()).equals(DeliverableStatusEnum.COMPLETE)) {
               flagshipProgressMilestoneNew.setReason(null);
               flagshipProgressMilestoneNew.setOtherReason(null);
             } else {
