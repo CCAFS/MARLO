@@ -34,13 +34,13 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -135,6 +136,13 @@ public class DeliverableListAction extends BaseAction {
     // }
 
     if (deliverableID > 0) {
+      SectionStatus sectionStatus =
+        this.sectionStatusManager.getSectionStatusByIndicator(this.getCurrentCycle(), this.getCurrentCycleYear(),
+          this.isUpKeepActive(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), this.project.getId());
+      if (sectionStatus != null) {
+        sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+      }
+
       return SUCCESS;
     }
 
@@ -173,6 +181,8 @@ public class DeliverableListAction extends BaseAction {
 
     // Map<String, Object> parameters = this.getParameters();
     Map<String, Parameter> parameters = this.getParameters();
+    Phase phase = this.getActualPhase();
+    phase = phaseManager.getPhaseById(phase.getId());
     deliverableID =
       // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0]));
       Long
@@ -188,11 +198,35 @@ public class DeliverableListAction extends BaseAction {
       }
 
       projectID = deliverable.getProject().getId();
-
+      project = deliverable.getProject();
 
       deliverableManager.saveDeliverable(deliverable);
       deliverableManager.deleteDeliverable(deliverableID);
       this.addActionMessage("message:" + this.getText("deleting.success"));
+
+      SectionStatus sectionStatus =
+        this.sectionStatusManager.getSectionStatusByIndicator(this.getCurrentCycle(), this.getCurrentCycleYear(),
+          this.isUpKeepActive(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), this.projectID);
+
+      this.loadAllDeliverables(phase);
+      this.loadCurrentDeliverables();
+
+      List<Deliverable> activeDeliverables = CollectionUtils.emptyIfNull(this.currentDeliverableList).stream()
+        .filter(d -> d != null && d.getId() != null && d.isActive()).collect(Collectors.toList());
+
+      if (this.isEmpty(activeDeliverables)) {
+        if (sectionStatus == null) {
+          sectionStatus = new SectionStatus();
+          sectionStatus.setCycle(this.getCurrentCycle());
+          sectionStatus.setYear(this.getCurrentCycleYear());
+          sectionStatus.setUpkeep(this.isUpKeepActive());
+          sectionStatus.setSectionName(ProjectSectionStatusEnum.DELIVERABLES.getStatus());
+          sectionStatus.setProject(this.project);
+        }
+
+        sectionStatus.setMissingFields(APConstants.STATUS_EMPTY_DELIVERABLE_LIST);
+        sectionStatus = this.sectionStatusManager.saveSectionStatus(sectionStatus);
+      }
     }
     return SUCCESS;
   }
@@ -378,6 +412,40 @@ public class DeliverableListAction extends BaseAction {
     return projectID;
   }
 
+  /**
+   * @param phase
+   */
+  private void loadAllDeliverables(Phase phase) {
+    if (project.getDeliverables() != null) {
+
+      List<DeliverableInfo> infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
+      deliverables = new ArrayList<>();
+      if (infos != null && !infos.isEmpty()) {
+        for (DeliverableInfo deliverableInfo : infos) {
+          Deliverable deliverable = deliverableInfo.getDeliverable();
+          deliverable.setDeliverableInfo(deliverableInfo);
+          deliverables.add(deliverable);
+        }
+      }
+
+      for (Deliverable deliverable : deliverables) {
+        deliverable.setResponsiblePartnership(this.responsiblePartner(deliverable));
+
+        // Gets the Deliverable Funding Source Data without the full information.
+        List<DeliverableFundingSource> fundingSources =
+          new ArrayList<>(deliverable.getDeliverableFundingSources().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+        for (DeliverableFundingSource deliverableFundingSource : fundingSources) {
+          deliverableFundingSource.getFundingSource().setFundingSourceInfo(
+            deliverableFundingSource.getFundingSource().getFundingSourceInfo(this.getActualPhase()));
+        }
+
+        deliverable.setFundingSources(fundingSources);
+      }
+    }
+  }
+
+
   /*
    * Copy method from project.getCurrentDeliverables to allow add the shared deliverables to list
    */
@@ -388,14 +456,14 @@ public class DeliverableListAction extends BaseAction {
       .collect(Collectors.toList());
 
     // Load Shared deliverables
-    List<ProjectDeliverableShared> deliverableShared =
-      this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId()) != null
-        ? this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId())
-          .stream()
-          .filter(px -> px.isActive() && px.getDeliverable().isActive()
-            && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null)
-          .collect(Collectors.toList())
-        : Collections.emptyList();
+    List<ProjectDeliverableShared> deliverableShared = CollectionUtils
+      .emptyIfNull(
+        this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId()))
+      .stream()
+      .filter(px -> px != null && px.getId() != null && px.isActive() && px.getDeliverable() != null
+        && px.getDeliverable().getId() != null && px.getDeliverable().isActive()
+        && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null)
+      .collect(Collectors.toList());
 
     if (deliverableShared != null && !deliverableShared.isEmpty()) {
       for (ProjectDeliverableShared deliverableS : deliverableShared) {
@@ -412,7 +480,6 @@ public class DeliverableListAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -432,33 +499,7 @@ public class DeliverableListAction extends BaseAction {
           deliverablesType = new ArrayList<>(deliverableTypeManager.findAll());
         }
 
-        if (project.getDeliverables() != null) {
-
-          List<DeliverableInfo> infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
-          deliverables = new ArrayList<>();
-          if (infos != null && !infos.isEmpty()) {
-            for (DeliverableInfo deliverableInfo : infos) {
-              Deliverable deliverable = deliverableInfo.getDeliverable();
-              deliverable.setDeliverableInfo(deliverableInfo);
-              deliverables.add(deliverable);
-            }
-          }
-
-          for (Deliverable deliverable : deliverables) {
-            deliverable.setResponsiblePartnership(this.responsiblePartner(deliverable));
-
-            // Gets the Deliverable Funding Source Data without the full information.
-            List<DeliverableFundingSource> fundingSources =
-              new ArrayList<>(deliverable.getDeliverableFundingSources().stream()
-                .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
-            for (DeliverableFundingSource deliverableFundingSource : fundingSources) {
-              deliverableFundingSource.getFundingSource().setFundingSourceInfo(
-                deliverableFundingSource.getFundingSource().getFundingSourceInfo(this.getActualPhase()));
-            }
-
-            deliverable.setFundingSources(fundingSources);
-          }
-        }
+        this.loadAllDeliverables(phase);
 
         this.loadCurrentDeliverables();
       }

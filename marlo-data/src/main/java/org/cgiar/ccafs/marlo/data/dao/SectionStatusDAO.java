@@ -72,6 +72,14 @@ public interface SectionStatusDAO {
   public SectionStatus getSectionStatusByFundingSource(long fundingSource, String cycle, Integer year, Boolean upkeep,
     String sectionName);
 
+  /**
+   * This method gets a sectionStatus object by a given sectionStatus identifier.
+   * 
+   * @return a SectionStatus object.
+   */
+  public SectionStatus getSectionStatusByIndicator(String cycle, int year, Boolean upkeep, String sectionName,
+    long projectId);
+
   public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, Boolean upkeep,
     String sectionName);
 

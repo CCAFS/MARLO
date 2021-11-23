@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -85,6 +86,27 @@ public class ProjectOutcomeValidator extends BaseValidator {
       builder.replace(index, index + from.length(), to);
       index += to.length(); // Move to the end of the replacement
       index = builder.indexOf(from, index);
+    }
+  }
+
+  public void validate(BaseAction action, Project project, boolean hasOutcomes) {
+    if (project != null && project.getId() != null) {
+      if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
+        && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
+        if (hasOutcomes == false) {
+          action.addMissingField(APConstants.STATUS_EMPTY_OUTCOME_LIST);
+          this.saveMissingFieldsIndicator(project, action.getActualPhase().getDescription(),
+            action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+            ProjectSectionStatusEnum.OUTCOMES.getStatus(), action);
+        } else {
+          SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByIndicator(action.getCurrentCycle(),
+            action.getCurrentCycleYear(), action.isUpKeepActive(), ProjectSectionStatusEnum.OUTCOMES.getStatus(),
+            project.getId());
+          if (sectionStatus != null) {
+            this.sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+          }
+        }
+      }
     }
   }
 

@@ -4,7 +4,7 @@
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20211025A",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20211118A",
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
@@ -40,6 +40,25 @@
         
       [@s.form action=actionName cssClass="pure-form" enctype="multipart/form-data" ]
       
+      <span id="actualCrpID" style="display: none;">${(action.getCurrentCrp().id)!-1}</span>
+      <span id="actualPhase" style="display: none;">${(action.isSelectedPhaseAR2021())?c}</span>
+      <span id="innovationID" style="display: none;">${(innovation.id)!-1}</span>
+      <span id="isSubmitted" style="display: none;">${submission?c}</span>
+      [#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
+      [#assign isQAIncluded = action.isIndicatorIncludedInQA("innovation", (innovation.id)!-1, (action.getActualPhase().id)!-1)!false]
+
+      [#if actualPhaseAR2021 && isQAIncluded]
+        <div class="containerTitleElementsProject">
+          <div class="containerTitleMessage">
+            <div id="qualityAssessedIcon" class="pendingForReview-mode text-center animated flipInX" style="height: auto;">
+              <p>
+                [@s.text name="annualReport2018.policies.table2.pendingForReview"][/@s.text]
+              </p>
+            </div> 
+          </div>
+        </div>
+      [/#if]
+
         [#-- Back --]
         <small class="pull-right">
           <a href="[@s.url action='${crpSession}/innovationsList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
@@ -50,20 +69,6 @@
         [#--  Innovation Title --]
         <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3> 
 
-        [#--  <div class="containerTitleElements">
-          <div class="containerTitleMessage">
-            <div id="qualityAssessedIcon" class="deliverableQualityAssessedIcon qualityAssessed-mode text-center animated flipInX">
-              [#assign lastSubmission=action.getProjectSubmissions(projectID)?last /]
-              <p>
-                [@s.text name="message.qualityAssessed"]
-                  [@s.param]Innovation[/@s.param]
-                  [@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param]
-                [/@s.text]
-              </p>
-            </div> 
-            <p class="messageQAInfo">[@s.text name="message.qualityAssessedInfo"][/@s.text]</p>
-          </div>  
-        </div>  --]
         <div id="innovations" class="borderBox clearfix">   
 
         <div class="">        
