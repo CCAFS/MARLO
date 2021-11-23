@@ -264,7 +264,11 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
 function updateQualityAssessmentStatusData(data) {
   data.map(function (x) {
     var isCheckedAR = $(`#isCheckedAR-${x[0]}`).html();
-    var element = document.getElementById(`QAStatusIcon-${x[0]}`);
+    if ($('#isOICR').html() == 'true') {
+      var element = document.getElementById(`QAStatusIcon-${x[0]}`);
+    } else {
+      var element = document.querySelectorAll(`[id^=QAStatusIcon-${x[0]}]`);
+    }
     var status, iconSrc;
 
     switch (x[1]) {
@@ -283,8 +287,13 @@ function updateQualityAssessmentStatusData(data) {
       case 'quality_assessed':
         status = 'Quality Assessed';
         iconSrc = baseURL + '/global/images/quality-assessed-icon.svg';
-        $(`#study-${x[0]}`).prop('disabled', true);
-        $(`#study-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
+        if ($('#isOICR').html() == 'true') {
+          $(`#study-${x[0]}`).prop('disabled', true);
+          $(`#study-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
+        } else {
+          $(`#milestone-${x[0]}`).prop('disabled', true);
+          $(`#milestone-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
+        }
         break;
 
       default:
@@ -297,13 +306,28 @@ function updateQualityAssessmentStatusData(data) {
       var spanTag = document.createElement('span');
       var text = document.createTextNode(status);
 
-      element.innerHTML = '';
-      imgTag.style.width = '25px';
-      imgTag.src = iconSrc;
-      element.appendChild(imgTag);
-      element.appendChild(br);
-      spanTag.appendChild(text);
-      element.appendChild(spanTag);
+      if ($('#isOICR').html() == 'true') {
+        element.innerHTML = '';
+        imgTag.style.width = '25px';
+        imgTag.src = iconSrc;
+        element.appendChild(imgTag);
+        element.appendChild(br);
+        spanTag.appendChild(text);
+        element.appendChild(spanTag);
+      } else {
+        console.log("--------------")
+        for (let i = 0; i < element.length; i++) {
+          console.log(i, element[i]);
+          element[i].innerHTML = '';
+          imgTag.style.width = '25px';
+          imgTag.src = iconSrc;
+          element[i].appendChild(imgTag);
+          element[i].appendChild(br);
+          spanTag.appendChild(text);
+          element[i].appendChild(spanTag);
+          console.log(element[i].innerHTML)
+        }
+      }
     }
   });
 }
