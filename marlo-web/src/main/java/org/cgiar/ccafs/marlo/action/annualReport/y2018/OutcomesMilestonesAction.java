@@ -1397,7 +1397,7 @@ public class OutcomesMilestonesAction extends BaseAction {
               .getGeneralStatusById(flagshipProgressMilestoneIncoming.getMilestonesStatus().getId());
           flagshipProgressMilestoneNew.setMilestonesStatus(status);
 
-          if (status != null) {
+          if (status != null && status.getId() != null) {
             // LOG.debug(status.getName() + " for milestone " + flagshipProgressMilestoneIncoming.getId());
             // LOG.debug(StringUtils.containsIgnoreCase(status.getName(), "omplete")
             // ? "Complete for " + flagshipProgressMilestoneIncoming.getId()
@@ -1408,7 +1408,7 @@ public class OutcomesMilestonesAction extends BaseAction {
               flagshipProgressMilestoneNew.setExtendedYear(null);
             }
 
-            if (DeliverableStatusEnum.getValue(status.getId().intValue()).equals(DeliverableStatusEnum.COMPLETE)) {
+            if (DeliverableStatusEnum.COMPLETE.equals(DeliverableStatusEnum.getValue(status.getId().intValue()))) {
               flagshipProgressMilestoneNew.setReason(null);
               flagshipProgressMilestoneNew.setOtherReason(null);
             } else {
