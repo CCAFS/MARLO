@@ -94,5 +94,12 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverable" />
         </set>
+        
+         <!--set name="reportSynthesisFlagshipProgressOutcomeMilestones" table="report_synthesis_flagship_progress_outcome_milestones" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synthesis_flagship_progress_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone" />
+        </set-->
     </class>
 </hibernate-mapping>

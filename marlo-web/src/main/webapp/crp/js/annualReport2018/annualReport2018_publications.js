@@ -13,7 +13,7 @@ function init() {
 }
 
 function attachEvents() {
-  if ($('#actualPhase').html() == 'true') {
+  if ($('#actualPhase').html() == 'true' && $('#isSubmitted').html() == 'true') {
     loadQualityAssessmentStatus(publicationsAjaxURL, publicationsArrName);
   }
 }
@@ -53,7 +53,11 @@ function updateQualityAssessmentStatusData(data) {
 
     switch (x[1]) {
       case 'pending':
-        status = 'Pending';
+        status = 'Pending assessment';
+        iconSrc = baseURL + '/global/images/pending-icon.svg';
+        break;
+      case 'pending_crp':
+        status = 'Pending CRP response';
         iconSrc = baseURL + '/global/images/pending-icon.svg';
         break;
       case 'in_progress':

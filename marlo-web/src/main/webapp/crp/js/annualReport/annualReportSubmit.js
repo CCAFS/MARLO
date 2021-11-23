@@ -54,7 +54,7 @@ function cancel() {
 
 function submitButtonEvent(e) {
   e.preventDefault();
-  var message = 'By clicking OK, from this point forward, the SMO will have access to your Annual Reporting data from MARLO ';
+  var message = 'By clicking OK, from this point forward, the SMO will have access to the Annual Reporting data that will be marked as submitted';
   noty({
       text: message,
       type: 'confirm',

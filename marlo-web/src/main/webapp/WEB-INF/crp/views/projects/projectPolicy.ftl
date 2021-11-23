@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${policyID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload", "flag-icon-css", "components-font-awesome"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectPolicy.js?20211020A",
+  "${baseUrlMedia}/js/projects/projectPolicy.js?20211118A",
   "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
@@ -42,6 +42,26 @@
         [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
         
         [@s.form action=actionName cssClass="pure-form" enctype="multipart/form-data" ]  
+
+          <span id="actualCrpID" style="display: none;">${(action.getCurrentCrp().id)!-1}</span>
+          <span id="actualPhase" style="display: none;">${(action.isSelectedPhaseAR2021())?c}</span>
+          <span id="policyID" style="display: none;">${(policy.id)!-1}</span>
+          <span id="isSubmitted" style="display: none;">${submission?c}</span>
+          [#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
+          [#assign isQAIncluded = action.isIndicatorIncludedInQA("policy", (policy.id)!-1, (action.getActualPhase().id)!-1)!false]
+
+          [#if actualPhaseAR2021 && isQAIncluded]
+            <div class="containerTitleElementsProject">
+              <div class="containerTitleMessage">
+                <div id="qualityAssessedIcon" class="pendingForReview-mode text-center animated flipInX" style="height: auto;">
+                  <p>
+                    [@s.text name="annualReport2018.policies.table2.pendingForReview"][/@s.text]
+                  </p>
+                </div> 
+              </div>
+            </div>
+          [/#if]
+
           [#-- Back --]
             <small class="pull-right">
               <a href="[@s.url action='${crpSession}/policies'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
@@ -51,21 +71,6 @@
 
           [#-- Outcome case studies list --]
           <h3 class="headTitle">[@s.text name="projectPolicies.policyTitle" /]</h3>
-          
-          [#--  <div class="containerTitleElements">
-            <div class="containerTitleMessage">
-              <div id="qualityAssessedIcon" class="qualityAssessed-mode text-center animated flipInX">
-                [#assign lastSubmission=action.getProjectSubmissions(audit.id)?last /]
-                <p>
-                  [@s.text name="message.qualityAssessed"]
-                    [@s.param]Policy[/@s.param]
-                    [@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param]
-                  [/@s.text]
-                </p>
-              </div> 
-              <p class="messageQAInfo">[@s.text name="message.qualityAssessedInfo"][/@s.text]</p>
-            </div>  
-          </div>    --]
 
           <div id="" class="">
             [@policyMacro element=(policy)!{} name="policy" index=0  /]

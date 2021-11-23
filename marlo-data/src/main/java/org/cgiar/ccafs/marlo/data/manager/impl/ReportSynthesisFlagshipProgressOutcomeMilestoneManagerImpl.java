@@ -84,6 +84,12 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneManagerImpl
   }
 
   @Override
+  public List<ReportSynthesisFlagshipProgressOutcomeMilestone> getAllFlagshipProgressOutcomeMilestones(Long phaseId) {
+    return this.reportSynthesisFlagshipProgressOutcomeMilestoneDAO
+      .getAllFlagshipProgressOutcomeMilestones(phaseId.longValue());
+  }
+
+  @Override
   public ReportSynthesisFlagshipProgressOutcomeMilestone getMilestoneId(long progressID, long outcomeID) {
     return reportSynthesisFlagshipProgressOutcomeMilestoneDAO.getMilestoneId(progressID, outcomeID);
   }
@@ -117,7 +123,6 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneManagerImpl
 
     return reportSynthesisFlagshipProgressOutcomeMilestone;
   }
-
 
   /**
    * Updates the milestone's status and extended year (if applies)
