@@ -218,7 +218,7 @@ function attachEvents() {
 
     // Milestone Evidence
     var $block = $(this).parents('.synthesisMilestone').find('.milestonesEvidence');
-    if (optionSelected == 4 || optionSelected == 5 || optionSelected == 6) {
+    if (optionSelected == 4 || optionSelected == 5 || optionSelected == 6 || optionSelected == 7) {
       $block.slideDown();
     } else {
       $block.slideUp();
