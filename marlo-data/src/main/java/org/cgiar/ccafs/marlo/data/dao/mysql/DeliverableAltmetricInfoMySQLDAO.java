@@ -25,6 +25,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.collections4.ListUtils;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
@@ -78,13 +79,14 @@ public class DeliverableAltmetricInfoMySQLDAO extends AbstractMarloDAO<Deliverab
   @Override
   public DeliverableAltmetricInfo findByPhaseAndDeliverable(Phase phase, Deliverable deliverable) {
     String query = "select distinct dai from DeliverableAltmetricInfo dai where phase.id = :phaseId "
-      + "and deliverable.id= :deliverableId";
+      + "and deliverable.id= :deliverableId order by lastUpdated desc";
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phase.getId());
     createQuery.setParameter("deliverableId", deliverable.getId());
 
-    Object findSingleResult = super.findSingleResult(DeliverableAltmetricInfo.class, createQuery);
-    DeliverableAltmetricInfo deliverableAltmetricInfoResult = (DeliverableAltmetricInfo) findSingleResult;
+    List<DeliverableAltmetricInfo> findSingleResult = ListUtils.emptyIfNull(super.findAll(createQuery));
+    DeliverableAltmetricInfo deliverableAltmetricInfoResult =
+      (findSingleResult.isEmpty()) ? null : findSingleResult.get(0);
     return deliverableAltmetricInfoResult;
   }
 
