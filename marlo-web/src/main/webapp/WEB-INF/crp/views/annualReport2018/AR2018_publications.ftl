@@ -281,17 +281,17 @@
     <table class="table table-bordered">
       <thead>
         <tr>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.id" /] </th>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.deliverable" /] </th>
+          <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.id" /] </th>
+          <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.deliverable" /] </th>
           [#if !isGrey]
-            <th class="text-center"> [@s.text name="${customLabel}.${name}.article" /] </th>
+            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.article" /] </th>
           [/#if]
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.author" /](s) </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.date" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.journal" /] </th>
           [/#if]
-          <th class="col-md-2 text-center" > [@s.text name="${customLabel}.${name}.directLink" /] </th>
+          <th class="col-md-1 text-center" > [@s.text name="${customLabel}.${name}.directLink" /] </th>
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.volume" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.issue" /] </th>
@@ -302,15 +302,14 @@
           [/#if]
           
           <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.${isGrey?string('altmetricScore','isi')}" /] </th>
+          <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.${isGrey?string('altmetricScore','isi')}" /] </th>
           [#if allowPopups]
             [#if !isGrey]
               <th class="col-md-1 text-center">[@s.text name="${customLabel}.${name}.missingFields" /]</th>
             [/#if]
             [#if PMU]
-              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] 
-              <br>
-              <button type="button" class="selectAllCheck" id="selectAll${isGrey?then('Grey','')}" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
+              <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /]
+              <button type="button" class="selectAllCheck" id="selectAll${isGrey?then('Grey','')}" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none; padding: 5px;">Select All</button>
               [#--  [@customForm.checkmark id="selectAll${isGrey?then('Grey','')}" name="selectAll${isGrey?then('Grey','')}" value="false" checked=false editable=editable centered=true/]  --]
               </th>
               [#if actualPhaseAR2021 && submission]
