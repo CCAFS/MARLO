@@ -785,11 +785,15 @@ var deliverablePartnersModule = (function () {
           pTag.appendChild(text);
           element.appendChild(pTag);
   
-          if (x[1] == 'quality_assessed' || x[1] == 'automatically_validated') {
+          if ((x[1] == 'quality_assessed') || (x[1] == 'automatically_validated')) {
             var pMessageTag = document.createElement('p');
-            var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+            if (x[1] == 'quality_assessed') {
+              var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+            } else {
+              var textMessage = document.createTextNode('As this item has already been Automatically Validated, no changes are recommended');
+              element.style.backgroundPosition = '655px';
+            }
             
-            element.style.backgroundPosition = '655px';
             pMessageTag.classList.add('messageQAInfo');
             pMessageTag.appendChild(textMessage);
             container.appendChild(pMessageTag);
