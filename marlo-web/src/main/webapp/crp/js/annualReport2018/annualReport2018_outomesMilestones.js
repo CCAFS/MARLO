@@ -283,8 +283,13 @@ function updateQualityAssessmentStatusData(data) {
       case 'quality_assessed':
         status = 'Quality Assessed';
         iconSrc = baseURL + '/global/images/quality-assessed-icon.svg';
-        $(`#study-${x[0]}`).prop('disabled', true);
-        $(`#study-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
+        if ($('#isOICR').html() == 'true') {
+          $(`#study-${x[0]}`).prop('disabled', true);
+          $(`#study-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
+        } else {
+          $(`#milestone-${x[0]}`).prop('disabled', true);
+          $(`#milestone-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
+        }
         break;
 
       default:

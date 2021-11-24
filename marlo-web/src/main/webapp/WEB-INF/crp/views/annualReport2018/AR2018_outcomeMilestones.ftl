@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlCdn}/global/js/utils.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211123A",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211124A",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211111a"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210924a"] /]
@@ -150,12 +150,14 @@
           [#if !allowPopups]<th rowspan="2"> Outcome Progress </th>[/#if]
           <th rowspan="2"> Milestone </th>
           <th rowspan="2"> Status</th>
-          <th rowspan="2" class="col-md-1 text-center">Include in QA 
-            <br>
-            <button type="button" class="selectAllCheckMilestones" id="selectAllMilestones" style="display: none; color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
-          </th>
-          [#if actualPhaseAR2021 && submission]
-            <th rowspan="2"> QA Status</th>
+          [#if allowPopups]
+            [#if actualPhaseAR2021 && submission]
+              <th rowspan="2" class="col-md-1 text-center">Include in QA 
+                <br>
+                <button type="button" class="selectAllCheckMilestones" id="selectAllMilestones" style="display: none; color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
+              </th>
+              <th rowspan="2"> QA Status</th>
+            [/#if]
           [/#if]
           [#if !allowPopups]
           <th rowspan="2">Milestone Evidence</th>
@@ -232,21 +234,24 @@
                   <td class="text-center"> 
                     [@utils.tableText value=(milestoneReportSynthesis.milestonesStatus.name)!"" emptyText="global.prefilledByFlagship" /]
                   </td>
-                  [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.milestoneIds?seq_contains(milestone.id))!true) /]
-                  <td class="text-center">
-                    <div data-toggle="tooltip" [#if isChecked]title="[@s.text name="annualReport2018.oicr.table3.cannotBeRemoved" /]"[/#if]>
-                      [@customForm.checkmark id="milestone-${(milestoneReportSynthesis.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.milestonesValue" value="${(milestone.id)!''}" checked=isChecked editable=(editable) centered=true/] 
-                    </div>
-                    <div id="isCheckedAR-${(milestoneReportSynthesis.id)!}" style="display: none">${isChecked?string('1','0')}</div>
-                  </td>
-                  [#if actualPhaseAR2021 && submission]
-                    <td id="QAStatusIcon-${(milestoneReportSynthesis.id)!}" class="text-center">
-                      [#if isChecked]
-                        <i style="font-weight: normal;opacity:0.8;">[@s.text name="annualReport2018.policies.table2.pendingForReview"/]</i>
-                      [#else]
-                        <i style="font-weight: normal;opacity:0.8;">[@s.text name="annualReport2018.policies.table2.notInluded"/]</i>
-                      [/#if]
-                    </td>
+                  [#if allowPopups]
+                    [#if actualPhaseAR2021 && submission]
+                      [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.milestoneIds?seq_contains(milestone.id))!true) /]
+                      <td class="text-center">
+                        <div data-toggle="tooltip" [#if isChecked]title="[@s.text name="annualReport2018.oicr.table3.cannotBeRemoved" /]"[/#if]>
+                          [@customForm.checkmark id="milestone-${(milestoneReportSynthesis.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.milestonesValue" value="${(milestone.id)!''}" checked=isChecked editable=(editable) centered=true/] 
+                        </div>
+                        <div id="isCheckedAR-${(milestoneReportSynthesis.id)!}" style="display: none">${isChecked?string('1','0')}</div>
+                      </td>
+                    
+                      <td id="QAStatusIcon-${(milestoneReportSynthesis.id)!}" class="text-center">
+                        [#if isChecked]
+                          <i style="font-weight: normal;opacity:0.8;">[@s.text name="annualReport2018.policies.table2.pendingForReview"/]</i>
+                        [#else]
+                          <i style="font-weight: normal;opacity:0.8;">[@s.text name="annualReport2018.policies.table2.notInluded"/]</i>
+                        [/#if]
+                      </td>
+                    [/#if]
                   [/#if]
                   [#if !allowPopups]
                     [#-- Milestone Evidence --]
