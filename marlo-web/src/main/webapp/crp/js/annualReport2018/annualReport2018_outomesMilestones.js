@@ -264,11 +264,7 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
 function updateQualityAssessmentStatusData(data) {
   data.map(function (x) {
     var isCheckedAR = $(`#isCheckedAR-${x[0]}`).html();
-    if ($('#isOICR').html() == 'true') {
-      var element = document.getElementById(`QAStatusIcon-${x[0]}`);
-    } else {
-      var element = document.querySelectorAll(`[id^=QAStatusIcon-${x[0]}]`);
-    }
+    var element = document.getElementById(`QAStatusIcon-${x[0]}`);
     var status, iconSrc;
 
     switch (x[1]) {
@@ -306,28 +302,13 @@ function updateQualityAssessmentStatusData(data) {
       var spanTag = document.createElement('span');
       var text = document.createTextNode(status);
 
-      if ($('#isOICR').html() == 'true') {
-        element.innerHTML = '';
-        imgTag.style.width = '25px';
-        imgTag.src = iconSrc;
-        element.appendChild(imgTag);
-        element.appendChild(br);
-        spanTag.appendChild(text);
-        element.appendChild(spanTag);
-      } else {
-        console.log("--------------")
-        for (let i = 0; i < element.length; i++) {
-          console.log(i, element[i]);
-          element[i].innerHTML = '';
-          imgTag.style.width = '25px';
-          imgTag.src = iconSrc;
-          element[i].appendChild(imgTag);
-          element[i].appendChild(br);
-          spanTag.appendChild(text);
-          element[i].appendChild(spanTag);
-          console.log(element[i].innerHTML)
-        }
-      }
+      element.innerHTML = '';
+      imgTag.style.width = '25px';
+      imgTag.src = iconSrc;
+      element.appendChild(imgTag);
+      element.appendChild(br);
+      spanTag.appendChild(text);
+      element.appendChild(spanTag);
     }
   });
 }
