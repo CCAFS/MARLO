@@ -127,6 +127,9 @@ public class ProjectOutcomeAction extends BaseAction {
   private Double totalParticipantFormalTrainingShortFemale = new Double(0);
   private Double totalParticipantFormalTrainingLongFemale = new Double(0);
   private Double totalParticipantFormalTrainingPhdFemale = new Double(0);
+  private Double totalFemales = new Double(0);
+  private Double totalAfricans = new Double(0);
+  private Double totalYouth = new Double(0);
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -558,6 +561,14 @@ public class ProjectOutcomeAction extends BaseAction {
     return targetUnits;
   }
 
+  public Double getTotalAfricans() {
+    return totalAfricans;
+  }
+
+  public Double getTotalFemales() {
+    return totalFemales;
+  }
+
   public Double getTotalParticipantFormalTraining() {
     return totalParticipantFormalTraining;
   }
@@ -565,7 +576,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public Double getTotalParticipantFormalTrainingLongFemale() {
     return totalParticipantFormalTrainingLongFemale;
   }
-
 
   public Double getTotalParticipantFormalTrainingLongMale() {
     return totalParticipantFormalTrainingLongMale;
@@ -583,13 +593,17 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipantFormalTrainingShortFemale;
   }
 
+
   public Double getTotalParticipantFormalTrainingShortMale() {
     return totalParticipantFormalTrainingShortMale;
   }
 
-
   public Double getTotalParticipants() {
     return totalParticipants;
+  }
+
+  public Double getTotalYouth() {
+    return totalYouth;
   }
 
   public String getTransaction() {
@@ -599,6 +613,7 @@ public class ProjectOutcomeAction extends BaseAction {
   public boolean isEditMilestoneExpectedValue() {
     return editMilestoneExpectedValue;
   }
+
 
   public boolean isEditOutcomeExpectedValue() {
     return editOutcomeExpectedValue;
@@ -635,7 +650,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return editable;
   }
 
-
   public ProjectCommunication loadProjectCommunication(int year) {
 
     List<ProjectCommunication> projectCommunications =
@@ -660,7 +674,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -933,7 +946,14 @@ public class ProjectOutcomeAction extends BaseAction {
                   if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm() != null) {
                     Double numberFemales = 0.0;
                     if (deliverable.getDeliverableParticipant().getFemales() != null) {
+                      totalFemales += deliverable.getDeliverableParticipant().getFemales();
                       numberFemales = deliverable.getDeliverableParticipant().getFemales();
+                    }
+                    if (deliverable.getDeliverableParticipant().getAfrican() != null) {
+                      totalAfricans += deliverable.getDeliverableParticipant().getAfrican();
+                    }
+                    if (deliverable.getDeliverableParticipant().getYouth() != null) {
+                      totalYouth += deliverable.getDeliverableParticipant().getYouth();
                     }
                     if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
                       .equals(APConstants.REP_IND_TRAINING_TERMS_SHORT)) {
@@ -1012,6 +1032,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
 
@@ -1079,7 +1100,6 @@ public class ProjectOutcomeAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
-
 
   public void saveCommunications(ProjectOutcome projectOutcomeDB) {
 
@@ -1207,7 +1227,6 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
-
   private void saveMilestones(ProjectOutcome projectOutcomeDB) {
 
     for (ProjectMilestone projectMilestone : projectOutcomeDB.getProjectMilestones().stream().filter(c -> c.isActive())
@@ -1282,6 +1301,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
+
   public void saveNextUsers(ProjectOutcome projectOutcomeDB) {
 
     for (ProjectNextuser projectNextuser : projectOutcomeDB.getProjectNextusers().stream().filter(c -> c.isActive())
@@ -1331,6 +1351,7 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
   }
+
 
   private ProjectOutcome saveProjectOutcome() {
 
@@ -1410,6 +1431,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+
   public void setDeliverableParticipants(List<DeliverableParticipant> deliverableParticipants) {
     this.deliverableParticipants = deliverableParticipants;
   }
@@ -1454,6 +1476,14 @@ public class ProjectOutcomeAction extends BaseAction {
     this.targetUnits = targetUnits;
   }
 
+  public void setTotalAfricans(Double totalAfricans) {
+    this.totalAfricans = totalAfricans;
+  }
+
+  public void setTotalFemales(Double totalFemales) {
+    this.totalFemales = totalFemales;
+  }
+
   public void setTotalParticipantFormalTraining(Double totalParticipantFormalTraining) {
     this.totalParticipantFormalTraining = totalParticipantFormalTraining;
   }
@@ -1484,6 +1514,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public void setTotalParticipants(Double totalParticipants) {
     this.totalParticipants = totalParticipants;
+  }
+
+  public void setTotalYouth(Double totalYouth) {
+    this.totalYouth = totalYouth;
   }
 
   public void setTransaction(String transaction) {
