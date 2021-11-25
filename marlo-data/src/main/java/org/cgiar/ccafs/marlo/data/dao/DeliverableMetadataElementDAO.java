@@ -54,6 +54,9 @@ public interface DeliverableMetadataElementDAO {
    */
   public List<DeliverableMetadataElement> findAll();
 
+  public List<DeliverableMetadataElement> findAllByPhaseAndDeliverable(long phaseId, long deliverableId);
+
+
   /**
    * This method gets a deliverableMetadataElement object by a given phase, deliverable and metadata identifier
    * 
