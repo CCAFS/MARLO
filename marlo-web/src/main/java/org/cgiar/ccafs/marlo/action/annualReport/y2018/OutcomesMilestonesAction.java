@@ -1507,7 +1507,8 @@ public class OutcomesMilestonesAction extends BaseAction {
   private void updateQAInclusionList(ReportSynthesisFlagshipProgress flagshipProgressNew) {
     Bag<Long> excludedMilestoneIds = new TreeBag<>();
     Set<Long> newExcludedMilestoneIds = new HashSet<>();
-    String[] milestonesValue = StringUtils.split(flagshipProgressNew.getMilestonesValue(), ',');
+    String[] milestonesValue =
+      StringUtils.split(StringUtils.trimToEmpty(flagshipProgressNew.getMilestonesValue()), ',');
     excludedMilestoneIds
       .addAll(Stream.of(milestonesValue).map(this::stringToLongNoException).collect(Collectors.toList()));
     excludedMilestoneIds
