@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableUserDAO;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
@@ -116,6 +117,20 @@ public class DeliverableUserMySQLDAO extends AbstractMarloDAO<DeliverableUser, L
 
 
     return deliverableUser;
+  }
+
+  @Override
+  public List<DeliverableUser> findAllByPhaseAndDeliverable(Phase phase, Deliverable deliverable) {
+    String query =
+      "select distinct du from DeliverableUser du " + "where phase.id = :phaseId and deliverable.id= :deliverableId ";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phase.getId());
+    createQuery.setParameter("deliverableId", deliverable.getId());
+    
+
+    Object findSingleResult = super.findAll(createQuery);
+    List<DeliverableUser> findSingleResult2 = (List<DeliverableUser>) findSingleResult;
+    return findSingleResult2;
   }
 
 

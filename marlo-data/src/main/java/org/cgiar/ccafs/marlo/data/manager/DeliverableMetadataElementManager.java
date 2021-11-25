@@ -54,6 +54,8 @@ public interface DeliverableMetadataElementManager {
   public List<DeliverableMetadataElement> findAll();
 
 
+  public List<DeliverableMetadataElement> findAllByPhaseAndDeliverable(Phase phase, Deliverable deliverable);
+
   /**
    * This method gets a deliverableMetadataElement object by a given phase, deliverable and metadata identifier
    * 
