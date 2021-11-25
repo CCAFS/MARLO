@@ -76,6 +76,7 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
 
             return arr;
           });
+          console.log(data)
           updateQualityAssessmentStatusData(newData);
         }
       }
@@ -86,61 +87,64 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
 function updateQualityAssessmentStatusData(data) {
   data.map(function (x) {
     var isCheckedARComponent = document.getElementById(`isCheckedAR-${x[0]}`);
-    var isCheckedAR = isCheckedARComponent.innerHTML;
-    var element = document.getElementById(`containerQAStatus-${x[0]}`);
-    var containerElements = isCheckedARComponent.parentElement;
-    var removeARBtn = isCheckedARComponent.nextElementSibling;
-    var date, status, statusClass;
-
-    switch (x[1]) {
-      case 'pending':
-        status = 'Pending assessment';
-        statusClass = 'pending-mode';
-        break;
-      case 'pending_crp':
-        status = 'Pending CRP response';
-        statusClass = 'pending-mode';
-        break;
-      case 'in_progress':
-        status = 'Quality Assessed (Requires 2nd assessment)';
-        statusClass = 'qualityAssessed-mode';
-        break;
-      case 'quality_assessed':
-        date = new Date((x[2].split('T')[0])).toDateString();
-        status = 'SLO Target was Quality Assessed on ' + date;
-        statusClass = 'qualityAssessed-mode';
-        break;
-
-      default:
-        break;
-    }
-
-    if (element && isCheckedAR == 'true') {
-      var pTag = document.createElement('p');
-      var text = document.createTextNode(status);
-      
-      
-      element.innerHTML = '';
-      element.classList.remove('pendingForReview-mode');
-      element.classList.add(statusClass);
-      pTag.appendChild(text);
-      element.appendChild(pTag);
-      element.style.backgroundPosition = '442px';
-      
-      if (x[1] == 'quality_assessed') {
-        var pMessageTag = document.createElement('p');
-        var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
-        container = element.parentElement;
-
-        containerElements.style.marginBottom = '0';
-        containerElements.style.justifyContent = 'center';
-        container.style.marginLeft = '0';
-        removeARBtn.style.display = 'none';
-        element.style.backgroundPosition = '485px';
-        pMessageTag.classList.add('messageQAInfo');
-        pMessageTag.appendChild(textMessage);
-        container.appendChild(pMessageTag);
-      } 
+    if (isCheckedARComponent) {
+      console.log(isCheckedARComponent);
+      var isCheckedAR = isCheckedARComponent.innerHTML;
+      var element = document.getElementById(`containerQAStatus-${x[0]}`);
+      var containerElements = isCheckedARComponent.parentElement;
+      var removeARBtn = isCheckedARComponent.nextElementSibling;
+      var date, status, statusClass;
+  
+      switch (x[1]) {
+        case 'pending':
+          status = 'Pending assessment';
+          statusClass = 'pending-mode';
+          break;
+        case 'pending_crp':
+          status = 'Pending CRP response';
+          statusClass = 'pending-mode';
+          break;
+        case 'in_progress':
+          status = 'Quality Assessed (Requires 2nd assessment)';
+          statusClass = 'qualityAssessed-mode';
+          break;
+        case 'quality_assessed':
+          date = new Date((x[2].split('T')[0])).toDateString();
+          status = 'SLO Target was Quality Assessed on ' + date;
+          statusClass = 'qualityAssessed-mode';
+          break;
+  
+        default:
+          break;
+      }
+  
+      if (element && isCheckedAR == 'true') {
+        var pTag = document.createElement('p');
+        var text = document.createTextNode(status);
+        
+        
+        element.innerHTML = '';
+        element.classList.remove('pendingForReview-mode');
+        element.classList.add(statusClass);
+        pTag.appendChild(text);
+        element.appendChild(pTag);
+        element.style.backgroundPosition = '442px';
+        
+        if (x[1] == 'quality_assessed') {
+          var pMessageTag = document.createElement('p');
+          var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+          container = element.parentElement;
+  
+          containerElements.style.marginBottom = '0';
+          containerElements.style.justifyContent = 'center';
+          container.style.marginLeft = '0';
+          removeARBtn.style.display = 'none';
+          element.style.backgroundPosition = '485px';
+          pMessageTag.classList.add('messageQAInfo');
+          pMessageTag.appendChild(textMessage);
+          container.appendChild(pMessageTag);
+        } 
+      }
     }
   });
 }
