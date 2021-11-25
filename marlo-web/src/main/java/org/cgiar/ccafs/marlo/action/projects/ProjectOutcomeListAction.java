@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -46,6 +47,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -106,7 +108,18 @@ public class ProjectOutcomeListAction extends BaseAction {
       projectOutcomeManager.saveProjectOutcome(projectOutcome);
       projectOutcomeID = projectOutcome.getId().longValue();
 
-      return SUCCESS;
+      if (projectOutcomeID > 0) {
+        SectionStatus sectionStatus =
+          this.sectionStatusManager.getSectionStatusByIndicator(this.getCurrentCycle(), this.getCurrentCycleYear(),
+            this.isUpKeepActive(), ProjectSectionStatusEnum.OUTCOMES.getStatus(), this.project.getId());
+        if (sectionStatus != null) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
+
+        return SUCCESS;
+      }
+
+      return INPUT;
     } else {
       return NOT_AUTHORIZED;
     }
@@ -119,6 +132,31 @@ public class ProjectOutcomeListAction extends BaseAction {
         sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
       }
       projectOutcomeManager.deleteProjectOutcome(outcome.getId());
+
+      SectionStatus sectionStatus =
+        this.sectionStatusManager.getSectionStatusByIndicator(this.getCurrentCycle(), this.getCurrentCycleYear(),
+          this.isUpKeepActive(), ProjectSectionStatusEnum.OUTCOMES.getStatus(), this.project.getId());
+
+      List<ProjectOutcome> currentOutcomes =
+        CollectionUtils
+          .emptyIfNull(this.project.getOutcomes()).stream().filter(o -> o != null && o.getId() != null && o.isActive()
+            && o.getCrpProgramOutcome() != null && o.getCrpProgramOutcome().getId() != null)
+          .collect(Collectors.toList());
+
+      if (this.isEmpty(currentOutcomes)) {
+        if (sectionStatus == null) {
+          sectionStatus = new SectionStatus();
+          sectionStatus.setCycle(this.getCurrentCycle());
+          sectionStatus.setYear(this.getCurrentCycleYear());
+          sectionStatus.setUpkeep(this.isUpKeepActive());
+          sectionStatus.setSectionName(ProjectSectionStatusEnum.OUTCOMES.getStatus());
+          sectionStatus.setProject(this.project);
+        }
+
+        sectionStatus.setMissingFields(APConstants.STATUS_EMPTY_OUTCOME_LIST);
+        sectionStatus = this.sectionStatusManager.saveSectionStatus(sectionStatus);
+      }
+
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
