@@ -75,6 +75,12 @@ public class DeliverableMetadataElementManagerImpl implements DeliverableMetadat
   }
 
   @Override
+  public List<DeliverableMetadataElement> findAllByPhaseAndDeliverable(Phase phase, Deliverable deliverable) {
+
+    return deliverableMetadataElementDAO.findAllByPhaseAndDeliverable(phase.getId(), deliverable.getId());
+  }
+
+  @Override
   public DeliverableMetadataElement findMetadataElementByPhaseAndDeliverable(Phase phase, Deliverable deliverable,
     long metadataElementId) {
     return this.deliverableMetadataElementDAO.findMetadataElementByPhaseAndDeliverable(phase.getId(),
