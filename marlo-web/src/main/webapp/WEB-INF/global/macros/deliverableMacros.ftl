@@ -312,7 +312,14 @@
         [@customForm.input name="${name}.confidentialUrl" type="text" i18nkey="project.deliverable.dissemination.confidentialUrl" help="project.deliverable.dissemination.confidentialUrl.help" helpIcon=false placeholder="global.webSiteLink.placeholder" className="" required=true editable=editable /]
       </div>
       <div class="form-group confidentialBlock-false" style="display:${(isConfidential == "false")?string('block', 'none')}">
-        <p class="note"> [@s.text name="project.deliverable.dissemination.confidentialNoMessage" /] </p>
+        <p class="note"> 
+          [#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
+          [#if actualPhaseAR2021]
+            [@s.text name="project.deliverable.dissemination.confidentialNoMessageAR2021" /] 
+          [#else]
+            [@s.text name="project.deliverable.dissemination.confidentialNoMessage" /] 
+          [/#if]
+        </p>
       </div>
     </div>
   </div>

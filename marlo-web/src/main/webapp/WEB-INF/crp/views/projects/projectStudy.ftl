@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${expectedID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload", "flag-icon-css", "components-font-awesome"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectStudy.js?20211104A",
+  "${baseUrlMedia}/js/projects/projectStudy.js?20211118A",
   "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
@@ -46,7 +46,28 @@
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-caseStudy.ftl" /]
         
-        [@s.form action=actionName cssClass="pure-form" enctype="multipart/form-data" ]  
+        [@s.form action=actionName cssClass="pure-form" enctype="multipart/form-data" ] 
+
+          <span id="actualCrpID" style="display: none;">${(action.getCurrentCrp().id)!-1}</span>
+          <span id="actualPhase" style="display: none;">${(action.isSelectedPhaseAR2021())?c}</span>
+          <span id="isOICR" style="display: none;">${(((expectedStudy.projectExpectedStudyInfo.studyType.id == 1)!false) && (reportingActive || upKeepActive))?c}</span>
+          <span id="studyID" style="display: none;">${(expectedStudy.id)!-1}</span>
+          <span id="isSubmitted" style="display: none;">${submission?c}</span>
+          [#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
+          [#assign isOutcomeCaseStudy = (((expectedStudy.projectExpectedStudyInfo.studyType.id == 1)!false) && (reportingActive || upKeepActive))!false]
+          [#assign isQAIncluded = action.isIndicatorIncludedInQA(isOutcomeCaseStudy?then('oicr', 'melia'), (expectedStudy.id)!-1, (action.getActualPhase().id)!-1)!false]
+
+          [#if actualPhaseAR2021 && isQAIncluded]
+            <div class="containerTitleElementsProject">
+              <div class="containerTitleMessage">
+                <div id="qualityAssessedIcon" class="pendingForReview-mode text-center animated flipInX" style="height: auto;">
+                  <p>
+                    [@s.text name="annualReport2018.policies.table2.pendingForReview"][/@s.text]
+                  </p>
+                </div> 
+              </div>
+            </div>
+          [/#if] 
 
           [#-- Back --]
           <small class="pull-right">
@@ -58,21 +79,6 @@
           [#-- Outcome case studies list --]
           <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformation" /]</h3>
           
-          [#--  <div class="containerTitleElements">
-            <div class="containerTitleMessage">
-              <div id="qualityAssessedIcon" class="qualityAssessed-mode text-center animated flipInX">
-                [#assign lastSubmission=action.getProjectSubmissions(projectID)?last /]
-                <p>
-                  [@s.text name="message.qualityAssessed"]
-                    [@s.param]Study[/@s.param]
-                    [@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param]
-                  [/@s.text]
-                </p>
-              </div> 
-              <p class="messageQAInfo">[@s.text name="message.qualityAssessedInfo"][/@s.text]</p>
-            </div>  
-          </div>  --]
-          <span id="actualPhase" style="display: none;">${action.isSelectedPhaseAR2021()?c}</span>
           <div id="caseStudiesBlock" class="">
             [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0  /]
           </div> 

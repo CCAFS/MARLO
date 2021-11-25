@@ -59,7 +59,12 @@
       [#if project??]
         [#if project.projectInfo.isProjectEditLeader()]
           [#if !(action.hasPermission("statusDescription")) ]
-            <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+            [#assign actualPhaseAR = (action.isReportingActive())!false]
+            [#if actualPhaseAR && ((currentStage!'') == "budgetByPartners")]
+              <p class="readPrivileges">This section is read-only for Annual Report</p>
+            [#else]
+              <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+            [/#if]
           [/#if]
         [#else]
           [#if !editStatus]

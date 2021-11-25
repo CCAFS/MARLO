@@ -3,6 +3,8 @@ $(document).ready(init);
 var markers, inputMilestoneStatus;
 var oicrsAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=4&crpID=';
 var oicrsArrName = 'fullItemsAssessmentStatus';
+var milestoneAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=7&crpID=';
+var milestoneArrName = 'fullItemsAssessmentStatus';
 
 function init() {
 
@@ -116,8 +118,12 @@ function disabledUncheckedCheckmarkColor() {
 }
 
 function attachEvents() {
-  if ($('#actualPhase').html() == 'true') {
-    loadQualityAssessmentStatus(oicrsAjaxURL, oicrsArrName);
+  if ($('#actualPhase').html() == 'true' && $('#isSubmitted').html() == 'true') {
+    if ($('#isOICR').html() == 'true') {
+      loadQualityAssessmentStatus(oicrsAjaxURL, oicrsArrName);
+    } else {
+      loadQualityAssessmentStatus(milestoneAjaxURL, milestoneArrName);
+    }
   }
 
   // Links Component
@@ -212,7 +218,7 @@ function attachEvents() {
 
     // Milestone Evidence
     var $block = $(this).parents('.synthesisMilestone').find('.milestonesEvidence');
-    if (optionSelected == 4 || optionSelected == 5 || optionSelected == 6) {
+    if (optionSelected == 4 || optionSelected == 5 || optionSelected == 6 || optionSelected == 7) {
       $block.slideDown();
     } else {
       $block.slideUp();
@@ -263,7 +269,11 @@ function updateQualityAssessmentStatusData(data) {
 
     switch (x[1]) {
       case 'pending':
-        status = 'Pending';
+        status = 'Pending assessment';
+        iconSrc = baseURL + '/global/images/pending-icon.svg';
+        break;
+      case 'pending_crp':
+        status = 'Pending CRP response';
         iconSrc = baseURL + '/global/images/pending-icon.svg';
         break;
       case 'in_progress':
@@ -273,8 +283,13 @@ function updateQualityAssessmentStatusData(data) {
       case 'quality_assessed':
         status = 'Quality Assessed';
         iconSrc = baseURL + '/global/images/quality-assessed-icon.svg';
-        $(`#study-${x[0]}`).prop('disabled', true);
-        $(`#study-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
+        if ($('#isOICR').html() == 'true') {
+          $(`#study-${x[0]}`).prop('disabled', true);
+          $(`#study-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
+        } else {
+          $(`#milestone-${x[0]}`).prop('disabled', true);
+          $(`#milestone-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
+        }
         break;
 
       default:

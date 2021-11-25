@@ -61,6 +61,8 @@ public interface ReportSynthesisFlagshipProgressOutcomeMilestoneDAO {
    */
   public List<ReportSynthesisFlagshipProgressOutcomeMilestone> findAll();
 
+  public List<ReportSynthesisFlagshipProgressOutcomeMilestone> getAllFlagshipProgressOutcomeMilestones(long phaseId);
+
   public ReportSynthesisFlagshipProgressOutcomeMilestone getMilestoneId(long progressID, long outcomeID);
 
   public ReportSynthesisFlagshipProgressOutcomeMilestone getReportSynthesisMilestoneFromOutcomeIdAndMilestoneId(

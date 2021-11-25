@@ -276,7 +276,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
         + "].milestones[" + j + "].milestonesStatus.id", InvalidFieldsMessages.EMPTYFIELD);
     } else {
-      if (StringUtils.equals(String.valueOf(milestone.getMilestonesStatus().getId()),
+      if (!StringUtils.equals(String.valueOf(milestone.getMilestonesStatus().getId()),
         ProjectStatusEnum.Complete.getStatusId())) {
         // Validate Milestone Reasons
         if (milestone.getReason() != null) {
