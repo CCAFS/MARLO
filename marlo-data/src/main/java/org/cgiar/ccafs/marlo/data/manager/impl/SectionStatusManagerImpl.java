@@ -104,6 +104,12 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
+  public SectionStatus getSectionStatusByIndicator(String cycle, int year, Boolean upkeep, String sectionName,
+    long projectId) {
+    return this.sectionStatusDAO.getSectionStatusByIndicator(cycle, year, upkeep, sectionName, projectId);
+  }
+
+  @Override
   public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, Boolean upkeep,
     String sectionName) {
     return sectionStatusDAO.getSectionStatusByIpProgram(ipProgramID, cycle, year, upkeep, sectionName);

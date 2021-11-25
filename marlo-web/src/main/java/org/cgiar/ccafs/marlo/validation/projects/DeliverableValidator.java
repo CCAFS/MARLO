@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -218,10 +219,12 @@ public class DeliverableValidator extends BaseValidator {
 
         }
 
-        if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {
-          action.addMessage(action.getText("project.deliverable.fundingSource.readText"));
-          action.getInvalidFields().put("list-deliverable.fundingSources",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
+        if (action.hasSpecificities(APConstants.CRP_DELIVERABLE_FUNDING_REQUIRED)) {
+          if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {
+            action.addMessage(action.getText("project.deliverable.fundingSource.readText"));
+            action.getInvalidFields().put("list-deliverable.fundingSources",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
+          }
         }
       }
 
@@ -368,6 +371,24 @@ public class DeliverableValidator extends BaseValidator {
     this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
 
+  }
+
+  public void validate(BaseAction action, Project project, boolean hasDeliverables) {
+    if (project != null && project.getId() != null) {
+      if (hasDeliverables == false) {
+        action.addMissingField(APConstants.STATUS_EMPTY_DELIVERABLE_LIST);
+        this.saveMissingFieldsIndicator(project, action.getActualPhase().getDescription(),
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+          ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
+      } else {
+        SectionStatus sectionStatus =
+          this.sectionStatusManager.getSectionStatusByIndicator(action.getCurrentCycle(), action.getCurrentCycleYear(),
+            action.isUpKeepActive(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), project.getId());
+        if (sectionStatus != null) {
+          this.sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
+      }
+    }
   }
 
   private void validateDeliverableInfo(DeliverableInfo deliverableInfo, Deliverable deliverable, Project project,
