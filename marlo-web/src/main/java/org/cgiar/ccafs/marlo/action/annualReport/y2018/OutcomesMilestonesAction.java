@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.DeliverableStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -77,12 +78,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import org.apache.commons.collections4.Bag;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.bag.TreeBag;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1061,6 +1067,7 @@ public class OutcomesMilestonesAction extends BaseAction {
       }
     }
 
+
     outcomeList = outcomeList2;
 
     if (outcomeList != null) {
@@ -1092,6 +1099,21 @@ public class OutcomesMilestonesAction extends BaseAction {
 
     if (this.isPMU()) {
       this.loadTablePMU();
+
+      reportSynthesis.getReportSynthesisFlagshipProgress().setCrpMilestones(new ArrayList<>());
+      List<CrpProgramOutcome> selectedOutcomes = flagships.stream().filter(fp -> fp != null && fp.getId() != null)
+        .flatMap(fp -> fp.getOutcomes().stream()).collect(Collectors.toList());
+
+      if (this.isNotEmpty(selectedOutcomes)) {
+        for (ReportSynthesisFlagshipProgressOutcomeMilestone outcomeMilestone : CollectionUtils
+          .emptyIfNull(reportSynthesisFlagshipProgressOutcomeMilestoneManager
+            .getAllFlagshipProgressOutcomeMilestones(this.getActualPhase().getId()))) {
+          if (outcomeMilestone.getIsQAIncluded() != null && outcomeMilestone.getIsQAIncluded() == true) {
+            reportSynthesis.getReportSynthesisFlagshipProgress().getCrpMilestones()
+              .add(outcomeMilestone.getCrpMilestone());
+          }
+        }
+      }
     }
 
     this.fillMilestoneReason();
@@ -1121,6 +1143,10 @@ public class OutcomesMilestonesAction extends BaseAction {
       if (this.isFlagship()) {
         this.saveFlagshipProgressNewData(flagshipProgressDB);
         flagshipProgressDB.setSummary(reportSynthesis.getReportSynthesisFlagshipProgress().getSummary());
+      }
+
+      if (this.isPMU()) {
+        this.updateQAInclusionList(reportSynthesis.getReportSynthesisFlagshipProgress());
       }
 
       flagshipProgressDB =
@@ -1331,92 +1357,96 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   public void saveMilestones(ReportSynthesisFlagshipProgressOutcome OutcomeDB,
     ReportSynthesisFlagshipProgressOutcome outcome) {
-    List<ReportSynthesisFlagshipProgressOutcomeMilestone> progressMilestonesListOld = outcome.getMilestones();
-    List<ReportSynthesisFlagshipProgressOutcomeMilestone> progressMilestonesListNew = outcome.getMilestones();
+    if (!this.isPMU()) {
+      List<ReportSynthesisFlagshipProgressOutcomeMilestone> progressMilestonesListOld = outcome.getMilestones();
+      List<ReportSynthesisFlagshipProgressOutcomeMilestone> progressMilestonesListNew = outcome.getMilestones();
 
-    if (progressMilestonesListOld == null) {
-      progressMilestonesListOld = new ArrayList<>();
-      outcome.setMilestones(progressMilestonesListOld);
-    }
+      if (progressMilestonesListOld == null) {
+        progressMilestonesListOld = new ArrayList<>();
+        outcome.setMilestones(progressMilestonesListOld);
+      }
 
-    // in theory, both old an new should have the same milestones, so the size should be the same
-    for (int i = 0; i < progressMilestonesListOld.size(); i++) {
-      ReportSynthesisFlagshipProgressOutcomeMilestone flagshipProgressMilestoneOld = progressMilestonesListOld.get(i);
-      ReportSynthesisFlagshipProgressOutcomeMilestone flagshipProgressMilestoneIncoming =
-        progressMilestonesListNew.get(i);
-      ReportSynthesisFlagshipProgressOutcomeMilestone flagshipProgressMilestoneNew = null;
+      // in theory, both old an new should have the same milestones, so the size should be the same
+      for (int i = 0; i < progressMilestonesListOld.size(); i++) {
+        ReportSynthesisFlagshipProgressOutcomeMilestone flagshipProgressMilestoneOld = progressMilestonesListOld.get(i);
+        ReportSynthesisFlagshipProgressOutcomeMilestone flagshipProgressMilestoneIncoming =
+          progressMilestonesListNew.get(i);
+        ReportSynthesisFlagshipProgressOutcomeMilestone flagshipProgressMilestoneNew = null;
 
-      if (flagshipProgressMilestoneOld != null) {
-        if (flagshipProgressMilestoneOld.getCrpMilestone() != null
-          && flagshipProgressMilestoneOld.getCrpMilestone().getId() > 0) {
-          flagshipProgressMilestoneOld.setCrpMilestone(
-            crpMilestoneManager.getCrpMilestoneById(flagshipProgressMilestoneOld.getCrpMilestone().getId()));
-        }
-
-        if (flagshipProgressMilestoneOld.getId() == null) {
-          flagshipProgressMilestoneNew = new ReportSynthesisFlagshipProgressOutcomeMilestone();
-          flagshipProgressMilestoneNew.setReportSynthesisFlagshipProgressOutcome(OutcomeDB);
-        } else {
-          flagshipProgressMilestoneNew = reportSynthesisFlagshipProgressOutcomeMilestoneManager
-            .getReportSynthesisFlagshipProgressOutcomeMilestoneById(flagshipProgressMilestoneOld.getId());
-        }
-
-        // LOG.debug(flagshipProgressMilestoneIncoming.getReason() == null
-        // ? "no reason for " + flagshipProgressMilestoneIncoming.getId()
-        // : flagshipProgressMilestoneIncoming.getReason().getName() + " for milestone "
-        // + flagshipProgressMilestoneIncoming.getId());
-        GeneralStatus status = flagshipProgressMilestoneIncoming.getMilestonesStatus() == null ? null
-          : generalStatusManager.getGeneralStatusById(flagshipProgressMilestoneIncoming.getMilestonesStatus().getId());
-        flagshipProgressMilestoneNew.setMilestonesStatus(status);
-
-        if (status != null) {
-          // LOG.debug(status.getName() + " for milestone " + flagshipProgressMilestoneIncoming.getId());
-          // LOG.debug(StringUtils.containsIgnoreCase(status.getName(), "omplete")
-          // ? "Complete for " + flagshipProgressMilestoneIncoming.getId()
-          // : "Other than complete for " + flagshipProgressMilestoneIncoming.getId());
-          if (StringUtils.containsIgnoreCase(status.getName(), "xtended")) {
-            flagshipProgressMilestoneNew.setExtendedYear(flagshipProgressMilestoneIncoming.getExtendedYear());
-          } else {
-            flagshipProgressMilestoneNew.setExtendedYear(null);
+        if (flagshipProgressMilestoneOld != null) {
+          if (flagshipProgressMilestoneOld.getCrpMilestone() != null
+            && flagshipProgressMilestoneOld.getCrpMilestone().getId() > 0) {
+            flagshipProgressMilestoneOld.setCrpMilestone(
+              crpMilestoneManager.getCrpMilestoneById(flagshipProgressMilestoneOld.getCrpMilestone().getId()));
           }
 
-          if (StringUtils.containsIgnoreCase(status.getName(), "omplete")) {
-            flagshipProgressMilestoneNew.setReason(null);
-            flagshipProgressMilestoneNew.setOtherReason(null);
+          if (flagshipProgressMilestoneOld.getId() == null) {
+            flagshipProgressMilestoneNew = new ReportSynthesisFlagshipProgressOutcomeMilestone();
+            flagshipProgressMilestoneNew.setReportSynthesisFlagshipProgressOutcome(OutcomeDB);
           } else {
-            if (flagshipProgressMilestoneIncoming.getReason() != null) {
-              if (flagshipProgressMilestoneIncoming.getReason().getId() != null
-                && flagshipProgressMilestoneIncoming.getReason().getId() != -1) {
-                RepIndMilestoneReason milestoneReason = repIndMilestoneReasonManager
-                  .getRepIndMilestoneReasonById(flagshipProgressMilestoneIncoming.getReason().getId());
+            flagshipProgressMilestoneNew = reportSynthesisFlagshipProgressOutcomeMilestoneManager
+              .getReportSynthesisFlagshipProgressOutcomeMilestoneById(flagshipProgressMilestoneOld.getId());
+          }
 
-                flagshipProgressMilestoneNew.setReason(milestoneReason);
-                if (StringUtils.containsIgnoreCase(milestoneReason.getName(), "ther")) {
-                  flagshipProgressMilestoneNew.setOtherReason(flagshipProgressMilestoneOld.getOtherReason());
-                } else {
-                  flagshipProgressMilestoneNew.setOtherReason(null);
+          // LOG.debug(flagshipProgressMilestoneIncoming.getReason() == null
+          // ? "no reason for " + flagshipProgressMilestoneIncoming.getId()
+          // : flagshipProgressMilestoneIncoming.getReason().getName() + " for milestone "
+          // + flagshipProgressMilestoneIncoming.getId());
+          GeneralStatus status =
+            flagshipProgressMilestoneIncoming.getMilestonesStatus() == null ? null : generalStatusManager
+              .getGeneralStatusById(flagshipProgressMilestoneIncoming.getMilestonesStatus().getId());
+          flagshipProgressMilestoneNew.setMilestonesStatus(status);
+
+          if (status != null && status.getId() != null) {
+            // LOG.debug(status.getName() + " for milestone " + flagshipProgressMilestoneIncoming.getId());
+            // LOG.debug(StringUtils.containsIgnoreCase(status.getName(), "omplete")
+            // ? "Complete for " + flagshipProgressMilestoneIncoming.getId()
+            // : "Other than complete for " + flagshipProgressMilestoneIncoming.getId());
+            if (StringUtils.containsIgnoreCase(status.getName(), "xtended")) {
+              flagshipProgressMilestoneNew.setExtendedYear(flagshipProgressMilestoneIncoming.getExtendedYear());
+            } else {
+              flagshipProgressMilestoneNew.setExtendedYear(null);
+            }
+
+            if (DeliverableStatusEnum.COMPLETE.equals(DeliverableStatusEnum.getValue(status.getId().intValue()))) {
+              flagshipProgressMilestoneNew.setReason(null);
+              flagshipProgressMilestoneNew.setOtherReason(null);
+            } else {
+              if (flagshipProgressMilestoneIncoming.getReason() != null) {
+                if (flagshipProgressMilestoneIncoming.getReason().getId() != null
+                  && flagshipProgressMilestoneIncoming.getReason().getId() != -1) {
+                  RepIndMilestoneReason milestoneReason = repIndMilestoneReasonManager
+                    .getRepIndMilestoneReasonById(flagshipProgressMilestoneIncoming.getReason().getId());
+
+                  flagshipProgressMilestoneNew.setReason(milestoneReason);
+                  if (StringUtils.containsIgnoreCase(milestoneReason.getName(), "ther")) {
+                    flagshipProgressMilestoneNew.setOtherReason(flagshipProgressMilestoneOld.getOtherReason());
+                  } else {
+                    flagshipProgressMilestoneNew.setOtherReason(null);
+                  }
                 }
               }
             }
           }
+
+          flagshipProgressMilestoneNew.setEvidence(flagshipProgressMilestoneIncoming.getEvidence());
+          flagshipProgressMilestoneNew.setEvidenceLink(flagshipProgressMilestoneIncoming.getEvidenceLink());
+          flagshipProgressMilestoneNew.setCrpMilestone(flagshipProgressMilestoneOld.getCrpMilestone());
+          flagshipProgressMilestoneNew.setIsQAIncluded(flagshipProgressMilestoneOld.getIsQAIncluded());
+          flagshipProgressMilestoneNew = reportSynthesisFlagshipProgressOutcomeMilestoneManager
+            .saveReportSynthesisFlagshipProgressOutcomeMilestone(flagshipProgressMilestoneNew);
+
+          this.saveCrossCutting(flagshipProgressMilestoneNew, flagshipProgressMilestoneOld);
+          this.saveLinks(flagshipProgressMilestoneNew, flagshipProgressMilestoneOld);
         }
-
-        flagshipProgressMilestoneNew.setEvidence(flagshipProgressMilestoneIncoming.getEvidence());
-        flagshipProgressMilestoneNew.setEvidenceLink(flagshipProgressMilestoneIncoming.getEvidenceLink());
-        flagshipProgressMilestoneNew.setCrpMilestone(flagshipProgressMilestoneOld.getCrpMilestone());
-        flagshipProgressMilestoneNew = reportSynthesisFlagshipProgressOutcomeMilestoneManager
-          .saveReportSynthesisFlagshipProgressOutcomeMilestone(flagshipProgressMilestoneNew);
-
-        this.saveCrossCutting(flagshipProgressMilestoneNew, flagshipProgressMilestoneOld);
-        this.saveLinks(flagshipProgressMilestoneNew, flagshipProgressMilestoneOld);
       }
     }
   }
 
-
   public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
     this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
   }
+
 
   public void setFlagships(List<CrpProgram> flagships) {
     this.flagships = flagships;
@@ -1464,6 +1494,48 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  private Long stringToLongNoException(String longString) {
+    try {
+      return Long.valueOf(StringUtils.stripToNull(longString));
+    } catch (NumberFormatException nfe) {
+      return -1L;
+    }
+  }
+
+  private void updateQAInclusionList(ReportSynthesisFlagshipProgress flagshipProgressNew) {
+    Bag<Long> excludedMilestoneIds = new TreeBag<>();
+    Set<Long> newExcludedMilestoneIds = new HashSet<>();
+    String[] milestonesValue =
+      StringUtils.split(StringUtils.trimToEmpty(flagshipProgressNew.getMilestonesValue()), ',');
+    excludedMilestoneIds
+      .addAll(Stream.of(milestonesValue).map(this::stringToLongNoException).collect(Collectors.toList()));
+    excludedMilestoneIds
+      .addAll(LongStream.of(flagshipProgressNew.getMilestoneIds()).boxed().collect(Collectors.toList()));
+
+    for (Long milestoneId : excludedMilestoneIds) {
+      if (excludedMilestoneIds.getCount(milestoneId) == 1) {
+        newExcludedMilestoneIds.add(milestoneId);
+      }
+    }
+
+    for (ReportSynthesisFlagshipProgressOutcomeMilestone flagshipProgressOutcomeMilestone : CollectionUtils
+      .emptyIfNull(reportSynthesisFlagshipProgressOutcomeMilestoneManager
+        .getAllFlagshipProgressOutcomeMilestones(this.getActualPhase().getId()))) {
+      Boolean previousQAInclusionStatus = flagshipProgressOutcomeMilestone.getIsQAIncluded();
+      Long milestoneId = flagshipProgressOutcomeMilestone.getCrpMilestone().getId();
+      boolean newQAExclusionStatus = newExcludedMilestoneIds.contains(milestoneId);
+
+      flagshipProgressOutcomeMilestone.setIsQAIncluded(newQAExclusionStatus);
+
+      if ((previousQAInclusionStatus == null && newQAExclusionStatus == true)
+        || (previousQAInclusionStatus != null && previousQAInclusionStatus == false && newQAExclusionStatus == true)
+        || (previousQAInclusionStatus != null && previousQAInclusionStatus == true && newQAExclusionStatus == false)) {
+        this.reportSynthesisFlagshipProgressOutcomeMilestoneManager
+          .saveReportSynthesisFlagshipProgressOutcomeMilestone(flagshipProgressOutcomeMilestone);
+      }
+    }
   }
 
   @Override

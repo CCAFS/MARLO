@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20211019A",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20211124B",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20210908B", 
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20200205",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
@@ -51,20 +51,24 @@
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-deliverables.ftl" /]
 
-        [#--  <div class="containerTitleElements">
-            <div class="containerTitleMessage" style="margin-top: 10px;">
-              <div id="qualityAssessedIcon" class="deliverableQualityAssessedIcon qualityAssessed-mode text-center animated flipInX">
-                [#assign lastSubmission=action.getProjectSubmissions(projectID)?last /]
+        <span id="actualCrpID" style="display: none;">${(action.getCurrentCrp().id)!-1}</span>
+        <span id="actualPhase" style="display: none;">${(action.isSelectedPhaseAR2021())?c}</span>
+        <span id="deliverableID" style="display: none;">${(deliverable.id)!-1}</span>
+        <span id="isSubmitted" style="display: none;">${submission?c}</span>
+        [#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
+        [#assign isQAIncluded = action.isIndicatorIncludedInQA("deliverable", (deliverable.id)!-1, (action.getActualPhase().id)!-1)!false]
+
+        [#if actualPhaseAR2021 && isQAIncluded]
+          <div class="containerTitleElementsProject">
+            <div class="containerTitleMessage">
+              <div id="qualityAssessedIcon" class="pendingForReview-mode text-center animated flipInX" style="height: auto;">
                 <p>
-                  [@s.text name="message.qualityAssessed"]
-                    [@s.param]Deliverable[/@s.param]
-                    [@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param]
-                  [/@s.text]
+                  [@s.text name="annualReport2018.policies.table2.pendingForReview"][/@s.text]
                 </p>
               </div> 
-              <p class="messageQAInfo">[@s.text name="message.qualityAssessedInfo"][/@s.text]</p>
-            </div>  
-          </div>  --]
+            </div>
+          </div>
+        [/#if]
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           

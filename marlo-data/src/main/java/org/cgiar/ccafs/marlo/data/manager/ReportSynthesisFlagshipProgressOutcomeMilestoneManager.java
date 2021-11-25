@@ -36,7 +36,6 @@ public interface ReportSynthesisFlagshipProgressOutcomeMilestoneManager {
   public void
     deleteReportSynthesisFlagshipProgressOutcomeMilestone(long reportSynthesisFlagshipProgressOutcomeMilestoneId);
 
-
   /**
    * This method validate if the reportSynthesisFlagshipProgressOutcomeMilestone identify with the given id exists in
    * the system.
@@ -48,13 +47,15 @@ public interface ReportSynthesisFlagshipProgressOutcomeMilestoneManager {
   public boolean
     existReportSynthesisFlagshipProgressOutcomeMilestone(long reportSynthesisFlagshipProgressOutcomeMilestoneID);
 
-
   /**
    * This method gets a list of reportSynthesisFlagshipProgressOutcomeMilestone that are active
    * 
    * @return a list from ReportSynthesisFlagshipProgressOutcomeMilestone null if no exist records
    */
   public List<ReportSynthesisFlagshipProgressOutcomeMilestone> findAll();
+
+
+  public List<ReportSynthesisFlagshipProgressOutcomeMilestone> getAllFlagshipProgressOutcomeMilestones(Long phaseId);
 
 
   public ReportSynthesisFlagshipProgressOutcomeMilestone getMilestoneId(long progressID, long outcomeID);

@@ -80,5 +80,8 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProgressTargetCaseGeographicCountry" />
     </set>
+    <property name="isQAIncluded" type="boolean">
+            <column name="is_qa_included" />
+        </property>
 	</class>
 </hibernate-mapping>

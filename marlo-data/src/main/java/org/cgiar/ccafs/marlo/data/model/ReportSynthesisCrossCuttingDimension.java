@@ -122,10 +122,11 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
   @Expose
   private Double traineesPhdMale;
 
+  @Expose
+  private Boolean isQAIncluded;
 
   public ReportSynthesisCrossCuttingDimension() {
   }
-
 
   /**
    * @return an array of integers (intellectual assets Id).
@@ -168,6 +169,7 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     return climateChangeKeyAchievements;
   }
 
+
   public String getEvidenceLink() {
     return evidenceLink;
   }
@@ -176,7 +178,6 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
   public String getGenderDescription() {
     return genderDescription;
   }
-
 
   public String getGenderLearned() {
     return genderLearned;
@@ -187,14 +188,15 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     return genderLessons;
   }
 
+
   public String getGenderProblemsArisen() {
     return genderProblemsArisen;
   }
 
+
   public String getGenderResearchFindings() {
     return genderResearchFindings;
   }
-
 
   /**
    * @return an array of integers (project Innovation Id).
@@ -212,7 +214,6 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     return null;
   }
 
-
   public List<ProjectInnovation> getInnovations() {
     return innovations;
   }
@@ -225,6 +226,11 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
 
   public String getIntellectualAssets() {
     return intellectualAssets;
+  }
+
+
+  public Boolean getIsQAIncluded() {
+    return isQAIncluded;
   }
 
 
@@ -259,6 +265,7 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
   public List<ReportSynthesisCrossCuttingDimensionAsset> getPlannedAssets() {
     return plannedAssets;
   }
+
 
   public List<ReportSynthesisCrossCuttingDimensionInnovation> getPlannedInnovations() {
     return plannedInnovations;
@@ -324,10 +331,10 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     return youthResearchFindings;
   }
 
-
   public void setAssets(List<DeliverableIntellectualAsset> assets) {
     this.assets = assets;
   }
+
 
   public void setAssetsValue(String assetsValue) {
     this.assetsValue = assetsValue;
@@ -348,7 +355,6 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
   public void setEvidenceLink(String evidenceLink) {
     this.evidenceLink = evidenceLink;
   }
-
 
   public void setGenderDescription(String genderDescription) {
     this.genderDescription = genderDescription;
@@ -387,6 +393,11 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
 
   public void setIntellectualAssets(String intellectualAssets) {
     this.intellectualAssets = intellectualAssets;
+  }
+
+
+  public void setIsQAIncluded(Boolean isQAIncluded) {
+    this.isQAIncluded = isQAIncluded;
   }
 
   public void setOpenData(String openData) {
