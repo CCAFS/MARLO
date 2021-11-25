@@ -92,6 +92,11 @@ public class DeliverableDisseminationManagerImpl implements DeliverableDissemina
   }
 
   @Override
+  public DeliverableDissemination findDisseminationByPhaseAndDeliverable(Phase phase, Deliverable deliverable) {
+    return deliverableDisseminationDAO.findDisseminationByPhaseAndDeliverable(phase, deliverable);
+  }
+
+  @Override
   public DeliverableDissemination getDeliverableDisseminationById(long deliverableDisseminationID) {
 
     return deliverableDisseminationDAO.find(deliverableDisseminationID);

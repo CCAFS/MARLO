@@ -125,9 +125,6 @@ public class NewPublicationDTO {
     this.authorlist = authorlist;
   }
 
-  public void setAuthorList(List<DeliverableUserDTO> authorlist) {
-    this.authorlist = authorlist;
-  }
 
   public void setAuthors(String authors) {
     this.authors = authors;
