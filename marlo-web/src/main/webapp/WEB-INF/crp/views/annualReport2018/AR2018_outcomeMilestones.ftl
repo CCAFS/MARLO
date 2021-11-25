@@ -11,7 +11,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlCdn}/global/js/utils.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211124A",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211111a"
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211125a"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210924a"] /]
 
