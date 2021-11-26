@@ -31,7 +31,7 @@ function checkContributingCRP() {
 
   actualContributingCRP.each((index, item) => {
     actualContributingCRPSpan = $(item).find('span.elementName').html();
-    var crpName = actualContributingCRPSpan.substr(0,actualContributingCRPSpan.indexOf(' '));
+    var crpName = actualContributingCRPSpan.substr(0, actualContributingCRPSpan.indexOf(' '));
     var actualCRP = $('#actualCRP').html();
 
     if (crpName == actualCRP) {
@@ -232,9 +232,13 @@ function updateQualityAssessmentStatusData(data) {
         pTag.appendChild(text);
         element.appendChild(pTag);
 
-        if (x[1] == 'quality_assessed') {
+        if (x[1] == 'quality_assessed' || x[1] == 'pending') {
           var pMessageTag = document.createElement('p');
-          var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+          if (x[1] == 'quality_assessed') {
+            var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+          } else {
+            var textMessage = document.createTextNode('As this item is being assessed by the SMO, no changes are recommended');
+          }
 
           pMessageTag.classList.add('messageQAInfo');
           pMessageTag.appendChild(textMessage);
@@ -253,7 +257,7 @@ function validateEmptyLinks() {
   } else {
     linksList = linksList;
   }
-  if ( linksList > 0) {
+  if (linksList > 0) {
     $('#warningEmptyLinksTag').hide();
   } else {
     $('#warningEmptyLinksTag').show();
