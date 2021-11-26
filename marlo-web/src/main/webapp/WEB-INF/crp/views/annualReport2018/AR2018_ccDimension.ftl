@@ -10,11 +10,11 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20210422A",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211111B" 
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211126A" 
 ] /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210823a",
-  "${baseUrlCdn}/global/css/global.css?20211111a"
+  "${baseUrlCdn}/global/css/global.css?20211126a"
 ] /]
 
 [#assign breadCrumb = [
