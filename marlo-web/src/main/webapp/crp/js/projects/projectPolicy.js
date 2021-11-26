@@ -190,9 +190,13 @@ function updateQualityAssessmentStatusData(data) {
         pTag.appendChild(text);
         element.appendChild(pTag);
 
-        if (x[1] == 'quality_assessed') {
+        if (x[1] == 'quality_assessed' || x[1] == 'pending') {
           var pMessageTag = document.createElement('p');
-          var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+          if (x[1] == 'quality_assessed') {
+            var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+          } else {
+            var textMessage = document.createTextNode('As this item is being assessed by the SMO, no changes are recommended');
+          }
 
           pMessageTag.classList.add('messageQAInfo');
           pMessageTag.appendChild(textMessage);

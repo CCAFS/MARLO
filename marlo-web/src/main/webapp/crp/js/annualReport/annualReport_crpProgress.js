@@ -88,7 +88,6 @@ function updateQualityAssessmentStatusData(data) {
   data.map(function (x) {
     var isCheckedARComponent = document.getElementById(`isCheckedAR-${x[0]}`);
     if (isCheckedARComponent) {
-      console.log(isCheckedARComponent);
       var isCheckedAR = isCheckedARComponent.innerHTML;
       var element = document.getElementById(`containerQAStatus-${x[0]}`);
       var containerElements = isCheckedARComponent.parentElement;
@@ -130,15 +129,19 @@ function updateQualityAssessmentStatusData(data) {
         element.appendChild(pTag);
         element.style.backgroundPosition = '442px';
         
-        if (x[1] == 'quality_assessed') {
+        if (x[1] == 'quality_assessed' || x[1] == 'pending') {
           var pMessageTag = document.createElement('p');
-          var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
           container = element.parentElement;
-  
+          if (x[1] == 'quality_assessed') {
+            var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+            container.style.marginLeft = '0';
+            removeARBtn.style.display = 'none';
+          } else {
+            var textMessage = document.createTextNode('As this item is being assessed by the SMO, no changes are recommended');
+          }
+
           containerElements.style.marginBottom = '0';
           containerElements.style.justifyContent = 'center';
-          container.style.marginLeft = '0';
-          removeARBtn.style.display = 'none';
           element.style.backgroundPosition = '485px';
           pMessageTag.classList.add('messageQAInfo');
           pMessageTag.appendChild(textMessage);
