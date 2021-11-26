@@ -115,17 +115,20 @@ function updateQualityAssessmentStatusData(data) {
       pTag.appendChild(text);
       element.appendChild(pTag);
       
-      if (x[1] == 'quality_assessed') {
-        var containerElements = document.getElementsByClassName('containerTitleElements')[0];
-        
+      if (x[1] == 'quality_assessed' || x[1] == 'pending') {
+        var containerElements = document.getElementsByClassName('containerTitleElements')[0]; 
         var removeARBtn = document.getElementsByClassName('removeARButton')[0];
         var pMessageTag = document.createElement('p');
-        var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+        if (x[1] == 'quality_assessed') {
+          var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+          container.style.marginLeft = '0';
+          removeARBtn.style.display = 'none';
+        } else {
+          var textMessage = document.createTextNode('As this item is being assessed by the SMO, no changes are recommended');
+        }
 
         containerElements.style.marginBottom = '0';
         containerElements.style.justifyContent = 'center';
-        container.style.marginLeft = '0';
-        removeARBtn.style.display = 'none';
         element.style.backgroundPosition = '555px';
         pMessageTag.classList.add('messageQAInfo');
         pMessageTag.appendChild(textMessage);
