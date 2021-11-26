@@ -1491,9 +1491,12 @@ public class DeliverablesItem<T> {
 
         // create deliverable dissemination data ???
         final long phaseID = phase.getId();
-        DeliverableDissemination deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
-          .filter(c -> c.getPhase().getId().longValue() == phaseID).findFirst().orElse(null);
-
+        /*
+         * DeliverableDissemination deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
+         * .filter(c -> c.getPhase().getId().longValue() == phaseID).findFirst().orElse(null);
+         */
+        DeliverableDissemination deliverableDissemination =
+          deliverableDisseminationManager.findDisseminationByPhaseAndDeliverable(phase, deliverable);
         if (deliverableDissemination == null) {
           deliverableDissemination = new DeliverableDissemination();
         }
@@ -1510,8 +1513,11 @@ public class DeliverablesItem<T> {
         deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
 
         // create deliverable publication metadata
-        DeliverablePublicationMetadata deliverablePublicationMetadata = deliverable.getDeliverablePublicationMetadatas()
-          .stream().filter(m -> m.getPhase().getId() == phaseID).findFirst().orElse(null);
+        // DeliverablePublicationMetadata deliverablePublicationMetadata =
+        // deliverable.getDeliverablePublicationMetadatas()
+        // .stream().filter(m -> m.getPhase().getId() == phaseID).findFirst().orElse(null);
+        DeliverablePublicationMetadata deliverablePublicationMetadata =
+          deliverablePubMetadataManager.findPublicationMetadataByPhaseAndDeliverable(phase, deliverable);
         if (deliverablePublicationMetadata == null) {
           deliverablePublicationMetadata = new DeliverablePublicationMetadata();
         }
@@ -1526,8 +1532,12 @@ public class DeliverablesItem<T> {
 
         // get element ID from econded_name to get Handle and DOI and create
         Long phaseId = phase.getId();
-        List<DeliverableMetadataElement> phaseMetadata = deliverable.getDeliverableMetadataElements().stream()
-          .filter(m -> m.getPhase().getId() == phaseId).collect(Collectors.toList());
+        /*
+         * List<DeliverableMetadataElement> phaseMetadata = deliverable.getDeliverableMetadataElements().stream()
+         * .filter(m -> m.getPhase().getId() == phaseId).collect(Collectors.toList());
+         */
+        List<DeliverableMetadataElement> phaseMetadata =
+          deliverableMetadataElementManager.findAllByPhaseAndDeliverable(phase, deliverable);
         Map<String, DeliverableMetadataElement> metadataElements = this.getMetadataElements(phaseMetadata);
         if (metadataElements != null && !metadataElements.isEmpty()) {
           // deliverable metadataelement handle
@@ -1605,11 +1615,14 @@ public class DeliverablesItem<T> {
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementAuthors);
         }
 
-
+        List<DeliverableUser> authorListDB = deliverableUserManager.findAllByPhaseAndDeliverable(phase, deliverable);
         for (DeliverableUserDTO deliverableUserDTO : newPublicationDTO.getAuthorList()) {
           boolean found = false;
-          for (DeliverableUser authorsList : deliverable.getDeliverableUsers().stream().filter(c -> c.isActive())
-            .collect(Collectors.toList())) {
+          /*
+           * for (DeliverableUser authorsList : deliverable.getDeliverableUsers().stream().filter(c -> c.isActive())
+           * .collect(Collectors.toList())) {
+           */
+          for (DeliverableUser authorsList : authorListDB) {
             if (deliverableUserDTO.getFirstName().toUpperCase().equals(authorsList.getFirstName().toUpperCase())
               && deliverableUserDTO.getLastName().toUpperCase().equals(authorsList.getLastName().toUpperCase())) {
               found = true;
@@ -1624,8 +1637,11 @@ public class DeliverablesItem<T> {
             deliverableUserManager.saveDeliverableUser(deliverableUser);
           }
         }
-        for (DeliverableUser authorsList : deliverable.getDeliverableUsers().stream().filter(c -> c.isActive())
-          .collect(Collectors.toList())) {
+        /*
+         * for (DeliverableUser authorsList : deliverable.getDeliverableUsers().stream().filter(c -> c.isActive())
+         * .collect(Collectors.toList())) {
+         */
+        for (DeliverableUser authorsList : authorListDB) {
           boolean found = true;
           for (DeliverableUserDTO deliverableUserDTO : newPublicationDTO.getAuthorList()) {
             if (deliverableUserDTO.getFirstName().toUpperCase().equals(authorsList.getFirstName().toUpperCase())

@@ -20,12 +20,14 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GlobalUnitItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions.CountryOfficeRequestItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions.InstitutionItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions.InstitutionRelatedItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions.InstitutionTypeItem;
 import org.cgiar.ccafs.marlo.rest.dto.CountryOfficeRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionSimpleDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionsRelatedDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewCountryOfficeRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewInstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
@@ -68,6 +70,7 @@ public class Institutions {
 
   private InstitutionTypeItem<InstitutionTypeDTO> institutionTypeItem;
   private InstitutionItem<InstitutionDTO> institutionItem;
+  private InstitutionRelatedItem<InstitutionsRelatedDTO> institutionRelatedItem;
   private CountryOfficeRequestItem<CountryOfficeRequestDTO> countryOfficeRequestItem;
   private final UserManager userManager;
 
@@ -75,11 +78,13 @@ public class Institutions {
   public Institutions(InstitutionTypeItem<InstitutionTypeDTO> institutionTypeItem,
     InstitutionItem<InstitutionDTO> institutionItem,
     CountryOfficeRequestItem<CountryOfficeRequestDTO> countryOfficeRequestItem,
-    GlobalUnitItem<InstitutionDTO> globalUnitItem, UserManager userManager) {
+    GlobalUnitItem<InstitutionDTO> globalUnitItem,
+    InstitutionRelatedItem<InstitutionsRelatedDTO> institutionRelatedItem, UserManager userManager) {
     this.institutionTypeItem = institutionTypeItem;
     this.institutionItem = institutionItem;
     this.userManager = userManager;
     this.countryOfficeRequestItem = countryOfficeRequestItem;
+    this.institutionRelatedItem = institutionRelatedItem;
   }
 
 
@@ -266,6 +271,15 @@ public class Institutions {
   public ResponseEntity<List<InstitutionDTO>> getAllInstitutions() {
     ResponseEntity<List<InstitutionDTO>> resp = this.institutionItem.getAllInstitutions();
     return resp;
+  }
+
+  @ApiOperation(value = "${Institutions.institution-types.all.value}", response = InstitutionsRelatedDTO.class,
+    responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/institutionRelated", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<InstitutionsRelatedDTO> getAllInstitutionsRelated() {
+    return institutionRelatedItem.getAllInstitutionRelated();
   }
 
   @ApiOperation(tags = {"Table 4 - CRP Innovations", "Table 3 - Outcome/ Impact Case Reports"},
