@@ -423,7 +423,7 @@ function updateQualityAssessmentStatusData(data) {
       var container = document.getElementsByClassName('containerTitleElementsProject')[0];
       var element = document.getElementById('qualityAssessedIcon');
       var date, status, statusClass;
-  
+
       switch (x[1]) {
         case 'pending':
           status = 'Pending assessment';
@@ -446,26 +446,30 @@ function updateQualityAssessmentStatusData(data) {
           }
           statusClass = 'qualityAssessed-mode';
           break;
-  
+
         default:
           break;
       }
-  
+
       if (element) {
         var pTag = document.createElement('p');
         var text = document.createTextNode(status);
-  
+
         element.innerHTML = '';
         element.classList.remove('pendingForReview-mode');
         element.classList.add(statusClass);
         pTag.style.margin = '0';
         pTag.appendChild(text);
         element.appendChild(pTag);
-  
-        if (x[1] == 'quality_assessed') {
+
+        if (x[1] == 'quality_assessed' || x[1] == 'pending') {
           var pMessageTag = document.createElement('p');
-          var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
-  
+          if (x[1] == 'quality_assessed') {
+            var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+          } else {
+            var textMessage = document.createTextNode('As this item is being assessed by the SMO, no changes are recommended');
+          }
+
           pMessageTag.classList.add('messageQAInfo');
           pMessageTag.appendChild(textMessage);
           container.appendChild(pMessageTag);

@@ -7130,7 +7130,7 @@ li.currentSection#bi::before{
   width: 100%;
   display: flex;
   flex-flow: row;
-  align-items: center;
+  /* align-items: center; */
   margin-bottom: 10px
 }
 
@@ -7167,10 +7167,12 @@ li.currentSection#bi::before{
 }
 
 .includeARButton {
+  height: 33px;
   /* margin-bottom: 10px; */
 }
 
 .removeARButton {
+  height: 33px;
   background: #D5504C;
   border-bottom: 3px solid #bf4644;
 }
