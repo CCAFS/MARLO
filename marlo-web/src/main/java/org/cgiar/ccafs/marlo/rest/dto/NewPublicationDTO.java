@@ -22,7 +22,7 @@ import io.swagger.annotations.ApiModelProperty;
 public class NewPublicationDTO {
 
   @ApiModelProperty(notes = "Deliverable Author List")
-  private List<DeliverableUserDTO> authorlist;
+  private List<DeliverableUserDTO> authorList;
   @ApiModelProperty(notes = "Deliverable title")
   private String title;
   @ApiModelProperty(notes = "Jorunal/Publish Name")
@@ -63,7 +63,7 @@ public class NewPublicationDTO {
 
 
   public List<DeliverableUserDTO> getAuthorList() {
-    return authorlist;
+    return authorList;
   }
 
 
@@ -121,8 +121,8 @@ public class NewPublicationDTO {
     this.articleURL = articleURL;
   }
 
-  public void setAuthorlist(List<DeliverableUserDTO> authorlist) {
-    this.authorlist = authorlist;
+  public void setAuthorList(List<DeliverableUserDTO> authorList) {
+    this.authorList = authorList;
   }
 
 
