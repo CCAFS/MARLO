@@ -3,14 +3,15 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${policyID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload", "flag-icon-css", "components-font-awesome"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectPolicy.js?20211118A",
+  "${baseUrlMedia}/js/projects/projectPolicy.js?20211126A",
   "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/projects/projectPolicies.css",
-  "${baseUrlMedia}/css/projects/projectSubIdos.css"
+  "${baseUrlMedia}/css/projects/projectSubIdos.css",
+  "${baseUrlCdn}/global/css/global.css?20211126a"
   ] 
 /]
 
