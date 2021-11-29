@@ -271,7 +271,7 @@ function attachEvents() {
       var $element = $('#multiInput-references-template').clone(true).removeAttr("id");
       var $listLength = $list.children().length;
 
-      if ($listLength <= 9) {
+      if ($listLength <= 10) {
         // Remove template tag
         $element.find('input, textarea').each(function (i, e) {
           e.name = (e.name).replace("_TEMPLATE_", "");
@@ -299,7 +299,7 @@ function attachEvents() {
         $(element).find('.indexTag').text(i + 1);
         $(element).setNameIndexes(1, i);
       });
-      console.log(linksList.children().length - 1)
+      
       if ((linksList.children().length - 1) != 0) {
         $('#warningEmptyReferencesTag').hide();
         validateEmptyLinks();
