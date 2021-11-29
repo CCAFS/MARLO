@@ -273,7 +273,7 @@ public class Institutions {
     return resp;
   }
 
-  @ApiOperation(value = "${Institutions.institution-types.all.value}", response = InstitutionsRelatedDTO.class,
+  @ApiOperation(value = "${Institutions.institutionsRelated.all.value}", response = InstitutionsRelatedDTO.class,
     responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/institutionRelated", method = RequestMethod.GET,

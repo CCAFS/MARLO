@@ -223,6 +223,44 @@ setTimeout(() => {
 	});
 }
 
+function sdg2(){
+	$.ajax({
+		url: config.endpoint + '/allSDG',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"sdgs");
+			destroyTable("sdgs");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"sdgs");
+			console.log(data);
+			let nameColumns = ['UNSD code', 'Short Name','Full Name','Financial Code']
+
+			$.each(data, function (index, item) {
+				
+				$('#list-print-sdgs').append(
+					'<tr>' + '<td >' + item['usndCode'] + '</td>' + '<td>'
+					+ item['shortName'] + '</td>' + '<td>'
+					+ item['fullName'] + '</td>' + '<td>'
+					+ item['financialCode'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("sdgs");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
 
 function scienceGroups(){
 	$.ajax({
