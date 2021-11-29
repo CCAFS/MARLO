@@ -23,8 +23,20 @@ package org.cgiar.ccafs.marlo.rest.dto;
 public class InstitutionsRelatedDTO {
 
   private String source;
+  private String clarisaId;
+  private String clarisaInstitutionName;
   private String institutionName;
   private String institutionCode;
+
+
+  public String getClarisaId() {
+    return clarisaId;
+  }
+
+
+  public String getClarisaInstitutionName() {
+    return clarisaInstitutionName;
+  }
 
   public String getInstitutionCode() {
     return institutionCode;
@@ -36,6 +48,14 @@ public class InstitutionsRelatedDTO {
 
   public String getSource() {
     return source;
+  }
+
+  public void setClarisaId(String clarisaId) {
+    this.clarisaId = clarisaId;
+  }
+
+  public void setClarisaInstitutionName(String clarisaInstitutionName) {
+    this.clarisaInstitutionName = clarisaInstitutionName;
   }
 
   public void setInstitutionCode(String institutionCode) {
