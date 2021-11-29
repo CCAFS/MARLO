@@ -951,9 +951,19 @@ public class ProjectOutcomeAction extends BaseAction {
                     }
                     if (deliverable.getDeliverableParticipant().getAfrican() != null) {
                       totalAfricans += deliverable.getDeliverableParticipant().getAfrican();
+                      if (numberParticipant != null) {
+                        double africanPercentaje = Math
+                          .round(((100 * deliverable.getDeliverableParticipant().getAfrican())) / numberParticipant);
+                        deliverable.getDeliverableParticipant().setAfricanPercentage(africanPercentaje);
+                      }
                     }
                     if (deliverable.getDeliverableParticipant().getYouth() != null) {
                       totalYouth += deliverable.getDeliverableParticipant().getYouth();
+                      if (numberParticipant != null) {
+                        double youthPercentaje =
+                          Math.round(((100 * deliverable.getDeliverableParticipant().getYouth())) / numberParticipant);
+                        deliverable.getDeliverableParticipant().setYouthPercentage(youthPercentaje);
+                      }
                     }
                     if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
                       .equals(APConstants.REP_IND_TRAINING_TERMS_SHORT)) {
