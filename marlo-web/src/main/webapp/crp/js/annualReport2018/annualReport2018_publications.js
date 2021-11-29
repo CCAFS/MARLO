@@ -67,12 +67,14 @@ function updateQualityAssessmentStatusData(data) {
       case 'quality_assessed':
         status = 'Quality Assessed';
         iconSrc = baseURL + '/global/images/quality-assessed-icon.svg';
+        $(`<input name='reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue' type='hidden' value='${x[0]}'/>`).insertAfter(`#deliverable-${x[0]}`);
         $(`#deliverable-${x[0]}`).prop('disabled', true);
         $(`#deliverable-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
         break;
       case 'automatically_validated':
         status = 'Automatically Validated';
         iconSrc = baseURL + '/global/images/autochecked-icon.svg';
+        $(`<input name='reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue' type='hidden' value='${x[0]}'/>`).insertAfter(`#deliverable-${x[0]}`);
         $(`#deliverable-${x[0]}`).prop('disabled', true);
         $(`#deliverable-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Automatically Validated');
         break;
