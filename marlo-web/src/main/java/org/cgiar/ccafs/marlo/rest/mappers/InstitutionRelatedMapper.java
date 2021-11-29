@@ -31,6 +31,8 @@ public interface InstitutionRelatedMapper {
 
   @Mappings({@Mapping(source = "source.name", target = "source"),
     @Mapping(source = "sourceName", target = "institutionName"),
+    @Mapping(source = "institution.name", target = "clarisaInstitutionName"),
+    @Mapping(source = "institution.id", target = "clarisaId"),
     @Mapping(source = "sourceId", target = "institutionCode")})
   public abstract InstitutionsRelatedDTO
     institutionDictionaryToInstitutionsRelatedDTO(InstitutionDictionary institutionDictionary);
