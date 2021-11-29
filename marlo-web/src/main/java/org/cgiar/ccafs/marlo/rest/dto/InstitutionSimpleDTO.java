@@ -15,26 +15,31 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import java.util.List;
+
 import io.swagger.annotations.ApiModelProperty;
 
 public class InstitutionSimpleDTO {
 
-  @ApiModelProperty(notes = "The Generated Institution Code")
+  @ApiModelProperty(notes = "The Generated Institution Code", position = 1)
   private Long code;
-  @ApiModelProperty(notes = "The Institution Name")
+  @ApiModelProperty(notes = "The Institution Name", position = 2)
   private String name;
-  @ApiModelProperty(notes = "The Institution Acronym")
+  @ApiModelProperty(notes = "The Institution Acronym", position = 3)
   private String acronym;
-  @ApiModelProperty(notes = "The Institution Website")
+  @ApiModelProperty(notes = "The Institution Website", position = 4)
   private String websiteLink;
-  @ApiModelProperty(notes = "The Institution type Identifier")
+  @ApiModelProperty(notes = "The Institution type Identifier", position = 5)
   private Long institutionTypeId;
-  @ApiModelProperty(notes = "The Institution type")
+  @ApiModelProperty(notes = "The Institution type", position = 6)
   private String institutionType;
-  @ApiModelProperty(notes = "HQ location")
+  @ApiModelProperty(notes = "HQ location", position = 7)
   private String hqLocation;
-  @ApiModelProperty(notes = "HQ location")
+  @ApiModelProperty(notes = "HQ location", position = 8)
   private String hqLocationISOalpha2;
+  @ApiModelProperty(notes = "Institutions Related List", position = 9)
+  private List<InstitutionsRelatedDTO> institutionRelatedList;
+
 
   public String getAcronym() {
     return this.acronym;
@@ -50,14 +55,19 @@ public class InstitutionSimpleDTO {
     return hqLocation;
   }
 
+
   public String getHqLocationISOalpha2() {
     return hqLocationISOalpha2;
+  }
+
+
+  public List<InstitutionsRelatedDTO> getInstitutionRelatedList() {
+    return institutionRelatedList;
   }
 
   public String getInstitutionType() {
     return institutionType;
   }
-
 
   public Long getInstitutionTypeId() {
     return institutionTypeId;
@@ -91,6 +101,11 @@ public class InstitutionSimpleDTO {
 
   public void setHqLocationISOalpha2(String hqLocationISOalpha2) {
     this.hqLocationISOalpha2 = hqLocationISOalpha2;
+  }
+
+
+  public void setInstitutionRelatedList(List<InstitutionsRelatedDTO> institutionRelatedList) {
+    this.institutionRelatedList = institutionRelatedList;
   }
 
 
