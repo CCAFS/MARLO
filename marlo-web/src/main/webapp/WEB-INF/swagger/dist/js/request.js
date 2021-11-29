@@ -683,6 +683,43 @@ setTimeout(() => {
 	});
 }
 
+function impact_areas2() {
+	$.ajax({
+		url: config.endpoint + '/impact-areas',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"impact_areas");
+			destroyTable("impact_areas");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"impact_areas");
+			console.log(data);
+			let nameColumns = ['Code', 'Name','Description']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-impact_areas').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>'+ '<td>'
+					+ item['description'] + '</td>'+ '<td>'
+					+ item['financialCode'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("impact_areas");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
 function action_areas_outcomes() {
 	$.ajax({
 		url: config.endpoint + '/actionAreaOutcomeIndicators',
