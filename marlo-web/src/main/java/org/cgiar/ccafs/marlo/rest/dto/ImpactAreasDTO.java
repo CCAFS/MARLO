@@ -30,16 +30,24 @@ public class ImpactAreasDTO {
   private Long id;
 
 
-  @ApiModelProperty(notes = "Action area name", position = 2)
+  @ApiModelProperty(notes = "Impact area name", position = 2)
   private String name;
 
 
-  @ApiModelProperty(notes = "Action area description", position = 3)
+  @ApiModelProperty(notes = "Impact area description", position = 3)
   private String description;
+
+  @ApiModelProperty(notes = "Impact area financial Code", position = 4)
+  private String financialCode;
 
 
   public String getDescription() {
     return description;
+  }
+
+
+  public String getFinancialCode() {
+    return financialCode;
   }
 
 
@@ -55,6 +63,11 @@ public class ImpactAreasDTO {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+
+  public void setFinancialCode(String financialCode) {
+    this.financialCode = financialCode;
   }
 
 
