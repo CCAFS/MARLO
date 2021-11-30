@@ -290,6 +290,31 @@
       [/#list]
     </div> 
     
+    [#-- African - Youth: --]
+    <div class="form-group row">
+      <div class="col-md-6">
+        [@customForm.input name="${customName}.african" i18nkey="involveParticipants.african" help="involveParticipants.african.help" placeholder="global.number" className="numericInput" required=editable editable=editable /]
+        <div class="dottedBox">
+          [@customForm.checkBoxFlat id="estimateAfrican" name="${customName}.estimateAfrican" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateAfrican)!false) cssClass="" cssClassLabel="font-italic" /]
+        </div>
+      </div>
+      <div class="col-md-6 femaleNumbers">
+        [@customForm.input name="${customName}.youth" i18nkey="involveParticipants.youth" help="involveParticipants.youth.help" placeholder="global.number" className="numericInput" required=true editable=editable /]
+        <div class="dottedBox">
+          [@customForm.checkBoxFlat id="estimateYouth" name="${customName}.estimateYouth" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateYouth)!false) cssClass="" cssClassLabel="font-italic" /]
+        </div>
+      </div>
+    </div>
+    
+    [#-- Focus --]
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.focus" i18nkey="involveParticipants.focus" className="" required=editable editable=editable /]
+    </div>
+    [#-- Likely Outcomes --]
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.likelyOutcomes" i18nkey="involveParticipants.likelyOutcomes" className="" required=editable editable=editable /]
+    </div>
+    
   </div>
 </div>
 [/#macro]

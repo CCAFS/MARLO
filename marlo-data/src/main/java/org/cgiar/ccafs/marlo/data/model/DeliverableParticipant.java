@@ -32,6 +32,22 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
   @Expose
   private Boolean dontKnowFemale;
   @Expose
+  private Double african;
+  @Expose
+  private Boolean estimateAfrican;
+  @Expose
+  private Double africanPercentage;
+  @Expose
+  private Double youth;
+  @Expose
+  private Boolean estimateYouth;
+  @Expose
+  private Double youthPercentage;
+  @Expose
+  private String focus;
+  @Expose
+  private String likelyOutcomes;
+  @Expose
   private RepIndTypeParticipant repIndTypeParticipant;
   @Expose
   private RepIndTrainingTerm repIndTrainingTerm;
@@ -71,21 +87,41 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
   }
 
 
+  public Double getAfrican() {
+    return african;
+  }
+
+
+  public Double getAfricanPercentage() {
+    return africanPercentage;
+  }
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
-
 
   public Boolean getDontKnowFemale() {
     return dontKnowFemale;
   }
 
+
+  public Boolean getEstimateAfrican() {
+    return estimateAfrican;
+  }
+
+
   public Boolean getEstimateFemales() {
     return estimateFemales;
   }
 
+
   public Boolean getEstimateParticipants() {
     return estimateParticipants;
+  }
+
+
+  public Boolean getEstimateYouth() {
+    return estimateYouth;
   }
 
 
@@ -99,8 +135,17 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
   }
 
 
+  public String getFocus() {
+    return focus;
+  }
+
   public Boolean getHasParticipants() {
     return hasParticipants;
+  }
+
+
+  public String getLikelyOutcomes() {
+    return likelyOutcomes;
   }
 
 
@@ -133,7 +178,6 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
     return repIndTrainingTerm;
   }
 
-
   public RepIndTypeActivity getRepIndTypeActivity() {
     return repIndTypeActivity;
   }
@@ -144,6 +188,14 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
   }
 
 
+  public Double getYouth() {
+    return youth;
+  }
+
+  public Double getYouthPercentage() {
+    return youthPercentage;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -152,9 +204,17 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
     return result;
   }
 
-
   public void setAcademicDegree(String academicDegree) {
     this.academicDegree = academicDegree;
+  }
+
+
+  public void setAfrican(Double african) {
+    this.african = african;
+  }
+
+  public void setAfricanPercentage(Double africanPercentage) {
+    this.africanPercentage = africanPercentage;
   }
 
 
@@ -166,15 +226,22 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
     this.dontKnowFemale = dontKnowFemale;
   }
 
+
+  public void setEstimateAfrican(Boolean estimateAfrican) {
+    this.estimateAfrican = estimateAfrican;
+  }
+
   public void setEstimateFemales(Boolean estimateFemales) {
     this.estimateFemales = estimateFemales;
   }
-
 
   public void setEstimateParticipants(Boolean estimateParticipants) {
     this.estimateParticipants = estimateParticipants;
   }
 
+  public void setEstimateYouth(Boolean estimateYouth) {
+    this.estimateYouth = estimateYouth;
+  }
 
   public void setEventActivityName(String eventActivityName) {
     this.eventActivityName = eventActivityName;
@@ -184,14 +251,21 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
     this.females = females;
   }
 
+  public void setFocus(String focus) {
+    this.focus = focus;
+  }
+
   public void setHasParticipants(Boolean hasParticipants) {
     this.hasParticipants = hasParticipants;
+  }
+
+  public void setLikelyOutcomes(String likelyOutcomes) {
+    this.likelyOutcomes = likelyOutcomes;
   }
 
   public void setMales(Double males) {
     this.males = males;
   }
-
 
   public void setParticipants(Double participants) {
     this.participants = participants;
@@ -201,7 +275,6 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
     this.phase = phase;
   }
 
-
   public void setRepIndTrainingTerm(RepIndTrainingTerm repIndTrainingTerm) {
     this.repIndTrainingTerm = repIndTrainingTerm;
   }
@@ -210,11 +283,17 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
     this.repIndTypeActivity = repIndTypeActivity;
   }
 
-
   public void setRepIndTypeParticipant(RepIndTypeParticipant repIndTypeParticipant) {
     this.repIndTypeParticipant = repIndTypeParticipant;
   }
 
+  public void setYouth(Double youth) {
+    this.youth = youth;
+  }
+
+  public void setYouthPercentage(Double youthPercentage) {
+    this.youthPercentage = youthPercentage;
+  }
 
   @Override
   public String toString() {
