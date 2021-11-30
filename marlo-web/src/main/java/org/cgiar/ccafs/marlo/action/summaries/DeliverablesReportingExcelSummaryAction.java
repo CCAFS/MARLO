@@ -2347,9 +2347,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               gender = deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName();
               String genderLevels = "";
               int countGenderLevel = 0;
-              List<DeliverableGenderLevel> deliverableGenderLevels = deliverable.getDeliverableGenderLevels().stream()
-                .filter(dgl -> dgl.isActive() && dgl.getPhase().equals(this.getSelectedPhase()))
-                .collect(Collectors.toList());
+              List<DeliverableGenderLevel> deliverableGenderLevels =
+                deliverable.getDeliverableGenderLevels().stream().filter(dgl -> dgl != null && dgl.getId() != null
+                  && dgl.isActive() && dgl.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
               if (deliverableGenderLevels == null || deliverableGenderLevels.isEmpty()) {
                 genderLevels = "";
               } else {
