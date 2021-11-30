@@ -68,6 +68,8 @@ public interface DeliverableParticipantDAO {
    */
   public List<DeliverableParticipant> getDeliverableParticipantByPhase(Phase phase);
 
+  public List<DeliverableParticipant> getDeliverableParticipantByPhaseAndProject(Phase phase, long projectID);
+
   /**
    * This method saves the information of the given deliverableParticipant
    * 

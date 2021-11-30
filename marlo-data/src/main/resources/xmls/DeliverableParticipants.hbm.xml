@@ -41,6 +41,30 @@
 		<property name="estimateFemales" type="java.lang.Boolean">
 			<column name="estimate_females" />
 		</property>
+		<property name="african" type="java.lang.Double">
+      <column name="african" precision="10" scale="0" />
+    </property>
+    <property name="estimateAfrican" type="java.lang.Boolean">
+      <column name="estimate_african" />
+    </property>
+		<property name="africanPercentage" type="java.lang.Double">
+      <column name="african_percentage" precision="10" scale="2" />
+    </property>
+    <property name="youth" type="java.lang.Double">
+      <column name="youth" precision="10" scale="0" />
+    </property>
+    <property name="estimateYouth" type="java.lang.Boolean">
+      <column name="estimate_youth" />
+    </property>
+		<property name="youthPercentage" type="java.lang.Double">
+      <column name="youth_percentage" precision="10" scale="2" />
+    </property>
+    <property name="focus" type="string">
+      <column name="focus" sql-type="TEXT" />
+    </property>
+    <property name="likelyOutcomes" type="string">
+      <column name="likely_outcomes" sql-type="TEXT" />
+    </property>
 		<property name="dontKnowFemale" type="java.lang.Boolean">
 			<column name="dont_know_female" />
 		</property>
