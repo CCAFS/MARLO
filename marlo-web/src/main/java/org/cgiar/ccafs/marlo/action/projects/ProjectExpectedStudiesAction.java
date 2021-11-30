@@ -132,6 +132,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1028,7 +1029,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         if (this.expectedStudy.getProjectExpectedStudyReferences() != null) {
           this.expectedStudy
             .setReferences(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyReferences().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(o -> o != null && o.getId() != null && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+              .sorted((o1, o2) -> Comparator.comparing(ProjectExpectedStudyReference::getId).compare(o1, o2))
+              .collect(Collectors.toList())));
         }
 
         // Expected Study Innovations List

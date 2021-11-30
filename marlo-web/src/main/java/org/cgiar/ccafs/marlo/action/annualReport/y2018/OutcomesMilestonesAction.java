@@ -78,7 +78,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -86,9 +85,7 @@ import javax.inject.Inject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.bag.TreeBag;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1505,36 +1502,21 @@ public class OutcomesMilestonesAction extends BaseAction {
   }
 
   private void updateQAInclusionList(ReportSynthesisFlagshipProgress flagshipProgressNew) {
-    Bag<Long> excludedMilestoneIds = new TreeBag<>();
-    Set<Long> newExcludedMilestoneIds = new HashSet<>();
-    String[] milestonesValue =
-      StringUtils.split(StringUtils.trimToEmpty(flagshipProgressNew.getMilestonesValue()), ',');
-    excludedMilestoneIds
-      .addAll(Stream.of(milestonesValue).map(this::stringToLongNoException).collect(Collectors.toList()));
-    excludedMilestoneIds
-      .addAll(LongStream.of(flagshipProgressNew.getMilestoneIds()).boxed().collect(Collectors.toList()));
-
-    for (Long milestoneId : excludedMilestoneIds) {
-      if (excludedMilestoneIds.getCount(milestoneId) == 1) {
-        newExcludedMilestoneIds.add(milestoneId);
-      }
-    }
+    List<Long> selectedMilestones =
+      Stream.of(StringUtils.split(StringUtils.trimToEmpty(flagshipProgressNew.getMilestonesValue()), ','))
+        .map(this::stringToLongNoException).collect(Collectors.toList());
 
     for (ReportSynthesisFlagshipProgressOutcomeMilestone flagshipProgressOutcomeMilestone : CollectionUtils
       .emptyIfNull(reportSynthesisFlagshipProgressOutcomeMilestoneManager
         .getAllFlagshipProgressOutcomeMilestones(this.getActualPhase().getId()))) {
-      Boolean previousQAInclusionStatus = flagshipProgressOutcomeMilestone.getIsQAIncluded();
       Long milestoneId = flagshipProgressOutcomeMilestone.getCrpMilestone().getId();
-      boolean newQAExclusionStatus = newExcludedMilestoneIds.contains(milestoneId);
+
+      boolean newQAExclusionStatus = !selectedMilestones.contains(milestoneId);
 
       flagshipProgressOutcomeMilestone.setIsQAIncluded(newQAExclusionStatus);
 
-      if ((previousQAInclusionStatus == null && newQAExclusionStatus == true)
-        || (previousQAInclusionStatus != null && previousQAInclusionStatus == false && newQAExclusionStatus == true)
-        || (previousQAInclusionStatus != null && previousQAInclusionStatus == true && newQAExclusionStatus == false)) {
-        this.reportSynthesisFlagshipProgressOutcomeMilestoneManager
-          .saveReportSynthesisFlagshipProgressOutcomeMilestone(flagshipProgressOutcomeMilestone);
-      }
+      this.reportSynthesisFlagshipProgressOutcomeMilestoneManager
+        .saveReportSynthesisFlagshipProgressOutcomeMilestone(flagshipProgressOutcomeMilestone);
     }
   }
 
