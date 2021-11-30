@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlCdn}/global/js/utils.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211124A",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211130A",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211125a"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210924a"] /]
@@ -154,7 +154,7 @@
             [#if actualPhaseAR2021 && submission]
               <th rowspan="2" class="col-md-1">Include in QA 
                 <br>
-                <button type="button" class="selectAllCheckMilestones" id="selectAllMilestones" style="display: none; color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
+                <button type="button" class="selectAllCheckMilestones" id="selectAllMilestones" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
               </th>
               <th rowspan="2"> QA Status</th>
             [/#if]
@@ -239,8 +239,9 @@
                       [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.milestoneIds?seq_contains(milestone.id))!true) /]
                       <td class="text-center">
                         <div>
-                          [@customForm.checkmark id="milestone-${(milestoneReportSynthesis.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.milestonesValue" value="${(milestone.id)!''}" checked=isChecked editable=(editable) centered=true/] 
+                          [@customForm.checkmark id="milestone-${(milestoneReportSynthesis.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.milestonesValue" value="${(milestone.id)!''}" checked=isChecked editable=editable centered=true/] 
                         </div>
+                        <span id="milestoneID" style="display: none">${(milestone.id)!''}</span>
                         <div id="isCheckedAR-${(milestoneReportSynthesis.id)!}" style="display: none">${isChecked?string('1','0')}</div>
                       </td>
                     
