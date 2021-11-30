@@ -382,6 +382,7 @@
                       </div>
                       <div class="col-md-8">
                         [#-- Trainees in Short-Term --]
+                        [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
                         <div id="chart12" class="chartBox simpleBox">
                           [#assign chartData = [
                             {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
@@ -404,8 +405,10 @@
                             [/#if]
                           </ul>
                         </div>
+                        [/#if]
                         <br />
                         [#-- Trainees in Long-Term --]
+                        [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
                         <div id="chart13" class="chartBox simpleBox">
                           [#assign chartData = [
                             {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
@@ -430,6 +433,7 @@
                             [/#if]
                           </ul>
                          </div>
+                         [/#if]
                       </div>
                     </div>
                     
