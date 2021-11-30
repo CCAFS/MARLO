@@ -32,6 +32,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGeographicScopeMan
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyQuantificationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectImpactsCategoriesManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectImpactsManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
@@ -99,6 +101,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
+import org.cgiar.ccafs.marlo.data.model.ProjectImpactsCategories;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
@@ -252,6 +256,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final ProjectPolicySubIdoManager projectPolicySubIdoManager;
   private final ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager;
   private final ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager;
+  private final ProjectImpactsManager projectImpactsManager;
+  private final ProjectImpactsCategoriesManager projectImpactsCategoriesManager;
 
   @Inject
   public ReportingSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
@@ -274,7 +280,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager,
     ProjectPolicySubIdoManager projectPolicySubIdoManager,
     ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager,
-    ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager) {
+    ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
+    ProjectImpactsManager projectImpactsManager, ProjectImpactsCategoriesManager projectImpactsCategoriesManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
@@ -303,6 +310,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.projectPolicySubIdoManager = projectPolicySubIdoManager;
     this.projectExpectedStudyGeographicScopeManager = projectExpectedStudyGeographicScopeManager;
     this.projectExpectedStudyQuantificationManager = projectExpectedStudyQuantificationManager;
+    this.projectImpactsManager = projectImpactsManager;
+    this.projectImpactsCategoriesManager = projectImpactsCategoriesManager;
   }
 
   /**
@@ -448,10 +457,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       masterReport.getParameterValues().put("i8nProjectPolicyMenu", "10. " + this.getText("breadCrumb.menu.policy"));
       masterReport.getParameterValues().put("i8nProjectContributionMenu",
         "11. " + this.getText("breadCrumb.menu.contribution"));
+      masterReport.getParameterValues().put("i8nProjectCovidMenu",
+        "12. " + this.getText("projects.impacts.covid19.reportTitle"));
 
     } else {
       masterReport.getParameterValues().put("i8nLeveragesReportingMenu",
         "8. " + this.getText("breadCrumb.menu.leverage"));
+      masterReport.getParameterValues().put("i8nProjectCovidMenu",
+        "9. " + this.getText("projects.impacts.covid19.reportTitle"));
     }
 
 
@@ -1037,6 +1050,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       this.getText("projectPolicy.geographicScope"));
     masterReport.getParameterValues().put("i8nProjectPolicyNarrative", this.getText("policy.narrative"));
 
+    /*
+     * Project Impacts (COVID-19)
+     */
+    masterReport.getParameterValues().put("i8nProjectCovidRNoData", this.getText("projects.impacts.covid19.noData"));
+    masterReport.getParameterValues().put("i8nProjectCovidImpactCategory",
+      this.getText("projects.impacts.covid19CategoryTitle"));
+    masterReport.getParameterValues().put("i8nProjectCovidImpactSummary",
+      this.getText("projects.impacts.covid19ImpactQuestion"));
+
     return masterReport;
   }
 
@@ -1314,6 +1336,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           // Lp6 contribution
           args.clear();
           this.fillSubreport((SubReport) hm.get("project_contribution"), "project_contribution", args);
+
+          // COVID-19
+          args.clear();
+          this.fillSubreport((SubReport) hm.get("project_covid"), "project_covid", args);
         }
 
       }
@@ -1424,6 +1450,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       case "project_contribution":
         model = this.getProjectContributionTableModel();
         break;
+      case "project_covid":
+        model = this.getCovidReportingTableModel();
+        break;
     }
     sdf.addTable(query, model);
     subReport.setDataFactory(cdf);
@@ -1438,12 +1467,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getActivities().isEmpty()) {
-      for (Activity activity : project.getActivities().stream().sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
-        .filter(a -> a.isActive() && a.getActivityStatus() != null
+      for (Activity activity : project.getActivities().stream()
+        .filter(a -> a != null && a.getId() != null && a.isActive() && a.getActivityStatus() != null
           && (a.getActivityStatus() == 2 || a.getActivityStatus() == 4 || a.getActivityStatus() == 3)
-          && a.getStartDate() != null && a.getEndDate() != null && a.getPhase() != null
-          && a.getPhase().equals(this.getSelectedPhase()))
-        .collect(Collectors.toList())) {
+          && a.getStartDate() != null && a.getEndDate() != null && a.getPhase() != null && a.getPhase().getId() != null
+          && a.getPhase().getId().equals(this.getSelectedPhase().getId()))
+        .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId())).collect(Collectors.toList())) {
         // Filter by date
         Calendar cal = Calendar.getInstance();
         cal.setTime(activity.getStartDate());
@@ -1540,19 +1569,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     return model;
   }
-
-  /*
-   * public ProjectBudgetsCluserActvity getBudgetbyCoa(Long activitiyId, int year, long type) {
-   * for (ProjectBudgetsCluserActvity pb : project.getProjectBudgetsCluserActvities().stream()
-   * .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getCrpClusterOfActivity() != null
-   * && pb.getCrpClusterOfActivity().getId() == activitiyId && type == pb.getBudgetType().getId()
-   * && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
-   * .collect(Collectors.toList())) {
-   * return pb;
-   * }
-   * return null;
-   * }
-   */
 
   private TypedTableModel getBudgetsbyCoasTableModel() {
     DecimalFormat df = new DecimalFormat("###,###.00");
@@ -1756,6 +1772,19 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return model;
   }
 
+  /*
+   * public ProjectBudgetsCluserActvity getBudgetbyCoa(Long activitiyId, int year, long type) {
+   * for (ProjectBudgetsCluserActvity pb : project.getProjectBudgetsCluserActvities().stream()
+   * .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getCrpClusterOfActivity() != null
+   * && pb.getCrpClusterOfActivity().getId() == activitiyId && type == pb.getBudgetType().getId()
+   * && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
+   * .collect(Collectors.toList())) {
+   * return pb;
+   * }
+   * return null;
+   * }
+   */
+
   private TypedTableModel getBudgetsbyPartnersTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"year", "institution", "w1w2", "w3", "bilateral", "center", "institution_id", "p_id", "w1w2Gender",
@@ -1861,7 +1890,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return model;
   }
 
-
   private TypedTableModel getBudgetSummaryTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"year", "w1w2", "w3", "bilateral", "centerfunds", "w1w2CoFinancing", "grand_total"},
@@ -1907,6 +1935,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return bytesPDF;
   }
 
+
   public String getCaseStudyUrl(String project) {
     return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath(project).replace('\\', '/');
   }
@@ -1924,6 +1953,25 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   @Override
   public String getContentType() {
     return "application/pdf";
+  }
+
+  private TypedTableModel getCovidReportingTableModel() {
+    TypedTableModel model = new TypedTableModel(new String[] {"impactCategory", "impactSummary"},
+      new Class[] {String.class, String.class}, 0);
+    if (this.isNotEmpty(this.projectImpactsManager.getProjectImpactsByProjectId(project.getId()))) {
+      for (ProjectImpacts impact : this.projectImpactsManager.getProjectImpactsByProjectId(project.getId()).stream()
+        .filter(i -> i != null && i.getId() != null && i.isActive() && i.getYear() == this.getSelectedYear())
+        .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId())).collect(Collectors.toList())) {
+
+        ProjectImpactsCategories category = impact.getProjectImpactCategoryId() == null ? null
+          : this.projectImpactsCategoriesManager.getProjectImpactsCategoriesById(impact.getProjectImpactCategoryId());
+
+        model.addRow(new Object[] {category == null ? this.notDefinedHtml : category.getComposedName(),
+          StringUtils.isNotBlank(impact.getAnswer()) ? impact.getAnswer() : this.notProvidedHtml});
+      }
+    }
+
+    return model;
   }
 
   private String getDeliverableDataSharingFilePath() {
@@ -4313,7 +4361,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       new TypedTableModel(new String[] {"count", "overall"}, new Class[] {Integer.class, String.class}, 0);
     int partnersSize = 0;
     List<ProjectPartner> projectPartners = project.getProjectPartners().stream()
-      .filter(pp -> pp.isActive() && pp.getPhase() != null && pp.getPhase().equals(this.getSelectedPhase()))
+      .filter(pp -> pp != null && pp.getId() != null && pp.isActive() && pp.getPhase() != null
+        && pp.getPhase().getId() != null && pp.getPhase().getId().equals(this.getSelectedPhase().getId()))
       .collect(Collectors.toList());
     if (!projectPartners.isEmpty()) {
       partnersSize = projectPartners.size();
