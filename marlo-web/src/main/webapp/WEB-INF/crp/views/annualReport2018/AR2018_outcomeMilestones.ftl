@@ -151,11 +151,11 @@
           <th rowspan="2"> Milestone </th>
           <th rowspan="2"> Status</th>
           [#if allowPopups]
-            [#if actualPhaseAR2021 && submission]
               <th rowspan="2" class="col-md-1">Include in QA 
                 <br>
                 <button type="button" class="selectAllCheckMilestones" id="selectAllMilestones" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
               </th>
+            [#if actualPhaseAR2021 && submission]
               <th rowspan="2"> QA Status</th>
             [/#if]
           [/#if]
@@ -235,7 +235,6 @@
                     [@utils.tableText value=(milestoneReportSynthesis.milestonesStatus.name)!"" emptyText="global.prefilledByFlagship" /]
                   </td>
                   [#if allowPopups]
-                    [#if actualPhaseAR2021 && submission]
                       [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.milestoneIds?seq_contains(milestone.id))!true) /]
                       <td class="text-center">
                         <div>
@@ -245,6 +244,7 @@
                         <div id="isCheckedAR-${(milestoneReportSynthesis.id)!}" style="display: none">${isChecked?string('1','0')}</div>
                       </td>
                     
+                    [#if actualPhaseAR2021 && submission]
                       <td id="QAStatusIcon-${(milestoneReportSynthesis.id)!}" class="text-center">
                         [#if isChecked]
                           <i style="font-weight: normal;opacity:0.8;">[@s.text name="annualReport2018.policies.table2.pendingForReview"/]</i>
