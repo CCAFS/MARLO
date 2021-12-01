@@ -172,10 +172,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
       return false;
     }
 
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
-
     Phase other = (Phase) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {

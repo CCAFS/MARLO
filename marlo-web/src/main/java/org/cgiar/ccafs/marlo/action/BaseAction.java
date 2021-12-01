@@ -4800,6 +4800,33 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  public boolean isAr2018SubmittedCurrentPhase() {
+    if (!this.getActualPhase().getUpkeep()) {
+      LiaisonInstitution liaisonInstitution =
+        this.liaisonInstitutionManager.findByAcronymAndCrp("PMU", this.getCrpID());
+      if (liaisonInstitution != null) {
+        ReportSynthesis reportSynthesis =
+          this.reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitution.getId());
+        if (reportSynthesis != null) {
+          List<Submission> submissions = reportSynthesis.getSubmissions().stream()
+            .filter(c -> c.getCycle().equals(this.getCurrentCycle())
+              && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+            .collect(Collectors.toList());
+          if (submissions.isEmpty()) {
+            return false;
+          }
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+      return false;
+    }
+
+    return false;
+  }
+
   public boolean isAvailabePhase() {
     return this.availabePhase;
   }

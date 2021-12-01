@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlCdn}/global/js/utils.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211130A",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211201A",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211125a"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210924a"] /]
@@ -28,6 +28,8 @@
 
 [#assign customName= "reportSynthesis.reportSynthesisFlagshipProgress" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
+[#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
+[#assign isSubmitted = (action.isAr2018SubmittedCurrentPhase())!false]
 
 [#-- Helptext --]
 [@utilities.helpBox name="${customLabel}.help" /]
@@ -50,9 +52,10 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           <span id="actualCrpID" style="display: none;">${(action.getCurrentCrp().id)!-1}</span>
           <span id="actualPhase" style="display: none;">${(action.isSelectedPhaseAR2021())?c}</span>
-          <span id="isSubmitted" style="display: none;">${submission?c}</span>
+          <span id="isSubmitted" style="display: none;">${isSubmitted?c}</span>
           <span id="isOICR" style="display: none;">false</span>
-          [#assign actualPhaseAR2021 = action.isSelectedPhaseAR2021()!false]
+          <span id="isPMU" style="display: none;">${PMU?c}</span>
+
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="">
@@ -240,7 +243,7 @@
                         <div>
                           [@customForm.checkmark id="milestone-${(milestoneReportSynthesis.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.milestonesValue" value="${(milestone.id)!''}" checked=isChecked editable=editable centered=true/] 
                         </div>
-                        <span id="milestoneID" style="display: none">${(milestone.id)!''}</span>
+                        <span id="milestoneID-${(milestoneReportSynthesis.id)!}" style="display: none">${(milestone.id)!''}</span>
                         <div id="isCheckedAR-${(milestoneReportSynthesis.id)!}" style="display: none">${isChecked?string('1','0')}</div>
                       </td>
                     
@@ -393,6 +396,20 @@
     <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" >
     
     [#-- Title --]
+    <br>
+    [#assign isQAIncluded = ((!annualReportElement.isQAIncluded)!true)]
+    [#if actualPhaseAR2021 && isSubmitted && isQAIncluded]
+      <span id="mileID-${(annualReportElement.id)!}" style="display: none;">${(annualReportElement.id)!}</span>
+      <div id="containerTitleElementsProject-${(annualReportElement.id)!}" class="containerTitleElementsProject">
+        <div class="containerTitleMessage">
+          <div id="qualityAssessedIcon-${(annualReportElement.id)!}" class="pendingForReview-mode text-center animated flipInX" style="height: auto;">
+            <p>
+              [@s.text name="annualReport2018.policies.table2.pendingForReview"][/@s.text]
+            </p>
+          </div> 
+        </div>
+      </div>
+    [/#if]
     <div class="form-group grayBox">
       <div class="pull-right">[@milestoneContributions element=element /]</div>
       <p class="text-justify"><strong>[#if (element.milestonesStatus.id == 4)!false ]Milestone of ${element.year} extended to ${actualPhase.year}[#else]Milestone for ${actualPhase.year}[/#if]</strong> - ${(element.title)!} </p>
