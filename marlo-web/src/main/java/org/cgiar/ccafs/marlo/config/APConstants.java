@@ -830,6 +830,9 @@ public final class APConstants {
   public static final String STATUS_EMPTY_DELIVERABLE_LIST = "No data: Deliverables";
   public static final String STATUS_EMPTY_OUTCOME_LIST = "No data: ProjectOutcomes";
 
+  public static final String READY_FOR_QA_BUTTON_VISIBLE = "ready_for_qa_button_visible";
+
+
   public static String getFilterBy() {
     return FILTER_BY;
   }
