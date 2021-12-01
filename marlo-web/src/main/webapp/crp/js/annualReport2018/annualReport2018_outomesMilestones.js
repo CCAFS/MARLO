@@ -284,9 +284,12 @@ function updateQualityAssessmentStatusData(data) {
         status = 'Quality Assessed';
         iconSrc = baseURL + '/global/images/quality-assessed-icon.svg';
         if ($('#isOICR').html() == 'true') {
+          $(`<input name='reportSynthesis.reportSynthesisFlagshipProgress.studiesValue' type='hidden' value='${x[0]}'/>`).insertAfter(`#study-${x[0]}`);
           $(`#study-${x[0]}`).prop('disabled', true);
           $(`#study-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
         } else {
+          var milestoneID = $('#milestoneID').html();
+          $(`<input name='reportSynthesis.reportSynthesisFlagshipProgress.milestonesValue' type='hidden' value='${milestoneID}'/>`).insertAfter(`#milestone-${x[0]}`);
           $(`#milestone-${x[0]}`).prop('disabled', true);
           $(`#milestone-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
         }
