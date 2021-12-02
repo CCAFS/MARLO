@@ -95,9 +95,10 @@
   <br>
 [/#if]
 
+[#assign isQAButtonVisible= (action.hasSpecificities('ready_for_qa_button_visible'))!false]
 
 [#-- Submit button --] 
-[#if canEdit && canSubmit && PMU]
+[#if canEdit && canSubmit && PMU && isQAButtonVisible]
   [#assign showSubmit=(canSubmit && !submission )]
   <center><small style="display:${showSubmit?string('block','none')}"><i>By clicking in this button, you allow the SMO to access all the data contained in the required tables in the template.</i></small></center>
   <a id="submitProject-${synthesisID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submitAnnualReport"][@s.param name='synthesisID']${synthesisID}[/@s.param][/@s.url]" >
