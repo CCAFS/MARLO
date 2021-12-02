@@ -349,9 +349,9 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
           projectSet.stream().sorted((p1, p2) -> p1.getId().compareTo(p2.getId())).collect(Collectors.toList());
         for (Project project : projectList) {
           if (projects.isEmpty()) {
-            projects += "P" + project.getId();
+            projects += "C" + project.getId();
           } else {
-            projects += ", P" + project.getId();
+            projects += ", C" + project.getId();
           }
         }
       }
@@ -393,7 +393,7 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
     if (partnerType.equals("All")) {
       fileName.append("ProjectPartnersSummary-");
     } else {
-      fileName.append("ProjectLeadingInstitutionsSummary-");
+      fileName.append("ClusterLeadingInstitutionsSummary-");
     }
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedCycle() + "-");
