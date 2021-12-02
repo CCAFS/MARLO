@@ -96,12 +96,13 @@
 [/#if]
 
 [#assign isQAButtonVisible= (action.hasSpecificities('ready_for_qa_button_visible'))!false]
+<span id="isQAButtonVisible" style="display: none;">${((action.hasSpecificities('ready_for_qa_button_visible'))!false)?c}</span>
 
 [#-- Submit button --] 
-[#if canEdit && canSubmit && PMU && isQAButtonVisible]
+[#if canEdit && canSubmit && PMU]
   [#assign showSubmit=(canSubmit && !submission )]
   <center><small style="display:${showSubmit?string('block','none')}"><i>By clicking in this button, you allow the SMO to access all the data contained in the required tables in the template.</i></small></center>
-  <a id="submitProject-${synthesisID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submitAnnualReport"][@s.param name='synthesisID']${synthesisID}[/@s.param][/@s.url]" >
+  <a id="submitProject-${synthesisID}" class="projectSubmitButton ${isQAButtonVisible?string('', 'btn-disabled')}" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submitAnnualReport"][@s.param name='synthesisID']${synthesisID}[/@s.param][/@s.url]" title="${isQAButtonVisible?string('', 'This CRP cannot be submitted for this QA batch')}">
     [@s.text name="form.buttons.submitSynthesisAR" /]
   </a>
 [#else]
