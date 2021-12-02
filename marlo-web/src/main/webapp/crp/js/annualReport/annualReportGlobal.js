@@ -683,7 +683,7 @@ function createGoogleChart(chartID, type, options) {
         getChartDataArray($chart)
       );
       console.log(data, data.bf.length);
-      if (!data.bf.length || $totalNumber.html() == 0) {
+      if (!data.bf.length || $totalNumber.html() == 0 || $('.totalParticipantsNumber').html() == 0 && $('.totalParticipantFormalTrainingNumber').html() == 0) {
         $chart.append(
           '<p  class="text-center"> ' + options.title + " <br>  No data </p>"
         );
