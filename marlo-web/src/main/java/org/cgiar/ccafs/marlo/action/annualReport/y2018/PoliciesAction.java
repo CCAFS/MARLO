@@ -70,7 +70,6 @@ import javax.inject.Inject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -186,6 +185,30 @@ public class PoliciesAction extends BaseAction {
     return editable;
   }
 
+  /**
+   * Ensures that all indicators to be reported are in its corresponding synthesis table
+   */
+  private void ensureAllIndicatorsOnSynthesis() {
+    for (ProjectPolicy projectPolicy : this.projectPolicies) {
+      if (projectPolicy != null && projectPolicy.getId() != null) {
+        ReportSynthesisFlagshipProgressPolicy synthesisPolicy = this.reportSynthesisFlagshipProgressPolicyManager
+          .getReportSynthesisFlagshipProgressPolicyByPolicyAndFlagshipProgress(projectPolicy.getId(),
+            liaisonInstitutionID);
+        if (synthesisPolicy == null) {
+          synthesisPolicy = new ReportSynthesisFlagshipProgressPolicy();
+          // is_active = false -> included
+          synthesisPolicy.setActive(false);
+          synthesisPolicy.setCreatedBy(this.getCurrentUser());
+          synthesisPolicy.setProjectPolicy(projectPolicy);
+          synthesisPolicy.setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
+
+          synthesisPolicy = this.reportSynthesisFlagshipProgressPolicyManager
+            .saveReportSynthesisFlagshipProgressPolicy(synthesisPolicy);
+        }
+      }
+    }
+  }
+
   /*
    * Fill Countries and Regions information to projectPolicies list
    */
@@ -227,6 +250,7 @@ public class PoliciesAction extends BaseAction {
       }
     }
   }
+
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -352,7 +376,6 @@ public class PoliciesAction extends BaseAction {
     return policiesByOrganizationTypeDTOs;
   }
 
-
   public List<ReportSynthesisPoliciesByRepIndPolicyInvestimentTypeDTO> getPoliciesByRepIndInvestimentTypeDTOs() {
     return policiesByRepIndInvestimentTypeDTOs;
   }
@@ -365,6 +388,7 @@ public class PoliciesAction extends BaseAction {
     return projectPolicies;
   }
 
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
@@ -373,7 +397,6 @@ public class PoliciesAction extends BaseAction {
   public Long getSynthesisID() {
     return synthesisID;
   }
-
 
   public Integer getTotal() {
     return total;
@@ -397,6 +420,7 @@ public class PoliciesAction extends BaseAction {
     return isFP;
   }
 
+
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -408,7 +432,6 @@ public class PoliciesAction extends BaseAction {
     return isFP;
 
   }
-
 
   /**
    * This method get the status of an specific policy depending of the
@@ -564,14 +587,20 @@ public class PoliciesAction extends BaseAction {
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
 
-        if (CollectionUtils.emptyIfNull(this.reportSynthesisFlagshipProgressPolicyManager.findAll()).stream()
-          .filter(p -> p != null && p.getId() != null && p.getProjectPolicy() != null
-            && p.getReportSynthesisFlagshipProgress() != null && p.getReportSynthesisFlagshipProgress().getId() != null
-            && p.getReportSynthesisFlagshipProgress().getId()
-              .equals(this.reportSynthesis.getReportSynthesisFlagshipProgress().getId()))
-          .count() == 0L) {
-          this.removeAllFromAR();
-        }
+        // if(!this.isPMU()) {
+        this.ensureAllIndicatorsOnSynthesis();
+        // }
+
+        /*
+         * if (CollectionUtils.emptyIfNull(this.reportSynthesisFlagshipProgressPolicyManager.findAll()).stream()
+         * .filter(p -> p != null && p.getId() != null && p.getProjectPolicy() != null
+         * && p.getReportSynthesisFlagshipProgress() != null && p.getReportSynthesisFlagshipProgress().getId() != null
+         * && p.getReportSynthesisFlagshipProgress().getId()
+         * .equals(this.reportSynthesis.getReportSynthesisFlagshipProgress().getId()))
+         * .count() == 0L) {
+         * this.removeAllFromAR();
+         * }
+         */
 
         reportSynthesis.getReportSynthesisFlagshipProgress().setProjectPolicies(new ArrayList<>());
         if (reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies() != null
@@ -647,12 +676,14 @@ public class PoliciesAction extends BaseAction {
   }
 
 
-  private void removeAllFromAR() {
-    for (ProjectPolicy projectPolicy : this.projectPolicies) {
-      this.reportSynthesisFlagshipProgressPolicyManager.toAnnualReport(projectPolicy,
-        this.reportSynthesis.getReportSynthesisFlagshipProgress(), this.getCurrentUser(), true);
-    }
-  }
+  /*
+   * private void removeAllFromAR() {
+   * for (ProjectPolicy projectPolicy : this.projectPolicies) {
+   * this.reportSynthesisFlagshipProgressPolicyManager.toAnnualReport(projectPolicy,
+   * this.reportSynthesis.getReportSynthesisFlagshipProgress(), this.getCurrentUser(), true);
+   * }
+   * }
+   */
 
   @Override
   public String save() {
