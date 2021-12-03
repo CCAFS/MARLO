@@ -161,6 +161,7 @@ public class ParticipantsCapDevItem<T> {
             reportSynthesisCrossCuttingDimension.setPhdMale(new Double(newParticipantsCapDevDTO.getTraineesPhdMale()));
             reportSynthesisCrossCuttingDimension.setEvidenceLink(newParticipantsCapDevDTO.getEvidencelink());
             reportSynthesisCrossCuttingDimension.setReportSynthesis(reportSynthesis);
+            reportSynthesisCrossCuttingDimension.setIsQAIncluded(new Boolean(false));
 
             reportSynthesisCrossCuttingDimension = this.reportSynthesisCrossCuttingDimensionManager
               .saveReportSynthesisCrossCuttingDimension(reportSynthesisCrossCuttingDimension);
@@ -273,6 +274,7 @@ public class ParticipantsCapDevItem<T> {
           reportSynthesisCrossCuttingDimension.setPhdFemale(null);
           reportSynthesisCrossCuttingDimension.setPhdMale(null);
           reportSynthesisCrossCuttingDimension.setEvidenceLink(null);
+          reportSynthesisCrossCuttingDimension.setIsQAIncluded(null);
 
           reportSynthesisCrossCuttingDimension = this.reportSynthesisCrossCuttingDimensionManager
             .saveReportSynthesisCrossCuttingDimension(reportSynthesisCrossCuttingDimension);
@@ -435,6 +437,7 @@ public class ParticipantsCapDevItem<T> {
               ? newParticipantsCapDevDTO.getTraineesPhdMale().doubleValue() : null);
             reportSynthesisCrossCuttingDimension.setEvidenceLink(
               newParticipantsCapDevDTO.getEvidencelink() != null ? newParticipantsCapDevDTO.getEvidencelink() : null);
+            reportSynthesisCrossCuttingDimension.setIsQAIncluded(new Boolean(false));
 
             this.reportSynthesisCrossCuttingDimensionManager
               .saveReportSynthesisCrossCuttingDimension(reportSynthesisCrossCuttingDimension);
