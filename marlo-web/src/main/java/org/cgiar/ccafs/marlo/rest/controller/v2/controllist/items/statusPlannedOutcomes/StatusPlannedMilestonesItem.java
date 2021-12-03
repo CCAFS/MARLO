@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndMilestoneReasonManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeMilestoneLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
@@ -51,7 +52,9 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestoneLink;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.dto.EvidenceLinkDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersSynthesisDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewStatusPlannedMilestoneDTO;
 import org.cgiar.ccafs.marlo.rest.dto.StatusPlannedMilestonesDTO;
@@ -87,6 +90,7 @@ public class StatusPlannedMilestonesItem<T> {
   private ReportSynthesisFlagshipProgressOutcomeManager reportSynthesisFlagshipProgressOutcomeManager;
   private ReportSynthesisFlagshipProgressOutcomeMilestoneManager reportSynthesisFlagshipProgressOutcomeMilestoneManager;
   private ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
+  private ReportSynthesisFlagshipProgressOutcomeMilestoneLinkManager reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private GeneralStatusManager generalStatusManager;
   private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
@@ -106,7 +110,8 @@ public class StatusPlannedMilestonesItem<T> {
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
     RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
     RepIndMilestoneReasonManager repIndMilestoneReasonManager, StatusPlannedOutcomesMapper statusPlannedOutcomesMapper,
-    StatusPlannedMilestonesMapper statusPlannedMilestonesMapper) {
+    StatusPlannedMilestonesMapper statusPlannedMilestonesMapper,
+    ReportSynthesisFlagshipProgressOutcomeMilestoneLinkManager reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.crpProgramManager = crpProgramManager;
@@ -125,6 +130,8 @@ public class StatusPlannedMilestonesItem<T> {
       reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
     this.repIndMilestoneReasonManager = repIndMilestoneReasonManager;
     this.statusPlannedMilestonesMapper = statusPlannedMilestonesMapper;
+    this.reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager =
+      reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager;
   }
 
   private int countWords(String string) {
@@ -147,6 +154,9 @@ public class StatusPlannedMilestonesItem<T> {
     ReportSynthesis reportSynthesis = null;
     ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress = null;
     ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome = null;
+    List<ReportSynthesisFlagshipProgressOutcomeMilestoneLink> evidenceLinks =
+      new ArrayList<ReportSynthesisFlagshipProgressOutcomeMilestoneLink>();
+
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
     String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
@@ -348,6 +358,12 @@ public class StatusPlannedMilestonesItem<T> {
             .setExtendedYear(newStatusPlannedMilestoneDTO.getExtendedYear() != 0
               ? newStatusPlannedMilestoneDTO.getExtendedYear() : null);
         }
+        for (EvidenceLinkDTO link : newStatusPlannedMilestoneDTO.getEvidenceLinks()) {
+          ReportSynthesisFlagshipProgressOutcomeMilestoneLink milestoneEvidenceLink =
+            new ReportSynthesisFlagshipProgressOutcomeMilestoneLink();
+          milestoneEvidenceLink.setLink(link.getLink());
+          evidenceLinks.add(milestoneEvidenceLink);
+        }
 
         List<ReportSynthesisFlagshipProgressCrossCuttingMarker> reportSynthesisFlagshipProgressCrossCuttingMarkerList =
           new ArrayList<ReportSynthesisFlagshipProgressCrossCuttingMarker>();
@@ -387,6 +403,13 @@ public class StatusPlannedMilestonesItem<T> {
           reportSynthesisFlagshipProgressOutcomeMilestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager
             .saveReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisFlagshipProgressOutcomeMilestone);
           plannedMilestoneStatusID = reportSynthesisFlagshipProgressOutcomeMilestone.getId();
+          for (ReportSynthesisFlagshipProgressOutcomeMilestoneLink reportSynthesisFlagshipProgressOutcomeMilestoneLink : evidenceLinks) {
+            reportSynthesisFlagshipProgressOutcomeMilestoneLink
+              .setReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisFlagshipProgressOutcomeMilestone);
+            reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager
+              .saveReportSynthesisFlagshipProgressOutcomeMilestoneLink(
+                reportSynthesisFlagshipProgressOutcomeMilestoneLink);
+          }
           for (ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker : reportSynthesisFlagshipProgressCrossCuttingMarkerList) {
             reportSynthesisFlagshipProgressCrossCuttingMarker
               .setReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisFlagshipProgressOutcomeMilestone);
@@ -665,6 +688,8 @@ public class StatusPlannedMilestonesItem<T> {
             } else {
               List<ReportSynthesisFlagshipProgressCrossCuttingMarker> markersList =
                 new ArrayList<ReportSynthesisFlagshipProgressCrossCuttingMarker>();
+              List<ReportSynthesisFlagshipProgressOutcomeMilestoneLink> evidenceLinks =
+                new ArrayList<ReportSynthesisFlagshipProgressOutcomeMilestoneLink>();
               reportSynthesisFlagshipProgressOutcomeMilestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager
                 .getReportSynthesisFlagshipProgressOutcomeMilestoneById(
                   reportSynthesisFlagshipProgressOutcomeMilestone.getId());
@@ -675,7 +700,15 @@ public class StatusPlannedMilestonesItem<T> {
                   .getReportSynthesisFlagshipProgressCrossCuttingMarkerById(marker.getId());
                 markersList.add(marker);
               }
+              for (ReportSynthesisFlagshipProgressOutcomeMilestoneLink link : reportSynthesisFlagshipProgressOutcomeMilestone
+                .getReportSynthesisFlagshipProgressOutcomeMilestoneLinks().stream().filter(c -> c.isActive())
+                .collect(Collectors.toList())) {
+                link = reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager
+                  .getReportSynthesisFlagshipProgressOutcomeMilestoneLinkById(link.getId());
+                evidenceLinks.add(link);
+              }
               reportSynthesisFlagshipProgressOutcomeMilestone.setMarkers(markersList);
+              reportSynthesisFlagshipProgressOutcomeMilestone.setLinks(evidenceLinks);
             }
           }
         }
@@ -703,7 +736,8 @@ public class StatusPlannedMilestonesItem<T> {
     ReportSynthesis reportSynthesis = null;
     ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress = null;
     ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome = null;
-
+    List<ReportSynthesisFlagshipProgressOutcomeMilestoneLink> reportSynthesisFlagshipProgressOutcomeMilestoneLinkDB =
+      new ArrayList<ReportSynthesisFlagshipProgressOutcomeMilestoneLink>();
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
 
     String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
@@ -870,7 +904,49 @@ public class StatusPlannedMilestonesItem<T> {
                   .setExtendedYear(newStatusPlannedMilestoneDTO.getExtendedYear() != 0
                     ? newStatusPlannedMilestoneDTO.getExtendedYear() : null);
               }
+              List<ReportSynthesisFlagshipProgressOutcomeMilestoneLink> evidenceLinks =
+                new ArrayList<ReportSynthesisFlagshipProgressOutcomeMilestoneLink>();
+              List<ReportSynthesisFlagshipProgressOutcomeMilestoneLink> existingReportSynthesisFlagshipProgressOutcomeMilestoneLink =
+                new ArrayList<ReportSynthesisFlagshipProgressOutcomeMilestoneLink>();
+              if (newStatusPlannedMilestoneDTO.getEvidenceLinks() != null) {
+                for (EvidenceLinkDTO link : newStatusPlannedMilestoneDTO.getEvidenceLinks()) {
+                  boolean linkFound = false;
 
+                  for (ReportSynthesisFlagshipProgressOutcomeMilestoneLink reportSynthesisFlagshipProgressOutcomeMilestoneLink : reportSynthesisFlagshipProgressOutcomeMilestone
+                    .getReportSynthesisFlagshipProgressOutcomeMilestoneLinks().stream().filter(c -> c != null)
+                    .collect(Collectors.toList())) {
+                    if (link.getLink().equals(reportSynthesisFlagshipProgressOutcomeMilestoneLink.getLink())) {
+                      linkFound = true;
+                      existingReportSynthesisFlagshipProgressOutcomeMilestoneLink
+                        .add(reportSynthesisFlagshipProgressOutcomeMilestoneLink);
+                    }
+                  }
+                  if (!linkFound) {
+                    ReportSynthesisFlagshipProgressOutcomeMilestoneLink reportSynthesisFlagshipProgressOutcomeMilestoneLink =
+                      new ReportSynthesisFlagshipProgressOutcomeMilestoneLink();
+                    reportSynthesisFlagshipProgressOutcomeMilestoneLink.setLink(link.getLink());
+                    evidenceLinks.add(reportSynthesisFlagshipProgressOutcomeMilestoneLink);
+                  }
+                }
+
+                for (ReportSynthesisFlagshipProgressOutcomeMilestoneLink reportSynthesisFlagshipProgressOutcomeMilestoneLink : reportSynthesisFlagshipProgressOutcomeMilestone
+                  .getReportSynthesisFlagshipProgressOutcomeMilestoneLinks().stream().collect(Collectors.toList())) {
+                  boolean linkFound = true;
+                  for (EvidenceLinkDTO link : newStatusPlannedMilestoneDTO.getEvidenceLinks()) {
+                    if (link.getLink().equals(reportSynthesisFlagshipProgressOutcomeMilestoneLink.getLink())) {
+                      linkFound = false;
+                    }
+                  }
+                  if (linkFound) {
+                    reportSynthesisFlagshipProgressOutcomeMilestoneLinkDB
+                      .add(reportSynthesisFlagshipProgressOutcomeMilestoneLink);
+                  }
+                }
+
+              } else {
+                fieldErrors.add(new FieldErrorDTO("updateStatusPlannedMilestone", "Evidence Links",
+                  "Evidence Links needs to be filled or declared empty [ ]"));
+              }
               List<ReportSynthesisFlagshipProgressCrossCuttingMarker> reportSynthesisFlagshipProgressCrossCuttingMarkerList =
                 new ArrayList<ReportSynthesisFlagshipProgressCrossCuttingMarker>();
               if (newStatusPlannedMilestoneDTO.getCrosscuttinmarkerList() != null) {
@@ -928,6 +1004,19 @@ public class StatusPlannedMilestonesItem<T> {
                 reportSynthesisFlagshipProgressOutcomeMilestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager
                   .saveReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisFlagshipProgressOutcomeMilestone);
                 plannedMilestoneStatusID = reportSynthesisFlagshipProgressOutcomeMilestone.getId();
+                for (ReportSynthesisFlagshipProgressOutcomeMilestoneLink reportSynthesisFlagshipProgressOutcomeMilestoneLink : evidenceLinks) {
+                  reportSynthesisFlagshipProgressOutcomeMilestoneLink
+                    .setReportSynthesisFlagshipProgressOutcomeMilestone(
+                      reportSynthesisFlagshipProgressOutcomeMilestone);
+                  reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager
+                    .saveReportSynthesisFlagshipProgressOutcomeMilestoneLink(
+                      reportSynthesisFlagshipProgressOutcomeMilestoneLink);
+                }
+                for (ReportSynthesisFlagshipProgressOutcomeMilestoneLink reportSynthesisFlagshipProgressOutcomeMilestoneLink : reportSynthesisFlagshipProgressOutcomeMilestoneLinkDB) {
+                  reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager
+                    .deleteReportSynthesisFlagshipProgressOutcomeMilestoneLink(
+                      reportSynthesisFlagshipProgressOutcomeMilestoneLink.getId());
+                }
                 for (ReportSynthesisFlagshipProgressCrossCuttingMarker reportSynthesisFlagshipProgressCrossCuttingMarker : reportSynthesisFlagshipProgressCrossCuttingMarkerList) {
                   reportSynthesisFlagshipProgressCrossCuttingMarker.setReportSynthesisFlagshipProgressOutcomeMilestone(
                     reportSynthesisFlagshipProgressOutcomeMilestone);

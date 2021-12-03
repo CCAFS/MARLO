@@ -72,6 +72,17 @@ public class DeliverableMetadataElementMySQLDAO extends AbstractMarloDAO<Deliver
 
 
   @Override
+  public List<DeliverableMetadataElement> findAllByPhaseAndDeliverable(long phaseId, long deliverableId) {
+    String query = "select distinct dm from DeliverableMetadataElement dm where phase.id = :phaseId "
+      + "and deliverable.id= :deliverableId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phaseId);
+    createQuery.setParameter("deliverableId", deliverableId);
+    List<DeliverableMetadataElement> result = super.findAll(createQuery);
+    return result;
+  }
+
+  @Override
   public DeliverableMetadataElement findMetadataElementByPhaseAndDeliverable(long phaseId, long deliverableId,
     long metadataElementId) {
     String query = "select distinct dm from DeliverableMetadataElement dm where phase.id = :phaseId "
@@ -96,7 +107,6 @@ public class DeliverableMetadataElementMySQLDAO extends AbstractMarloDAO<Deliver
     } else {
       deliverableMetadataElement = super.update(deliverableMetadataElement);
     }
-
 
     return deliverableMetadataElement;
   }

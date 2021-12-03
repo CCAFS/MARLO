@@ -45,6 +45,7 @@ public class InstitutionDTO {
   @ApiModelProperty(notes = "List of countries where are offices")
   private List<CountryOfficeDTO> countryOfficeDTO;
 
+
   public String getAcronym() {
     return this.acronym;
   }

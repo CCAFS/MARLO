@@ -27,6 +27,8 @@ public class ImpactArea extends MarloAuditableEntity implements java.io.Serializ
 
   private String name;
   private String description;
+  private String financialCode;
+
 
   public ImpactArea() {
     super();
@@ -44,12 +46,22 @@ public class ImpactArea extends MarloAuditableEntity implements java.io.Serializ
     return description;
   }
 
+
+  public String getFinancialCode() {
+    return financialCode;
+  }
+
+
   public String getName() {
     return name;
   }
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public void setFinancialCode(String financialCode) {
+    this.financialCode = financialCode;
   }
 
   public void setName(String name) {
