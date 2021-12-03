@@ -65,6 +65,15 @@ public interface ProjectInnovationEvidenceLinkManager {
   public ProjectInnovationEvidenceLink getProjectInnovationEvidenceLinkById(long projectInnovationEvidenceLinkID);
 
   /**
+   * This method gets a projectInnovationEvidenceLink List by a given projectExpectedStudy and phase identifier
+   * 
+   * @param innovationID is the projectExpectedStudy identifier.
+   * @param phaseID is the phase identifier
+   * @return a ProjectInnovationEvidenceLink object.
+   */
+  public List<ProjectInnovationEvidenceLink> getProjectInnovationEvidenceLinkByPhase(Long innovationID, Long phaseID);
+
+  /**
    * This method gets a projectInnovationEvidenceLink object by a given projectExpectedStudy, phase identifier and link
    * 
    * @param innovationID is the projectExpectedStudy identifier.

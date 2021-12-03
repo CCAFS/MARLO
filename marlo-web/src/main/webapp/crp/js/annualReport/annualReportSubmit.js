@@ -17,7 +17,13 @@ $(document).ready(function() {
   $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
 
   // Click on submit button
-  $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
+    $('.submitButton, .projectSubmitButton').on('click', function(e) {
+      if ($('#isQAButtonVisible').html() == 'true') {
+        submitButtonEvent(e);
+      } else {
+        e.preventDefault();
+      }
+    });
 
   // Click on submit button
   $('.projectUnSubmitButton').on('click', unSubmitButtonEvent);

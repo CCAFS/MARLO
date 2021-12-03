@@ -66,6 +66,15 @@ public interface ProjectInnovationEvidenceLinkDAO {
    * This method gets a projectInnovationEvidenceLink object by a given projectInnovation, phase identifier and link
    * 
    * @param innovationID is the projectInnovation identifier.
+   * @param phaseID is the phase identifier
+   * @return a ProjectInnovationEvidenceLink object.
+   */
+  public List<ProjectInnovationEvidenceLink> getProjectInnovationEvidenceLinkByPhase(long innovationID, long phaseID);
+
+  /**
+   * This method gets a projectInnovationEvidenceLink object by a given projectInnovation, phase identifier and link
+   * 
+   * @param innovationID is the projectInnovation identifier.
    * @param link is the url link
    * @param phaseID is the phase identifier
    * @return a ProjectInnovationEvidenceLink object.

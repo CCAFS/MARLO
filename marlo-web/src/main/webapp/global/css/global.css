@@ -3328,6 +3328,22 @@ a.projectSubmitButton {
   display: block;
 }
 
+a.projectSubmitButton.btn-disabled {
+  background: url(../../global/images/submit-icon.png) no-repeat;
+  background-color: #ABABAB;
+  background-position: 46px 9px;
+  padding: 11px 0 11px 18px;
+  margin: 0px 10px;
+  border-radius: 2px;
+  color: #fff;
+  font-weight: lighter;
+  font-size: 1.3em;
+  text-align: center;
+  cursor: default;
+  display: block;
+  text-decoration: none;
+}
+
 a.projectUnSubmitButton {
   background: url(../../global/images/submit-icon.png) no-repeat;
   background-color: #F44336;

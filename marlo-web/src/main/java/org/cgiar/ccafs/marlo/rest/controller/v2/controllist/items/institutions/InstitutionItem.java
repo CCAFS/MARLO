@@ -282,6 +282,15 @@ public class InstitutionItem<T> {
       .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
+  public ResponseEntity<List<InstitutionSimpleDTO>> getAllInstitutionsSimpleRelated() {
+    List<Institution> institutions = this.institutionManager.getAllInstitutionsRelated();
+    List<InstitutionSimpleDTO> institutionDTOs =
+      institutions.stream().map(institution -> this.institutionMapper.institutionToInstitutionSimpleDTO(institution))
+        .collect(Collectors.toList());
+    return Optional.ofNullable(institutionDTOs).map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+      .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
   public List<InstitutionRequestDTO> getParterRequestByGlobalUnit(String entityAcronym, User user) {
     List<InstitutionRequestDTO> partnerRequestList = new ArrayList<InstitutionRequestDTO>();
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();

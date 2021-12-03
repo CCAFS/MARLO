@@ -18,20 +18,28 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaStudy;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -79,6 +87,11 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   private StudyTypeManager studyTypeManager;
   private ExpectedStudyProjectManager expectedStudyProjectManager;
 
+  private LiaisonInstitutionManager liaisonInstitutionManager;
+  private ReportSynthesisManager reportSynthesisManager;
+  private ReportSynthesisFlagshipProgressStudyManager flagshipProgressStudyManager;
+  private ReportSynthesisMeliaStudyManager reportSynthesisMeliaStudyManager;
+
   // Parameters or Variables
   private List<ProjectExpectedStudy> nonProjectStudies;
   private List<ProjectExpectedStudy> myNonProjectStudies;
@@ -96,8 +109,10 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   public ProjectExpectedStudiesListAction(APConfig config, SectionStatusManager sectionStatusManager,
     ProjectManager projectManager, ProjectExpectedStudyManager projectExpectedStudyManager,
     ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, StudyTypeManager studyTypeManager,
-    ExpectedStudyProjectManager expectedStudyProjectManager,
-    ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager) {
+    ExpectedStudyProjectManager expectedStudyProjectManager, LiaisonInstitutionManager liaisonInstitutionManager,
+    ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager, ReportSynthesisManager reportSynthesisManager,
+    ReportSynthesisFlagshipProgressStudyManager flagshipProgressStudyManager,
+    ReportSynthesisMeliaStudyManager reportSynthesisMeliaStudyManager) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
@@ -106,6 +121,10 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     this.studyTypeManager = studyTypeManager;
     this.expectedStudyProjectManager = expectedStudyProjectManager;
     this.projectExpectedStudyCrpManager = projectExpectedStudyCrpManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.reportSynthesisManager = reportSynthesisManager;
+    this.flagshipProgressStudyManager = flagshipProgressStudyManager;
+    this.reportSynthesisMeliaStudyManager = reportSynthesisMeliaStudyManager;
   }
 
   @Override
@@ -163,10 +182,47 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
         studyCrp = projectExpectedStudyCrpManager.saveProjectExpectedStudyCrp(studyCrp);
       }
 
+      this.createSynthesisAssociation(projectExpectedStudy, studyTypeID);
+
       return SUCCESS;
     }
 
     return INPUT;
+  }
+
+  private void createSynthesisAssociation(ProjectExpectedStudy study, Long studyTypeId) {
+    if (studyTypeId > 0) {
+      LiaisonInstitution liaisonInstitution =
+        this.liaisonInstitutionManager.findByAcronymAndCrp("PMU", this.getCrpID());
+      if (liaisonInstitution != null) {
+        ReportSynthesis reportSynthesis =
+          this.reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitution.getId());
+        if (reportSynthesis != null) {
+          if (studyTypeId == 1L) {
+            ReportSynthesisFlagshipProgressStudy flagshipProgressStudy = new ReportSynthesisFlagshipProgressStudy();
+            // isActive means excluded
+            flagshipProgressStudy.setActive(true);
+            flagshipProgressStudy.setCreatedBy(this.getCurrentUser());
+            flagshipProgressStudy.setProjectExpectedStudy(study);
+            flagshipProgressStudy
+              .setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
+
+            flagshipProgressStudy =
+              this.flagshipProgressStudyManager.saveReportSynthesisFlagshipProgressStudy(flagshipProgressStudy);
+          } else {
+            ReportSynthesisMeliaStudy reportSynthesisMeliaStudy = new ReportSynthesisMeliaStudy();
+            // isActive means excluded
+            reportSynthesisMeliaStudy.setActive(true);
+            reportSynthesisMeliaStudy.setCreatedBy(this.getCurrentUser());
+            reportSynthesisMeliaStudy.setProjectExpectedStudy(study);
+            reportSynthesisMeliaStudy.setReportSynthesisMelia(reportSynthesis.getReportSynthesisMelia());
+
+            reportSynthesisMeliaStudy =
+              this.reportSynthesisMeliaStudyManager.saveReportSynthesisMeliaStudy(reportSynthesisMeliaStudy);
+          }
+        }
+      }
+    }
   }
 
   /*

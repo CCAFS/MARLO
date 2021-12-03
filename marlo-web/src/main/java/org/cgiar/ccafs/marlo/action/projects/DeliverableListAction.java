@@ -21,9 +21,12 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressDeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
@@ -31,11 +34,14 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverable;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -72,6 +78,10 @@ public class DeliverableListAction extends BaseAction {
   private SectionStatusManager sectionStatusManager;
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
 
+  private LiaisonInstitutionManager liaisonInstitutionManager;
+  private ReportSynthesisManager reportSynthesisManager;
+  private ReportSynthesisFlagshipProgressDeliverableManager flagshipProgressDeliverableManager;
+
 
   // Front-end
   private List<Integer> allYears;
@@ -88,7 +98,9 @@ public class DeliverableListAction extends BaseAction {
   public DeliverableListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     DeliverableTypeManager deliverableTypeManager, DeliverableManager deliverableManager, PhaseManager phaseManager,
     DeliverableInfoManager deliverableInfoManager, SectionStatusManager sectionStatusManager,
-    ProjectDeliverableSharedManager projectDeliverableSharedManager) {
+    ProjectDeliverableSharedManager projectDeliverableSharedManager, ReportSynthesisManager reportSynthesisManager,
+    ReportSynthesisFlagshipProgressDeliverableManager flagshipProgressDeliverableManager,
+    LiaisonInstitutionManager liaisonInstitutionManager) {
     super(config);
     this.projectManager = projectManager;
     this.sectionStatusManager = sectionStatusManager;
@@ -98,6 +110,9 @@ public class DeliverableListAction extends BaseAction {
     this.deliverableManager = deliverableManager;
     this.phaseManager = phaseManager;
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
+    this.reportSynthesisManager = reportSynthesisManager;
+    this.flagshipProgressDeliverableManager = flagshipProgressDeliverableManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
   @Override
@@ -143,12 +158,13 @@ public class DeliverableListAction extends BaseAction {
         sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
       }
 
+      this.createSynthesisAssociation(deliverable);
+
       return SUCCESS;
     }
 
     return INPUT;
   }
-
 
   public void addDeliverablePhase(Phase phase, Deliverable deliverable) {
     phase = phaseManager.getPhaseById(phase.getId());
@@ -164,7 +180,6 @@ public class DeliverableListAction extends BaseAction {
     }
   }
 
-
   public boolean canEdit(long deliverableID) {
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
     if (this.isPlanningActive() && !this.isUpKeepActive()) {
@@ -174,6 +189,28 @@ public class DeliverableListAction extends BaseAction {
       return false;
     }
     return true;
+  }
+
+
+  private void createSynthesisAssociation(Deliverable deliverable) {
+    LiaisonInstitution liaisonInstitution = this.liaisonInstitutionManager.findByAcronymAndCrp("PMU", this.getCrpID());
+    if (liaisonInstitution != null) {
+      ReportSynthesis reportSynthesis =
+        this.reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitution.getId());
+      if (reportSynthesis != null) {
+        ReportSynthesisFlagshipProgressDeliverable flagshipProgressDeliverable =
+          new ReportSynthesisFlagshipProgressDeliverable();
+        // isActive means excluded
+        flagshipProgressDeliverable.setActive(true);
+        flagshipProgressDeliverable.setCreatedBy(this.getCurrentUser());
+        flagshipProgressDeliverable.setDeliverable(deliverable);
+        flagshipProgressDeliverable
+          .setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
+
+        flagshipProgressDeliverable = this.flagshipProgressDeliverableManager
+          .saveReportSynthesisFlagshipProgressDeliverable(flagshipProgressDeliverable);
+      }
+    }
   }
 
   @Override
