@@ -340,6 +340,7 @@ public class StatusPlannedMilestonesItem<T> {
           .setReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
         reportSynthesisFlagshipProgressOutcomeMilestone.setCrpMilestone(crpMilestone);
         reportSynthesisFlagshipProgressOutcomeMilestone.setMilestonesStatus(status);
+        reportSynthesisFlagshipProgressOutcomeMilestone.setIsQAIncluded(new Boolean(false));
         reportSynthesisFlagshipProgressOutcomeMilestone.setEvidence(newStatusPlannedMilestoneDTO.getEvidence());
         reportSynthesisFlagshipProgressOutcomeMilestone.setEvidenceLink(newStatusPlannedMilestoneDTO.getLinkEvidence());
         if (status.getId().longValue() == 4 || status.getId().longValue() == 5 || status.getId().longValue() == 6) {
@@ -887,6 +888,7 @@ public class StatusPlannedMilestonesItem<T> {
               reportSynthesisFlagshipProgressOutcomeMilestone.setEvidence(newStatusPlannedMilestoneDTO.getEvidence());
               reportSynthesisFlagshipProgressOutcomeMilestone
                 .setEvidenceLink(newStatusPlannedMilestoneDTO.getLinkEvidence());
+              reportSynthesisFlagshipProgressOutcomeMilestone.setIsQAIncluded(new Boolean(false));
               if (status.getId().longValue() == 4 || status.getId().longValue() == 5
                 || status.getId().longValue() == 6) {
                 reportSynthesisFlagshipProgressOutcomeMilestone.setReason(repIndMilestoneReason);
