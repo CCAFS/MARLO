@@ -73,7 +73,6 @@ import javax.inject.Inject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -215,6 +214,30 @@ public class StudiesOICRAction extends BaseAction {
     return canBeRemoved;
   }
 
+  /**
+   * Ensures that all indicators to be reported are in its corresponding synthesis table
+   */
+  private void ensureAllIndicatorsOnSynthesis() {
+    for (ProjectExpectedStudy projectStudy : this.projectExpectedStudies) {
+      if (projectStudy != null && projectStudy.getId() != null) {
+        ReportSynthesisFlagshipProgressStudy synthesisStudy = this.reportSynthesisFlagshipProgressStudyManager
+          .getReportSynthesisFlagshipProgressStudyByStudyAndFlagshipProgress(projectStudy.getId(),
+            liaisonInstitutionID);
+        if (synthesisStudy == null) {
+          synthesisStudy = new ReportSynthesisFlagshipProgressStudy();
+          // is_active = false -> included
+          synthesisStudy.setActive(false);
+          synthesisStudy.setCreatedBy(this.getCurrentUser());
+          synthesisStudy.setProjectExpectedStudy(projectStudy);
+          synthesisStudy.setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
+
+          synthesisStudy =
+            this.reportSynthesisFlagshipProgressStudyManager.saveReportSynthesisFlagshipProgressStudy(synthesisStudy);
+        }
+      }
+    }
+  }
+
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -316,6 +339,7 @@ public class StudiesOICRAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public void getFlagshipsWithMissingFields() {
     SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
       "Reporting", this.getActualPhase().getYear(), false, "synthesis.AR2019Table3");
@@ -372,7 +396,6 @@ public class StudiesOICRAction extends BaseAction {
     return liaisonInstitution;
   }
 
-
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
@@ -380,6 +403,7 @@ public class StudiesOICRAction extends BaseAction {
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
+
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -428,7 +452,6 @@ public class StudiesOICRAction extends BaseAction {
     return policyList;
   }
 
-
   public List<ProjectExpectedStudy> getProjectExpectedStudies() {
     return projectExpectedStudies;
   }
@@ -436,6 +459,7 @@ public class StudiesOICRAction extends BaseAction {
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
+
 
   public List<ReportSynthesisStudiesByCrpProgramDTO> getReportSynthesisStudiesByCrpProgramDTOs() {
     return reportSynthesisStudiesByCrpProgramDTOs;
@@ -446,7 +470,6 @@ public class StudiesOICRAction extends BaseAction {
     return reportSynthesisStudiesByRepIndStageStudyDTOs;
   }
 
-
   public Long getSynthesisID() {
     return synthesisID;
   }
@@ -455,10 +478,10 @@ public class StudiesOICRAction extends BaseAction {
     return total;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -509,6 +532,7 @@ public class StudiesOICRAction extends BaseAction {
 
   }
 
+
   public boolean isPolicyIncludedInReport(long policyID, long phaseID) {
     // boolean included = false;
     List<ReportSynthesisFlagshipProgressPolicy> synthesisPolicies =
@@ -558,7 +582,6 @@ public class StudiesOICRAction extends BaseAction {
 
   }
 
-
   @Override
   public String next() {
     String result = this.save();
@@ -568,7 +591,6 @@ public class StudiesOICRAction extends BaseAction {
       return result;
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -692,14 +714,20 @@ public class StudiesOICRAction extends BaseAction {
 
         this.getFlagshipsWithMissingFields();
 
-        if (CollectionUtils.emptyIfNull(this.reportSynthesisFlagshipProgressStudyManager.findAll()).stream()
-          .filter(p -> p != null && p.getId() != null && p.getProjectExpectedStudy() != null
-            && p.getReportSynthesisFlagshipProgress() != null && p.getReportSynthesisFlagshipProgress().getId() != null
-            && p.getReportSynthesisFlagshipProgress().getId()
-              .equals(this.reportSynthesis.getReportSynthesisFlagshipProgress().getId()))
-          .count() == 0L) {
-          this.removeAllFromAR();
-        }
+        // if(!this.isPMU()) {
+        this.ensureAllIndicatorsOnSynthesis();
+        // }
+
+        /*
+         * if (CollectionUtils.emptyIfNull(this.reportSynthesisFlagshipProgressStudyManager.findAll()).stream()
+         * .filter(p -> p != null && p.getId() != null && p.getProjectExpectedStudy() != null
+         * && p.getReportSynthesisFlagshipProgress() != null && p.getReportSynthesisFlagshipProgress().getId() != null
+         * && p.getReportSynthesisFlagshipProgress().getId()
+         * .equals(this.reportSynthesis.getReportSynthesisFlagshipProgress().getId()))
+         * .count() == 0L) {
+         * this.removeAllFromAR();
+         * }
+         */
 
         reportSynthesis.getReportSynthesisFlagshipProgress().setProjectStudies(new ArrayList<>());
         if (reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies() != null
@@ -772,12 +800,14 @@ public class StudiesOICRAction extends BaseAction {
 
   }
 
-  private void removeAllFromAR() {
-    for (ProjectExpectedStudy study : this.projectExpectedStudies) {
-      this.reportSynthesisFlagshipProgressStudyManager.toAnnualReport(study,
-        this.reportSynthesis.getReportSynthesisFlagshipProgress(), this.getCurrentUser(), true);
-    }
-  }
+  /*
+   * private void removeAllFromAR() {
+   * for (ProjectExpectedStudy study : this.projectExpectedStudies) {
+   * this.reportSynthesisFlagshipProgressStudyManager.toAnnualReport(study,
+   * this.reportSynthesis.getReportSynthesisFlagshipProgress(), this.getCurrentUser(), true);
+   * }
+   * }
+   */
 
   @Override
   public String save() {
