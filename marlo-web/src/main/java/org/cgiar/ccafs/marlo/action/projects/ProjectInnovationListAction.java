@@ -17,20 +17,26 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.Patterns;
@@ -75,6 +81,10 @@ public class ProjectInnovationListAction extends BaseAction {
   private SectionStatusManager sectionStatusManager;
   private ProjectManager projectManager;
 
+  private LiaisonInstitutionManager liaisonInstitutionManager;
+  private ReportSynthesisManager reportSynthesisManager;
+  private ReportSynthesisFlagshipProgressInnovationManager flagshipProgressInnovationManager;
+
   // Variables
   // Model for the back-end
   private Project project;
@@ -91,7 +101,9 @@ public class ProjectInnovationListAction extends BaseAction {
   public ProjectInnovationListAction(APConfig config, ProjectInnovationInfoManager projectInnovationInfoManager,
     SectionStatusManager sectionStatusManager, ProjectManager projectManager, PhaseManager phaseManager,
     ProjectInnovationManager projectInnovationManager, ProjectInnovationSharedManager projectInnovationSharedManager,
-    ProjectInnovationCrpManager projectInnovationCrpManager) {
+    ProjectInnovationCrpManager projectInnovationCrpManager, LiaisonInstitutionManager liaisonInstitutionManager,
+    ReportSynthesisFlagshipProgressInnovationManager flagshipProgressInnovationManager,
+    ReportSynthesisManager reportSynthesisManager) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
@@ -100,6 +112,9 @@ public class ProjectInnovationListAction extends BaseAction {
     this.projectInnovationSharedManager = projectInnovationSharedManager;
     this.projectInnovationCrpManager = projectInnovationCrpManager;
     this.phaseManager = phaseManager;
+    this.flagshipProgressInnovationManager = flagshipProgressInnovationManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.reportSynthesisManager = reportSynthesisManager;
   }
 
   @Override
@@ -125,11 +140,32 @@ public class ProjectInnovationListAction extends BaseAction {
     innovationID = projectInnovation.getId();
 
     if (innovationID > 0) {
-
+      this.createSynthesisAssociation(projectInnovation);
       return SUCCESS;
     }
 
     return INPUT;
+  }
+
+  private void createSynthesisAssociation(ProjectInnovation innovation) {
+    LiaisonInstitution liaisonInstitution = this.liaisonInstitutionManager.findByAcronymAndCrp("PMU", this.getCrpID());
+    if (liaisonInstitution != null) {
+      ReportSynthesis reportSynthesis =
+        this.reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitution.getId());
+      if (reportSynthesis != null) {
+        ReportSynthesisFlagshipProgressInnovation flagshipProgressInnovation =
+          new ReportSynthesisFlagshipProgressInnovation();
+        // isActive means excluded
+        flagshipProgressInnovation.setActive(true);
+        flagshipProgressInnovation.setCreatedBy(this.getCurrentUser());
+        flagshipProgressInnovation.setProjectInnovation(innovation);
+        flagshipProgressInnovation
+          .setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
+
+        flagshipProgressInnovation = this.flagshipProgressInnovationManager
+          .saveReportSynthesisFlagshipProgressInnovation(flagshipProgressInnovation);
+      }
+    }
   }
 
   @Override
@@ -150,7 +186,6 @@ public class ProjectInnovationListAction extends BaseAction {
     }
     return SUCCESS;
   }
-
 
   @Override
   public List<Integer> getAllYears() {
