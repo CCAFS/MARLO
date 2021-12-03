@@ -623,6 +623,6 @@ div#chart13 {
   opacity: 1 !important;
 }
 
-/*textarea[name^="reportSynthesis.reportSynthesisFlagshipProgress.outcomeList"] {
+textarea[name^="reportSynthesis.reportSynthesisFlagshipProgress.outcomeList"] {
   display: none;
-}*/
+}
