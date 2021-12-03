@@ -539,10 +539,14 @@ public class DeliverableValidator extends BaseValidator {
      * deliverable.getDeliverableInfo(action.getActualPhase()).setCrpProgramOutcome(null);
      * }
      */
-    if (deliverable.getProjectOutcomes() == null || deliverable.getProjectOutcomes().isEmpty()) {
-      action.addMessage(action.getText("deliverable.projectOutcomes"));
-      action.addMissingField("deliverable.projectOutcomes");
-      action.getInvalidFields().put("list-deliverable.projectOutcomes", InvalidFieldsMessages.EMPTYFIELD);
+
+    if (project != null && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
+      && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == false) {
+      if (deliverable.getProjectOutcomes() == null || deliverable.getProjectOutcomes().isEmpty()) {
+        action.addMessage(action.getText("deliverable.projectOutcomes"));
+        action.addMissingField("deliverable.projectOutcomes");
+        action.getInvalidFields().put("list-deliverable.projectOutcomes", InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
 
     if (!action.isCenterGlobalUnit()) {
