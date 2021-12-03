@@ -273,7 +273,7 @@ public class Institutions {
     return resp;
   }
 
-  @ApiOperation(value = "${Institutions.institution-types.all.value}", response = InstitutionsRelatedDTO.class,
+  @ApiOperation(value = "${Institutions.institutionsRelated.all.value}", response = InstitutionsRelatedDTO.class,
     responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/institutionRelated", method = RequestMethod.GET,
@@ -291,6 +291,17 @@ public class Institutions {
     ResponseEntity<List<InstitutionSimpleDTO>> resp = this.institutionItem.getAllInstitutionsSimple();
     return resp;
   }
+
+  @ApiOperation(tags = {"Table 4 - CRP Innovations", "Table 3 - Outcome/ Impact Case Reports"},
+    value = "${Institutions.institutions.all.value}", response = InstitutionSimpleDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/institutionsSimpleRelated", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<InstitutionSimpleDTO>> getAllInstitutionsSimpleRelated() {
+    ResponseEntity<List<InstitutionSimpleDTO>> resp = this.institutionItem.getAllInstitutionsSimple();
+    return resp;
+  }
+
 
   /**
    * Get all institution types *

@@ -223,6 +223,44 @@ setTimeout(() => {
 	});
 }
 
+function sdg2(){
+	$.ajax({
+		url: config.endpoint + '/allSDG',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"sdgs");
+			destroyTable("sdgs");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"sdgs");
+			console.log(data);
+			let nameColumns = ['UNSD code', 'Short Name','Full Name','Financial Code']
+
+			$.each(data, function (index, item) {
+				
+				$('#list-print-sdgs').append(
+					'<tr>' + '<td >' + item['usndCode'] + '</td>' + '<td>'
+					+ item['shortName'] + '</td>' + '<td>'
+					+ item['fullName'] + '</td>' + '<td>'
+					+ item['financialCode'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("sdgs");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
 
 function scienceGroups(){
 	$.ajax({
@@ -631,6 +669,43 @@ function impact_areas() {
 					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
 					+ item['name'] + '</td>'+ '<td>'
 					+ item['description'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("impact_areas");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function impact_areas2() {
+	$.ajax({
+		url: config.endpoint + '/impact-areas',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"impact_areas");
+			destroyTable("impact_areas");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"impact_areas");
+			console.log(data);
+			let nameColumns = ['Code', 'Name','Description']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-impact_areas').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>'+ '<td>'
+					+ item['description'] + '</td>'+ '<td>'
+					+ item['financialCode'] + '</td>' + '</tr>')
 			});
 setTimeout(() => {
 	updateDataTable("impact_areas");
