@@ -319,7 +319,7 @@
   [/#if]
   [#if !PMU] [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/][/#if]
   [#if PMU]
-    [#if actualPhaseAR2021 && submission]
+    [#if actualPhaseAR2021]
       [#assign qaIncluded = (!(element.isQAIncluded))!false]
       <div class="containerTitleElements">
         <span id="isCheckedAR-${(element.id)!''}" style="display: none;">${(qaIncluded)?c}</span>
