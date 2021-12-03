@@ -13,5 +13,8 @@
     <property name="description" type="string" >
       <column name="description" sql-type="TEXT" />
     </property>
+    <property name="financialCode" type="string" >
+      <column name="financial_code" sql-type="TEXT" />
+    </property>
   </class>
 </hibernate-mapping>

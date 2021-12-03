@@ -14,7 +14,9 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -52,6 +54,9 @@ public interface DeliverablePublicationMetadataManager {
   public List<DeliverablePublicationMetadata> findAll();
 
 
+  public DeliverablePublicationMetadata findPublicationMetadataByPhaseAndDeliverable(Phase phase,
+    Deliverable deliverable);
+
   /**
    * This method gets a deliverablePublicationMetadata object by a given deliverablePublicationMetadata identifier.
    * 
@@ -59,6 +64,7 @@ public interface DeliverablePublicationMetadataManager {
    * @return a DeliverablePublicationMetadata object.
    */
   public DeliverablePublicationMetadata getDeliverablePublicationMetadataById(long deliverablePublicationMetadataID);
+
 
   /**
    * This method saves the information of the given deliverablePublicationMetadata
@@ -72,6 +78,5 @@ public interface DeliverablePublicationMetadataManager {
    */
   public DeliverablePublicationMetadata
     saveDeliverablePublicationMetadata(DeliverablePublicationMetadata deliverablePublicationMetadata);
-
 
 }
