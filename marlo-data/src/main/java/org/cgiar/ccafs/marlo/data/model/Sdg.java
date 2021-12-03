@@ -29,6 +29,8 @@ public class Sdg implements java.io.Serializable {
   private String shortName;
   private String fullName;
   private String description;
+  private String financialCode;
+
 
   public Sdg() {
     super();
@@ -47,6 +49,11 @@ public class Sdg implements java.io.Serializable {
 
   public String getDescription() {
     return description;
+  }
+
+
+  public String getFinancialCode() {
+    return financialCode;
   }
 
 
@@ -69,8 +76,13 @@ public class Sdg implements java.io.Serializable {
     return smoCode;
   }
 
+
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public void setFinancialCode(String financialCode) {
+    this.financialCode = financialCode;
   }
 
   public void setFullName(String fullName) {

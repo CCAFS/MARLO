@@ -83,6 +83,13 @@ public class DeliverablePublicationMetadataManagerImpl implements DeliverablePub
   }
 
   @Override
+  public DeliverablePublicationMetadata findPublicationMetadataByPhaseAndDeliverable(Phase phase,
+    Deliverable deliverable) {
+
+    return deliverablePublicationMetadataDAO.findPublicationMetadataByPhaseAndDeliverable(phase, deliverable);
+  }
+
+  @Override
   public DeliverablePublicationMetadata getDeliverablePublicationMetadataById(long deliverablePublicationMetadataID) {
 
     return deliverablePublicationMetadataDAO.find(deliverablePublicationMetadataID);

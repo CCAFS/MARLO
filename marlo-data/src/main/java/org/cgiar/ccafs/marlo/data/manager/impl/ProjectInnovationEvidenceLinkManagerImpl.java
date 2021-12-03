@@ -112,6 +112,12 @@ public class ProjectInnovationEvidenceLinkManagerImpl implements ProjectInnovati
   }
 
   @Override
+  public List<ProjectInnovationEvidenceLink> getProjectInnovationEvidenceLinkByPhase(Long innovationID, Long phaseID) {
+
+    return projectInnovationEvidenceLinkDAO.getProjectInnovationEvidenceLinkByPhase(innovationID, phaseID);
+  }
+
+  @Override
   public ProjectInnovationEvidenceLink getProjectInnovationEvidenceLinkByPhase(Long expectedID, String link,
     Long phaseID) {
     return projectInnovationEvidenceLinkDAO.getProjectInnovationEvidenceLinkByPhase(expectedID, link, phaseID);

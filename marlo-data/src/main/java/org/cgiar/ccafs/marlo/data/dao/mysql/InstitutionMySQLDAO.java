@@ -17,8 +17,11 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.InstitutionDAO;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.InstitutionDictionary;
+import org.cgiar.ccafs.marlo.data.model.InstitutionSource;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,6 +35,7 @@ import org.hibernate.SessionFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Diego Perez - CIAT/CCAFS
  */
 @Named
 public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> implements InstitutionDAO {
@@ -85,6 +89,54 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
     List<Map<String, Object>> queryValue = super.findCustomQuery(query.toString());
     for (Map<String, Object> map : queryValue) {
       institutions.add(this.find(Long.parseLong(map.get("id").toString())));
+    }
+    return institutions;
+  }
+
+  @Override
+  public List<Institution> getAllInstitutionsRelated() {
+    String sqlquery =
+      "Select inst.id, inst.name, inst.acronym, inst.website_link,insttypes.id as typeid,insttypes.name as type,loc.name as hqLocation,"
+        + "loc.iso_alpha_2 as hqLocationISOalpha2, "
+        + "(select GROUP_CONCAT(DISTINCT CONCAT(dictionary.institution_source_id,'--',dictionary.institution_source_name,'--',dictionary.source_id,'--',isource.name)SEPARATOR '; ') "
+        + "from institution_dictionary dictionary "
+        + "INNER JOIN institution_source isource ON isource.id=dictionary.source_id "
+        + "where dictionary.institution_id=inst.id ) as  institution_related" + "from institutions inst "
+        + "INNER JOIN institution_types insttypes ON insttypes.id=inst.institution_type_id "
+        + "INNER JOIN institutions_locations instloc ON instloc.institution_id=inst.id and instloc.is_headquater=1 "
+        + "INNER JOIN loc_elements loc ON loc.id=instloc.loc_element_id";
+    List<Institution> institutions = new ArrayList<>();
+
+    List<InstitutionDictionary> dictionary;
+    InstitutionDictionary obj;
+    List<Map<String, Object>> queryValue = super.findCustomQuery(sqlquery);
+    Institution data = null;
+    InstitutionSource isource = null;
+    for (Map<String, Object> map : queryValue) {
+      data = new Institution();
+      data.setName(map.get("name").toString());
+      data.setAcronym(map.get("acronym") != null ? map.get("acronym").toString() : "");
+      data.setId(Long.parseLong(map.get("id").toString()));
+      data.setWebsiteLink(map.get("website_link") != null ? map.get("website_link").toString() : "");
+      data.setTypeId(Long.parseLong(map.get("typeid").toString()));
+      data.setType(map.get("type").toString());
+      data.setHqLocation(map.get("hqLocation").toString());
+      data.setHqLocationISOalpha2(map.get("hqLocationISOalpha2").toString());
+      dictionary = new ArrayList<InstitutionDictionary>();
+      for (String dictionaryData : map.get("institution_related").toString() == null ? new ArrayList<String>()
+        : new ArrayList<String>(Arrays.asList(map.get("institution_related").toString().split(";")))) {
+        obj = new InstitutionDictionary();
+        obj.setInstitution(data);
+        isource = new InstitutionSource();
+        isource.setId(Long.getLong(dictionaryData.split("--")[2]));
+        isource.setName(dictionaryData.split("--")[3]);
+        obj.setSource(isource);
+        obj.setSourceId(dictionaryData.split("--")[0]);
+        obj.setSourceName(dictionaryData.split("--")[1]);
+        dictionary.add(obj);
+      }
+      data.setInstitutionsRelated(dictionary);
+      institutions.add(data);
     }
     return institutions;
   }
