@@ -312,6 +312,7 @@ public class ProgressTowardsItem<T> {
         reportSynthesisSrfProgressTarget.setBriefSummary(newSrfProgressTowardsTargetDTO.getBriefSummary().trim());
         reportSynthesisSrfProgressTarget
           .setAdditionalContribution(newSrfProgressTowardsTargetDTO.getAdditionalContribution());
+        reportSynthesisSrfProgressTarget.setIsQAIncluded(new Boolean(false));
 
         // AR2020 changes
         List<ProgressTargetCaseGeographicScope> scopeList = new ArrayList<ProgressTargetCaseGeographicScope>();
@@ -806,6 +807,7 @@ public class ProgressTowardsItem<T> {
       String strippedBriefSummary = StringUtils.stripToNull(newSrfProgressTowardsTargetDTO.getBriefSummary());
       if (strippedBriefSummary != null) {
         reportSynthesisSrfProgressTarget.setBriefSummary(strippedBriefSummary);
+        reportSynthesisSrfProgressTarget.setIsQAIncluded(new Boolean(false));
       } else {
         fieldErrors.add(new FieldErrorDTO("putProgressTowards", "Summary", "Please enter a brief summary"));
       }
