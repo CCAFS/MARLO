@@ -1,6 +1,6 @@
 $(document).ready(init);
 
-var markers, inputMilestoneStatus;
+var markers, inputMilestoneStatus, isOICR;
 var oicrsAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=4&crpID=';
 var oicrsArrName = 'fullItemsAssessmentStatus';
 var milestoneAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=7&crpID=';
@@ -12,7 +12,8 @@ function init() {
   // $('form select').select2({
   //   width: '100%'
   // });
-  if ($('#actualPhaseAR2021').html() == 'true') {
+  isOICR = $('#isOICR').html();
+  if ($('#actualPhaseAR2021').html() == 'true' ) {
     $('textarea[name*="evidenceLink"]').prop('disabled', true);
   }
   inputMilestoneStatus = $('input.milestoneStatus');
@@ -119,7 +120,7 @@ function disabledUncheckedCheckmarkColor() {
 
 function attachEvents() {
   if ($('#actualPhase').html() == 'true' && $('#isSubmitted').html() == 'true') {
-    if ($('#isOICR').html() == 'true') {
+    if (isOICR == 'true') {
       loadQualityAssessmentStatus(oicrsAjaxURL, oicrsArrName);
     } else {
       loadQualityAssessmentStatus(milestoneAjaxURL, milestoneArrName);
@@ -254,7 +255,17 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
 
             return arr;
           });
-          updateQualityAssessmentStatusData(newData);
+          
+          if (isOICR == 'true') {
+            updateQualityAssessmentStatusData(newData);
+          } else {
+            if ($('#isPMU').html() == 'true') {
+              updateQualityAssessmentStatusData(newData);
+            } else {
+              console.log("FP",newData)
+              qualityAssessmentStatusMessage(newData);
+            }
+          }
         }
       }
     });
@@ -283,12 +294,12 @@ function updateQualityAssessmentStatusData(data) {
       case 'quality_assessed':
         status = 'Quality Assessed';
         iconSrc = baseURL + '/global/images/quality-assessed-icon.svg';
-        if ($('#isOICR').html() == 'true') {
+        if (isOICR == 'true') {
           $(`<input name='reportSynthesis.reportSynthesisFlagshipProgress.studiesValue' type='hidden' value='${x[0]}'/>`).insertAfter(`#study-${x[0]}`);
           $(`#study-${x[0]}`).prop('disabled', true);
           $(`#study-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
         } else {
-          var milestoneID = $('#milestoneID').html();
+          var milestoneID = $(`#milestoneID-${x[0]}`).html();
           $(`<input name='reportSynthesis.reportSynthesisFlagshipProgress.milestonesValue' type='hidden' value='${milestoneID}'/>`).insertAfter(`#milestone-${x[0]}`);
           $(`#milestone-${x[0]}`).prop('disabled', true);
           $(`#milestone-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
@@ -312,6 +323,65 @@ function updateQualityAssessmentStatusData(data) {
       element.appendChild(br);
       spanTag.appendChild(text);
       element.appendChild(spanTag);
+    }
+  });
+}
+
+function qualityAssessmentStatusMessage(data) {
+  data.map(function (x) {
+    var mileID = $(`#mileID-${x[0]}`).html();
+    if (mileID && (x[0] == mileID)) {
+      var container = document.getElementById(`containerTitleElementsProject-${x[0]}`);
+      var element = document.getElementById(`qualityAssessedIcon-${x[0]}`);
+      var date, status, statusClass;
+
+      switch (x[1]) {
+        case 'pending':
+          status = 'Pending assessment';
+          statusClass = 'pending-mode';
+          break;
+        case 'pending_crp':
+          status = 'Pending CRP response';
+          statusClass = 'pending-mode';
+          break;
+        case 'in_progress':
+          status = 'Quality Assessed (Requires 2nd assessment)';
+          statusClass = 'qualityAssessed-mode';
+          break;
+        case 'quality_assessed':
+          date = new Date((x[2].split('T')[0])).toDateString();
+          status = 'Milestone was Quality Assessed on ' + date;
+          statusClass = 'qualityAssessed-mode';
+          break;
+
+        default:
+          break;
+      }
+
+      if (element) {
+        var pTag = document.createElement('p');
+        var text = document.createTextNode(status);
+
+        element.innerHTML = '';
+        element.classList.remove('pendingForReview-mode');
+        element.classList.add(statusClass);
+        pTag.style.margin = '0';
+        pTag.appendChild(text);
+        element.appendChild(pTag);
+
+        if (x[1] == 'quality_assessed' || x[1] == 'pending') {
+          var pMessageTag = document.createElement('p');
+          if (x[1] == 'quality_assessed') {
+            var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+          } else {
+            var textMessage = document.createTextNode('As this item is being assessed by the SMO, no changes are recommended');
+          }
+
+          pMessageTag.classList.add('messageQAInfo');
+          pMessageTag.appendChild(textMessage);
+          container.appendChild(pMessageTag);
+        }
+      }
     }
   });
 }
