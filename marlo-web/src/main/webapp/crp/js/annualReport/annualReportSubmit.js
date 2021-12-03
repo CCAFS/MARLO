@@ -4,6 +4,7 @@ var currentCycle;
 var selectedUrl, selectedAction;
 
 $(document).ready(function() {
+  $('#menu-financial').on('click', table13UnderConstruction);
 
   sections = $('#sectionsForChecking').text().split(',');
 
@@ -56,6 +57,29 @@ function cancel() {
   window.location.replace(selectedUrl);
   window.location.href = selectedUrl;
   $('#discardChanges').modal('hide');
+}
+
+function table13UnderConstruction(e) {
+  e.preventDefault();
+  var message = 'This version of the table is not updated according to the SMO template. Please go to the following link to refer to the updated guide for this table:';
+  noty({
+      text: message,
+      type: 'confirm',
+      dismissQueue: true,
+      layout: 'center',
+      theme: 'relax',
+      modal: true,
+      template: '<div class="noty_message"><span class="noty_text"></span><br><a href="https://www.screencast.com/t/9vRG4oNOB" target="_blank">Updated SMO version of Table 13</a></div>',
+      buttons: [
+          {
+            addClass: 'btn btn-primary',
+            text: 'Ok',
+            onClick: function($noty) {
+              $noty.close();
+            }
+          }
+      ]
+  });
 }
 
 function submitButtonEvent(e) {
