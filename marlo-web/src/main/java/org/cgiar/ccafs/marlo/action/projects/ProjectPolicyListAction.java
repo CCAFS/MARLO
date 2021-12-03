@@ -17,19 +17,25 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.PhaseComparator;
@@ -74,6 +80,10 @@ public class ProjectPolicyListAction extends BaseAction {
   private ProjectManager projectManager;
   private RepIndGeographicScopeManager repIndGeographicScopeManager;
 
+  private LiaisonInstitutionManager liaisonInstitutionManager;
+  private ReportSynthesisManager reportSynthesisManager;
+  private ReportSynthesisFlagshipProgressPolicyManager flagshipProgressPolicyManager;
+
   // Variables
   // Model for the back-end
   private Project project;
@@ -89,7 +99,9 @@ public class ProjectPolicyListAction extends BaseAction {
   public ProjectPolicyListAction(APConfig config, ProjectPolicyManager projectPolicyManager,
     ProjectPolicyInfoManager projectPolicyInfoManager, SectionStatusManager sectionStatusManager,
     ProjectManager projectManager, ProjectPolicyCrpManager projectPolicyCrpManager,
-    RepIndGeographicScopeManager repIndGeographicScopeManager) {
+    RepIndGeographicScopeManager repIndGeographicScopeManager, ReportSynthesisManager reportSynthesisManager,
+    ReportSynthesisFlagshipProgressPolicyManager flagshipProgressPolicyManager,
+    LiaisonInstitutionManager liaisonInstitutionManager) {
     super(config);
     this.projectPolicyManager = projectPolicyManager;
     this.projectPolicyInfoManager = projectPolicyInfoManager;
@@ -97,6 +109,9 @@ public class ProjectPolicyListAction extends BaseAction {
     this.projectManager = projectManager;
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
     this.projectPolicyCrpManager = projectPolicyCrpManager;
+    this.reportSynthesisManager = reportSynthesisManager;
+    this.flagshipProgressPolicyManager = flagshipProgressPolicyManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
   @Override
@@ -122,13 +137,31 @@ public class ProjectPolicyListAction extends BaseAction {
     policyID = projectPolicy.getId();
 
     if (policyID > 0) {
-
+      this.createSynthesisAssociation(projectPolicy);
       return SUCCESS;
     }
 
     return INPUT;
   }
 
+  private void createSynthesisAssociation(ProjectPolicy policy) {
+    LiaisonInstitution liaisonInstitution = this.liaisonInstitutionManager.findByAcronymAndCrp("PMU", this.getCrpID());
+    if (liaisonInstitution != null) {
+      ReportSynthesis reportSynthesis =
+        this.reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitution.getId());
+      if (reportSynthesis != null) {
+        ReportSynthesisFlagshipProgressPolicy flagshipProgressPolicy = new ReportSynthesisFlagshipProgressPolicy();
+        // isActive means excluded
+        flagshipProgressPolicy.setActive(true);
+        flagshipProgressPolicy.setCreatedBy(this.getCurrentUser());
+        flagshipProgressPolicy.setProjectPolicy(policy);
+        flagshipProgressPolicy.setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
+
+        flagshipProgressPolicy =
+          this.flagshipProgressPolicyManager.saveReportSynthesisFlagshipProgressPolicy(flagshipProgressPolicy);
+      }
+    }
+  }
 
   @Override
   public String delete() {

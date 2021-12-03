@@ -844,7 +844,7 @@ public class ProjectOutcomeAction extends BaseAction {
               projectOutcomeDB.setNextUsers(new ArrayList<>());
             }
 
-            projectOutcomeDB.getNextUsers().add(projectNextuser);
+            // projectOutcomeDB.getNextUsers().add(projectNextuser);
 
           } else {
             // Update existing entity
@@ -861,7 +861,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
             projectNextuserDB = projectNextuserManager.saveProjectNextuser(projectNextuserDB);
             // This add projectNextuser to generate correct auditlog.
-            projectOutcomeDB.getProjectNextusers().add(projectNextuserDB);
+            // projectOutcomeDB.getProjectNextusers().add(projectNextuserDB);
           }
 
 
