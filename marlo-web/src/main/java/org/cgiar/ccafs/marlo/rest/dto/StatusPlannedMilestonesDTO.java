@@ -44,9 +44,13 @@ public class StatusPlannedMilestonesDTO {
   @ApiModelProperty(notes = "Milestone Status Evidence links", position = 6)
   private String evidenceLink;
 
+  @ApiModelProperty(notes = "Milestone Status Evidence link list", position = 6)
+  private List<EvidenceLinkDTO> evidenceLinkList;
+
 
   @ApiModelProperty(notes = "Milestone Cross Cutting Markers", position = 7)
   private List<CrosscuttingMarkersJustificationDTO> crossCuttingMarkerList;
+
 
   @ApiModelProperty(notes = "Main reason for Milestone Status", position = 8)
   public MilestoneReasonDTO reason;
@@ -54,7 +58,6 @@ public class StatusPlannedMilestonesDTO {
 
   @ApiModelProperty(notes = "If main reason = 7. Other, please state", position = 9)
   public String otherReason;
-
 
   public List<CrosscuttingMarkersJustificationDTO> getCrossCuttingMarkerList() {
     return crossCuttingMarkerList;
@@ -70,6 +73,12 @@ public class StatusPlannedMilestonesDTO {
     return evidenceLink;
   }
 
+
+  public List<EvidenceLinkDTO> getEvidenceLinkList() {
+    return evidenceLinkList;
+  }
+
+
   public MilestoneDTO getMilestone() {
     return milestone;
   }
@@ -78,15 +87,14 @@ public class StatusPlannedMilestonesDTO {
     return otherReason;
   }
 
-
   public MilestoneReasonDTO getReason() {
     return reason;
   }
 
+
   public Integer getReportedExtendedYear() {
     return reportedExtendedYear;
   }
-
 
   public MilestoneStatusDTO getReportedStatus() {
     return reportedStatus;
@@ -97,13 +105,18 @@ public class StatusPlannedMilestonesDTO {
     this.crossCuttingMarkerList = crossCuttingMarkerList;
   }
 
+
   public void setEvidence(String evidence) {
     this.evidence = evidence;
   }
 
-
   public void setEvidenceLink(String evidenceLink) {
     this.evidenceLink = evidenceLink;
+  }
+
+
+  public void setEvidenceLinkList(List<EvidenceLinkDTO> evidenceLinkList) {
+    this.evidenceLinkList = evidenceLinkList;
   }
 
 

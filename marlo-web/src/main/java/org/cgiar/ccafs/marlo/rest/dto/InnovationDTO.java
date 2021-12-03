@@ -75,11 +75,17 @@ public class InnovationDTO {
   @ApiModelProperty(notes = "Evidence Link", position = 130)
   private String evidenceLink;
 
+  @ApiModelProperty(notes = "Evidence Link list", position = 131)
+  private List<EvidenceLinkDTO> evidenceLinkList;
+
+
   @ApiModelProperty(notes = "Contributing CRPs/Platforms", position = 140)
   private List<CGIAREntityDTO> contributingCGIAREntities;
 
+
   @ApiModelProperty(notes = "Contributing milestone list", position = 142)
   private List<ProjectInnovationMilestoneDTO> milestonesList;
+
 
   @ApiModelProperty(notes = "CGIAR Sub-IDOs List", position = 143)
   private List<ProjectInnovationSubIdoDTO> srfSubIdoList;
@@ -94,11 +100,9 @@ public class InnovationDTO {
     return this.contributingCGIAREntities;
   }
 
-
   public List<InstitutionDTO> getContributingInstitutions() {
     return this.contributingInstitutions;
   }
-
 
   public List<CountryDTO> getCountries() {
     return this.countries;
@@ -120,6 +124,11 @@ public class InnovationDTO {
   }
 
 
+  public List<EvidenceLinkDTO> getEvidenceLinkList() {
+    return evidenceLinkList;
+  }
+
+
   public List<GeographicScopeDTO> getGeographicScopes() {
     return this.geographicScopes;
   }
@@ -129,10 +138,10 @@ public class InnovationDTO {
     return this.id;
   }
 
+
   public Long getInnovationNumber() {
     return innovationNumber;
   }
-
 
   public InnovationTypeDTO getInnovationType() {
     return this.innovationType;
@@ -226,6 +235,11 @@ public class InnovationDTO {
 
   public void setEvidenceLink(String evidenceLink) {
     this.evidenceLink = evidenceLink;
+  }
+
+
+  public void setEvidenceLinkList(List<EvidenceLinkDTO> evidenceLinkList) {
+    this.evidenceLinkList = evidenceLinkList;
   }
 
 

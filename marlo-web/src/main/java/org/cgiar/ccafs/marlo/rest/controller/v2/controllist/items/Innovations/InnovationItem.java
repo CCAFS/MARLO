@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationEvidenceLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
@@ -58,6 +59,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationEvidenceLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
@@ -129,6 +131,7 @@ public class InnovationItem<T> {
   private SrfSubIdoManager srfSubIdoManager;
   private ProjectInnovationSubIdoManager projectInnovationSubIdoManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private ProjectInnovationEvidenceLinkManager projectInnovationEvidenceLinkManager;
   // changes to be included to Synthesis
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private ReportSynthesisManager reportSynthesisManager;
@@ -161,7 +164,8 @@ public class InnovationItem<T> {
     ProjectExpectedStudyManager projectExpectedStudyManager, LiaisonInstitutionManager liaisonInstitutionManager,
     ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager,
     ReportSynthesisManager reportSynthesisManager,
-    ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager) {
+    ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
+    ProjectInnovationEvidenceLinkManager projectInnovationEvidenceLinkManager) {
     this.projectInnovationManager = projectInnovationManager;
     this.innovationMapper = innovationMapper;
     this.phaseManager = phaseManager;
@@ -190,6 +194,7 @@ public class InnovationItem<T> {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.reportSynthesisManager = reportSynthesisManager;
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
+    this.projectInnovationEvidenceLinkManager = projectInnovationEvidenceLinkManager;
   }
 
   /**
@@ -221,6 +226,8 @@ public class InnovationItem<T> {
     List<ProjectInnovationCountry> projectInnovationCountryList = new ArrayList<ProjectInnovationCountry>();
     List<ProjectInnovationMilestone> projectInnovationMilestoneList = new ArrayList<ProjectInnovationMilestone>();
     List<ProjectInnovationSubIdo> projectInnovationSubIdoList = new ArrayList<ProjectInnovationSubIdo>();
+    List<ProjectInnovationEvidenceLink> projectInnovationEvidenceLinkList =
+      new ArrayList<ProjectInnovationEvidenceLink>();
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     if (globalUnitEntity == null) {
@@ -268,10 +275,19 @@ public class InnovationItem<T> {
         newInnovationDTO.getInnovationType() + " is an invalid innovation type code"));
     } else {
       if (newInnovationDTO.getInnovationType().getCode() == 1) {
-        if (newInnovationDTO.getInnovationNumber() == null
-          || (newInnovationDTO.getInnovationNumber() != null && newInnovationDTO.getInnovationNumber() == 0)) {
-          fieldErrors.add(
-            new FieldErrorDTO("createInnovation", "InnovationNumber", "Number of innovations need to be more than 0"));
+        if (RepIndStageInnovation != null) {
+          if (RepIndStageInnovation.getId() == 1 || RepIndStageInnovation.getId() == 2) {
+            if (newInnovationDTO.getInnovationNumber() == null
+              || (newInnovationDTO.getInnovationNumber() != null && newInnovationDTO.getInnovationNumber() == 0)) {
+              fieldErrors.add(new FieldErrorDTO("createInnovation", "InnovationNumber",
+                "Number of innovations need to be more than 0"));
+            }
+          } else {
+            newInnovationDTO.setInnovationNumber(new Long(1));
+          }
+        } else {
+          fieldErrors
+            .add(new FieldErrorDTO("createInnovation", "Stage of Innovation", "Stage of innovation code is required"));
         }
       }
     }
@@ -302,8 +318,9 @@ public class InnovationItem<T> {
       projectInnovationInfo.setRepIndInnovationType(repIndInnovationType);
       projectInnovationInfo.setEvidenceLink(newInnovationDTO.getEvidenceLink());
       projectInnovationInfo.setClearLead(newInnovationDTO.getEquitativeEffort());
-      projectInnovationInfo
-        .setInnovationNumber(repIndInnovationType.getId() == 1 ? newInnovationDTO.getInnovationNumber() : 1);
+      projectInnovationInfo.setInnovationNumber((repIndInnovationType.getId() == 1
+        && (newInnovationDTO.getDescriptionStage().equals("1") || newInnovationDTO.getDescriptionStage().equals("2")))
+          ? newInnovationDTO.getInnovationNumber() : 1);
 
 
       // SAVE innovation CRP
@@ -502,6 +519,16 @@ public class InnovationItem<T> {
           }
         }
       }
+      // save Evidence links
+      if (newInnovationDTO.getEvidenceLinkList() != null && newInnovationDTO.getEvidenceLinkList().size() > 0) {
+        for (String link : newInnovationDTO.getEvidenceLinkList()) {
+          ProjectInnovationEvidenceLink evidenceLink = new ProjectInnovationEvidenceLink();
+          evidenceLink.setPhase(phase);
+          evidenceLink.setLink(link);
+          projectInnovationEvidenceLinkList.add(evidenceLink);
+        }
+      }
+
       // validation for primary subIdo must be one of them selected.
       List<ProjectInnovationSubIdo> primaryDataSubIdos =
         projectInnovationSubIdoList.stream().filter(c -> c.getPrimary() == true).collect(Collectors.toList());
@@ -551,6 +578,10 @@ public class InnovationItem<T> {
         for (ProjectInnovationSubIdo projectInnovationSubIdo : projectInnovationSubIdoList) {
           projectInnovationSubIdo.setProjectInnovation(projectInnovation);
           projectInnovationSubIdoManager.saveProjectInnovationSubIdo(projectInnovationSubIdo);
+        }
+        for (ProjectInnovationEvidenceLink projectInnovationEvidenceLink : projectInnovationEvidenceLinkList) {
+          projectInnovationEvidenceLink.setProjectInnovation(projectInnovation);
+          projectInnovationEvidenceLinkManager.saveProjectInnovationEvidenceLink(projectInnovationEvidenceLink);
         }
 
         // verify if was included in synthesis PMU
@@ -733,6 +764,10 @@ public class InnovationItem<T> {
             .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
           innovation.setSubIdos(innovation.getProjectInnovationSubIdos().stream()
             .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+          innovation.setInnovationLinks(innovation.getProjectInnovationEvidenceLinks().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+          innovation.setStudies(innovation.getProjectExpectedStudyInnovations().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
           projectInnovationList.add(innovation);
         }
       }
@@ -807,6 +842,8 @@ public class InnovationItem<T> {
           .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
         innovation.setSubIdos(innovation.getProjectInnovationSubIdos().stream()
           .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        innovation.setInnovationLinks(innovation.getProjectInnovationEvidenceLinks().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
         List<ProjectExpectedStudyInnovation> projectExpectedStudyInnovationList =
           new ArrayList<ProjectExpectedStudyInnovation>();
         for (ProjectExpectedStudyInnovation projectExpectedStudyInnovation : innovation
@@ -860,6 +897,8 @@ public class InnovationItem<T> {
     List<ProjectInnovationCountry> projectInnovationCountryList = new ArrayList<ProjectInnovationCountry>();
     List<ProjectInnovationMilestone> projectInnovationMilestoneList = new ArrayList<ProjectInnovationMilestone>();
     List<ProjectInnovationSubIdo> projectInnovationSubIdoList = new ArrayList<ProjectInnovationSubIdo>();
+    List<ProjectInnovationEvidenceLink> projectInnovationEvidenceLinkList =
+      new ArrayList<ProjectInnovationEvidenceLink>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     if (globalUnitEntity == null) {
       fieldErrors.add(new FieldErrorDTO("updateInnovation", "GlobalUnitEntity",
@@ -917,10 +956,19 @@ public class InnovationItem<T> {
           newInnovationDTO.getInnovationType() + " is an invalid innovation type code"));
       } else {
         if (newInnovationDTO.getInnovationType().getCode() == 1) {
-          if (newInnovationDTO.getInnovationNumber() == null
-            || (newInnovationDTO.getInnovationNumber() != null && newInnovationDTO.getInnovationNumber() == 0)) {
-            fieldErrors.add(new FieldErrorDTO("updateInnovation", "InnovationNumber",
-              "Number of innovations need to be more than 0"));
+          if (RepIndStageInnovation != null) {
+            if (RepIndStageInnovation.getId() == 1 || RepIndStageInnovation.getId() == 2) {
+              if (newInnovationDTO.getInnovationNumber() == null
+                || (newInnovationDTO.getInnovationNumber() != null && newInnovationDTO.getInnovationNumber() == 0)) {
+                fieldErrors.add(new FieldErrorDTO("updateInnovation", "InnovationNumber",
+                  "Number of innovations need to be more than 0"));
+              }
+            } else {
+              newInnovationDTO.setInnovationNumber(new Long(1));
+            }
+          } else {
+            fieldErrors.add(
+              new FieldErrorDTO("updateInnovation", "Stage of Innovation", "Stage of innovation code is required"));
           }
         }
       }
@@ -950,8 +998,9 @@ public class InnovationItem<T> {
         projectInnovationInfo.setRepIndInnovationType(repIndInnovationType);
         projectInnovationInfo.setEvidenceLink(newInnovationDTO.getEvidenceLink());
         projectInnovationInfo.setClearLead(newInnovationDTO.getEquitativeEffort());
-        projectInnovationInfo
-          .setInnovationNumber(repIndInnovationType.getId() == 1 ? newInnovationDTO.getInnovationNumber() : 1);
+        projectInnovationInfo.setInnovationNumber((repIndInnovationType.getId() == 1
+          && (newInnovationDTO.getDescriptionStage().equals("1") || newInnovationDTO.getDescriptionStage().equals("2")))
+            ? newInnovationDTO.getInnovationNumber() : 1);
 
 
         // let's check Organizations
@@ -1200,6 +1249,28 @@ public class InnovationItem<T> {
             }
           }
         }
+
+        // save Evidence links
+        List<ProjectInnovationEvidenceLink> projectInnovationEvidenceLinkListDB =
+          this.projectInnovationEvidenceLinkManager.getProjectInnovationEvidenceLinkByPhase(innovation.getId(),
+            phase.getId());
+        List<ProjectInnovationEvidenceLink> existingprojectInnovationEvidenceLinkList =
+          new ArrayList<ProjectInnovationEvidenceLink>();
+        if (newInnovationDTO.getEvidenceLinkList() != null && newInnovationDTO.getEvidenceLinkList().size() > 0) {
+          for (String link : newInnovationDTO.getEvidenceLinkList()) {
+            ProjectInnovationEvidenceLink projectInnovationEvidenceLink = projectInnovationEvidenceLinkManager
+              .getProjectInnovationEvidenceLinkByPhase(innovation.getId(), link, phase.getId());
+            if (projectInnovationEvidenceLink != null) {
+              existingprojectInnovationEvidenceLinkList.add(projectInnovationEvidenceLink);
+            } else {
+              projectInnovationEvidenceLink = new ProjectInnovationEvidenceLink();
+              projectInnovationEvidenceLink.setPhase(phase);
+              projectInnovationEvidenceLink.setLink(link);
+              projectInnovationEvidenceLinkList.add(projectInnovationEvidenceLink);
+            }
+
+          }
+        }
         if (fieldErrors.isEmpty()) {
           // SAVE innovation info
           innovation = this.projectInnovationManager.saveProjectInnovation(innovation);
@@ -1292,6 +1363,17 @@ public class InnovationItem<T> {
             for (ProjectInnovationSubIdo obj : projectInnovationSubIdoListDB) {
               if (!existingProjectInnovationSubIdoList.contains(obj)) {
                 projectInnovationSubIdoManager.deleteProjectInnovationSubIdo(obj.getId());
+              }
+            }
+
+            for (ProjectInnovationEvidenceLink projectInnovationEvidenceLink : projectInnovationEvidenceLinkList) {
+              projectInnovationEvidenceLink.setProjectInnovation(innovation);
+              projectInnovationEvidenceLinkManager.saveProjectInnovationEvidenceLink(projectInnovationEvidenceLink);
+            }
+            // verify existing Evidence Links
+            for (ProjectInnovationEvidenceLink obj : projectInnovationEvidenceLinkListDB) {
+              if (!existingprojectInnovationEvidenceLinkList.contains(obj)) {
+                projectInnovationEvidenceLinkManager.deleteProjectInnovationEvidenceLink(obj.getId());
               }
             }
           }

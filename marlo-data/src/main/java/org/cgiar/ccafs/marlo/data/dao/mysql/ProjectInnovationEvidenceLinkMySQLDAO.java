@@ -86,6 +86,20 @@ public class ProjectInnovationEvidenceLinkMySQLDAO extends AbstractMarloDAO<Proj
   }
 
   @Override
+  public List<ProjectInnovationEvidenceLink> getProjectInnovationEvidenceLinkByPhase(long innovationID, long phaseID) {
+    String query = "select distinct du from ProjectInnovationEvidenceLink du "
+      + "where phase.id = :phaseId and projectInnovation.id= :innovationId ";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+
+    createQuery.setParameter("phaseId", phaseID);
+    createQuery.setParameter("innovationId", innovationID);
+
+    List<ProjectInnovationEvidenceLink> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
   public ProjectInnovationEvidenceLink getProjectInnovationEvidenceLinkByPhase(long innovationID, String link,
     long phaseID) {
     String query = "select distinct du from ProjectInnovationEvidenceLink du "

@@ -40,14 +40,19 @@ public class NewStatusPlannedMilestoneDTO {
   @ApiModelProperty(notes = "Milestone Status", position = 5)
   private Long status;
 
-  @ApiModelProperty(notes = "Milestone Evidence", position = 6)
+  @ApiModelProperty(notes = "Milestone Evidence status", position = 6)
   private String evidence;
 
   @ApiModelProperty(notes = "Milestone Evidence Link", position = 7)
   private String linkEvidence;
 
+  @ApiModelProperty(notes = "Milestone Evidence Links", position = 7)
+  private List<EvidenceLinkDTO> evidenceLinks;
+
+
   @ApiModelProperty(notes = "Year value for extended milestone", position = 8)
   private int extendedYear;
+
 
   @ApiModelProperty(notes = "Reason for extended or canceled milestone", position = 9)
   private Long mainReason;
@@ -58,7 +63,6 @@ public class NewStatusPlannedMilestoneDTO {
   @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 11)
   private PhaseDTO phase;
 
-
   public List<NewCrosscuttingMarkersSynthesisDTO> getCrosscuttinmarkerList() {
     return crosscuttinmarkerList;
   }
@@ -67,12 +71,17 @@ public class NewStatusPlannedMilestoneDTO {
     return crpOutcomeCode;
   }
 
+
   public String getCrpProgramCode() {
     return crpProgramCode;
   }
 
   public String getEvidence() {
     return evidence;
+  }
+
+  public List<EvidenceLinkDTO> getEvidenceLinks() {
+    return evidenceLinks;
   }
 
   public int getExtendedYear() {
@@ -103,10 +112,10 @@ public class NewStatusPlannedMilestoneDTO {
     return status;
   }
 
-
   public void setCrosscuttinmarkerList(List<NewCrosscuttingMarkersSynthesisDTO> crosscuttinmarkerList) {
     this.crosscuttinmarkerList = crosscuttinmarkerList;
   }
+
 
   public void setCrpOutcomeCode(String crpOutcomeCode) {
     this.crpOutcomeCode = crpOutcomeCode;
@@ -118,6 +127,10 @@ public class NewStatusPlannedMilestoneDTO {
 
   public void setEvidence(String evidence) {
     this.evidence = evidence;
+  }
+
+  public void setEvidenceLinks(List<EvidenceLinkDTO> evidenceLinks) {
+    this.evidenceLinks = evidenceLinks;
   }
 
   public void setExtendedYear(int extendedYear) {
