@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
@@ -54,6 +55,8 @@ public interface DeliverableUserDAO {
    * @return a list from DeliverableUser null if no exist records
    */
   public List<DeliverableUser> findAll();
+
+  public List<DeliverableUser> findAllByPhaseAndDeliverable(Phase phase, Deliverable deliverable);
 
 
   /**

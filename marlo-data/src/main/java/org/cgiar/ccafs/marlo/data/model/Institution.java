@@ -73,9 +73,16 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
   private List<InstitutionLocation> locations;
   private Set<GlobalUnit> globalUnits = new HashSet<GlobalUnit>(0);
 
+  // agresso integration
+  private List<InstitutionDictionary> institutionsRelated;
+
+
   // fields not mapped in hibernate
   private String type;
+
+
   private Long typeId;
+
   private String hqLocation;
   private String hqLocationISOalpha2;
 
@@ -105,7 +112,6 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
   public String getAcronym() {
     return this.acronym;
   }
-
 
   public String getAcronymName() {
     if (this.getAcronym() != null) {
@@ -162,9 +168,11 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return this.getName();
   }
 
+
   public Set<CrpPpaPartner> getCrpPpaPartners() {
     return crpPpaPartners;
   }
+
 
   public Set<FundingSource> getFundingSourcesDirectDonor() {
     return fundingSourcesDirectDonor;
@@ -174,11 +182,9 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return fundingSourcesOriginalDonor;
   }
 
-
   public Set<GlobalUnit> getGlobalUnits() {
     return globalUnits;
   }
-
 
   public String getHqLocation() {
     return hqLocation;
@@ -194,6 +200,12 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return institutionsLocations;
   }
 
+
+  public List<InstitutionDictionary> getInstitutionsRelated() {
+    return institutionsRelated;
+  }
+
+
   public InstitutionType getInstitutionType() {
     return institutionType;
   }
@@ -201,7 +213,6 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
-
 
   public List<InstitutionLocation> getLocations() {
     return locations;
@@ -225,6 +236,7 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -232,13 +244,17 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return null;
   }
 
-
   public String getName() {
     return this.name;
   }
 
+
   public Long getProgramId() {
     return this.programId;
+  }
+
+  public Set<ProjectBudget> getProjectBudgets() {
+    return projectBudgets;
   }
 
   /*
@@ -263,10 +279,6 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
    * }
    */
 
-  public Set<ProjectBudget> getProjectBudgets() {
-    return projectBudgets;
-  }
-
   public Set<ProjectPartnerPerson> getProjectPartnerPersons() {
     return projectPartnerPersons;
   }
@@ -274,7 +286,6 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
   public Set<ProjectPartner> getProjectPartners() {
     return projectPartners;
   }
-
 
   public String getType() {
     return type;
@@ -285,10 +296,10 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return typeId;
   }
 
+
   public String getWebsiteLink() {
     return this.websiteLink;
   }
-
 
   @Override
   public int hashCode() {
@@ -319,6 +330,7 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     this.acronym = acronym;
   }
 
+
   public void setAdded(Date added) {
     this.added = added;
   }
@@ -347,13 +359,17 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     this.hqLocation = hqLocation;
   }
 
-
   public void setHqLocationISOalpha2(String hqLocationISOalpha2) {
     this.hqLocationISOalpha2 = hqLocationISOalpha2;
   }
 
+
   public void setInstitutionsLocations(Set<InstitutionLocation> institutionsLocations) {
     this.institutionsLocations = institutionsLocations;
+  }
+
+  public void setInstitutionsRelated(List<InstitutionDictionary> institutionsRelated) {
+    this.institutionsRelated = institutionsRelated;
   }
 
   public void setInstitutionType(InstitutionType institutionType) {

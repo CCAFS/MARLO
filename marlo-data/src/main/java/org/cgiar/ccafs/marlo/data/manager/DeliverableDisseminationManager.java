@@ -14,7 +14,9 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -52,6 +54,8 @@ public interface DeliverableDisseminationManager {
   public List<DeliverableDissemination> findAll();
 
 
+  public DeliverableDissemination findDisseminationByPhaseAndDeliverable(Phase phase, Deliverable deliverable);
+
   /**
    * This method gets a deliverableDissemination object by a given deliverableDissemination identifier.
    * 
@@ -59,6 +63,7 @@ public interface DeliverableDisseminationManager {
    * @return a DeliverableDissemination object.
    */
   public DeliverableDissemination getDeliverableDisseminationById(long deliverableDisseminationID);
+
 
   /**
    * This method saves the information of the given deliverableDissemination

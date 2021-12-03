@@ -16,6 +16,8 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationEvidenceLink;
+import org.cgiar.ccafs.marlo.rest.dto.EvidenceLinkDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectInnovationARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPageInnovationsDTO;
@@ -34,6 +36,11 @@ import org.mapstruct.Mappings;
     PhaseMapper.class, ProjectInnovationMilestoneMapper.class, ProjectInnovationSubIdoMapper.class,
     ProjectExpectedStudyInnovationMapper.class, DefaultFieldMapper.class, DefaultFieldPrimaryMapper.class})
 public interface InnovationMapper {
+
+
+  public abstract EvidenceLinkDTO
+    projectInnovationEvidenceLinkToEvidenceLinkDTO(ProjectInnovationEvidenceLink projectInnovationEvidenceLink);
+
 
   @Mappings({@Mapping(source = "project.id", target = "project"),
     @Mapping(source = "projectInnovationInfo.title", target = "title"),
@@ -54,9 +61,9 @@ public interface InnovationMapper {
     @Mapping(source = "contributingOrganizations", target = "contributingInstitutions"),
     @Mapping(source = "projectInnovation.milestones", target = "milestonesList"),
     @Mapping(source = "projectInnovation.subIdos", target = "srfSubIdoList"),
-    @Mapping(source = "projectInnovation.studies", target = "projectExpetedStudyList")})
+    @Mapping(source = "projectInnovation.studies", target = "projectExpetedStudyList"),
+    @Mapping(source = "projectInnovation.innovationLinks", target = "evidenceLinkList")})
   public abstract ProjectInnovationARDTO projectInnovationToInnovationARDTO(ProjectInnovation projectInnovation);
-
 
   @Mappings({@Mapping(source = "projectInnovation.projectInnovationInfo.title", target = "title"),
     @Mapping(source = "projectInnovation.projectInnovationInfo.narrative", target = "narrative"),
@@ -76,7 +83,8 @@ public interface InnovationMapper {
     @Mapping(source = "projectInnovation.projectInnovationInfo.otherInnovationType", target = "otherInnovationType"),
     @Mapping(source = "projectInnovation.milestones", target = "milestonesList"),
     @Mapping(source = "projectInnovation.subIdos", target = "srfSubIdoList"),
-    @Mapping(source = "projectInnovation.studies", target = "projectExpetedStudyList")})
+    @Mapping(source = "projectInnovation.studies", target = "projectExpetedStudyList"),
+    @Mapping(source = "projectInnovation.innovationLinks", target = "evidenceLinkList")})
   public abstract InnovationDTO projectInnovationToInnovationDTO(ProjectInnovation projectInnovation);
 
   @Mappings({@Mapping(source = "projectInnovationInfo.title", target = "title"),

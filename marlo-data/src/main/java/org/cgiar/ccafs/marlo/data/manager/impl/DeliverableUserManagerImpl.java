@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableUserDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
@@ -109,6 +110,12 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
 
     return deliverableUserDAO.findAll();
 
+  }
+
+  @Override
+  public List<DeliverableUser> findAllByPhaseAndDeliverable(Phase phase, Deliverable deliverable) {
+
+    return deliverableUserDAO.findAllByPhaseAndDeliverable(phase, deliverable);
   }
 
   @Override

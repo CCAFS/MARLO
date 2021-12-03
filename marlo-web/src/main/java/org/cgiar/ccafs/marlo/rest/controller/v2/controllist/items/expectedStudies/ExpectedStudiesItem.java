@@ -2706,7 +2706,7 @@ public class ExpectedStudiesItem<T> {
                 }
               }
               // delete not existing reference
-              for (ProjectExpectedStudyReference obj : referenceList) {
+              for (ProjectExpectedStudyReference obj : projectExpectedStudyReferenceList) {
                 if (!existingProjectExpectedStudyReferenceList.contains(obj)) {
                   projectExpectedStudyReferenceManager.deleteProjectExpectedStudyReference(obj.getId());
                 }

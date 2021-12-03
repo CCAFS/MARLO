@@ -35,9 +35,18 @@ public class SDGsDTO {
   @ApiModelProperty(notes = "SDG Full Name", position = 3)
   private String fullName;
 
+  @ApiModelProperty(notes = "SDG Fiancial Code", position = 4)
+  private String financialCode;
+
+  public String getFinancialCode() {
+    return financialCode;
+  }
+
+
   public String getFullName() {
     return fullName;
   }
+
 
   public String getShortName() {
     return shortName;
@@ -45,6 +54,10 @@ public class SDGsDTO {
 
   public long getUsndCode() {
     return usndCode;
+  }
+
+  public void setFinancialCode(String financialCode) {
+    this.financialCode = financialCode;
   }
 
   public void setFullName(String fullName) {

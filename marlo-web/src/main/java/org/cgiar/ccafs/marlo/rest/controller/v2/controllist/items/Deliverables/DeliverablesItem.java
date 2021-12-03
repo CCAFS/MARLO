@@ -98,6 +98,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonParser;
 import com.ibm.icu.util.Calendar;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -1023,11 +1024,14 @@ public class DeliverablesItem<T> {
         if (deliverable.getPhase() != null) {
           if (deliverable.getPhase().getId() == phase.getId()) {
             // only soft delete if deliverable is a publication
+
             if (deliverable.getProject() == null) {
+              DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
               deliverableManager.deleteDeliverable(deliverable.getId());
-              List<DeliverableMetadataElement> phaseMetadata = deliverable.getMetadataElements(phase);
-              Map<String, DeliverableMetadataElement> metadataElements = this.getMetadataElements(phaseMetadata);
-              publication = this.publicationsMapper.deliverableToPublication(deliverable, phase, metadataElements);
+              // List<DeliverableMetadataElement> phaseMetadata = deliverable.getMetadataElements(phase);
+              // Map<String, DeliverableMetadataElement> metadataElements = this.getMetadataElements(phaseMetadata);
+              publication = this.getPublication(deliverable, deliverableInfo, phase);
+              // publication = this.publicationsMapper.deliverableToPublication(deliverable, phase, metadataElements);
             }
           } else {
             fieldErrors.add(new FieldErrorDTO("deleteDeliverableById", "DeliverableEntity",
@@ -1116,9 +1120,9 @@ public class DeliverablesItem<T> {
     if (fieldErrors.isEmpty()) {
       // if it does not have a project associated, it must be a publication
       if (deliverable.getProject() == null) {
-        List<DeliverableMetadataElement> phaseMetadata = deliverable.getMetadataElements(phase);
-        Map<String, DeliverableMetadataElement> metadataElements = this.getMetadataElements(phaseMetadata);
-        publication = publicationsMapper.deliverableToPublication(deliverable, phase, metadataElements);
+        // change to avoid using lazy hibernate
+        publication = this.getPublication(deliverable, deliverableInfo, phase);
+        // publication = publicationsMapper.deliverableToPublication(deliverable, phase, metadataElements);
       }
     }
 
@@ -1176,23 +1180,30 @@ public class DeliverablesItem<T> {
               deliverable.setCrp(phase.getCrp());
               deliverable.setDeliverableInfo(deliverableInfo);
               // getting deliverableDissemination
-              List<DeliverableDissemination> deliverableDisseminationList =
-                deliverable.getDeliverableDisseminations().stream()
-                  .filter(deliverabledisemination -> deliverabledisemination.getPhase().getId().equals(phase.getId()))
-                  .collect(Collectors.toList());
-              for (DeliverableDissemination deliverableDissemination : deliverableDisseminationList) {
-                if (deliverableDissemination.getPhase().getId().equals(phase.getId())) {
-                  deliverable.setDissemination(deliverableDissemination);
-                  break;
-                }
-              }
+              DeliverableDissemination deliverableDissemination =
+                deliverableDisseminationManager.findDisseminationByPhaseAndDeliverable(phase, deliverable);
+              deliverable.setDissemination(deliverableDissemination);
+              /*
+               * List<DeliverableDissemination> deliverableDisseminationList =
+               * deliverable.getDeliverableDisseminations().stream()
+               * .filter(deliverabledisemination -> deliverabledisemination.getPhase().getId().equals(phase.getId()))
+               * .collect(Collectors.toList());
+               * for (DeliverableDissemination deliverableDissemination : deliverableDisseminationList) {
+               * if (deliverableDissemination.getPhase().getId().equals(phase.getId())) {
+               * deliverable.setDissemination(deliverableDissemination);
+               * break;
+               * }
+               * }
+               */
               publication.setIsOpenAccess(
                 deliverable.getDissemination() != null ? (deliverable.getDissemination().getIsOpenAccess() != null
                   ? deliverable.getDissemination().getIsOpenAccess() : false) : false);
               // getting deliverablepublicationMetadata
               Deliverable d = deliverableManager.getDeliverableById(deliverable.getId());
 
-              DeliverablePublicationMetadata deliverablePublicationMetadata = d.getPublication(phase);
+              // DeliverablePublicationMetadata deliverablePublicationMetadata = d.getPublication(phase);
+              DeliverablePublicationMetadata deliverablePublicationMetadata =
+                deliverablePubMetadataManager.findPublicationMetadataByPhaseAndDeliverable(phase, d);
               if (deliverablePublicationMetadata.getId() != null) {
                 publication.setISIJournal(deliverablePublicationMetadata.getIsiPublication() != null
                   ? deliverablePublicationMetadata.getIsiPublication() : false);
@@ -1202,11 +1213,15 @@ public class DeliverablesItem<T> {
                 publication.setVolume(deliverablePublicationMetadata.getVolume());
               }
               // Getting deliverablemetadataelement
+              /*
+               * List<DeliverableMetadataElement> deliverableMetadataElementList =
+               * deliverable.getDeliverableMetadataElements().stream()
+               * .filter(
+               * deliverableMetadataElement -> deliverableMetadataElement.getPhase().getId().equals(phase.getId()))
+               * .collect(Collectors.toList());
+               */
               List<DeliverableMetadataElement> deliverableMetadataElementList =
-                deliverable.getDeliverableMetadataElements().stream()
-                  .filter(
-                    deliverableMetadataElement -> deliverableMetadataElement.getPhase().getId().equals(phase.getId()))
-                  .collect(Collectors.toList());
+                deliverableMetadataElementManager.findAllByPhaseAndDeliverable(phase, deliverable);
               for (DeliverableMetadataElement deliverableMetadataElement : deliverableMetadataElementList) {
 
                 if (deliverableMetadataElement.getElementValue() != null
@@ -1236,8 +1251,12 @@ public class DeliverablesItem<T> {
                   }
                 }
               }
-              List<DeliverableUser> deliverableUserList = deliverable.getDeliverableUsers().stream()
-                .filter(c -> c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+              /*
+               * List<DeliverableUser> deliverableUserList = deliverable.getDeliverableUsers().stream()
+               * .filter(c -> c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+               */
+              List<DeliverableUser> deliverableUserList =
+                deliverableUserManager.findAllByPhaseAndDeliverable(phase, deliverable);
               List<DeliverableUser> newdeliverableUserList = new ArrayList<DeliverableUser>();
               for (DeliverableUser deliverableUser : deliverableUserList) {
                 newdeliverableUserList.add(deliverableUser);
@@ -1310,6 +1329,49 @@ public class DeliverablesItem<T> {
     }
 
     return map;
+  }
+
+  private Publication getPublication(Deliverable deliverable, DeliverableInfo deliverableInfo, Phase phase) {
+    Publication publication = new Publication();
+    publication.setId(deliverable.getId());
+    // deliverableinfo
+    publication.setYear(deliverableInfo != null ? deliverableInfo.getYear() : -1);
+    // deliverable dissemination
+    DeliverableDissemination deliverableDissemination =
+      deliverableDisseminationManager.findDisseminationByPhaseAndDeliverable(phase, deliverable);
+    publication.setIsOpenAccess(
+      deliverableDissemination != null ? BooleanUtils.toBoolean(deliverableDissemination.getIsOpenAccess()) : false);
+    publication.setArticleURL(deliverableDissemination != null ? deliverableDissemination.getArticleUrl() : null);
+    // deliverablePublicationMetadada
+    DeliverablePublicationMetadata deliverablePublicationMetadata =
+      deliverablePubMetadataManager.findPublicationMetadataByPhaseAndDeliverable(phase, deliverable);
+    publication.setISIJournal(deliverablePublicationMetadata != null
+      ? BooleanUtils.toBoolean(deliverablePublicationMetadata.getIsiPublication()) : false);
+    publication.setIssue(deliverablePublicationMetadata != null ? deliverablePublicationMetadata.getIssue() : null);
+    publication.setJournal(deliverablePublicationMetadata != null ? deliverablePublicationMetadata.getJournal() : null);
+    publication.setNpages(deliverablePublicationMetadata != null ? deliverablePublicationMetadata.getPages() : null);
+    publication.setPhase(phase);
+    publication.setVolume(deliverablePublicationMetadata != null ? deliverablePublicationMetadata.getVolume() : null);
+
+    // Deliverable metadata Elements
+    List<DeliverableMetadataElement> phaseMetadata =
+      deliverableMetadataElementManager.findAllByPhaseAndDeliverable(phase, deliverable);
+    Map<String, DeliverableMetadataElement> metadataElements = this.getMetadataElements(phaseMetadata);
+    DeliverableMetadataElement deliverableMetadataElement = null;
+    deliverableMetadataElement = metadataElements.get(APConstants.METADATAELEMENTDOI);
+    publication.setDoi(deliverableMetadataElement != null ? deliverableMetadataElement.getElementValue() : null);
+    deliverableMetadataElement = metadataElements.get(APConstants.METADATAELEMENTHANDLE);
+    publication.setHandle(deliverableMetadataElement != null ? deliverableMetadataElement.getElementValue() : null);
+    deliverableMetadataElement = metadataElements.get(APConstants.METADATAELEMENTTITLE);
+    publication.setTitle(deliverableMetadataElement != null ? deliverableMetadataElement.getElementValue() : null);
+    deliverableMetadataElement = metadataElements.get(APConstants.METADATAELEMENTAUTHORS);
+    String authors = deliverableMetadataElement != null ? deliverableMetadataElement.getElementValue() : null;
+    publication // why is this validation necessary?
+      .setAuthors(authors != null && !authors.contains("[object Object]") ? authors : null);
+    // deliverable authors
+    List<DeliverableUser> authorList = deliverableUserManager.findAllByPhaseAndDeliverable(phase, deliverable);
+    publication.setAuthorlist(authorList);
+    return publication;
   }
 
   public JsonElement getServiceWOS(String url) throws MalformedURLException, IOException {
@@ -1429,9 +1491,12 @@ public class DeliverablesItem<T> {
 
         // create deliverable dissemination data ???
         final long phaseID = phase.getId();
-        DeliverableDissemination deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
-          .filter(c -> c.getPhase().getId().longValue() == phaseID).findFirst().orElse(null);
-
+        /*
+         * DeliverableDissemination deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
+         * .filter(c -> c.getPhase().getId().longValue() == phaseID).findFirst().orElse(null);
+         */
+        DeliverableDissemination deliverableDissemination =
+          deliverableDisseminationManager.findDisseminationByPhaseAndDeliverable(phase, deliverable);
         if (deliverableDissemination == null) {
           deliverableDissemination = new DeliverableDissemination();
         }
@@ -1448,8 +1513,11 @@ public class DeliverablesItem<T> {
         deliverableDisseminationManager.saveDeliverableDissemination(deliverableDissemination);
 
         // create deliverable publication metadata
-        DeliverablePublicationMetadata deliverablePublicationMetadata = deliverable.getDeliverablePublicationMetadatas()
-          .stream().filter(m -> m.getPhase().getId() == phaseID).findFirst().orElse(null);
+        // DeliverablePublicationMetadata deliverablePublicationMetadata =
+        // deliverable.getDeliverablePublicationMetadatas()
+        // .stream().filter(m -> m.getPhase().getId() == phaseID).findFirst().orElse(null);
+        DeliverablePublicationMetadata deliverablePublicationMetadata =
+          deliverablePubMetadataManager.findPublicationMetadataByPhaseAndDeliverable(phase, deliverable);
         if (deliverablePublicationMetadata == null) {
           deliverablePublicationMetadata = new DeliverablePublicationMetadata();
         }
@@ -1464,8 +1532,12 @@ public class DeliverablesItem<T> {
 
         // get element ID from econded_name to get Handle and DOI and create
         Long phaseId = phase.getId();
-        List<DeliverableMetadataElement> phaseMetadata = deliverable.getDeliverableMetadataElements().stream()
-          .filter(m -> m.getPhase().getId() == phaseId).collect(Collectors.toList());
+        /*
+         * List<DeliverableMetadataElement> phaseMetadata = deliverable.getDeliverableMetadataElements().stream()
+         * .filter(m -> m.getPhase().getId() == phaseId).collect(Collectors.toList());
+         */
+        List<DeliverableMetadataElement> phaseMetadata =
+          deliverableMetadataElementManager.findAllByPhaseAndDeliverable(phase, deliverable);
         Map<String, DeliverableMetadataElement> metadataElements = this.getMetadataElements(phaseMetadata);
         if (metadataElements != null && !metadataElements.isEmpty()) {
           // deliverable metadataelement handle
@@ -1543,11 +1615,14 @@ public class DeliverablesItem<T> {
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementAuthors);
         }
 
-
+        List<DeliverableUser> authorListDB = deliverableUserManager.findAllByPhaseAndDeliverable(phase, deliverable);
         for (DeliverableUserDTO deliverableUserDTO : newPublicationDTO.getAuthorList()) {
           boolean found = false;
-          for (DeliverableUser authorsList : deliverable.getDeliverableUsers().stream().filter(c -> c.isActive())
-            .collect(Collectors.toList())) {
+          /*
+           * for (DeliverableUser authorsList : deliverable.getDeliverableUsers().stream().filter(c -> c.isActive())
+           * .collect(Collectors.toList())) {
+           */
+          for (DeliverableUser authorsList : authorListDB) {
             if (deliverableUserDTO.getFirstName().toUpperCase().equals(authorsList.getFirstName().toUpperCase())
               && deliverableUserDTO.getLastName().toUpperCase().equals(authorsList.getLastName().toUpperCase())) {
               found = true;
@@ -1562,8 +1637,11 @@ public class DeliverablesItem<T> {
             deliverableUserManager.saveDeliverableUser(deliverableUser);
           }
         }
-        for (DeliverableUser authorsList : deliverable.getDeliverableUsers().stream().filter(c -> c.isActive())
-          .collect(Collectors.toList())) {
+        /*
+         * for (DeliverableUser authorsList : deliverable.getDeliverableUsers().stream().filter(c -> c.isActive())
+         * .collect(Collectors.toList())) {
+         */
+        for (DeliverableUser authorsList : authorListDB) {
           boolean found = true;
           for (DeliverableUserDTO deliverableUserDTO : newPublicationDTO.getAuthorList()) {
             if (deliverableUserDTO.getFirstName().toUpperCase().equals(authorsList.getFirstName().toUpperCase())
