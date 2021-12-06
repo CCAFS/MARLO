@@ -204,6 +204,11 @@ public class PoliciesAction extends BaseAction {
 
           synthesisPolicy = this.reportSynthesisFlagshipProgressPolicyManager
             .saveReportSynthesisFlagshipProgressPolicy(synthesisPolicy);
+
+          // apparently the creation of deactivated entities is not supported or simply does not work, so we have to
+          // manually "delete" them after creation.
+          this.reportSynthesisFlagshipProgressPolicyManager
+            .deleteReportSynthesisFlagshipProgressPolicy(synthesisPolicy.getId());
         }
       }
     }
