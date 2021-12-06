@@ -340,6 +340,7 @@ public class StatusPlannedMilestonesItem<T> {
           .setReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
         reportSynthesisFlagshipProgressOutcomeMilestone.setCrpMilestone(crpMilestone);
         reportSynthesisFlagshipProgressOutcomeMilestone.setMilestonesStatus(status);
+        reportSynthesisFlagshipProgressOutcomeMilestone.setIsQAIncluded(new Boolean(false));
         reportSynthesisFlagshipProgressOutcomeMilestone.setEvidence(newStatusPlannedMilestoneDTO.getEvidence());
         reportSynthesisFlagshipProgressOutcomeMilestone.setEvidenceLink(newStatusPlannedMilestoneDTO.getLinkEvidence());
         if (status.getId().longValue() == 4 || status.getId().longValue() == 5 || status.getId().longValue() == 6) {
@@ -358,11 +359,13 @@ public class StatusPlannedMilestonesItem<T> {
             .setExtendedYear(newStatusPlannedMilestoneDTO.getExtendedYear() != 0
               ? newStatusPlannedMilestoneDTO.getExtendedYear() : null);
         }
-        for (EvidenceLinkDTO link : newStatusPlannedMilestoneDTO.getEvidenceLinks()) {
-          ReportSynthesisFlagshipProgressOutcomeMilestoneLink milestoneEvidenceLink =
-            new ReportSynthesisFlagshipProgressOutcomeMilestoneLink();
-          milestoneEvidenceLink.setLink(link.getLink());
-          evidenceLinks.add(milestoneEvidenceLink);
+        if (newStatusPlannedMilestoneDTO.getEvidenceLinks() != null) {
+          for (EvidenceLinkDTO link : newStatusPlannedMilestoneDTO.getEvidenceLinks()) {
+            ReportSynthesisFlagshipProgressOutcomeMilestoneLink milestoneEvidenceLink =
+              new ReportSynthesisFlagshipProgressOutcomeMilestoneLink();
+            milestoneEvidenceLink.setLink(link.getLink());
+            evidenceLinks.add(milestoneEvidenceLink);
+          }
         }
 
         List<ReportSynthesisFlagshipProgressCrossCuttingMarker> reportSynthesisFlagshipProgressCrossCuttingMarkerList =
@@ -887,6 +890,7 @@ public class StatusPlannedMilestonesItem<T> {
               reportSynthesisFlagshipProgressOutcomeMilestone.setEvidence(newStatusPlannedMilestoneDTO.getEvidence());
               reportSynthesisFlagshipProgressOutcomeMilestone
                 .setEvidenceLink(newStatusPlannedMilestoneDTO.getLinkEvidence());
+              reportSynthesisFlagshipProgressOutcomeMilestone.setIsQAIncluded(new Boolean(false));
               if (status.getId().longValue() == 4 || status.getId().longValue() == 5
                 || status.getId().longValue() == 6) {
                 reportSynthesisFlagshipProgressOutcomeMilestone.setReason(repIndMilestoneReason);
@@ -943,10 +947,14 @@ public class StatusPlannedMilestonesItem<T> {
                   }
                 }
 
-              } else {
-                fieldErrors.add(new FieldErrorDTO("updateStatusPlannedMilestone", "Evidence Links",
-                  "Evidence Links needs to be filled or declared empty [ ]"));
               }
+              // Dperez to change
+              /*
+               * else {
+               * fieldErrors.add(new FieldErrorDTO("updateStatusPlannedMilestone", "Evidence Links",
+               * "Evidence Links needs to be filled or declared empty [ ]"));
+               * }
+               */
               List<ReportSynthesisFlagshipProgressCrossCuttingMarker> reportSynthesisFlagshipProgressCrossCuttingMarkerList =
                 new ArrayList<ReportSynthesisFlagshipProgressCrossCuttingMarker>();
               if (newStatusPlannedMilestoneDTO.getCrosscuttinmarkerList() != null) {
