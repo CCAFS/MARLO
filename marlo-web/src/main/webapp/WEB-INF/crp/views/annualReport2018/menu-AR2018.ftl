@@ -1,5 +1,10 @@
 [#ftl]
 
+[#assign customCSS = [
+  "${baseUrlCdn}/global/css/global.css?20211203a"
+  ]
+/]
+
 [#assign menus= [
   { 'title': '0. Narrative section', 'show': true,
     'items': [
@@ -139,7 +144,7 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Project Submit JS --]
-[#assign customJS = customJS  + [  "${baseUrlMedia}/js/annualReport/annualReportSubmit.js?20211111a", "${baseUrlCdn}/global/js/fieldsValidation.js"]
+[#assign customJS = customJS  + [  "${baseUrlMedia}/js/annualReport/annualReportSubmit.js?20211203b", "${baseUrlCdn}/global/js/fieldsValidation.js"]
 /]
 
 [#macro menuItem item]
