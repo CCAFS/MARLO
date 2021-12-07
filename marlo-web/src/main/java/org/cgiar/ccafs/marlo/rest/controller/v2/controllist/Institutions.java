@@ -298,8 +298,14 @@ public class Institutions {
   @RequestMapping(value = "/institutionsSimpleRelated", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<InstitutionSimpleDTO>> getAllInstitutionsSimpleRelated() {
-    ResponseEntity<List<InstitutionSimpleDTO>> resp = this.institutionItem.getAllInstitutionsSimple();
-    return resp;
+    try {
+
+      ResponseEntity<List<InstitutionSimpleDTO>> resp = this.institutionItem.getAllInstitutionsSimpleRelated();
+      return resp;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 
 
