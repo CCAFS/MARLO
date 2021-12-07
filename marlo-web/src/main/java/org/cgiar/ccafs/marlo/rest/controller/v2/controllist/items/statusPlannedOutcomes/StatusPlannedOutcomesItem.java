@@ -1,5 +1,4 @@
-/**
- * ***************************************************************
+/*****************************************************************
  * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
@@ -12,12 +11,12 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
- */
-/**
- * ************
- * 
+ *****************************************************************/
+
+/**************
  * @author Diego Perez - CIAT/CCAFS
- */
+ **************/
+
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.statusPlannedOutcomes;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
@@ -32,7 +31,6 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcome
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeMilestoneLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
-import org.cgiar.ccafs.marlo.data.manager.RestApiAuditlogManager;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -45,11 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
-<<<<<<< HEAD
-import org.cgiar.ccafs.marlo.data.model.RestApiAuditlog;
-=======
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestoneLink;
->>>>>>> refs/remotes/origin/CLARISA_dev_onecgiar
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewStatusPlannedOutcomeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.StatusPlannedOutcomesDTO;
@@ -59,19 +53,14 @@ import org.cgiar.ccafs.marlo.rest.mappers.StatusPlannedOutcomesMapper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -96,7 +85,7 @@ public class StatusPlannedOutcomesItem<T> {
   // private CrpMilestoneManager crpMilestoneManager;
 
   private StatusPlannedOutcomesMapper statusPlannedOutcomesMapper;
-  private RestApiAuditlogManager restApiAuditlogManager;
+
 
   @Inject
   public StatusPlannedOutcomesItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
@@ -107,11 +96,7 @@ public class StatusPlannedOutcomesItem<T> {
     ReportSynthesisFlagshipProgressOutcomeMilestoneManager reportSynthesisFlagshipProgressOutcomeMilestoneManager,
     ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager,
     LiaisonInstitutionManager liaisonInstitutionManager, StatusPlannedOutcomesMapper statusPlannedOutcomesMapper,
-<<<<<<< HEAD
-    RestApiAuditlogManager restApiAuditlogManager) {
-=======
     ReportSynthesisFlagshipProgressOutcomeMilestoneLinkManager reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager) {
->>>>>>> refs/remotes/origin/CLARISA_dev_onecgiar
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.crpProgramManager = crpProgramManager;
@@ -129,12 +114,8 @@ public class StatusPlannedOutcomesItem<T> {
     this.reportSynthesisFlagshipProgressCrossCuttingMarkerManager =
       reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
     this.statusPlannedOutcomesMapper = statusPlannedOutcomesMapper;
-<<<<<<< HEAD
-    this.restApiAuditlogManager = restApiAuditlogManager;
-=======
     this.reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager =
       reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager;
->>>>>>> refs/remotes/origin/CLARISA_dev_onecgiar
   }
 
   private int countWords(String string) {
@@ -326,22 +307,6 @@ public class StatusPlannedOutcomesItem<T> {
               reportSynthesisFlagshipProgressOutcome = reportSynthesisFlagshipProgressOutcomeManager
                 .saveReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
               plannedOutcomeStatusID = reportSynthesisFlagshipProgressOutcome.getId();
-
-              // Log Action
-              try {
-                ObjectMapper mapper = new ObjectMapper();
-                String originalJson =
-                  mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newStatusPlannedOutcomeDTO);
-                RestApiAuditlog restApiAuditLog = new RestApiAuditlog("createStatusPlannedOutcome",
-                  "Created CGIAR Entity Acronym " + CGIARentityAcronym + " ID " + plannedOutcomeStatusID, new Date(),
-                  plannedOutcomeStatusID,
-                  "class org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome", originalJson,
-                  user.getId(), null, "", phase.getId());
-                restApiAuditlogManager.logApiCall(restApiAuditLog);
-              } catch (JsonProcessingException ex) {
-                Logger.getLogger(StatusPlannedOutcomesItem.class.getName()).log(Level.SEVERE, null, ex);
-              }
-
             }
           } else {
             fieldErrors.add(new FieldErrorDTO("createStatusPlannedOutcome", "ReportSynthesisFlagshipOutocome",
@@ -497,19 +462,6 @@ public class StatusPlannedOutcomesItem<T> {
           .collect(Collectors.toList()));
     }
 
-    // Log Action
-    try {
-      RestApiAuditlog restApiAuditLog = new RestApiAuditlog("findStatusPlannedOutcomeById",
-        "Searched CGIAR Entity Acronym " + CGIARentityAcronym + " ID " + outcomeID + " Year:" + repoYear + " Phase: "
-          + repoPhase,
-        new Date(), 0, "class org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome", "N/A",
-        user.getId(), null, "", phase.getId());
-      restApiAuditlogManager.logApiCall(restApiAuditLog);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-
     return Optional.ofNullable(reportSynthesisFlagshipProgressOutcome)
       .map(this.statusPlannedOutcomesMapper::reportSynthesisFlagshipProgressOutcomeToStatusPlannedOutcomesDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -638,21 +590,6 @@ public class StatusPlannedOutcomesItem<T> {
               .saveReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcome);
             if (reportSynthesisFlagshipProgressOutcome != null) {
               plannedOutcomeStatusID = reportSynthesisFlagshipProgressOutcome.getId();
-
-              // Log Action
-              try {
-                ObjectMapper mapper = new ObjectMapper();
-                String originalJson =
-                  mapper.writerWithDefaultPrettyPrinter().writeValueAsString(newStatusPlannedOutcomeDTO);
-                RestApiAuditlog restApiAuditLog = new RestApiAuditlog("updateStatusPlannedOutcome",
-                  "Updated " + plannedOutcomeStatusID, new Date(), plannedOutcomeStatusID,
-                  "class org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome", originalJson,
-                  user.getId(), null, "", phase.getId());
-                restApiAuditlogManager.logApiCall(restApiAuditLog);
-              } catch (JsonProcessingException ex) {
-                Logger.getLogger(StatusPlannedOutcomesItem.class.getName()).log(Level.SEVERE, null, ex);
-              }
-
             } else {
               fieldErrors.add(new FieldErrorDTO("updateStatusPlannedOutcome", "plannedOutcomeStatusID",
                 "can not save plannedOutcomeStatusID"));
