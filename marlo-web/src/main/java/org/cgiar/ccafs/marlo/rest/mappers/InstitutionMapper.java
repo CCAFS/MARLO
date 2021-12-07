@@ -41,7 +41,8 @@ import org.mapstruct.Mappings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mapper(componentModel = "jsr330", uses = {LocationMapper.class, InstitutionTypeMapper.class}, imports = Date.class)
+@Mapper(componentModel = "jsr330",
+  uses = {LocationMapper.class, InstitutionTypeMapper.class, InstitutionRelatedMapper.class}, imports = Date.class)
 public abstract class InstitutionMapper {
 
   private static final Logger LOG = LoggerFactory.getLogger(InstitutionMapper.class);
@@ -81,7 +82,8 @@ public abstract class InstitutionMapper {
   public abstract InstitutionDTO institutionToInstitutionDTO(Institution institution);
 
   @Mappings({@Mapping(source = "id", target = "code"), @Mapping(source = "type", target = "institutionType"),
-    @Mapping(source = "typeId", target = "institutionTypeId")})
+    @Mapping(source = "typeId", target = "institutionTypeId"),
+    @Mapping(source = "institutionsRelated", target = "institutionRelatedList")})
   public abstract InstitutionSimpleDTO institutionToInstitutionSimpleDTO(Institution institution);
 
   @Mappings({@Mapping(source = "locElement", target = "locElement"), @Mapping(source = "globalUnit", target = "crp"),
