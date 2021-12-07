@@ -133,7 +133,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
             if (reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null) {
               if (!reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().isEmpty()) {
                 for (int i = 0; i < reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().size(); i++) {
-                  this.validateOutcomes(action,
+                  this.validateOutcomes(reportSynthesis, action,
                     reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().get(i), i);
                 }
               } else {
@@ -282,8 +282,8 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     }
   }
 
-  public void validateMilestones(BaseAction action, ReportSynthesisFlagshipProgressOutcomeMilestone milestone, int i,
-    int j) {
+  public void validateMilestones(ReportSynthesis reportSynthesis, BaseAction action,
+    ReportSynthesisFlagshipProgressOutcomeMilestone milestone, int i, int j) {
     // Validate Milestone Status
     if (milestone.getMilestonesStatus() == null) {
       action.addMessage(action.getText("Milestone Status"));
@@ -424,18 +424,17 @@ public class OutcomeMilestonesValidator extends BaseValidator {
 
     if (!action.isPMU()) {
       try {
-        this.saveMissingFields(
-          milestone.getReportSynthesisFlagshipProgressOutcome().getReportSynthesisFlagshipProgress()
-            .getReportSynthesis(),
-          milestone, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-          action.getActualPhase().getUpkeep(), this.section.getStatus(), milestoneStatus);
+        this.saveMissingFields(reportSynthesis, milestone, action.getActualPhase().getDescription(),
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(), this.section.getStatus(),
+          milestoneStatus);
       } catch (Exception e) {
         LOG.error("Error saving the milestone list: " + e.getMessage());
       }
     }
   }
 
-  private void validateOutcomes(BaseAction action, ReportSynthesisFlagshipProgressOutcome outcome, int i) {
+  private void validateOutcomes(ReportSynthesis reportSynthesis, BaseAction action,
+    ReportSynthesisFlagshipProgressOutcome outcome, int i) {
     // Validate Summary
     if (!(this.isValidString(outcome.getSummary())
       && this.wordCount(this.removeHtmlTags(outcome.getSummary())) <= 100)) {
@@ -447,7 +446,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     }
 
     for (int j = 0; j < outcome.getMilestones().size(); j++) {
-      this.validateMilestones(action, outcome.getMilestones().get(j), i, j);
+      this.validateMilestones(reportSynthesis, action, outcome.getMilestones().get(j), i, j);
     }
   }
 
