@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,8 @@ import org.slf4j.LoggerFactory;
 public class OutcomeMilestonesValidator extends BaseValidator {
 
   private static Logger LOG = LoggerFactory.getLogger(OutcomeMilestonesValidator.class);
+
+  private final ReportSynthesis2018SectionStatusEnum section = ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES;
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
@@ -85,6 +88,19 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     ReportSynthesis reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
     LiaisonInstitution liaisonInstitution = reportSynthesis.getLiaisonInstitution();
     return liaisonInstitution;
+  }
+
+  private List<String> getMilestoneStatus(BaseAction action, int outcome, int milestone) {
+    List<String> milestoneStatus = new ArrayList<>();
+    String search = "outcomeList[" + outcome + "].milestones[" + milestone + "]";
+
+    for (String key : MapUtils.emptyIfNull(action.getInvalidFields()).keySet()) {
+      if (StringUtils.containsIgnoreCase(key, search)) {
+        milestoneStatus.add(key);
+      }
+    }
+
+    return milestoneStatus;
   }
 
   public boolean isPMU(LiaisonInstitution liaisonInstitution) {
@@ -218,8 +234,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
 
       try {
         this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-          ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES.getStatus(), action);
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(), this.section.getStatus(), action);
       } catch (Exception e) {
         LOG.error("Error getting innovations list: " + e.getMessage());
       }
@@ -402,6 +417,20 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     } else {
       for (int k = 0; k < milestone.getMarkers().size(); k++) {
         this.validateCrossCuttingMarkers(action, milestone.getMarkers().get(k), i, j, k);
+      }
+    }
+
+    String milestoneStatus = String.join(";", this.getMilestoneStatus(action, i, j));
+
+    if (!action.isPMU()) {
+      try {
+        this.saveMissingFields(
+          milestone.getReportSynthesisFlagshipProgressOutcome().getReportSynthesisFlagshipProgress()
+            .getReportSynthesis(),
+          milestone, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+          action.getActualPhase().getUpkeep(), this.section.getStatus(), milestoneStatus);
+      } catch (Exception e) {
+        LOG.error("Error saving the milestone list: " + e.getMessage());
       }
     }
   }
