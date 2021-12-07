@@ -850,7 +850,8 @@ public class StatusPlannedMilestonesItem<T> {
     if (status == null) {
       fieldErrors.add(new FieldErrorDTO("updateStatusPlannedMilestone", "Status", "is an invalid Status identifier"));
     } else {
-      if (status.getId().longValue() == 4 || status.getId().longValue() == 5 || status.getId().longValue() == 6) {
+      if (status.getId().longValue() == 4 || status.getId().longValue() == 5 || status.getId().longValue() == 6
+        || status.getId().longValue() == 7) {
         repIndMilestoneReason =
           repIndMilestoneReasonManager.getRepIndMilestoneReasonById(newStatusPlannedMilestoneDTO.getMainReason());
         if (repIndMilestoneReason == null) {
@@ -891,8 +892,8 @@ public class StatusPlannedMilestonesItem<T> {
               reportSynthesisFlagshipProgressOutcomeMilestone
                 .setEvidenceLink(newStatusPlannedMilestoneDTO.getLinkEvidence());
               reportSynthesisFlagshipProgressOutcomeMilestone.setIsQAIncluded(new Boolean(false));
-              if (status.getId().longValue() == 4 || status.getId().longValue() == 5
-                || status.getId().longValue() == 6) {
+              if (status.getId().longValue() == 4 || status.getId().longValue() == 5 || status.getId().longValue() == 6
+                || status.getId().longValue() == 7) {
                 reportSynthesisFlagshipProgressOutcomeMilestone.setReason(repIndMilestoneReason);
                 if (repIndMilestoneReason != null && repIndMilestoneReason.getId() == 7) {
                   reportSynthesisFlagshipProgressOutcomeMilestone

@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeMilestoneLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.RestApiAuditlogManager;
@@ -44,7 +45,11 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
+<<<<<<< HEAD
 import org.cgiar.ccafs.marlo.data.model.RestApiAuditlog;
+=======
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestoneLink;
+>>>>>>> refs/remotes/origin/CLARISA_dev_onecgiar
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewStatusPlannedOutcomeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.StatusPlannedOutcomesDTO;
@@ -84,6 +89,7 @@ public class StatusPlannedOutcomesItem<T> {
   private ReportSynthesisFlagshipProgressOutcomeMilestoneManager reportSynthesisFlagshipProgressOutcomeMilestoneManager;
   private ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
+  private ReportSynthesisFlagshipProgressOutcomeMilestoneLinkManager reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager;
   // private GeneralStatusManager generalStatusManager;
   // private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
   // private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
@@ -101,7 +107,11 @@ public class StatusPlannedOutcomesItem<T> {
     ReportSynthesisFlagshipProgressOutcomeMilestoneManager reportSynthesisFlagshipProgressOutcomeMilestoneManager,
     ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager,
     LiaisonInstitutionManager liaisonInstitutionManager, StatusPlannedOutcomesMapper statusPlannedOutcomesMapper,
+<<<<<<< HEAD
     RestApiAuditlogManager restApiAuditlogManager) {
+=======
+    ReportSynthesisFlagshipProgressOutcomeMilestoneLinkManager reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager) {
+>>>>>>> refs/remotes/origin/CLARISA_dev_onecgiar
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.crpProgramManager = crpProgramManager;
@@ -119,7 +129,12 @@ public class StatusPlannedOutcomesItem<T> {
     this.reportSynthesisFlagshipProgressCrossCuttingMarkerManager =
       reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
     this.statusPlannedOutcomesMapper = statusPlannedOutcomesMapper;
+<<<<<<< HEAD
     this.restApiAuditlogManager = restApiAuditlogManager;
+=======
+    this.reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager =
+      reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager;
+>>>>>>> refs/remotes/origin/CLARISA_dev_onecgiar
   }
 
   private int countWords(String string) {
@@ -436,6 +451,8 @@ public class StatusPlannedOutcomesItem<T> {
               .collect(Collectors.toList())) {
               List<ReportSynthesisFlagshipProgressCrossCuttingMarker> markersList =
                 new ArrayList<ReportSynthesisFlagshipProgressCrossCuttingMarker>();
+              List<ReportSynthesisFlagshipProgressOutcomeMilestoneLink> evidenceLinks =
+                new ArrayList<ReportSynthesisFlagshipProgressOutcomeMilestoneLink>();
               reportSynthesisFlagshipProgressOutcomeMilestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager
                 .getReportSynthesisFlagshipProgressOutcomeMilestoneById(
                   reportSynthesisFlagshipProgressOutcomeMilestone.getId());
@@ -446,7 +463,15 @@ public class StatusPlannedOutcomesItem<T> {
                   .getReportSynthesisFlagshipProgressCrossCuttingMarkerById(marker.getId());
                 markersList.add(marker);
               }
+              for (ReportSynthesisFlagshipProgressOutcomeMilestoneLink link : reportSynthesisFlagshipProgressOutcomeMilestone
+                .getReportSynthesisFlagshipProgressOutcomeMilestoneLinks().stream().filter(c -> c.isActive())
+                .collect(Collectors.toList())) {
+                link = reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager
+                  .getReportSynthesisFlagshipProgressOutcomeMilestoneLinkById(link.getId());
+                evidenceLinks.add(link);
+              }
               reportSynthesisFlagshipProgressOutcomeMilestone.setMarkers(markersList);
+              reportSynthesisFlagshipProgressOutcomeMilestone.setLinks(evidenceLinks);
               reportSynthesisFlagshipProgressOutcomeMilestoneList.add(reportSynthesisFlagshipProgressOutcomeMilestone);
             }
             reportSynthesisFlagshipProgressOutcome.setMilestones(reportSynthesisFlagshipProgressOutcomeMilestoneList);
