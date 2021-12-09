@@ -216,11 +216,12 @@ public class InnovationsAction extends BaseAction {
         ReportSynthesisFlagshipProgressInnovation synthesisInnovation =
           this.reportSynthesisFlagshipProgressInnovationManager
             .getReportSynthesisFlagshipProgressInnovationByInnovationAndFlagshipProgress(projectInnovation.getId(),
-              liaisonInstitutionID);
+              reportSynthesis.getReportSynthesisFlagshipProgress().getId());
         if (synthesisInnovation == null) {
           synthesisInnovation = new ReportSynthesisFlagshipProgressInnovation();
-          // is_active = false -> included
-          synthesisInnovation.setActive(false);
+          // if isPMU = true, the indicators should be excluded by default. If isPMU = false, the indicators should be
+          // included by default
+          synthesisInnovation.setActive(this.isPMU());
           synthesisInnovation.setCreatedBy(this.getCurrentUser());
           synthesisInnovation.setProjectInnovation(projectInnovation);
           synthesisInnovation.setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
@@ -228,10 +229,18 @@ public class InnovationsAction extends BaseAction {
           synthesisInnovation = this.reportSynthesisFlagshipProgressInnovationManager
             .saveReportSynthesisFlagshipProgressInnovation(synthesisInnovation);
 
-          // apparently the creation of deactivated entities is not supported or simply does not work, so we have to
-          // manually "delete" them after creation.
-          this.reportSynthesisFlagshipProgressInnovationManager
-            .deleteReportSynthesisFlagshipProgressInnovation(synthesisInnovation.getId());
+          if (!this.isPMU()) {
+            // apparently the creation of deactivated entities is not supported or simply does not work, so we have to
+            // manually "delete" them after creation.
+            this.reportSynthesisFlagshipProgressInnovationManager
+              .deleteReportSynthesisFlagshipProgressInnovation(synthesisInnovation.getId());
+          }
+        } else {
+          if (!this.isPMU() && synthesisInnovation.getId() != null && synthesisInnovation.isActive()) {
+            // if we are currently in a FP/Module, the entity should always be is_active=0 (included)
+            this.reportSynthesisFlagshipProgressInnovationManager
+              .deleteReportSynthesisFlagshipProgressInnovation(synthesisInnovation.getId());
+          }
         }
       }
     }
