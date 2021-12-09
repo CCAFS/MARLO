@@ -4275,7 +4275,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               this.sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
                 this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
             if (sectionStatus != null) {
-              if (sectionStatus.getMissingFields().length() != 0) {
+              if (sectionStatus.getMissingFields() != null && sectionStatus.getMissingFields().length() != 0) {
                 return false;
               }
             } else {
