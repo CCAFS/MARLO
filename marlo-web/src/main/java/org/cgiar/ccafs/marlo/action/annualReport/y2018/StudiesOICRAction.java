@@ -222,17 +222,31 @@ public class StudiesOICRAction extends BaseAction {
       if (projectStudy != null && projectStudy.getId() != null) {
         ReportSynthesisFlagshipProgressStudy synthesisStudy = this.reportSynthesisFlagshipProgressStudyManager
           .getReportSynthesisFlagshipProgressStudyByStudyAndFlagshipProgress(projectStudy.getId(),
-            liaisonInstitutionID);
+            reportSynthesis.getReportSynthesisFlagshipProgress().getId());
         if (synthesisStudy == null) {
           synthesisStudy = new ReportSynthesisFlagshipProgressStudy();
-          // is_active = false -> included
-          synthesisStudy.setActive(false);
+          // if isPMU = true, the indicators should be excluded by default. If isPMU = false, the indicators should be
+          // included by default
+          synthesisStudy.setActive(this.isPMU());
           synthesisStudy.setCreatedBy(this.getCurrentUser());
           synthesisStudy.setProjectExpectedStudy(projectStudy);
           synthesisStudy.setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
 
           synthesisStudy =
             this.reportSynthesisFlagshipProgressStudyManager.saveReportSynthesisFlagshipProgressStudy(synthesisStudy);
+
+          if (!this.isPMU()) {
+            // apparently the creation of deactivated entities is not supported or simply does not work, so we have to
+            // manually "delete" them after creation.
+            this.reportSynthesisFlagshipProgressStudyManager
+              .deleteReportSynthesisFlagshipProgressStudy(synthesisStudy.getId());
+          }
+        } else {
+          if (!this.isPMU() && synthesisStudy.getId() != null && synthesisStudy.isActive()) {
+            // if we are currently in a FP/Module, the entity should always be is_active=0 (included)
+            this.reportSynthesisFlagshipProgressStudyManager
+              .deleteReportSynthesisFlagshipProgressStudy(synthesisStudy.getId());
+          }
         }
       }
     }

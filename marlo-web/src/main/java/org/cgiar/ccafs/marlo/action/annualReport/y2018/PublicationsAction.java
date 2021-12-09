@@ -152,18 +152,32 @@ public class PublicationsAction extends BaseAction {
     for (Deliverable projectDeliverable : this.deliverables) {
       if (projectDeliverable != null && projectDeliverable.getId() != null) {
         ReportSynthesisFlagshipProgressDeliverable synthesisDeliverable =
-          this.reportSynthesisFlagshipProgressDeliverableManager
-            .getByFlagshipProgressAndDeliverable(projectDeliverable.getId(), liaisonInstitutionID);
+          this.reportSynthesisFlagshipProgressDeliverableManager.getByFlagshipProgressAndDeliverable(
+            projectDeliverable.getId(), reportSynthesis.getReportSynthesisFlagshipProgress().getId());
         if (synthesisDeliverable == null) {
           synthesisDeliverable = new ReportSynthesisFlagshipProgressDeliverable();
-          // is_active = false -> included
-          synthesisDeliverable.setActive(false);
+          // if isPMU = true, the indicators should be excluded by default. If isPMU = false, the indicators should be
+          // included by default
+          synthesisDeliverable.setActive(this.isPMU());
           synthesisDeliverable.setCreatedBy(this.getCurrentUser());
           synthesisDeliverable.setDeliverable(projectDeliverable);
           synthesisDeliverable.setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
 
           synthesisDeliverable = this.reportSynthesisFlagshipProgressDeliverableManager
             .saveReportSynthesisFlagshipProgressDeliverable(synthesisDeliverable);
+
+          if (!this.isPMU()) {
+            // apparently the creation of deactivated entities is not supported or simply does not work, so we have to
+            // manually "delete" them after creation.
+            this.reportSynthesisFlagshipProgressDeliverableManager
+              .deleteReportSynthesisFlagshipProgressDeliverable(synthesisDeliverable.getId());
+          }
+        } else {
+          if (!this.isPMU() && synthesisDeliverable.getId() != null && synthesisDeliverable.isActive()) {
+            // if we are currently in a FP/Module, the entity should always be is_active=0 (included)
+            this.reportSynthesisFlagshipProgressDeliverableManager
+              .deleteReportSynthesisFlagshipProgressDeliverable(synthesisDeliverable.getId());
+          }
         }
       }
     }
