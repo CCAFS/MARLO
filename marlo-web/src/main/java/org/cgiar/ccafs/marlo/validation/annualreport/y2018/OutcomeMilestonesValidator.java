@@ -285,7 +285,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
   public void validateMilestones(ReportSynthesis reportSynthesis, BaseAction action,
     ReportSynthesisFlagshipProgressOutcomeMilestone milestone, int i, int j) {
     // Validate Milestone Status
-    if (milestone.getMilestonesStatus() == null) {
+    if (milestone.getMilestonesStatus() == null || milestone.getMilestonesStatus().getId() == null) {
       action.addMessage(action.getText("Milestone Status"));
       action.addMissingField("Milestone Status");
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
@@ -293,6 +293,15 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     } else {
       if (!StringUtils.equals(String.valueOf(milestone.getMilestonesStatus().getId()),
         ProjectStatusEnum.Complete.getStatusId())) {
+        // Validate status not extended for 2021
+        if (milestone.getMilestonesStatus().getId() == 1L && (action.isSelectedPhaseAR2021() && StringUtils
+          .equals(String.valueOf(milestone.getMilestonesStatus().getId()), ProjectStatusEnum.Extended.getStatusId()))) {
+          action.addMessage(action.getText("Milestone Status"));
+          action.addMissingField("Milestone Status");
+          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
+            + "].milestones[" + j + "].milestonesStatus.id", InvalidFieldsMessages.WRONGVALUE);
+        }
+
         // Validate Milestone Reasons
         if (milestone.getReason() != null) {
           if (milestone.getReason().getId() != null && milestone.getReason().getId() != -1) {
