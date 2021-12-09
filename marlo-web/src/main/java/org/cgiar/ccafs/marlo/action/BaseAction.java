@@ -3277,10 +3277,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<GlobalUnitType> getListGlobalUnitTypes() {
 
     List<GlobalUnitType> globalUnitTypes = this.globalUnitTypeManager.findAll();
+
     for (GlobalUnitType globalUnitType : globalUnitTypes) {
-      globalUnitType.setGlobalUnitsList(
-        globalUnitType.getGlobalUnits().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      globalUnitType.getGlobalUnitsList().sort((i1, i2) -> i1.getAcronym().compareTo(i2.getAcronym()));
+      globalUnitType.setGlobalUnitsList(globalUnitType.getGlobalUnits().stream()
+        .filter(c -> c.isActive() && c.getAcronym().equals("AICCRA")).collect(Collectors.toList()));
     }
 
     return globalUnitTypes;
@@ -4275,7 +4275,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               this.sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
                 this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
             if (sectionStatus != null) {
-              if (sectionStatus.getMissingFields().length() != 0) {
+              if (sectionStatus.getMissingFields() != null && sectionStatus.getMissingFields().length() != 0) {
                 return false;
               }
             } else {
