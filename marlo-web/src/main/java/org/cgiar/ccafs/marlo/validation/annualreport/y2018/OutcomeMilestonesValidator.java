@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,8 @@ import org.slf4j.LoggerFactory;
 public class OutcomeMilestonesValidator extends BaseValidator {
 
   private static Logger LOG = LoggerFactory.getLogger(OutcomeMilestonesValidator.class);
+
+  private final ReportSynthesis2018SectionStatusEnum section = ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES;
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
@@ -85,6 +88,19 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     ReportSynthesis reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
     LiaisonInstitution liaisonInstitution = reportSynthesis.getLiaisonInstitution();
     return liaisonInstitution;
+  }
+
+  private List<String> getMilestoneStatus(BaseAction action, int outcome, int milestone) {
+    List<String> milestoneStatus = new ArrayList<>();
+    String search = "outcomeList[" + outcome + "].milestones[" + milestone + "]";
+
+    for (String key : MapUtils.emptyIfNull(action.getInvalidFields()).keySet()) {
+      if (StringUtils.containsIgnoreCase(key, search)) {
+        milestoneStatus.add(key);
+      }
+    }
+
+    return milestoneStatus;
   }
 
   public boolean isPMU(LiaisonInstitution liaisonInstitution) {
@@ -117,7 +133,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
             if (reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() != null) {
               if (!reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().isEmpty()) {
                 for (int i = 0; i < reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().size(); i++) {
-                  this.validateOutcomes(action,
+                  this.validateOutcomes(reportSynthesis, action,
                     reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList().get(i), i);
                 }
               } else {
@@ -218,8 +234,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
 
       try {
         this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-          ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES.getStatus(), action);
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(), this.section.getStatus(), action);
       } catch (Exception e) {
         LOG.error("Error getting innovations list: " + e.getMessage());
       }
@@ -267,8 +282,8 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     }
   }
 
-  public void validateMilestones(BaseAction action, ReportSynthesisFlagshipProgressOutcomeMilestone milestone, int i,
-    int j) {
+  public void validateMilestones(ReportSynthesis reportSynthesis, BaseAction action,
+    ReportSynthesisFlagshipProgressOutcomeMilestone milestone, int i, int j) {
     // Validate Milestone Status
     if (milestone.getMilestonesStatus() == null) {
       action.addMessage(action.getText("Milestone Status"));
@@ -404,9 +419,22 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         this.validateCrossCuttingMarkers(action, milestone.getMarkers().get(k), i, j, k);
       }
     }
+
+    String milestoneStatus = String.join(";", this.getMilestoneStatus(action, i, j));
+
+    if (!action.isPMU()) {
+      try {
+        this.saveMissingFields(reportSynthesis, milestone, action.getActualPhase().getDescription(),
+          action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(), this.section.getStatus(),
+          milestoneStatus);
+      } catch (Exception e) {
+        LOG.error("Error saving the milestone list: " + e.getMessage());
+      }
+    }
   }
 
-  private void validateOutcomes(BaseAction action, ReportSynthesisFlagshipProgressOutcome outcome, int i) {
+  private void validateOutcomes(ReportSynthesis reportSynthesis, BaseAction action,
+    ReportSynthesisFlagshipProgressOutcome outcome, int i) {
     // Validate Summary
     if (!(this.isValidString(outcome.getSummary())
       && this.wordCount(this.removeHtmlTags(outcome.getSummary())) <= 100)) {
@@ -418,7 +446,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     }
 
     for (int j = 0; j < outcome.getMilestones().size(); j++) {
-      this.validateMilestones(action, outcome.getMilestones().get(j), i, j);
+      this.validateMilestones(reportSynthesis, action, outcome.getMilestones().get(j), i, j);
     }
   }
 

@@ -227,6 +227,11 @@ public class InnovationsAction extends BaseAction {
 
           synthesisInnovation = this.reportSynthesisFlagshipProgressInnovationManager
             .saveReportSynthesisFlagshipProgressInnovation(synthesisInnovation);
+
+          // apparently the creation of deactivated entities is not supported or simply does not work, so we have to
+          // manually "delete" them after creation.
+          this.reportSynthesisFlagshipProgressInnovationManager
+            .deleteReportSynthesisFlagshipProgressInnovation(synthesisInnovation.getId());
         }
       }
     }

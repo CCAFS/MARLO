@@ -164,6 +164,11 @@ public class PublicationsAction extends BaseAction {
 
           synthesisDeliverable = this.reportSynthesisFlagshipProgressDeliverableManager
             .saveReportSynthesisFlagshipProgressDeliverable(synthesisDeliverable);
+
+          // apparently the creation of deactivated entities is not supported or simply does not work, so we have to
+          // manually "delete" them after creation.
+          this.reportSynthesisFlagshipProgressDeliverableManager
+            .deleteReportSynthesisFlagshipProgressDeliverable(synthesisDeliverable.getId());
         }
       }
     }

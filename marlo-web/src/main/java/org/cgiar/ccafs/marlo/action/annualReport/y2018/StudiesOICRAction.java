@@ -233,6 +233,11 @@ public class StudiesOICRAction extends BaseAction {
 
           synthesisStudy =
             this.reportSynthesisFlagshipProgressStudyManager.saveReportSynthesisFlagshipProgressStudy(synthesisStudy);
+
+          // apparently the creation of deactivated entities is not supported or simply does not work, so we have to
+          // manually "delete" them after creation.
+          this.reportSynthesisFlagshipProgressStudyManager
+            .deleteReportSynthesisFlagshipProgressStudy(synthesisStudy.getId());
         }
       }
     }
