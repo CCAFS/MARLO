@@ -359,11 +359,13 @@ public class StatusPlannedMilestonesItem<T> {
             .setExtendedYear(newStatusPlannedMilestoneDTO.getExtendedYear() != 0
               ? newStatusPlannedMilestoneDTO.getExtendedYear() : null);
         }
-        for (EvidenceLinkDTO link : newStatusPlannedMilestoneDTO.getEvidenceLinks()) {
-          ReportSynthesisFlagshipProgressOutcomeMilestoneLink milestoneEvidenceLink =
-            new ReportSynthesisFlagshipProgressOutcomeMilestoneLink();
-          milestoneEvidenceLink.setLink(link.getLink());
-          evidenceLinks.add(milestoneEvidenceLink);
+        if (newStatusPlannedMilestoneDTO.getEvidenceLinks() != null) {
+          for (EvidenceLinkDTO link : newStatusPlannedMilestoneDTO.getEvidenceLinks()) {
+            ReportSynthesisFlagshipProgressOutcomeMilestoneLink milestoneEvidenceLink =
+              new ReportSynthesisFlagshipProgressOutcomeMilestoneLink();
+            milestoneEvidenceLink.setLink(link.getLink());
+            evidenceLinks.add(milestoneEvidenceLink);
+          }
         }
 
         List<ReportSynthesisFlagshipProgressCrossCuttingMarker> reportSynthesisFlagshipProgressCrossCuttingMarkerList =
@@ -945,10 +947,14 @@ public class StatusPlannedMilestonesItem<T> {
                   }
                 }
 
-              } else {
-                fieldErrors.add(new FieldErrorDTO("updateStatusPlannedMilestone", "Evidence Links",
-                  "Evidence Links needs to be filled or declared empty [ ]"));
               }
+              // Dperez to change
+              /*
+               * else {
+               * fieldErrors.add(new FieldErrorDTO("updateStatusPlannedMilestone", "Evidence Links",
+               * "Evidence Links needs to be filled or declared empty [ ]"));
+               * }
+               */
               List<ReportSynthesisFlagshipProgressCrossCuttingMarker> reportSynthesisFlagshipProgressCrossCuttingMarkerList =
                 new ArrayList<ReportSynthesisFlagshipProgressCrossCuttingMarker>();
               if (newStatusPlannedMilestoneDTO.getCrosscuttinmarkerList() != null) {

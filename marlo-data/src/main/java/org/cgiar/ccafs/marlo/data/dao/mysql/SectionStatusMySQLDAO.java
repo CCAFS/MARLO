@@ -323,6 +323,18 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   }
 
   @Override
+  public SectionStatus getSectionStatusBySynthesisMilestone(long synthesisMilestoneID, String cycle, int year,
+    Boolean upkeep, String sectionName) {
+    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and synthesis_milestone_id=" + synthesisMilestoneID;
+    List<SectionStatus> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public SectionStatus save(SectionStatus sectionStatus) {
     if (sectionStatus.getId() == null) {
       super.saveEntity(sectionStatus);

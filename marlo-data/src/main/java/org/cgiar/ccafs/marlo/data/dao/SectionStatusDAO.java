@@ -119,6 +119,9 @@ public interface SectionStatusDAO {
   public SectionStatus getSectionStatusBySynteshisMog(long ipProgramID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
+  public SectionStatus getSectionStatusBySynthesisMilestone(long synthesisMilestoneID, String cycle, int year,
+    Boolean upkeep, String sectionName);
+
   /**
    * This method saves the information of the given sectionStatus
    * 
