@@ -74,6 +74,10 @@
       class="org.cgiar.ccafs.marlo.data.model.ProjectImpacts" fetch="select">
       <column name="project_impact_id" />
     </many-to-one>
+    <many-to-one name="synthesisMilestone"
+      class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone" fetch="select">
+      <column name="synthesis_milestone_id" />
+    </many-to-one>
 		<property name="sectionName" type="string">
 			<column name="section_name" not-null="true">
 				<comment>Some section name (would be the action name)</comment>

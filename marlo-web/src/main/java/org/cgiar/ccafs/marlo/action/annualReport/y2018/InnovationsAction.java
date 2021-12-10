@@ -71,7 +71,6 @@ import javax.inject.Inject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -202,6 +201,45 @@ public class InnovationsAction extends BaseAction {
             Arrays.asList(innovation.getProjectInnovationInfo(this.getActualPhase()).getEvidenceLink().split("; ")));
           if (!evidencesLinks.isEmpty()) {
             innovation.getProjectInnovationInfo(this.getActualPhase()).setEvidencesLink(evidencesLinks);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Ensures that all indicators to be reported are in its corresponding synthesis table
+   */
+  private void ensureAllIndicatorsOnSynthesis() {
+    for (ProjectInnovation projectInnovation : this.projectInnovations) {
+      if (projectInnovation != null && projectInnovation.getId() != null) {
+        ReportSynthesisFlagshipProgressInnovation synthesisInnovation =
+          this.reportSynthesisFlagshipProgressInnovationManager
+            .getReportSynthesisFlagshipProgressInnovationByInnovationAndFlagshipProgress(projectInnovation.getId(),
+              reportSynthesis.getReportSynthesisFlagshipProgress().getId());
+        if (synthesisInnovation == null) {
+          synthesisInnovation = new ReportSynthesisFlagshipProgressInnovation();
+          // if isPMU = true, the indicators should be excluded by default. If isPMU = false, the indicators should be
+          // included by default
+          synthesisInnovation.setActive(this.isPMU());
+          synthesisInnovation.setCreatedBy(this.getCurrentUser());
+          synthesisInnovation.setProjectInnovation(projectInnovation);
+          synthesisInnovation.setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
+
+          synthesisInnovation = this.reportSynthesisFlagshipProgressInnovationManager
+            .saveReportSynthesisFlagshipProgressInnovation(synthesisInnovation);
+
+          if (!this.isPMU()) {
+            // apparently the creation of deactivated entities is not supported or simply does not work, so we have to
+            // manually "delete" them after creation.
+            this.reportSynthesisFlagshipProgressInnovationManager
+              .deleteReportSynthesisFlagshipProgressInnovation(synthesisInnovation.getId());
+          }
+        } else {
+          if (!this.isPMU() && synthesisInnovation.getId() != null && synthesisInnovation.isActive()) {
+            // if we are currently in a FP/Module, the entity should always be is_active=0 (included)
+            this.reportSynthesisFlagshipProgressInnovationManager
+              .deleteReportSynthesisFlagshipProgressInnovation(synthesisInnovation.getId());
           }
         }
       }
@@ -351,6 +389,7 @@ public class InnovationsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public List<ReportSynthesisInnovationsByStageDTO> getInnovationsByStageDTO() {
     return innovationsByStageDTO;
   }
@@ -395,7 +434,6 @@ public class InnovationsAction extends BaseAction {
     return synthesisID;
   }
 
-
   public Integer getTotal() {
     return total;
   }
@@ -403,6 +441,7 @@ public class InnovationsAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
+
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -443,7 +482,6 @@ public class InnovationsAction extends BaseAction {
 
   }
 
-
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -465,7 +503,6 @@ public class InnovationsAction extends BaseAction {
       return result;
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -585,14 +622,20 @@ public class InnovationsAction extends BaseAction {
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
 
-        if (CollectionUtils.emptyIfNull(this.reportSynthesisFlagshipProgressInnovationManager.findAll()).stream()
-          .filter(p -> p != null && p.getId() != null && p.getProjectInnovation() != null
-            && p.getReportSynthesisFlagshipProgress() != null && p.getReportSynthesisFlagshipProgress().getId() != null
-            && p.getReportSynthesisFlagshipProgress().getId()
-              .equals(this.reportSynthesis.getReportSynthesisFlagshipProgress().getId()))
-          .count() == 0L) {
-          this.removeAllFromAR();
-        }
+        // if(!this.isPMU()) {
+        this.ensureAllIndicatorsOnSynthesis();
+        // }
+
+        /*
+         * if (CollectionUtils.emptyIfNull(this.reportSynthesisFlagshipProgressInnovationManager.findAll()).stream()
+         * .filter(p -> p != null && p.getId() != null && p.getProjectInnovation() != null
+         * && p.getReportSynthesisFlagshipProgress() != null && p.getReportSynthesisFlagshipProgress().getId() != null
+         * && p.getReportSynthesisFlagshipProgress().getId()
+         * .equals(this.reportSynthesis.getReportSynthesisFlagshipProgress().getId()))
+         * .count() == 0L) {
+         * this.removeAllFromAR();
+         * }
+         */
 
         reportSynthesis.getReportSynthesisFlagshipProgress().setProjectInnovations(new ArrayList<>());
         if (reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations() != null
@@ -658,12 +701,14 @@ public class InnovationsAction extends BaseAction {
 
   }
 
-  private void removeAllFromAR() {
-    for (ProjectInnovation innovation : this.projectInnovations) {
-      this.reportSynthesisFlagshipProgressInnovationManager.toAnnualReport(innovation,
-        this.reportSynthesis.getReportSynthesisFlagshipProgress(), this.getCurrentUser(), true);
-    }
-  }
+  /*
+   * private void removeAllFromAR() {
+   * for (ProjectInnovation innovation : this.projectInnovations) {
+   * this.reportSynthesisFlagshipProgressInnovationManager.toAnnualReport(innovation,
+   * this.reportSynthesis.getReportSynthesisFlagshipProgress(), this.getCurrentUser(), true);
+   * }
+   * }
+   */
 
   @Override
   public String save() {
