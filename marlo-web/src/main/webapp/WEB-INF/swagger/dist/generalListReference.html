@@ -129,6 +129,7 @@
       <a href="#section2" class="collap"> <button type="button" class="collapsible">Institutions</button></a>
       <div class="content">
         <a href="#section2-item1" > <button type="button" class="subCollapsible">Institutions List <span class="getColor">GET</span></button></a>
+        <a href="#section2-item2" > <button type="button" class="subCollapsible">Institutions Related List <span class="getColor">GET</span></button></a>
 
       </div>
       <a href="#section3"  class="collap"> <button type="button" class="collapsible">Research Strategy 2030</button></a>
@@ -880,148 +881,250 @@
           </div>
         </div>
       </div>
-
-
       <div class="section" id="section2">
         <h1 class="title" data-aos="fade-up">Institutions </h1>
         <div class="bshadow" data-aos="fade-up">
-          <div class="container">
+          <div class="container-c">
             <div class="row">
               <div class="col-12">
-                <h2 class="title">Summary</h2>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Method 2.1 -->
-        <div class="bshadow" data-aos="fade-up">
-          <div class="container">
-            <div class="row">
-              <div class="col-12">
-                <h2 class="title">methods</h2>
-                <div class="bshadow" data-aos="fade-up" id="section2-item1">
-                  <div class="getColorbackground contEndpoint">
-                    <button type="button" class="btn getColorbackground">GET</button> <span
-                      class="endpointTitle">/institutions</span>
-                  </div>
-                  <div class="parameters">
-                    <h3>Functionality</h3>
-                    <div>This is a worldwide list of institutions that have been related to CGIAR activities as funders, leaders, partners, and/or contributors. This list reflects the information consolidated by some of the CGIAR Management Information Systems and external sources (i.e. MARLO and MEL). </div>
-                    <h3>Parameters</h3>
-                    <div>No parameters</div>
-                    <table style="width: 70%">
-                      <thead>
-                        <tr>
-                          <th></th>     
-                        </tr>
-                      </thead>
-                      <tbody>        
-                        <tr>
-                          <td colspan="2">
-                            <div>
-                              <p><span><Strong>Request URL: </Strong></span></p>
-                              <div class="URLendpoint">
-                                <div class="fragCode">
-                                  <p><span class="endpoint"></span>/institutions</p>
+                <h2>Summary</h2>
+                <h2 class="title">Methods</h2>
+				                <!-- Method 2.1 -->           
+                  <div class="bshadow" data-aos="fade-up" id="section2-item1">
+                    <div class="getColorbackground contEndpoint">
+                      <button type="button" class="btn getColorbackground">GET</button> <span
+                        class="endpointTitle">/institutions</span>
+                    </div>
+                    <div class="parameters">
+                      <h3>Functionality</h3>
+                      <div>This is a worldwide list of institutions that have been related to CGIAR activities as funders, leaders, partners, and/or contributors. This list reflects the information consolidated by some of the CGIAR Management Information Systems and external sources (i.e. MARLO and MEL). </div>
+                      <h3>Parameters</h3>
+                      <div>No parameters</div>
+                      <table style="width: 70%">
+                        <thead>
+                          <tr>
+                            <th></th>     
+                          </tr>
+                        </thead>
+                        <tbody>        
+                          <tr>
+                            <td colspan="2">
+                              <div>
+                                <p><span><Strong>Request URL: </Strong></span></p>
+                                <div class="URLendpoint">
+                                  <div class="fragCode">
+                                    <p><span class="endpoint"></span>/institutions</p>
+                                  </div>
                                 </div>
                               </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="container-c">
+                      <div class="row">
+                        <div class="col-12" style="margin-bottom: 20px;">
+                          <button onclick="institutions()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal5" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
+                        </div>
+                        <div class="col-12">
+                          <div class="fragCode">
+                            <div class="infoCode">
+                              <p>State code: <span class="greenCode">200</span>: <span class="blueCode">OK</span> </p>
                             </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div class="container-c">
-                    <div class="row">
-                      <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="institutions()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal5" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
-                      </div>
-                      <div class="col-12">
-                        <div class="fragCode">
-                          <div class="infoCode">
-                            <p>State code: <span class="greenCode">200</span>: <span class="blueCode">OK</span> </p>
-                          </div>
-                          <pre><code>
-<span class="yellowCode">[</span>
-  <span class="yellowCode">{</span>
-    <span class="blueCode">"acronym"</span><span class="WhiteCode"> : "string",</span>
-    <span class="blueCode">"added"</span><span class="WhiteCode"> : "2020-10-09",</span>
-    <span class="blueCode">"code"</span><span class="WhiteCode"> : 0,</span>
-    <span class="blueCode">"countryOfficeDTO":</span><span class="yellowCode"> [</span>
-        <span class="blueCode">"countryOfficeDTO":</span><span class="yellowCode"> {</span>
-        <span class="blueCode">"code"</span><span class="WhiteCode"> : 0,</span>
-        <span class="blueCode">"isHeadquarter"</span><span class="WhiteCode"> : "string",</span>
-        <span class="blueCode">"isoAlpha2"</span><span class="WhiteCode"> : "string",</span>
-        <span class="blueCode">"name"</span><span class="WhiteCode"> : "string",</span>
-        <span class="blueCode">"regionDTO"</span><span class="yellowCode"> : {</span>
-          <span class="blueCode">"um49Code"</span><span class="WhiteCode"> : 0,</span>
+                            <pre><code>
+  <span class="yellowCode">[</span>
+    <span class="yellowCode">{</span>
+      <span class="blueCode">"acronym"</span><span class="WhiteCode"> : "string",</span>
+      <span class="blueCode">"added"</span><span class="WhiteCode"> : "2020-10-09",</span>
+      <span class="blueCode">"code"</span><span class="WhiteCode"> : 0,</span>
+      <span class="blueCode">"countryOfficeDTO":</span><span class="yellowCode"> [</span>
+          <span class="blueCode">"countryOfficeDTO":</span><span class="yellowCode"> {</span>
+          <span class="blueCode">"code"</span><span class="WhiteCode"> : 0,</span>
+          <span class="blueCode">"isHeadquarter"</span><span class="WhiteCode"> : "string",</span>
+          <span class="blueCode">"isoAlpha2"</span><span class="WhiteCode"> : "string",</span>
           <span class="blueCode">"name"</span><span class="WhiteCode"> : "string",</span>
-          <span class="blueCode">"parentRegion"</span><span class="yellowCode"> : {</span>
+          <span class="blueCode">"regionDTO"</span><span class="yellowCode"> : {</span>
             <span class="blueCode">"um49Code"</span><span class="WhiteCode"> : 0,</span>
-            <span class="blueCode">"name"</span><span class="WhiteCode"> : "string"</span>
+            <span class="blueCode">"name"</span><span class="WhiteCode"> : "string",</span>
+            <span class="blueCode">"parentRegion"</span><span class="yellowCode"> : {</span>
+              <span class="blueCode">"um49Code"</span><span class="WhiteCode"> : 0,</span>
+              <span class="blueCode">"name"</span><span class="WhiteCode"> : "string"</span>
+            <span class="yellowCode">}</span> 
           <span class="yellowCode">}</span> 
-        <span class="yellowCode">}</span> 
-      <span class="yellowCode">}</span>
-    <span class="yellowCode">]</span><span class="WhiteCode">,</span>
-     <span class="blueCode">"institutionType":</span><span class="yellowCode"> {</span>
-        <span class="blueCode">"code"</span><span class="WhiteCode"> : 0,</span>
-        <span class="blueCode">"name"</span><span class="WhiteCode"> : "string"</span>
-     <span class="yellowCode">}</span><span class="WhiteCode">,</span>
-     <span class="blueCode">"name"</span><span class="WhiteCode"> : "string",</span>
-     <span class="blueCode">"websiteLink"</span><span class="WhiteCode"> : "string"</span>
-  <span class="yellowCode">}</span>
-<span class="yellowCode">]</span>
+        <span class="yellowCode">}</span>
+      <span class="yellowCode">]</span><span class="WhiteCode">,</span>
+       <span class="blueCode">"institutionType":</span><span class="yellowCode"> {</span>
+          <span class="blueCode">"code"</span><span class="WhiteCode"> : 0,</span>
+          <span class="blueCode">"name"</span><span class="WhiteCode"> : "string"</span>
+       <span class="yellowCode">}</span><span class="WhiteCode">,</span>
+       <span class="blueCode">"name"</span><span class="WhiteCode"> : "string",</span>
+       <span class="blueCode">"websiteLink"</span><span class="WhiteCode"> : "string"</span>
+    <span class="yellowCode">}</span>
+  <span class="yellowCode">]</span>
+                              </code></pre>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="fragCode">
+                            <div class="infoCode">
+                              <p>State code: <span class="redCode2">400</span></p>
+                            </div>
+                            <pre><code>
+  <span class="redCode">Bad Request</span>
+                              </code></pre>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="fragCode">
+                            <div class="infoCode">
+                              <p>State code: <span class="redCode2">401</span></p>
+                            </div>
+                            <pre><code>
+  <span class="redCode">Unauthorized</span>
                             </code></pre>
-                        </div>
-                      </div>
-                      <div class="col-6">
-                        <div class="fragCode">
-                          <div class="infoCode">
-                            <p>State code: <span class="redCode2">400</span></p>
                           </div>
-                          <pre><code>
-<span class="redCode">Bad Request</span>
+                        </div>
+                        <div class="col-6">
+                          <div class="fragCode">
+                            <div class="infoCode">
+                              <p>State code: <span class="redCode2">403</span></p>
+                            </div>
+                            <pre><code>
+  <span class="redCode">Forbidden</span>
                             </code></pre>
-                        </div>
-                      </div>
-                      <div class="col-6">
-                        <div class="fragCode">
-                          <div class="infoCode">
-                            <p>State code: <span class="redCode2">401</span></p>
                           </div>
-                          <pre><code>
-<span class="redCode">Unauthorized</span>
-                          </code></pre>
                         </div>
-                      </div>
-                      <div class="col-6">
-                        <div class="fragCode">
-                          <div class="infoCode">
-                            <p>State code: <span class="redCode2">403</span></p>
+                        <div class="col-6">
+                          <div class="fragCode">
+                            <div class="infoCode">
+                              <p>State code: <span class="redCode2">404</span></p>
+                            </div>
+                            <pre><code>
+  <span class="redCode">Not Found</span>
+                            </code></pre>
                           </div>
-                          <pre><code>
-<span class="redCode">Forbidden</span>
-                          </code></pre>
-                        </div>
-                      </div>
-                      <div class="col-6">
-                        <div class="fragCode">
-                          <div class="infoCode">
-                            <p>State code: <span class="redCode2">404</span></p>
-                          </div>
-                          <pre><code>
-<span class="redCode">Not Found</span>
-                          </code></pre>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+				                <!-- Method 2.2 -->           
+                  <div class="bshadow" data-aos="fade-up" id="section2-item2">
+                    <div class="getColorbackground contEndpoint">
+                      <button type="button" class="btn getColorbackground">GET</button> <span
+                        class="endpointTitle">/institutionsSimpleRelated</span>
+                    </div>
+                    <div class="parameters">
+                      <h3>Functionality</h3>                      
+                      <h3>Parameters</h3>
+                      <div>No parameters</div>
+                      <table style="width: 70%">
+                        <thead>
+                          <tr>
+                            <th></th>     
+                          </tr>
+                        </thead>
+                        <tbody>        
+                          <tr>
+                            <td colspan="2">
+                              <div>
+                                <p><span><Strong>Request URL: </Strong></span></p>
+                                <div class="URLendpoint">
+                                  <div class="fragCode">
+                                    <p><span class="endpoint"></span>/institutionsSimpleRelated</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="container-c">
+                      <div class="row">
+                        <div class="col-12" style="margin-bottom: 20px;">
+                          <button onclick="institutionsRelated()" type="button"  data-bs-toggle="modal" data-bs-target="#exampleRequestModal18" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
+                        </div>
+                        <div class="col-12">
+                          <div class="fragCode">
+                            <div class="infoCode">
+                              <p>State code: <span class="greenCode">200</span>: <span class="blueCode">OK</span> </p>
+                            </div>
+                            <pre><code>
+  <span class="yellowCode">[</span>
+    <span class="yellowCode">{</span>
+      <span class="blueCode">"code"</span><span class="WhiteCode"> : 0,</span>
+      <span class="blueCode">"name"</span><span class="WhiteCode"> : "string",</span>
+      <span class="blueCode">"acronym"</span><span class="WhiteCode"> : "string",</span>
+      <span class="blueCode">"websiteLink"</span><span class="WhiteCode"> : "string",</span>
+      <span class="blueCode">"institutionTypeId"</span><span class="WhiteCode"> : 0,</span>
+      <span class="blueCode">"institutionType"</span><span class="WhiteCode"> : "string",</span>
+      <span class="blueCode">"hqLocation"</span><span class="WhiteCode"> : "string",</span>
+      <span class="blueCode">"hqLocationISOalpha2"</span><span class="WhiteCode"> : "string",</span>
+      <span class="blueCode">"institutionRelatedList":</span><span class="yellowCode"> [</span>
+        <span class="yellowCode">}</span>
+          <span class="blueCode">"source"</span><span class="WhiteCode"> : "string",</span>
+          <span class="blueCode">"clarisaId"</span><span class="WhiteCode"> : "string",</span>
+          <span class="blueCode">"clarisaInstitutionName"</span><span class="WhiteCode"> : "string",</span>
+          <span class="blueCode">"institutionName"</span><span class="WhiteCode"> : "string",</span>
+          <span class="blueCode">"institutionCode"</span><span class="WhiteCode"> : "string"</span>
+        <span class="yellowCode">}</span>
+      <span class="yellowCode">]</span>       
+    <span class="yellowCode">}</span>
+  <span class="yellowCode">]</span>
+                              </code></pre>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="fragCode">
+                            <div class="infoCode">
+                              <p>State code: <span class="redCode2">400</span></p>
+                            </div>
+                            <pre><code>
+  <span class="redCode">Bad Request</span>
+                              </code></pre>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="fragCode">
+                            <div class="infoCode">
+                              <p>State code: <span class="redCode2">401</span></p>
+                            </div>
+                            <pre><code>
+  <span class="redCode">Unauthorized</span>
+                            </code></pre>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="fragCode">
+                            <div class="infoCode">
+                              <p>State code: <span class="redCode2">403</span></p>
+                            </div>
+                            <pre><code>
+  <span class="redCode">Forbidden</span>
+                            </code></pre>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="fragCode">
+                            <div class="infoCode">
+                              <p>State code: <span class="redCode2">404</span></p>
+                            </div>
+                            <pre><code>
+  <span class="redCode">Not Found</span>
+                            </code></pre>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>    
+				         
+				      </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+        
       
       <div class="section" id="section3">
         <h1 class="title" data-aos="fade-up">Research Strategy 2030</h1>
@@ -2389,7 +2492,7 @@
     </div>
   </div>
 </div>
-
+<!-- SDG targets -->
 <div class="modal fade" id="exampleRequestModal10" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-xl">
     <div class="modal-content">      
@@ -2423,7 +2526,7 @@
     </div>
   </div>
 </div>
-
+<!-- SDG indicactors -->
 <div class="modal fade" id="exampleRequestModal11" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-xl">
     <div class="modal-content">      
@@ -2671,6 +2774,50 @@
     </div>
   </div>
 </div>
+<!-- Institutions Related  -->
+<div class="modal fade" id="exampleRequestModal18" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+    <div class="modal-content">      
+      <div class="modal-body" >
+        <table class="table dataTable" id="institutionsrelated" >
+          <thead class="thead-dark">
+            <tr id="#list-print-columns-name">              
+              <td>Code</td>
+              <td>Name</td>   
+              <td>Acronym</td>              
+              <td>website</td> 
+              <td>
+                  <table>
+	                  <thead>
+	                     <tr>
+		                    <td class="relatedInstitutions">ID source</td>
+		                    <td class="relatedInstitutions">Institution Name</td>
+	                     </tr>
+	                  </thead>                              
+                  </table>
+              </td>
+            </tr>
+          </thead>
+          <tbody id="list-print-institutionsrelated">
+          </tbody>
+        </table>
+        <div class="text-center">
+          <div class="spinner-general" id="spinner_institutionsrelated">
+            <div class="spinner-border   text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <h4 style="margin-top: 15px;">Loading...</h4>
+          </div>
+        </div>
+      </div>
+      <div  class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
 
 </body>
 <!-- 
