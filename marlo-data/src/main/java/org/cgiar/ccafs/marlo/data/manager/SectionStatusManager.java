@@ -194,6 +194,9 @@ public interface SectionStatusManager {
   public SectionStatus getSectionStatusByReportSynthesis(long powbSynthesisID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
+  public SectionStatus getSectionStatusBySynthesisMilestone(long synthesisMilestoneID, String cycle, int year,
+    Boolean upkeep, String sectionName);
+
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
    * 
