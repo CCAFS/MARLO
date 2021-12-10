@@ -321,3 +321,17 @@ tbody#list-print td {
   max-height: calc(100vh - 250px);  
   overflow-y: scroll;
 }
+
+.relatedInstitutions{
+  padding: 8px 30px 8px 8px;
+  
+  
+}
+
+.relatedInstitutionsHead{
+  padding-right: 30px;    
+}
+
+.institutionsTable{
+  vertical-align: middle;
+}
