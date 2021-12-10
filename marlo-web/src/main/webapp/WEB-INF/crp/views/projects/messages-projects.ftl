@@ -63,7 +63,11 @@
             [#if actualPhaseAR && ((currentStage!'') == "budgetByPartners")]
               <p class="readPrivileges">This section is read-only for Annual Report</p>
             [#else]
-              <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+              [#if submission]
+                <p class="readPrivileges">[@s.text name="saving.submitted.privileges.section" /]</p>
+              [#else]
+                <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+               [/#if]
             [/#if]
           [/#if]
         [#else]
