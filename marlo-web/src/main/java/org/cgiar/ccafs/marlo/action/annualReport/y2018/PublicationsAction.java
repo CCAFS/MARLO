@@ -145,6 +145,45 @@ public class PublicationsAction extends BaseAction {
   }
 
 
+  /**
+   * Ensures that all indicators to be reported are in its corresponding synthesis table
+   */
+  private void ensureAllIndicatorsOnSynthesis() {
+    for (Deliverable projectDeliverable : this.deliverables) {
+      if (projectDeliverable != null && projectDeliverable.getId() != null) {
+        ReportSynthesisFlagshipProgressDeliverable synthesisDeliverable =
+          this.reportSynthesisFlagshipProgressDeliverableManager.getByFlagshipProgressAndDeliverable(
+            projectDeliverable.getId(), reportSynthesis.getReportSynthesisFlagshipProgress().getId());
+        if (synthesisDeliverable == null) {
+          synthesisDeliverable = new ReportSynthesisFlagshipProgressDeliverable();
+          // if isPMU = true, the indicators should be excluded by default. If isPMU = false, the indicators should be
+          // included by default
+          synthesisDeliverable.setActive(this.isPMU());
+          synthesisDeliverable.setCreatedBy(this.getCurrentUser());
+          synthesisDeliverable.setDeliverable(projectDeliverable);
+          synthesisDeliverable.setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
+
+          synthesisDeliverable = this.reportSynthesisFlagshipProgressDeliverableManager
+            .saveReportSynthesisFlagshipProgressDeliverable(synthesisDeliverable);
+
+          if (!this.isPMU()) {
+            // apparently the creation of deactivated entities is not supported or simply does not work, so we have to
+            // manually "delete" them after creation.
+            this.reportSynthesisFlagshipProgressDeliverableManager
+              .deleteReportSynthesisFlagshipProgressDeliverable(synthesisDeliverable.getId());
+          }
+        } else {
+          if (!this.isPMU() && synthesisDeliverable.getId() != null && synthesisDeliverable.isActive()) {
+            // if we are currently in a FP/Module, the entity should always be is_active=0 (included)
+            this.reportSynthesisFlagshipProgressDeliverableManager
+              .deleteReportSynthesisFlagshipProgressDeliverable(synthesisDeliverable.getId());
+          }
+        }
+      }
+    }
+  }
+
+
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -154,7 +193,6 @@ public class PublicationsAction extends BaseAction {
     long liaisonInstitutionId = liaisonInstitutions.get(0).getId();
     return liaisonInstitutionId;
   }
-
 
   public String getArticleTitle(long deliverableId) {
     return this.deliverableTitles.get(deliverableId);
@@ -172,6 +210,7 @@ public class PublicationsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public List<Deliverable> getDeliverables() {
     return deliverables;
   }
@@ -180,7 +219,6 @@ public class PublicationsAction extends BaseAction {
   public List<Deliverable> getDeliverablesNotPublications() {
     return deliverablesNotPublications;
   }
-
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -197,6 +235,7 @@ public class PublicationsAction extends BaseAction {
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public String getPublicationMissingFields(long id) {
     String missingFieldsText = "";
@@ -261,15 +300,14 @@ public class PublicationsAction extends BaseAction {
     return totalLimited;
   }
 
-
   public Integer getTotalNoIsis() {
     return totalNoIsis;
   }
 
+
   public Integer getTotalOpenAccess() {
     return totalOpenAccess;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -471,7 +509,6 @@ public class PublicationsAction extends BaseAction {
     }
   }
 
-
   @Override
   public void prepare() throws Exception {
     this.actualPhase = this.getActualPhase();
@@ -606,6 +643,10 @@ public class PublicationsAction extends BaseAction {
           // save the changes
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
+
+        // if(!this.isPMU()) {
+        this.ensureAllIndicatorsOnSynthesis();
+        // }
 
 
         reportSynthesis.getReportSynthesisFlagshipProgress().setDeliverables(new ArrayList<>());

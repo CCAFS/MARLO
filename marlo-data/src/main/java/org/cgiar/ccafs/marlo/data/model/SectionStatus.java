@@ -66,6 +66,9 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
 
   private ProjectImpacts projectImpact;
 
+  private ReportSynthesisFlagshipProgressOutcomeMilestone synthesisMilestone;
+
+
   public SectionStatus() {
   }
 
@@ -74,11 +77,9 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
     return caseStudy;
   }
 
-
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
   }
-
 
   public String getCycle() {
     return this.cycle;
@@ -91,7 +92,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public FundingSource getFundingSource() {
     return fundingSource;
   }
-
 
   public IpLiaisonInstitution getIpLiaisonInstitution() {
     return ipLiaisonInstitution;
@@ -109,7 +109,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
     return powbSynthesis;
   }
 
-
   public Project getProject() {
     return project;
   }
@@ -117,7 +116,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
   }
-
 
   public ProjectHighlight getProjectHighlight() {
     return projectHighlight;
@@ -155,6 +153,10 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
     return synthesisFlagships;
   }
 
+  public ReportSynthesisFlagshipProgressOutcomeMilestone getSynthesisMilestone() {
+    return synthesisMilestone;
+  }
+
   public Boolean getUpkeep() {
     return upkeep;
   }
@@ -162,6 +164,7 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public Integer getYear() {
     return this.year;
   }
+
 
   public void setCaseStudy(CaseStudy caseStudy) {
     this.caseStudy = caseStudy;
@@ -183,11 +186,9 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
     this.fundingSource = fundingSource;
   }
 
-
   public void setIpLiaisonInstitution(IpLiaisonInstitution ipLiaisonInstitution) {
     this.ipLiaisonInstitution = ipLiaisonInstitution;
   }
-
 
   public void setIpProgram(IpProgram ipProgram) {
     this.ipProgram = ipProgram;
@@ -205,21 +206,17 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
     this.project = project;
   }
 
-
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
   }
-
 
   public void setProjectHighlight(ProjectHighlight projectHighlight) {
     this.projectHighlight = projectHighlight;
   }
 
-
   public void setProjectImpact(ProjectImpacts projectImpact) {
     this.projectImpact = projectImpact;
   }
-
 
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
@@ -229,7 +226,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
     this.projectLp6Contribution = projectLp6Contribution;
   }
 
-
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
   }
@@ -237,7 +233,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public void setProjectPolicy(ProjectPolicy projectPolicy) {
     this.projectPolicy = projectPolicy;
   }
-
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
@@ -249,6 +244,10 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
 
   public void setSynthesisFlagships(String synthesisFlagships) {
     this.synthesisFlagships = synthesisFlagships;
+  }
+
+  public void setSynthesisMilestone(ReportSynthesisFlagshipProgressOutcomeMilestone synthesisMilestone) {
+    this.synthesisMilestone = synthesisMilestone;
   }
 
   public void setUpkeep(Boolean upkeep) {
@@ -268,7 +267,7 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
       + ipProgram + ", ipLiaisonInstitution=" + ipLiaisonInstitution + ", powbSynthesis=" + powbSynthesis
       + ", projectInnovation=" + projectInnovation + ", projectExpectedStudy=" + projectExpectedStudy
       + ", reportSynthesis=" + reportSynthesis + ", projectLp6Contribution=" + projectLp6Contribution
-      + ", projectImpact=" + projectImpact + "]";
+      + ", projectImpact=" + projectImpact + ", synthesisMilestone=" + synthesisMilestone + "]";
   }
 }
 

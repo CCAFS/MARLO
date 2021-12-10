@@ -184,6 +184,13 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
+  public SectionStatus getSectionStatusBySynthesisMilestone(long synthesisMilestoneID, String cycle, int year,
+    Boolean upkeep, String sectionName) {
+    return sectionStatusDAO.getSectionStatusBySynthesisMilestone(synthesisMilestoneID, cycle, year, upkeep,
+      sectionName);
+  }
+
+  @Override
   public SectionStatus getSectionStatusBySynthesisMog(long ipProgramID, String cycle, int year, Boolean upkeep,
     String sectionName) {
     return sectionStatusDAO.getSectionStatusBySynteshisMog(ipProgramID, cycle, year, upkeep, sectionName);
