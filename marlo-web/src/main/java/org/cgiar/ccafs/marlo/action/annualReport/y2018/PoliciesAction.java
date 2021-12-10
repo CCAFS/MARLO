@@ -193,11 +193,12 @@ public class PoliciesAction extends BaseAction {
       if (projectPolicy != null && projectPolicy.getId() != null) {
         ReportSynthesisFlagshipProgressPolicy synthesisPolicy = this.reportSynthesisFlagshipProgressPolicyManager
           .getReportSynthesisFlagshipProgressPolicyByPolicyAndFlagshipProgress(projectPolicy.getId(),
-            liaisonInstitutionID);
+            reportSynthesis.getReportSynthesisFlagshipProgress().getId());
         if (synthesisPolicy == null) {
           synthesisPolicy = new ReportSynthesisFlagshipProgressPolicy();
-          // is_active = false -> included
-          synthesisPolicy.setActive(false);
+          // if isPMU = true, the indicators should be excluded by default. If isPMU = false, the indicators should be
+          // included by default
+          synthesisPolicy.setActive(this.isPMU());
           synthesisPolicy.setCreatedBy(this.getCurrentUser());
           synthesisPolicy.setProjectPolicy(projectPolicy);
           synthesisPolicy.setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
@@ -205,10 +206,18 @@ public class PoliciesAction extends BaseAction {
           synthesisPolicy = this.reportSynthesisFlagshipProgressPolicyManager
             .saveReportSynthesisFlagshipProgressPolicy(synthesisPolicy);
 
-          // apparently the creation of deactivated entities is not supported or simply does not work, so we have to
-          // manually "delete" them after creation.
-          this.reportSynthesisFlagshipProgressPolicyManager
-            .deleteReportSynthesisFlagshipProgressPolicy(synthesisPolicy.getId());
+          if (!this.isPMU()) {
+            // apparently the creation of deactivated entities is not supported or simply does not work, so we have to
+            // manually "delete" them after creation.
+            this.reportSynthesisFlagshipProgressPolicyManager
+              .deleteReportSynthesisFlagshipProgressPolicy(synthesisPolicy.getId());
+          }
+        } else {
+          if (!this.isPMU() && synthesisPolicy.getId() != null && synthesisPolicy.isActive()) {
+            // if we are currently in a FP/Module, the entity should always be is_active=0 (included)
+            this.reportSynthesisFlagshipProgressPolicyManager
+              .deleteReportSynthesisFlagshipProgressPolicy(synthesisPolicy.getId());
+          }
         }
       }
     }
