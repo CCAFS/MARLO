@@ -1588,7 +1588,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveMilestones(this.expectedStudyDB, phase);
 
       // AR2021 Save
-      this.saveReferences(this.expectedStudyDB, phase);
+      if (this.isSelectedPhaseAR2021()) {
+        this.saveReferences(this.expectedStudyDB, phase);
+      }
 
       // Save Geographic Scope Data
       this.saveGeographicScopes(this.expectedStudyDB, phase);
