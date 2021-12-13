@@ -1085,6 +1085,61 @@ function institutions() {
 		});
 }
 
+function institutionsRelated() {
+	$
+		.ajax({
+			url: config.endpoint + '/institutionsSimpleRelated',
+			type: "GET",
+			beforeSend: function () {
+				// hideFilter();
+
+				cleanModal();
+				manageSpinner(true,"institutionsrelated");
+				destroyTable("institutionsrelated");
+			},
+			success: function (data) {
+				// ********************************************* */
+				// print data
+				// testInstitution(data);
+				// showFilter();
+				manageSpinner(false,"institutionsrelated");
+				console.log(data);
+				let nameColumns = ['Code', 'Acronym','Institution Type', 'Office Location',
+					'Name', 'Website']
+				$
+					.each(
+						data,
+						function (index, item) {
+							// console.log(item['institutionRelatedList']);
+							$('#list-print-institutionsrelated')
+								.append(
+									'<tr>'
+									+ '<td class="institutionsTable">'
+									+ item['code']
+									+ '</td>'
+									+ '<td class="institutionsTable">'
+									+ item['name']
+									+ '</td>'
+									+ '<td class="institutionsTable">'
+									+ validateNull(item['acronym'])
+									+ '</td>'
+									+ `<td class="link-Web institutionsTable"  data-toggle="tooltip" data-placement="top" title="${item['websiteLink']}"><a  href="${item['websiteLink']}" target="_blank">${item['websiteLink']}</a></td>`									
+									// Institutions related Location
+									+ '<td>' 
+									+ getinstitutionRelated(item['institutionRelatedList'])
+									+ '</td>'																																	
+									+ '</tr>')
+						});
+				updateDataTable("institutionsrelated");
+				// end print Data
+				// ********************************************** */
+			},
+			error: function (e) {
+				console.log(e);
+			}
+		});
+}
+
 function getCountries(countryDTO) {
 	let resultado = "";
 	$.each(countryDTO, function (index, item) {
@@ -1097,6 +1152,31 @@ function getCountries(countryDTO) {
 	});
 	return resultado;
 }
+
+function getinstitutionRelated(institutionRelatedDTO) {
+	let resultado = "";
+	resultado+='<table class="relatedInstitutions"><tbody class="relatedInstitutions">'
+	// console.log(institutionRelatedDTO);
+	if(institutionRelatedDTO == null){
+		resultado+='<tr>'
+					+'<td class="relatedInstitutions"></td>'
+					+'<td class="relatedInstitutions"></td>'
+					+'</tr>';
+	}else{
+		$.each(institutionRelatedDTO, function (index, item) {	
+			// console.log(item);
+			resultado+='<tr>';		
+				resultado += '<td class="relatedInstitutions">'+item['institutionCode']+'</td>';	
+				resultado += '<td class="relatedInstitutions">'+item['institutionName']+'</td>';		
+			resultado+='</tr>';
+		});
+	}
+		
+	resultado+='</tbody></table>'
+	// console.log(resultado);
+	return resultado;
+}
+
 
 function getHeadquarter(countryOfficeDTO) {
 	let resultado = "";
