@@ -50,7 +50,3 @@ table#projectHighlights {
 .optionPublicComponent button {
   padding: 3px 10px 4px 10px;
 }
-
-textarea[name="expectedStudy.projectExpectedStudyInfo.referencesText"] {
-  display: none;
-}

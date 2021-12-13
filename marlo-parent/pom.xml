@@ -66,6 +66,7 @@
 		<geoip2.version>2.12.0</geoip2.version>
 		<javax.inject.version>1</javax.inject.version>
 		<tomcat.version>8.0.53</tomcat.version>
+		<log4j.version>2.15.0</log4j.version>
 	</properties>
 	<developers>
 		<developer>
@@ -127,6 +128,12 @@
 				<groupId>${project.groupId}</groupId>
 				<artifactId>marlo-web</artifactId>
 				<version>${project.version}</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
+			<dependency>
+			    <groupId>org.apache.logging.log4j</groupId>
+			    <artifactId>log4j-api</artifactId>
+			    <version>${log4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.struts</groupId>
