@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.TagItem;
 import org.cgiar.ccafs.marlo.rest.dto.BroadAreaDTO;
 import org.cgiar.ccafs.marlo.rest.dto.BudgetTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.BudgetTypeOneCGIARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerScoreDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrpGeoLocationMapDTO;
@@ -78,6 +79,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Configuration
 @PropertySource("classpath:clarisa.properties")
@@ -529,6 +531,16 @@ public class ARControlLists {
   @RequestMapping(value = "/budget-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<BudgetTypeDTO> getAllBudgerTypes() {
     return this.bugdetTypeItem.getAllBudgetTypes();
+  }
+
+  @ApiIgnore
+  @ApiOperation(value = "${ARControlLists.budget-types.all.value}", response = BudgetTypeOneCGIARDTO.class,
+    responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/onecgiar-budget-types", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<BudgetTypeOneCGIARDTO> getAllBudgetTypesCGIAR() {
+    return this.bugdetTypeItem.getAllBudgetTypesCGIAR();
   }
 
   /**

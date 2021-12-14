@@ -531,6 +531,42 @@ setTimeout(() => {
 	});
 }
 
+function fundingsources() {
+	$.ajax({
+		url: config.endpoint + '/onecgiar-budget-types',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"fundingsources");
+			destroyTable("fundingsources");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"fundingsources");
+			console.log(data);
+			let nameColumns = ['Code', 'Name','Parent','Financial Code']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-fundingsources').append(
+					'<tr>' + '<td >' + (item['code'] +'</td>' + '<td>'+item['name']) + '</td>' + '<td>'
+					+ validateNull(item['parent']) + '</td>'+ '<td>'
+					+ validateNull(item['financialCode']) + '</td>' +'</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("fundingsources");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
 function accounts() {
 	$.ajax({
 		url: config.endpoint + '/accounts',

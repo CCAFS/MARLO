@@ -54,6 +54,8 @@ public interface BudgetTypeDAO {
    */
   public List<BudgetType> findAll();
 
+  public List<BudgetType> findAllFundingSourcesCGIAR();
+
 
   /**
    * This method saves the information of the given budgetType
