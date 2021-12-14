@@ -65,6 +65,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
+import org.cgiar.ccafs.marlo.data.model.DeliverableStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
@@ -3070,7 +3071,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           type += ", " + typeString;
         }
       }
-      String status = ProjectStatusEnum.getValue(projectInfo.getStatus().intValue()).getStatus();
+      String status = DeliverableStatusEnum.getValue(projectInfo.getStatus().intValue()).getStatus();
       if (projectLeader.getInstitution() != null) {
         orgLeader = projectLeader.getInstitution().getComposedName();
       }
