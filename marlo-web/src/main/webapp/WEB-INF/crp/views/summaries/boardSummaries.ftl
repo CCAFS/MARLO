@@ -109,6 +109,7 @@
       "formats": [ "Excel" ],
       "cycles": [ "Reporting" ]
     },
+    [#--  
     { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.innovations", 
@@ -118,6 +119,7 @@
       "formats": [ "Excel" ],
       "cycles": [ "Reporting" ]
     },
+    --]
     { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.projectActivities", 
