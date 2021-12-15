@@ -632,8 +632,12 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
                 && progressOutcomeMilestone.isActive() && progressOutcomeMilestone.getCrpMilestone() != null
                 && progressOutcomeMilestone.getCrpMilestone().getId() != null) {
 
-                progressOutcomeMilestone
-                  .setMilestonesStatus(this.getCurrentMilestoneStatus(progressOutcomeMilestone.getCrpMilestone()));
+                if (progressOutcomeMilestone.getMilestonesStatus() == null
+                  || progressOutcomeMilestone.getMilestonesStatus().getId() == null) {
+                  progressOutcomeMilestone
+                    .setMilestonesStatus(this.getCurrentMilestoneStatus(progressOutcomeMilestone.getCrpMilestone()));
+                }
+
                 progressOutcomeMilestone.setMarkers(this.getCrossCuttingMarker(progressOutcomeMilestone));
 
                 milestones.add(progressOutcomeMilestone);
