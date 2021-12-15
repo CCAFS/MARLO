@@ -60,7 +60,6 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
     this.projectPartnerManager = projectPartnerManager;
   }
 
-
   public void addPersons(DeliverableUserPartnership deliverableUserPartnership, Long newDeliverableUserPartnershipId) {
 
     if (deliverableUserPartnership.getPartnershipPersons() != null) {
@@ -81,6 +80,7 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
     }
 
   }
+
 
   @Override
   public DeliverableUserPartnership copyDeliverableUserPartnership(DeliverableUserPartnership deliverablePartnership,
@@ -111,7 +111,6 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
 
   }
 
-
   @Override
   public void deleteDeliverableUserPartnership(long deliverableUserPartnershipId) {
     DeliverableUserPartnership deliverableUserPartnership =
@@ -139,6 +138,7 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
 
     deliverableUserPartnershipDAO.deleteDeliverableUserPartnership(deliverableUserPartnershipId);
   }
+
 
   public void deleteDeliverableUserPartnershipPhase(Phase next, long deliverableID,
     DeliverableUserPartnership deliverableUserPartnership) {
@@ -189,6 +189,13 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
   @Override
   public List<DeliverableUserPartnership> findByDeliverableID(long deliverableID) {
     return deliverableUserPartnershipDAO.findByDeliverableID(deliverableID);
+  }
+
+  @Override
+  public List<DeliverableUserPartnership> findPartnershipsByInstitutionProjectAndPhase(Long institutionId,
+    Long projectId, Long phaseId) {
+    return this.deliverableUserPartnershipDAO.findPartnershipsByInstitutionProjectAndPhase(institutionId.longValue(),
+      projectId.longValue(), phaseId.longValue());
   }
 
 
