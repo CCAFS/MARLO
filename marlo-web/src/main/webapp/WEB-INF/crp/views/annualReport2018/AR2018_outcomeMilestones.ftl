@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlCdn}/global/js/utils.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211201A",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20211210A",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js?20211125a"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20210924a"] /]
@@ -154,6 +154,7 @@
           <th rowspan="2"> Milestone </th>
           <th rowspan="2"> Status</th>
           [#if allowPopups]
+            <th rowspan="2">Missing fields status</th>
               <th rowspan="2" class="col-md-1">Include in QA 
                 <br>
                 <button type="button" class="selectAllCheckMilestones" id="selectAllMilestones" style="color: #1da5ce; font-style: italic; font-weight: 500; background-color: #F9F9F9; border-bottom: none; outline: none">Select All</button>
@@ -238,6 +239,14 @@
                     [@utils.tableText value=(milestoneReportSynthesis.milestonesStatus.name)!"" emptyText="global.prefilledByFlagship" /]
                   </td>
                   [#if allowPopups]
+                    <td class="text-center">
+                    [#assign isMilestoneComplete  = action.isMilestoneComplete(milestoneReportSynthesis.id)!false /]
+                    [#if isMilestoneComplete ]
+                     <span class="glyphicon glyphicon-ok-sign mf-icon check" title="Complete"></span> 
+                    [#else]
+                      <span class="glyphicon glyphicon-exclamation-sign mf-icon" title="Incomplete"></span> 
+                    [/#if] 
+                    
                       [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.milestoneIds?seq_contains(milestone.id))!true) /]
                       <td class="text-center">
                         <div>

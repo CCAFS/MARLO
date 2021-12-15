@@ -54,6 +54,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndMilestoneReason;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
@@ -98,6 +99,8 @@ public class OutcomesMilestonesAction extends BaseAction {
   private static Logger LOG = LoggerFactory.getLogger(OutcomesMilestonesAction.class);
 
   private static final long serialVersionUID = -6827326398431411479L;
+
+  private final ReportSynthesis2018SectionStatusEnum section = ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES;
 
   // Managers
   private GlobalUnitManager crpManager;
@@ -632,6 +635,32 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
 
     return isFP;
+  }
+
+  /**
+   * This method get the status of an specific milestone depending of the
+   * sectionStatuses
+   *
+   * @param synthesisMilestoneId is the synthesisMilestone ID to be identified.
+   * @return Boolean object with the status of the milestone
+   */
+  public Boolean isMilestoneComplete(Long synthesisMilestoneId) {
+    if (synthesisMilestoneId != null) {
+      SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusBySynthesisMilestone(synthesisMilestoneId,
+        "Reporting", this.getActualPhase().getYear(), false, this.section.getStatus());
+
+      if (sectionStatus == null) {
+        return true;
+      }
+
+      if (sectionStatus.getMissingFields().length() != 0) {
+        return false;
+      }
+
+      return true;
+    }
+
+    return null;
   }
 
   @Override
@@ -1440,10 +1469,10 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
   }
 
+
   public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
     this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
   }
-
 
   public void setFlagships(List<CrpProgram> flagships) {
     this.flagships = flagships;

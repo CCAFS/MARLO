@@ -98,10 +98,10 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
     String sqlquery =
       "Select inst.id, inst.name, inst.acronym, inst.website_link,insttypes.id as typeid,insttypes.name as type,loc.name as hqLocation,"
         + "loc.iso_alpha_2 as hqLocationISOalpha2, "
-        + "(select GROUP_CONCAT(DISTINCT CONCAT(dictionary.institution_source_id,'--',dictionary.institution_source_name,'--',dictionary.source_id,'--',isource.name)SEPARATOR '; ') "
+        + "(select GROUP_CONCAT(DISTINCT CONCAT(dictionary.institution_source_id,'--',dictionary.institution_source_name,'--',dictionary.source_id,'--',isource.source_name)SEPARATOR '; ') "
         + "from institution_dictionary dictionary "
-        + "INNER JOIN institution_source isource ON isource.id=dictionary.source_id "
-        + "where dictionary.institution_id=inst.id ) as  institution_related" + "from institutions inst "
+        + "INNER JOIN institutions_source isource ON isource.id=dictionary.source_id "
+        + "where dictionary.institution_id=inst.id ) as  institution_related  from institutions inst "
         + "INNER JOIN institution_types insttypes ON insttypes.id=inst.institution_type_id "
         + "INNER JOIN institutions_locations instloc ON instloc.institution_id=inst.id and instloc.is_headquater=1 "
         + "INNER JOIN loc_elements loc ON loc.id=instloc.loc_element_id";
@@ -123,8 +123,8 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
       data.setHqLocation(map.get("hqLocation").toString());
       data.setHqLocationISOalpha2(map.get("hqLocationISOalpha2").toString());
       dictionary = new ArrayList<InstitutionDictionary>();
-      for (String dictionaryData : map.get("institution_related").toString() == null ? new ArrayList<String>()
-        : new ArrayList<String>(Arrays.asList(map.get("institution_related").toString().split(";")))) {
+      for (String dictionaryData : map.get("institution_related") == null ? new ArrayList<String>()
+        : Arrays.asList(map.get("institution_related").toString().split(";"))) {
         obj = new InstitutionDictionary();
         obj.setInstitution(data);
         isource = new InstitutionSource();
