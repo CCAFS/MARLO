@@ -3,13 +3,13 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${expectedID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload", "flag-icon-css", "components-font-awesome"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectStudy.js?20211129A",
+  "${baseUrlMedia}/js/projects/projectStudy.js?20211213A",
   "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectStudies.css?20210907a",
+  "${baseUrlMedia}/css/projects/projectStudies.css?20211213A",
   "${baseUrlCdn}/global/css/global.css?20211126a"
   ] 
 /]

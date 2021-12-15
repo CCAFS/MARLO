@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -638,7 +639,6 @@ public class BaseValidator {
     action.getMissingFields().setLength(0);
   }
 
-
   /**
    * This method saves the missing fields into the database for a section at project Innovation.
    * 
@@ -738,6 +738,7 @@ public class BaseValidator {
     // Not sure if this is still required to set the missingFields to length zero???
     action.getMissingFields().setLength(0);
   }
+
 
   /**
    * This method saves the missing fields into the database for a section at project Policy.
@@ -875,6 +876,36 @@ public class BaseValidator {
     sectionStatusManager.saveSectionStatus(status);
     // Not sure if this is still required to set the missingFields to length zero???
     action.getMissingFields().setLength(0);
+  }
+
+  /**
+   * This method saves the missing fields into the database for a section at project expected study.
+   * 
+   * @param expectedStudy is a Project Expected Study.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
+   * @param sectionName is the name of the section.
+   */
+  protected void saveMissingFields(ReportSynthesis reportSynthesis,
+    ReportSynthesisFlagshipProgressOutcomeMilestone synthesisMilestone, String cycle, int year, Boolean upkeep,
+    String sectionName, String fields) {
+    // Reporting missing fields into the database.
+    SectionStatus status = sectionStatusManager.getSectionStatusBySynthesisMilestone(synthesisMilestone.getId(), cycle,
+      year, upkeep, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setUpkeep(upkeep);
+      status.setSynthesisMilestone(synthesisMilestone);
+      status.setSectionName(sectionName);
+      status.setReportSynthesis(reportSynthesis);
+
+    }
+    status.setMissingFields(fields);
+    sectionStatusManager.saveSectionStatus(status);
+    // Not sure if this is still required to set the missingFields to length zero???
   }
 
 
