@@ -294,7 +294,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       if (!StringUtils.equals(String.valueOf(milestone.getMilestonesStatus().getId()),
         ProjectStatusEnum.Complete.getStatusId())) {
         // Validate status not extended for 2021
-        if (milestone.getMilestonesStatus().getId() == 1L && (action.isSelectedPhaseAR2021() && StringUtils
+        if (milestone.getMilestonesStatus().getId() == 1L || (action.isSelectedPhaseAR2021() && StringUtils
           .equals(String.valueOf(milestone.getMilestonesStatus().getId()), ProjectStatusEnum.Extended.getStatusId()))) {
           action.addMessage(action.getText("Milestone Status"));
           action.addMissingField("Milestone Status");
