@@ -267,7 +267,7 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
             if ($('#isPMU').html() == 'true') {
               updateQualityAssessmentStatusData(newData);
             } else {
-              console.log("FP",newData)
+              // console.log("FP",newData)
               qualityAssessmentStatusMessage(newData);
             }
           }
@@ -378,6 +378,7 @@ function qualityAssessmentStatusMessage(data) {
           var pMessageTag = document.createElement('p');
           if (x[1] == 'quality_assessed') {
             var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+            element.style.backgroundPosition = '594px';
           } else {
             var textMessage = document.createTextNode('As this item is being assessed by the SMO, no changes are recommended');
           }
