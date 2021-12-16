@@ -66,7 +66,8 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
     if (clusters.isEmpty()) {
       ProjectClusterActivity projectClusterAdd = new ProjectClusterActivity();
       CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO
-        .getCrpClusterOfActivityByIdentifierPhase(projectCluster.getCrpClusterOfActivity().getIdentifier(), phase);
+        .getCrpClusterOfActivityByIdentifierFlagshipAndPhase(projectCluster.getCrpClusterOfActivity().getIdentifier(),
+          projectCluster.getCrpClusterOfActivity().getCrpProgram().getId(), phase.getId());
       if (crpClusterOfActivity != null) {
         projectClusterAdd.setCrpClusterOfActivity(crpClusterOfActivity);
         projectClusterAdd.setPhase(phase);
