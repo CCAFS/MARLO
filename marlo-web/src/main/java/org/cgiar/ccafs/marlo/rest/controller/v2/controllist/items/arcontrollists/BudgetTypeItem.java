@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollist
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.rest.dto.BudgetTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.BudgetTypeOneCGIARDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.BudgetTypeMapper;
 
 import java.util.ArrayList;
@@ -67,6 +68,19 @@ public class BudgetTypeItem<T> {
 
       List<BudgetTypeDTO> budgetTypeDTOs = budgetTypes.stream()
         .map(budgetTypesEntity -> this.budgetTypeMapper.budgetTypeToBudgetTypeDTO(budgetTypesEntity))
+        .collect(Collectors.toList());
+      return budgetTypeDTOs;
+    } else {
+      return null;
+    }
+  }
+
+  public List<BudgetTypeOneCGIARDTO> getAllBudgetTypesCGIAR() {
+    if (this.budgetTypeManager.findAllFundingSourcesCGIAR() != null) {
+      List<BudgetType> budgetTypes = new ArrayList<>(this.budgetTypeManager.findAllFundingSourcesCGIAR());
+
+      List<BudgetTypeOneCGIARDTO> budgetTypeDTOs = budgetTypes.stream()
+        .map(budgetTypesEntity -> this.budgetTypeMapper.budgetTypeToBudgetTypeOneCGIARDTO(budgetTypesEntity))
         .collect(Collectors.toList());
       return budgetTypeDTOs;
     } else {
