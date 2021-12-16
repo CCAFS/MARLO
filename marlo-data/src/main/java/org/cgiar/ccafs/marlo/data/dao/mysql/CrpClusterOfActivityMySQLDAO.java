@@ -19,7 +19,6 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.CrpClusterOfActivityDAO;
 import org.cgiar.ccafs.marlo.data.dto.ImpactPathwaysClusterDTO;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -131,10 +130,10 @@ public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO<CrpClusterOfA
   }
 
   @Override
-  public CrpClusterOfActivity getCrpClusterOfActivityByIdentifierPhase(String crpClusterOfActivityIdentefier,
-    Phase phase) {
+  public CrpClusterOfActivity getCrpClusterOfActivityByIdentifierFlagshipAndPhase(String crpClusterOfActivityIdentefier,
+    long fpId, long phaseId) {
     String query = "from " + CrpClusterOfActivity.class.getName() + " where is_active=1 and identifier='"
-      + crpClusterOfActivityIdentefier + "' and id_phase=" + phase.getId();
+      + crpClusterOfActivityIdentefier + "' and id_phase=" + phaseId + " and crp_program_id=" + fpId;
     List<CrpClusterOfActivity> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
