@@ -32,8 +32,13 @@ public class CountryDTO {
   @ApiModelProperty(notes = "The ISO Alpha 2 letters code")
   private String isoAlpha2;
 
+  @ApiModelProperty(notes = "The ISO Alpha 3 letters code")
+  private String isoAlpha3;
+
+
   @ApiModelProperty(notes = "Country Name")
   private String name;
+
 
   @ApiModelProperty(notes = "Region")
   @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -45,6 +50,10 @@ public class CountryDTO {
 
   public String getIsoAlpha2() {
     return this.isoAlpha2;
+  }
+
+  public String getIsoAlpha3() {
+    return isoAlpha3;
   }
 
   public String getName() {
@@ -61,6 +70,10 @@ public class CountryDTO {
 
   public void setIsoAlpha2(String isoAlpha2) {
     this.isoAlpha2 = isoAlpha2;
+  }
+
+  public void setIsoAlpha3(String isoAlpha3) {
+    this.isoAlpha3 = isoAlpha3;
   }
 
   public void setName(String name) {

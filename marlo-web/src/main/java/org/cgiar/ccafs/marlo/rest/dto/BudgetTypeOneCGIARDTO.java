@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class BudgetTypeDTO {
+public class BudgetTypeOneCGIARDTO {
 
   @ApiModelProperty(notes = "Budget type ID", position = 1)
   @NotNull
@@ -33,6 +33,11 @@ public class BudgetTypeDTO {
   @NotNull
   private String description;
 
+  @ApiModelProperty(notes = "Budget type  financial code", position = 4)
+  private String financialCode;
+
+  @ApiModelProperty(notes = "Budget type  parent tree", position = 5)
+  private String parent;
 
   public Long getCode() {
     return this.code;
@@ -43,8 +48,19 @@ public class BudgetTypeDTO {
     return this.description;
   }
 
+
+  public String getFinancialCode() {
+    return financialCode;
+  }
+
+
   public String getName() {
     return this.name;
+  }
+
+
+  public String getParent() {
+    return parent;
   }
 
   public void setCode(Long code) {
@@ -55,10 +71,16 @@ public class BudgetTypeDTO {
     this.description = description;
   }
 
+  public void setFinancialCode(String financialCode) {
+    this.financialCode = financialCode;
+  }
 
   public void setName(String name) {
     this.name = name;
   }
 
+  public void setParent(String parent) {
+    this.parent = parent;
+  }
 
 }
