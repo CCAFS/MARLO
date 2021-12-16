@@ -80,8 +80,16 @@ public interface CrpClusterOfActivityManager {
    */
   public CrpClusterOfActivity getCrpClusterOfActivityById(long crpClusterOfActivityID);
 
-  public CrpClusterOfActivity getCrpClusterOfActivityByIdentifierPhase(String crpClusterOfActivityIdentefier,
-    Phase phase);
+  /**
+   * Gets the CrpClusterOfActivity by a given phase, flagship and identifier
+   * 
+   * @param phaseId the Phase identifier
+   * @param fpId the CrpProgram identifier
+   * @param crpClusterOfActivityIdentefier the CrpClusterOfActivity identifier
+   * @return a CrpClusterOfActivity object; null if not found.
+   */
+  public CrpClusterOfActivity getCrpClusterOfActivityByIdentifierFlagshipAndPhase(String crpClusterOfActivityIdentefier,
+    Long fpId, Long phaseId);
 
   /**
    * This method saves the information of the given crpClusterOfActivity

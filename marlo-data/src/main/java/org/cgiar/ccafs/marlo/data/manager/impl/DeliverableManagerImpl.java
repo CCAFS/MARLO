@@ -95,11 +95,14 @@ public class DeliverableManagerImpl implements DeliverableManager {
     DeliverableInfo deliverableInfo = new DeliverableInfo();
     deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
 
-    if (deliverableInfo.getCrpClusterKeyOutput() != null) {
+    if (deliverableInfo.getCrpClusterKeyOutput() != null
+      && deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity() != null) {
       CrpClusterKeyOutput crpClusterKeyOutput =
         crpClusterKeyOutputDAO.find(deliverableInfo.getCrpClusterKeyOutput().getId());
-      CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO
-        .getCrpClusterOfActivityByIdentifierPhase(crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(), phase);
+      CrpClusterOfActivity crpClusterOfActivity =
+        crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierFlagshipAndPhase(
+          crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(),
+          crpClusterKeyOutput.getCrpClusterOfActivity().getCrpProgram().getId(), phase.getId());
       List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
         .filter(c -> c.isActive() && c.getComposeID().equals(deliverableInfo.getCrpClusterKeyOutput().getComposeID()))
         .collect(Collectors.toList());
@@ -681,14 +684,16 @@ public class DeliverableManagerImpl implements DeliverableManager {
     for (DeliverableInfo deliverableInfo : deliverablesInfo) {
       deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
 
-      if (deliverableInfo.getCrpClusterKeyOutput() != null
-        && deliverableInfo.getCrpClusterKeyOutput().getId() != null) {
+      if (deliverableInfo.getCrpClusterKeyOutput() != null && deliverableInfo.getCrpClusterKeyOutput().getId() != null
+        && deliverableInfo.getCrpClusterKeyOutput() != null) {
 
         CrpClusterKeyOutput crpClusterKeyOutput =
           crpClusterKeyOutputDAO.find(deliverableInfo.getCrpClusterKeyOutput().getId());
 
-        CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierPhase(
-          crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(), phase);
+        CrpClusterOfActivity crpClusterOfActivity =
+          crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierFlagshipAndPhase(
+            crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(),
+            crpClusterKeyOutput.getCrpClusterOfActivity().getCrpProgram().getId(), phase.getId());
         if (crpClusterOfActivity != null) {
           List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
             .filter(c -> c.isActive() && c.getComposeID().equals(crpClusterKeyOutput.getComposeID()))
