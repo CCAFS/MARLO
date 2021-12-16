@@ -128,11 +128,15 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
     if (deliverableUserPartnership.getPhase().getDescription().equals(APConstants.REPORTING)) {
       if (deliverableUserPartnership.getPhase().getNext() != null
         && deliverableUserPartnership.getPhase().getNext().getNext() != null && !isPublication) {
-        Phase upkeepPhase = deliverableUserPartnership.getPhase().getNext().getNext();
-        if (upkeepPhase != null) {
-          this.deleteDeliverableUserPartnershipPhase(upkeepPhase, deliverableUserPartnership.getDeliverable().getId(),
-            deliverableUserPartnership);
-        }
+        /*
+         * Phase upkeepPhase = deliverableUserPartnership.getPhase().getNext().getNext();
+         * if (upkeepPhase != null) {
+         * this.deleteDeliverableUserPartnershipPhase(upkeepPhase, deliverableUserPartnership.getDeliverable().getId(),
+         * deliverableUserPartnership);
+         * }
+         */
+        this.deleteDeliverableUserPartnershipPhase(deliverableUserPartnership.getPhase(),
+          deliverableUserPartnership.getDeliverable().getId(), deliverableUserPartnership);
       }
     }
 
