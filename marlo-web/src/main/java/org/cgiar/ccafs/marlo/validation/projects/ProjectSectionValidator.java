@@ -995,6 +995,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       List<DeliverableInfo> infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
       deliverables = new ArrayList<>();
       if (infos != null && !infos.isEmpty()) {
+        infos = infos.stream().filter(i -> i.isRequiredToComplete()).collect(Collectors.toList());
         for (DeliverableInfo deliverableInfo : infos) {
           Deliverable deliverable = deliverableInfo.getDeliverable();
           deliverable.setDeliverableInfo(deliverableInfo);
