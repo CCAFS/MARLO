@@ -62,6 +62,17 @@ public interface DeliverableUserPartnershipDAO {
    */
   public List<DeliverableUserPartnership> findByDeliverableID(long deliverableID);
 
+  /**
+   * This method gets a deliverableUserPartnership list by a given Institution, Project and Phase identifier.
+   * 
+   * @param institutionId is the institution identifier.
+   * @param projectId is the project identifier.
+   * @param phaseId is the phase identifier.
+   * @return a DeliverableUserPartnership list.
+   */
+  public List<DeliverableUserPartnership> findPartnershipsByInstitutionProjectAndPhase(long institutionId,
+    long projectId, long phaseId);
+
 
   /**
    * This method saves the information of the given deliverableUserPartnership

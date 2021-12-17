@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
@@ -59,6 +60,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -189,6 +191,7 @@ public class ProjectPartnerAction extends BaseAction {
   private final ProjectInnovationManager projectInnovationManager;
   private final ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager;
   private final ProjectExpectedStudyManager projectExpectedStudyManager;
+  private final DeliverableUserPartnershipManager deliverableUserPartnershipManager;
 
 
   // Variables
@@ -235,7 +238,8 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPolicyCenterManager projectPolicyCenterManager, ProjectPolicyManager projectPolicyManager,
     ProjectInnovationCenterManager projectInnovationCenterManager, ProjectInnovationManager projectInnovationManager,
     ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager) {
+    ProjectExpectedStudyManager projectExpectedStudyManager,
+    DeliverableUserPartnershipManager deliverableUserPartnershipManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
@@ -272,6 +276,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.projectInnovationManager = projectInnovationManager;
     this.projectExpectedStudyCenterManager = projectExpectedStudyCenterManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.deliverableUserPartnershipManager = deliverableUserPartnershipManager;
   }
 
   public void addCrpUser(User user) {
@@ -334,6 +339,21 @@ public class ProjectPartnerAction extends BaseAction {
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
+  private void deleteDeliverablePartners(ProjectPartner removedPartner) {
+    if (removedPartner != null && removedPartner.getId() != null && removedPartner.getProject() != null
+      && removedPartner.getProject().getId() != null && removedPartner.getInstitution() != null
+      && removedPartner.getInstitution().getId() != null && removedPartner.getPhase() != null
+      && removedPartner.getPhase().getId() != null) {
+      for (DeliverableUserPartnership dup : deliverableUserPartnershipManager
+        .findPartnershipsByInstitutionProjectAndPhase(removedPartner.getInstitution().getId(),
+          removedPartner.getProject().getId(), removedPartner.getPhase().getId())) {
+        if (dup != null && dup.getId() != null && dup.isActive()) {
+          this.deliverableUserPartnershipManager.deleteDeliverableUserPartnership(dup.getId());
+        }
+      }
+    }
+  }
+
   private void deletePartnershipLocations(List<ProjectPartnerPartnershipLocation> locationsDB) {
     if (locationsDB != null) {
       for (ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation : locationsDB) {
@@ -374,10 +394,10 @@ public class ProjectPartnerAction extends BaseAction {
     return allRepIndResearchPhases;
   }
 
+
   public List<User> getAllUsers() {
     return allUsers;
   }
-
 
   private Path getAutoSaveFilePath() {
     // get the class simple name
@@ -391,10 +411,10 @@ public class ProjectPartnerAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public List<LocElement> getCountries() {
     return countries;
   }
-
 
   public List<Deliverable> getDeliverablesLedByPartner(Long projectPartnerID) {
     List<Deliverable> deliverablesLeads = new ArrayList<>();
@@ -476,10 +496,10 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
+
   public List<PartnerDivision> getDivisions() {
     return divisions;
   }
-
 
   public List<ProjectInnovation> getInnovationContributingByPartner(Long projectPartnerID) {
     List<ProjectInnovation> innovationContributings = new ArrayList<>();
@@ -517,6 +537,7 @@ public class ProjectPartnerAction extends BaseAction {
     return innovationContributings;
   }
 
+
   public List<InstitutionType> getIntitutionTypes() {
     return intitutionTypes;
   }
@@ -526,10 +547,10 @@ public class ProjectPartnerAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public Map<String, String> getPartnerPersonTypes() {
     return partnerPersonTypes;
   }
+
 
   public List<ProjectPolicy> getPolicyContributingByPartner(Long projectPartnerID) {
     List<ProjectPolicy> policyContributings = new ArrayList<>();
@@ -566,7 +587,6 @@ public class ProjectPartnerAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
@@ -574,6 +594,7 @@ public class ProjectPartnerAction extends BaseAction {
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
   }
+
 
   public List<ProjectExpectedStudy> getStudyContributingByPartner(Long projectExpectedID) {
     List<ProjectExpectedStudy> studyContributings = new ArrayList<>();
@@ -615,7 +636,6 @@ public class ProjectPartnerAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
-
 
   /**
    * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
@@ -971,6 +991,7 @@ public class ProjectPartnerAction extends BaseAction {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -1405,7 +1426,6 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
-
   /**
    * Delete projectPartner if it is not in the list of partners sent back from the UI.
    * 
@@ -1422,6 +1442,7 @@ public class ProjectPartnerAction extends BaseAction {
         if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
 
           this.removeProjectIndicatorsCenter(previouslyEnteredPartner);
+          this.deleteDeliverablePartners(previouslyEnteredPartner);
           projectPartnerManager.deleteProjectPartner(previouslyEnteredPartner.getId());
 
         } else {

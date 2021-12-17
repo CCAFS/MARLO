@@ -1006,8 +1006,18 @@ public class ProjectDescriptionAction extends BaseAction {
             projectClusterActivity = projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
             // This add clusterActivity to generate correct auditlog.
             project.getProjectClusterActivities().add(projectClusterActivity);
-          }
+          } else {
+            ProjectClusterActivity projectClusterActivityDB =
+              this.projectClusterActivityManager.getProjectClusterActivityById(projectClusterActivity.getId());
 
+            projectClusterActivityDB.setCrpClusterOfActivity(projectClusterActivity.getCrpClusterOfActivity());
+            projectClusterActivityDB.setPhase(this.getActualPhase());
+            projectClusterActivityDB.setProject(this.project);
+            projectClusterActivityDB.setModifiedBy(this.getCurrentUser());
+
+            projectClusterActivityDB =
+              this.projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivityDB);
+          }
         }
       }
 

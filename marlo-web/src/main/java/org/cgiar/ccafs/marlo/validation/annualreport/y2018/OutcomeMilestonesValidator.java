@@ -391,7 +391,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       }
     } else {
       if (milestone.getMilestonesStatus() != null && milestone.getMilestonesStatus().getId() != null
-        && (milestone.getMilestonesStatus().getId() == 3L || milestone.getMilestonesStatus().getId() == 6L)) {
+        && (milestone.getMilestonesStatus().getId() == 3L || milestone.getMilestonesStatus().getId() == 7L)) {
         if (action.isNotEmpty(milestone.getLinks())) {
           boolean validLinks = true;
           for (ReportSynthesisFlagshipProgressOutcomeMilestoneLink link : milestone.getLinks()) {
