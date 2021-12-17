@@ -1208,9 +1208,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
         }
         if (deliverable != null && deliverable.getDeliverableInfo() != null
-          && (deliverable.getDeliverableInfo().getStatus() != null
-            && deliverable.getDeliverableInfo().getStatus().intValue() == 2
-            && deliverable.getDeliverableInfo().getYear() == action.getActualPhase().getYear())) {
+          && deliverable.getDeliverableInfo().isRequiredToComplete()) {
           deliverableValidator.validate(action, deliverable, false);
         }
       }
