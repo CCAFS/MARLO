@@ -3693,7 +3693,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (deliverables != null && !deliverables.isEmpty()) {
-
       total = deliverables.size();
 
       if (deliverables != null && !deliverables.isEmpty()) {
