@@ -72,6 +72,9 @@
 		<one-to-one name="reportSynthesisMelia"
 			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia"
 			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisCrpFinancialReport"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpFinancialReport"
+			cascade="save-update"></one-to-one>
 		<one-to-one name="reportSynthesisSrfProgress"
 			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress"
 			cascade="save-update"></one-to-one>

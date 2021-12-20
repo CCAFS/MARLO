@@ -84,6 +84,9 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   private ReportSynthesisKeyPartnership reportSynthesisKeyPartnership;
 
   @Expose
+  private ReportSynthesisCrpFinancialReport reportSynthesisCrpFinancialReport;
+
+  @Expose
   private ReportSynthesisNarrative reportSynthesisNarrative;
 
 
@@ -145,36 +148,41 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisCrossCuttingDimension;
   }
 
+  public ReportSynthesisCrpFinancialReport getReportSynthesisCrpFinancialReport() {
+    return reportSynthesisCrpFinancialReport;
+  }
+
   public ReportSynthesisCrpProgress getReportSynthesisCrpProgress() {
     return reportSynthesisCrpProgress;
   }
+
 
   public ReportSynthesisEfficiency getReportSynthesisEfficiency() {
     return reportSynthesisEfficiency;
   }
 
-
   public ReportSynthesisExternalPartnership getReportSynthesisExternalPartnership() {
     return reportSynthesisExternalPartnership;
   }
+
 
   public ReportSynthesisFinancialSummary getReportSynthesisFinancialSummary() {
     return reportSynthesisFinancialSummary;
   }
 
-
   public ReportSynthesisFlagshipProgress getReportSynthesisFlagshipProgress() {
     return reportSynthesisFlagshipProgress;
   }
+
 
   public ReportSynthesisFundingUseSummary getReportSynthesisFundingUseSummary() {
     return reportSynthesisFundingUseSummary;
   }
 
-
   public ReportSynthesisGovernance getReportSynthesisGovernance() {
     return reportSynthesisGovernance;
   }
+
 
   public ReportSynthesisIndicatorGeneral getReportSynthesisIndicatorGeneral() {
     return reportSynthesisIndicatorGeneral;
@@ -199,7 +207,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public ReportSynthesisNarrative getReportSynthesisNarrative() {
     return reportSynthesisNarrative;
   }
-
 
   public ReportSynthesisProgramVariance getReportSynthesisProgramVariance() {
     return reportSynthesisProgramVariance;
@@ -244,6 +251,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public void
     setReportSynthesisCrossCuttingDimension(ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension) {
     this.reportSynthesisCrossCuttingDimension = reportSynthesisCrossCuttingDimension;
+  }
+
+  public void
+    setReportSynthesisCrpFinancialReport(ReportSynthesisCrpFinancialReport reportSynthesisCrpFinancialReport) {
+    this.reportSynthesisCrpFinancialReport = reportSynthesisCrpFinancialReport;
   }
 
 
