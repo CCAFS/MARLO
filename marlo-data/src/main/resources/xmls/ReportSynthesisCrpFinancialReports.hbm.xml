@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 28, 2018 10:47:34 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpFinancialReport" table="report_synthesis_crp_financial_reports" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="reportSynthesis" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesis" fetch="select">
+            <column name="report_synthesis_id" />
+        </many-to-one>
+        <property name="financialStatusNarrative" type="string">
+            <column name="financial_status_narrative" />
+        </property>
+        <property name="personnel2020Forecast" type="java.lang.Double">
+            <column name="personnel_2020_forecast" precision="30" />
+        </property>
+        <property name="personnel2021Budget" type="java.lang.Double">
+            <column name="personnel_2021_budget" precision="30" />
+        </property>
+        <property name="personnelComments" type="string">
+            <column name="personnel_comments" />
+        </property>
+        <property name="consultancy2020Forecast" type="java.lang.Double">
+            <column name="consultancy_2020_forecast" precision="30" />
+        </property>
+        <property name="consultancy2021Budget" type="java.lang.Double">
+            <column name="consultancy_2021_budget" precision="30" />
+        </property>
+        <property name="consultancyComments" type="string">
+            <column name="consultancy_comments" />
+        </property>
+        <property name="travel2020Forecast" type="java.lang.Double">
+            <column name="travel_2020_forecast" precision="30" />
+        </property>
+        <property name="travel2021Budget" type="java.lang.Double">
+            <column name="travel_2021_budget" precision="30" />
+        </property>
+        <property name="travelComments" type="string">
+            <column name="travel_comments" />
+        </property>
+        <property name="operation2020Forecast" type="java.lang.Double">
+            <column name="operation_2020_forecast" precision="30" />
+        </property>
+        <property name="operation2021Budget" type="java.lang.Double">
+            <column name="operation_2021_budget" precision="30" />
+        </property>
+        <property name="operationComments" type="string">
+            <column name="operation_comments" />
+        </property>
+        <property name="collaboratorPartnerships2020Forecast" type="java.lang.Double">
+            <column name="collaborator_partnerships_2020_forecast" precision="30" />
+        </property>
+        <property name="collaboratorPartnerships2021Budget" type="java.lang.Double">
+            <column name="collaborator_partnerships_2021_budget" precision="30" />
+        </property>
+        <property name="collaboratorPartnershipsComments" type="string">
+            <column name="collaborator_partnerships_comments" />
+        </property>
+        <property name="capitalEquipment2020Forecast" type="java.lang.Double">
+            <column name="capital_equipment_2020_forecast" precision="30" />
+        </property>
+        <property name="capitalEquipment2021Budget" type="java.lang.Double">
+            <column name="capital_equipment_2021_budget" precision="30" />
+        </property>
+        <property name="capitalEquipmentComments" type="string">
+            <column name="capital_equipment_comments" />
+        </property>
+        <property name="closeout2020Forecast" type="java.lang.Double">
+            <column name="closeout_2020_forecast" precision="30" />
+        </property>
+        <property name="closeout2021Budget" type="java.lang.Double">
+            <column name="closeout_2021_budget" precision="30" />
+        </property>
+        <property name="closeoutComments" type="string">
+            <column name="closeout_comments" />
+        </property>
+        <property name="crpTotal2020Forecast" type="java.lang.Double">
+            <column name="crp_total_2020_forecast" precision="30" />
+        </property>
+        <property name="crpTotal2021Budget" type="java.lang.Double">
+            <column name="crp_total_2021_budget" precision="30" />
+        </property>
+        <property name="crpTotalComments" type="string">
+            <column name="crp_total_comments" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp" update="false">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" />
+        </property>
+    </class>
+</hibernate-mapping>
