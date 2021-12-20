@@ -3,7 +3,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated May 28, 2018 10:47:34 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget" table="report_synthesis_financial_summary_budgets" optimistic-lock="none">
+    <class name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpFinancialReport" table="report_synthesis_crp_financial_reports" optimistic-lock="none">
         <id name="id" type="java.lang.Long">
             <column name="id" />
             <generator class="identity" />
