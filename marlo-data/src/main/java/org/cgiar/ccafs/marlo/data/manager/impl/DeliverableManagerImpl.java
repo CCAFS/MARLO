@@ -488,7 +488,8 @@ public class DeliverableManagerImpl implements DeliverableManager {
       if (projectFocusManager.findAll() != null) {
         List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
           .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
-            && pf.getPhase() != null && pf.getPhase().getId().equals(phaseDB.getId()))
+            && pf.getPhase() != null && pf.getPhase().getId().equals(phaseDB.getId()) && pf.getProject() != null
+            && pf.getProject().getId() != null)
           .collect(Collectors.toList()));
 
         for (ProjectFocus focus : projectFocus) {
@@ -532,14 +533,8 @@ public class DeliverableManagerImpl implements DeliverableManager {
       }
     } else {
       // Fill Project Deliverables of the PMU, removing flagship deletions
-      List<LiaisonInstitution> liaisonInstitutions = phaseDB.getCrp().getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() != null && c.isActive()
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList());
-      liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-
       List<ReportSynthesisFlagshipProgressDeliverableDTO> flagshipPlannedList =
-        this.getFpPlannedList(liaisonInstitutions, phaseDB, liaisonInstitution, true);
+        this.getPMU2020DeliverableList(phaseDB, liaisonInstitution, true);
 
       for (ReportSynthesisFlagshipProgressDeliverableDTO reportSynthesisFlagshipProgressDeliverableDTO : flagshipPlannedList) {
 
