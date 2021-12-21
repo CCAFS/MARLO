@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
@@ -69,6 +70,7 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
@@ -192,6 +194,7 @@ public class ProjectPartnerAction extends BaseAction {
   private final ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager;
   private final ProjectExpectedStudyManager projectExpectedStudyManager;
   private final DeliverableUserPartnershipManager deliverableUserPartnershipManager;
+  private final ProjectBudgetManager projectBudgetManager;
 
 
   // Variables
@@ -239,7 +242,7 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectInnovationCenterManager projectInnovationCenterManager, ProjectInnovationManager projectInnovationManager,
     ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager,
     ProjectExpectedStudyManager projectExpectedStudyManager,
-    DeliverableUserPartnershipManager deliverableUserPartnershipManager) {
+    DeliverableUserPartnershipManager deliverableUserPartnershipManager, ProjectBudgetManager projectBudgetManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
@@ -277,6 +280,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.projectExpectedStudyCenterManager = projectExpectedStudyCenterManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.deliverableUserPartnershipManager = deliverableUserPartnershipManager;
+    this.projectBudgetManager = projectBudgetManager;
   }
 
   public void addCrpUser(User user) {
@@ -363,6 +367,21 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
+  private void deleteProjectBudgets(ProjectPartner removedPartner) {
+    if (removedPartner != null && removedPartner.getId() != null && removedPartner.getProject() != null
+      && removedPartner.getProject().getId() != null && removedPartner.getInstitution() != null
+      && removedPartner.getInstitution().getId() != null && removedPartner.getPhase() != null
+      && removedPartner.getPhase().getId() != null) {
+      for (ProjectBudget pb : projectBudgetManager.findBudgetByInstitutionProjectAndPhase(
+        removedPartner.getInstitution().getId(), removedPartner.getProject().getId(),
+        removedPartner.getPhase().getId())) {
+        if (pb != null && pb.getId() != null && pb.isActive()) {
+          this.projectBudgetManager.deleteProjectBudget(pb.getId());
+        }
+      }
+    }
+  }
+
   public List<Activity> getActivitiesLedByUser(long userID) {
     Project project = projectManager.getProjectById(projectID);
     List<Activity> activities = project.getActivities().stream()
@@ -390,14 +409,15 @@ public class ProjectPartnerAction extends BaseAction {
     return allRepIndRegions;
   }
 
+
   public List<RepIndPhaseResearchPartnership> getAllRepIndResearchPhases() {
     return allRepIndResearchPhases;
   }
 
-
   public List<User> getAllUsers() {
     return allUsers;
   }
+
 
   private Path getAutoSaveFilePath() {
     // get the class simple name
@@ -410,7 +430,6 @@ public class ProjectPartnerAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public List<LocElement> getCountries() {
     return countries;
@@ -454,6 +473,7 @@ public class ProjectPartnerAction extends BaseAction {
     return deliverablesLeads;
   }
 
+
   public List<Deliverable> getDeliverablesLedByUser(long userID) {
     List<Deliverable> deliverablesLeads = new ArrayList<>();
     List<Deliverable> deliverables =
@@ -496,10 +516,10 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
-
   public List<PartnerDivision> getDivisions() {
     return divisions;
   }
+
 
   public List<ProjectInnovation> getInnovationContributingByPartner(Long projectPartnerID) {
     List<ProjectInnovation> innovationContributings = new ArrayList<>();
@@ -542,10 +562,10 @@ public class ProjectPartnerAction extends BaseAction {
     return intitutionTypes;
   }
 
-
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public Map<String, String> getPartnerPersonTypes() {
     return partnerPersonTypes;
@@ -582,7 +602,6 @@ public class ProjectPartnerAction extends BaseAction {
     return policyContributings;
   }
 
-
   public Project getProject() {
     return project;
   }
@@ -590,6 +609,7 @@ public class ProjectPartnerAction extends BaseAction {
   public long getProjectID() {
     return projectID;
   }
+
 
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
@@ -631,7 +651,6 @@ public class ProjectPartnerAction extends BaseAction {
     }
     return studyContributings;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -860,6 +879,7 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
+
   /**
    * This method notify the the user that he/she stopped contributing to a specific project.
    * 
@@ -991,7 +1011,6 @@ public class ProjectPartnerAction extends BaseAction {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -1423,7 +1442,6 @@ public class ProjectPartnerAction extends BaseAction {
     if (this.isHttpPost()) {
       project.getPartners().clear();
     }
-
   }
 
   /**
@@ -1443,6 +1461,7 @@ public class ProjectPartnerAction extends BaseAction {
 
           this.removeProjectIndicatorsCenter(previouslyEnteredPartner);
           this.deleteDeliverablePartners(previouslyEnteredPartner);
+          this.deleteProjectBudgets(previouslyEnteredPartner);
           projectPartnerManager.deleteProjectPartner(previouslyEnteredPartner.getId());
 
         } else {
