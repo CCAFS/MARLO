@@ -169,6 +169,12 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   }
 
   @Override
+  public List<ProjectBudget> findBudgetByInstitutionProjectAndPhase(Long institutionId, Long projectId, Long phaseId) {
+    return this.projectBudgetDAO.findBudgetByInstitutionProjectAndPhase(institutionId.longValue(),
+      projectId.longValue(), phaseId.longValue());
+  }
+
+  @Override
   public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId,
     Integer coFinancing, long idPhase) {
     return projectBudgetDAO.getByParameters(institutionID, year, budgetTypeId, projectId, coFinancing, idPhase);

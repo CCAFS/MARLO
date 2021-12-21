@@ -26,7 +26,6 @@ import java.util.List;
 
 public interface ProjectBudgetManager {
 
-
   /**
    * Gets the budget amount for a specific institution , year and budget type.
    * 
@@ -39,7 +38,6 @@ public interface ProjectBudgetManager {
    */
   public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId, Integer coFinancing,
     long idPhase);
-
 
   public ProjectBudget copyProjectBudget(ProjectBudget projectBudget, Phase phase);
 
@@ -61,12 +59,23 @@ public interface ProjectBudgetManager {
    */
   public boolean existProjectBudget(long projectBudgetID);
 
+
   /**
    * This method gets a list of projectBudget that are active
    * 
    * @return a list from ProjectBudget null if no exist records
    */
   public List<ProjectBudget> findAll();
+
+  /**
+   * This method gets a projectBudget list by a given Institution, Project and Phase identifier.
+   * 
+   * @param institutionId is the institution identifier.
+   * @param projectId is the project identifier.
+   * @param phaseId is the phase identifier.
+   * @return a ProjectBudget list.
+   */
+  public List<ProjectBudget> findBudgetByInstitutionProjectAndPhase(Long institutionId, Long projectId, Long phaseId);
 
   /**
    * gets a list of ProjectBudget of a specific parameters
