@@ -72,9 +72,14 @@
 		<one-to-one name="reportSynthesisMelia"
 			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia"
 			cascade="save-update"></one-to-one>
-		<one-to-one name="reportSynthesisCrpFinancialReport"
-			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpFinancialReport"
-			cascade="save-update"></one-to-one>
+		<set name="reportSynthesisCrpFinancialReports" table="report_synthesis_crp_financial_reports"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="report_synthesis_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpFinancialReport" />
+		</set>
 		<one-to-one name="reportSynthesisSrfProgress"
 			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress"
 			cascade="save-update"></one-to-one>

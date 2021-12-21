@@ -333,14 +333,20 @@ public class FinancialSummaryAction extends BaseAction {
         if (this.isSelectedPhaseAR2021()) {
           if (this.isPMU()) {
             // Check if relation is null -create it
-            if (reportSynthesis.getReportSynthesisCrpFinancialReport() == null) {
+            if (this.isEmpty(reportSynthesis.getReportSynthesisCrpFinancialReports())) {
               ReportSynthesisCrpFinancialReport reportSynthesisCrpFinancialReport =
                 new ReportSynthesisCrpFinancialReport();
               // create one to one relation
-              reportSynthesis.setReportSynthesisCrpFinancialReport(reportSynthesisCrpFinancialReport);;
+              reportSynthesis.setReportSynthesisCrpFinancialReport(reportSynthesisCrpFinancialReport);
+              reportSynthesis.getReportSynthesisCrpFinancialReports().add(reportSynthesisCrpFinancialReport);
               reportSynthesisCrpFinancialReport.setReportSynthesis(reportSynthesis);
               // save the changes
               reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+            } else {
+              reportSynthesis.setReportSynthesisCrpFinancialReport(reportSynthesis
+                .getReportSynthesisCrpFinancialReports().stream().sorted((f1, f2) -> Comparator
+                  .comparing(ReportSynthesisCrpFinancialReport::getActiveSince).reversed().compare(f1, f2))
+                .findFirst().orElse(null));
             }
 
             // nothing else for now

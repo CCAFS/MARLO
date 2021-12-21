@@ -86,6 +86,9 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisCrpFinancialReport reportSynthesisCrpFinancialReport;
 
+  // Unfortunate workaround
+  private Set<ReportSynthesisCrpFinancialReport> reportSynthesisCrpFinancialReports;
+
   @Expose
   private ReportSynthesisNarrative reportSynthesisNarrative;
 
@@ -97,7 +100,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   public ReportSynthesis() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -121,7 +123,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return true;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -144,45 +145,50 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisCrossCgiar;
   }
 
+
   public ReportSynthesisCrossCuttingDimension getReportSynthesisCrossCuttingDimension() {
     return reportSynthesisCrossCuttingDimension;
   }
 
+
   public ReportSynthesisCrpFinancialReport getReportSynthesisCrpFinancialReport() {
     return reportSynthesisCrpFinancialReport;
+  }
+
+  public Set<ReportSynthesisCrpFinancialReport> getReportSynthesisCrpFinancialReports() {
+    return reportSynthesisCrpFinancialReports;
   }
 
   public ReportSynthesisCrpProgress getReportSynthesisCrpProgress() {
     return reportSynthesisCrpProgress;
   }
 
-
   public ReportSynthesisEfficiency getReportSynthesisEfficiency() {
     return reportSynthesisEfficiency;
   }
+
 
   public ReportSynthesisExternalPartnership getReportSynthesisExternalPartnership() {
     return reportSynthesisExternalPartnership;
   }
 
-
   public ReportSynthesisFinancialSummary getReportSynthesisFinancialSummary() {
     return reportSynthesisFinancialSummary;
   }
+
 
   public ReportSynthesisFlagshipProgress getReportSynthesisFlagshipProgress() {
     return reportSynthesisFlagshipProgress;
   }
 
-
   public ReportSynthesisFundingUseSummary getReportSynthesisFundingUseSummary() {
     return reportSynthesisFundingUseSummary;
   }
 
+
   public ReportSynthesisGovernance getReportSynthesisGovernance() {
     return reportSynthesisGovernance;
   }
-
 
   public ReportSynthesisIndicatorGeneral getReportSynthesisIndicatorGeneral() {
     return reportSynthesisIndicatorGeneral;
@@ -207,6 +213,7 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public ReportSynthesisNarrative getReportSynthesisNarrative() {
     return reportSynthesisNarrative;
   }
+
 
   public ReportSynthesisProgramVariance getReportSynthesisProgramVariance() {
     return reportSynthesisProgramVariance;
@@ -256,6 +263,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public void
     setReportSynthesisCrpFinancialReport(ReportSynthesisCrpFinancialReport reportSynthesisCrpFinancialReport) {
     this.reportSynthesisCrpFinancialReport = reportSynthesisCrpFinancialReport;
+  }
+
+  public void
+    setReportSynthesisCrpFinancialReports(Set<ReportSynthesisCrpFinancialReport> reportSynthesisCrpFinancialReports) {
+    this.reportSynthesisCrpFinancialReports = reportSynthesisCrpFinancialReports;
   }
 
 
