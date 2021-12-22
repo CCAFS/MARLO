@@ -512,5 +512,6 @@
     <mapping resource="xmls/ProjectExpectedStudyReferences.hbm.xml" />
     <mapping resource="xmls/ProjectInnovationEvidenceLinks.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisFlagshipProgressOutcomeMilestoneLinks.hbm.xml" />
+    <mapping resource="xmls/ReportSynthesisCrpFinancialReports.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
