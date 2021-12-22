@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -80,6 +81,23 @@ public class DeliverableUserPartnershipMySQLDAO extends AbstractMarloDAO<Deliver
     }
     return null;
 
+  }
+
+  @Override
+  public List<DeliverableUserPartnership> findPartnershipsByInstitutionProjectAndPhase(long institutionId,
+    long projectId, long phaseId) {
+    String query = "select dup from DeliverableUserPartnership dup where dup.institution.id = :institutionId and "
+      + "dup.phase.id = :phaseId and dup.deliverable.project.id = :projectId and dup.deliverable.active = true";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+
+    createQuery.setParameter("phaseId", phaseId);
+    createQuery.setParameter("institutionId", institutionId);
+    createQuery.setParameter("projectId", projectId);
+
+    List<DeliverableUserPartnership> deliverables = super.findAll(createQuery);
+
+    return deliverables;
   }
 
   @Override
