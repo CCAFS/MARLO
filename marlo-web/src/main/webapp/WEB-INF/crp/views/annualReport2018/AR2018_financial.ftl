@@ -49,8 +49,12 @@
               [#if PMU]
                 [#-- Word Document Tag --]
                 [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-                    
-                [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.financialStatus" help="${customLabel}.financialStatus.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
+
+                [#if isSelectedPhaseAR2021]    
+                  [@customForm.textArea name="reportSynthesis.reportSynthesisCrpFinancialReport.financialStatusNarrative" i18nkey="${customLabel}.financialStatus" help="${customLabel}.financialStatus.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                [#else]
+                  [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.financialStatus" help="${customLabel}.financialStatus.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                [/#if]
               [#else]
                 <div class="textArea">
                   <label for="">[@customForm.text name="${customLabel}.financialStatus" readText=true /]</label>:
