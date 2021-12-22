@@ -20,7 +20,8 @@ package org.cgiar.ccafs.marlo.data.model;
  */
 public enum ProjectStatusEnum {
 
-  Ongoing("2", "On-going"), Complete("3", "Complete"), Extended("4", "Extended"), Cancelled("5", "Cancelled");
+  Ongoing("2", "On-going"), Complete("3", "Complete"), Extended("4", "Extended"), Cancelled("5", "Cancelled"),
+  PartiallyComplete("7", "Partially complete");
 
   /**
    * Look for the ProjectStatusEnum with id
