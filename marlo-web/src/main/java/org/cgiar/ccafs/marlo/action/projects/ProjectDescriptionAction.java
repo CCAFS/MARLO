@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.DeliverableStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -778,8 +779,12 @@ public class ProjectDescriptionAction extends BaseAction {
     projectStatuses = new HashMap<>();
     List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
     for (ProjectStatusEnum projectStatusEnum : list) {
-
       projectStatuses.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+    }
+
+    if (this.isSelectedPhaseAR2021()) {
+      projectStatuses.put(DeliverableStatusEnum.PARTIALLY_COMPLETE.getStatusId(),
+        DeliverableStatusEnum.PARTIALLY_COMPLETE.getStatus());
     }
 
 
@@ -1001,8 +1006,18 @@ public class ProjectDescriptionAction extends BaseAction {
             projectClusterActivity = projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
             // This add clusterActivity to generate correct auditlog.
             project.getProjectClusterActivities().add(projectClusterActivity);
-          }
+          } else {
+            ProjectClusterActivity projectClusterActivityDB =
+              this.projectClusterActivityManager.getProjectClusterActivityById(projectClusterActivity.getId());
 
+            projectClusterActivityDB.setCrpClusterOfActivity(projectClusterActivity.getCrpClusterOfActivity());
+            projectClusterActivityDB.setPhase(this.getActualPhase());
+            projectClusterActivityDB.setProject(this.project);
+            projectClusterActivityDB.setModifiedBy(this.getCurrentUser());
+
+            projectClusterActivityDB =
+              this.projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivityDB);
+          }
         }
       }
 
