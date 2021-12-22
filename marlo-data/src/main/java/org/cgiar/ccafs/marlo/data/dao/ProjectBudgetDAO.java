@@ -77,6 +77,16 @@ public interface ProjectBudgetDAO {
   public List<ProjectBudget> findAll();
 
   /**
+   * This method gets a projectBudget list by a given Institution, Project and Phase identifier.
+   * 
+   * @param institutionId is the institution identifier.
+   * @param projectId is the project identifier.
+   * @param phaseId is the phase identifier.
+   * @return a ProjectBudget list.
+   */
+  public List<ProjectBudget> findBudgetByInstitutionProjectAndPhase(long institutionId, long projectId, long phaseId);
+
+  /**
    * gets a list of ProjectBudget of a specific parameters
    * 
    * @param institutionID
