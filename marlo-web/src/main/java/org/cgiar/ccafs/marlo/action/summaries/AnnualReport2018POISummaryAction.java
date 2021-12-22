@@ -1788,8 +1788,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                     }
                   }
 
-                  if (milestoneOb.getCrpMilestone().getStatusName() != null) {
-                    milestoneStatus = milestoneOb.getCrpMilestone().getStatusName();
+                  if (milestoneOb.getMilestonesStatus() != null && milestoneOb.getMilestonesStatus().getId() != null) {
+                    milestoneStatus = milestoneOb.getMilestonesStatus().getName();
                     if (milestoneStatus != null) {
                       // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
                       milestoneStatus = milestoneStatus.replaceAll("&amp;", "&");
