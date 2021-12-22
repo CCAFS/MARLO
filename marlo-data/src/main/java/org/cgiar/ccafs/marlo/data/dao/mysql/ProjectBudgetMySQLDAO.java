@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -134,6 +135,22 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
 
   }
 
+
+  @Override
+  public List<ProjectBudget> findBudgetByInstitutionProjectAndPhase(long institutionId, long projectId, long phaseId) {
+    String query = "select pb from ProjectBudget pb where pb.institution.id = :institutionId and "
+      + "pb.phase.id = :phaseId and pb.project.id = :projectId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+
+    createQuery.setParameter("phaseId", phaseId);
+    createQuery.setParameter("institutionId", institutionId);
+    createQuery.setParameter("projectId", projectId);
+
+    List<ProjectBudget> budgets = super.findAll(createQuery);
+
+    return budgets;
+  }
 
   @Override
   public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId,
