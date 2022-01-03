@@ -39,7 +39,7 @@
   },
   { 'title': '3. Financial Summary', 'show': true,
     'items': [
-    { 'slug': 'financial',    'name': 'annualReport2018.menu.financial',    'action': 'financial',    'active': false, 'subName': '(Table 13)', 'onlyPMU': !PMU, 'development': true }
+    { 'slug': 'financial',    'name': 'annualReport2018.menu.financial',    'action': 'financial',    'active': true, 'subName': '(Table 13)', 'onlyPMU': !PMU }
     ]
   }
   
@@ -144,7 +144,7 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Project Submit JS --]
-[#assign customJS = customJS  + [  "${baseUrlMedia}/js/annualReport/annualReportSubmit.js?20211203b", "${baseUrlCdn}/global/js/fieldsValidation.js"]
+[#assign customJS = customJS  + [  "${baseUrlMedia}/js/annualReport/annualReportSubmit.js?20220103a", "${baseUrlCdn}/global/js/fieldsValidation.js"]
 /]
 
 [#macro menuItem item]
