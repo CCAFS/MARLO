@@ -769,7 +769,7 @@ public class POISummary {
     }
   }
 
-  public void table13AnnualReportStyle(XWPFTable table) {
+  public void table13AnnualReportStyle(XWPFTable table, boolean isAr2021) {
     /* Horizontal merge, From format tables 13 */
     CTHMerge hMerge = CTHMerge.Factory.newInstance();
     CTHMerge hMerge1 = CTHMerge.Factory.newInstance();
@@ -797,21 +797,23 @@ public class POISummary {
       }
     }
 
-    for (int x = 0; x < table.getNumberOfRows(); x++) {
-      if (x > 1) {
-        XWPFTableRow rowCom = table.getRow(x);
-        XWPFTableCell cell = rowCom.getCell(10);
+    if (isAr2021 == false) {
+      for (int x = 0; x < table.getNumberOfRows(); x++) {
+        if (x > 1) {
+          XWPFTableRow rowCom = table.getRow(x);
+          XWPFTableCell cell = rowCom.getCell(10);
 
-        if (cell.getCTTc() == null) {
-          ((CTTc) cell).addNewTcPr();
+          if (cell.getCTTc() == null) {
+            ((CTTc) cell).addNewTcPr();
+          }
+
+          if (cell.getCTTc().getTcPr() == null) {
+            cell.getCTTc().addNewTcPr();
+          }
+
+          cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(5000));
+
         }
-
-        if (cell.getCTTc().getTcPr() == null) {
-          cell.getCTTc().addNewTcPr();
-        }
-
-        cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(5000));
-
       }
     }
   }
@@ -2231,7 +2233,10 @@ public class POISummary {
         this.tableJAnnualReportStyle(table);
         break;
       case "table13AnnualReport2018":
-        this.table13AnnualReportStyle(table);
+        this.table13AnnualReportStyle(table, false);
+        break;
+      case "table13AnnualReport2021":
+        this.table13AnnualReportStyle(table, true);
         break;
 
 
