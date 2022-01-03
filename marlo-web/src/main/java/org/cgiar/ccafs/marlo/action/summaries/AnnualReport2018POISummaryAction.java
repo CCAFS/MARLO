@@ -474,11 +474,26 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     String financialSummaryNarrative = "";
 
     if (reportSynthesisPMU != null) {
+      if (this.getSelectedPhase().getName().equals("AR") && this.getSelectedPhase().getYear() == 2021) {
+        if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrpFinancialReports() != null
+          && !reportSynthesisPMU.getReportSynthesisCrpFinancialReports().isEmpty()) {
+          reportSynthesisPMU.setReportSynthesisCrpFinancialReport(reportSynthesisPMU
+            .getReportSynthesisCrpFinancialReports().stream().sorted((f1, f2) -> Comparator
+              .comparing(ReportSynthesisCrpFinancialReport::getActiveSince).reversed().compare(f1, f2))
+            .findFirst().orElse(null));
+        }
 
-      if (reportSynthesisPMU.getReportSynthesisFinancialSummary() != null) {
-        ReportSynthesisFinancialSummary financialSummary = reportSynthesisPMU.getReportSynthesisFinancialSummary();
-        if (financialSummary != null) {
-          financialSummaryNarrative = financialSummary.getNarrative();
+        if (reportSynthesisPMU.getReportSynthesisCrpFinancialReport() != null
+          && reportSynthesisPMU.getReportSynthesisCrpFinancialReport().getId() != null) {
+          financialSummaryNarrative =
+            reportSynthesisPMU.getReportSynthesisCrpFinancialReport().getFinancialStatusNarrative();
+        }
+      } else {
+        if (reportSynthesisPMU.getReportSynthesisFinancialSummary() != null) {
+          ReportSynthesisFinancialSummary financialSummary = reportSynthesisPMU.getReportSynthesisFinancialSummary();
+          if (financialSummary != null) {
+            financialSummaryNarrative = financialSummary.getNarrative();
+          }
         }
       }
     }
