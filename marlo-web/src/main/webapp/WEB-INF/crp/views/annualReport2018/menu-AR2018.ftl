@@ -39,7 +39,7 @@
   },
   { 'title': '3. Financial Summary', 'show': true,
     'items': [
-    { 'slug': 'financial',    'name': 'annualReport2018.menu.financial',    'action': 'financial',    'active': false, 'subName': '(Table 13)', 'onlyPMU': !PMU, 'development': true }
+    { 'slug': 'financial',    'name': 'annualReport2018.menu.financial',    'action': 'financial',    'active': true, 'subName': '(Table 13)', 'onlyPMU': !PMU }
     ]
   }
   
