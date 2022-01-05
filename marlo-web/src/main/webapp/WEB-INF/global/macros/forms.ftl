@@ -569,6 +569,8 @@
     [#else]
       <br /><i class="helpLabel">${nameValue}</i>
     [/#if]
+  [#elseif !editable]
+    <br /><i class="helpLabel" style="color: #FFFFFF;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur nisi provident dignissimos ratione soluta, veritatis nihil minus modi veniam</i>
   [/#if]
   [#if editable && helpMore]
     [@helpViewMore name="${name}" /]
