@@ -1250,3 +1250,423 @@ setTimeout(() => {
 		}
 	});
 }
+
+function business_category() {
+	$.ajax({
+		url: config.endpoint + '/business-category',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"business-category");
+			destroyTable("business-category");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"business-category");
+			console.log(data);
+			let nameColumns = ['Code', 'Name']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-business-category').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("business-category");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function technical_field() {
+	$.ajax({
+		url: config.endpoint + '/technical-field',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"technical-field");
+			destroyTable("technical-field");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"technical-field");
+			console.log(data);
+			let nameColumns = ['Code', 'Name']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-technical-field').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("technical-field");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function innovation_type() {
+	$.ajax({
+		url: config.endpoint + '/innovation-type',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"innovation-type");
+			destroyTable("innovation-type");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"innovation-type");
+			console.log(data);
+			let nameColumns = ['Code', 'Name']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-innovation-type').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("innovation-type");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function governance_type() {
+	$.ajax({
+		url: config.endpoint + '/governance-type',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"governance-type");
+			destroyTable("governance-type");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"governance-type");
+			console.log(data);
+			let nameColumns = ['Code', 'Name']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-governance-type').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("governance-type");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function environmental_benefits() {
+	$.ajax({
+		url: config.endpoint + '/environmental-benefits',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"environmental-benefits");
+			destroyTable("environmental-benefits");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"environmental-benefits");
+			console.log(data);
+			let nameColumns = ['Code', 'Name']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-environmental-benefits').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("environmental-benefits");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function technology_development() {
+	$.ajax({
+		url: config.endpoint + '/technology-development-stage',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"technology-development-stage");
+			destroyTable("technology-development-stage");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"technology-development-stage");
+			console.log(data);
+			let nameColumns = ['Code', 'Name']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-technology-development-stage').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("technology-development-stage");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function innovation_readiness() {
+	$.ajax({
+		url: config.endpoint + '/innovation-readiness-levels',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"innovation-readiness-levels");
+			destroyTable("innovation-readiness-levels");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"innovation-readiness-levels");
+			console.log(data);
+			let nameColumns = ['Code', 'Name']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-innovation-readiness-levels').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("innovation-readiness-levels");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function administrative_scale() {
+	$.ajax({
+		url: config.endpoint + '/administrative-scale',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"administrative-scale");
+			destroyTable("administrative-scale");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"administrative-scale");
+			console.log(data);
+			let nameColumns = ['Code', 'Name']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-administrative-scale').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("administrative-scale");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function users() {
+	$.ajax({
+		url: config.endpoint + '/users',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"users");
+			destroyTable("users");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"users");
+			console.log(data);
+			let nameColumns = ['Code', 'Name']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-users').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("users");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function beneficiaries() {
+	$.ajax({
+		url: config.endpoint + '/beneficiaries',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"beneficiaries");
+			destroyTable("beneficiaries");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"beneficiaries");
+			console.log(data);
+			let nameColumns = ['Code', 'Name']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-beneficiaries').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("beneficiaries");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function investment_type() {
+	$.ajax({
+		url: config.endpoint + '/investment-type',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"investment-type");
+			destroyTable("investment-type");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"investment-type");
+			console.log(data);
+			let nameColumns = ['Code', 'Name']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-investment-type').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("investment-type");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function innovation_use() {
+	$.ajax({
+		url: config.endpoint + '/innovation-use-levels',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"innovation-use-levels");
+			destroyTable("innovation-use-levels");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"innovation-use-levels");
+			console.log(data);
+			let nameColumns = ['Code', 'Name']			
+
+			$.each(data, function (index, item) {				
+				$('#list-print-innovation-use-levels').append(
+					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("innovation-use-levels");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
