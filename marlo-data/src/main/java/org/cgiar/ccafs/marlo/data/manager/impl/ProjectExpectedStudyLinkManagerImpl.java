@@ -141,6 +141,12 @@ public class ProjectExpectedStudyLinkManagerImpl implements ProjectExpectedStudy
       projectExpectedStudyLinkAdd.setLink(projectExpectedStudyLink.getLink());
       projectExpectedStudyLinkDAO.save(projectExpectedStudyLinkAdd);
     } else {
+      ProjectExpectedStudyLink projectExpectedStudyLinkAdd = new ProjectExpectedStudyLink();
+      projectExpectedStudyLinkAdd.setProjectExpectedStudy(projectExpectedStudyLink.getProjectExpectedStudy());
+      projectExpectedStudyLinkAdd.setPhase(phase);
+      projectExpectedStudyLinkAdd.setLink(projectExpectedStudyLink.getLink());
+      projectExpectedStudyLinkDAO.save(projectExpectedStudyLinkAdd);
+
       for (ProjectExpectedStudyLink projectExpectedStudyLinkDel : projectExpectedStudyLinks) {
         try {
           projectExpectedStudyLinkDAO.deleteProjectExpectedStudyLink(projectExpectedStudyLinkDel.getId());
@@ -148,11 +154,6 @@ public class ProjectExpectedStudyLinkManagerImpl implements ProjectExpectedStudy
           // TODO: handle exception
         }
       }
-      ProjectExpectedStudyLink projectExpectedStudyLinkAdd = new ProjectExpectedStudyLink();
-      projectExpectedStudyLinkAdd.setProjectExpectedStudy(projectExpectedStudyLink.getProjectExpectedStudy());
-      projectExpectedStudyLinkAdd.setPhase(phase);
-      projectExpectedStudyLinkAdd.setLink(projectExpectedStudyLink.getLink());
-      projectExpectedStudyLinkDAO.save(projectExpectedStudyLinkAdd);
     }
 
 
