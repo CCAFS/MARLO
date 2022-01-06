@@ -4,7 +4,7 @@ var currentCycle;
 var selectedUrl, selectedAction;
 
 $(document).ready(function() {
-  $('#menu-financial').on('click', table13UnderConstruction);
+  // $('#menu-financial').on('click', table13UnderConstruction);
 
   sections = $('#sectionsForChecking').text().split(',');
 

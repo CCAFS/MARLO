@@ -99,6 +99,7 @@ function attachEvents() {
   if ($('#actualPhase').html() == 'true') {
     $('select.statusSelect option[value="1"]').prop('disabled', true);
     $('select.statusSelect option[value="4"]').prop('disabled', true);
+    $('textarea[name="expectedStudy.projectExpectedStudyInfo.referencesText"]').css('display', 'none');
   }
 
   //Expected Year

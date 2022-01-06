@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpFinancialReportManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFinancialSummaryBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFinancialSummaryManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
@@ -34,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpFinancialReport;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -64,9 +66,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class FinancialSummaryAction extends BaseAction {
 
-
   private static final long serialVersionUID = -8306463804965610803L;
-
 
   // Managers
   private GlobalUnitManager crpManager;
@@ -77,6 +77,7 @@ public class FinancialSummaryAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private FinancialSummary2018Validator validator;
   private ReportSynthesisFinancialSummaryManager reportSynthesisFinancialSummaryManager;
+  private ReportSynthesisCrpFinancialReportManager reportSynthesisCrpFinancialReportManager;
   private ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager;
   private PowbExpenditureAreasManager powbExpenditureAreasManager;
 
@@ -90,12 +91,12 @@ public class FinancialSummaryAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private String pmuText;
 
-
   @Inject
   public FinancialSummaryAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
     FinancialSummary2018Validator validator,
+    ReportSynthesisCrpFinancialReportManager reportSynthesisCrpFinancialReportManager,
     ReportSynthesisFinancialSummaryManager reportSynthesisFinancialSummaryManager,
     ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager) {
@@ -110,8 +111,8 @@ public class FinancialSummaryAction extends BaseAction {
     this.reportSynthesisFinancialSummaryManager = reportSynthesisFinancialSummaryManager;
     this.reportSynthesisFinancialSummaryBudgetManager = reportSynthesisFinancialSummaryBudgetManager;
     this.powbExpenditureAreasManager = powbExpenditureAreasManager;
+    this.reportSynthesisCrpFinancialReportManager = reportSynthesisCrpFinancialReportManager;
   }
-
 
   @Override
   public String cancel() {
@@ -300,14 +301,12 @@ public class FinancialSummaryAction extends BaseAction {
       }
     }
 
-
     if (reportSynthesis != null) {
 
       ReportSynthesis reportSynthesisDB = reportSynthesisManager.getReportSynthesisById(reportSynthesis.getId());
       synthesisID = reportSynthesisDB.getId();
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
-
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
@@ -324,56 +323,79 @@ public class FinancialSummaryAction extends BaseAction {
       } else {
 
         this.setDraft(false);
-        // Check if relation is null -create it
-        if (reportSynthesis.getReportSynthesisFinancialSummary() == null) {
-          ReportSynthesisFinancialSummary financialSummary = new ReportSynthesisFinancialSummary();
-          // create one to one relation
-          reportSynthesis.setReportSynthesisFinancialSummary(financialSummary);;
-          financialSummary.setReportSynthesis(reportSynthesis);
-          // save the changes
-          reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
-        }
 
-        reportSynthesis.getReportSynthesisFinancialSummary().setBudgets(new ArrayList<>());
-        if (this.isPMU()) {
-          // Flagships Financial Budgets
-          if (reportSynthesis.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets() != null
-            && !reportSynthesis.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets()
-              .isEmpty()) {
-            reportSynthesis.getReportSynthesisFinancialSummary()
-              .setBudgets(new ArrayList<>(
-                reportSynthesis.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets()
-                  .stream().filter(t -> t.isActive()).collect(Collectors.toList())));
-          } else {
-
-            List<LiaisonInstitution> flagshipList = loggedCrp.getLiaisonInstitutions().stream()
-              .filter(c -> c.getCrpProgram() != null && c.isActive()
-                && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-              .collect(Collectors.toList());
-            flagshipList.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-            reportSynthesis.getReportSynthesisFinancialSummary().setBudgets(new ArrayList<>());
-            for (LiaisonInstitution liInstitution : flagshipList) {
-              ReportSynthesisFinancialSummaryBudget financialSummaryBudget =
-                new ReportSynthesisFinancialSummaryBudget();
-              financialSummaryBudget.setLiaisonInstitution(liInstitution);
-              reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().add(financialSummaryBudget);
+        if (this.isSelectedPhaseAR2021()) {
+          if (this.isPMU()) {
+            // Check if relation is null -create it
+            if (this.isEmpty(reportSynthesis.getReportSynthesisCrpFinancialReports())) {
+              ReportSynthesisCrpFinancialReport reportSynthesisCrpFinancialReport =
+                new ReportSynthesisCrpFinancialReport();
+              // create one to one relation
+              reportSynthesis.setReportSynthesisCrpFinancialReport(reportSynthesisCrpFinancialReport);
+              reportSynthesis.getReportSynthesisCrpFinancialReports().add(reportSynthesisCrpFinancialReport);
+              reportSynthesisCrpFinancialReport.setReportSynthesis(reportSynthesis);
+              // save the changes
+              reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+              reportSynthesisCrpFinancialReport = this.reportSynthesisCrpFinancialReportManager
+                .saveReportSynthesisCrpFinancialReport(reportSynthesisCrpFinancialReport);
+            } else {
+              reportSynthesis.setReportSynthesisCrpFinancialReport(reportSynthesis
+                .getReportSynthesisCrpFinancialReports().stream().sorted((f1, f2) -> Comparator
+                  .comparing(ReportSynthesisCrpFinancialReport::getActiveSince).reversed().compare(f1, f2))
+                .findFirst().orElse(null));
             }
 
-            List<PowbExpenditureAreas> expAreas = new ArrayList<>(powbExpenditureAreasManager.findAll().stream()
-              .filter(x -> x.isActive() && !x.getIsExpenditure()).collect(Collectors.toList()));
-            for (PowbExpenditureAreas powbExpenditureAreas : expAreas) {
-              ReportSynthesisFinancialSummaryBudget financialSummaryBudget =
-                new ReportSynthesisFinancialSummaryBudget();
-              financialSummaryBudget.setExpenditureArea(powbExpenditureAreas);
-              reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().add(financialSummaryBudget);
+            // nothing else for now
+          }
+        } else {
+          // Check if relation is null -create it
+          if (reportSynthesis.getReportSynthesisFinancialSummary() == null) {
+            ReportSynthesisFinancialSummary financialSummary = new ReportSynthesisFinancialSummary();
+            // create one to one relation
+            reportSynthesis.setReportSynthesisFinancialSummary(financialSummary);;
+            financialSummary.setReportSynthesis(reportSynthesis);
+            // save the changes
+            reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+          }
+          reportSynthesis.getReportSynthesisFinancialSummary().setBudgets(new ArrayList<>());
+          if (this.isPMU()) {
+            // Flagships Financial Budgets
+            if (reportSynthesis.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets() != null
+              && !reportSynthesis.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets()
+                .isEmpty()) {
+              reportSynthesis.getReportSynthesisFinancialSummary()
+                .setBudgets(new ArrayList<>(
+                  reportSynthesis.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets()
+                    .stream().filter(t -> t.isActive()).collect(Collectors.toList())));
+            } else {
+
+              List<LiaisonInstitution> flagshipList = loggedCrp.getLiaisonInstitutions().stream()
+                .filter(c -> c.getCrpProgram() != null && c.isActive()
+                  && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+                .collect(Collectors.toList());
+              flagshipList.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+              reportSynthesis.getReportSynthesisFinancialSummary().setBudgets(new ArrayList<>());
+              for (LiaisonInstitution liInstitution : flagshipList) {
+                ReportSynthesisFinancialSummaryBudget financialSummaryBudget =
+                  new ReportSynthesisFinancialSummaryBudget();
+                financialSummaryBudget.setLiaisonInstitution(liInstitution);
+                reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().add(financialSummaryBudget);
+              }
+
+              List<PowbExpenditureAreas> expAreas = new ArrayList<>(powbExpenditureAreasManager.findAll().stream()
+                .filter(x -> x.isActive() && !x.getIsExpenditure()).collect(Collectors.toList()));
+              for (PowbExpenditureAreas powbExpenditureAreas : expAreas) {
+                ReportSynthesisFinancialSummaryBudget financialSummaryBudget =
+                  new ReportSynthesisFinancialSummaryBudget();
+                financialSummaryBudget.setExpenditureArea(powbExpenditureAreas);
+                reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().add(financialSummaryBudget);
+              }
+
             }
-
-
           }
         }
       }
     }
-
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
@@ -388,13 +410,12 @@ public class FinancialSummaryAction extends BaseAction {
       .collect(Collectors.toList()));
 
     // Informative table to Flagships
-    if (this.isFlagship()) {
+    if (!this.isSelectedPhaseAR2021() && this.isFlagship()) {
 
       LiaisonInstitution pmuInstitution = loggedCrp.getLiaisonInstitutions().stream()
         .filter(c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU"))
         .collect(Collectors.toList()).get(0);
       ReportSynthesis reportSynthesisDB = reportSynthesisManager.findSynthesis(phase.getId(), pmuInstitution.getId());
-
 
       if (reportSynthesisDB != null) {
         if (reportSynthesisDB.getReportSynthesisFinancialSummary() != null) {
@@ -415,7 +436,7 @@ public class FinancialSummaryAction extends BaseAction {
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_CRP_PROGRESS_BASE_PERMISSION, params));
 
-    if (this.isHttpPost()) {
+    if (!this.isSelectedPhaseAR2021() && this.isHttpPost()) {
       if (reportSynthesis.getReportSynthesisFinancialSummary().getBudgets() != null) {
         reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().clear();
       }
@@ -426,28 +447,37 @@ public class FinancialSummaryAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      ReportSynthesisFinancialSummary financialSummaryDB =
-        reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisFinancialSummary();
+      if (this.isSelectedPhaseAR2021()) {
+        ReportSynthesisCrpFinancialReport reportSynthesisCrpFinancialReportDB =
+          this.reportSynthesisCrpFinancialReportManager.findByReportSynthesis(synthesisID);
 
-      if (this.isPMU()) {
-        this.saveFinancialSummaryBudgets(financialSummaryDB);
-        financialSummaryDB.setNarrative(reportSynthesis.getReportSynthesisFinancialSummary().getNarrative());
+        if (this.isPMU()) {
+          this.saveCrpFinancialReport(reportSynthesisCrpFinancialReportDB);
+        }
+      } else {
+        ReportSynthesisFinancialSummary financialSummaryDB =
+          reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisFinancialSummary();
 
-        financialSummaryDB =
-          reportSynthesisFinancialSummaryManager.saveReportSynthesisFinancialSummary(financialSummaryDB);
+        if (this.isPMU()) {
+          this.saveFinancialSummaryBudgets(financialSummaryDB);
+          financialSummaryDB.setNarrative(reportSynthesis.getReportSynthesisFinancialSummary().getNarrative());
+
+          financialSummaryDB =
+            reportSynthesisFinancialSummaryManager.saveReportSynthesisFinancialSummary(financialSummaryDB);
+        }
       }
 
       List<String> relationsName = new ArrayList<>();
       reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
 
       /**
-       * The following is required because we need to update something on the @ReportSynthesis if we want a row created
-       * in the auditlog table.
+       * The following is required because we need to update something on
+       * the @ReportSynthesis if we want a row created in the auditlog
+       * table.
        */
       this.setModificationJustification(reportSynthesis);
 
       reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, this.getActualPhase());
-
 
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
@@ -472,9 +502,49 @@ public class FinancialSummaryAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
 
-
   }
 
+  private void saveCrpFinancialReport(ReportSynthesisCrpFinancialReport reportSynthesisCrpFinancialReportDB) {
+    ReportSynthesisCrpFinancialReport crpFinancialReport = reportSynthesis.getReportSynthesisCrpFinancialReport();
+    if (crpFinancialReport != null) {
+      reportSynthesisCrpFinancialReportDB.setFinancialStatusNarrative(crpFinancialReport.getFinancialStatusNarrative());
+
+      reportSynthesisCrpFinancialReportDB
+        .setCapitalEquipment2020Forecast(crpFinancialReport.getCapitalEquipment2020Forecast());
+      reportSynthesisCrpFinancialReportDB
+        .setCapitalEquipment2021Budget(crpFinancialReport.getCapitalEquipment2021Budget());
+      reportSynthesisCrpFinancialReportDB.setCapitalEquipmentComments(crpFinancialReport.getCapitalEquipmentComments());
+      reportSynthesisCrpFinancialReportDB.setCloseout2020Forecast(crpFinancialReport.getCloseout2020Forecast());
+      reportSynthesisCrpFinancialReportDB.setCloseout2021Budget(crpFinancialReport.getCloseout2021Budget());
+      reportSynthesisCrpFinancialReportDB.setCloseoutComments(crpFinancialReport.getCloseoutComments());
+      reportSynthesisCrpFinancialReportDB
+        .setCollaboratorPartnerships2020Forecast(crpFinancialReport.getCollaboratorPartnerships2020Forecast());
+      reportSynthesisCrpFinancialReportDB
+        .setCollaboratorPartnerships2021Budget(crpFinancialReport.getCollaboratorPartnerships2021Budget());
+      reportSynthesisCrpFinancialReportDB
+        .setCollaboratorPartnershipsComments(crpFinancialReport.getCollaboratorPartnershipsComments());
+      reportSynthesisCrpFinancialReportDB.setConsultancy2020Forecast(crpFinancialReport.getConsultancy2020Forecast());
+      reportSynthesisCrpFinancialReportDB.setConsultancy2021Budget(crpFinancialReport.getConsultancy2021Budget());
+      reportSynthesisCrpFinancialReportDB.setConsultancyComments(crpFinancialReport.getConsultancyComments());
+      reportSynthesisCrpFinancialReportDB.setOperation2020Forecast(crpFinancialReport.getOperation2020Forecast());
+      reportSynthesisCrpFinancialReportDB.setOperation2021Budget(crpFinancialReport.getOperation2021Budget());
+      reportSynthesisCrpFinancialReportDB.setOperationComments(crpFinancialReport.getOperationComments());
+      reportSynthesisCrpFinancialReportDB.setPersonnel2020Forecast(crpFinancialReport.getPersonnel2020Forecast());
+      reportSynthesisCrpFinancialReportDB.setPersonnel2021Budget(crpFinancialReport.getPersonnel2021Budget());
+      reportSynthesisCrpFinancialReportDB.setPersonnelComments(crpFinancialReport.getPersonnelComments());
+      reportSynthesisCrpFinancialReportDB.setTravel2020Forecast(crpFinancialReport.getTravel2020Forecast());
+      reportSynthesisCrpFinancialReportDB.setTravel2021Budget(crpFinancialReport.getTravel2021Budget());
+      reportSynthesisCrpFinancialReportDB.setTravelComments(crpFinancialReport.getTravelComments());
+
+      // Total
+      reportSynthesisCrpFinancialReportDB.setCrpTotal2020Forecast(crpFinancialReport.getCrpTotal2020Forecast());
+      reportSynthesisCrpFinancialReportDB.setCrpTotal2021Budget(crpFinancialReport.getCrpTotal2021Budget());
+      reportSynthesisCrpFinancialReportDB.setCrpTotalComments(crpFinancialReport.getCrpTotalComments());
+
+      reportSynthesisCrpFinancialReportDB = this.reportSynthesisCrpFinancialReportManager
+        .saveReportSynthesisCrpFinancialReport(reportSynthesisCrpFinancialReportDB);
+    }
+  }
 
   /**
    * Save Financial Summary budget by Flagship Information
@@ -518,7 +588,6 @@ public class FinancialSummaryAction extends BaseAction {
 
         } else {
 
-
           boolean hasChanges = false;
           ReportSynthesisFinancialSummaryBudget budgetPrev =
             reportSynthesisFinancialSummaryBudgetManager.getReportSynthesisFinancialSummaryBudgetById(budget.getId());
@@ -558,11 +627,9 @@ public class FinancialSummaryAction extends BaseAction {
             budgetPrev.setComments(budget.getComments());
           }
 
-
           if (hasChanges) {
             reportSynthesisFinancialSummaryBudgetManager.saveReportSynthesisFinancialSummaryBudget(budgetPrev);
           }
-
 
         }
       }
@@ -582,16 +649,13 @@ public class FinancialSummaryAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setPmuText(String pmuText) {
     this.pmuText = pmuText;
   }
-
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;

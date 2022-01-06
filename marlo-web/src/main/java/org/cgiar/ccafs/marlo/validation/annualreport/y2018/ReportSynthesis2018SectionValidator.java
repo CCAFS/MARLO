@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressCrossCuttingMarkerManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeMilestoneLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
@@ -32,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestoneLink;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisGovernance;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIntellectualAsset;
@@ -68,6 +70,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
   private CrpMilestoneManager crpMilestoneManager;
   private GeneralStatusManager generalStatusManager;
   private ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
+  private ReportSynthesisFlagshipProgressOutcomeMilestoneLinkManager reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager;
 
   // Validations
   private final IntellectualAssetsValidator intellectualAssetsValidator;
@@ -102,7 +105,8 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     PartnershipValidator partnershipValidator, FileDBManager fileDBManager,
     MonitoringEvaluationValidator monitoringEvaluationValidator, OutcomeMilestonesValidator outcomeMilestonesValidator,
     CrpMilestoneManager crpMilestoneManager, GeneralStatusManager generalStatusManager,
-    ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager) {
+    ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager,
+    ReportSynthesisFlagshipProgressOutcomeMilestoneLinkManager reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager) {
     super();
     this.reportSynthesisManager = reportSynthesisManager;
     this.intellectualAssetsValidator = intellectualAssetsValidator;
@@ -127,6 +131,8 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     this.generalStatusManager = generalStatusManager;
     this.reportSynthesisFlagshipProgressCrossCuttingMarkerManager =
       reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
+    this.reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager =
+      reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager;
   }
 
 
@@ -148,7 +154,6 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     }
   }
 
-
   private GeneralStatus getCurrentMilestoneStatus(CrpMilestone milestone) {
     Long milestoneID = milestone.getId();
     GeneralStatus milestoneStatus = null;
@@ -161,6 +166,26 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     }
 
     return milestoneStatus;
+  }
+
+
+  /**
+   * Get the information for the Cross Cutting marker in the form
+   * 
+   * @param markerID
+   * @return
+   */
+  public List<ReportSynthesisFlagshipProgressOutcomeMilestoneLink>
+    getLinks(ReportSynthesisFlagshipProgressOutcomeMilestone progressOutcomeMilestone) {
+    Long progressOutcomeMilestoneID = progressOutcomeMilestone.getId();
+    if (progressOutcomeMilestoneID != -1) {
+      List<ReportSynthesisFlagshipProgressOutcomeMilestoneLink> links =
+        reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager
+          .getLinksByProgressOutcomeMilestone(progressOutcomeMilestoneID);
+      return (links != null && !links.isEmpty()) ? links : null;
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -632,9 +657,17 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
                 && progressOutcomeMilestone.isActive() && progressOutcomeMilestone.getCrpMilestone() != null
                 && progressOutcomeMilestone.getCrpMilestone().getId() != null) {
 
-                progressOutcomeMilestone
-                  .setMilestonesStatus(this.getCurrentMilestoneStatus(progressOutcomeMilestone.getCrpMilestone()));
+                if (progressOutcomeMilestone.getMilestonesStatus() == null
+                  || progressOutcomeMilestone.getMilestonesStatus().getId() == null) {
+                  progressOutcomeMilestone
+                    .setMilestonesStatus(this.getCurrentMilestoneStatus(progressOutcomeMilestone.getCrpMilestone()));
+                }
+
                 progressOutcomeMilestone.setMarkers(this.getCrossCuttingMarker(progressOutcomeMilestone));
+
+                if (action.isSelectedPhaseAR2021()) {
+                  progressOutcomeMilestone.setLinks(this.getLinks(progressOutcomeMilestone));
+                }
 
                 milestones.add(progressOutcomeMilestone);
               }

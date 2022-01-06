@@ -95,11 +95,14 @@ public class DeliverableManagerImpl implements DeliverableManager {
     DeliverableInfo deliverableInfo = new DeliverableInfo();
     deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
 
-    if (deliverableInfo.getCrpClusterKeyOutput() != null) {
+    if (deliverableInfo.getCrpClusterKeyOutput() != null
+      && deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity() != null) {
       CrpClusterKeyOutput crpClusterKeyOutput =
         crpClusterKeyOutputDAO.find(deliverableInfo.getCrpClusterKeyOutput().getId());
-      CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO
-        .getCrpClusterOfActivityByIdentifierPhase(crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(), phase);
+      CrpClusterOfActivity crpClusterOfActivity =
+        crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierFlagshipAndPhase(
+          crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(),
+          crpClusterKeyOutput.getCrpClusterOfActivity().getCrpProgram().getId(), phase.getId());
       List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
         .filter(c -> c.isActive() && c.getComposeID().equals(deliverableInfo.getCrpClusterKeyOutput().getComposeID()))
         .collect(Collectors.toList());
@@ -488,7 +491,8 @@ public class DeliverableManagerImpl implements DeliverableManager {
       if (projectFocusManager.findAll() != null) {
         List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
           .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
-            && pf.getPhase() != null && pf.getPhase().getId().equals(phaseDB.getId()))
+            && pf.getPhase() != null && pf.getPhase().getId().equals(phaseDB.getId()) && pf.getProject() != null
+            && pf.getProject().getId() != null)
           .collect(Collectors.toList()));
 
         for (ProjectFocus focus : projectFocus) {
@@ -532,14 +536,8 @@ public class DeliverableManagerImpl implements DeliverableManager {
       }
     } else {
       // Fill Project Deliverables of the PMU, removing flagship deletions
-      List<LiaisonInstitution> liaisonInstitutions = phaseDB.getCrp().getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() != null && c.isActive()
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList());
-      liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-
       List<ReportSynthesisFlagshipProgressDeliverableDTO> flagshipPlannedList =
-        this.getFpPlannedList(liaisonInstitutions, phaseDB, liaisonInstitution, true);
+        this.getPMU2020DeliverableList(phaseDB, liaisonInstitution, true);
 
       for (ReportSynthesisFlagshipProgressDeliverableDTO reportSynthesisFlagshipProgressDeliverableDTO : flagshipPlannedList) {
 
@@ -681,14 +679,16 @@ public class DeliverableManagerImpl implements DeliverableManager {
     for (DeliverableInfo deliverableInfo : deliverablesInfo) {
       deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
 
-      if (deliverableInfo.getCrpClusterKeyOutput() != null
-        && deliverableInfo.getCrpClusterKeyOutput().getId() != null) {
+      if (deliverableInfo.getCrpClusterKeyOutput() != null && deliverableInfo.getCrpClusterKeyOutput().getId() != null
+        && deliverableInfo.getCrpClusterKeyOutput() != null) {
 
         CrpClusterKeyOutput crpClusterKeyOutput =
           crpClusterKeyOutputDAO.find(deliverableInfo.getCrpClusterKeyOutput().getId());
 
-        CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierPhase(
-          crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(), phase);
+        CrpClusterOfActivity crpClusterOfActivity =
+          crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierFlagshipAndPhase(
+            crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(),
+            crpClusterKeyOutput.getCrpClusterOfActivity().getCrpProgram().getId(), phase.getId());
         if (crpClusterOfActivity != null) {
           List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
             .filter(c -> c.isActive() && c.getComposeID().equals(crpClusterKeyOutput.getComposeID()))

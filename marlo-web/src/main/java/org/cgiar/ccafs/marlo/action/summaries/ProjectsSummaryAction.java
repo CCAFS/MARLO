@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -584,6 +585,11 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         if (project.getProjectInfo().getStatus().intValue() == Integer
           .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
           status = ProjectStatusEnum.Extended.getStatus();
+        }
+
+        if (project.getProjectInfo().getStatus().intValue() == Integer
+          .parseInt(DeliverableStatusEnum.PARTIALLY_COMPLETE.getStatusId())) {
+          status = DeliverableStatusEnum.PARTIALLY_COMPLETE.getStatus();
         }
       }
 

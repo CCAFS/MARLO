@@ -65,6 +65,17 @@ public interface DeliverableUserPartnershipManager {
   List<DeliverableUserPartnership> findByDeliverableID(long deliverableID);
 
   /**
+   * This method gets a deliverableUserPartnership list by a given Institution, Project and Phase identifier.
+   * 
+   * @param institutionId is the institution identifier.
+   * @param projectId is the project identifier.
+   * @param phaseId is the phase identifier.
+   * @return a DeliverableUserPartnership list.
+   */
+  public List<DeliverableUserPartnership> findPartnershipsByInstitutionProjectAndPhase(Long institutionId,
+    Long projectId, Long phaseId);
+
+  /**
    * This method gets a deliverableUserPartnership object by a given deliverableUserPartnership identifier.
    * 
    * @param deliverableUserPartnershipID is the deliverableUserPartnership identifier.
