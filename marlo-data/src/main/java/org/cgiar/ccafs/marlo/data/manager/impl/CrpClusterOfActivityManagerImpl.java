@@ -196,9 +196,10 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
   }
 
   @Override
-  public CrpClusterOfActivity getCrpClusterOfActivityByIdentifierPhase(String crpClusterOfActivityIdentefier,
-    Phase phase) {
-    return crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierPhase(crpClusterOfActivityIdentefier, phase);
+  public CrpClusterOfActivity getCrpClusterOfActivityByIdentifierFlagshipAndPhase(String crpClusterOfActivityIdentefier,
+    Long fpId, Long phaseId) {
+    return this.crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierFlagshipAndPhase(
+      crpClusterOfActivityIdentefier, fpId.longValue(), phaseId.longValue());
   }
 
   @Override

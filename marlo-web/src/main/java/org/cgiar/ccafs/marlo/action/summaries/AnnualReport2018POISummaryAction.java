@@ -71,6 +71,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpFinancialReport;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
@@ -473,11 +474,26 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     String financialSummaryNarrative = "";
 
     if (reportSynthesisPMU != null) {
+      if (this.getSelectedPhase().getName().equals("AR") && this.getSelectedPhase().getYear() == 2021) {
+        if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrpFinancialReports() != null
+          && !reportSynthesisPMU.getReportSynthesisCrpFinancialReports().isEmpty()) {
+          reportSynthesisPMU.setReportSynthesisCrpFinancialReport(reportSynthesisPMU
+            .getReportSynthesisCrpFinancialReports().stream().sorted((f1, f2) -> Comparator
+              .comparing(ReportSynthesisCrpFinancialReport::getActiveSince).reversed().compare(f1, f2))
+            .findFirst().orElse(null));
+        }
 
-      if (reportSynthesisPMU.getReportSynthesisFinancialSummary() != null) {
-        ReportSynthesisFinancialSummary financialSummary = reportSynthesisPMU.getReportSynthesisFinancialSummary();
-        if (financialSummary != null) {
-          financialSummaryNarrative = financialSummary.getNarrative();
+        if (reportSynthesisPMU.getReportSynthesisCrpFinancialReport() != null
+          && reportSynthesisPMU.getReportSynthesisCrpFinancialReport().getId() != null) {
+          financialSummaryNarrative =
+            reportSynthesisPMU.getReportSynthesisCrpFinancialReport().getFinancialStatusNarrative();
+        }
+      } else {
+        if (reportSynthesisPMU.getReportSynthesisFinancialSummary() != null) {
+          ReportSynthesisFinancialSummary financialSummary = reportSynthesisPMU.getReportSynthesisFinancialSummary();
+          if (financialSummary != null) {
+            financialSummaryNarrative = financialSummary.getNarrative();
+          }
         }
       }
     }
@@ -1277,6 +1293,162 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   }
 
 
+  private void createTable13AR2021() {
+    try {
+      String blackColor = "000000";
+      if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrpFinancialReports() != null
+        && !reportSynthesisPMU.getReportSynthesisCrpFinancialReports().isEmpty()) {
+        reportSynthesisPMU.setReportSynthesisCrpFinancialReport(reportSynthesisPMU
+          .getReportSynthesisCrpFinancialReports().stream().sorted((f1, f2) -> Comparator
+            .comparing(ReportSynthesisCrpFinancialReport::getActiveSince).reversed().compare(f1, f2))
+          .findFirst().orElse(null));
+      }
+
+      List<List<POIField>> headers = new ArrayList<>();
+      POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("annualReport2018.financial.table12.2020Forecast") + "*", ParagraphAlignment.CENTER,
+          false),
+        new POIField(this.getText("annualReport2018.financial.table12.2021Budget") + "*", ParagraphAlignment.CENTER,
+          false),
+        new POIField(this.getText("annualReport2018.financial.table12.commentsChanges") + "*",
+          ParagraphAlignment.CENTER, false)};
+
+      List<POIField> header = Arrays.asList(sHeader);
+      headers.add(header);
+
+      List<List<POIField>> datas = new ArrayList<>();
+      List<POIField> data;
+      POIField[] sData;
+
+      ReportSynthesisCrpFinancialReport financialReport = reportSynthesisPMU.getReportSynthesisCrpFinancialReport();
+
+      if (financialReport != null && financialReport.getId() != null) {
+        sData = new POIField[] {
+          new POIField(this.getText("annualReport2018.financial.table12.personnel"), ParagraphAlignment.CENTER, false),
+          new POIField(
+            "US$ " + (this.conversion(
+              financialReport.getPersonnel2020Forecast() != null ? financialReport.getPersonnel2020Forecast() : 0d)),
+            ParagraphAlignment.CENTER, false),
+          new POIField(
+            "US$ " + (this.conversion(
+              financialReport.getPersonnel2021Budget() != null ? financialReport.getPersonnel2021Budget() : 0d)),
+            ParagraphAlignment.CENTER, false),
+          new POIField(financialReport.getPersonnelComments(), ParagraphAlignment.LEFT, true)};
+
+        data = Arrays.asList(sData);
+        datas.add(data);
+
+        sData = new POIField[] {
+          new POIField(this.getText("annualReport2018.financial.table12.consultancy"), ParagraphAlignment.CENTER,
+            false),
+          new POIField("US$ " + (this.conversion(
+            financialReport.getConsultancy2020Forecast() != null ? financialReport.getConsultancy2020Forecast() : 0d)),
+            ParagraphAlignment.CENTER, false),
+          new POIField(
+            "US$ " + (this.conversion(
+              financialReport.getConsultancy2021Budget() != null ? financialReport.getConsultancy2021Budget() : 0d)),
+            ParagraphAlignment.CENTER, false),
+          new POIField(financialReport.getConsultancyComments(), ParagraphAlignment.LEFT, true)};
+
+        data = Arrays.asList(sData);
+        datas.add(data);
+
+        sData = new POIField[] {
+          new POIField(this.getText("annualReport2018.financial.table12.travel"), ParagraphAlignment.CENTER, false),
+          new POIField(
+            "US$ " + (this.conversion(
+              financialReport.getTravel2020Forecast() != null ? financialReport.getTravel2020Forecast() : 0d)),
+            ParagraphAlignment.CENTER, false),
+          new POIField(
+            "US$ " + (this
+              .conversion(financialReport.getTravel2021Budget() != null ? financialReport.getTravel2021Budget() : 0d)),
+            ParagraphAlignment.CENTER, false),
+          new POIField(financialReport.getTravelComments(), ParagraphAlignment.LEFT, true)};
+
+        data = Arrays.asList(sData);
+        datas.add(data);
+
+        sData = new POIField[] {
+          new POIField(this.getText("annualReport2018.financial.table12.expenses"), ParagraphAlignment.CENTER, false),
+          new POIField(
+            "US$ " + (this.conversion(
+              financialReport.getOperation2020Forecast() != null ? financialReport.getOperation2020Forecast() : 0d)),
+            ParagraphAlignment.CENTER, false),
+          new POIField(
+            "US$ " + (this.conversion(
+              financialReport.getOperation2021Budget() != null ? financialReport.getOperation2021Budget() : 0d)),
+            ParagraphAlignment.CENTER, false),
+          new POIField(financialReport.getOperationComments(), ParagraphAlignment.LEFT, true)};
+
+        data = Arrays.asList(sData);
+        datas.add(data);
+
+        sData = new POIField[] {
+          new POIField(this.getText("annualReport2018.financial.table12.collaborators"), ParagraphAlignment.CENTER,
+            false),
+          new POIField("US$ " + (this.conversion(financialReport.getCollaboratorPartnerships2020Forecast() != null
+            ? financialReport.getCollaboratorPartnerships2020Forecast() : 0d)), ParagraphAlignment.CENTER, false),
+          new POIField("US$ " + (this.conversion(financialReport.getCollaboratorPartnerships2021Budget() != null
+            ? financialReport.getCollaboratorPartnerships2021Budget() : 0d)), ParagraphAlignment.CENTER, false),
+          new POIField(financialReport.getCollaboratorPartnershipsComments(), ParagraphAlignment.LEFT, true)};
+
+        data = Arrays.asList(sData);
+        datas.add(data);
+
+        sData = new POIField[] {
+          new POIField(this.getText("annualReport2018.financial.table12.capital"), ParagraphAlignment.CENTER, false),
+          new POIField("US$ " + (this.conversion(financialReport.getCapitalEquipment2020Forecast() != null
+            ? financialReport.getCapitalEquipment2020Forecast() : 0d)), ParagraphAlignment.CENTER, false),
+          new POIField("US$ " + (this.conversion(financialReport.getCapitalEquipment2021Budget() != null
+            ? financialReport.getCapitalEquipment2021Budget() : 0d)), ParagraphAlignment.CENTER, false),
+          new POIField(financialReport.getCapitalEquipmentComments(), ParagraphAlignment.LEFT, true)};
+
+        data = Arrays.asList(sData);
+        datas.add(data);
+
+        sData = new POIField[] {
+          new POIField(this.getText("annualReport2018.financial.table12.closeout"), ParagraphAlignment.CENTER, false),
+          new POIField(
+            "US$ " + (this.conversion(
+              financialReport.getCloseout2020Forecast() != null ? financialReport.getCloseout2020Forecast() : 0d)),
+            ParagraphAlignment.CENTER, false),
+          new POIField(
+            "US$ " + (this.conversion(
+              financialReport.getCloseout2021Budget() != null ? financialReport.getCloseout2021Budget() : 0d)),
+            ParagraphAlignment.CENTER, false),
+          new POIField(financialReport.getCloseoutComments(), ParagraphAlignment.LEFT, true)};
+
+        data = Arrays.asList(sData);
+        datas.add(data);
+
+        String totalCRPPTL = "";
+        if (this.isEntityCRP()) {
+          totalCRPPTL = "CRP Total";
+        } else {
+          totalCRPPTL = "Platform Total";
+        }
+
+        sData = new POIField[] {new POIField(totalCRPPTL, ParagraphAlignment.CENTER, true, blackColor),
+          new POIField(
+            "US$ " + (this.conversion(
+              financialReport.getCrpTotal2020Forecast() != null ? financialReport.getCrpTotal2020Forecast() : 0d)),
+            ParagraphAlignment.CENTER, true, blackColor),
+          new POIField(
+            "US$ " + (this.conversion(
+              financialReport.getCrpTotal2021Budget() != null ? financialReport.getCrpTotal2021Budget() : 0d)),
+            ParagraphAlignment.CENTER, true, blackColor),
+          new POIField(financialReport.getCrpTotalComments(), ParagraphAlignment.LEFT, true)};
+
+        data = Arrays.asList(sData);
+        datas.add(data);
+      }
+
+      poiSummary.textTable(document, headers, datas, true, "table13AnnualReport2021");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
   private void createTable2() {
 
     List<List<POIField>> headers = new ArrayList<>();
@@ -1610,6 +1782,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     poiSummary.textTable(document, headers, datas, false, "table4AnnualReport2018");
   }
 
+
   private void createTable5() {
 
     List<List<POIField>> headers = new ArrayList<>();
@@ -1788,8 +1961,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                     }
                   }
 
-                  if (milestoneOb.getCrpMilestone().getStatusName() != null) {
-                    milestoneStatus = milestoneOb.getCrpMilestone().getStatusName();
+                  if (milestoneOb.getMilestonesStatus() != null && milestoneOb.getMilestonesStatus().getId() != null) {
+                    milestoneStatus = milestoneOb.getMilestonesStatus().getName();
                     if (milestoneStatus != null) {
                       // TODO the replaceAll() is a temporal solution. we need to check where the problem comes from
                       milestoneStatus = milestoneStatus.replaceAll("&amp;", "&");
@@ -1850,7 +2023,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
     poiSummary.textTable(document, headers, datas, false, "table4AnnualReport2018");
   }
-
 
   public void createTable6() {
     List<List<POIField>> headers = new ArrayList<>();
@@ -2237,6 +2409,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     return text;
   }
 
+
   public String deleteSpanTags(String text) {
     text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;\">", "");
     text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;", "");
@@ -2247,7 +2420,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
   @Override
   public String execute() throws Exception {
-    if (this.getSelectedPhase() == null) {
+    if (this.getSelectedPhase() == null || this.getSelectedPhase().getId() == null) {
       return NOT_FOUND;
     }
 
@@ -2751,7 +2924,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table13"));
         paragraph.setStyle("heading 38");
-        this.createTable13();
+        if (this.getSelectedPhase().getName().equals("AR") && this.getSelectedPhase().getYear() == 2021) {
+          this.createTable13AR2021();
+        } else {
+          this.createTable13();
+        }
 
         // Part C
         document.createParagraph().setPageBreak(true);
@@ -3217,7 +3394,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018Platform.table13"));
         paragraph.setStyle("heading 38");
-        this.createTable13();
+        if (this.getSelectedPhase().getName().equals("AR") && this.getSelectedPhase().getYear() == 2021) {
+          this.createTable13AR2021();
+        } else {
+          this.createTable13();
+        }
 
 
         // Part C
@@ -3254,7 +3435,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
-
 
   private void fillProjectPoliciesTable2List() {
     projectPoliciesTable2 =
@@ -3693,7 +3873,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (deliverables != null && !deliverables.isEmpty()) {
-
       total = deliverables.size();
 
       if (deliverables != null && !deliverables.isEmpty()) {

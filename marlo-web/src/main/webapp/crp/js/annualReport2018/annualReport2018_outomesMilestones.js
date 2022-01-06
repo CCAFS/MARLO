@@ -52,22 +52,22 @@ function disableEnableWarningTag(optionSelected, evidenceTag, warningTag, tag) {
   switch (optionSelected) {
     case '3':
       $(evidenceTag).hide();
-      $(warningTag).show();
+      // $(warningTag).show();
       $(tag).show();
       break;
     case '5':
       $(evidenceTag).show();
-      $(warningTag).hide();
+      // $(warningTag).hide();
       $(tag).hide();
       break;
     case '6':
       $(evidenceTag).show();
-      $(warningTag).show();
+      // $(warningTag).show();
       $(tag).show();
       break;
     case '7':
       $(evidenceTag).show();
-      $(warningTag).hide();
+      // $(warningTag).hide();
       $(tag).hide();
       break;
 
@@ -164,15 +164,17 @@ function attachEvents() {
     }
     function updateIndexes(list) {
       var linksList = $(list).parent('.linksBlock').find('.linksList');
+      var warningTag = $(linksList).parent().parent().find('#warningEmptyLinksTag');
       linksList.find('.multiInput').each(function (i, element) {
         $(element).find('.indexTag').text(i + 1);
         $(element).setNameIndexes(3, i);
       });
+
       if (linksList.children().length != 0) {
-        $('#warningEmptyLinksTag').hide();
+        warningTag.hide();
         validateEmptyLinks();
       } else {
-        $('#warningEmptyLinksTag').show();
+        warningTag.show();
       }
     }
     function validateURL() {
@@ -180,22 +182,25 @@ function attachEvents() {
       var expression = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
       var regex = new RegExp(expression);
       var res = "";
+      var warningTag = $(this).parent().parent().parent().parent().parent().parent().find('#warningEmptyLinksTag');
+
       if (url.match(regex)) {
         res = "Valid URL";
         $(this).css('border', 'none');
-        $('#warningEmptyLinksTag').hide();
+        warningTag.hide();
       } else {
         res = "Invalid URL";
         $(this).css('border', '1px solid red');
-        $('#warningEmptyLinksTag').show();
+        warningTag.show();
       }
     }
     function validateEmptyLinks() {
       $('.linksList').find('.multiInput span input').map((index, item) => {
+        var warningTag = $(item).parent().parent().parent().parent().parent().parent().find('#warningEmptyLinksTag');
         if (item.value != '') {
-          $('#warningEmptyLinksTag').hide();
+          warningTag.hide();
         } else {
-          $('#warningEmptyLinksTag').show();
+          warningTag.show();
         }
       });
     }
@@ -262,7 +267,7 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
             if ($('#isPMU').html() == 'true') {
               updateQualityAssessmentStatusData(newData);
             } else {
-              console.log("FP",newData)
+              // console.log("FP",newData)
               qualityAssessmentStatusMessage(newData);
             }
           }
@@ -373,6 +378,7 @@ function qualityAssessmentStatusMessage(data) {
           var pMessageTag = document.createElement('p');
           if (x[1] == 'quality_assessed') {
             var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
+            element.style.backgroundPosition = '594px';
           } else {
             var textMessage = document.createTextNode('As this item is being assessed by the SMO, no changes are recommended');
           }

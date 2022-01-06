@@ -84,6 +84,12 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   private ReportSynthesisKeyPartnership reportSynthesisKeyPartnership;
 
   @Expose
+  private ReportSynthesisCrpFinancialReport reportSynthesisCrpFinancialReport;
+
+  // Unfortunate workaround
+  private Set<ReportSynthesisCrpFinancialReport> reportSynthesisCrpFinancialReports;
+
+  @Expose
   private ReportSynthesisNarrative reportSynthesisNarrative;
 
 
@@ -94,7 +100,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   public ReportSynthesis() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -118,7 +123,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return true;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -141,8 +145,18 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisCrossCgiar;
   }
 
+
   public ReportSynthesisCrossCuttingDimension getReportSynthesisCrossCuttingDimension() {
     return reportSynthesisCrossCuttingDimension;
+  }
+
+
+  public ReportSynthesisCrpFinancialReport getReportSynthesisCrpFinancialReport() {
+    return reportSynthesisCrpFinancialReport;
+  }
+
+  public Set<ReportSynthesisCrpFinancialReport> getReportSynthesisCrpFinancialReports() {
+    return reportSynthesisCrpFinancialReports;
   }
 
   public ReportSynthesisCrpProgress getReportSynthesisCrpProgress() {
@@ -244,6 +258,16 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public void
     setReportSynthesisCrossCuttingDimension(ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension) {
     this.reportSynthesisCrossCuttingDimension = reportSynthesisCrossCuttingDimension;
+  }
+
+  public void
+    setReportSynthesisCrpFinancialReport(ReportSynthesisCrpFinancialReport reportSynthesisCrpFinancialReport) {
+    this.reportSynthesisCrpFinancialReport = reportSynthesisCrpFinancialReport;
+  }
+
+  public void
+    setReportSynthesisCrpFinancialReports(Set<ReportSynthesisCrpFinancialReport> reportSynthesisCrpFinancialReports) {
+    this.reportSynthesisCrpFinancialReports = reportSynthesisCrpFinancialReports;
   }
 
 

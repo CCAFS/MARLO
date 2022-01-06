@@ -170,14 +170,6 @@ public class ProjectExpectedStudyQuantificationManagerImpl implements ProjectExp
         .setTypeQuantification(projectExpectedStudyQuantification.getTypeQuantification());
       projectExpectedStudyQuantificationDAO.save(projectExpectedStudyQuantificationAdd);
     } else {
-      for (ProjectExpectedStudyQuantification projectExpectedStudyQuantificationDel : projectExpectedStudyQuantifications) {
-        try {
-          projectExpectedStudyQuantificationDAO
-            .deleteProjectExpectedStudyQuantification(projectExpectedStudyQuantificationDel.getId());
-        } catch (Exception e) {
-          // TODO: handle exception
-        }
-      }
       ProjectExpectedStudyQuantification projectExpectedStudyQuantificationAdd =
         new ProjectExpectedStudyQuantification();
       projectExpectedStudyQuantificationAdd
@@ -189,6 +181,15 @@ public class ProjectExpectedStudyQuantificationManagerImpl implements ProjectExp
       projectExpectedStudyQuantificationAdd
         .setTypeQuantification(projectExpectedStudyQuantification.getTypeQuantification());
       projectExpectedStudyQuantificationDAO.save(projectExpectedStudyQuantificationAdd);
+
+      for (ProjectExpectedStudyQuantification projectExpectedStudyQuantificationDel : projectExpectedStudyQuantifications) {
+        try {
+          projectExpectedStudyQuantificationDAO
+            .deleteProjectExpectedStudyQuantification(projectExpectedStudyQuantificationDel.getId());
+        } catch (Exception e) {
+          // TODO: handle exception
+        }
+      }
     }
 
 
