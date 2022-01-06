@@ -506,6 +506,8 @@
     <mapping resource="xmls/GlobalTargets.hbm.xml"/>
     <mapping resource="xmls/InstitutionSource.hbm.xml"/>
     <mapping resource="xmls/InstitutionDictionary.hbm.xml"/>
+    <mapping resource="xmls/OneCGIARBussinessCategory.hbm.xml"/>
+    <mapping resource="xmls/OneCGIARTechnicalField.hbm.xml"/>
     
     <!-- Annual Report 2021 -->
     <mapping resource="xmls/ProjectExpectedStudyReferences.hbm.xml" />
