@@ -139,6 +139,13 @@ public class ProjectExpectedStudyReferenceManagerImpl implements ProjectExpected
       projectExpectedStudyReferenceAdd.setLink(projectExpectedStudyReference.getLink());
       projectExpectedStudyReferenceDAO.save(projectExpectedStudyReferenceAdd);
     } else {
+      ProjectExpectedStudyReference projectExpectedStudyReferenceAdd = new ProjectExpectedStudyReference();
+      projectExpectedStudyReferenceAdd.setProjectExpectedStudy(projectExpectedStudyReference.getProjectExpectedStudy());
+      projectExpectedStudyReferenceAdd.setPhase(phase);
+      projectExpectedStudyReferenceAdd.setReference(projectExpectedStudyReference.getReference());
+      projectExpectedStudyReferenceAdd.setLink(projectExpectedStudyReference.getLink());
+      projectExpectedStudyReferenceDAO.save(projectExpectedStudyReferenceAdd);
+
       for (ProjectExpectedStudyReference projectExpectedStudyReferenceDel : projectExpectedStudyReferences) {
         try {
           projectExpectedStudyReferenceDAO
@@ -147,12 +154,6 @@ public class ProjectExpectedStudyReferenceManagerImpl implements ProjectExpected
           // TODO: handle exception
         }
       }
-      ProjectExpectedStudyReference projectExpectedStudyReferenceAdd = new ProjectExpectedStudyReference();
-      projectExpectedStudyReferenceAdd.setProjectExpectedStudy(projectExpectedStudyReference.getProjectExpectedStudy());
-      projectExpectedStudyReferenceAdd.setPhase(phase);
-      projectExpectedStudyReferenceAdd.setReference(projectExpectedStudyReference.getReference());
-      projectExpectedStudyReferenceAdd.setLink(projectExpectedStudyReference.getLink());
-      projectExpectedStudyReferenceDAO.save(projectExpectedStudyReferenceAdd);
     }
 
     if (phase.getNext() != null) {
