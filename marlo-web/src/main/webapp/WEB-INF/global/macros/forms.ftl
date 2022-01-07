@@ -502,7 +502,7 @@
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
     </label>
     [#elseif checked]
-      <p>${label}</p>
+      <p>[@s.text name="${label}" /]</p>
     [/#if]
   </div>
 [/#macro]
