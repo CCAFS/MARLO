@@ -19,6 +19,8 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.AccountTypesItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.AccountsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.RegionTypesItem;
@@ -27,6 +29,8 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.Scien
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.UnitsItem;
 import org.cgiar.ccafs.marlo.rest.dto.AccountTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.AccountsDTO;
+import org.cgiar.ccafs.marlo.rest.dto.KeyExternalPartnershipDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewAccountDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ScienceGroupDTO;
@@ -38,10 +42,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -49,6 +57,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,6 +69,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "All CGIAR Control Lists")
 @Named
 public class OneCGIARControlList {
+
+  private final UserManager userManager;
 
   private RegionsItem<OneCGIARControlList> regionsItem;
   private RegionTypesItem<OneCGIARControlList> regionTypesItem;
@@ -73,7 +85,8 @@ public class OneCGIARControlList {
   @Inject
   public OneCGIARControlList(RegionsItem<OneCGIARControlList> regionsItem, UnitsItem<OneCGIARControlList> unitsItem,
     RegionTypesItem<OneCGIARControlList> regionTypesItem, ScienceGroupItem<OneCGIARControlList> scienceGroupItem,
-    AccountTypesItem<OneCGIARControlList> accountTypesItem, AccountsItem<OneCGIARControlList> accountsItem) {
+    AccountTypesItem<OneCGIARControlList> accountTypesItem, AccountsItem<OneCGIARControlList> accountsItem,
+    UserManager userManager) {
     super();
     this.regionsItem = regionsItem;
     this.regionTypesItem = regionTypesItem;
@@ -81,6 +94,27 @@ public class OneCGIARControlList {
     this.accountTypesItem = accountTypesItem;
     this.accountsItem = accountsItem;
     this.unitsItem = unitsItem;
+    this.userManager = userManager;
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Accounts.DELETE.value}",
+    response = KeyExternalPartnershipDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/accounts/{financialCode}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<AccountsDTO> deleteAccountsByFinancialCode(
+    @ApiParam(value = "${CGIARControlList.Accounts.DELETE.param.CGIAR.value}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${KeyExternalPartnership.externalpartnerships.DELETE.id.param.id}",
+      required = true) @PathVariable String financialCode) {
+
+    ResponseEntity<AccountsDTO> response =
+      this.accountsItem.deleteAccountByFinanceCode(financialCode, CGIAREntity, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Accounts.code.404"));
+    }
+
+    return response;
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Accounts.all.value}",
@@ -176,5 +210,35 @@ public class OneCGIARControlList {
       e.printStackTrace();
       return null;
     }
+  }
+
+  private User getCurrentUser() {
+    Subject subject = SecurityUtils.getSubject();
+    Long principal = (Long) subject.getPrincipal();
+    User user = this.userManager.getUser(principal);
+    return user;
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Accounts.PUT.value}",
+    response = KeyExternalPartnershipDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/keyexternalpartnership/{financialCode}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> putAccountByFinanceCode(
+    @ApiParam(value = "${CGIARControlList.Accounts.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${CGIARControlList.Accounts.PUT.financialCode.value}",
+      required = true) @PathVariable String financeCode,
+    @ApiParam(value = "${CGIARControlList.Accounts.PUT.param.newAccount}",
+      required = true) @Valid @RequestBody NewAccountDTO newAccountDTO) {
+
+    Long accountId =
+      this.accountsItem.putAccountByFinanceCode(financeCode, newAccountDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(accountId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Accounts.code.404"));
+    }
+
+    return response;
   }
 }
