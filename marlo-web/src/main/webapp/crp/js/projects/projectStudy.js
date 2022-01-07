@@ -181,13 +181,20 @@ function attachEvents() {
     var $parent = $(this).parents(".optionPublicComponent");
     var $input = $parent.find('.urlInput');
     var $message = $parent.find('.message');
-    $input.select();
+    var tempInput = document.createElement("input");
+
+    tempInput.value = $input.val();
+    document.body.appendChild(tempInput);
+    tempInput.select();
+
     if (document.execCommand("copy")) {
       $message.fadeIn(400, function () {
         $message.fadeOut(300);
       });
     }
-    console.log($input.val());
+
+    console.log(tempInput.value);
+    document.body.removeChild(tempInput);
   });
 
   /**
