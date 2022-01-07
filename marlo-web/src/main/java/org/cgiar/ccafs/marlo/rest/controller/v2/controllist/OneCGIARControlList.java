@@ -21,7 +21,7 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.AccountTypesItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.AccountsItem;
-import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.BussinessCategoryItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.BusinessCategoryItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.RegionTypesItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.RegionsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.ScienceGroupItem;
@@ -29,7 +29,7 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.Techn
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.UnitsItem;
 import org.cgiar.ccafs.marlo.rest.dto.AccountTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.AccountsDTO;
-import org.cgiar.ccafs.marlo.rest.dto.BussinessCategoryDTO;
+import org.cgiar.ccafs.marlo.rest.dto.BusinessCategoryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ScienceGroupDTO;
@@ -70,7 +70,7 @@ public class OneCGIARControlList {
   private AccountsItem<OneCGIARControlList> accountsItem;
   private AccountTypesItem<OneCGIARControlList> accountTypesItem;
   private UnitsItem<OneCGIARControlList> unitsItem;
-  private BussinessCategoryItem<OneCGIARControlList> bussinessCategoryItem;
+  private BusinessCategoryItem<OneCGIARControlList> businessCategoryItem;
   private TechnicalFieldItem<OneCGIARControlList> technicalFieldItem;
 
   @Autowired
@@ -80,7 +80,7 @@ public class OneCGIARControlList {
   public OneCGIARControlList(RegionsItem<OneCGIARControlList> regionsItem, UnitsItem<OneCGIARControlList> unitsItem,
     RegionTypesItem<OneCGIARControlList> regionTypesItem, ScienceGroupItem<OneCGIARControlList> scienceGroupItem,
     AccountTypesItem<OneCGIARControlList> accountTypesItem, AccountsItem<OneCGIARControlList> accountsItem,
-    BussinessCategoryItem<OneCGIARControlList> bussinessCategoryItem,
+    BusinessCategoryItem<OneCGIARControlList> businessCategoryItem,
     TechnicalFieldItem<OneCGIARControlList> technicalFieldItem) {
     super();
     this.regionsItem = regionsItem;
@@ -89,7 +89,7 @@ public class OneCGIARControlList {
     this.accountTypesItem = accountTypesItem;
     this.accountsItem = accountsItem;
     this.unitsItem = unitsItem;
-    this.bussinessCategoryItem = bussinessCategoryItem;
+    this.businessCategoryItem = businessCategoryItem;
     this.technicalFieldItem = technicalFieldItem;
   }
 
@@ -128,13 +128,13 @@ public class OneCGIARControlList {
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.AccountTypes.all.value}",
-    response = BussinessCategoryDTO.class)
+    response = BusinessCategoryDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/bussiness-categories", method = RequestMethod.GET,
+  @RequestMapping(value = "/business-categories", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<List<BussinessCategoryDTO>> findAllBussinesCategories() {
+  public ResponseEntity<List<BusinessCategoryDTO>> findAllBussinesCategories() {
     try {
-      ResponseEntity<List<BussinessCategoryDTO>> response = this.bussinessCategoryItem.getAll();
+      ResponseEntity<List<BusinessCategoryDTO>> response = this.businessCategoryItem.getAll();
       if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
         throw new NotFoundException("404", this.env.getProperty("CGIARControlList.BussinessCategory.code.404"));
       }

@@ -1289,7 +1289,7 @@ setTimeout(() => {
 
 function business_category() {
 	$.ajax({
-		url: config.endpoint + '/business-category',
+		url: config.endpoint + '/business-categories',
 		type: "GET",
 		beforeSend: function () {
 			// hideFilter();
@@ -1324,7 +1324,7 @@ setTimeout(() => {
 
 function technical_field() {
 	$.ajax({
-		url: config.endpoint + '/technical-field',
+		url: config.endpoint + '/technical-fields',
 		type: "GET",
 		beforeSend: function () {
 			// hideFilter();

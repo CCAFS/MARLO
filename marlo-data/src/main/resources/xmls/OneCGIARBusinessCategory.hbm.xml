@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-  <class name="org.cgiar.ccafs.marlo.data.model.OneCGIARBussinessCategory" table="oc_bussiness_category" optimistic-lock="none">
+  <class name="org.cgiar.ccafs.marlo.data.model.OneCGIARBusinessCategory" table="oc_business_category" optimistic-lock="none">
     <id name="id" type="java.lang.Long">
       <column name="id" />
       <generator class="identity" />

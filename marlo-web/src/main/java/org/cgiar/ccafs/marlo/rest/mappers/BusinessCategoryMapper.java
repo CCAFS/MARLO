@@ -17,28 +17,17 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.rest.mappers;
 
+import org.cgiar.ccafs.marlo.data.model.OneCGIARBusinessCategory;
+import org.cgiar.ccafs.marlo.rest.dto.BusinessCategoryDTO;
 
-public class BussinessCategoryDTO {
+import org.mapstruct.Mapper;
 
-  private Long id;
-  private String name;
+@Mapper(componentModel = "jsr330")
+public interface BusinessCategoryMapper {
 
-  public Long getId() {
-    return id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
+  public abstract BusinessCategoryDTO
+    oneCGIARBussinesCategoryToBussinessCategoryDTO(OneCGIARBusinessCategory oneCGIARBussinessCategory);
 
 }

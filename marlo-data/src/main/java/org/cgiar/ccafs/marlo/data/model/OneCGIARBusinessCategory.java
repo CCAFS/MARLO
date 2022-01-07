@@ -17,17 +17,25 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+package org.cgiar.ccafs.marlo.data.model;
 
-import org.cgiar.ccafs.marlo.data.model.OneCGIARBussinessCategory;
-import org.cgiar.ccafs.marlo.rest.dto.BussinessCategoryDTO;
 
-import org.mapstruct.Mapper;
+public class OneCGIARBusinessCategory extends MarloAuditableEntity implements java.io.Serializable {
 
-@Mapper(componentModel = "jsr330")
-public interface BussinessCategoryMapper {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+  private String name;
 
-  public abstract BussinessCategoryDTO
-    oneCGIARBussinesCategoryToBussinessCategoryDTO(OneCGIARBussinessCategory oneCGIARBussinessCategory);
+
+  public String getName() {
+    return name;
+  }
+
+
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }
