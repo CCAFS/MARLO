@@ -160,7 +160,7 @@
             <br />
             <div class="input-group">
               <span class="input-group-btn">
-                <button class="btn btn-default btn-sm copyButton" type="button"> <span class="glyphicon glyphicon-duplicate"></span> Copy URL </button>
+                <button class="btn btn-default btn-sm copyButton" type="button" style="${editable?string('', 'margin-right: 5px;')}"> <span class="glyphicon glyphicon-duplicate"></span> Copy URL </button>
               </span>
               [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
               [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable readOnly=true/]
@@ -451,7 +451,7 @@
       <div class="form-group stageProcessOne">
         <div class="form-group">
           <span id="warningEmptyReferencesTag" class="errorTag glyphicon glyphicon-info-sign" style="position: relative; left: 750px;" title="" aria-describedby="ui-id-5"> </span>
-          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+          [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
 
           [#assign isAR2021 = (action.isSelectedPhaseAR2021()!false)]
 

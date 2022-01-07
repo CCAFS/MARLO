@@ -729,7 +729,9 @@ public class StudiesOICRAction extends BaseAction {
         this.getFlagshipsWithMissingFields();
 
         // if(!this.isPMU()) {
-        this.ensureAllIndicatorsOnSynthesis();
+        if (!this.isHttpPost()) {
+          this.ensureAllIndicatorsOnSynthesis();
+        }
         // }
 
         /*
