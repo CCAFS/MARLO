@@ -17,36 +17,41 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.data.manager.impl;
+package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.dao.OneCGIARBussinessCategoryDAO;
-import org.cgiar.ccafs.marlo.data.manager.OneCGIARBussinessCategoryManager;
-import org.cgiar.ccafs.marlo.data.model.OneCGIARBussinessCategory;
+import org.cgiar.ccafs.marlo.data.dao.OneCGIARBusinessCategoryDAO;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARBusinessCategory;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-@Named
-public class OneCGIARBussinessCategoryManagerImpl implements OneCGIARBussinessCategoryManager {
+import org.hibernate.SessionFactory;
 
-  private OneCGIARBussinessCategoryDAO oneCGIARBussinessCategoryDAO;
+@Named
+public class OneCGIARBusinessCategoryMySQLDAO extends AbstractMarloDAO<OneCGIARBusinessCategory, Long>
+  implements OneCGIARBusinessCategoryDAO {
+
 
   @Inject
-  public OneCGIARBussinessCategoryManagerImpl(OneCGIARBussinessCategoryDAO oneCGIARBussinessCategoryDAO) {
-    super();
-    this.oneCGIARBussinessCategoryDAO = oneCGIARBussinessCategoryDAO;
+  public OneCGIARBusinessCategoryMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public List<OneCGIARBussinessCategory> getAll() {
-    return oneCGIARBussinessCategoryDAO.getAll();
+  public List<OneCGIARBusinessCategory> getAll() {
+    String query = "from " + OneCGIARBusinessCategory.class.getName();
+    List<OneCGIARBusinessCategory> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
   }
 
   @Override
-  public OneCGIARBussinessCategory getOneCGIARBussinessCategoryById(long id) {
-    return oneCGIARBussinessCategoryDAO.getOneCGIARBussinessCategoryById(id);
+  public OneCGIARBusinessCategory getOneCGIARBussinessCategoryById(long id) {
+    return super.find(OneCGIARBusinessCategory.class, id);
   }
 
 }

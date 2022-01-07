@@ -17,16 +17,28 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.data.dao;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.OneCGIARBussinessCategory;
 
-import java.util.List;
+public class BusinessCategoryDTO {
 
-public interface OneCGIARBussinessCategoryDAO {
+  private Long id;
+  private String name;
 
-  public List<OneCGIARBussinessCategory> getAll();
+  public Long getId() {
+    return id;
+  }
 
-  public OneCGIARBussinessCategory getOneCGIARBussinessCategoryById(long id);
+  public String getName() {
+    return name;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }

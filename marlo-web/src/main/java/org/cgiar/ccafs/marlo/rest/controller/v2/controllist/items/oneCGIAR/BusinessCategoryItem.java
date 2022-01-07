@@ -19,13 +19,13 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR;
 
-import org.cgiar.ccafs.marlo.data.manager.OneCGIARBussinessCategoryManager;
-import org.cgiar.ccafs.marlo.data.model.OneCGIARBussinessCategory;
+import org.cgiar.ccafs.marlo.data.manager.OneCGIARBusinessCategoryManager;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARBusinessCategory;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.rest.dto.BussinessCategoryDTO;
+import org.cgiar.ccafs.marlo.rest.dto.BusinessCategoryDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
-import org.cgiar.ccafs.marlo.rest.mappers.BussinessCategoryMapper;
+import org.cgiar.ccafs.marlo.rest.mappers.BusinessCategoryMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,46 +42,46 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Named
-public class BussinessCategoryItem<T> {
+public class BusinessCategoryItem<T> {
 
-  private static final Logger LOG = LoggerFactory.getLogger(BussinessCategoryItem.class);
+  private static final Logger LOG = LoggerFactory.getLogger(BusinessCategoryItem.class);
 
   // Mappers
-  private BussinessCategoryMapper bussinessCategoryMapper;
+  private BusinessCategoryMapper businessCategoryMapper;
 
   // managers
-  private OneCGIARBussinessCategoryManager oneCGIARBussinessCategoryManager;
+  private OneCGIARBusinessCategoryManager oneCGIARBussinessCategoryManager;
 
   @Inject
-  public BussinessCategoryItem(OneCGIARBussinessCategoryManager oneCGIARBussinessCategoryManager,
-    BussinessCategoryMapper bussinessCategoryMapper) {
+  public BusinessCategoryItem(OneCGIARBusinessCategoryManager oneCGIARBussinessCategoryManager,
+    BusinessCategoryMapper businessCategoryMapper) {
     super();
     this.oneCGIARBussinessCategoryManager = oneCGIARBussinessCategoryManager;
-    this.bussinessCategoryMapper = bussinessCategoryMapper;
+    this.businessCategoryMapper = businessCategoryMapper;
   }
 
-  public ResponseEntity<List<BussinessCategoryDTO>> getAll() {
-    List<OneCGIARBussinessCategory> oneCGIARBussinessCategories = this.oneCGIARBussinessCategoryManager.getAll();
+  public ResponseEntity<List<BusinessCategoryDTO>> getAll() {
+    List<OneCGIARBusinessCategory> oneCGIARBussinessCategories = this.oneCGIARBussinessCategoryManager.getAll();
 
-    List<BussinessCategoryDTO> bussinessCategoryDTOs = CollectionUtils.emptyIfNull(oneCGIARBussinessCategories).stream()
-      .map(this.bussinessCategoryMapper::oneCGIARBussinesCategoryToBussinessCategoryDTO).collect(Collectors.toList());
+    List<BusinessCategoryDTO> bussinessCategoryDTOs = CollectionUtils.emptyIfNull(oneCGIARBussinessCategories).stream()
+      .map(this.businessCategoryMapper::oneCGIARBussinesCategoryToBussinessCategoryDTO).collect(Collectors.toList());
 
     return Optional.ofNullable(bussinessCategoryDTOs).map(result -> new ResponseEntity<>(result, HttpStatus.OK))
       .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
-  public ResponseEntity<BussinessCategoryDTO> getBussinessCategoryById(Long id, User user) {
+  public ResponseEntity<BusinessCategoryDTO> getBusinessCategoryById(Long id, User user) {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
-    OneCGIARBussinessCategory oneCGIARBussinessCategory = null;
+    OneCGIARBusinessCategory oneCGIARBussinessCategory = null;
     if (id == null || id < 1L) {
-      fieldErrors.add(new FieldErrorDTO("OneCGIARBussinessCategory", "id", "Invalid ID for an Bussiness Category"));
+      fieldErrors.add(new FieldErrorDTO("OneCGIARBusinessCategory", "id", "Invalid ID for an Business Category"));
     }
     // User validation???
 
     if (fieldErrors.isEmpty()) {
       oneCGIARBussinessCategory = this.oneCGIARBussinessCategoryManager.getOneCGIARBussinessCategoryById(id);
       if (oneCGIARBussinessCategory == null) {
-        fieldErrors.add(new FieldErrorDTO("OneCGIARBussinessCategory", "id",
+        fieldErrors.add(new FieldErrorDTO("OneCGIARBusinessCategory", "id",
           "The Bussiness Category with id " + id + " does not exist"));
       }
     }
@@ -91,7 +91,7 @@ public class BussinessCategoryItem<T> {
     }
 
     return Optional.ofNullable(oneCGIARBussinessCategory)
-      .map(this.bussinessCategoryMapper::oneCGIARBussinesCategoryToBussinessCategoryDTO)
+      .map(this.businessCategoryMapper::oneCGIARBussinesCategoryToBussinessCategoryDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 }

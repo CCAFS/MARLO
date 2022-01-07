@@ -17,25 +17,15 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.data.model;
+package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.OneCGIARBusinessCategory;
 
-public class OneCGIARBussinessCategory extends MarloAuditableEntity implements java.io.Serializable {
+import java.util.List;
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
-  private String name;
+public interface OneCGIARBusinessCategoryManager {
 
+  public List<OneCGIARBusinessCategory> getAll();
 
-  public String getName() {
-    return name;
-  }
-
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
+  public OneCGIARBusinessCategory getOneCGIARBussinessCategoryById(long id);
 }

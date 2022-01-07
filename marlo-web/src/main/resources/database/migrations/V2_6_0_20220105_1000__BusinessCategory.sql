@@ -1,4 +1,4 @@
-CREATE TABLE oc_bussiness_category (
+CREATE TABLE oc_business_category (
 id bigint(20) NOT NULL AUTO_INCREMENT,
 name TEXT,
 PRIMARY KEY (id),
@@ -6,12 +6,12 @@ INDEX `oc_bussiness_category_id` (`id`) USING BTREE
 )ENGINE=InnoDB
 DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci;
 
-Insert into oc_bussiness_category(id,name) values (1,'Design');
-Insert into oc_bussiness_category(id,name) values (2,'Device'); 
-Insert into oc_bussiness_category(id,name) values (3,'Facility'); 
-Insert into oc_bussiness_category(id,name) values (4,'Material'); 
-Insert into oc_bussiness_category(id,name) values (5,'Process'); 
-Insert into oc_bussiness_category(id,name) values (6,'System or software');  
+Insert into oc_business_category(id,name) values (1,'Design');
+Insert into oc_business_category(id,name) values (2,'Device'); 
+Insert into oc_business_category(id,name) values (3,'Facility'); 
+Insert into oc_business_category(id,name) values (4,'Material'); 
+Insert into oc_business_category(id,name) values (5,'Process'); 
+Insert into oc_business_category(id,name) values (6,'System or software');  
 
 CREATE TABLE oc_technical_field (
 id bigint(20) NOT NULL AUTO_INCREMENT,
