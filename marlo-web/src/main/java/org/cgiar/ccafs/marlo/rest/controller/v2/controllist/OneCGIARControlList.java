@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.rest.dto.AccountTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.AccountsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.KeyExternalPartnershipDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewAccountDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewUnitDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ScienceGroupDTO;
@@ -97,6 +98,47 @@ public class OneCGIARControlList {
     this.userManager = userManager;
   }
 
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Accounts.POST.value}",
+    response = AccountsDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/account", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> createAccount(
+    @ApiParam(value = "${CGIARControlList.Accounts.POST.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${CGIARControlList.Accounts.POST.param.newAccount}",
+      required = true) @Valid @RequestBody NewAccountDTO newAccountDTO) {
+
+    Long accountID = this.accountsItem.createAccount(newAccountDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(accountID, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Accounts.GET.id.404"));
+    }
+
+    return response;
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.POST.value}",
+    response = AccountsDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/unit", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> createUnit(
+    @ApiParam(value = "${CGIARControlList.Units.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${CGIARControlList.Units.POST.param.newUnit}",
+      required = true) @Valid @RequestBody NewUnitDTO newUnitDTO) {
+
+    Long unitID = this.unitsItem.createUnit(newUnitDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(unitID, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Units.GET.id.404"));
+    }
+
+    return response;
+  }
+
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Accounts.DELETE.value}",
     response = KeyExternalPartnershipDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
@@ -112,6 +154,26 @@ public class OneCGIARControlList {
       this.accountsItem.deleteAccountByFinanceCode(financialCode, CGIAREntity, this.getCurrentUser());
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Accounts.code.404"));
+    }
+
+    return response;
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.DELETE.value}",
+    response = KeyExternalPartnershipDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/units/{financialCode}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<UnitDTO> deleteUnitsByFinancialCode(
+    @ApiParam(value = "${CGIARControlList.Units.DELETE.param.CGIAR.value}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${KeyExternalPartnership.externalpartnerships.DELETE.id.param.id}",
+      required = true) @PathVariable String financialCode) {
+
+    ResponseEntity<UnitDTO> response =
+      this.unitsItem.deleteUnitByFinanceCode(financialCode, CGIAREntity, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Units.code.404"));
     }
 
     return response;
@@ -236,7 +298,29 @@ public class OneCGIARControlList {
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(accountId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Accounts.code.404"));
+      throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Accounts.GET.id.404"));
+    }
+
+    return response;
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.PUT.value}",
+    response = KeyExternalPartnershipDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/keyexternalpartnership/{financialCode}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> putUnitByFinanceCode(
+    @ApiParam(value = "${CGIARControlList.Units.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${CGIARControlList.Units.PUT.financialCode.value}",
+      required = true) @PathVariable String financeCode,
+    @ApiParam(value = "${CGIARControlList.Units.PUT.param.newUnit}",
+      required = true) @Valid @RequestBody NewUnitDTO newUnitDTO) {
+
+    Long unitId = this.unitsItem.putUnitByFinanceCode(financeCode, newUnitDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(unitId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Units.GET.id.404"));
     }
 
     return response;

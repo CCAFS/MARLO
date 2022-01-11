@@ -20,20 +20,18 @@ package org.cgiar.ccafs.marlo.rest.dto;
  * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-public class NewAccountDTO {
+public class NewUnitDTO {
 
   private String description;
 
   private String financialCode;
 
-  private String accountTypeCode;
+  private String unitTypeCode;
 
   private String parentCode;
 
+  private String scienceGroupCode;
 
-  public String getAccountTypeCode() {
-    return accountTypeCode;
-  }
 
   public String getDescription() {
     return description;
@@ -47,10 +45,14 @@ public class NewAccountDTO {
     return parentCode;
   }
 
-
-  public void setAccountTypeCode(String accountTypeCode) {
-    this.accountTypeCode = accountTypeCode;
+  public String getScienceGroupCode() {
+    return scienceGroupCode;
   }
+
+  public String getUnitTypeCode() {
+    return unitTypeCode;
+  }
+
 
   public void setDescription(String description) {
     this.description = description;
@@ -64,4 +66,11 @@ public class NewAccountDTO {
     this.parentCode = parentCode;
   }
 
+  public void setScienceGroupCode(String scienceGroupCode) {
+    this.scienceGroupCode = scienceGroupCode;
+  }
+
+  public void setUnitTypeCode(String unitTypeCode) {
+    this.unitTypeCode = unitTypeCode;
+  }
 }
