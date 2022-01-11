@@ -13,9 +13,9 @@ function init() {
   //   width: '100%'
   // });
   isOICR = $('#isOICR').html();
-  if ($('#actualPhaseAR2021').html() == 'true' ) {
-    $('textarea[name*="evidenceLink"]').prop('disabled', true);
-  }
+  // if ($('#actualPhaseAR2021').html() == 'true' ) {
+  //   $('textarea[name*="evidenceLink"]').prop('disabled', true);
+  // }
   inputMilestoneStatus = $('input.milestoneStatus');
   loadInputMilestoneStatus();
   inputMilestoneStatus.on('change', function () {
