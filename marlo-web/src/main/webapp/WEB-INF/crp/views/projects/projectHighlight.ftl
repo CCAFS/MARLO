@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${highlight.id}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectHighlight.js", 
+  "${baseUrlMedia}/js/projects/projectHighlight.js?20220111a", 
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
@@ -61,7 +61,8 @@
         [#--  Highlight Information --]
         <h3 class="headTitle">[@s.text name="projectHighlight.information" /]</h3> 
         <div id="highlight-information" class="borderBox clearfix">
-          
+          <div id="isEditable" style="display: none;">${(editable!false)?c}</div>
+
           [#-- Title --]
           <div class="form-group">
             [@customForm.input name="highlight.projectHighlightInfo.title" type="text" i18nkey="highlight.title" editable=editable required=true  /]
@@ -165,16 +166,16 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-6">
-          
-                [@customForm.checkbox  name="highlight.projectHighlightInfo.global" className="isGlobal" i18nkey="highlight.isGlobal" checked=(highlight.global)!false value="true" editable=editable/]
+                <div id="isGlobalValue" style="display: none;">${(highlight.projectHighlightInfo.global!false)?c}</div>
+                [@customForm.checkbox  name="highlight.projectHighlightInfo.global" className="isGlobal" i18nkey="highlight.isGlobal" checked=(highlight.projectHighlightInfo.global)!false value="true" editable=editable/]
               </div>
             </div>
           </div>
           
           [#-- Countries --]
-          <div class="form-group countriesBlock chosen ${customForm.changedField('highlight.countries')}" style="display:${((highlight.global)!false)?string('none','block')}" >
+          <div class="form-group countriesBlock chosen ${customForm.changedField('highlight.countries')}" style="display:${((highlight.projectHighlightInfo.global)!false)?string('none','block')}" >
             [#if editable]
-              [@customForm.select name="highlight.countriesIds" label="" i18nkey="highlight.countries" listName="countries" keyFieldName="id"  displayFieldName="name" value="highlight.countriesIds" multiple=true disabled="${(highlight.global?string(1, 0))!0}"/]              
+              [@customForm.select name="highlight.countriesIds" label="" i18nkey="highlight.countries" listName="countries" keyFieldName="id"  displayFieldName="name" value="highlight.countriesIds" multiple=true /]              
             [#else]
               <label>[@s.text name="highlight.countries" /]:</label>
               <div class="select">
