@@ -2,7 +2,7 @@ CREATE TABLE oc_business_category (
 id bigint(20) NOT NULL AUTO_INCREMENT,
 name TEXT,
 PRIMARY KEY (id),
-INDEX `oc_bussiness_category_id` (`id`) USING BTREE
+INDEX `oc_business_category_id` (`id`) USING BTREE
 )ENGINE=InnoDB
 DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci;
 

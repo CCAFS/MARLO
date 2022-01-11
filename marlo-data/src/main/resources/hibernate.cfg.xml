@@ -508,6 +508,7 @@
     <mapping resource="xmls/InstitutionDictionary.hbm.xml"/>
     <mapping resource="xmls/OneCGIARBusinessCategory.hbm.xml"/>
     <mapping resource="xmls/OneCGIARTechnicalField.hbm.xml"/>
+    <mapping resource="xmls/OneCGIARGoveranceType.hbm.xml"/>
     
     <!-- Annual Report 2021 -->
     <mapping resource="xmls/ProjectExpectedStudyReferences.hbm.xml" />
