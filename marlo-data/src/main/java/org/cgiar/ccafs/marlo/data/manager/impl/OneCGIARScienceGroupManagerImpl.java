@@ -40,14 +40,33 @@ public class OneCGIARScienceGroupManagerImpl implements OneCGIARScienceGroupMana
   }
 
   @Override
-  public List<OneCGIARScienceGroup> getAll() {
+  public void deleteOneCGIARScienceGroup(Long oneCGIARScienceGroupId) {
+    this.oneCGIARScienceGroupDAO.deleteOneCGIARScienceGroup(oneCGIARScienceGroupId.longValue());
+  }
 
+  @Override
+  public boolean existOneCGIARScienceGroup(Long oneCGIARScienceGroupID) {
+    return this.oneCGIARScienceGroupDAO.existOneCGIARScienceGroup(oneCGIARScienceGroupID.longValue());
+  }
+
+  @Override
+  public List<OneCGIARScienceGroup> getAll() {
     return oneCGIARScienceGroupDAO.getAll();
   }
 
   @Override
-  public OneCGIARScienceGroup getScienceGroupById(long id) {
-    return oneCGIARScienceGroupDAO.getScienceGroupById(id);
+  public OneCGIARScienceGroup getScienceGroupByFinanceCode(String financeCode) {
+    return this.oneCGIARScienceGroupDAO.getScienceGroupByFinanceCode(financeCode);
+  }
+
+  @Override
+  public OneCGIARScienceGroup getScienceGroupById(Long id) {
+    return oneCGIARScienceGroupDAO.getScienceGroupById(id.longValue());
+  }
+
+  @Override
+  public OneCGIARScienceGroup save(OneCGIARScienceGroup oneCGIARScienceGroup) {
+    return this.oneCGIARScienceGroupDAO.save(oneCGIARScienceGroup);
   }
 
 }
