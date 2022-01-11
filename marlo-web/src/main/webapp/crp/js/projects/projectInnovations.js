@@ -20,6 +20,8 @@ $(document).ready(function () {
   attachEvents();
   AddRequired();
   $('input[name="innovation.projectInnovationInfo.evidenceLink"]').prop('disabled', true);
+  $('input[name="innovation.projectInnovationInfo.evidenceLink"]').css('display', 'none');
+  $('input[name="innovation.projectInnovationInfo.evidenceLink"]').siblings('p').css('display', 'none');
   $('.innovationContributingCRP select').on('change', checkContributingCRP);
   checkContributingCRP();
   multiInputInnovations = $('.multiInput').find('span input');
