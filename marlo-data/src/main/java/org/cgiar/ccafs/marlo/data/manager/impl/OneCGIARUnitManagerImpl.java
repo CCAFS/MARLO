@@ -40,6 +40,16 @@ public class OneCGIARUnitManagerImpl implements OneCGIARUnitManager {
   }
 
   @Override
+  public void deleteOneCGIARUnit(Long oneCGIARUnitId) {
+    this.oneCGIARUnitDAO.deleteOneCGIARUnit(oneCGIARUnitId.longValue());
+  }
+
+  @Override
+  public boolean existOneCGIARUnit(Long oneCGIARUnitID) {
+    return this.oneCGIARUnitDAO.existOneCGIARUnit(oneCGIARUnitID.longValue());
+  }
+
+  @Override
   public List<OneCGIARUnit> getAll() {
     return this.oneCGIARUnitDAO.getAll();
   }
@@ -62,6 +72,11 @@ public class OneCGIARUnitManagerImpl implements OneCGIARUnitManager {
   @Override
   public List<OneCGIARUnit> getUnitsByScienceGroup(Long scienceGroupId) {
     return this.oneCGIARUnitDAO.getUnitsByScienceGroup(scienceGroupId.longValue());
+  }
+
+  @Override
+  public OneCGIARUnit save(OneCGIARUnit oneCGIARUnit) {
+    return this.oneCGIARUnitDAO.save(oneCGIARUnit);
   }
 
 }
