@@ -65,6 +65,14 @@ public interface OneCGIARScienceGroupManager {
   public OneCGIARScienceGroup getScienceGroupById(Long id);
 
   /**
+   * This method gets a list of OneCGIARScienceGroup objects by a given scienceGroup parent identifier.
+   * 
+   * @param parentId is the scienceGroup parent identifier.
+   * @return a list from OneCGIARScienceGroup; empty list if no records exists.
+   */
+  public List<OneCGIARScienceGroup> getScienceGroupsByParent(Long parentId);
+
+  /**
    * This method saves the information of the given oneCGIARScienceGroup
    * 
    * @param oneCGIARScienceGroup - is the oneCGIARScienceGroup object with the new information to be added/updated.

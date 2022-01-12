@@ -72,14 +72,26 @@ public class OneCGIARScienceGroupMySQLDAO extends AbstractMarloDAO<OneCGIARScien
 
     List<OneCGIARScienceGroup> results = super.findAll(createQuery);
 
-    OneCGIARScienceGroup oneCGIARUnit = (results != null && !results.isEmpty()) ? results.get(0) : null;
+    OneCGIARScienceGroup oneCGIARScienceGroup = (results != null && !results.isEmpty()) ? results.get(0) : null;
 
-    return oneCGIARUnit;
+    return oneCGIARScienceGroup;
   }
+
 
   @Override
   public OneCGIARScienceGroup getScienceGroupById(long id) {
     return super.find(OneCGIARScienceGroup.class, id);
+  }
+
+  @Override
+  public List<OneCGIARScienceGroup> getScienceGroupsByParent(long parentId) {
+    String query = "select ocsg from OneCGIARScienceGroup ocsg where parentScienceGroup.id = :parentId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("parentId", parentId);
+
+    List<OneCGIARScienceGroup> results = super.findAll(createQuery);
+
+    return results;
   }
 
   @Override
