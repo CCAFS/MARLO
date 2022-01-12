@@ -14,7 +14,7 @@
     <property name="description" type="string" >
       <column name="description" sql-type="TEXT" />
     </property>
-    <many-to-one name="parentCode"
+    <many-to-one name="parentScienceGroup"
       class="org.cgiar.ccafs.marlo.data.model.OneCGIARScienceGroup" fetch="select">
       <column name="parent_id" />
     </many-to-one>  
