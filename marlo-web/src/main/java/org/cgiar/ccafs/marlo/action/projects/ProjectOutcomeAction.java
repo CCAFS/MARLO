@@ -206,21 +206,23 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   public int getIndexMilestone(long milestoneId, int year) {
-
     int i = 0;
-    for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
 
-      if (crpMilestone.getCrpMilestone().getId().longValue() == milestoneId) {
+    for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
+      if (crpMilestone != null && crpMilestone.getId() != null && crpMilestone.getCrpMilestone() != null
+        && crpMilestone.getCrpMilestone().getId() != null
+        && crpMilestone.getCrpMilestone().getId().longValue() == milestoneId) {
         return i;
       }
+
       i++;
     }
-
 
     ProjectMilestone projectMilestone = new ProjectMilestone();
     projectMilestone.setYear(year);
     projectMilestone.setCrpMilestone(crpMilestoneManager.getCrpMilestoneById(milestoneId));
     projectOutcome.getMilestones().add(projectMilestone);
+
     return this.getIndexMilestone(milestoneId, year);
   }
 
