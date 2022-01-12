@@ -115,7 +115,7 @@ public class UnitsItem<T> {
         unitType = this.unitTypeManager.getUnitTypeByAcronym(unitTypeId);
         if (unitType == null) {
           fieldErrors.add(new FieldErrorDTO("createUnit", "OneCGIARUnitType",
-            "The Unit Type with code " + unitTypeId + "does not exist"));
+            "The Unit Type with code " + unitTypeId + " does not exist"));
         }
       } else {
         fieldErrors.add(new FieldErrorDTO("createUnit", "OneCGIARUnitType", "Invalid Unit Type code"));
@@ -127,7 +127,7 @@ public class UnitsItem<T> {
         scienceGroup = this.scienceGroupManager.getScienceGroupByFinanceCode(strippedId);
         if (scienceGroup == null) {
           fieldErrors.add(new FieldErrorDTO("createUnit", "OneCGIARScienceGroup",
-            "The Science Group with code " + strippedId + "does not exist"));
+            "The Science Group with code " + strippedId + " does not exist"));
         }
       } else {
         fieldErrors.add(new FieldErrorDTO("createUnit", "OneCGIARScienceGroup", "Invalid Science Group code"));
@@ -139,7 +139,7 @@ public class UnitsItem<T> {
         parent = this.unitManager.getUnitByFinancialCode(strippedId);
         if (parent == null) {
           fieldErrors.add(new FieldErrorDTO("createUnit", "OneCGIARUnit",
-            "The parent Unit with code " + strippedId + "does not exist"));
+            "The parent Unit with code " + strippedId + " does not exist"));
         }
       } else {
         if (unitTypeId == null || !StringUtils.containsIgnoreCase(unitTypeId, "1")) {
@@ -148,7 +148,8 @@ public class UnitsItem<T> {
       }
 
       // financeCode check
-      if (StringUtils.isBlank(newUnitDTO.getFinancialCode())) {
+      if (StringUtils.isBlank(newUnitDTO.getFinancialCode())
+        || !StringUtils.startsWithIgnoreCase(newUnitDTO.getFinancialCode(), unitTypeId)) {
         fieldErrors.add(new FieldErrorDTO("createUnit", "OneCGIARUnit", "Invalid financial code for an Unit"));
       }
 
@@ -434,7 +435,7 @@ public class UnitsItem<T> {
         unitType = this.unitTypeManager.getUnitTypeByAcronym(unitTypeId);
         if (unitType == null) {
           fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnitType",
-            "The Unit Type with code " + unitTypeId + "does not exist"));
+            "The Unit Type with code " + unitTypeId + " does not exist"));
         }
       } else {
         fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnitType", "Invalid Unit Type code"));
@@ -446,7 +447,7 @@ public class UnitsItem<T> {
         scienceGroup = this.scienceGroupManager.getScienceGroupByFinanceCode(strippedId);
         if (scienceGroup == null) {
           fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARScienceGroup",
-            "The Science Group with code " + strippedId + "does not exist"));
+            "The Science Group with code " + strippedId + " does not exist"));
         }
       } else {
         fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnitType", "Invalid Science Group code"));
@@ -458,7 +459,7 @@ public class UnitsItem<T> {
         parent = this.unitManager.getUnitByFinancialCode(strippedId);
         if (parent == null) {
           fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnit",
-            "The parent Unit with code " + strippedId + "does not exist"));
+            "The parent Unit with code " + strippedId + " does not exist"));
         }
       } else {
         if (unitTypeId == null || !StringUtils.containsIgnoreCase(unitTypeId, "1")) {
@@ -467,7 +468,8 @@ public class UnitsItem<T> {
       }
 
       // financeCode check
-      if (StringUtils.isBlank(newUnitDTO.getFinancialCode())) {
+      if (StringUtils.isBlank(newUnitDTO.getFinancialCode())
+        || !StringUtils.startsWithIgnoreCase(newUnitDTO.getFinancialCode(), unitTypeId)) {
         fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnit", "Invalid financial code for an Unit"));
       }
 
@@ -547,7 +549,7 @@ public class UnitsItem<T> {
         unitType = this.unitTypeManager.getUnitTypeByAcronym(unitTypeId);
         if (unitType == null) {
           fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnitType",
-            "The Unit Type with code " + unitTypeId + "does not exist"));
+            "The Unit Type with code " + unitTypeId + " does not exist"));
         }
       } else {
         fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnitType", "Invalid Unit Type code"));
@@ -559,7 +561,7 @@ public class UnitsItem<T> {
         scienceGroup = this.scienceGroupManager.getScienceGroupByFinanceCode(strippedId);
         if (scienceGroup == null) {
           fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARScienceGroup",
-            "The Science Group with code " + strippedId + "does not exist"));
+            "The Science Group with code " + strippedId + " does not exist"));
         }
       } else {
         fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnitType", "Invalid Science Group code"));
@@ -571,7 +573,7 @@ public class UnitsItem<T> {
         parent = this.unitManager.getUnitByFinancialCode(strippedId);
         if (parent == null) {
           fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnit",
-            "The parent Unit with code " + strippedId + "does not exist"));
+            "The parent Unit with code " + strippedId + " does not exist"));
         }
       } else {
         if (unitTypeId == null || !StringUtils.containsIgnoreCase(unitTypeId, "1")) {
@@ -580,7 +582,8 @@ public class UnitsItem<T> {
       }
 
       // financeCode check
-      if (StringUtils.isBlank(newUnitDTO.getFinancialCode())) {
+      if (StringUtils.isBlank(newUnitDTO.getFinancialCode())
+        || !StringUtils.startsWithIgnoreCase(newUnitDTO.getFinancialCode(), unitTypeId)) {
         fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnit", "Invalid financial code for an Unit"));
       }
 

@@ -108,12 +108,13 @@ public class ScienceGroupItem<T> {
         parent = this.scienceGroupManager.getScienceGroupByFinanceCode(strippedId);
         if (parent == null) {
           fieldErrors.add(new FieldErrorDTO("createScienceGroup", "OneCGIARScienceGroup",
-            "The parent Science Group with code " + strippedId + "does not exist"));
+            "The parent Science Group with code " + strippedId + " does not exist"));
         }
       }
 
       // financeCode check
-      if (StringUtils.isBlank(newScienceGroupDTO.getFinancialCode())) {
+      if (StringUtils.isBlank(newScienceGroupDTO.getFinancialCode())
+        || !StringUtils.startsWithIgnoreCase(newScienceGroupDTO.getFinancialCode(), "S")) {
         fieldErrors.add(new FieldErrorDTO("createScienceGroup", "OneCGIARScienceGroup",
           "Invalid financial code for an ScienceGroup"));
       }
@@ -379,12 +380,13 @@ public class ScienceGroupItem<T> {
         parent = this.scienceGroupManager.getScienceGroupByFinanceCode(strippedId);
         if (parent == null) {
           fieldErrors.add(new FieldErrorDTO("putScienceGroupById", "OneCGIARScienceGroup",
-            "The parent Science Group with code " + strippedId + "does not exist"));
+            "The parent Science Group with code " + strippedId + " does not exist"));
         }
       }
 
       // financeCode check
-      if (StringUtils.isBlank(newScienceGroupDTO.getFinancialCode())) {
+      if (StringUtils.isBlank(newScienceGroupDTO.getFinancialCode())
+        || !StringUtils.startsWithIgnoreCase(newScienceGroupDTO.getFinancialCode(), "S")) {
         fieldErrors.add(new FieldErrorDTO("putScienceGroupById", "OneCGIARScienceGroup",
           "Invalid financial code for an Science Group"));
       }
@@ -462,12 +464,13 @@ public class ScienceGroupItem<T> {
         parent = this.scienceGroupManager.getScienceGroupByFinanceCode(strippedId);
         if (parent == null) {
           fieldErrors.add(new FieldErrorDTO("putScienceGroupById", "OneCGIARScienceGroup",
-            "The parent Science Group with code " + strippedId + "does not exist"));
+            "The parent Science Group with code " + strippedId + " does not exist"));
         }
       }
 
       // financeCode check
-      if (StringUtils.isBlank(newScienceGroupDTO.getFinancialCode())) {
+      if (StringUtils.isBlank(newScienceGroupDTO.getFinancialCode())
+        || !StringUtils.startsWithIgnoreCase(newScienceGroupDTO.getFinancialCode(), "S")) {
         fieldErrors.add(new FieldErrorDTO("putScienceGroupById", "OneCGIARScienceGroup",
           "Invalid financial code for an Science Group"));
       }

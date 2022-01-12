@@ -109,7 +109,7 @@ public class AccountsItem<T> {
         accountType = this.accountTypeManager.getAccountTypeByAcronym(accountTypeId);
         if (accountType == null) {
           fieldErrors.add(new FieldErrorDTO("createAccount", "OneCGIARAccountType",
-            "The Account Type with code " + accountTypeId + "does not exist"));
+            "The Account Type with code " + accountTypeId + " does not exist"));
         }
       } else {
         fieldErrors.add(new FieldErrorDTO("createAccount", "OneCGIARAccountType", "Invalid Account Type code"));
@@ -121,7 +121,7 @@ public class AccountsItem<T> {
         parent = this.accountManager.getAccountByFinancialCode(strippedId);
         if (parent == null) {
           fieldErrors.add(new FieldErrorDTO("createAccount", "OneCGIARAccount",
-            "The parent Account with code " + strippedId + "does not exist"));
+            "The parent Account with code " + strippedId + " does not exist"));
         }
       } else {
         if (accountTypeId == null || !StringUtils.containsIgnoreCase(accountTypeId, "1")) {
@@ -130,7 +130,8 @@ public class AccountsItem<T> {
       }
 
       // financeCode check
-      if (StringUtils.isBlank(newAccountDTO.getFinancialCode())) {
+      if (StringUtils.isBlank(newAccountDTO.getFinancialCode())
+        || !StringUtils.startsWithIgnoreCase(newAccountDTO.getFinancialCode(), accountTypeId)) {
         fieldErrors.add(new FieldErrorDTO("createAccount", "OneCGIARAccount", "Invalid financial code for an Account"));
       }
 
@@ -416,7 +417,7 @@ public class AccountsItem<T> {
         accountType = this.accountTypeManager.getAccountTypeByAcronym(accountTypeId);
         if (accountType == null) {
           fieldErrors.add(new FieldErrorDTO("putAccountById", "OneCGIARAccountType",
-            "The Account Type with code " + accountTypeId + "does not exist"));
+            "The Account Type with code " + accountTypeId + " does not exist"));
         }
       } else {
         fieldErrors.add(new FieldErrorDTO("putAccountById", "OneCGIARAccountType", "Invalid Account Type code"));
@@ -428,7 +429,7 @@ public class AccountsItem<T> {
         parent = this.accountManager.getAccountByFinancialCode(strippedId);
         if (parent == null) {
           fieldErrors.add(new FieldErrorDTO("putAccountById", "OneCGIARAccount",
-            "The parent Account with code " + strippedId + "does not exist"));
+            "The parent Account with code " + strippedId + " does not exist"));
         }
       } else {
         if (accountTypeId == null || !StringUtils.containsIgnoreCase(accountTypeId, "1")) {
@@ -437,7 +438,8 @@ public class AccountsItem<T> {
       }
 
       // financeCode check
-      if (StringUtils.isBlank(newAccountDTO.getFinancialCode())) {
+      if (StringUtils.isBlank(newAccountDTO.getFinancialCode())
+        || !StringUtils.startsWithIgnoreCase(newAccountDTO.getFinancialCode(), accountTypeId)) {
         fieldErrors
           .add(new FieldErrorDTO("putAccountById", "OneCGIARAccount", "Invalid financial code for an Account"));
       }
@@ -516,7 +518,7 @@ public class AccountsItem<T> {
         accountType = this.accountTypeManager.getAccountTypeByAcronym(accountTypeId);
         if (accountType == null) {
           fieldErrors.add(new FieldErrorDTO("putAccountById", "OneCGIARAccountType",
-            "The Account Type with code " + accountTypeId + "does not exist"));
+            "The Account Type with code " + accountTypeId + " does not exist"));
         }
       } else {
         fieldErrors.add(new FieldErrorDTO("putAccountById", "OneCGIARAccountType", "Invalid Account Type code"));
@@ -528,7 +530,7 @@ public class AccountsItem<T> {
         parent = this.accountManager.getAccountByFinancialCode(strippedId);
         if (parent == null) {
           fieldErrors.add(new FieldErrorDTO("putAccountById", "OneCGIARAccount",
-            "The parent Account with code " + strippedId + "does not exist"));
+            "The parent Account with code " + strippedId + " does not exist"));
         }
       } else {
         if (accountTypeId == null || !StringUtils.containsIgnoreCase(accountTypeId, "1")) {
@@ -537,7 +539,8 @@ public class AccountsItem<T> {
       }
 
       // financeCode check
-      if (StringUtils.isBlank(newAccountDTO.getFinancialCode())) {
+      if (StringUtils.isBlank(newAccountDTO.getFinancialCode())
+        || !StringUtils.startsWithIgnoreCase(newAccountDTO.getFinancialCode(), accountTypeId)) {
         fieldErrors
           .add(new FieldErrorDTO("putAccountById", "OneCGIARAccount", "Invalid financial code for an Account"));
       }
