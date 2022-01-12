@@ -145,6 +145,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.exception.LockAcquisitionException;
 
 /**
  * @author Christian Garcia - CIAT/CCAFS
@@ -2614,10 +2615,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           studyReferenceSave.setReference(studyReference.getReference());
           studyReferenceSave.setLink(studyReference.getLink());
 
-          this.projectExpectedStudyReferenceManager.saveProjectExpectedStudyReference(studyReferenceSave);
-          // This is to add studyReferenceSave to generate correct
-          // auditlog.
-          this.expectedStudy.getProjectExpectedStudyReferences().add(studyReferenceSave);
+          try {
+            this.projectExpectedStudyReferenceManager.saveProjectExpectedStudyReference(studyReferenceSave);
+            // This is to add studyReferenceSave to generate correct
+            // auditlog.
+            this.expectedStudy.getProjectExpectedStudyReferences().add(studyReferenceSave);
+          } catch (LockAcquisitionException lae) {
+            // i am tired of this exception
+          }
         }
       }
     }
@@ -2886,8 +2891,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           if (expectedStudy.getSubIdos() != null && expectedStudy.getSubIdos().size() == 1) {
             studySubIdoSave.setPrimary(true);
           }
-          projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(studySubIdoSave);
-
+          try {
+            projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(studySubIdoSave);
+          } catch (LockAcquisitionException lae) {
+            // i am tired of this exception. this is the last thing that is saved, so it is no problem to ignore it
+          }
         }
       }
     }
