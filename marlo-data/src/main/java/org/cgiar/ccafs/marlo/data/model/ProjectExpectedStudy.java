@@ -344,19 +344,23 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   }
 
   public ProjectExpectedStudyInfo getProjectExpectedStudyInfo(Phase phase) {
-    if (this.getProjectExpectedStudyInfo() != null) {
-      return this.getProjectExpectedStudyInfo();
-    } else {
-      List<ProjectExpectedStudyInfo> infos =
-        projectExpectedStudyInfos.stream().filter(c -> c != null && c.getPhase() != null && c.getPhase().getId() != null
-          && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
-      if (!infos.isEmpty()) {
-        this.setProjectExpectedStudyInfo(infos.get(0));
+    if (phase != null && phase.getId() != null) {
+      if (this.getProjectExpectedStudyInfo() != null) {
         return this.getProjectExpectedStudyInfo();
       } else {
-        return null;
+        List<ProjectExpectedStudyInfo> infos =
+          projectExpectedStudyInfos.stream().filter(c -> c != null && c.getId() != null && c.getPhase() != null
+            && c.getPhase().getId() != null && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+        if (!infos.isEmpty()) {
+          this.setProjectExpectedStudyInfo(infos.get(0));
+          return this.getProjectExpectedStudyInfo();
+        } else {
+          return null;
+        }
       }
     }
+
+    return null;
   }
 
   public Set<ProjectExpectedStudyInfo> getProjectExpectedStudyInfos() {
