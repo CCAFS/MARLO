@@ -65,6 +65,11 @@ public class OneCGIARScienceGroupManagerImpl implements OneCGIARScienceGroupMana
   }
 
   @Override
+  public List<OneCGIARScienceGroup> getScienceGroupsByParent(Long parentId) {
+    return this.oneCGIARScienceGroupDAO.getScienceGroupsByParent(parentId.longValue());
+  }
+
+  @Override
   public OneCGIARScienceGroup save(OneCGIARScienceGroup oneCGIARScienceGroup) {
     return this.oneCGIARScienceGroupDAO.save(oneCGIARScienceGroup);
   }
