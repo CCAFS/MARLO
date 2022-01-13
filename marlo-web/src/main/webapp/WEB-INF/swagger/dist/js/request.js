@@ -1359,7 +1359,7 @@ setTimeout(() => {
 
 function innovation_type() {
 	$.ajax({
-		url: config.endpoint + '/innovation-type',
+		url: config.endpoint + '/type-of-innovations',
 		type: "GET",
 		beforeSend: function () {
 			// hideFilter();
@@ -1394,7 +1394,7 @@ setTimeout(() => {
 
 function governance_type() {
 	$.ajax({
-		url: config.endpoint + '/governance-type',
+		url: config.endpoint + '/governance-types',
 		type: "GET",
 		beforeSend: function () {
 			// hideFilter();
