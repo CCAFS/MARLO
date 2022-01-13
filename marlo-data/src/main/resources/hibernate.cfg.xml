@@ -511,6 +511,7 @@
     <mapping resource="xmls/OneCGIARGoveranceType.hbm.xml"/>
     <mapping resource="xmls/OneCGIAREnvironmentalBenefits.hbm.xml"/>
     <mapping resource="xmls/OneCGIARTechnologyDevelopmentStage.hbm.xml"/>
+    <mapping resource="xmls/OneCGIARInnovationReadinessLevel.hbm.xml"/>
     
     <!-- Annual Report 2021 -->
     <mapping resource="xmls/ProjectExpectedStudyReferences.hbm.xml" />
