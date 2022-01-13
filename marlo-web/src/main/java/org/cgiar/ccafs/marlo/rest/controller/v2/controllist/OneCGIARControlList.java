@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.Accou
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.BusinessCategoryItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.EnvironmentalBenefitsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.GovernanceTypeItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.InnovationReadinessLevelItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.RegionTypesItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.RegionsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.ScienceGroupItem;
@@ -36,6 +37,7 @@ import org.cgiar.ccafs.marlo.rest.dto.AccountsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.BusinessCategoryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.EnvironmentalBenefitsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GovernanceTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InnovationReadinessLevelDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionsDTO;
@@ -84,6 +86,7 @@ public class OneCGIARControlList {
   private GovernanceTypeItem<OneCGIARControlList> governanceTypeItem;
   private EnvironmentalBenefitsItem<OneCGIARControlList> environmentalBenefitsItem;
   private TechnologyDevelopmentStageItem<OneCGIARControlList> technologyDeploymentStageItem;
+  private InnovationReadinessLevelItem<OneCGIARControlList> innovationReadinessLevelItem;
 
   @Autowired
   private Environment env;
@@ -97,7 +100,8 @@ public class OneCGIARControlList {
     TypeOfInnovationItem<OneCGIARControlList> innovationTypeItem,
     GovernanceTypeItem<OneCGIARControlList> governanceTypeItem,
     EnvironmentalBenefitsItem<OneCGIARControlList> environmentalBenefitsItem,
-    TechnologyDevelopmentStageItem<OneCGIARControlList> technologyDeploymentStageItem) {
+    TechnologyDevelopmentStageItem<OneCGIARControlList> technologyDeploymentStageItem,
+    InnovationReadinessLevelItem<OneCGIARControlList> innovationReadinessLevelItem) {
     super();
     this.regionsItem = regionsItem;
     this.regionTypesItem = regionTypesItem;
@@ -111,6 +115,7 @@ public class OneCGIARControlList {
     this.governanceTypeItem = governanceTypeItem;
     this.environmentalBenefitsItem = environmentalBenefitsItem;
     this.technologyDeploymentStageItem = technologyDeploymentStageItem;
+    this.innovationReadinessLevelItem = innovationReadinessLevelItem;
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Accounts.all.value}",
@@ -197,12 +202,48 @@ public class OneCGIARControlList {
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.all.value}",
+    response = EnvironmentalBenefitsDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/environmental-benefits", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<EnvironmentalBenefitsDTO>> findAllEnvironmentalBenefits() {
+    try {
+      ResponseEntity<List<EnvironmentalBenefitsDTO>> response = this.environmentalBenefitsItem.getAll();
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Units.code.404"));
+      }
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.all.value}",
     response = UnitDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/governance-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<GovernanceTypeDTO>> findAllGovernanceTypes() {
     try {
       ResponseEntity<List<GovernanceTypeDTO>> response = this.governanceTypeItem.getAll();
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Units.code.404"));
+      }
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.all.value}",
+    response = InnovationReadinessLevelDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/innovation-readiness-levels", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<InnovationReadinessLevelDTO>> findAllInnovationReadinessLevels() {
+    try {
+      ResponseEntity<List<InnovationReadinessLevelDTO>> response = this.innovationReadinessLevelItem.getAll();
       if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
         throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Units.code.404"));
       }
@@ -262,48 +303,30 @@ public class OneCGIARControlList {
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.all.value}",
+    response = TechnologyDevelopmentStageDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/technology-development-stages", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<TechnologyDevelopmentStageDTO>> findAllTechnologyDevelopmentStage() {
+    try {
+      ResponseEntity<List<TechnologyDevelopmentStageDTO>> response = this.technologyDeploymentStageItem.getAll();
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Units.code.404"));
+      }
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.all.value}",
     response = UnitDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/units", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<UnitDTO>> findAllUnits() {
     try {
       ResponseEntity<List<UnitDTO>> response = this.unitsItem.getAll();
-      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-        throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Units.code.404"));
-      }
-      return response;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
-
-  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.all.value}",
-    response = EnvironmentalBenefitsDTO.class)
-  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/environmental-benefits", method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<List<EnvironmentalBenefitsDTO>> findEnvironmentalBenefits() {
-    try {
-      ResponseEntity<List<EnvironmentalBenefitsDTO>> response = this.environmentalBenefitsItem.getAll();
-      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-        throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Units.code.404"));
-      }
-      return response;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
-
-  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.all.value}",
-    response = TechnologyDevelopmentStageDTO.class)
-  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/technology-development-stages", method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<List<TechnologyDevelopmentStageDTO>> findTechnologyDevelopmentStage() {
-    try {
-      ResponseEntity<List<TechnologyDevelopmentStageDTO>> response = this.technologyDeploymentStageItem.getAll();
       if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
         throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Units.code.404"));
       }

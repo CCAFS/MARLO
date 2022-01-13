@@ -1376,7 +1376,7 @@ function innovation_type() {
 
 			$.each(data, function (index, item) {				
 				$('#list-print-innovation-type').append(
-					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					'<tr>' + '<td >' + item['code'] + '</td>' + '<td>'
 					+ item['name'] + '</td>' + '</tr>')
 			});
 setTimeout(() => {
@@ -1464,7 +1464,7 @@ setTimeout(() => {
 
 function technology_development() {
 	$.ajax({
-		url: config.endpoint + '/technology-development-stage',
+		url: config.endpoint + '/technology-development-stages',
 		type: "GET",
 		beforeSend: function () {
 			// hideFilter();
@@ -1477,11 +1477,12 @@ function technology_development() {
 			// print data
 			manageSpinner(false,"technology-development-stage");
 			console.log(data);
-			let nameColumns = ['Code', 'Name']			
+			let nameColumns = ['Code','OficialCode', 'Name']			
 
 			$.each(data, function (index, item) {				
 				$('#list-print-technology-development-stage').append(
 					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					+ item['officialCode'] + '</td>'+'<td>' 
 					+ item['name'] + '</td>' + '</tr>')
 			});
 setTimeout(() => {
