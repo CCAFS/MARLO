@@ -4193,7 +4193,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           break;
 
         case BUDGET:
-          if (this.reportingActive) {
+          if (this.isReportingActive()) {
             return true;
           } else {
             if (!this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
