@@ -354,6 +354,16 @@ public class ProjectOutcomeValidator extends BaseValidator {
             action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeAchieved",
               InvalidFieldsMessages.EMPTYFIELD);
           }
+
+          // Validate achived value in reporting phase
+          if (action.getActualPhase().getYear() == projectMilestone.getYear()) {
+            if (projectMilestone.getAchievedValue() == null
+              || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue()))) {
+              action.addMessage(action.getText("projectOutcomeMilestone.requeried.achievedValue", params));
+              action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
         }
 
       }
