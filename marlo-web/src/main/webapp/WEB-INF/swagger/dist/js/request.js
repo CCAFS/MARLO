@@ -1535,7 +1535,7 @@ setTimeout(() => {
 
 function administrative_scale() {
 	$.ajax({
-		url: config.endpoint + '/administrative-scale',
+		url: config.endpoint + '/administrative-scales',
 		type: "GET",
 		beforeSend: function () {
 			// hideFilter();

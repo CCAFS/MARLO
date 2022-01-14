@@ -21,6 +21,7 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.AccountTypesItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.AccountsItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.AdministrativeScaleItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.BusinessCategoryItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.EnvironmentalBenefitsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.GovernanceTypeItem;
@@ -36,6 +37,7 @@ import org.cgiar.ccafs.marlo.rest.dto.AccountTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.AccountsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.BusinessCategoryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.EnvironmentalBenefitsDTO;
+import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GovernanceTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationReadinessLevelDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationTypeDTO;
@@ -87,6 +89,7 @@ public class OneCGIARControlList {
   private EnvironmentalBenefitsItem<OneCGIARControlList> environmentalBenefitsItem;
   private TechnologyDevelopmentStageItem<OneCGIARControlList> technologyDeploymentStageItem;
   private InnovationReadinessLevelItem<OneCGIARControlList> innovationReadinessLevelItem;
+  private AdministrativeScaleItem<OneCGIARControlList> administrativeScaleItem;
 
   @Autowired
   private Environment env;
@@ -101,7 +104,8 @@ public class OneCGIARControlList {
     GovernanceTypeItem<OneCGIARControlList> governanceTypeItem,
     EnvironmentalBenefitsItem<OneCGIARControlList> environmentalBenefitsItem,
     TechnologyDevelopmentStageItem<OneCGIARControlList> technologyDeploymentStageItem,
-    InnovationReadinessLevelItem<OneCGIARControlList> innovationReadinessLevelItem) {
+    InnovationReadinessLevelItem<OneCGIARControlList> innovationReadinessLevelItem,
+    AdministrativeScaleItem<OneCGIARControlList> administrativeScaleItem) {
     super();
     this.regionsItem = regionsItem;
     this.regionTypesItem = regionTypesItem;
@@ -116,6 +120,7 @@ public class OneCGIARControlList {
     this.environmentalBenefitsItem = environmentalBenefitsItem;
     this.technologyDeploymentStageItem = technologyDeploymentStageItem;
     this.innovationReadinessLevelItem = innovationReadinessLevelItem;
+    this.administrativeScaleItem = administrativeScaleItem;
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Accounts.all.value}",
@@ -144,6 +149,24 @@ public class OneCGIARControlList {
       ResponseEntity<List<AccountTypeDTO>> response = this.accountTypesItem.getAll();
       if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
         throw new NotFoundException("404", this.env.getProperty("CGIARControlList.AccountsType.code.404"));
+      }
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.all.value}",
+    response = GeographicScopeDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/administrative-scales", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<GeographicScopeDTO>> findAllAdministrativeScale() {
+    try {
+      ResponseEntity<List<GeographicScopeDTO>> response = this.administrativeScaleItem.getAll();
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Units.code.404"));
       }
       return response;
     } catch (Exception e) {
