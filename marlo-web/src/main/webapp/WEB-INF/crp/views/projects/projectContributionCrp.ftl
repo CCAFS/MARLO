@@ -616,7 +616,7 @@
               [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.upkeepAchievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) /]
             </div>
           [#else]
-           [#if !isYearRequired(milestoneYear)]
+           [#if isYearRequired(milestoneYear)]
             <div class="col-md-4">
               [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear)/]
             </div>
