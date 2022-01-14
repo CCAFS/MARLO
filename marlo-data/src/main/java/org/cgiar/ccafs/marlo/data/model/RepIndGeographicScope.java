@@ -16,15 +16,31 @@ public class RepIndGeographicScope extends MarloBaseEntity implements java.io.Se
   @Expose
   private String definition;
 
+  private Boolean isOneCGIAR;
+
+  private Boolean isMarlo;
+
+
   public RepIndGeographicScope() {
   }
+
 
   public String getDefinition() {
     return this.definition;
   }
 
+
   public String getIatiName() {
     return this.iatiName;
+  }
+
+
+  public Boolean getIsMarlo() {
+    return isMarlo;
+  }
+
+  public Boolean getIsOneCGIAR() {
+    return isOneCGIAR;
   }
 
   public String getName() {
@@ -45,6 +61,14 @@ public class RepIndGeographicScope extends MarloBaseEntity implements java.io.Se
 
   public void setIatiName(String iatiName) {
     this.iatiName = iatiName;
+  }
+
+  public void setIsMarlo(Boolean isMarlo) {
+    this.isMarlo = isMarlo;
+  }
+
+  public void setIsOneCGIAR(Boolean isOneCGIAR) {
+    this.isOneCGIAR = isOneCGIAR;
   }
 
   public void setName(String name) {
