@@ -128,7 +128,7 @@
   </div>
 [/#macro]
 
-[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" editable=true]
+[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" editable=true isPlannedColl=false]
   <div class="select ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
@@ -193,31 +193,39 @@
               [/#if]
             [/#if]
           [#else]
-            [#if name?contains(".id")]
-              [#assign customName]${name?replace('.id','')}[/#assign]
-            [#else]
-              [#assign customName]${name}[/#assign]
-            [/#if]
-            [#assign customValue][@s.property value="${customName}.${displayFieldName}"/][/#assign]
-            [#if value=="-NULL"] 
-              [#if customValue?has_content] 
-                ${customValue}  
-              [#elseif forcedValue?has_content]
-                ${forcedValue}
+            [#if isPlannedColl]
+              [#if valueName?has_content]
+                ${valueName} 
               [#else]
-                ${requiredText} [@s.text name="form.values.fieldEmpty" /]  
+                ${requiredText} [@s.text name="form.values.fieldEmpty" /]
               [/#if]
             [#else]
-              [#if customValue?has_content]
-                ${customValue}
-              [#elseif value=="-1"]
-                ${requiredText} [@s.text name="form.values.fieldEmpty" /]
+              [#if name?contains(".id")]
+                [#assign customName]${name?replace('.id','')}[/#assign]
               [#else]
-                ${valueName} 
-              [/#if] 
+                [#assign customName]${name}[/#assign]
+              [/#if]
+              [#assign customValue][@s.property value="${customName}.${displayFieldName}"/][/#assign]
+              [#if value=="-NULL"] 
+                [#if customValue?has_content] 
+                  ${customValue}  
+                [#elseif forcedValue?has_content]
+                  ${forcedValue}
+                [#else]
+                  ${requiredText} [@s.text name="form.values.fieldEmpty" /]  
+                [/#if]
+              [#else]
+                [#if customValue?has_content]
+                  ${customValue}
+                [#elseif value=="-1"]
+                  ${requiredText} [@s.text name="form.values.fieldEmpty" /]
+                [#else]
+                  ${valueName} 
+                [/#if] 
+              [/#if]
+              </p>
             [/#if]
-            </p>
-          [/#if]
+        [/#if]
       [/#if]  
     </div> 
   </div>
