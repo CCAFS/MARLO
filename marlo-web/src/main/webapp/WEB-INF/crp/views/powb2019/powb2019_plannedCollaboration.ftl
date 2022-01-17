@@ -157,11 +157,11 @@
     
     [#-- CRP/Platform --] 
     <div class="form-group collaboratorType collaboratorType-1" style="display:${((element.collaboratorType == 1)!false)?string("block", "none")}"> 
-      [@customForm.select name="${customName}.globalUnit.id" value="${(element.globalUnit.id)!-1}" label="" keyFieldName="id"  displayFieldName="acronymValid" i18nkey="powbSynthesis.programCollaboration.globalUnit" listName="globalUnits"  required=true  className="globalUnitSelect" editable=isEditable/]
+      [@customForm.select name="${customName}.globalUnit.id" value="${(element.globalUnit.id)!-1}" label="" keyFieldName="id"  displayFieldName="acronymValid" i18nkey="powbSynthesis.programCollaboration.globalUnit" listName="globalUnits"  required=true  className="globalUnitSelect" editable=isEditable valueName="${(element.globalUnit.acronymValid)!''}" isPlannedColl=true/]
     </div>
     [#-- Institution --]
     <div class="form-group collaboratorType collaboratorType-2" style="display:${((element.collaboratorType == 2)!false)?string("block", "none")}">
-      [@customForm.select name="${customName}.institution.id" value="${(element.institution.id)!-1}" label="" keyFieldName="id"  displayFieldName="composedName" i18nkey="powbSynthesis.programCollaboration.institution" listName="institutions"  required=true  className="institutionsSelect" editable=isEditable/]
+      [@customForm.select name="${customName}.institution.id" value="${(element.institution.id)!-1}" label="" keyFieldName="id"  displayFieldName="composedName" i18nkey="powbSynthesis.programCollaboration.institution" listName="institutions"  required=true  className="institutionsSelect" editable=isEditable valueName="${(element.institution.composedName)!''}" isPlannedColl=true/]
     </div>
     
     [#-- Brief Description --] 
