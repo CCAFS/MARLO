@@ -152,14 +152,14 @@ public class ProjectOutcomeValidator extends BaseValidator {
       if (programOutcome.contains("PDO indicator 1") || programOutcome.contains("PDO indicator 3")) {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
-        if (action.isPlanningActive()) {
-          if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-            && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
-            action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
+        // if (action.isPlanningActive()) {
+        if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
+          && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+          action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+          action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
+        // }
         /*
          * if (i == 0) {
          * if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
