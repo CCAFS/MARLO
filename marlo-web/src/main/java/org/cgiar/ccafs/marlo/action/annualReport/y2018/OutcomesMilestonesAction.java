@@ -597,14 +597,16 @@ public class OutcomesMilestonesAction extends BaseAction {
     long outcomeId, long milestoneId) {
     ReportSynthesisFlagshipProgressOutcomeMilestone flagshipProgressOutcomeMilestone = null;
 
-    List<ReportSynthesisFlagshipProgress> progress =
-      this.reportSynthesisFlagshipProgressManager.getFlagshipsReportSynthesisFlagshipProgress(
-        Collections.singletonList(
-          this.liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), crpProgram.getCrp().getId())),
-        this.getPhaseID());
-    if (this.isNotEmpty(progress) && progress.get(0) != null && progress.get(0).getId() != null) {
-      flagshipProgressOutcomeMilestone = this.reportSynthesisFlagshipProgressOutcomeMilestoneManager
-        .getReportSynthesisMilestoneFromOutcomeIdAndMilestoneId(progress.get(0).getId(), outcomeId, milestoneId);
+    if (crpProgram != null && crpProgram.getId() != null) {
+      List<ReportSynthesisFlagshipProgress> progress =
+        this.reportSynthesisFlagshipProgressManager.getFlagshipsReportSynthesisFlagshipProgress(
+          Collections.singletonList(
+            this.liaisonInstitutionManager.findByAcronymAndCrp(crpProgram.getAcronym(), crpProgram.getCrp().getId())),
+          this.getPhaseID());
+      if (this.isNotEmpty(progress) && progress.get(0) != null && progress.get(0).getId() != null) {
+        flagshipProgressOutcomeMilestone = this.reportSynthesisFlagshipProgressOutcomeMilestoneManager
+          .getReportSynthesisMilestoneFromOutcomeIdAndMilestoneId(progress.get(0).getId(), outcomeId, milestoneId);
+      }
     }
 
     return flagshipProgressOutcomeMilestone;
