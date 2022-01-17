@@ -19,6 +19,8 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ActionAreaOutcomeIndicatorsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ActionAreaOutcomesItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ActionAreasItem;
@@ -50,11 +52,14 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import java.util.List;
 
 import javax.inject.Named;
+import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -63,6 +68,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -77,6 +83,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @Named
 public class SubmissionToolsControlLists {
 
+  private final UserManager userManager;
 
   private ActionAreasItem<SubmissionToolsControlLists> actionAreasItem;
   private ImpactAreasItem<SubmissionToolsControlLists> impactAreasItem;
@@ -102,7 +109,7 @@ public class SubmissionToolsControlLists {
     ActionAreaOutcomesItem<SubmissionToolsControlLists> actionAreaOutcomesItem,
     WorkpackagesItem<SubmissionToolsControlLists> workpackagesItem,
     ActionAreaOutcomeIndicatorsItem<SubmissionToolsControlLists> actionAreaOutcomeIndicatorsItem,
-    GlobalTargetsItem<SubmissionToolsControlLists> globalTargetsItem) {
+    GlobalTargetsItem<SubmissionToolsControlLists> globalTargetsItem, UserManager userManager) {
     super();
     this.actionAreasItem = actionAreasItem;
     this.impactAreasItem = impactAreasItem;
@@ -114,6 +121,48 @@ public class SubmissionToolsControlLists {
     this.workpackagesItem = workpackagesItem;
     this.actionAreaOutcomeIndicatorsItem = actionAreaOutcomeIndicatorsItem;
     this.globalTargetsItem = globalTargetsItem;
+    this.userManager = userManager;
+  }
+
+  @ApiOperation(tags = {"Submission Tool Control Lists"}, value = "${SubmissionToolsControlLists.SDG.POST.value}",
+    response = SDGsDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/sdg", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> createSDG(
+    @ApiParam(value = "${SubmissionToolsControlLists.SDG.POST.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${SubmissionToolsControlLists.SDG.POST.param.newSDG}",
+      required = true) @Valid @RequestBody SDGsDTO newSDGDTO) {
+
+    Long sdgID = this.sdgItem.createSdg(newSDGDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(sdgID, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("SubmissionToolsControlLists.SDG.GET.id.404"));
+    }
+
+    return response;
+  }
+
+  @ApiOperation(tags = {"Submission Tool Control Lists"}, value = "${SubmissionToolsControlLists.SDG.DELETE.value}",
+    response = SDGsDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/sdg/{financialCode}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<SDGsDTO> deleteSdgByFinancialCode(
+    @ApiParam(value = "${SubmissionToolsControlLists.SDG.DELETE.param.CGIAR.value}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${SubmissionToolsControlLists.SDG.DELETE.param.id}",
+      required = true) @PathVariable String financialCode) {
+
+    ResponseEntity<SDGsDTO> response =
+      this.sdgItem.deleteSdgByFinanceCode(financialCode, CGIAREntity, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("SubmissionToolsControlLists.SDG.code.404"));
+    }
+
+    return response;
   }
 
   @ApiOperation(tags = {"Submission Tool Control Lists"},
@@ -231,7 +280,7 @@ public class SubmissionToolsControlLists {
     return this.initiativesItem.getInitiatives();
   }
 
-  @ApiOperation(tags = {"Submission Tool Control Lists"}, value = "${SubmissionToolsControlLists.sdg.all.value}",
+  @ApiOperation(tags = {"Submission Tool Control Lists"}, value = "${SubmissionToolsControlLists.SDG.all.value}",
     response = SDGsDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/allSDG", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -254,6 +303,13 @@ public class SubmissionToolsControlLists {
   @RequestMapping(value = "/allSDGTargets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<SDGTargetDTO> getAllSDGTargets() {
     return this.sdgItem.getAllSDGTargets();
+  }
+
+  private User getCurrentUser() {
+    Subject subject = SecurityUtils.getSubject();
+    Long principal = (Long) subject.getPrincipal();
+    User user = this.userManager.getUser(principal);
+    return user;
   }
 
   @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdgTarget.all.value}",
@@ -296,6 +352,29 @@ public class SubmissionToolsControlLists {
   @RequestMapping(value = "/workpackages", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<WorkPackagesDTO>> getWorkpackages() {
     return this.workpackagesItem.getWorkPackages();
+  }
+
+  @ApiOperation(tags = {"Submission Tool Control Lists"}, value = "${SubmissionToolsControlLists.SDG.PUT.value}",
+    response = SDGsDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/sdg/{financialCode}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> putSdgByFinanceCode(
+    @ApiParam(value = "${SubmissionToolsControlLists.SDG.PUT.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${SubmissionToolsControlLists.SDG.PUT.financialCode.value}",
+      required = true) @PathVariable String financeCode,
+    @ApiParam(value = "${SubmissionToolsControlLists.SDG.PUT.param.newSDG}",
+      required = true) @Valid @RequestBody SDGsDTO newSdgDTO) {
+
+    Long sdgId = this.sdgItem.putSdgByFinanceCode(financeCode, newSdgDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(sdgId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("SubmissionToolsControlLists.SDG.GET.id.404"));
+    }
+
+    return response;
   }
 
 
