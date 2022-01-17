@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.rest.dto.GlobalTargetDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasIndicatorsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InitiativesDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewImpactAreaDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsDepthScaleDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsProbabilitiesDTO;
@@ -124,6 +125,27 @@ public class SubmissionToolsControlLists {
     this.userManager = userManager;
   }
 
+  @ApiOperation(tags = {"Submission Tool Control Lists"},
+    value = "${SubmissionToolsControlLists.impact-areas.POST.value}", response = ImpactAreasDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/impact-areas", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> createImpactArea(
+    @ApiParam(value = "${SubmissionToolsControlLists.impact-areas.POST.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${SubmissionToolsControlLists.impact-areas.POST.param.newImpactArea}",
+      required = true) @Valid @RequestBody NewImpactAreaDTO newImpactAreaDTO) {
+
+    Long impactAreaID = this.impactAreasItem.createImpactArea(newImpactAreaDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(impactAreaID, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("SubmissionToolsControlLists.impact-areas.GET.id.404"));
+    }
+
+    return response;
+  }
+
   @ApiOperation(tags = {"Submission Tool Control Lists"}, value = "${SubmissionToolsControlLists.SDG.POST.value}",
     response = SDGsDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
@@ -140,6 +162,26 @@ public class SubmissionToolsControlLists {
     ResponseEntity<Long> response = new ResponseEntity<Long>(sdgID, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("SubmissionToolsControlLists.SDG.GET.id.404"));
+    }
+
+    return response;
+  }
+
+  @ApiOperation(tags = {"Submission Tool Control Lists"},
+    value = "${SubmissionToolsControlLists.impact-areas.DELETE.value}", response = ImpactAreasDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/impact-area/{financialCode}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ImpactAreasDTO> deleteImpactAreaByFinancialCode(
+    @ApiParam(value = "${SubmissionToolsControlLists.impact-areas.DELETE.param.CGIAR.value}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${SubmissionToolsControlLists.impact-areas.DELETE.param.id}",
+      required = true) @PathVariable String financialCode) {
+
+    ResponseEntity<ImpactAreasDTO> response =
+      this.impactAreasItem.deleteImpactAreaByFinanceCode(financialCode, CGIAREntity, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("SubmissionToolsControlLists.impact-areas.code.404"));
     }
 
     return response;
@@ -164,6 +206,7 @@ public class SubmissionToolsControlLists {
 
     return response;
   }
+
 
   @ApiOperation(tags = {"Submission Tool Control Lists"},
     value = "${SubmissionToolsControlLists.action-areas.code.value}", response = ActionAreasDTO.class)
@@ -197,9 +240,10 @@ public class SubmissionToolsControlLists {
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<ImpactAreasDTO>
     findImpactAreaById(@ApiParam(value = "${SubmissionToolsControlLists.impact-areas.code.param.code}",
-      required = true) @PathVariable Long code) {
+      required = true) @PathVariable String financialCode) {
 
-    ResponseEntity<ImpactAreasDTO> response = this.impactAreasItem.findActionAreaById(code);
+    ResponseEntity<ImpactAreasDTO> response =
+      this.impactAreasItem.getImpactAreaByFinancialCode(financialCode, this.getCurrentUser());
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("SubmissionToolsControlLists.impact-areas.code.404"));
     }
@@ -257,8 +301,17 @@ public class SubmissionToolsControlLists {
     responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/impact-areas", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<ImpactAreasDTO> getAllImpactAreas() {
-    return this.impactAreasItem.getAllActionAreas();
+  public ResponseEntity<List<ImpactAreasDTO>> getAllImpactAreas() {
+    try {
+      ResponseEntity<List<ImpactAreasDTO>> response = this.impactAreasItem.getAll();
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("SubmissionToolsControlLists.impact-areas.code.404"));
+      }
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 
   @ApiOperation(tags = {"Submission Tool Control Lists"},
@@ -354,6 +407,30 @@ public class SubmissionToolsControlLists {
     return this.workpackagesItem.getWorkPackages();
   }
 
+  @ApiOperation(tags = {"Submission Tool Control Lists"},
+    value = "${SubmissionToolsControlLists.impact-areas.PUT.value}", response = SDGsDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/impact-area/{financialCode}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> putImpactAreaByFinanceCode(
+    @ApiParam(value = "${SubmissionToolsControlLists.impact-areas.PUT.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${SubmissionToolsControlLists.impact-areas.PUT.financialCode.value}",
+      required = true) @PathVariable String financeCode,
+    @ApiParam(value = "${SubmissionToolsControlLists.impact-areas.PUT.param.newImpactArea}",
+      required = true) @Valid @RequestBody NewImpactAreaDTO newImpactAreaDTO) {
+
+    Long impactAreaId = this.impactAreasItem.putImpactAreaByFinanceCode(financeCode, newImpactAreaDTO, CGIAREntity,
+      this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(impactAreaId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("SubmissionToolsControlLists.impact-areas.GET.id.404"));
+    }
+
+    return response;
+  }
+
   @ApiOperation(tags = {"Submission Tool Control Lists"}, value = "${SubmissionToolsControlLists.SDG.PUT.value}",
     response = SDGsDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
@@ -376,6 +453,4 @@ public class SubmissionToolsControlLists {
 
     return response;
   }
-
-
 }
