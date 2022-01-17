@@ -29,7 +29,6 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.Scien
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.UnitsItem;
 import org.cgiar.ccafs.marlo.rest.dto.AccountTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.AccountsDTO;
-import org.cgiar.ccafs.marlo.rest.dto.KeyExternalPartnershipDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewAccountDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewScienceGroupDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewUnitDTO;
@@ -163,14 +162,14 @@ public class OneCGIARControlList {
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Accounts.DELETE.value}",
-    response = KeyExternalPartnershipDTO.class)
+    response = AccountsDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/accounts/{financialCode}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<AccountsDTO> deleteAccountsByFinancialCode(
     @ApiParam(value = "${CGIARControlList.Accounts.DELETE.param.CGIAR.value}",
       required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${KeyExternalPartnership.externalpartnerships.DELETE.id.param.id}",
+    @ApiParam(value = "${CGIARControlList.Accounts.DELETE.param.id}",
       required = true) @PathVariable String financialCode) {
 
     ResponseEntity<AccountsDTO> response =
@@ -183,14 +182,14 @@ public class OneCGIARControlList {
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.ScienceGroups.DELETE.value}",
-    response = KeyExternalPartnershipDTO.class)
+    response = ScienceGroupDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/scienceGroups/{financialCode}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<ScienceGroupDTO> deleteScienceGroupsByFinancialCode(
     @ApiParam(value = "${CGIARControlList.ScienceGroups.DELETE.param.CGIAR.value}",
       required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${KeyExternalPartnership.externalpartnerships.DELETE.id.param.id}",
+    @ApiParam(value = "${CGIARControlList.ScienceGroups.DELETE.id.param.id}",
       required = true) @PathVariable String financialCode) {
 
     ResponseEntity<ScienceGroupDTO> response =
@@ -203,14 +202,14 @@ public class OneCGIARControlList {
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.DELETE.value}",
-    response = KeyExternalPartnershipDTO.class)
+    response = UnitDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/units/{financialCode}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<UnitDTO> deleteUnitsByFinancialCode(
     @ApiParam(value = "${CGIARControlList.Units.DELETE.param.CGIAR.value}",
       required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${KeyExternalPartnership.externalpartnerships.DELETE.id.param.id}",
+    @ApiParam(value = "${CGIARControlList.Units.DELETE.id.param.id}",
       required = true) @PathVariable String financialCode) {
 
     ResponseEntity<UnitDTO> response =
@@ -325,7 +324,7 @@ public class OneCGIARControlList {
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Accounts.PUT.value}",
-    response = KeyExternalPartnershipDTO.class)
+    response = AccountsDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/account/{financialCode}", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
@@ -348,7 +347,7 @@ public class OneCGIARControlList {
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.ScienceGroups.PUT.value}",
-    response = KeyExternalPartnershipDTO.class)
+    response = ScienceGroupDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/scienceGroup/{financialCode}", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
@@ -372,7 +371,7 @@ public class OneCGIARControlList {
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.PUT.value}",
-    response = KeyExternalPartnershipDTO.class)
+    response = UnitDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/unit/{financialCode}", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
