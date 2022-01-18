@@ -125,6 +125,12 @@ public class SdgItem<T> {
       if (StringUtils.isBlank(newSdgDTO.getFinancialCode())
         || StringUtils.startsWithIgnoreCase(newSdgDTO.getFinancialCode(), "SDG")) {
         fieldErrors.add(new FieldErrorDTO("createSdg", "Sdg", "Invalid financial code for an Sdg"));
+      } else {
+        Sdg possibleSdg = this.sdgManager.getSdgByFinancialCode(StringUtils.trimToEmpty(newSdgDTO.getFinancialCode()));
+        if (possibleSdg != null) {
+          fieldErrors.add(new FieldErrorDTO("createSdg", "Sdg", "An SDG with a financial code "
+            + StringUtils.trimToNull(newSdgDTO.getFinancialCode()) + " already exists."));
+        }
       }
 
       if (fieldErrors.isEmpty()) {
@@ -390,6 +396,16 @@ public class SdgItem<T> {
       if (StringUtils.isBlank(newSdgDTO.getFinancialCode())
         || StringUtils.startsWithIgnoreCase(newSdgDTO.getFinancialCode(), "SDG")) {
         fieldErrors.add(new FieldErrorDTO("putSdgByFinanceCode", "Sdg", "Invalid financial code for an Sdg"));
+      } else {
+        if (!StringUtils.trimToEmpty(newSdgDTO.getFinancialCode())
+          .equalsIgnoreCase(StringUtils.trimToEmpty(financeCode))) {
+          Sdg possibleSdg =
+            this.sdgManager.getSdgByFinancialCode(StringUtils.trimToEmpty(newSdgDTO.getFinancialCode()));
+          if (possibleSdg != null) {
+            fieldErrors.add(new FieldErrorDTO("putSdgByFinanceCode", "Sdg", "An SDG with a financial code "
+              + StringUtils.trimToNull(newSdgDTO.getFinancialCode()) + " already exists."));
+          }
+        }
       }
 
       if (fieldErrors.isEmpty()) {

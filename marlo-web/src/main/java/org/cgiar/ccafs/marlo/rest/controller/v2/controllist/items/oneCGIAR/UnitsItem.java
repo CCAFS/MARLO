@@ -151,6 +151,13 @@ public class UnitsItem<T> {
       if (StringUtils.isBlank(newUnitDTO.getFinancialCode())
         || !StringUtils.startsWithIgnoreCase(newUnitDTO.getFinancialCode(), unitTypeId)) {
         fieldErrors.add(new FieldErrorDTO("createUnit", "OneCGIARUnit", "Invalid financial code for an Unit"));
+      } else {
+        OneCGIARUnit possibleUnit =
+          this.unitManager.getUnitByFinancialCode(StringUtils.trimToEmpty(newUnitDTO.getFinancialCode()));
+        if (possibleUnit != null) {
+          fieldErrors.add(new FieldErrorDTO("createUnit", "OneCGIARUnit", "An Unit with a financial code "
+            + StringUtils.trimToNull(newUnitDTO.getFinancialCode()) + " already exists."));
+        }
       }
 
       // description check
@@ -397,11 +404,11 @@ public class UnitsItem<T> {
     String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
     if (globalUnitEntity == null) {
-      fieldErrors.add(new FieldErrorDTO("putUnitById", "GlobalUnitEntity",
+      fieldErrors.add(new FieldErrorDTO("putUnitByFinanceCode", "GlobalUnitEntity",
         CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
     } else {
       if (!globalUnitEntity.isActive()) {
-        fieldErrors.add(new FieldErrorDTO("putUnitById", "GlobalUnitEntity",
+        fieldErrors.add(new FieldErrorDTO("putUnitByFinanceCode", "GlobalUnitEntity",
           "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
       }
     }
@@ -409,16 +416,16 @@ public class UnitsItem<T> {
     Set<CrpUser> lstUser = user.getCrpUsers();
     if (!lstUser.stream()
       .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), strippedEntityAcronym))) {
-      fieldErrors.add(new FieldErrorDTO("putUnitById", "GlobalUnitEntity", "CGIAR entity not autorized"));
+      fieldErrors.add(new FieldErrorDTO("putUnitByFinanceCode", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
 
     strippedId = StringUtils.trimToNull(financeCode);
     if (strippedId == null) {
-      fieldErrors.add(new FieldErrorDTO("putUnitById", "ID", "Invalid Unit code"));
+      fieldErrors.add(new FieldErrorDTO("putUnitByFinanceCode", "ID", "Invalid Unit code"));
     } else {
       unit = this.unitManager.getUnitByFinancialCode(strippedId);
       if (unit == null) {
-        fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnit",
+        fieldErrors.add(new FieldErrorDTO("putUnitByFinanceCode", "OneCGIARUnit",
           "The unit with financial code " + strippedId + " does not exist"));
       }
     }
@@ -434,11 +441,11 @@ public class UnitsItem<T> {
       if (unitTypeId != null) {
         unitType = this.unitTypeManager.getUnitTypeByAcronym(unitTypeId);
         if (unitType == null) {
-          fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnitType",
+          fieldErrors.add(new FieldErrorDTO("putUnitByFinanceCode", "OneCGIARUnitType",
             "The Unit Type with code " + unitTypeId + " does not exist"));
         }
       } else {
-        fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnitType", "Invalid Unit Type code"));
+        fieldErrors.add(new FieldErrorDTO("putUnitByFinanceCode", "OneCGIARUnitType", "Invalid Unit Type code"));
       }
 
       // scienceGroup check
@@ -446,11 +453,11 @@ public class UnitsItem<T> {
       if (strippedId != null) {
         scienceGroup = this.scienceGroupManager.getScienceGroupByFinanceCode(strippedId);
         if (scienceGroup == null) {
-          fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARScienceGroup",
+          fieldErrors.add(new FieldErrorDTO("putUnitByFinanceCode", "OneCGIARScienceGroup",
             "The Science Group with code " + strippedId + " does not exist"));
         }
       } else {
-        fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnitType", "Invalid Science Group code"));
+        fieldErrors.add(new FieldErrorDTO("putUnitByFinanceCode", "OneCGIARUnitType", "Invalid Science Group code"));
       }
 
       // parent unit check
@@ -458,24 +465,35 @@ public class UnitsItem<T> {
       if (strippedId != null) {
         parent = this.unitManager.getUnitByFinancialCode(strippedId);
         if (parent == null) {
-          fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnit",
+          fieldErrors.add(new FieldErrorDTO("putUnitByFinanceCode", "OneCGIARUnit",
             "The parent Unit with code " + strippedId + " does not exist"));
         }
       } else {
         if (unitTypeId == null || !StringUtils.containsIgnoreCase(unitTypeId, "1")) {
-          fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnit", "Invalid parent Unit code"));
+          fieldErrors.add(new FieldErrorDTO("putUnitByFinanceCode", "OneCGIARUnit", "Invalid parent Unit code"));
         }
       }
 
       // financeCode check
       if (StringUtils.isBlank(newUnitDTO.getFinancialCode())
         || !StringUtils.startsWithIgnoreCase(newUnitDTO.getFinancialCode(), unitTypeId)) {
-        fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnit", "Invalid financial code for an Unit"));
+        fieldErrors
+          .add(new FieldErrorDTO("putUnitByFinanceCode", "OneCGIARUnit", "Invalid financial code for an Unit"));
+      } else {
+        if (!StringUtils.trimToEmpty(newUnitDTO.getFinancialCode())
+          .equalsIgnoreCase(StringUtils.trimToEmpty(financeCode))) {
+          OneCGIARUnit possibleUnit =
+            this.unitManager.getUnitByFinancialCode(StringUtils.trimToEmpty(newUnitDTO.getFinancialCode()));
+          if (possibleUnit != null) {
+            fieldErrors.add(new FieldErrorDTO("putUnitByFinanceCode", "OneCGIARUnit", "An Unit with a financial code "
+              + StringUtils.trimToNull(newUnitDTO.getFinancialCode()) + " already exists."));
+          }
+        }
       }
 
       // description check
       if (StringUtils.isBlank(newUnitDTO.getDescription())) {
-        fieldErrors.add(new FieldErrorDTO("putUnitById", "OneCGIARUnit", "Invalid description for an Unit"));
+        fieldErrors.add(new FieldErrorDTO("putUnitByFinanceCode", "OneCGIARUnit", "Invalid description for an Unit"));
       }
 
       if (fieldErrors.isEmpty()) {

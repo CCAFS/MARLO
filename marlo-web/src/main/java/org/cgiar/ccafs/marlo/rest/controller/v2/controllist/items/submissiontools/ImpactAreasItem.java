@@ -95,6 +95,13 @@ public class ImpactAreasItem<T> {
       if (StringUtils.isBlank(newImpactAreaDTO.getFinancialCode())) {
         fieldErrors
           .add(new FieldErrorDTO("createImpactArea", "ImpactArea", "Invalid financial code for an ImpactArea"));
+      } else {
+        ImpactArea possibleImpactArea = this.impactAreaManager
+          .getImpactAreaByFinancialCode(StringUtils.trimToEmpty(newImpactAreaDTO.getFinancialCode()));
+        if (possibleImpactArea != null) {
+          fieldErrors.add(new FieldErrorDTO("createImpactArea", "ImpactArea", "An Impact Area with a financial code "
+            + StringUtils.trimToNull(newImpactAreaDTO.getFinancialCode()) + " already exists."));
+        }
       }
 
       // description check
@@ -102,7 +109,7 @@ public class ImpactAreasItem<T> {
         fieldErrors.add(new FieldErrorDTO("createImpactArea", "ImpactArea", "Invalid description for an ImpactArea"));
       }
 
-      // name; check
+      // name check
       if (StringUtils.isBlank(newImpactAreaDTO.getName())) {
         fieldErrors.add(new FieldErrorDTO("createImpactArea", "ImpactArea", "Invalid name for an ImpactArea"));
       }
@@ -335,6 +342,17 @@ public class ImpactAreasItem<T> {
       if (StringUtils.isBlank(newImpactAreaDTO.getFinancialCode())) {
         fieldErrors.add(
           new FieldErrorDTO("putImpactAreaByFinanceCode", "ImpactArea", "Invalid financial code for an ImpactArea"));
+      } else {
+        if (!StringUtils.trimToEmpty(newImpactAreaDTO.getFinancialCode())
+          .equalsIgnoreCase(StringUtils.trimToEmpty(financeCode))) {
+          ImpactArea possibleImpactArea = this.impactAreaManager
+            .getImpactAreaByFinancialCode(StringUtils.trimToEmpty(newImpactAreaDTO.getFinancialCode()));
+          if (possibleImpactArea != null) {
+            fieldErrors
+              .add(new FieldErrorDTO("putImpactAreaByFinanceCode", "ImpactArea", "An Impact Area with a financial code "
+                + StringUtils.trimToNull(newImpactAreaDTO.getFinancialCode()) + " already exists."));
+          }
+        }
       }
 
       // description check

@@ -442,12 +442,11 @@ public class GeneralLists {
   public ResponseEntity<Long> putEntityByAcronym(
     @ApiParam(value = "${GeneralLists.cgiar-entities.PUT.param.CGIAR}",
       required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${GeneralLists.cgiar-entities.PUT.acronym.value}", required = true) @PathVariable String acronym,
+    @ApiParam(value = "${GeneralLists.cgiar-entities.PUT.id.value}", required = true) @PathVariable Long id,
     @ApiParam(value = "${GeneralLists.cgiar-entities.PUT.param.newEntity}",
       required = true) @Valid @RequestBody NewCGIAREntityDTO newAccountDTO) {
 
-    Long globalUnitId =
-      this.globalUnitItem.putGlobalUnitByAcronym(acronym, newAccountDTO, CGIAREntity, this.getCurrentUser());
+    Long globalUnitId = this.globalUnitItem.putGlobalUnitById(id, newAccountDTO, CGIAREntity, this.getCurrentUser());
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(globalUnitId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {

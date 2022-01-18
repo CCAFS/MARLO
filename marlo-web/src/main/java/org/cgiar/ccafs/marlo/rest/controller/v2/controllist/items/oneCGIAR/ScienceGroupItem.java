@@ -117,6 +117,14 @@ public class ScienceGroupItem<T> {
         || !StringUtils.startsWithIgnoreCase(newScienceGroupDTO.getFinancialCode(), "S")) {
         fieldErrors.add(new FieldErrorDTO("createScienceGroup", "OneCGIARScienceGroup",
           "Invalid financial code for an ScienceGroup"));
+      } else {
+        OneCGIARScienceGroup possibleScienceGroup = this.scienceGroupManager
+          .getScienceGroupByFinanceCode(StringUtils.trimToEmpty(newScienceGroupDTO.getFinancialCode()));
+        if (possibleScienceGroup != null) {
+          fieldErrors.add(
+            new FieldErrorDTO("createScienceGroup", "OneCGIARScienceGroup", "A Science Group with a financial code "
+              + StringUtils.trimToNull(newScienceGroupDTO.getFinancialCode()) + " already exists."));
+        }
       }
 
       // description check
@@ -345,11 +353,11 @@ public class ScienceGroupItem<T> {
     String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
     if (globalUnitEntity == null) {
-      fieldErrors.add(new FieldErrorDTO("putScienceGroupById", "GlobalUnitEntity",
+      fieldErrors.add(new FieldErrorDTO("putScienceGroupByFinanceCode", "GlobalUnitEntity",
         CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
     } else {
       if (!globalUnitEntity.isActive()) {
-        fieldErrors.add(new FieldErrorDTO("putScienceGroupById", "GlobalUnitEntity",
+        fieldErrors.add(new FieldErrorDTO("putScienceGroupByFinanceCode", "GlobalUnitEntity",
           "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
       }
     }
@@ -357,16 +365,17 @@ public class ScienceGroupItem<T> {
     Set<CrpUser> lstUser = user.getCrpUsers();
     if (!lstUser.stream()
       .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), strippedEntityAcronym))) {
-      fieldErrors.add(new FieldErrorDTO("putScienceGroupById", "GlobalUnitEntity", "CGIAR entity not autorized"));
+      fieldErrors
+        .add(new FieldErrorDTO("putScienceGroupByFinanceCode", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
 
     strippedId = StringUtils.trimToNull(financeCode);
     if (strippedId == null) {
-      fieldErrors.add(new FieldErrorDTO("putScienceGroupById", "ID", "Invalid Science Group code"));
+      fieldErrors.add(new FieldErrorDTO("putScienceGroupByFinanceCode", "ID", "Invalid Science Group code"));
     } else {
       scienceGroup = this.scienceGroupManager.getScienceGroupByFinanceCode(strippedId);
       if (scienceGroup == null) {
-        fieldErrors.add(new FieldErrorDTO("putScienceGroupById", "OneCGIARScienceGroup",
+        fieldErrors.add(new FieldErrorDTO("putScienceGroupByFinanceCode", "OneCGIARScienceGroup",
           "The scienceGroup with financial code " + strippedId + " does not exist"));
       }
     }
@@ -379,7 +388,7 @@ public class ScienceGroupItem<T> {
       if (strippedId != null) {
         parent = this.scienceGroupManager.getScienceGroupByFinanceCode(strippedId);
         if (parent == null) {
-          fieldErrors.add(new FieldErrorDTO("putScienceGroupById", "OneCGIARScienceGroup",
+          fieldErrors.add(new FieldErrorDTO("putScienceGroupByFinanceCode", "OneCGIARScienceGroup",
             "The parent Science Group with code " + strippedId + " does not exist"));
         }
       }
@@ -387,14 +396,25 @@ public class ScienceGroupItem<T> {
       // financeCode check
       if (StringUtils.isBlank(newScienceGroupDTO.getFinancialCode())
         || !StringUtils.startsWithIgnoreCase(newScienceGroupDTO.getFinancialCode(), "S")) {
-        fieldErrors.add(new FieldErrorDTO("putScienceGroupById", "OneCGIARScienceGroup",
+        fieldErrors.add(new FieldErrorDTO("putScienceGroupByFinanceCode", "OneCGIARScienceGroup",
           "Invalid financial code for an Science Group"));
+      } else {
+        if (!StringUtils.trimToEmpty(newScienceGroupDTO.getFinancialCode())
+          .equalsIgnoreCase(StringUtils.trimToEmpty(financeCode))) {
+          OneCGIARScienceGroup possibleScienceGroup = this.scienceGroupManager
+            .getScienceGroupByFinanceCode(StringUtils.trimToEmpty(newScienceGroupDTO.getFinancialCode()));
+          if (possibleScienceGroup != null) {
+            fieldErrors.add(new FieldErrorDTO("putScienceGroupByFinanceCode", "OneCGIARScienceGroup",
+              "A Science Group with a financial code " + StringUtils.trimToNull(newScienceGroupDTO.getFinancialCode())
+                + " already exists."));
+          }
+        }
       }
 
       // description check
       if (StringUtils.isBlank(newScienceGroupDTO.getDescription())) {
-        fieldErrors.add(
-          new FieldErrorDTO("putScienceGroupById", "OneCGIARScienceGroup", "Invalid description for an Science Group"));
+        fieldErrors.add(new FieldErrorDTO("putScienceGroupByFinanceCode", "OneCGIARScienceGroup",
+          "Invalid description for an Science Group"));
       }
 
       if (fieldErrors.isEmpty()) {

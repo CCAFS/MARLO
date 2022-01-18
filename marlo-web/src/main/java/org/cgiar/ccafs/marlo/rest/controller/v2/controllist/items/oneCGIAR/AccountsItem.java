@@ -133,6 +133,13 @@ public class AccountsItem<T> {
       if (StringUtils.isBlank(newAccountDTO.getFinancialCode())
         || !StringUtils.startsWithIgnoreCase(newAccountDTO.getFinancialCode(), accountTypeId)) {
         fieldErrors.add(new FieldErrorDTO("createAccount", "OneCGIARAccount", "Invalid financial code for an Account"));
+      } else {
+        OneCGIARAccount possibleAccount =
+          this.accountManager.getAccountByFinancialCode(StringUtils.trimToEmpty(newAccountDTO.getFinancialCode()));
+        if (possibleAccount != null) {
+          fieldErrors.add(new FieldErrorDTO("createAccount", "OneCGIARAccount", "An Account with a financial code "
+            + StringUtils.trimToNull(newAccountDTO.getFinancialCode()) + " already exists."));
+        }
       }
 
       // description check
@@ -445,6 +452,17 @@ public class AccountsItem<T> {
         || !StringUtils.startsWithIgnoreCase(newAccountDTO.getFinancialCode(), accountTypeId)) {
         fieldErrors.add(
           new FieldErrorDTO("putAccountByFinanceCode", "OneCGIARAccount", "Invalid financial code for an Account"));
+      } else {
+        if (!StringUtils.trimToEmpty(newAccountDTO.getFinancialCode())
+          .equalsIgnoreCase(StringUtils.trimToEmpty(financeCode))) {
+          OneCGIARAccount possibleAccount =
+            this.accountManager.getAccountByFinancialCode(StringUtils.trimToEmpty(newAccountDTO.getFinancialCode()));
+          if (possibleAccount != null) {
+            fieldErrors
+              .add(new FieldErrorDTO("putAccountByFinanceCode", "OneCGIARAccount", "An Account with a financial code "
+                + StringUtils.trimToNull(newAccountDTO.getFinancialCode()) + " already exists."));
+          }
+        }
       }
 
       // description check
