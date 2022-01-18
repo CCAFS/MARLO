@@ -513,6 +513,8 @@
     <mapping resource="xmls/OneCGIARTechnologyDevelopmentStage.hbm.xml"/>
     <mapping resource="xmls/OneCGIARInnovationReadinessLevel.hbm.xml"/>
     <mapping resource="xmls/OneCGIARUser.hbm.xml"/>
+    <mapping resource="xmls/OneCGIARInnovationUseLevel.hbm.xml"/>
+    <mapping resource="xmls/OneCGIARInvestmentType.hbm.xml"/>
     
     <!-- Annual Report 2021 -->
     <mapping resource="xmls/ProjectExpectedStudyReferences.hbm.xml" />
