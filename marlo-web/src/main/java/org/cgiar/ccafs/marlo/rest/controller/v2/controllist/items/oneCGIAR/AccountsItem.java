@@ -278,10 +278,10 @@ public class AccountsItem<T> {
     // User validation???
 
     if (fieldErrors.isEmpty()) {
-      oneCGIARAccount = this.accountManager.getAccountByFinancialCode(financialCode);
+      oneCGIARAccount = this.accountManager.getAccountByFinancialCode(StringUtils.trimToNull(financialCode));
       if (oneCGIARAccount == null) {
         fieldErrors.add(new FieldErrorDTO("Accounts", "financialCode",
-          "The account with financialCode " + financialCode + " does not exist"));
+          "The account with financialCode " + StringUtils.trimToNull(financialCode) + " does not exist"));
       }
     }
 
