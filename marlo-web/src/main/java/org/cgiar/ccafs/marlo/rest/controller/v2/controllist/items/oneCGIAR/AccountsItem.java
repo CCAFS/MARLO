@@ -175,11 +175,11 @@ public class AccountsItem<T> {
     String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
     if (globalUnitEntity == null) {
-      fieldErrors.add(new FieldErrorDTO("deleteAccountById", "GlobalUnitEntity",
+      fieldErrors.add(new FieldErrorDTO("deleteAccountByFinanceCode", "GlobalUnitEntity",
         CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
     } else {
       if (!globalUnitEntity.isActive()) {
-        fieldErrors.add(new FieldErrorDTO("deleteAccountById", "GlobalUnitEntity",
+        fieldErrors.add(new FieldErrorDTO("deleteAccountByFinanceCode", "GlobalUnitEntity",
           "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
       }
     }
@@ -187,12 +187,13 @@ public class AccountsItem<T> {
     Set<CrpUser> lstUser = user.getCrpUsers();
     if (!lstUser.stream()
       .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), strippedEntityAcronym))) {
-      fieldErrors.add(new FieldErrorDTO("deleteAccountById", "GlobalUnitEntity", "CGIAR entity not autorized"));
+      fieldErrors
+        .add(new FieldErrorDTO("deleteAccountByFinanceCode", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
 
     strippedId = StringUtils.trimToNull(financeCode);
     if (strippedId == null) {
-      fieldErrors.add(new FieldErrorDTO("deleteAccountById", "ID", "Invalid Account financial code"));
+      fieldErrors.add(new FieldErrorDTO("deleteAccountByFinanceCode", "ID", "Invalid Account financial code"));
     }
 
     if (fieldErrors.isEmpty()) {
@@ -201,7 +202,7 @@ public class AccountsItem<T> {
       if (account != null) {
         this.accountManager.deleteOneCGIARAccount(account.getId());
       } else {
-        fieldErrors.add(new FieldErrorDTO("deleteAccountById", "OneCGIARAccount",
+        fieldErrors.add(new FieldErrorDTO("deleteAccountByFinanceCode", "OneCGIARAccount",
           "The Account with code " + strippedId + " does not exist"));
       }
     }
@@ -380,11 +381,11 @@ public class AccountsItem<T> {
     String strippedEntityAcronym = StringUtils.stripToNull(CGIARentityAcronym);
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(strippedEntityAcronym);
     if (globalUnitEntity == null) {
-      fieldErrors.add(new FieldErrorDTO("putAccountById", "GlobalUnitEntity",
+      fieldErrors.add(new FieldErrorDTO("putAccountByFinanceCode", "GlobalUnitEntity",
         CGIARentityAcronym + " is not a valid CGIAR entity acronym"));
     } else {
       if (!globalUnitEntity.isActive()) {
-        fieldErrors.add(new FieldErrorDTO("putAccountById", "GlobalUnitEntity",
+        fieldErrors.add(new FieldErrorDTO("putAccountByFinanceCode", "GlobalUnitEntity",
           "The Global Unit with acronym " + CGIARentityAcronym + " is not active."));
       }
     }
@@ -392,16 +393,16 @@ public class AccountsItem<T> {
     Set<CrpUser> lstUser = user.getCrpUsers();
     if (!lstUser.stream()
       .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), strippedEntityAcronym))) {
-      fieldErrors.add(new FieldErrorDTO("putAccountById", "GlobalUnitEntity", "CGIAR entity not autorized"));
+      fieldErrors.add(new FieldErrorDTO("putAccountByFinanceCode", "GlobalUnitEntity", "CGIAR entity not autorized"));
     }
 
     strippedId = StringUtils.trimToNull(financeCode);
     if (strippedId == null) {
-      fieldErrors.add(new FieldErrorDTO("putAccountById", "ID", "Invalid Account code"));
+      fieldErrors.add(new FieldErrorDTO("putAccountByFinanceCode", "ID", "Invalid Account code"));
     } else {
       account = this.accountManager.getAccountByFinancialCode(strippedId);
       if (account == null) {
-        fieldErrors.add(new FieldErrorDTO("putAccountById", "OneCGIARAccount",
+        fieldErrors.add(new FieldErrorDTO("putAccountByFinanceCode", "OneCGIARAccount",
           "The account with financial code " + strippedId + " does not exist"));
       }
     }
@@ -416,11 +417,12 @@ public class AccountsItem<T> {
       if (accountTypeId != null) {
         accountType = this.accountTypeManager.getAccountTypeByAcronym(accountTypeId);
         if (accountType == null) {
-          fieldErrors.add(new FieldErrorDTO("putAccountById", "OneCGIARAccountType",
+          fieldErrors.add(new FieldErrorDTO("putAccountByFinanceCode", "OneCGIARAccountType",
             "The Account Type with code " + accountTypeId + " does not exist"));
         }
       } else {
-        fieldErrors.add(new FieldErrorDTO("putAccountById", "OneCGIARAccountType", "Invalid Account Type code"));
+        fieldErrors
+          .add(new FieldErrorDTO("putAccountByFinanceCode", "OneCGIARAccountType", "Invalid Account Type code"));
       }
 
       // parent account check
@@ -428,25 +430,27 @@ public class AccountsItem<T> {
       if (strippedId != null) {
         parent = this.accountManager.getAccountByFinancialCode(strippedId);
         if (parent == null) {
-          fieldErrors.add(new FieldErrorDTO("putAccountById", "OneCGIARAccount",
+          fieldErrors.add(new FieldErrorDTO("putAccountByFinanceCode", "OneCGIARAccount",
             "The parent Account with code " + strippedId + " does not exist"));
         }
       } else {
         if (accountTypeId == null || !StringUtils.containsIgnoreCase(accountTypeId, "1")) {
-          fieldErrors.add(new FieldErrorDTO("putAccountById", "OneCGIARAccount", "Invalid parent Account code"));
+          fieldErrors
+            .add(new FieldErrorDTO("putAccountByFinanceCode", "OneCGIARAccount", "Invalid parent Account code"));
         }
       }
 
       // financeCode check
       if (StringUtils.isBlank(newAccountDTO.getFinancialCode())
         || !StringUtils.startsWithIgnoreCase(newAccountDTO.getFinancialCode(), accountTypeId)) {
-        fieldErrors
-          .add(new FieldErrorDTO("putAccountById", "OneCGIARAccount", "Invalid financial code for an Account"));
+        fieldErrors.add(
+          new FieldErrorDTO("putAccountByFinanceCode", "OneCGIARAccount", "Invalid financial code for an Account"));
       }
 
       // description check
       if (StringUtils.isBlank(newAccountDTO.getDescription())) {
-        fieldErrors.add(new FieldErrorDTO("putAccountById", "OneCGIARAccount", "Invalid description for an Account"));
+        fieldErrors
+          .add(new FieldErrorDTO("putAccountByFinanceCode", "OneCGIARAccount", "Invalid description for an Account"));
       }
 
       if (fieldErrors.isEmpty()) {
