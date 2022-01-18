@@ -820,9 +820,7 @@ function work_packages() {
 					+ item['acronym'] + '</td>'+ '<td>'
 					+ item['name'] + '</td>'+ '<td>'
 					+ item['initiativeId'] + '</td>'+ '<td>'
-					+ item['stageId'] + '</td>'+ '<td>'
-					+ (item['results']==null? '':item['results'] )+ '</td>'+ '<td>'
-					+ (item['pathway_content']==null? '':item['pathway_content'] ) + '</td>' + '</tr>')
+					+ item['stageId'] + '</td>'+  '</tr>')
 			});
 setTimeout(() => {
 	updateDataTable("workpackages");
@@ -1074,7 +1072,7 @@ function institutions() {
 				// testInstitution(data);
 				// showFilter();
 				manageSpinner(false,"institutions");
-				console.log(data);
+				// console.log(data);
 				let nameColumns = ['Code', 'Acronym','Institution Type', 'Office Location',
 					'Name', 'Website']
 				$
@@ -1139,7 +1137,7 @@ function institutionsRelated() {
 				// testInstitution(data);
 				// showFilter();
 				manageSpinner(false,"institutionsrelated");
-				console.log(data);
+				// console.log(data);
 				let nameColumns = ['Code', 'Acronym','Institution Type', 'Office Location',
 					'Name', 'Website']
 				$
@@ -1265,7 +1263,7 @@ function acronyms() {
 			// ********************************************* */
 			// print data
 			manageSpinner(false,"acronyms");
-			console.log(data);
+			// console.log(data);
 			let nameColumns = ['Code', 'Acronym','Description']			
 
 			$.each(data, function (index, item) {				
@@ -1301,7 +1299,7 @@ function business_category() {
 			// ********************************************* */
 			// print data
 			manageSpinner(false,"business-category");
-			console.log(data);
+			// console.log(data);
 			let nameColumns = ['Code', 'Name']			
 
 			$.each(data, function (index, item) {				
@@ -1336,7 +1334,7 @@ function technical_field() {
 			// ********************************************* */
 			// print data
 			manageSpinner(false,"technical-field");
-			console.log(data);
+			// console.log(data);
 			let nameColumns = ['Code', 'Name']			
 
 			$.each(data, function (index, item) {				
@@ -1371,7 +1369,7 @@ function innovation_type() {
 			// ********************************************* */
 			// print data
 			manageSpinner(false,"innovation-type");
-			console.log(data);
+			// console.log(data);
 			let nameColumns = ['Code', 'Name']			
 
 			$.each(data, function (index, item) {				
@@ -1406,7 +1404,7 @@ function governance_type() {
 			// ********************************************* */
 			// print data
 			manageSpinner(false,"governance-type");
-			console.log(data);
+			// console.log(data);
 			let nameColumns = ['Code', 'Name']			
 
 			$.each(data, function (index, item) {				
@@ -1441,7 +1439,7 @@ function environmental_benefits() {
 			// ********************************************* */
 			// print data
 			manageSpinner(false,"environmental-benefits");
-			console.log(data);
+			// console.log(data);
 			let nameColumns = ['Code', 'Name']			
 
 			$.each(data, function (index, item) {				
@@ -1476,7 +1474,7 @@ function technology_development() {
 			// ********************************************* */
 			// print data
 			manageSpinner(false,"technology-development-stage");
-			console.log(data);
+			// console.log(data);
 			let nameColumns = ['Code','OficialCode', 'Name']			
 
 			$.each(data, function (index, item) {				
@@ -1512,7 +1510,7 @@ function innovation_readiness() {
 			// ********************************************* */
 			// print data
 			manageSpinner(false,"innovation-readiness-levels");
-			console.log(data);
+			// console.log(data);
 			let nameColumns = ['Code', 'Name']			
 
 			$.each(data, function (index, item) {				
@@ -1547,12 +1545,12 @@ function administrative_scale() {
 			// ********************************************* */
 			// print data
 			manageSpinner(false,"administrative-scale");
-			console.log(data);
+			// console.log(data);
 			let nameColumns = ['Code', 'Name']			
 
 			$.each(data, function (index, item) {				
 				$('#list-print-administrative-scale').append(
-					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					'<tr>' + '<td >' + item['code'] + '</td>' + '<td>'
 					+ item['name'] + '</td>' + '</tr>')
 			});
 setTimeout(() => {
@@ -1582,7 +1580,7 @@ function users() {
 			// ********************************************* */
 			// print data
 			manageSpinner(false,"users");
-			console.log(data);
+			// console.log(data);
 			let nameColumns = ['Code', 'Name']			
 
 			$.each(data, function (index, item) {				
@@ -1617,7 +1615,7 @@ function beneficiaries() {
 			// ********************************************* */
 			// print data
 			manageSpinner(false,"beneficiaries");
-			console.log(data);
+			// console.log(data);
 			let nameColumns = ['Code', 'Name']			
 
 			$.each(data, function (index, item) {				
@@ -1640,7 +1638,7 @@ setTimeout(() => {
 
 function investment_type() {
 	$.ajax({
-		url: config.endpoint + '/investment-type',
+		url: config.endpoint + '/investment-types',
 		type: "GET",
 		beforeSend: function () {
 			// hideFilter();
@@ -1652,7 +1650,7 @@ function investment_type() {
 			// ********************************************* */
 			// print data
 			manageSpinner(false,"investment-type");
-			console.log(data);
+			// console.log(data);
 			let nameColumns = ['Code', 'Name']			
 
 			$.each(data, function (index, item) {				
@@ -1687,7 +1685,7 @@ function innovation_use() {
 			// ********************************************* */
 			// print data
 			manageSpinner(false,"innovation-use-levels");
-			console.log(data);
+			// console.log(data);
 			let nameColumns = ['Code', 'Name']			
 
 			$.each(data, function (index, item) {				

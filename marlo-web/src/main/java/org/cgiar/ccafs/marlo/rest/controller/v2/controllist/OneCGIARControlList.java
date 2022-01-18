@@ -26,6 +26,8 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.Busin
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.EnvironmentalBenefitsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.GovernanceTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.InnovationReadinessLevelItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.InnovationUseLevelItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.InvestmentTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.RegionTypesItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.RegionsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.ScienceGroupItem;
@@ -43,6 +45,8 @@ import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GovernanceTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationReadinessLevelDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InnovationUseLevelDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InvestmentTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARUserDTO;
@@ -94,6 +98,8 @@ public class OneCGIARControlList {
   private InnovationReadinessLevelItem<OneCGIARControlList> innovationReadinessLevelItem;
   private AdministrativeScaleItem<OneCGIARControlList> administrativeScaleItem;
   private UsersItem<OneCGIARControlList> usersItem;
+  private InvestmentTypeItem<OneCGIARControlList> investmentTypeItem;
+  private InnovationUseLevelItem<OneCGIARControlList> innovationUseLevelItem;
 
   @Autowired
   private Environment env;
@@ -109,7 +115,9 @@ public class OneCGIARControlList {
     EnvironmentalBenefitsItem<OneCGIARControlList> environmentalBenefitsItem,
     TechnologyDevelopmentStageItem<OneCGIARControlList> technologyDeploymentStageItem,
     InnovationReadinessLevelItem<OneCGIARControlList> innovationReadinessLevelItem,
-    AdministrativeScaleItem<OneCGIARControlList> administrativeScaleItem, UsersItem<OneCGIARControlList> usersItem) {
+    AdministrativeScaleItem<OneCGIARControlList> administrativeScaleItem, UsersItem<OneCGIARControlList> usersItem,
+    InvestmentTypeItem<OneCGIARControlList> investmentTypeItem,
+    InnovationUseLevelItem<OneCGIARControlList> innovationUseLevelItem) {
     super();
     this.regionsItem = regionsItem;
     this.regionTypesItem = regionTypesItem;
@@ -126,6 +134,8 @@ public class OneCGIARControlList {
     this.innovationReadinessLevelItem = innovationReadinessLevelItem;
     this.administrativeScaleItem = administrativeScaleItem;
     this.usersItem = usersItem;
+    this.investmentTypeItem = investmentTypeItem;
+    this.innovationUseLevelItem = innovationUseLevelItem;
   }
 
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Accounts.all.value}",
@@ -324,6 +334,41 @@ public class OneCGIARControlList {
   public ResponseEntity<List<InnovationTypeDTO>> findAllInnovationTypes() {
     try {
       ResponseEntity<List<InnovationTypeDTO>> response = this.innovationTypeItem.getAll();
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Units.code.404"));
+      }
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.all.value}",
+    response = InnovationUseLevelDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/innovation-use-levels", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<InnovationUseLevelDTO>> findAllInnovationUseLevels() {
+    try {
+      ResponseEntity<List<InnovationUseLevelDTO>> response = this.innovationUseLevelItem.getAll();
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Units.code.404"));
+      }
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.all.value}",
+    response = InvestmentTypeDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/investment-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<InvestmentTypeDTO>> findAllInvestmentTypes() {
+    try {
+      ResponseEntity<List<InvestmentTypeDTO>> response = this.investmentTypeItem.getAll();
       if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
         throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Units.code.404"));
       }
