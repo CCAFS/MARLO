@@ -32,7 +32,7 @@ public class OneCGIARUnit extends MarloAuditableEntity implements Serializable {
 
   private String financialCode;
   private String description;
-  private OneCGIARUnitTypes oneCGIARUnitType;
+  private OneCGIARUnitType oneCGIARUnitType;
 
 
   private OneCGIARUnit parentUnit;
@@ -72,7 +72,7 @@ public class OneCGIARUnit extends MarloAuditableEntity implements Serializable {
   }
 
 
-  public OneCGIARUnitTypes getOneCGIARUnitType() {
+  public OneCGIARUnitType getOneCGIARUnitType() {
     return oneCGIARUnitType;
   }
 
@@ -102,7 +102,7 @@ public class OneCGIARUnit extends MarloAuditableEntity implements Serializable {
   }
 
 
-  public void setOneCGIARUnitType(OneCGIARUnitTypes oneCGIARUnitType) {
+  public void setOneCGIARUnitType(OneCGIARUnitType oneCGIARUnitType) {
     this.oneCGIARUnitType = oneCGIARUnitType;
   }
 

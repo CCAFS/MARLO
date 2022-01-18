@@ -17,16 +17,23 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.data.manager;
+package org.cgiar.ccafs.marlo.data.model;
 
-import org.cgiar.ccafs.marlo.data.model.OneCGIAREnvironmentalBenefit;
+public class OneCGIAREnvironmentalBenefit extends MarloBaseEntity implements java.io.Serializable {
 
-import java.util.List;
+  private static final long serialVersionUID = 1L;
 
-public interface OneCGIAREnvironmentalBenefitsManager {
+  private String name;
 
-  public List<OneCGIAREnvironmentalBenefit> getAll();
 
-  public OneCGIAREnvironmentalBenefit getOneCGIAREnvironmentalBenefitsById(long id);
+  public String getName() {
+    return name;
+  }
+
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
 
 }

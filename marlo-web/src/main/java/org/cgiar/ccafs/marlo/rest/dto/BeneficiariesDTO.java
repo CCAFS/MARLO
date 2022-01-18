@@ -17,16 +17,27 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.data.manager;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.OneCGIAREnvironmentalBenefit;
 
-import java.util.List;
+public class BeneficiariesDTO {
 
-public interface OneCGIAREnvironmentalBenefitsManager {
+  private Long id;
+  private String name;
 
-  public List<OneCGIAREnvironmentalBenefit> getAll();
+  public Long getId() {
+    return id;
+  }
 
-  public OneCGIAREnvironmentalBenefit getOneCGIAREnvironmentalBenefitsById(long id);
+  public String getName() {
+    return name;
+  }
 
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 }

@@ -17,16 +17,39 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.data.manager;
+package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.model.OneCGIAREnvironmentalBenefit;
+import org.cgiar.ccafs.marlo.data.dao.OneCGIARUserDAO;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARUser;
 
 import java.util.List;
 
-public interface OneCGIAREnvironmentalBenefitsManager {
+import javax.inject.Inject;
+import javax.inject.Named;
 
-  public List<OneCGIAREnvironmentalBenefit> getAll();
+import org.hibernate.SessionFactory;
 
-  public OneCGIAREnvironmentalBenefit getOneCGIAREnvironmentalBenefitsById(long id);
+@Named
+public class OneCGIARUserMySQLDAO extends AbstractMarloDAO<OneCGIARUser, Long> implements OneCGIARUserDAO {
+
+  @Inject
+  public OneCGIARUserMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
+
+  @Override
+  public List<OneCGIARUser> getAll() {
+    String query = "from " + OneCGIARUser.class.getName();
+    List<OneCGIARUser> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+  }
+
+  @Override
+  public OneCGIARUser getOneCGIARUserById(long id) {
+    return super.find(OneCGIARUser.class, id);
+  }
 
 }

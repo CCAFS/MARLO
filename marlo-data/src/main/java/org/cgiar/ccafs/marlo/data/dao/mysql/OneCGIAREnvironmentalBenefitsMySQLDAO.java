@@ -20,7 +20,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.OneCGIAREnvironmentalBenefitsDAO;
-import org.cgiar.ccafs.marlo.data.model.OneCGIAREnvironmentalBenefits;
+import org.cgiar.ccafs.marlo.data.model.OneCGIAREnvironmentalBenefit;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class OneCGIAREnvironmentalBenefitsMySQLDAO extends AbstractMarloDAO<OneCGIAREnvironmentalBenefits, Long>
+public class OneCGIAREnvironmentalBenefitsMySQLDAO extends AbstractMarloDAO<OneCGIAREnvironmentalBenefit, Long>
   implements OneCGIAREnvironmentalBenefitsDAO {
 
   @Inject
@@ -39,9 +39,9 @@ public class OneCGIAREnvironmentalBenefitsMySQLDAO extends AbstractMarloDAO<OneC
   }
 
   @Override
-  public List<OneCGIAREnvironmentalBenefits> getAll() {
-    String query = "from " + OneCGIAREnvironmentalBenefits.class.getName();
-    List<OneCGIAREnvironmentalBenefits> list = super.findAll(query);
+  public List<OneCGIAREnvironmentalBenefit> getAll() {
+    String query = "from " + OneCGIAREnvironmentalBenefit.class.getName();
+    List<OneCGIAREnvironmentalBenefit> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -49,8 +49,8 @@ public class OneCGIAREnvironmentalBenefitsMySQLDAO extends AbstractMarloDAO<OneC
   }
 
   @Override
-  public OneCGIAREnvironmentalBenefits getOneCGIAREnvironmentalBenefitsById(long id) {
-    return super.find(OneCGIAREnvironmentalBenefits.class, id);
+  public OneCGIAREnvironmentalBenefit getOneCGIAREnvironmentalBenefitsById(long id) {
+    return super.find(OneCGIAREnvironmentalBenefit.class, id);
   }
 
 }
