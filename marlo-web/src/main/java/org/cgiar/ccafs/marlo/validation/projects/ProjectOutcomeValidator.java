@@ -144,7 +144,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
   public void validateAiccraProjectOutcomeIndicator(BaseAction action, ProjectOutcome projectOutcome,
     ProjectOutcomeIndicator projectOutcomeIndicator, int i) {
 
-    if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
+    if (projectOutcomeIndicator != null && projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
       && projectOutcome.getCrpProgramOutcome().getDescription() != null) {
       String programOutcome = projectOutcome.getCrpProgramOutcome().getDescription();
 
