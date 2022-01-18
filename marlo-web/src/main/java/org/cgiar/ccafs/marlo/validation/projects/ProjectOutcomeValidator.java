@@ -149,12 +149,18 @@ public class ProjectOutcomeValidator extends BaseValidator {
       String programOutcome = projectOutcome.getCrpProgramOutcome().getDescription();
 
       // PDO 1 and 3
-      if (programOutcome.contains("PDO indicator 1") || programOutcome.contains("PDO indicator 3")) {
+      if (programOutcome.contains("PDO Indicator 1") || programOutcome.contains("PDO Indicator 3")) {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
         // if (action.isPlanningActive()) {
-        if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-          && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+        if (projectOutcomeIndicator.getNarrative() != null) {
+          if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
+            && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        } else {
           action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
           action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
             InvalidFieldsMessages.EMPTYFIELD);
@@ -194,17 +200,23 @@ public class ProjectOutcomeValidator extends BaseValidator {
       }
 
       // PDO 2
-      if (programOutcome.contains("PDO indicator 2")) {
+      if (programOutcome.contains("PDO Indicator 2")) {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
         // if (action.isPlanningActive()) {
-        if (i != 0) {
-          if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-            && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
-            action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-              InvalidFieldsMessages.EMPTYFIELD);
+        if (projectOutcomeIndicator.getNarrative() != null) {
+          if (i != 0) {
+            if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
+              && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+              action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
           }
+        } else {
+          action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+          action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
         // }
 
@@ -227,8 +239,14 @@ public class ProjectOutcomeValidator extends BaseValidator {
         params.add(String.valueOf(i + 1));
         // if (action.isPlanningActive()) {
 
-        if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-          && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+        if (projectOutcomeIndicator.getNarrative() != null) {
+          if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
+            && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        } else {
           action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
           action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
             InvalidFieldsMessages.EMPTYFIELD);
@@ -254,9 +272,14 @@ public class ProjectOutcomeValidator extends BaseValidator {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
         // if (action.isPlanningActive()) {
-
-        if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-          && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+        if (projectOutcomeIndicator.getNarrative() != null) {
+          if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
+            && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        } else {
           action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
           action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
             InvalidFieldsMessages.EMPTYFIELD);
@@ -282,9 +305,14 @@ public class ProjectOutcomeValidator extends BaseValidator {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
         // if (action.isPlanningActive()) {
-
-        if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-          && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+        if (projectOutcomeIndicator.getNarrative() != null) {
+          if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
+            && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        } else {
           action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
           action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
             InvalidFieldsMessages.EMPTYFIELD);
