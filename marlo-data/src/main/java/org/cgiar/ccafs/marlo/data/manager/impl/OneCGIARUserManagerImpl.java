@@ -17,16 +17,36 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.data.manager;
+package org.cgiar.ccafs.marlo.data.manager.impl;
 
-import org.cgiar.ccafs.marlo.data.model.OneCGIAREnvironmentalBenefit;
+import org.cgiar.ccafs.marlo.data.dao.OneCGIARUserDAO;
+import org.cgiar.ccafs.marlo.data.manager.OneCGIARUserManager;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARUser;
 
 import java.util.List;
 
-public interface OneCGIAREnvironmentalBenefitsManager {
+import javax.inject.Inject;
+import javax.inject.Named;
 
-  public List<OneCGIAREnvironmentalBenefit> getAll();
+@Named
+public class OneCGIARUserManagerImpl implements OneCGIARUserManager {
 
-  public OneCGIAREnvironmentalBenefit getOneCGIAREnvironmentalBenefitsById(long id);
+  private OneCGIARUserDAO oneCGIARUserDAO;
+
+  @Inject
+  public OneCGIARUserManagerImpl(OneCGIARUserDAO oneCGIARUserDAO) {
+    super();
+    this.oneCGIARUserDAO = oneCGIARUserDAO;
+  }
+
+  @Override
+  public List<OneCGIARUser> getAll() {
+    return oneCGIARUserDAO.getAll();
+  }
+
+  @Override
+  public OneCGIARUser getOneCGIARUserById(long id) {
+    return oneCGIARUserDAO.getOneCGIARUserById(id);
+  }
 
 }

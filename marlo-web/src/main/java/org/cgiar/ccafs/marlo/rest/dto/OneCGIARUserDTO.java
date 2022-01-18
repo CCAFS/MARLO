@@ -17,31 +17,27 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.data.model;
+package org.cgiar.ccafs.marlo.rest.dto;
 
 
-public class OneCGIARUnitTypes extends MarloAuditableEntity implements java.io.Serializable {
+public class OneCGIARUserDTO {
 
-  private static final long serialVersionUID = 2071137314799462986L;
+  private Long id;
+  private String name;
 
-  private String acronym;
-  private String description;
-
-  public String getAcronym() {
-    return acronym;
+  public Long getId() {
+    return id;
   }
 
-  public String getDescription() {
-    return description;
+  public String getName() {
+    return name;
   }
 
-  public void setAcronym(String acronym) {
-    this.acronym = acronym;
+  public void setId(Long id) {
+    this.id = id;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
+  public void setName(String name) {
+    this.name = name;
   }
-
-
 }

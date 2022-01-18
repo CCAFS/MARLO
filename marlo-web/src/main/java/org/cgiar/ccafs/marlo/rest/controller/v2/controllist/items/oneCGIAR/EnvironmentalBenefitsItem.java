@@ -20,7 +20,7 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR;
 
 import org.cgiar.ccafs.marlo.data.manager.OneCGIAREnvironmentalBenefitsManager;
-import org.cgiar.ccafs.marlo.data.model.OneCGIAREnvironmentalBenefits;
+import org.cgiar.ccafs.marlo.data.model.OneCGIAREnvironmentalBenefit;
 import org.cgiar.ccafs.marlo.rest.dto.EnvironmentalBenefitsDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.EnvironmentalBenefitsMapper;
 
@@ -53,7 +53,7 @@ public class EnvironmentalBenefitsItem<T> {
   }
 
   public ResponseEntity<List<EnvironmentalBenefitsDTO>> getAll() {
-    List<OneCGIAREnvironmentalBenefits> oneCGIAREnvironmentalBenefits =
+    List<OneCGIAREnvironmentalBenefit> oneCGIAREnvironmentalBenefits =
       this.oneCGIAREnvironmentalBenefitsManager.getAll();
 
     List<EnvironmentalBenefitsDTO> environmentalBenefitsDTOs =

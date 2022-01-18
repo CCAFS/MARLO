@@ -19,14 +19,13 @@
 
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.model.OneCGIAREnvironmentalBenefit;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARUser;
 
 import java.util.List;
 
-public interface OneCGIAREnvironmentalBenefitsManager {
+public interface OneCGIARUserManager {
 
-  public List<OneCGIAREnvironmentalBenefit> getAll();
+  public List<OneCGIARUser> getAll();
 
-  public OneCGIAREnvironmentalBenefit getOneCGIAREnvironmentalBenefitsById(long id);
-
+  public OneCGIARUser getOneCGIARUserById(long id);
 }

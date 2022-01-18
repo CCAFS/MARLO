@@ -19,14 +19,14 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.model.OneCGIAREnvironmentalBenefits;
+import org.cgiar.ccafs.marlo.data.model.OneCGIAREnvironmentalBenefit;
 
 import java.util.List;
 
 public interface OneCGIAREnvironmentalBenefitsDAO {
 
-  public List<OneCGIAREnvironmentalBenefits> getAll();
+  public List<OneCGIAREnvironmentalBenefit> getAll();
 
-  public OneCGIAREnvironmentalBenefits getOneCGIAREnvironmentalBenefitsById(long id);
+  public OneCGIAREnvironmentalBenefit getOneCGIAREnvironmentalBenefitsById(long id);
 
 }

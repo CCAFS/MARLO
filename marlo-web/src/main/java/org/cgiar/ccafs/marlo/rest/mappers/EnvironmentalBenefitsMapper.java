@@ -19,7 +19,7 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.OneCGIAREnvironmentalBenefits;
+import org.cgiar.ccafs.marlo.data.model.OneCGIAREnvironmentalBenefit;
 import org.cgiar.ccafs.marlo.rest.dto.EnvironmentalBenefitsDTO;
 
 import org.mapstruct.Mapper;
@@ -30,5 +30,5 @@ public interface EnvironmentalBenefitsMapper {
 
 
   public abstract EnvironmentalBenefitsDTO
-    oneCGIAREnvironmentBenefitsToEnvironmentBenefit(OneCGIAREnvironmentalBenefits oneCGIAREnvironmentalBenefits);
+    oneCGIAREnvironmentBenefitsToEnvironmentBenefit(OneCGIAREnvironmentalBenefit oneCGIAREnvironmentalBenefits);
 }

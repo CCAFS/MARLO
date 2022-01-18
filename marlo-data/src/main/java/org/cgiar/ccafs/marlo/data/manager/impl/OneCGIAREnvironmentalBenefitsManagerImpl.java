@@ -21,7 +21,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.OneCGIAREnvironmentalBenefitsDAO;
 import org.cgiar.ccafs.marlo.data.manager.OneCGIAREnvironmentalBenefitsManager;
-import org.cgiar.ccafs.marlo.data.model.OneCGIAREnvironmentalBenefits;
+import org.cgiar.ccafs.marlo.data.model.OneCGIAREnvironmentalBenefit;
 
 import java.util.List;
 
@@ -40,12 +40,12 @@ public class OneCGIAREnvironmentalBenefitsManagerImpl implements OneCGIAREnviron
   }
 
   @Override
-  public List<OneCGIAREnvironmentalBenefits> getAll() {
+  public List<OneCGIAREnvironmentalBenefit> getAll() {
     return oneCGIAREnvironmentalBenefitsDAO.getAll();
   }
 
   @Override
-  public OneCGIAREnvironmentalBenefits getOneCGIAREnvironmentalBenefitsById(long id) {
+  public OneCGIAREnvironmentalBenefit getOneCGIAREnvironmentalBenefitsById(long id) {
     return oneCGIAREnvironmentalBenefitsDAO.getOneCGIAREnvironmentalBenefitsById(id);
   }
 
