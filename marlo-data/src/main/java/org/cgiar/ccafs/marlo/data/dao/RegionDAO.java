@@ -56,6 +56,13 @@ public interface RegionDAO {
    */
   public List<Region> findAll();
 
+  /**
+   * This method gets a Region object by a given acronym.
+   * 
+   * @param acronym is the account acronym.
+   * @return a Region object.
+   */
+  public Region getRegionByAcronym(String acronym);
 
   /**
    * This method saves the information of the given Region
