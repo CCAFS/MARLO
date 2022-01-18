@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.oneCGIAR.Units
 import org.cgiar.ccafs.marlo.rest.dto.AccountTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.AccountsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewAccountDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewOneCGIARRegionsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewScienceGroupDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewUnitDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OneCGIARRegionTypeDTO;
@@ -119,6 +120,26 @@ public class OneCGIARControlList {
     return response;
   }
 
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Regions.POST.value}",
+    response = OneCGIARRegionsDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/regions", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> createRegion(
+    @ApiParam(value = "${CGIARControlList.Regions.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${CGIARControlList.Regions.POST.param.newRegion}",
+      required = true) @Valid @RequestBody NewOneCGIARRegionsDTO newRegionDTO) {
+
+    Long accountID = this.regionsItem.createRegion(newRegionDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(accountID, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Regions.GET.id.404"));
+    }
+
+    return response;
+  }
+
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.ScienceGroups.POST.value}",
     response = AccountsDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
@@ -176,6 +197,25 @@ public class OneCGIARControlList {
       this.accountsItem.deleteAccountByFinanceCode(financialCode, CGIAREntity, this.getCurrentUser());
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Accounts.code.404"));
+    }
+
+    return response;
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Regions.DELETE.value}",
+    response = OneCGIARRegionsDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/regions/{acronym}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<OneCGIARRegionsDTO> deleteRegionsByAcronym(
+    @ApiParam(value = "${CGIARControlList.Regions.DELETE.param.CGIAR.value}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${CGIARControlList.Regions.DELETE.param.id}", required = true) @PathVariable String acronym) {
+
+    ResponseEntity<OneCGIARRegionsDTO> response =
+      this.regionsItem.deleteRegionByAcronym(acronym, CGIAREntity, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Regions.code.404"));
     }
 
     return response;
@@ -341,6 +381,28 @@ public class OneCGIARControlList {
     ResponseEntity<Long> response = new ResponseEntity<Long>(accountId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Accounts.GET.id.404"));
+    }
+
+    return response;
+  }
+
+  @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Regions.PUT.value}",
+    response = OneCGIARRegionsDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/regions/{financialCode}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> putRegionByAcronym(
+    @ApiParam(value = "${CGIARControlList.Regions.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${CGIARControlList.Regions.PUT.acronym.value}",
+      required = true) @PathVariable String financeCode,
+    @ApiParam(value = "${CGIARControlList.Regions.PUT.param.newRegion}",
+      required = true) @Valid @RequestBody NewOneCGIARRegionsDTO newRegionDTO) {
+
+    Long regionId = this.regionsItem.putRegionByAcronym(financeCode, newRegionDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(regionId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("CGIARControlList.Regions.GET.id.404"));
     }
 
     return response;
