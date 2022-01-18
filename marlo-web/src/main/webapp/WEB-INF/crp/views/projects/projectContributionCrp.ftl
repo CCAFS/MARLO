@@ -796,8 +796,10 @@
         <th id="tb-type">[@s.text name="Youth" /]</th>
         <th id="tb-type">[@s.text name="total Participants" /]</th>
         <th id="tb-training-period">[@s.text name="Training Period" /]</th>
+        [#--  
         <th id="tb-training-period">[@s.text name="Event Focus" /]</th>
         <th id="tb-training-period">[@s.text name="Likely Outcomes" /]</th>
+        --]
       </tr>
     </thead>
     <tbody>
@@ -874,12 +876,16 @@
             [@utils.tableText value=(item.repIndTrainingTerm.name)!"" /]
           </td>
           [#-- Training period of time --]
+          [#--  
           <td class="text-center">
             [@utils.tableText value=(item.focus)!"" /]
           </td>
+          --]
           [#-- Training period of time --]
+          [#--  
           <td class="text-center">
             [@utils.tableText value=(item.likelyOutcomes)!"" /]
+            --]
           </td>
         </tr>
       [/#list]
