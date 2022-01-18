@@ -102,7 +102,7 @@ public class OneCGIARControlList {
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Accounts.POST.value}",
     response = AccountsDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/account", method = RequestMethod.POST,
+  @RequestMapping(value = "/{CGIAREntity}/accounts/create", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Long> createAccount(
     @ApiParam(value = "${CGIARControlList.Accounts.POST.param.CGIAR}",
@@ -123,7 +123,7 @@ public class OneCGIARControlList {
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Regions.POST.value}",
     response = OneCGIARRegionsDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/regions", method = RequestMethod.POST,
+  @RequestMapping(value = "/{CGIAREntity}/regions/create", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Long> createRegion(
     @ApiParam(value = "${CGIARControlList.Regions.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
@@ -143,7 +143,7 @@ public class OneCGIARControlList {
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.ScienceGroups.POST.value}",
     response = AccountsDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/scienceGroup", method = RequestMethod.POST,
+  @RequestMapping(value = "/{CGIAREntity}/science-groups/create", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Long> createScienceGroup(
     @ApiParam(value = "${CGIARControlList.ScienceGroups.POST.param.CGIAR}",
@@ -165,7 +165,7 @@ public class OneCGIARControlList {
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.POST.value}",
     response = AccountsDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/unit", method = RequestMethod.POST,
+  @RequestMapping(value = "/{CGIAREntity}/units/create", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Long> createUnit(
     @ApiParam(value = "${CGIARControlList.Units.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
@@ -224,7 +224,7 @@ public class OneCGIARControlList {
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.ScienceGroups.DELETE.value}",
     response = ScienceGroupDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/scienceGroups/{financialCode}", method = RequestMethod.DELETE,
+  @RequestMapping(value = "/{CGIAREntity}/science-groups/{financialCode}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<ScienceGroupDTO> deleteScienceGroupsByFinancialCode(
     @ApiParam(value = "${CGIARControlList.ScienceGroups.DELETE.param.CGIAR.value}",
@@ -366,17 +366,17 @@ public class OneCGIARControlList {
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Accounts.PUT.value}",
     response = AccountsDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/account/{financialCode}", method = RequestMethod.PUT,
+  @RequestMapping(value = "/{CGIAREntity}/accounts/edit/{financialCode}", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Long> putAccountByFinanceCode(
     @ApiParam(value = "${CGIARControlList.Accounts.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${CGIARControlList.Accounts.PUT.financialCode.value}",
-      required = true) @PathVariable String financeCode,
+      required = true) @PathVariable String financialCode,
     @ApiParam(value = "${CGIARControlList.Accounts.PUT.param.newAccount}",
       required = true) @Valid @RequestBody NewAccountDTO newAccountDTO) {
 
     Long accountId =
-      this.accountsItem.putAccountByFinanceCode(financeCode, newAccountDTO, CGIAREntity, this.getCurrentUser());
+      this.accountsItem.putAccountByFinanceCode(financialCode, newAccountDTO, CGIAREntity, this.getCurrentUser());
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(accountId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
@@ -389,16 +389,17 @@ public class OneCGIARControlList {
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Regions.PUT.value}",
     response = OneCGIARRegionsDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/regions/{financialCode}", method = RequestMethod.PUT,
+  @RequestMapping(value = "/{CGIAREntity}/regions/edit/{financialCode}", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Long> putRegionByAcronym(
     @ApiParam(value = "${CGIARControlList.Regions.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${CGIARControlList.Regions.PUT.acronym.value}",
-      required = true) @PathVariable String financeCode,
+      required = true) @PathVariable String financialCode,
     @ApiParam(value = "${CGIARControlList.Regions.PUT.param.newRegion}",
       required = true) @Valid @RequestBody NewOneCGIARRegionsDTO newRegionDTO) {
 
-    Long regionId = this.regionsItem.putRegionByAcronym(financeCode, newRegionDTO, CGIAREntity, this.getCurrentUser());
+    Long regionId =
+      this.regionsItem.putRegionByAcronym(financialCode, newRegionDTO, CGIAREntity, this.getCurrentUser());
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(regionId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
@@ -411,17 +412,17 @@ public class OneCGIARControlList {
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.ScienceGroups.PUT.value}",
     response = ScienceGroupDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/scienceGroup/{financialCode}", method = RequestMethod.PUT,
+  @RequestMapping(value = "/{CGIAREntity}/science-groups/edit/{financialCode}", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Long> putScienceGroupByFinanceCode(
     @ApiParam(value = "${CGIARControlList.ScienceGroups.PUT.param.CGIAR}",
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${CGIARControlList.ScienceGroups.PUT.financialCode.value}",
-      required = true) @PathVariable String financeCode,
+      required = true) @PathVariable String financialCode,
     @ApiParam(value = "${CGIARControlList.ScienceGroups.PUT.param.newScienceGroup}",
       required = true) @Valid @RequestBody NewScienceGroupDTO newScienceGroupDTO) {
 
-    Long scienceGroupId = this.scienceGroupItem.putScienceGroupByFinanceCode(financeCode, newScienceGroupDTO,
+    Long scienceGroupId = this.scienceGroupItem.putScienceGroupByFinanceCode(financialCode, newScienceGroupDTO,
       CGIAREntity, this.getCurrentUser());
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(scienceGroupId, HttpStatus.OK);
@@ -435,16 +436,16 @@ public class OneCGIARControlList {
   @ApiOperation(tags = {"All CGIAR Control Lists"}, value = "${CGIARControlList.Units.PUT.value}",
     response = UnitDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/unit/{financialCode}", method = RequestMethod.PUT,
+  @RequestMapping(value = "/{CGIAREntity}/units/edit/{financialCode}", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Long> putUnitByFinanceCode(
     @ApiParam(value = "${CGIARControlList.Units.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${CGIARControlList.Units.PUT.financialCode.value}",
-      required = true) @PathVariable String financeCode,
+      required = true) @PathVariable String financialCode,
     @ApiParam(value = "${CGIARControlList.Units.PUT.param.newUnit}",
       required = true) @Valid @RequestBody NewUnitDTO newUnitDTO) {
 
-    Long unitId = this.unitsItem.putUnitByFinanceCode(financeCode, newUnitDTO, CGIAREntity, this.getCurrentUser());
+    Long unitId = this.unitsItem.putUnitByFinanceCode(financialCode, newUnitDTO, CGIAREntity, this.getCurrentUser());
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(unitId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {

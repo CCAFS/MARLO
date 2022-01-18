@@ -128,6 +128,13 @@ public class RegionsItem<T> {
       // acronym check
       if (StringUtils.isBlank(newRegionDTO.getAcronym())) {
         fieldErrors.add(new FieldErrorDTO("createRegion", "Region", "Invalid acronym for an Region"));
+      } else {
+        Region possibleRegion =
+          this.regionsManager.getRegionByAcronym(StringUtils.trimToEmpty(newRegionDTO.getAcronym()));
+        if (possibleRegion != null) {
+          fieldErrors.add(new FieldErrorDTO("createRegion", "Region",
+            "A Region with the acronym " + StringUtils.trimToNull(newRegionDTO.getAcronym()) + " already exists."));
+        }
       }
 
       if (fieldErrors.isEmpty()) {
@@ -381,6 +388,16 @@ public class RegionsItem<T> {
       // acronym check
       if (StringUtils.isBlank(newRegionDTO.getAcronym())) {
         fieldErrors.add(new FieldErrorDTO("putRegionByAcronym", "Region", "Invalid acronym for an Region"));
+      } else {
+        if (!StringUtils.trimToEmpty(newRegionDTO.getAcronym())
+          .equalsIgnoreCase(StringUtils.trimToEmpty(financeCode))) {
+          Region possibleRegion =
+            this.regionsManager.getRegionByAcronym(StringUtils.trimToEmpty(newRegionDTO.getAcronym()));
+          if (possibleRegion != null) {
+            fieldErrors.add(new FieldErrorDTO("putRegionByAcronym", "Region",
+              "A Region with the acronym " + StringUtils.trimToNull(newRegionDTO.getAcronym()) + " already exists."));
+          }
+        }
       }
 
       if (fieldErrors.isEmpty()) {
