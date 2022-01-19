@@ -167,7 +167,7 @@
                 <h5 class="sectionSubTitle">Progress to Targets</h5>
                 <div class="form-group">
                   <div class="" id="baseline">
-                    <div class="form-group text-right">
+                    <div class="form-group text-right hide">
                       [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
                         <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a>
                         [#-- (projectOutcome.crpProgramOutcome.file.fileName)! --] 
@@ -256,7 +256,7 @@
                             <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
                             <div class="form-group">
                               <div class="" id="baseline">
-                                <div class="form-group text-right">
+                                <div class="form-group text-right hide">
                                   [#if (projectOutcomeLastPhase.crpProgramOutcome.file.fileName??)!false]
                                     <a href="${action.getBaseLineFileURL((projectOutcomeLastPhase.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcomeLastPhase.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a> 
                                   [#else]
@@ -290,7 +290,7 @@
                               <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
                               <div class="form-group">
                                 <div class="" id="baseline">
-                                  <div class="form-group text-right">
+                                  <div class="form-group text-right hide">
                                     [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
                                       <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a> 
                                     [#else]
@@ -328,7 +328,7 @@
                           <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
                           <div class="form-group">
                             <div class="" id="baseline">
-                              <div class="form-group text-left">
+                              <div class="form-group text-left hide">
                                 [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
                                   <p><b>Baseline Instructions:</b></p>
                                   <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a>
