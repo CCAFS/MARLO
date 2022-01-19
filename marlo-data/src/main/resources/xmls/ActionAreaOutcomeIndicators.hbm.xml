@@ -14,6 +14,10 @@
     <many-to-one name="outcomeIndicator"
       class="org.cgiar.ccafs.marlo.data.model.OutcomeIndicator" fetch="select">
       <column name="outcome_indicator_id" />
-    </many-to-one>  
+    </many-to-one> 
+     <many-to-one name="actionArea"
+      class="org.cgiar.ccafs.marlo.data.model.ActionArea" fetch="select">
+      <column name="action_area_id" />
+    </many-to-one>   
   </class>
 </hibernate-mapping>

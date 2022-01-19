@@ -14,11 +14,26 @@ public class RepIndInnovationType extends MarloBaseEntity implements java.io.Ser
   @Expose
   private String definition;
 
+  private Boolean isOneCGIAR;
+  private Boolean isMarlo;
+
+
   public RepIndInnovationType() {
   }
 
+
   public String getDefinition() {
     return this.definition;
+  }
+
+
+  public Boolean getIsMarlo() {
+    return isMarlo;
+  }
+
+
+  public Boolean getIsOneCGIAR() {
+    return isOneCGIAR;
   }
 
   public String getName() {
@@ -27,6 +42,14 @@ public class RepIndInnovationType extends MarloBaseEntity implements java.io.Ser
 
   public void setDefinition(String definition) {
     this.definition = definition;
+  }
+
+  public void setIsMarlo(Boolean isMarlo) {
+    this.isMarlo = isMarlo;
+  }
+
+  public void setIsOneCGIAR(Boolean isOneCGIAR) {
+    this.isOneCGIAR = isOneCGIAR;
   }
 
   public void setName(String name) {

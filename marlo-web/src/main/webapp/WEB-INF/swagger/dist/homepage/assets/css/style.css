@@ -1050,6 +1050,13 @@ section {
   margin-bottom: 15px;
   color: #1f3548;
 }
+.faqBtn {
+  cursor: pointer;
+  color: #5c768d !important;
+}
+.faqBtn:hover {
+  text-decoration: underline;
+}
 
 /*--------------------------------------------------------------
 # Contact Us

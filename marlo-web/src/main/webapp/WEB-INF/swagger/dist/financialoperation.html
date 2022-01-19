@@ -2044,7 +2044,122 @@
       </div>
       <div class="section" id="section5">
         <h1 class="title" data-aos="fade-up">Funding Sources</h1>
-        <h2 class="title">Coming Soon</h2>
+        <div class="bshadow" data-aos="fade-up">
+         <div class="container">
+             <div class="row">
+                <div class="col-12">
+                    <h2 class="title">methods</h2>
+                </div>
+             </div>
+          </div>
+         </div>
+          <!-- Method 5.1 -->
+        <div class="bshadow" data-aos="fade-up">
+          <div class="container">
+            <div class="row">
+              <div class="col-12">
+                <h2 class="title">methods</h2>
+                <div class="bshadow" data-aos="fade-up" id="section5-item1">
+                  <div class="getColorbackground contEndpoint">
+                    <button type="button" class="btn getColorbackground">GET</button> <span
+                      class="endpointTitle">/onecgiar-budget-types</span>
+                  </div>
+                  <div class="parameters">
+                  <h3>Functionality</h3>
+                    <div>Test funtionality</div>
+                    <h3>Parameters</h3>
+                    <div>No parameters</div>
+                    <table style="width: 70%">
+                      <thead>
+                        <tr>
+                          <th></th>     
+                        </tr>
+                      </thead>
+                      <tbody>        
+                        <tr>
+                          <td colspan="2">
+                            <div>
+                              <p><span><Strong>Request URL: </Strong></span></p>
+                              <div class="URLendpoint">
+                                <div class="fragCode">
+                                  <p><span class="endpoint"></span>/onecgiar-budget-types</p>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="container-c">
+                    <div class="row">
+                      <div class="col-12" style="margin-bottom: 20px;">
+                        <button onclick="fundingsources()" type="button"  data-bs-toggle="modal" data-bs-target="#fundingsourcesmodal" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
+                      </div>
+                      <div class="col-12">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="greenCode">200</span>: <span class="blueCode">OK</span> </p>
+                          </div>
+                          <pre><code>
+<span class="yellowCode">[</span>
+  <span class="yellowCode">{</span>
+    <span class="blueCode">"code"</span><span class="WhiteCode"> : "long",</span>
+    <span class="blueCode">"name"</span><span class="WhiteCode"> : "String",</span>
+    <span class="blueCode">"parent"</span><span class="WhiteCode"> : "String",</span>
+    <span class="blueCode">"financialCode"</span><span class="WhiteCode"> : "String"</span>
+  <span class="yellowCode">}</span>
+<span class="yellowCode">]</span>
+                          </code></pre> 
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">400</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Bad Request</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">401</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Unauthorized</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">403</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Forbidden</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">404</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Not Found</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="section" id="section6">
         <h1 class="title" data-aos="fade-up">Impact Areas</h1>      
@@ -2310,7 +2425,7 @@
     </div>
   </div>
 </div>
-
+<!-- Entity Types -->
 <div class="modal fade" id="exampleRequestModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-xl">
     <div class="modal-content">
@@ -2321,11 +2436,6 @@
         </button>
       </div> -->
       <div class="modal-body" >
-
-
-
-
-
         <table class="table dataTable" id="cgiar_entity_types" >
           <thead class="thead-dark">
             <tr >
@@ -2336,9 +2446,6 @@
           <tbody id="list-print-cgiar_entity_types">
           </tbody>
         </table>
-
-
-
         <div class="text-center">
           <div class="spinner-general " id="spinner_cgiar_entity_types">
             <div class="spinner-border   text-success" role="status">
@@ -2347,11 +2454,6 @@
             <h4 style="margin-top: 15px;">Loading...</h4>
           </div>
         </div>
-
-
-
-
-
       </div>
       <div  class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
@@ -2857,6 +2959,46 @@
         </table>
         <div class="text-center">
           <div class="spinner-general" id="spinner_accountTypes">
+            <div class="spinner-border   text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <h4 style="margin-top: 15px;">Loading...</h4>
+          </div>
+        </div>
+      </div>
+      <div  class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Funding sources -->
+<div class="modal fade" id="fundingsourcesmodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+    <div class="modal-content">
+      <!-- <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> -->
+      <div class="modal-body" >
+        <table class="table dataTable" id="fundingsources" >
+          <thead class="thead-dark">
+            <tr >
+              <td>Code</td>
+              <td>Name</td>
+              <td>parent</td>
+              <td>Financial Code</td>
+            </tr>
+          </thead>
+          <tbody id="list-print-fundingsources">
+          </tbody>
+        </table>
+        <div class="text-center">
+          <div class="spinner-general " id="spinner_fundingsources">
             <div class="spinner-border   text-success" role="status">
               <span class="sr-only">Loading...</span>
             </div>
