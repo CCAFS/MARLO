@@ -425,9 +425,11 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
   public ProjectOutcomeIndicator getIndicator(Long indicatorID) {
-    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
-      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
-        return projectOutcomeIndicator;
+    if (projectOutcome.getIndicators() != null) {
+      for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+        if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+          return projectOutcomeIndicator;
+        }
       }
     }
     ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
@@ -472,9 +474,12 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
   public ProjectOutcomeIndicator getPreIndicator(Long indicatorID) {
-    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
-      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
-        return projectOutcomeIndicator;
+    if (projectOutcome.getIndicators() != null) {
+      for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+        if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+          && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+          return projectOutcomeIndicator;
+        }
       }
     }
     ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
@@ -492,8 +497,12 @@ public class ProjectOutcomeAction extends BaseAction {
       ProjectOutcomeIndicator projectOutcomeIndicator = this.getPrevIndicator(indicatorID);
       int i = 0;
       for (ProjectOutcomeIndicator projectOutcomeIndicatorList : projectOutcomeLastPhase.getIndicators()) {
-        if (projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
-          .getCrpProgramOutcomeIndicator().getId().longValue()) {
+        if (projectOutcomeIndicator != null && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+          && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId() != null
+          && projectOutcomeIndicatorList != null && projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator() != null
+          && projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId() != null
+          && projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
+            .getCrpProgramOutcomeIndicator().getId().longValue()) {
           return i;
         }
         i++;
@@ -504,7 +513,8 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public ProjectOutcomeIndicator getPrevIndicator(Long indicatorID) {
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeLastPhase.getIndicators()) {
-      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+      if (projectOutcomeIndicator != null && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+        && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
         return projectOutcomeIndicator;
       }
     }
@@ -1209,9 +1219,14 @@ public class ProjectOutcomeAction extends BaseAction {
 
           } else {
             // Update existing entity
-            ProjectOutcomeIndicator projectOutcomeIndicatorDB =
-              projectOutcomeIndicatorManager.getProjectOutcomeIndicatorById(projectOutcomeIndicator.getId());
+            ProjectOutcomeIndicator projectOutcomeIndicatorDB = new ProjectOutcomeIndicator();
 
+            if (projectOutcomeIndicator != null && projectOutcomeIndicator.getId() != null
+              && projectOutcomeIndicatorManager
+                .getProjectOutcomeIndicatorById(projectOutcomeIndicator.getId()) != null) {
+              projectOutcomeIndicatorDB =
+                projectOutcomeIndicatorManager.getProjectOutcomeIndicatorById(projectOutcomeIndicator.getId());
+            }
             projectOutcomeIndicatorDB.setProjectOutcome(projectOutcomeDB);
 
             // update existing fields
@@ -1228,6 +1243,7 @@ public class ProjectOutcomeAction extends BaseAction {
               projectOutcomeIndicatorManager.saveProjectOutcomeIndicator(projectOutcomeIndicatorDB);
             // This add projectOutcomeIndicator to generate correct auditlog.
             projectOutcome.getProjectOutcomeIndicators().add(projectOutcomeIndicatorDB);
+
           }
 
 
