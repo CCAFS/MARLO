@@ -425,9 +425,11 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
   public ProjectOutcomeIndicator getIndicator(Long indicatorID) {
-    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
-      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
-        return projectOutcomeIndicator;
+    if (projectOutcome.getIndicators() != null) {
+      for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+        if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+          return projectOutcomeIndicator;
+        }
       }
     }
     ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
