@@ -54,6 +54,8 @@ public interface RepIndInnovationTypeDAO {
    */
   public List<RepIndInnovationType> findAll();
 
+  public List<RepIndInnovationType> oneCGIARFindAll();
+
 
   /**
    * This method saves the information of the given repIndInnovationType

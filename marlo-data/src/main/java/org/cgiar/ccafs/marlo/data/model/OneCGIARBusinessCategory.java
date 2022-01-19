@@ -20,28 +20,22 @@
 package org.cgiar.ccafs.marlo.data.model;
 
 
-public class OneCGIARUnitTypes extends MarloAuditableEntity implements java.io.Serializable {
+public class OneCGIARBusinessCategory extends MarloAuditableEntity implements java.io.Serializable {
 
-  private static final long serialVersionUID = 2071137314799462986L;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+  private String name;
 
-  private String acronym;
-  private String description;
 
-  public String getAcronym() {
-    return acronym;
+  public String getName() {
+    return name;
   }
 
-  public String getDescription() {
-    return description;
-  }
 
-  public void setAcronym(String acronym) {
-    this.acronym = acronym;
+  public void setName(String name) {
+    this.name = name;
   }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
 
 }
