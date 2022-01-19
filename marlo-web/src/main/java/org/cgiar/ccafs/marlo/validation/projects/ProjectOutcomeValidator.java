@@ -299,9 +299,10 @@ public class ProjectOutcomeValidator extends BaseValidator {
         }
       }
 
-      // IPI 2.3, IPI 3.1, IPI 3.2, IPI 3.4, IPI 3.5
-      if (programOutcome.contains("IPI 2.3") || programOutcome.contains("IPI 3.1") || programOutcome.contains("IPI 3.2")
-        || programOutcome.contains("IPI 3.4") || programOutcome.contains("IPI 3.5")) {
+      // IPI 2.1, 2.3, IPI 3.1, IPI 3.2, IPI 3.4, IPI 3.5
+      if (programOutcome.contains("IPI 2.1") || programOutcome.contains("IPI 2.3") || programOutcome.contains("IPI 3.1")
+        || programOutcome.contains("IPI 3.2") || programOutcome.contains("IPI 3.4")
+        || programOutcome.contains("IPI 3.5")) {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
         // if (action.isPlanningActive()) {
