@@ -13,8 +13,13 @@
 			class="org.cgiar.ccafs.marlo.data.model.InstitutionType" fetch="select">
 			<column name="institution_type_id" not-null="true" />
 		</many-to-one>
-	
-		
+	 <property name="is_parent" type="boolean">
+      <column name="is_parent" not-null="true" />
+    </property>
+		<many-to-one name="parent"
+      class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+      <column name="parent_id" not-null="true" />
+    </many-to-one>
 		<property name="name" type="string">
 			<column name="name" sql-type="TEXT" not-null="true" />
 		</property>

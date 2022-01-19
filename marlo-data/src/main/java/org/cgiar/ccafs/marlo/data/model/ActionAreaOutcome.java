@@ -27,13 +27,9 @@ public class ActionAreaOutcome extends MarloAuditableEntity implements java.io.S
   private static final long serialVersionUID = 1L;
   private String smoCode;
 
-  private ActionArea actionArea;
 
   private String outcomeStatement;
 
-  public ActionArea getActionArea() {
-    return actionArea;
-  }
 
   public String getOutcomeStatement() {
     return outcomeStatement;
@@ -43,9 +39,6 @@ public class ActionAreaOutcome extends MarloAuditableEntity implements java.io.S
     return smoCode;
   }
 
-  public void setActionArea(ActionArea actionArea) {
-    this.actionArea = actionArea;
-  }
 
   public void setOutcomeStatement(String outcomeStatement) {
     this.outcomeStatement = outcomeStatement;
