@@ -21,21 +21,23 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class BudgetTypeDTO {
 
-  @ApiModelProperty(notes = "Budget type ID")
+  @ApiModelProperty(notes = "Budget type ID", position = 1)
   @NotNull
   private Long code;
 
-  @ApiModelProperty(notes = "Budget type  name")
+  @ApiModelProperty(notes = "Budget type  name", position = 2)
   @NotNull
   private String name;
 
-  @ApiModelProperty(notes = "Budget type  description")
+  @ApiModelProperty(notes = "Budget type  description", position = 3)
   @NotNull
   private String description;
+
 
   public Long getCode() {
     return this.code;
   }
+
 
   public String getDescription() {
     return this.description;
@@ -53,8 +55,10 @@ public class BudgetTypeDTO {
     this.description = description;
   }
 
+
   public void setName(String name) {
     this.name = name;
   }
+
 
 }

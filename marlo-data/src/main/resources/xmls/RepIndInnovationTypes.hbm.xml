@@ -14,5 +14,12 @@
         <property name="definition" type="string">
             <column name="definition" sql-type="TEXT" />
         </property>
+        
+         <property name="isOneCGIAR" type="boolean">
+            <column name="is_onecgiar" not-null="true" />
+        </property>
+         <property name="isMarlo" type="boolean">
+            <column name="is_marlo" not-null="true"/>
+        </property>
     </class>
 </hibernate-mapping>

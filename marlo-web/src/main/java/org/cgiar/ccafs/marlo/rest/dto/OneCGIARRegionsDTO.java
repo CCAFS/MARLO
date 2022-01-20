@@ -34,8 +34,6 @@ public class OneCGIARRegionsDTO {
   @ApiModelProperty(notes = "Region Acronym", position = 3)
   private String acronym;
 
-  // @ApiModelProperty(notes = "Region Type Object", position = 4)
-  // private OneCGIARRegionTypeDTO regionType;
 
   @ApiModelProperty(notes = "Region Countries", position = 5)
   private List<CountryDTO> countries;

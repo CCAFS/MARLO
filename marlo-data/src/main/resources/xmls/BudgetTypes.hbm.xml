@@ -14,6 +14,18 @@
          <property name="description" type="string">
             <column name="description" sql-type="TEXT" />
         </property>
+         <property name="financialCode" type="string">
+            <column name="financial_code" sql-type="TEXT" />
+        </property>
+         <property name="parent" type="string">
+            <column name="parent" sql-type="TEXT" />
+        </property>
+         <property name="isMarlo" type="boolean">
+            <column name="isMarlo" not-null="true" />
+        </property>
+         <property name="isOneCGIAR" type="boolean">
+            <column name="isOneCGIAR" not-null="true" />
+        </property>
         <set name="projectBudgets" table="project_budgets" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="budget_type" not-null="true" />
