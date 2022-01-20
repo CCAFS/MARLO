@@ -25,7 +25,7 @@ import org.cgiar.ccafs.marlo.rest.dto.OneCGIARUserDTO;
 
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "jsr330", uses = {OneCGIARScienceGorupMapper.class})
+@Mapper(componentModel = "jsr330", uses = {OneCGIARScienceGroupMapper.class})
 public interface OneCGIARUsersMapper {
 
 
