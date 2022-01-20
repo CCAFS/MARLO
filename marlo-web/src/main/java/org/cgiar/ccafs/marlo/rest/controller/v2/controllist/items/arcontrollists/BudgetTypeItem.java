@@ -96,7 +96,7 @@ public class BudgetTypeItem<T> {
 
       // financeCode check
       if (StringUtils.isBlank(newBudgetTypeOneCGIARDTO.getFinancialCode())
-        || !StringUtils.startsWithIgnoreCase(newBudgetTypeOneCGIARDTO.getFinancialCode(), budgetTypeOneCGIARTypeId)) {
+        || !StringUtils.startsWithIgnoreCase(newBudgetTypeOneCGIARDTO.getFinancialCode(), "F")) {
         fieldErrors
           .add(new FieldErrorDTO("createBudgetTypeOneCGIAR", "BudgetType", "Invalid financial code for a BudgetType"));
       } else {
@@ -190,7 +190,7 @@ public class BudgetTypeItem<T> {
       budgetTypeOneCGIAR = this.budgetTypeManager.getBudgetTypeByFinancialCode(strippedId);
 
       if (budgetTypeOneCGIAR != null) {
-        if (budgetTypeOneCGIAR.getIsOneCGIAR()) {
+        if (!budgetTypeOneCGIAR.getIsMarlo()) {
           this.budgetTypeManager.deleteBudgetType(budgetTypeOneCGIAR.getId());
         } else {
           fieldErrors.add(new FieldErrorDTO("deleteBudgetTypeOneCGIARByFinanceCode", "BudgetType",
@@ -247,7 +247,7 @@ public class BudgetTypeItem<T> {
       budgetTypeOneCGIAR = this.budgetTypeManager.getBudgetTypeById(id);
 
       if (budgetTypeOneCGIAR != null) {
-        if (budgetTypeOneCGIAR.getIsOneCGIAR()) {
+        if (!budgetTypeOneCGIAR.getIsMarlo()) {
           this.budgetTypeManager.deleteBudgetType(budgetTypeOneCGIAR.getId());
         } else {
           fieldErrors.add(new FieldErrorDTO("deleteBudgetTypeOneCGIARById", "BudgetType",
@@ -376,7 +376,7 @@ public class BudgetTypeItem<T> {
         fieldErrors.add(new FieldErrorDTO("putBudgetTypeOneCGIARByFinanceCode", "BudgetType",
           "The budgetTypeOneCGIAR with financial code " + strippedId + " does not exist"));
       } else {
-        if (!budgetTypeOneCGIAR.getIsOneCGIAR()) {
+        if (budgetTypeOneCGIAR.getIsMarlo()) {
           fieldErrors.add(new FieldErrorDTO("putBudgetTypeOneCGIARByFinanceCode", "BudgetType",
             "A BudgetType used by MARLO cannot be edited"));
         }
@@ -388,7 +388,7 @@ public class BudgetTypeItem<T> {
 
       // financeCode check
       if (StringUtils.isBlank(newBudgetTypeOneCGIARDTO.getFinancialCode())
-        || !StringUtils.startsWithIgnoreCase(newBudgetTypeOneCGIARDTO.getFinancialCode(), budgetTypeOneCGIARTypeId)) {
+        || !StringUtils.startsWithIgnoreCase(newBudgetTypeOneCGIARDTO.getFinancialCode(), "F")) {
         fieldErrors.add(new FieldErrorDTO("putBudgetTypeOneCGIARByFinanceCode", "BudgetType",
           "Invalid financial code for a BudgetType"));
       } else {
@@ -482,7 +482,7 @@ public class BudgetTypeItem<T> {
         fieldErrors.add(new FieldErrorDTO("putBudgetTypeOneCGIARById", "BudgetTypeOneCGIAR",
           "The budgetTypeOneCGIAR with id " + idBudgetTypeOneCGIAR + " does not exist"));
       } else {
-        if (!budgetTypeOneCGIAR.getIsOneCGIAR()) {
+        if (budgetTypeOneCGIAR.getIsMarlo()) {
           fieldErrors.add(new FieldErrorDTO("putBudgetTypeOneCGIARById", "BudgetType",
             "A BudgetType used by MARLO cannot be edited"));
         }
@@ -494,7 +494,7 @@ public class BudgetTypeItem<T> {
 
       // financeCode check
       if (StringUtils.isBlank(newBudgetTypeOneCGIARDTO.getFinancialCode())
-        || !StringUtils.startsWithIgnoreCase(newBudgetTypeOneCGIARDTO.getFinancialCode(), budgetTypeOneCGIARTypeId)) {
+        || !StringUtils.startsWithIgnoreCase(newBudgetTypeOneCGIARDTO.getFinancialCode(), "F")) {
         fieldErrors
           .add(new FieldErrorDTO("putBudgetTypeOneCGIARById", "BudgetType", "Invalid financial code for a BudgetType"));
       } else {
