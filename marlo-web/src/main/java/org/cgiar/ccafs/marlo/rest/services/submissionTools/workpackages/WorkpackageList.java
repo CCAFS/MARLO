@@ -28,14 +28,14 @@ public class WorkpackageList implements Serializable {
    * 
    */
   private static final long serialVersionUID = 1L;
-  private List<Workpackage> workpackage;
+  private List<Workpackage> workpackages;
 
-  public List<Workpackage> getWorkpackage() {
-    return workpackage;
+  public List<Workpackage> getWorkpackages() {
+    return workpackages;
   }
 
-  public void setWorkpackage(List<Workpackage> workpackage) {
-    this.workpackage = workpackage;
+  public void setWorkpackages(List<Workpackage> workpackages) {
+    this.workpackages = workpackages;
   }
 
 
