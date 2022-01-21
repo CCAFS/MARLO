@@ -108,6 +108,13 @@ public class RepIndInnovationTypeManagerImpl implements RepIndInnovationTypeMana
   }
 
   @Override
+  public List<RepIndInnovationType> oneCGIARFindAll() {
+
+    return repIndInnovationTypeDAO.oneCGIARFindAll();
+
+  }
+
+  @Override
   public RepIndInnovationType saveRepIndInnovationType(RepIndInnovationType repIndInnovationType) {
 
     return repIndInnovationTypeDAO.save(repIndInnovationType);

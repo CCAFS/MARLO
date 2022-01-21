@@ -21,11 +21,21 @@ public class BudgetType extends MarloBaseEntity implements java.io.Serializable,
   @Expose
   private String description;
 
+  @Expose
+  private String financialCode;
+
+  private String parent;
+
+  private Boolean isMarlo;
+
+  private Boolean IsOneCGIAR;
+
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
 
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
+
 
   @Override
   public boolean equals(Object obj) {
@@ -49,12 +59,29 @@ public class BudgetType extends MarloBaseEntity implements java.io.Serializable,
     return true;
   }
 
+
   public String getDescription() {
     return description;
   }
 
+
+  public String getFinancialCode() {
+    return financialCode;
+  }
+
+
   public Set<FundingSource> getFundingSources() {
     return fundingSources;
+  }
+
+
+  public Boolean getIsMarlo() {
+    return isMarlo;
+  }
+
+
+  public Boolean getIsOneCGIAR() {
+    return IsOneCGIAR;
   }
 
   @Override
@@ -66,6 +93,7 @@ public class BudgetType extends MarloBaseEntity implements java.io.Serializable,
 
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -82,6 +110,10 @@ public class BudgetType extends MarloBaseEntity implements java.io.Serializable,
 
   public String getName() {
     return name;
+  }
+
+  public String getParent() {
+    return parent;
   }
 
   public Set<ProjectBudget> getProjectBudgets() {
@@ -106,8 +138,20 @@ public class BudgetType extends MarloBaseEntity implements java.io.Serializable,
     this.description = decription;
   }
 
+  public void setFinancialCode(String financialCode) {
+    this.financialCode = financialCode;
+  }
+
   public void setFundingSources(Set<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
+  }
+
+  public void setIsMarlo(Boolean isMarlo) {
+    this.isMarlo = isMarlo;
+  }
+
+  public void setIsOneCGIAR(Boolean isOneCGIAR) {
+    IsOneCGIAR = isOneCGIAR;
   }
 
   @Override
@@ -117,6 +161,10 @@ public class BudgetType extends MarloBaseEntity implements java.io.Serializable,
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setParent(String parent) {
+    this.parent = parent;
   }
 
   public void setProjectBudgets(Set<ProjectBudget> projectBudgets) {

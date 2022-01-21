@@ -20,7 +20,7 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.OneCGIARUnit;
-import org.cgiar.ccafs.marlo.data.model.OneCGIARUnitTypes;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARUnitType;
 import org.cgiar.ccafs.marlo.rest.dto.ParentDTO;
 import org.cgiar.ccafs.marlo.rest.dto.UnitDTO;
 import org.cgiar.ccafs.marlo.rest.dto.UnitTypeDTO;
@@ -41,6 +41,6 @@ public interface OneCGIARUnitMapper {
   public abstract UnitDTO oneCGIARUnitToUnitDTO(OneCGIARUnit oneCGIARUnit);
 
   @Mapping(source = "id", target = "code")
-  public abstract UnitTypeDTO oneCGIARUnitTypesToUnitTypeDTO(OneCGIARUnitTypes unitType);
+  public abstract UnitTypeDTO oneCGIARUnitTypesToUnitTypeDTO(OneCGIARUnitType unitType);
 
 }

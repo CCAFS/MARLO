@@ -27,15 +27,23 @@ public class ActionAreaOutcomeIndicator extends MarloAuditableEntity implements 
   private static final long serialVersionUID = 1L;
   public ActionAreaOutcome actionAreaOutcome;
   private OutcomeIndicator outcomeIndicator;
+  private ActionArea actionArea;
 
+  public ActionArea getActionArea() {
+    return actionArea;
+  }
 
   public ActionAreaOutcome getActionAreaOutcome() {
     return actionAreaOutcome;
   }
 
-
   public OutcomeIndicator getOutcomeIndicator() {
     return outcomeIndicator;
+  }
+
+
+  public void setActionArea(ActionArea actionArea) {
+    this.actionArea = actionArea;
   }
 
 
