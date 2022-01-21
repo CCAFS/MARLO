@@ -96,8 +96,8 @@ public class WorkpackagesItem<T> {
         response = new Gson().fromJson(json, Response.class);
         if (response.getResponse() != null) {
           WorkpackageList workpackageList = response.getResponse();
-          if (workpackageList.getWorkpackage() != null) {
-            workpackageListDTO = workpackageList.getWorkpackage().stream()
+          if (workpackageList.getWorkpackages() != null) {
+            workpackageListDTO = workpackageList.getWorkpackages().stream()
               .map(init -> this.WorkpackagesMapper.workpackageToWorkPackagesDTO(init)).collect(Collectors.toList());
           }
 
