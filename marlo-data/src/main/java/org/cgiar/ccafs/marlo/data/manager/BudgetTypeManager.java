@@ -51,6 +51,8 @@ public interface BudgetTypeManager {
    */
   public List<BudgetType> findAll();
 
+  public List<BudgetType> findAllFundingSourcesCGIAR();
+
 
   /**
    * This method gets a budgetType object by a given budgetType identifier.

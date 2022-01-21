@@ -54,7 +54,6 @@ public interface RepIndInnovationTypeManager {
    */
   public List<RepIndInnovationType> findAll();
 
-
   /**
    * This method gets a list of ReportSynthesisInnovationsByTypeDTO from a given innovation list:
    * List of Innovations grouped by Type
@@ -64,6 +63,7 @@ public interface RepIndInnovationTypeManager {
   public List<ReportSynthesisInnovationsByTypeDTO>
     getInnovationsByTypeDTO(List<ProjectInnovation> selectedProjectInnovations, Phase phase);
 
+
   /**
    * This method gets a repIndInnovationType object by a given repIndInnovationType identifier.
    * 
@@ -71,6 +71,8 @@ public interface RepIndInnovationTypeManager {
    * @return a RepIndInnovationType object.
    */
   public RepIndInnovationType getRepIndInnovationTypeById(long repIndInnovationTypeID);
+
+  public List<RepIndInnovationType> oneCGIARFindAll();
 
 
   /**
