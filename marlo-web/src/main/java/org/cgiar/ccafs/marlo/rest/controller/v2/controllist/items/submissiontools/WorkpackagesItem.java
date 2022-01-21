@@ -92,7 +92,7 @@ public class WorkpackagesItem<T> {
     String url = config.getUrlSubmissionTools();
     if (url != null) {
       try {
-        JsonElement json = this.getSubmissionElement(url + "stages-control/proposal/packages");
+        JsonElement json = this.getSubmissionElement(url + "previews/packages");
         response = new Gson().fromJson(json, Response.class);
         if (response.getResponse() != null) {
           WorkpackageList workpackageList = response.getResponse();
