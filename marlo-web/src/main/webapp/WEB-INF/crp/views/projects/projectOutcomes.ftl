@@ -3,8 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectOutcomes.js", 
-  "${baseUrlCdn}/global/js/autoSave.js", 
+  "${baseUrlMedia}/js/projects/projectOutcomes.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
