@@ -19,28 +19,21 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.OneCGIARUnit;
-import org.cgiar.ccafs.marlo.data.model.OneCGIARUnitType;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARScienceGroup;
 import org.cgiar.ccafs.marlo.rest.dto.ParentDTO;
-import org.cgiar.ccafs.marlo.rest.dto.UnitDTO;
-import org.cgiar.ccafs.marlo.rest.dto.UnitTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ScienceGroupDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330", uses = {OneCGIARScienceGroupMapper.class})
-public interface OneCGIARUnitMapper {
+@Mapper(componentModel = "jsr330")
+public interface OneCGIARScienceGroupMapper {
 
+  @Mappings({@Mapping(source = "id", target = "code"), @Mapping(source = "description", target = "description")})
+  public abstract ParentDTO oneCGIARScienceGroupToParentDTO(OneCGIARScienceGroup oneCGIARScienceGroup);
 
-  @Mapping(source = "id", target = "code")
-  public abstract ParentDTO oneCGIARUnitToParentDTO(OneCGIARUnit oneCGIARUnit);
-
-  @Mappings({@Mapping(source = "id", target = "code"), @Mapping(source = "parentUnit", target = "parent"),
-    @Mapping(source = "oneCGIARUnitType", target = "unitType")})
-  public abstract UnitDTO oneCGIARUnitToUnitDTO(OneCGIARUnit oneCGIARUnit);
-
-  @Mapping(source = "id", target = "code")
-  public abstract UnitTypeDTO oneCGIARUnitTypesToUnitTypeDTO(OneCGIARUnitType unitType);
+  @Mappings({@Mapping(source = "id", target = "code"), @Mapping(source = "parentScienceGroup", target = "parent")})
+  public abstract ScienceGroupDTO oneCGIARScienceGroupToScienceGroupDTO(OneCGIARScienceGroup oneCGIARScienceGroup);
 
 }

@@ -13,35 +13,64 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+package org.cgiar.ccafs.marlo.rest.dto;
+
+
 /**************
- * @author Diego Perez - CIAT/CCAFS
+ * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.data.model;
+public class NewUnitDTO {
 
-
-public class OneCGIARUnitType extends MarloAuditableEntity implements java.io.Serializable {
-
-  private static final long serialVersionUID = 2071137314799462986L;
-
-  private String acronym;
   private String description;
 
-  public String getAcronym() {
-    return acronym;
-  }
+  private String financialCode;
+
+  private String unitTypeCode;
+
+  private String parentCode;
+
+  private String scienceGroupCode;
+
 
   public String getDescription() {
     return description;
   }
 
-  public void setAcronym(String acronym) {
-    this.acronym = acronym;
+  public String getFinancialCode() {
+    return financialCode;
   }
+
+  public String getParentCode() {
+    return parentCode;
+  }
+
+  public String getScienceGroupCode() {
+    return scienceGroupCode;
+  }
+
+  public String getUnitTypeCode() {
+    return unitTypeCode;
+  }
+
 
   public void setDescription(String description) {
     this.description = description;
   }
 
+  public void setFinancialCode(String financialCode) {
+    this.financialCode = financialCode;
+  }
 
+  public void setParentCode(String parentCode) {
+    this.parentCode = parentCode;
+  }
+
+  public void setScienceGroupCode(String scienceGroupCode) {
+    this.scienceGroupCode = scienceGroupCode;
+  }
+
+  public void setUnitTypeCode(String unitTypeCode) {
+    this.unitTypeCode = unitTypeCode;
+  }
 }

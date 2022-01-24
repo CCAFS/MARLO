@@ -39,6 +39,27 @@ public class OneCGIARAccountMySQLDAO extends AbstractMarloDAO<OneCGIARAccount, L
   }
 
   @Override
+  public void deleteOneCGIARAccount(long oneCGIARAccountId) {
+    /*
+     * OneCGIARAccount oneCGIARAccount = this.getAccountById(oneCGIARAccountId);
+     * oneCGIARAccount.setActive(false);
+     * this.save(oneCGIARAccount);
+     */
+    OneCGIARAccount oneCGIARAccount = this.getAccountById(oneCGIARAccountId);
+    this.delete(oneCGIARAccount);
+  }
+
+  @Override
+  public boolean existOneCGIARAccount(long oneCGIARAccountID) {
+    OneCGIARAccount oneCGIARAccount = this.getAccountById(oneCGIARAccountID);
+    if (oneCGIARAccount == null) {
+      return false;
+    }
+    return true;
+
+  }
+
+  @Override
   public OneCGIARAccount getAccountByFinancialCode(String financialCode) {
     String query = "select oca from OneCGIARAccount oca where financialCode = :financialCode";
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
@@ -86,6 +107,16 @@ public class OneCGIARAccountMySQLDAO extends AbstractMarloDAO<OneCGIARAccount, L
       return list;
     }
     return null;
+  }
+
+  @Override
+  public OneCGIARAccount save(OneCGIARAccount oneCGIARAccount) {
+    if (oneCGIARAccount.getId() == null) {
+      super.saveEntity(oneCGIARAccount);
+    } else {
+      oneCGIARAccount = super.update(oneCGIARAccount);
+    }
+    return oneCGIARAccount;
   }
 
 }

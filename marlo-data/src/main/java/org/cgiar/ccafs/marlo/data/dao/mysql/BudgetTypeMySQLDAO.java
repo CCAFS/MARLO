@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -77,6 +78,19 @@ public class BudgetTypeMySQLDAO extends AbstractMarloDAO<BudgetType, Long> imple
       return list;
     }
     return null;
+  }
+
+  @Override
+  public BudgetType getBudgetTypeByFinancialCode(String financialCode) {
+    String query = "select bt from BudgetType bt where financialCode = :financialCode";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("financialCode", financialCode);
+
+    List<BudgetType> results = super.findAll(createQuery);
+
+    BudgetType budgetType = (results != null && !results.isEmpty()) ? results.get(0) : null;
+
+    return budgetType;
   }
 
   @Override

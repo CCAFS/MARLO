@@ -25,7 +25,52 @@ import java.util.List;
 
 public interface ImpactAreasManager {
 
+  /**
+   * This method removes a specific impactArea value from the database.
+   * 
+   * @param impactAreaId is the impactArea identifier.
+   * @return true if the impactArea was successfully deleted, false otherwise.
+   */
+  public void deleteImpactArea(Long impactAreaId);
+
+  /**
+   * This method validate if the impactArea identify with the given id exists in the system.
+   * 
+   * @param impactAreaID is a impactArea identifier.
+   * @return true if the impactArea exists, false otherwise.
+   */
+  public boolean existImpactArea(Long impactAreaID);
+
+  /**
+   * This method gets a list of impactArea that are active
+   * 
+   * @return a list from ImpactArea; null if no records exists
+   */
   public List<ImpactArea> getAll();
 
-  public ImpactArea getImpactAreaById(long id);
+  /**
+   * This method gets a ImpactArea object by a given financialCode identifier.
+   * 
+   * @param financialCode is the impactArea financialCode identifier.
+   * @return a ImpactArea object.
+   */
+  public ImpactArea getImpactAreaByFinancialCode(String financialCode);
+
+  /**
+   * This method gets a ImpactArea object by a given identifier.
+   * 
+   * @param id is the impactArea identifier.
+   * @return a ImpactArea object.
+   */
+  public ImpactArea getImpactAreaById(Long id);
+
+  /**
+   * This method saves the information of the given impactArea
+   * 
+   * @param impactArea - is the impactArea object with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the impactArea was
+   *         updated
+   *         or -1 is some error occurred.
+   */
+  public ImpactArea save(ImpactArea impactArea);
 }

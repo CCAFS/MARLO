@@ -40,6 +40,16 @@ public class OneCGIARAccountManagerImpl implements OneCGIARAccountManager {
   }
 
   @Override
+  public void deleteOneCGIARAccount(Long oneCGIARAccountId) {
+    this.oneCGIARAccountDAO.deleteOneCGIARAccount(oneCGIARAccountId.longValue());
+  }
+
+  @Override
+  public boolean existOneCGIARAccount(Long oneCGIARAccountID) {
+    return this.oneCGIARAccountDAO.existOneCGIARAccount(oneCGIARAccountID.longValue());
+  }
+
+  @Override
   public OneCGIARAccount getAccountByFinancialCode(String financialCode) {
     return this.oneCGIARAccountDAO.getAccountByFinancialCode(financialCode);
   }
@@ -62,6 +72,11 @@ public class OneCGIARAccountManagerImpl implements OneCGIARAccountManager {
   @Override
   public List<OneCGIARAccount> getAll() {
     return this.oneCGIARAccountDAO.getAll();
+  }
+
+  @Override
+  public OneCGIARAccount save(OneCGIARAccount oneCGIARAccount) {
+    return this.oneCGIARAccountDAO.save(oneCGIARAccount);
   }
 
 }

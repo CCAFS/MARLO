@@ -56,6 +56,14 @@ public interface BudgetTypeDAO {
 
   public List<BudgetType> findAllFundingSourcesCGIAR();
 
+  /**
+   * This method gets a BudgetType object by a given financialCode identifier.
+   * 
+   * @param financialCode is the account financialCode identifier.
+   * @return a BudgetType object.
+   */
+  public BudgetType getBudgetTypeByFinancialCode(String financialCode);
+
 
   /**
    * This method saves the information of the given budgetType
