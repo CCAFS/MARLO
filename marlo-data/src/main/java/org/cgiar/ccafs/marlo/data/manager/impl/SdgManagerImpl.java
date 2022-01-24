@@ -33,7 +33,6 @@ public class SdgManagerImpl implements SdgManager {
 
   private SdgDAO sdgDAO;
 
-
   @Inject
   public SdgManagerImpl(SdgDAO sdgDAO) {
     super();
@@ -41,13 +40,38 @@ public class SdgManagerImpl implements SdgManager {
   }
 
   @Override
-  public List<Sdg> findAll() {
-    return sdgDAO.findAll();
+  public void deleteSdg(Long sdgId) {
+    this.sdgDAO.deleteSdg(sdgId.longValue());
   }
 
   @Override
-  public Sdg getSDGById(Long id) {
-    return sdgDAO.getSDGById(id);
+  public boolean existSdg(Long sdgID) {
+    return this.sdgDAO.existSdg(sdgID.longValue());
+  }
+
+  @Override
+  public List<Sdg> getAll() {
+    return this.sdgDAO.getAll();
+  }
+
+  @Override
+  public Sdg getSdgByFinancialCode(String financialCode) {
+    return this.sdgDAO.getSdgByFinancialCode(financialCode);
+  }
+
+  @Override
+  public Sdg getSdgById(Long id) {
+    return this.sdgDAO.getSdgById(id.longValue());
+  }
+
+  @Override
+  public Sdg getSdgBySmoCode(String smoCode) {
+    return this.sdgDAO.getSdgBySmoCode(smoCode);
+  }
+
+  @Override
+  public Sdg save(Sdg sdg) {
+    return this.sdgDAO.save(sdg);
   }
 
 }

@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 import org.cgiar.ccafs.marlo.data.manager.RestApiAuditlogManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.RestApiAuditlog;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.BroadAreaItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.BudgetTypeItem;
@@ -49,6 +50,7 @@ import org.cgiar.ccafs.marlo.rest.dto.CrpGeoLocationMapDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.MaturityOfChangeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.MilestoneStatusDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewBudgetTypeOneCGIARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OrganizationTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PartnershipMainAreaDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PolicyInvestmentTypeDTO;
@@ -66,6 +68,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -83,6 +86,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -98,6 +102,9 @@ import springfox.documentation.annotations.ApiIgnore;
 public class ARControlLists {
 
   private static final Logger LOG = LoggerFactory.getLogger(ARControlLists.class);
+
+  private final UserManager userManager;
+
   private CrossCuttingMarkerScoreItem<ARControlLists> crossCuttingMarkerScoreItem;
   private CrossCuttingMarkerItem<ARControlLists> crossCuttingMarkerItem;
   private InnovationTypeItem<ARControlLists> innovationTypesItem;
@@ -113,7 +120,7 @@ public class ARControlLists {
   private StudyTypeItem<ARControlLists> studyTypeItem;
   private TagItem<ARControlLists> tagItem;
   private PartnershipMainAreaItem<ARControlLists> partnershipMainAreaItem;
-  private BudgetTypeItem<ARControlLists> bugdetTypeItem;
+  private BudgetTypeItem<ARControlLists> budgetTypeItem;
   private BroadAreaItem<ARControlLists> broadAreaItem;
   private StatusOfResponseItem<ARControlLists> statusOfResponseItem;
   private MilestoneStatusItem<ARControlLists> milestoneStatusItem;
@@ -157,13 +164,56 @@ public class ARControlLists {
     this.tagItem = tagItem;
     this.studyTypeItem = studyTypeItem;
     this.partnershipMainAreaItem = partnershipMainAreaItem;
-    this.bugdetTypeItem = bugdetTypeItem;
+    this.budgetTypeItem = bugdetTypeItem;
     this.broadAreaItem = broadAreaItem;
     this.statusOfResponseItem = statusOfResponseItem;
     this.milestoneStatusItem = milestoneStatusItem;
     this.restApiAuditlogManager = restApiAuditlogManager;
     this.userManager = userManager;
     this.crpGeoLocationMapItem = crpGeoLocationMapItem;
+    this.userManager = userManager;
+  }
+
+  @ApiOperation(tags = {"${ARControlLists.budget-types.all.value}"},
+    value = "${ARControlLists.budget-types.POST.value}", response = BudgetTypeOneCGIARDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/budget-types/create", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> createBudgetType(
+    @ApiParam(value = "${ARControlLists.budget-types.POST.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ARControlLists.budget-types.POST.param.newBudgetType}",
+      required = true) @Valid @RequestBody NewBudgetTypeOneCGIARDTO newBudgetTypeDTO) {
+
+    Long budgetTypeID =
+      this.budgetTypeItem.createBudgetTypeOneCGIAR(newBudgetTypeDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(budgetTypeID, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("ARControlLists.budget-types.GET.id.404"));
+    }
+
+    return response;
+  }
+
+  @ApiOperation(tags = {"${ARControlLists.budget-types.all.value}"},
+    value = "${ARControlLists.budget-types.DELETE.value}", response = BudgetTypeOneCGIARDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/budget-types/{financialCode}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<BudgetTypeOneCGIARDTO> deleteBudgetTypesByFinancialCode(
+    @ApiParam(value = "${ARControlLists.budget-types.DELETE.param.CGIAR.value}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ARControlLists.budget-types.DELETE.param.id}",
+      required = true) @PathVariable String financialCode) {
+
+    ResponseEntity<BudgetTypeOneCGIARDTO> response =
+      this.budgetTypeItem.deleteBudgetTypeOneCGIARByFinanceCode(financialCode, CGIAREntity, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("ARControlLists.budget-types.code.404"));
+    }
+
+    return response;
   }
 
   /**
@@ -201,7 +251,7 @@ public class ARControlLists {
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<BudgetTypeDTO> findBudgetTypeById(
     @ApiParam(value = "${ARControlLists.budget-types.code.param.code}", required = true) @PathVariable Long code) {
-    ResponseEntity<BudgetTypeDTO> response = this.bugdetTypeItem.findBudgetTypeById(code);
+    ResponseEntity<BudgetTypeDTO> response = this.budgetTypeItem.findBudgetTypeById(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("ARControlLists.budget-types.code.404"));
     }
@@ -293,6 +343,7 @@ public class ARControlLists {
     }
     return response;
   }
+
 
   /**
    * Find a Maturity of Change requesting by id
@@ -626,7 +677,7 @@ public class ARControlLists {
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/budget-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<BudgetTypeDTO> getAllBudgerTypes() {
-    return this.bugdetTypeItem.getAllBudgetTypes();
+    return this.budgetTypeItem.getAllBudgetTypes();
   }
 
   @ApiIgnore
@@ -636,7 +687,7 @@ public class ARControlLists {
   @RequestMapping(value = "/onecgiar-budget-types", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<BudgetTypeOneCGIARDTO> getAllBudgetTypesCGIAR() {
-    return this.bugdetTypeItem.getAllBudgetTypesCGIAR();
+    return this.budgetTypeItem.getAllBudgetTypesCGIAR();
   }
 
   /**
@@ -944,6 +995,30 @@ public class ARControlLists {
     Long principal = (Long) subject.getPrincipal();
     User user = this.userManager.getUser(principal);
     return user;
+  }
+
+  @ApiOperation(tags = {"${ARControlLists.budget-types.all.value}"}, value = "${ARControlLists.budget-types.PUT.value}",
+    response = BudgetTypeOneCGIARDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/budget-types/edit/{financialCode}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> putBudgetTypeByFinanceCode(
+    @ApiParam(value = "${ARControlLists.budget-types.PUT.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ARControlLists.budget-types.PUT.financialCode.value}",
+      required = true) @PathVariable String financialCode,
+    @ApiParam(value = "${ARControlLists.budget-types.PUT.param.newBudgetType}",
+      required = true) @Valid @RequestBody NewBudgetTypeOneCGIARDTO newBudgetTypeDTO) {
+
+    Long budgetTypeId = this.budgetTypeItem.putBudgetTypeOneCGIARByFinanceCode(financialCode, newBudgetTypeDTO,
+      CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(budgetTypeId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("ARControlLists.budget-types.GET.id.404"));
+    }
+
+    return response;
   }
 
 }

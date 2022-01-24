@@ -64,6 +64,11 @@ public class RegionsManagerImpl implements RegionsManager {
   }
 
   @Override
+  public Region getRegionByAcronym(String acronym) {
+    return regionDAO.getRegionByAcronym(acronym);
+  }
+
+  @Override
   public Region save(Region region) {
 
     return regionDAO.save(region);

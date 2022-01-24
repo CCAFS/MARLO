@@ -13,25 +13,55 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+package org.cgiar.ccafs.marlo.rest.dto;
+
+
 /**************
- * @author Diego Perez - CIAT/CCAFS
+ * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+public class NewAccountDTO {
 
-import org.cgiar.ccafs.marlo.data.model.OneCGIARUser;
-import org.cgiar.ccafs.marlo.rest.dto.BeneficiariesDTO;
-import org.cgiar.ccafs.marlo.rest.dto.OneCGIARUserDTO;
+  private String description;
 
-import org.mapstruct.Mapper;
+  private String financialCode;
 
-@Mapper(componentModel = "jsr330", uses = {OneCGIARScienceGroupMapper.class})
-public interface OneCGIARUsersMapper {
+  private String accountTypeCode;
+
+  private String parentCode;
 
 
-  public abstract BeneficiariesDTO oneCGIARUserToBeneficiariesDTO(OneCGIARUser oneCGIARUser);
+  public String getAccountTypeCode() {
+    return accountTypeCode;
+  }
 
-  public abstract OneCGIARUserDTO oneCGIARUserToOneCGIARUserDTO(OneCGIARUser oneCGIARUser);
+  public String getDescription() {
+    return description;
+  }
 
+  public String getFinancialCode() {
+    return financialCode;
+  }
+
+  public String getParentCode() {
+    return parentCode;
+  }
+
+
+  public void setAccountTypeCode(String accountTypeCode) {
+    this.accountTypeCode = accountTypeCode;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public void setFinancialCode(String financialCode) {
+    this.financialCode = financialCode;
+  }
+
+  public void setParentCode(String parentCode) {
+    this.parentCode = parentCode;
+  }
 
 }

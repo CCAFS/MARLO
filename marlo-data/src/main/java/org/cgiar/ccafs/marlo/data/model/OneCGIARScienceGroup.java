@@ -23,19 +23,12 @@ import java.io.Serializable;
 
 public class OneCGIARScienceGroup extends MarloAuditableEntity implements Serializable {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 1L;
-
-  public static long getSerialversionuid() {
-    return serialVersionUID;
-  }
 
   private String financialCode;
   private String description;
 
-  private OneCGIARScienceGroup parentCode;
+  private OneCGIARScienceGroup parentScienceGroup;
 
 
   public String getDescription() {
@@ -46,8 +39,8 @@ public class OneCGIARScienceGroup extends MarloAuditableEntity implements Serial
     return financialCode;
   }
 
-  public OneCGIARScienceGroup getParentCode() {
-    return parentCode;
+  public OneCGIARScienceGroup getParentScienceGroup() {
+    return parentScienceGroup;
   }
 
 
@@ -59,9 +52,8 @@ public class OneCGIARScienceGroup extends MarloAuditableEntity implements Serial
     this.financialCode = financialCode;
   }
 
-  public void setParentCode(OneCGIARScienceGroup parentCode) {
-    this.parentCode = parentCode;
+  public void setParentScienceGroup(OneCGIARScienceGroup parentScienceGroup) {
+    this.parentScienceGroup = parentScienceGroup;
   }
-
 
 }

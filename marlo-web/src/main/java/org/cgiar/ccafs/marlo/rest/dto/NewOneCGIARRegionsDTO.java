@@ -13,25 +13,48 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+package org.cgiar.ccafs.marlo.rest.dto;
+
+import io.swagger.annotations.ApiModelProperty;
+
 /**************
- * @author Diego Perez - CIAT/CCAFS
+ * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+public class NewOneCGIARRegionsDTO {
 
-import org.cgiar.ccafs.marlo.data.model.OneCGIARUser;
-import org.cgiar.ccafs.marlo.rest.dto.BeneficiariesDTO;
-import org.cgiar.ccafs.marlo.rest.dto.OneCGIARUserDTO;
+  @ApiModelProperty(notes = "The Generated Region Type id", position = 1)
+  private Long isoNumeric;
 
-import org.mapstruct.Mapper;
+  @ApiModelProperty(notes = "Region name", position = 2)
+  private String name;
 
-@Mapper(componentModel = "jsr330", uses = {OneCGIARScienceGroupMapper.class})
-public interface OneCGIARUsersMapper {
-
-
-  public abstract BeneficiariesDTO oneCGIARUserToBeneficiariesDTO(OneCGIARUser oneCGIARUser);
-
-  public abstract OneCGIARUserDTO oneCGIARUserToOneCGIARUserDTO(OneCGIARUser oneCGIARUser);
+  @ApiModelProperty(notes = "Region Acronym", position = 3)
+  private String acronym;
 
 
+  public String getAcronym() {
+    return acronym;
+  }
+
+  public Long getIsoNumeric() {
+    return isoNumeric;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
+  }
+
+  public void setIsoNumeric(Long isoNumeric) {
+    this.isoNumeric = isoNumeric;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 }

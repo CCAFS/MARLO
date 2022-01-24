@@ -27,6 +27,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -36,6 +37,34 @@ public class OneCGIARAccountTypeMySQLDAO extends AbstractMarloDAO<OneCGIARAccoun
   @Inject
   public OneCGIARAccountTypeMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
+  }
+
+  @Override
+  public void deleteOneCGIARAccountType(long oneCGIARAccountTypeId) {
+    OneCGIARAccountType oneCGIARAccountType = this.getAccountTypeById(oneCGIARAccountTypeId);
+    this.delete(oneCGIARAccountType);
+  }
+
+  @Override
+  public boolean existOneCGIARAccountType(long oneCGIARAccountTypeID) {
+    OneCGIARAccountType oneCGIARAccountType = this.getAccountTypeById(oneCGIARAccountTypeID);
+    if (oneCGIARAccountType == null) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public OneCGIARAccountType getAccountTypeByAcronym(String acronym) {
+    String query = "select ocat from OneCGIARAccountType ocat where acronym = :acronym";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("acronym", acronym);
+
+    List<OneCGIARAccountType> results = super.findAll(createQuery);
+
+    OneCGIARAccountType oneCGIARAccount = (results != null && !results.isEmpty()) ? results.get(0) : null;
+
+    return oneCGIARAccount;
   }
 
   @Override
@@ -51,6 +80,16 @@ public class OneCGIARAccountTypeMySQLDAO extends AbstractMarloDAO<OneCGIARAccoun
       return list;
     }
     return null;
+  }
+
+  @Override
+  public OneCGIARAccountType save(OneCGIARAccountType oneCGIARAccountType) {
+    if (oneCGIARAccountType.getId() == null) {
+      super.saveEntity(oneCGIARAccountType);
+    } else {
+      oneCGIARAccountType = super.update(oneCGIARAccountType);
+    }
+    return oneCGIARAccountType;
   }
 
 }
