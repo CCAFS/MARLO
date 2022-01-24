@@ -19,7 +19,6 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 import org.cgiar.ccafs.marlo.data.manager.RestApiAuditlogManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.RestApiAuditlog;
-import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.BroadAreaItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.BudgetTypeItem;
@@ -129,7 +128,6 @@ public class ARControlLists {
 
   @Autowired
   private Environment env;
-  private final UserManager userManager;
 
   @Inject
   public ARControlLists(CrossCuttingMarkerScoreItem<ARControlLists> crossCuttingMarkerScoreItem,
@@ -171,7 +169,6 @@ public class ARControlLists {
     this.restApiAuditlogManager = restApiAuditlogManager;
     this.userManager = userManager;
     this.crpGeoLocationMapItem = crpGeoLocationMapItem;
-    this.userManager = userManager;
   }
 
   @ApiOperation(tags = {"${ARControlLists.budget-types.all.value}"},
