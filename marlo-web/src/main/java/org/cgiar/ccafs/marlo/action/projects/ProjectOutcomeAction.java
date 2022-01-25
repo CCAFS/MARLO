@@ -762,7 +762,7 @@ public class ProjectOutcomeAction extends BaseAction {
             }
             projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
             // This add projectMilestone to generate correct auditlog.
-            projectOutcome.getProjectMilestones().add(projectMilestone);
+            // projectOutcome.getProjectMilestones().add(projectMilestone);
             // We should add this new milestone to the managed entity also
             if (this.isEmpty(this.projectOutcomeDB.getMilestones())) {
               this.projectOutcomeDB.setMilestones(new ArrayList<>());
