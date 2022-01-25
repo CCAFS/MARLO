@@ -747,7 +747,8 @@ public class ProjectOutcomeAction extends BaseAction {
     }
 
     if (this.isNotEmpty(projectOutcome.getMilestones())) {
-      for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
+      List<ProjectMilestone> projectMilestonesIncoming = new ArrayList<>(projectOutcome.getMilestones());
+      for (ProjectMilestone projectMilestone : projectMilestonesIncoming) {
         if (projectMilestone != null) {
           // Add new entity
           if (projectMilestone.getId() == null) {
