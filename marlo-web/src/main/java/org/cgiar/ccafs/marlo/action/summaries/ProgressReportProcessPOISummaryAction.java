@@ -1004,6 +1004,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                   expected2023 = Math.round(projectOutcome.getExpectedValue()) + "";
                 }
                 String milestoneNarrativeTarget = "";
+                String milestoneNarrativeAchieved = "";
                 List<ProjectMilestone> projectMilestones = new ArrayList<>();
                 projectMilestones = projectMilestoneManager.findAll().stream()
                   .filter(m -> m.isActive() && m.getYear() == this.getSelectedPhase().getYear()
@@ -1031,6 +1032,9 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                     if (milestone.getNarrativeTarget() != null) {
                       milestoneNarrativeTarget = milestone.getNarrativeTarget();
                     }
+                    if (milestone.getNarrativeAchieved() != null) {
+                      milestoneNarrativeAchieved = milestone.getNarrativeAchieved();
+                    }
                   }
                 }
                 this.createTableIndicators(overall2023, expected2023, expected2021, progress2021);
@@ -1054,20 +1058,38 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
                 // Project Milestone narrative
 
+                if (this.getSelectedPhase().isReporting()) {
+                  // Get Narrative Achieved - Reporting phase
+                  if (milestoneNarrativeAchieved != null) {
+                    poiSummary.textLineBreak(document, 1);
+                    poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
+                      this.getText("summaries.progressReport2020.projectMilestone.narrativeAchieved") + " "
+                        + this.getSelectedPhase().getYear() + ":");
 
-                if (milestoneNarrativeTarget != null) {
-                  poiSummary.textLineBreak(document, 1);
-                  poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
-                    this.getText("summaries.progressReport2020.projectMilestone.narrativeTarget") + " "
-                      + this.getSelectedPhase().getYear() + ":");
+                    paragraph = document.createParagraph();
+                    run = paragraph.createRun();
+                    run.setText(milestoneNarrativeAchieved);
+                    run.setBold(false);
+                    run.setFontSize(11);
+                    run.setFontFamily("Calibri");
+                    run.setColor("000000");
+                  }
+                } else {
+                  if (milestoneNarrativeTarget != null) {
+                    // Get Narrative Target - Not Reporting phase
+                    poiSummary.textLineBreak(document, 1);
+                    poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
+                      this.getText("summaries.progressReport2020.projectMilestone.narrativeTarget") + " "
+                        + this.getSelectedPhase().getYear() + ":");
 
-                  paragraph = document.createParagraph();
-                  run = paragraph.createRun();
-                  run.setText(milestoneNarrativeTarget);
-                  run.setBold(false);
-                  run.setFontSize(11);
-                  run.setFontFamily("Calibri");
-                  run.setColor("000000");
+                    paragraph = document.createParagraph();
+                    run = paragraph.createRun();
+                    run.setText(milestoneNarrativeTarget);
+                    run.setBold(false);
+                    run.setFontSize(11);
+                    run.setFontFamily("Calibri");
+                    run.setColor("000000");
+                  }
                 }
 
                 // Indicators
