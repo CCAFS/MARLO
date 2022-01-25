@@ -155,7 +155,7 @@
         
       </td>
       <td>
-        [#if !isTemplate][@popUps.relationsMacro element=projectOutcome labelText=false /]</div>[/#if]
+        [#if !isTemplate][@popUps.relationsOutcomesMacro element=projectOutcome labelText=true /]</div>[/#if]
       </td>
       [#-- Contribution Status --]
       <td class="text-center">
@@ -176,7 +176,7 @@
             <img src="${baseUrlCdn}/global/images/trash.png" />
           </a>
         [#else]
-          <img src="${baseUrlCdn}/global/images/trash_disable.png" title="" />
+          <img src="${baseUrlCdn}/global/images/trash_disable.png" title="To remove this outcome mapping from this project, ensure there are no Deliverables, Evidences, Policies or Innovations mapped to it." />
         [/#if]
       </td>
   </tr>
