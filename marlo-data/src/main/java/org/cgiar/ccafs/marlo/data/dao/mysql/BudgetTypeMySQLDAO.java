@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.BudgetType;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -59,13 +60,23 @@ public class BudgetTypeMySQLDAO extends AbstractMarloDAO<BudgetType, Long> imple
 
   @Override
   public List<BudgetType> findAll() {
-    String query = "from " + BudgetType.class.getName() + " ";
+    String query = "from " + BudgetType.class.getName() + " where isMarlo=1";
     List<BudgetType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
     return null;
 
+  }
+
+  @Override
+  public List<BudgetType> findAllFundingSourcesCGIAR() {
+    String query = "from " + BudgetType.class.getName() + " where isOneCGIAR=1";
+    List<BudgetType> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
   }
 
   @Override
