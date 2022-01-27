@@ -37,6 +37,9 @@
       </div>
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         <div class="col-md-9">
+        [#-- Section Messages --]
+        [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
+        
           <h3 class="headTitle">[@s.text name="projects.impacts.covid19Title" /]</h3>
           <div id="projectImpactCovid19" class="borderBox">
 
