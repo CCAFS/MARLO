@@ -948,50 +948,50 @@ public class ProjectOutcomeAction extends BaseAction {
                 totalParticipants += numberParticipant;
 
                 // Total Formal Training
-                if (deliverable.getDeliverableParticipant().getRepIndTypeActivity() != null
-                  && deliverable.getDeliverableParticipant().getRepIndTypeActivity().getIsFormal()) {
+                if (deliverable.getDeliverableParticipant().getRepIndTypeActivity() != null) {
+                  // && deliverable.getDeliverableParticipant().getRepIndTypeActivity().getIsFormal()
                   totalParticipantFormalTraining += numberParticipant;
 
                   // Total Female and Male per terms
-                  if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm() != null) {
-                    Double numberFemales = 0.0;
-                    if (deliverable.getDeliverableParticipant().getFemales() != null) {
-                      totalFemales += deliverable.getDeliverableParticipant().getFemales();
-                      numberFemales = deliverable.getDeliverableParticipant().getFemales();
-                    }
-                    if (deliverable.getDeliverableParticipant().getAfrican() != null) {
-                      totalAfricans += deliverable.getDeliverableParticipant().getAfrican();
-                      if (numberParticipant != null) {
-                        double africanPercentaje = Math
-                          .round(((100 * deliverable.getDeliverableParticipant().getAfrican())) / numberParticipant);
-                        deliverable.getDeliverableParticipant().setAfricanPercentage(africanPercentaje);
-                      }
-                    }
-                    if (deliverable.getDeliverableParticipant().getYouth() != null) {
-                      totalYouth += deliverable.getDeliverableParticipant().getYouth();
-                      if (numberParticipant != null) {
-                        double youthPercentaje =
-                          Math.round(((100 * deliverable.getDeliverableParticipant().getYouth())) / numberParticipant);
-                        deliverable.getDeliverableParticipant().setYouthPercentage(youthPercentaje);
-                      }
-                    }
-                    if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
-                      .equals(APConstants.REP_IND_TRAINING_TERMS_SHORT)) {
-                      totalParticipantFormalTrainingShortFemale += numberFemales;
-                      totalParticipantFormalTrainingShortMale += (numberParticipant - numberFemales);
-                    }
-                    if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
-                      .equals(APConstants.REP_IND_TRAINING_TERMS_LONG)) {
-                      totalParticipantFormalTrainingLongFemale += numberFemales;
-                      totalParticipantFormalTrainingLongMale += (numberParticipant - numberFemales);
-                    }
-                    if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
-                      .equals(APConstants.REP_IND_TRAINING_TERMS_PHD)) {
-                      totalParticipantFormalTrainingPhdFemale += numberFemales;
-                      totalParticipantFormalTrainingPhdMale += (numberParticipant - numberFemales);
-                    }
-
+                  // if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm() != null) {
+                  Double numberFemales = 0.0;
+                  if (deliverable.getDeliverableParticipant().getFemales() != null) {
+                    totalFemales += deliverable.getDeliverableParticipant().getFemales();
+                    numberFemales = deliverable.getDeliverableParticipant().getFemales();
                   }
+                  if (deliverable.getDeliverableParticipant().getAfrican() != null) {
+                    totalAfricans += deliverable.getDeliverableParticipant().getAfrican();
+                    if (numberParticipant != null) {
+                      double africanPercentaje =
+                        Math.round(((100 * deliverable.getDeliverableParticipant().getAfrican())) / numberParticipant);
+                      deliverable.getDeliverableParticipant().setAfricanPercentage(africanPercentaje);
+                    }
+                  }
+                  if (deliverable.getDeliverableParticipant().getYouth() != null) {
+                    totalYouth += deliverable.getDeliverableParticipant().getYouth();
+                    if (numberParticipant != null) {
+                      double youthPercentaje =
+                        Math.round(((100 * deliverable.getDeliverableParticipant().getYouth())) / numberParticipant);
+                      deliverable.getDeliverableParticipant().setYouthPercentage(youthPercentaje);
+                    }
+                  }
+                  if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                    .equals(APConstants.REP_IND_TRAINING_TERMS_SHORT)) {
+                    totalParticipantFormalTrainingShortFemale += numberFemales;
+                    totalParticipantFormalTrainingShortMale += (numberParticipant - numberFemales);
+                  }
+                  if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                    .equals(APConstants.REP_IND_TRAINING_TERMS_LONG)) {
+                    totalParticipantFormalTrainingLongFemale += numberFemales;
+                    totalParticipantFormalTrainingLongMale += (numberParticipant - numberFemales);
+                  }
+                  if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                    .equals(APConstants.REP_IND_TRAINING_TERMS_PHD)) {
+                    totalParticipantFormalTrainingPhdFemale += numberFemales;
+                    totalParticipantFormalTrainingPhdMale += (numberParticipant - numberFemales);
+                  }
+
+                  // }
                 }
 
                 // Add deliverable participant to list

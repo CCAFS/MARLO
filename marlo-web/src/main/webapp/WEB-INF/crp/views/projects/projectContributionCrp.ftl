@@ -850,7 +850,7 @@
           [#-- Number of african --]
           <td class="text-center">
             ${(item.african?number?string(",##0"))!0}
-            <p><i><small>(${(item.africanPercentage?number?string(",##0"))!0}% )</small></i><p>
+            [#--<p><i><small>(${(item.africanPercentage?number?string(",##0"))!0}% )</small></i><p>--]
             [#if isEstimateAfricans ]
               <i><small> (Estimated value)</small></i>
             [/#if]
@@ -858,7 +858,7 @@
           [#-- Number of youth --]
           <td class="text-center">
             ${(item.youth?number?string(",##0"))!0}
-            <p><i><small>(${(item.youthPercentage?number?string(",##0"))!0}% )</small></i></p>
+            [#--<p><i><small>(${(item.youthPercentage?number?string(",##0"))!0}% )</small></i></p>--]
             [#if isEstimateYouth ]
               <i><small> (Estimated value)</small></i>
             [/#if]
