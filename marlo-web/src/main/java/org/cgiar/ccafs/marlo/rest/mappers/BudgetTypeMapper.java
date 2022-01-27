@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.rest.dto.BudgetTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.BudgetTypeOneCGIARDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -34,5 +35,8 @@ public interface BudgetTypeMapper {
 
   @Mappings({@Mapping(source = "id", target = "code")})
   public abstract BudgetTypeDTO budgetTypeToBudgetTypeDTO(BudgetType budgetType);
+
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract BudgetTypeOneCGIARDTO budgetTypeToBudgetTypeOneCGIARDTO(BudgetType budgetType);
 
 }
