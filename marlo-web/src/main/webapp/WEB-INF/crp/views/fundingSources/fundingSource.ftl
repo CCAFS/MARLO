@@ -443,12 +443,12 @@
       <div class="col-md-12 metadataElement-originalDonorName">
         <label for="">[@s.text name="projectCofunded.donor" /]:</label>
         <span class="description"><i>([@s.text name="projectCofunded.donor.helpText" /])</i></span>
-          [#if editable]
+          [#--  [#if editable]  --]
             [@customForm.select name="fundingSource.fundingSourceInfo.originalDonor.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
-          [#else]
+          [#--  [#else]
             <p class="input">${(fundingSource.fundingSourceInfo.originalDonor.composedName)!}</p>
             <input  type="hidden" name="fundingSource.fundingSourceInfo.originalDonor.id" value="${(fundingSource.fundingSourceInfo.originalDonor.id)!-1}" />
-          [/#if]
+          [/#if]  --]
         <span class="text-warning metadataSuggested"></span> 
       </div>
     </div>

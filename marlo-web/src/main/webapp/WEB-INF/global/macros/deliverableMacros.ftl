@@ -243,14 +243,14 @@
       <div class="col-md-6">
         [@customForm.input name="${customName}.participants" i18nkey="involveParticipants.participants" help="involveParticipants.participants.help" placeholder="global.number" className="numericInput" required=editable editable=editable /]
         <div class="dottedBox">
-          [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.estimateParticipants" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateParticipants)!false) cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.estimateParticipants" label="involveParticipants.estimate.participant" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateParticipants)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
       <div class="col-md-6 femaleNumbers">
         [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="global.number" className="numericInput" required=true editable=editable disabled=(deliverable.deliverableParticipant.dontKnowFemale)!false /]
         <div class="dottedBox">
-          [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.estimateFemales" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateFemales)!false) cssClass="" cssClassLabel="font-italic" /]
-          [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.dontKnowFemale" label="involveParticipants.dontKnow" help="involveParticipants.dontKnow.help" value="true" editable=editable checked=((deliverable.deliverableParticipant.dontKnowFemale)!false) cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.estimateFemales" label="involveParticipants.estimate.female" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateFemales)!false) cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.dontKnowFemale" label="involveParticipants.dontKnow.female" help="involveParticipants.dontKnow.help" value="true" editable=editable checked=((deliverable.deliverableParticipant.dontKnowFemale)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
     </div>
@@ -400,8 +400,11 @@
       </div>
       <div class="col-md-6 conditionalRequire doi-bridge" style="position: relative;">
         [@customForm.input name="doi-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable/]
-        <p class="invalidDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(207, 40, 40); font-weight: 600; font-size: 0.8em; display: none;">Invalid DOI identifier.<br>Please use the correct format <strong>(e.g. 10.1109/5.771073)</strong></p>
-        <p class="validDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(50, 206, 45); font-weight: 600; font-size: 0.8em; display: none;">Valid DOI identifier</p>
+        
+        [#if editable]
+          <p class="invalidDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(207, 40, 40); font-weight: 600; font-size: 0.8em; display: none;">Invalid DOI identifier.<br>Please use the correct format <strong>(e.g. 10.1109/5.771073)</strong></p>
+          <p class="validDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(50, 206, 45); font-weight: 600; font-size: 0.8em; display: none;">Valid DOI identifier</p>
+        [/#if]
       </div>
     </div>
     <br>
@@ -412,10 +415,12 @@
       <div class="col-md-12" style="display: none;">
         [@customForm.input name="deliverable.dissemination.hasDOI" type="text" i18nkey="aux checkbox" className="isOtherUrlFiel"  placeholder="" required=false editable=editable /]
        </div>
-      <div class="col-md-6 isOtherUrl isOtherUrlTohide">
-        <br />
-        [@customForm.checkmark id="" name="" i18nkey="project.deliverable.hasDOI" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(deliverable.dissemination.hasDOI)!false cssClass="isOtherUrl" cssClassLabel=""  /]
-      </div>
+      [#if editable]
+        <div class="col-md-6 isOtherUrl isOtherUrlTohide">
+          <br />
+          [@customForm.checkmark id="" name="" i18nkey="project.deliverable.hasDOI" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(deliverable.dissemination.hasDOI)!false cssClass="isOtherUrl" cssClassLabel=""  /]
+        </div>
+      [/#if]
       [#-- Alternative url TextField --]
       <div class="col-md-6 other-url" style="display:${(isOtherUrl)?string('block','none')}">
         [@customForm.input name="deliverable.dissemination.articleUrl" type="text" i18nkey="project.deliverable.articleURL"  placeholder="" required=true editable=editable /]
@@ -672,6 +677,11 @@
       <label for="">[@s.text name="deliverable.isiPublication" /] [@customForm.req required=editable /]
       <p><i class="helpLabel">Please make sure the information from the repository you chose and the one on Web of Science match.</i></p></label> <br />
       [#local isISI = (deliverable.publication.isiPublication?string)!"" /]
+
+      [#if !editable && isISI == '']
+        <p>Not selected</p>
+      [/#if]
+      
       [@customForm.radioFlat id="optionISI-yes"  name="deliverable.publication.isiPublication" i18nkey="Yes"  value="true"  checked=(isISI == "true")  cssClass="radioType-optionISI" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
       [@customForm.radioFlat id="optionISI-no"   name="deliverable.publication.isiPublication" i18nkey="No"   value="false" checked=(isISI == "false") cssClass="radioType-optionISI" cssClassLabel="font-normal radio-label-no"  editable=editable /] 
       <div class="WOS_tag" style="display: none; margin: 5px 0px" >
@@ -964,7 +974,12 @@
       [@customForm.select name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue " i18nkey="metadata.${title}" listName=list disabled=mElementHide editable=editable /]
     [#elseif type == "hidden"]
     <label for="">[@s.text name="metadata.creator" /]: <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue "/>
-    [@customForm.req required=require && editable/] <span id="warningEmptyAuthorsTag" class="errorTag glyphicon glyphicon-info-sign" style="position: relative; left: 612px;" title="" aria-describedby="ui-id-5"> </span> </label>
+    [@customForm.req required=require && editable/] 
+
+    [#if editable]
+      <span id="warningEmptyAuthorsTag" class="errorTag glyphicon glyphicon-info-sign" style="position: relative; left: 612px;" title="" aria-describedby="ui-id-5"> </span> 
+    [/#if]
+    </label>
       
     [#elseif type == "text"]
       <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue "/>
