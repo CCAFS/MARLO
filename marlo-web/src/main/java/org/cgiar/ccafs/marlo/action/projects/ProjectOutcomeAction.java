@@ -977,19 +977,24 @@ public class ProjectOutcomeAction extends BaseAction {
                   }
                   if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
                     .equals(APConstants.REP_IND_TRAINING_TERMS_SHORT)) {
-                    totalParticipantFormalTrainingShortFemale += numberFemales;
-                    totalParticipantFormalTrainingShortMale += (numberParticipant - numberFemales);
                   }
                   if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
                     .equals(APConstants.REP_IND_TRAINING_TERMS_LONG)) {
-                    totalParticipantFormalTrainingLongFemale += numberFemales;
-                    totalParticipantFormalTrainingLongMale += (numberParticipant - numberFemales);
                   }
                   if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
                     .equals(APConstants.REP_IND_TRAINING_TERMS_PHD)) {
-                    totalParticipantFormalTrainingPhdFemale += numberFemales;
-                    totalParticipantFormalTrainingPhdMale += (numberParticipant - numberFemales);
                   }
+                  totalParticipantFormalTrainingShortFemale += numberFemales;
+                  totalParticipantFormalTrainingShortMale += (numberParticipant - numberFemales);
+
+
+                  totalParticipantFormalTrainingLongFemale += numberFemales;
+                  totalParticipantFormalTrainingLongMale += (numberParticipant - numberFemales);
+
+
+                  totalParticipantFormalTrainingPhdFemale += numberFemales;
+                  totalParticipantFormalTrainingPhdMale += (numberParticipant - numberFemales);
+
 
                   // }
                 }
