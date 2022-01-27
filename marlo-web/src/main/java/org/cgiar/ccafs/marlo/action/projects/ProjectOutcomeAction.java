@@ -975,15 +975,17 @@ public class ProjectOutcomeAction extends BaseAction {
                       deliverable.getDeliverableParticipant().setYouthPercentage(youthPercentaje);
                     }
                   }
-                  if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
-                    .equals(APConstants.REP_IND_TRAINING_TERMS_SHORT)) {
-                  }
-                  if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
-                    .equals(APConstants.REP_IND_TRAINING_TERMS_LONG)) {
-                  }
-                  if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
-                    .equals(APConstants.REP_IND_TRAINING_TERMS_PHD)) {
-                  }
+                  /*
+                   * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                   * .equals(APConstants.REP_IND_TRAINING_TERMS_SHORT)) {
+                   * }
+                   * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                   * .equals(APConstants.REP_IND_TRAINING_TERMS_LONG)) {
+                   * }
+                   * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                   * .equals(APConstants.REP_IND_TRAINING_TERMS_PHD)) {
+                   * }
+                   */
                   totalParticipantFormalTrainingShortFemale += numberFemales;
                   totalParticipantFormalTrainingShortMale += (numberParticipant - numberFemales);
 
@@ -994,7 +996,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
                   totalParticipantFormalTrainingPhdFemale += numberFemales;
                   totalParticipantFormalTrainingPhdMale += (numberParticipant - numberFemales);
-
 
                   // }
                 }
