@@ -26,19 +26,11 @@ import com.google.gson.annotations.Expose;
 
 public class Institution extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
 
-	private static final long serialVersionUID = 3635585962414755020L;
 
-	@Expose
-	private InstitutionType institutionType;
+  private static final long serialVersionUID = 3635585962414755020L;
 
-	@Expose
-	private String name;
-
-	@Expose
-	private String acronym;
-
-	@Expose
-	private String websiteLink;
+  @Expose
+  private InstitutionType institutionType;
 
 
   @Expose
