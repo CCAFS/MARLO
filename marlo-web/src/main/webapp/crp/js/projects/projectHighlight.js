@@ -42,6 +42,16 @@ $(document).ready(function() {
 function attachEvents() {
   $isGlobal.on('change', isGlobalChange);
   $isGlobal.trigger('change');
+  var isEditable = $('#isEditable').html();
+  var isGlobalValue = $('#isGlobalValue');
+
+  if (isEditable == 'false') {
+
+    if (isGlobalValue.html() == 'false') {
+      var isGlobalText = isGlobalValue.siblings('div.checkbox').find('p');
+      $(isGlobalText).html('Is <b style="color: red;">not</b> global');
+    } 
+  }
 
   $('.fileUpload .remove').on('click', function(e) {
     var context = $(this).attr('id').split('-')[1];

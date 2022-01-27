@@ -452,4 +452,3 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
       + acronym + ", programId=" + programId + "]";
   }
 }
-
