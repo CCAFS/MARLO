@@ -19,6 +19,9 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 
 public class WorkPackagesDTO {
@@ -44,28 +47,58 @@ public class WorkPackagesDTO {
   @ApiModelProperty(notes = "Workpackage acronym", position = 7)
   private String acronym;
 
+  @ApiModelProperty(notes = "Science Group List", position = 8)
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private List<ScienceGroupDTO> scienceGroupList;
+
+  @ApiModelProperty(notes = "SDG's List", position = 9)
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private List<SDGsDTO> sdgList;
+
+  @ApiModelProperty(notes = "Impact Area List", position = 10)
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private List<ImpactAreasDTO> impactAreaList;
+
   public String getAcronym() {
     return acronym;
   }
+
 
   public Long getId() {
     return id;
   }
 
+
+  public List<ImpactAreasDTO> getImpactAreaList() {
+    return impactAreaList;
+  }
+
+
   public Long getInitiativeId() {
     return initiativeId;
   }
+
 
   public String getName() {
     return name;
   }
 
+
   public String getPathway_content() {
     return pathway_content;
   }
 
+
   public String getResults() {
     return results;
+  }
+
+  public List<ScienceGroupDTO> getScienceGroupList() {
+    return scienceGroupList;
+  }
+
+  public List<SDGsDTO> getSdgList() {
+    return sdgList;
   }
 
   public Long getStageId() {
@@ -78,6 +111,10 @@ public class WorkPackagesDTO {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setImpactAreaList(List<ImpactAreasDTO> impactAreaList) {
+    this.impactAreaList = impactAreaList;
   }
 
   public void setInitiativeId(Long initiativeId) {
@@ -94,6 +131,14 @@ public class WorkPackagesDTO {
 
   public void setResults(String results) {
     this.results = results;
+  }
+
+  public void setScienceGroupList(List<ScienceGroupDTO> scienceGroupList) {
+    this.scienceGroupList = scienceGroupList;
+  }
+
+  public void setSdgList(List<SDGsDTO> sdgList) {
+    this.sdgList = sdgList;
   }
 
   public void setStageId(Long stageId) {

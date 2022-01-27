@@ -68,6 +68,45 @@ public class WorkpackagesItem<T> {
   }
 
 
+  public ResponseEntity<List<WorkPackagesDTO>> getOneCGIARWorkpackages() {
+
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    List<WorkPackagesDTO> workpackageListDTO = new ArrayList<WorkPackagesDTO>();
+    org.cgiar.ccafs.marlo.rest.services.submissionTools.onecgiarworkpackages.Response response = null;
+    String url = config.getUrlSubmissionTools();
+    if (url != null) {
+      try {
+        JsonElement json = this.getSubmissionElement(url + "stages-control/proposal/packages");
+        response = new Gson().fromJson(json,
+          org.cgiar.ccafs.marlo.rest.services.submissionTools.onecgiarworkpackages.Response.class);
+        if (response.getResponse() != null) {
+          org.cgiar.ccafs.marlo.rest.services.submissionTools.onecgiarworkpackages.WorkpackageList workpackageList =
+            response.getResponse();
+          if (workpackageList.getWorkPackagesProposal() != null) {
+            workpackageListDTO = workpackageList.getWorkPackagesProposal().stream()
+              .map(init -> this.WorkpackagesMapper.oneCGIARWorkpackageToWorkPackagesDTO(init))
+              .collect(Collectors.toList());
+          }
+
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+        fieldErrors.add(new FieldErrorDTO("getWorkPackages", "JSON element",
+          "Error trying to get data from service  " + e.getMessage()));
+      }
+
+    }
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+    return Optional.ofNullable(workpackageListDTO).map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+      .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
+  }
+
   public JsonElement getSubmissionElement(String url) throws MalformedURLException, IOException {
     URL submissionToolsUrl = new URL(url);
     String loginData = config.getSubmissionToolsUser() + ":" + config.getSubmissionToolsPassword();
@@ -84,6 +123,7 @@ public class WorkpackagesItem<T> {
     }
     return element;
   }
+
 
   public ResponseEntity<List<WorkPackagesDTO>> getWorkPackages() {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
