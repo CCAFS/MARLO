@@ -70,6 +70,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -81,6 +82,9 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.collections4.SetUtils;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -106,6 +110,54 @@ import org.slf4j.LoggerFactory;
 public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction implements Summary {
 
 
+  private class PartnerPersons {
+
+    private String institutionName;
+    private List<String> personNames;
+
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == null) {
+        return false;
+      }
+
+      if (this == obj) {
+        return true;
+      }
+
+      if (!(obj instanceof PartnerPersons)) {
+        return false;
+      }
+
+      PartnerPersons other = (PartnerPersons) obj;
+
+      return StringUtils.equalsIgnoreCase(this.institutionName, other.institutionName);
+    }
+
+    public String getInstitutionName() {
+      return institutionName;
+    }
+
+
+    public List<String> getPersonNames() {
+      return personNames;
+    }
+
+    @Override
+    public int hashCode() {
+      return this.institutionName != null ? this.institutionName.hashCode() : 0;
+    }
+
+    public void setInstitutionName(String institutionName) {
+      this.institutionName = institutionName;
+    }
+
+    public void setPersonNames(List<String> personNames) {
+      this.personNames = personNames;
+    }
+  }
+
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(DeliverablesReportingExcelSummaryAction.class);
   private final CrpProgramManager programManager;
@@ -122,12 +174,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   private final CrpPpaPartnerManager crpPpaPartnerManager;
   private final DeliverableInfoManager deliverableInfoManager;
   private String showAllYears;
+
+
   private String ppa;
 
 
   // XLSX bytes
   private byte[] bytesXLSX;
-
 
   // Streams
   InputStream inputStream;
@@ -377,22 +430,22 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     return bytesXLSX;
   }
 
+
   @Override
   public int getContentLength() {
     return bytesXLSX.length;
   }
-
 
   @Override
   public String getContentType() {
     return "application/xlsx";
   }
 
+
   private String getDeliverableDataSharingFilePath(String projectID) {
     String upload = config.getDownloadURL();
     return upload + "/" + this.getDeliverableDataSharingFileRelativePath(projectID).replace('\\', '/');
   }
-
 
   private String getDeliverableDataSharingFileRelativePath(String projectID) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectID + File.separator
@@ -1545,146 +1598,54 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         Set<String> ppaResponsibleList = new HashSet<>();
         LinkedHashSet<Institution> institutionsResponsibleList = new LinkedHashSet<>();
 
-        // Get partner responsible
-        List<DeliverableUserPartnership> partnershipsList = deliverable.getDeliverableUserPartnerships().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
-            && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
-          .collect(Collectors.toList());
-
-
-        DeliverableUserPartnership responsible = null;
-
-        // Set responible;
-        if (partnershipsList != null && !partnershipsList.isEmpty()) {
-          responsible = partnershipsList.get(0);
-          if (responsible.getInstitution() != null) {
-            institutionsResponsibleList.add(responsible.getInstitution());
-          }
-          if (responsible.getDeliverableUserPartnershipPersons() == null) {
-
-            // get deliverable information when partner responsible does not have a person
-            if (responsible.getInstitution() != null) {
-              if (responsible.getInstitution().getAcronym() != null
-                && !responsible.getInstitution().getAcronym().isEmpty()) {
-                ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + " ");
-                responsibleAcronym = responsible.getInstitution().getAcronym() + " ";
-
-              } else {
-                ppaResponsibleList.add("*" + responsible.getInstitution().getName() + " ");
-                responsibleName = responsible.getInstitution().getName() + " ";
-              }
-            }
-
-          } else if (responsible.getDeliverableUserPartnershipPersons() != null) {
-            // individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
-            individual += "●  ";
-            individual += "*";
-
-            DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
-            List<DeliverableUserPartnershipPerson> persons = responsible.getDeliverableUserPartnershipPersons().stream()
-              .filter(dp -> dp.isActive()).collect(Collectors.toList());
-            if (persons.size() > 0) {
-              responsibleppp = persons.get(0);
-            }
-
-
-            // get deliverable information when partner responsible does not have a person
-            if (responsible.getInstitution() != null) {
-              if (responsible.getInstitution().getAcronym() != null
-                && !responsible.getInstitution().getAcronym().isEmpty()) {
-                ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + " ");
-                responsibleAcronym = responsible.getInstitution().getAcronym() + " ";
-
-              } else {
-                ppaResponsibleList.add("*" + responsible.getInstitution().getName() + " ");
-                responsibleName = responsible.getInstitution().getName() + " ";
-              }
-            }
-
-            if (responsibleppp.getUser() != null) {
-              individual += responsibleppp.getUser().getComposedNameWithoutEmail();
-            }
-          }
-
-        }
-
-
-        // Get partner others
-        List<DeliverableUserPartnership> othersPartnerships = deliverable.getDeliverableUserPartnerships().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
-            && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER))
-          .collect(Collectors.toList());
-
-        if (othersPartnerships != null) {
-          individual += "\n ● ";
-
-          for (DeliverableUserPartnership deliverablePartnership : othersPartnerships) {
-            if (deliverablePartnership.getInstitution() != null) {
-              institutionsResponsibleList.add(deliverablePartnership.getInstitution());
-            }
-            if (deliverablePartnership.getDeliverableUserPartnershipPersons() != null) {
-
-
-              List<DeliverableUserPartnershipPerson> responsibleppp =
-                deliverablePartnership.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
-                  .collect(Collectors.toList());
-
-              if (deliverablePartnership.getInstitution() != null) {
-                if (deliverablePartnership.getInstitution().getAcronym() != null
-                  && !deliverablePartnership.getInstitution().getAcronym().isEmpty()) {
-                  ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getAcronym() + " ");
-                  responsibleAcronym = deliverablePartnership.getInstitution().getAcronym() + " ";
-
-                } else {
-                  ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getName() + " ");
-                  responsibleName = deliverablePartnership.getInstitution().getName() + " ";
-                }
-              }
-
-              for (DeliverableUserPartnershipPerson person : responsibleppp) {
-                if (person.getUser() != null) {
-                  individual += person.getUser().getComposedName();
-                }
-              }
-
-              individual += "\n● ";
-
-            } else {
-
-              if (deliverablePartnership.getInstitution() != null) {
-                if (deliverablePartnership.getInstitution().getAcronym() != null
-                  && !deliverablePartnership.getInstitution().getAcronym().isEmpty()) {
-                  ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getAcronym() + " ");
-                  responsibleAcronym = deliverablePartnership.getInstitution().getAcronym() + " ";
-
-                } else {
-                  ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getName() + " ");
-                  responsibleName = deliverablePartnership.getInstitution().getName() + " ";
-                }
-              }
-
-            }
-          }
-        }
-
-        if (individual.isEmpty()) {
-          individual = null;
-        } else {
-          if ((individual.length() > 4)
-            && (individual.substring(individual.length() - 3, individual.length()).contains("● "))) {
-            individual = individual.substring(0, individual.length() - 3);
-          }
-        }
+        Map<Long, Map<String, List<String>>> partnerMap = new HashMap<>();
+        String institution = "";
         LinkedHashSet<Institution> managingResponsibleList = new LinkedHashSet<>();
-        for (String ppaOher : ppaResponsibleList) {
-          if (ppaResponsible.isEmpty()) {
-            // ppaResponsible += "<span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
-            ppaResponsible += ppaOher + " ";
-          } else {
-            ppaResponsible += ppaOher + " ";
-            // ppaResponsible += ", <span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
+        DeliverableUserPartnership responsible = null;
+        Institution partnerInstitution = null;
+
+        List<DeliverableUserPartnership> partnershipsList =
+          SetUtils.emptyIfNull(deliverable.getDeliverableUserPartnerships()).stream()
+            .filter(dp -> dp != null && dp.getId() != null && dp.isActive()
+              && dp.getPhase().getId().equals(this.getActualPhase().getId()) && dp.getDeliverablePartnerType() != null
+              && dp.getDeliverablePartnerType().getId() != null)
+            .collect(Collectors.toList());
+
+        for (DeliverableUserPartnership partnership : partnershipsList) {
+          partnerInstitution = null;
+          institution = null;
+          if (APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE
+            .equals(partnership.getDeliverablePartnerType().getId())) {
+            if (responsible == null) {
+              responsible = partnership;
+            } else {
+              LOG.warn("There are more than 1 responsible institution for Deliverable ("
+                + deliverable.getId().toString() + ')');
+            }
           }
-          ppaResponsible += ", ";
+
+          partnerInstitution = partnership.getInstitution();
+          if (partnerInstitution != null) {
+            institutionsResponsibleList.add(partnerInstitution);
+            institution = this.getInstitutionSimplifiedName(partnerInstitution);
+
+            List<DeliverableUserPartnershipPerson> responsibleppp =
+              SetUtils.emptyIfNull(partnership.getDeliverableUserPartnershipPersons()).stream()
+                .filter(dpp -> dpp != null && dpp.getId() != null && dpp.isActive()).collect(Collectors.toList());
+
+            Map<String, List<String>> currentPartner =
+              partnerMap.computeIfAbsent(partnership.getDeliverablePartnerType().getId(), (k) -> new HashMap<>());
+
+            List<String> persons = responsibleppp.stream()
+              .filter(
+                ppp -> ppp != null && ppp.getId() != null && ppp.getUser() != null && ppp.getUser().getId() != null)
+              .map(ppp -> ppp.getUser().getComposedName()).collect(Collectors.toList());
+            if (persons.isEmpty()) {
+              persons.add(this.notProvided);
+            }
+
+            currentPartner.compute(institution, (k, v) -> (v == null) ? persons : ListUtils.union(v, persons));
+          }
         }
 
         for (Institution partnerResponsible : institutionsResponsibleList) {
@@ -1715,24 +1676,29 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
         }
 
-        if (ppaResponsible.isEmpty()) {
-          ppaResponsible = null;
-        } else {
-          ppaResponsible = ppaResponsible.replaceAll("  ,", ",");
-          ppaResponsible = ppaResponsible.replaceAll(",  ", ",");
-          ppaResponsible = ppaResponsible.substring(0, ppaResponsible.length() - 2);
-        }
+        StringBuffer sbFormatter = new StringBuffer();
 
-        if (individual != null) {
+        // Institutions
+        sbFormatter = sbFormatter.append("Responsible Partner:")
+          .append(partnerMap.getOrDefault(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE, Collections.emptyMap())
+            .keySet().stream().collect(Collectors.joining(" ●", "\n ●", "\n")))
+          .append("Other Partner(s):")
+          .append(partnerMap.getOrDefault(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER, Collections.emptyMap())
+            .keySet().stream().collect(Collectors.joining(" ●", "\n ●", "\n")));
+        ppaResponsible = RegExUtils.replaceAll(sbFormatter.toString(), " ●\n", " ●" + this.notProvided + "\n");
+        sbFormatter.setLength(0);
 
-          if (individual.charAt(0) == ',') {
-            individual = individual.substring(1);
-          }
-          if (individual.charAt(1) == ',') {
-            individual = individual.substring(2);
-          }
-        }
-
+        // People
+        sbFormatter = sbFormatter.append("Responsible Partner:")
+          .append(partnerMap.getOrDefault(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE, Collections.emptyMap())
+            .values().stream().map(p -> p.stream().collect(Collectors.joining("; ")))
+            .collect(Collectors.joining("●", "\n●", "\n")))
+          .append("Other Partner(s):")
+          .append(partnerMap.getOrDefault(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER, Collections.emptyMap())
+            .values().stream().map(p -> p.stream().collect(Collectors.joining("; ")))
+            .collect(Collectors.joining(" ●", "\n ●", "\n")));
+        individual = RegExUtils.replaceAll(sbFormatter.toString(), " ●\n", " ●" + this.notProvided + "\n");
+        sbFormatter.setLength(0);
 
         String managingResponsible = "";
         CrpPpaPartner ppaFilter;
@@ -1749,7 +1715,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             }
           }
 
-          String institution = "";
+          institution = "";
           if (managingInstitution.getAcronym() != null && !managingInstitution.getAcronym().trim().isEmpty()) {
             institution = managingInstitution.getAcronym();
           } else {
@@ -2605,6 +2571,17 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   }
 
 
+  private String getInstitutionSimplifiedName(Institution institution) {
+    String name = null;
+    if (institution.getAcronym() != null && !institution.getAcronym().isEmpty()) {
+      name = StringUtils.stripToEmpty(institution.getAcronym());
+    } else {
+      name = StringUtils.stripToEmpty(institution.getName());
+    }
+
+    return name;
+  }
+
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "regionalAvalaible"},
@@ -2615,6 +2592,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
   public String getShowAllYears() {
     return showAllYears;
+  }
+
+  private boolean isResponsible(String ppa) {
+    return ppa.startsWith("*");
   }
 
   @Override
