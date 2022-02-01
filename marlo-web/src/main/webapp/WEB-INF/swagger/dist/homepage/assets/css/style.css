@@ -27,6 +27,10 @@ h1, h2, h3, h4, h5, h6, .font-primary {
   font-family: "Montserrat", sans-serif;
 }
 
+.justifyParagraph {
+  text-align: justify;
+}
+
 /*--------------------------------------------------------------
 # Back to top button
 --------------------------------------------------------------*/

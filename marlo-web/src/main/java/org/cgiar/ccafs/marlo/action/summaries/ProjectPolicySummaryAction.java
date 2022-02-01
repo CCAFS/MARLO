@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PolicyMilestone;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
@@ -40,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.URLShortener;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -93,6 +95,8 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
   private final ProjectPolicySubIdoManager projectPolicySubIdoManager;
   private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
 
+  private final URLShortener shortener;
+
 
   // Parameters
   private long startTime;
@@ -123,6 +127,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     this.policyMilestoneManager = projectInnovationMilestoneManager;
     this.projectPolicySubIdoManager = projectInnovationSubIdoManager;
     this.projectExpectedStudyPolicyManager = projectExpectedStudyInnovationManager;
+    this.shortener = new URLShortener();
   }
 
   /**
@@ -278,9 +283,17 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     return "application/pdf";
   }
 
+  @SuppressWarnings("unused")
   private String getExpectedStudyDirectLink(String center, Long expectedStudyId, String phaseId) {
     return this.getBaseUrl() + "/projects/" + center + "/study.do?expectedID=" + expectedStudyId + "&phaseID="
       + phaseId;
+  }
+
+  private String getExpectedStudyPDFLink(String center, Long expectedStudyId, Phase phase) {
+    String longUrl = this.getBaseUrl() + "/projects/" + center + "/studySummary.do?studyID=" + expectedStudyId
+      + "&cycle=" + phase.getDescription() + "&year=" + phase.getYear();
+
+    return shortener.getShortUrlService(longUrl);
   }
 
   @SuppressWarnings("unused")
@@ -403,7 +416,8 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
 
     if (studyPolicies != null && !studyPolicies.isEmpty()) {
       for (ProjectExpectedStudyPolicy studyPolicy : studyPolicies) {
-        String url = this.getExpectedStudyDirectLink(loggedCenter, studyPolicy.getId(), phaseID);
+        String url = this.getExpectedStudyPDFLink(loggedCenter, studyPolicy.getProjectExpectedStudy().getId(),
+          this.getSelectedPhase());
         projectExpectedStudies += "<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyPolicy.getProjectExpectedStudy().getId()
           + " - " + studyPolicy.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getTitle()
           + " <font color=\"blue\">(" + url + ")</font>";
