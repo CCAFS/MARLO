@@ -11,6 +11,9 @@
     <property name="workpackageId" type="string" >
       <column name="workpackage_id" sql-type="TEXT" />
     </property>
+    <property name="initiativeId" type="java.lang.Long" >
+      <column name="initiative_id" />
+    </property>
      <many-to-one name="scienceGroup"
       class="org.cgiar.ccafs.marlo.data.model.OneCGIARScienceGroup" fetch="select">
       <column name="science_group_id" />

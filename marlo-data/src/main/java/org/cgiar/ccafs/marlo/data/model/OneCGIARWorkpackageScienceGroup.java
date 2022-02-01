@@ -29,7 +29,15 @@ public class OneCGIARWorkpackageScienceGroup extends MarloAuditableEntity implem
 
   private String workpackageId;
 
+  private Long initiativeId;
+
+
   private OneCGIARScienceGroup scienceGroup;
+
+
+  public Long getInitiativeId() {
+    return initiativeId;
+  }
 
 
   public OneCGIARScienceGroup getScienceGroup() {
@@ -39,6 +47,11 @@ public class OneCGIARWorkpackageScienceGroup extends MarloAuditableEntity implem
 
   public String getWorkpackageId() {
     return workpackageId;
+  }
+
+
+  public void setInitiativeId(Long initiativeId) {
+    this.initiativeId = initiativeId;
   }
 
 

@@ -42,8 +42,8 @@ public class OneCGIARWorkpackageImpactAreaManagerImpl implements OneCGIARWorkpac
 
 
   @Override
-  public List<OneCGIARWorkpackageImpactArea> getAllByWorkpackage(String workpackage) {
-    return oneCGIARWorkpackageImpactAreaDAO.getAllByWorkpackage(workpackage);
+  public List<OneCGIARWorkpackageImpactArea> getAllByWorkpackage(String workpackage, Long initiative) {
+    return oneCGIARWorkpackageImpactAreaDAO.getAllByWorkpackage(workpackage, initiative);
   }
 
 }

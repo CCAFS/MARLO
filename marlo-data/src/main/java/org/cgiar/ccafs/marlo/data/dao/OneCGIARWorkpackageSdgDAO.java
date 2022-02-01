@@ -25,6 +25,6 @@ import java.util.List;
 
 public interface OneCGIARWorkpackageSdgDAO {
 
-  public List<OneCGIARWorkpackageSdg> getAllByWorkpackage(String workpackage);
+  public List<OneCGIARWorkpackageSdg> getAllByWorkpackage(String workpackage, Long initiative);
 
 }

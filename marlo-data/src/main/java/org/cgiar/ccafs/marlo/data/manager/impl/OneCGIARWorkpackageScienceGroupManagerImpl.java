@@ -34,16 +34,17 @@ public class OneCGIARWorkpackageScienceGroupManagerImpl implements OneCGIARWorkp
   private OneCGIARWorkpackageScienceGroupDAO oneCGIARWorkpackageScienceGroupDAO;
 
   @Inject
-  public OneCGIARWorkpackageScienceGroupManagerImpl(OneCGIARWorkpackageScienceGroupDAO oneCGIARWorkpackageScienceGroupDAO) {
+  public OneCGIARWorkpackageScienceGroupManagerImpl(
+    OneCGIARWorkpackageScienceGroupDAO oneCGIARWorkpackageScienceGroupDAO) {
     super();
     this.oneCGIARWorkpackageScienceGroupDAO = oneCGIARWorkpackageScienceGroupDAO;
   }
 
 
   @Override
-  public List<OneCGIARWorkpackageScienceGroup> getAllByWorkpackage(String workpackage) {
+  public List<OneCGIARWorkpackageScienceGroup> getAllByWorkpackage(String workpackage, Long initiative) {
 
-    return oneCGIARWorkpackageScienceGroupDAO.getAllByWorkpackage(workpackage);
+    return oneCGIARWorkpackageScienceGroupDAO.getAllByWorkpackage(workpackage, initiative);
   }
 
 }
