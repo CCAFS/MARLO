@@ -25,5 +25,5 @@ import java.util.List;
 
 public interface OneCGIARWorkpackageImpactAreaDAO {
 
-  public List<OneCGIARWorkpackageImpactArea> getAllByWorkpackage(String workpackage);
+  public List<OneCGIARWorkpackageImpactArea> getAllByWorkpackage(String workpackage, Long initiative);
 }

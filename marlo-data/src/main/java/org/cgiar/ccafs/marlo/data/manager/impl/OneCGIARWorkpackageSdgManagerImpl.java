@@ -42,8 +42,8 @@ public class OneCGIARWorkpackageSdgManagerImpl implements OneCGIARWorkpackageSdg
 
 
   @Override
-  public List<OneCGIARWorkpackageSdg> getAllByWorkpackage(String workpackage) {
-    return oneCGIARWorkpackageSdgDAO.getAllByWorkpackage(workpackage);
+  public List<OneCGIARWorkpackageSdg> getAllByWorkpackage(String workpackage, Long initiative) {
+    return oneCGIARWorkpackageSdgDAO.getAllByWorkpackage(workpackage, initiative);
   }
 
 }

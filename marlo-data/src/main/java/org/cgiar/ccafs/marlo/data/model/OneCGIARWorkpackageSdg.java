@@ -29,7 +29,15 @@ public class OneCGIARWorkpackageSdg extends MarloAuditableEntity implements java
 
   private String workpackageId;
 
+  private Long initiativeId;
+
+
   private Sdg sdg;
+
+
+  public Long getInitiativeId() {
+    return initiativeId;
+  }
 
 
   public Sdg getSdg() {
@@ -39,6 +47,11 @@ public class OneCGIARWorkpackageSdg extends MarloAuditableEntity implements java
 
   public String getWorkpackageId() {
     return workpackageId;
+  }
+
+
+  public void setInitiativeId(Long initiativeId) {
+    this.initiativeId = initiativeId;
   }
 
 

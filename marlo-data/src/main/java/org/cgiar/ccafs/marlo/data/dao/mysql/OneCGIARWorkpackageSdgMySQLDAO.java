@@ -39,8 +39,9 @@ public class OneCGIARWorkpackageSdgMySQLDAO extends AbstractMarloDAO<OneCGIARWor
   }
 
   @Override
-  public List<OneCGIARWorkpackageSdg> getAllByWorkpackage(String workpackage) {
-    String query = "from " + OneCGIARWorkpackageSdg.class.getName() + " WHERE workpackage_Id='" + workpackage + "'";
+  public List<OneCGIARWorkpackageSdg> getAllByWorkpackage(String workpackage, Long initiative) {
+    String query = "from " + OneCGIARWorkpackageSdg.class.getName() + " WHERE workpackage_Id='" + workpackage
+      + "' and initiative_id=" + initiative;
     List<OneCGIARWorkpackageSdg> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

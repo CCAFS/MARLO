@@ -29,11 +29,19 @@ public class OneCGIARWorkpackageImpactArea extends MarloAuditableEntity implemen
 
   private String workpackageId;
 
+  private Long initiativeId;
+
+
   private ImpactArea impactArea;
 
 
   public ImpactArea getImpactArea() {
     return impactArea;
+  }
+
+
+  public Long getInitiativeId() {
+    return initiativeId;
   }
 
 
@@ -44,6 +52,11 @@ public class OneCGIARWorkpackageImpactArea extends MarloAuditableEntity implemen
 
   public void setImpactArea(ImpactArea impactArea) {
     this.impactArea = impactArea;
+  }
+
+
+  public void setInitiativeId(Long initiativeId) {
+    this.initiativeId = initiativeId;
   }
 
 
