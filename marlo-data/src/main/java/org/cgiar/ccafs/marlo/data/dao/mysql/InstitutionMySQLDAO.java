@@ -104,7 +104,7 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
         + "where dictionary.institution_id=inst.id ) as  institution_related  from institutions inst "
         + "INNER JOIN institution_types insttypes ON insttypes.id=inst.institution_type_id "
         + "INNER JOIN institutions_locations instloc ON instloc.institution_id=inst.id and instloc.is_headquater=1 "
-        + "INNER JOIN loc_elements loc ON loc.id=instloc.loc_element_id WHERE ins.is_parent=1";
+        + "INNER JOIN loc_elements loc ON loc.id=instloc.loc_element_id WHERE inst.is_parent=1";
     List<Institution> institutions = new ArrayList<>();
 
     List<InstitutionDictionary> dictionary;
