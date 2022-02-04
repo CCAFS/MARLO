@@ -484,8 +484,10 @@ function justificationByStatus(statusId) {
             } else {
               showNewExpectedComponent(true, true);
             }
-            if (statusId == 3) {
+            if (statusId == 3 && newExpectedYear == '-1') {
               showNewExpectedComponent(false, true);
+            } else {
+              showNewExpectedComponent(true, true);
             }
             if (statusId == 4 && newExpectedYear == '2021') {
               showExpectedComponent(true, true);
