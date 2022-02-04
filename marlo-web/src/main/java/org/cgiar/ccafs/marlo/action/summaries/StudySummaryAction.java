@@ -237,7 +237,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("OutcomesCaseStudySummary-");
+    fileName.append("OICRStudySummary-");
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
     try {
       if (studyProjects != null && !studyProjects.isEmpty()) {
@@ -249,7 +249,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     } catch (Exception e) {
       LOG.info("Error getting project(s) for study: " + projectExpectedStudyID);
     }
-    fileName.append("OICS" + projectExpectedStudyID + "-");
+    fileName.append("OICR" + projectExpectedStudyID + "-");
     fileName.append(this.getSelectedCycle() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
