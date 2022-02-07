@@ -28,6 +28,9 @@
 		<property name="programType" type="int">
 			<column name="program_type" not-null="true" />
 		</property>
+		<property name="orderIndex" type="int">
+			<column name="order_index" not-null="true" />
+		</property>
 		<property name="baseLine" type="java.lang.Boolean">
 			<column name="base_line" default="0" />
 		</property>
