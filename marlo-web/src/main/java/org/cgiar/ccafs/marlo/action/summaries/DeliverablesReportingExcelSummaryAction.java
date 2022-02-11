@@ -39,7 +39,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
-import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
@@ -54,7 +53,9 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.MarloAuditableEntity;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -71,6 +72,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -770,18 +772,22 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         }
 
         // Get funding sources if exist
-        for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
-          .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase())
-            && d.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null)
+        for (FundingSourceInfo fsi : deliverable.getDeliverableFundingSources().stream()
+          .filter(dfs -> dfs != null && dfs.getId() != null && dfs.isActive() && dfs.getPhase() != null
+            && dfs.getPhase().equals(this.getSelectedPhase()) && dfs.getFundingSource() != null
+            && dfs.getFundingSource().getId() != null
+            && dfs.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null)
+          .sorted(Comparator.comparing(MarloAuditableEntity::getActiveSince).reversed())
+          .map(dfs -> dfs.getFundingSource()).distinct().map(fs -> fs.getFundingSourceInfo(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
           String financialCode = "";
-          if (dfs.getFundingSource().getFundingSourceInfo().getFinanceCode() != null
-            && !dfs.getFundingSource().getFundingSourceInfo().getFinanceCode().isEmpty()) {
-            financialCode = " (" + dfs.getFundingSource().getFundingSourceInfo().getFinanceCode() + ")";
+          if (fsi.getFinanceCode() != null && !fsi.getFinanceCode().isEmpty()) {
+            financialCode = " (" + fsi.getFinanceCode() + ")";
           }
-          fundingSources += "●  FS" + dfs.getFundingSource().getId() + financialCode + " - "
-            + dfs.getFundingSource().getFundingSourceInfo().getTitle() + "\n";
+
+          fundingSources += "●  FS" + fsi.getFundingSource().getId() + financialCode + " - " + fsi.getTitle() + "\n";
         }
+
         if (fundingSources.isEmpty()) {
           fundingSources = null;
         }
@@ -1892,17 +1898,22 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
 
         // Get funding sources if exist
-        for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
-          .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase())
-            && d.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null)
+        for (FundingSourceInfo fsi : deliverable.getDeliverableFundingSources().stream()
+          .filter(dfs -> dfs != null && dfs.getId() != null && dfs.isActive() && dfs.getPhase() != null
+            && dfs.getPhase().equals(this.getSelectedPhase()) && dfs.getFundingSource() != null
+            && dfs.getFundingSource().getId() != null
+            && dfs.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null)
+          .sorted(Comparator.comparing(MarloAuditableEntity::getActiveSince).reversed())
+          .map(dfs -> dfs.getFundingSource()).distinct().map(fs -> fs.getFundingSourceInfo(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
           String financialCode = "";
-          if (dfs.getFundingSource().getFundingSourceInfo().getFinanceCode() != null) {
-            financialCode = dfs.getFundingSource().getFundingSourceInfo().getFinanceCode();
+          if (fsi.getFinanceCode() != null && !fsi.getFinanceCode().isEmpty()) {
+            financialCode = " (" + fsi.getFinanceCode() + ")";
           }
-          fundingSources += "●  FS" + dfs.getFundingSource().getId() + " (" + financialCode + ") - "
-            + dfs.getFundingSource().getFundingSourceInfo().getTitle() + "\n";
+
+          fundingSources += "●  FS" + fsi.getFundingSource().getId() + financialCode + " - " + fsi.getTitle() + "\n";
         }
+
         if (fundingSources.isEmpty()) {
           fundingSources = null;
         }
