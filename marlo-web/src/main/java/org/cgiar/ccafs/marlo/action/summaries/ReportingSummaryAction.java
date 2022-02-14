@@ -549,6 +549,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       this.getText("projectOutcome.lessons.planning"));
     masterReport.getParameterValues().put("i8nOutcomeYear", this.getText("outcome.inputTargetYear.placeholder"));
     masterReport.getParameterValues().put("i8nOutcomeLessons", this.getText("outcome.lessons"));
+    masterReport.getParameterValues().put("i8nContributingLessonsReporting",
+      this.getText("projectOutcome.lessons.reporting"));
+    masterReport.getParameterValues().put("i8nContributingLessonsPlanning",
+      this.getText("projectOutcome.lessons.planning"));
+
 
     /*
      * Expected Studies
@@ -1288,7 +1293,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           // args.clear();
           this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list_reporting", args);
           this.fillSubreport((SubReport) hm.get("innovations"), "innovations", args);
-          this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
+          // this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
         }
 
         // Subreport Activities
@@ -1308,13 +1313,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           // Subreport BudgetsbyCoas
         } else {
           // Subreport Leverages for reporting
-          this.fillSubreport((SubReport) hm.get("leverages"), "leverages", args);
+          // this.fillSubreport((SubReport) hm.get("leverages"), "leverages", args);
         }
 
         if (this.getSelectedCycle().equals("Reporting")) {
           // Project Policy
           args.clear();
-          this.fillSubreport((SubReport) hm.get("project_policy"), "project_policy", args);
+          // this.fillSubreport((SubReport) hm.get("project_policy"), "project_policy", args);
 
           // Lp6 contribution
           args.clear();
@@ -1417,15 +1422,19 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       case "innovations":
         model = this.getInnovationsTableModel();
         break;
+
       case "project_highlight":
-        model = this.getProjectHighlightReportingTableModel();
+        // model = this.getProjectHighlightReportingTableModel();
         break;
+
       case "leverages":
-        model = this.getLeveragesTableModel();
+        // model = this.getLeveragesTableModel();
         break;
+
       case "project_policy":
-        model = this.getProjectPolicyTableModel();
+        // model = this.getProjectPolicyTableModel();
         break;
+
       case "project_contribution":
         model = this.getProjectContributionTableModel();
         break;
@@ -3037,7 +3046,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         endDate = formatter.format(projectInfo.getEndDate());
       }
       if (projectInfo.getLiaisonInstitution() != null) {
-        ml = projectInfo.getLiaisonInstitution().getAcronym();
+        ml = projectInfo.getLiaisonInstitution().getName();
       }
 
       // Get type from funding sources
@@ -3337,10 +3346,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     TypedTableModel model = new TypedTableModel(
       new String[] {"exp_value", "narrative", "outcome_id", "out_fl", "out_year", "out_value", "out_statement",
         "out_unit", "cross_cutting", "exp_unit", "ach_unit", "ach_value", "ach_narrative", "communications",
-        "showCommunications"},
+        "showCommunications", "setted_value", "lessonsOutcome"},
       new Class[] {Long.class, String.class, Long.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        Boolean.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, Boolean.class,
+        String.class, String.class},
       0);
     if (!project.getProjectOutcomes().isEmpty()) {
       for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
@@ -3357,6 +3366,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String crossCutting = "";
         String ach_unit = null, ach_value = null, ach_narrative = null;
         String communications = null;
+        String settedValue = null;
+        String lessonsOutcome = null;
 
         if (projectOutcome.getCrpProgramOutcome() != null) {
           outYear = "" + projectOutcome.getCrpProgramOutcome().getYear();
@@ -3411,9 +3422,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
         }
 
-        model.addRow(new Object[] {expValue, projectOutcome.getNarrativeTarget(), projectOutcome.getId(), outFl,
-          outYear, outValue, outStatement, outUnit, crossCutting, expUnit, ach_unit, ach_value, ach_narrative,
-          communications, this.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS)});
+        if (projectOutcome.getProjectComponentLesson() != null
+          && projectOutcome.getProjectComponentLesson().getLessons() != null) {
+          lessonsOutcome = projectOutcome.getProjectComponentLesson().getLessons();
+        }
+
+        model
+          .addRow(new Object[] {expValue, projectOutcome.getNarrativeTarget(), projectOutcome.getId(), outFl, outYear,
+            outValue, outStatement, outUnit, crossCutting, expUnit, ach_unit, ach_value, ach_narrative, communications,
+            this.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS), settedValue, lessonsOutcome});
       }
     }
     return model;
