@@ -3839,7 +3839,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     if (projectLeader != null) {
       if (projectLeader.getInstitution() != null && projectLeader.getInstitution().getAcronym() != ""
         && projectLeader.getInstitution().getAcronym() != null) {
-        title += projectLeader.getInstitution().getAcronym() + "-";
+        // title += projectLeader.getInstitution().getAcronym() + "-";
       }
     }
     try {
@@ -3860,16 +3860,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       if (flagships != null) {
         if (!flagships.isEmpty()) {
           for (CrpProgram crpProgram : flagships) {
-            title += crpProgram.getAcronym() + "-";
+            // title += crpProgram.getAcronym() + "-";
           }
         }
       }
       if (projectInfo != null && projectInfo.getNoRegional() != null && projectInfo.getNoRegional()) {
-        title += "Global" + "-";
+        // title += "Global" + "-";
       } else {
         if (regions != null && !regions.isEmpty()) {
           for (CrpProgram crpProgram : regions) {
-            title += crpProgram.getAcronym() + "-";
+            // title += crpProgram.getAcronym() + "-";
           }
         }
       }
