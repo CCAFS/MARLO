@@ -83,7 +83,7 @@
                       [#local projectUrl][@s.url namespace="/clusters" action="${(crpSession)!}/description"][@s.param name='projectID']${p.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                     [/#if]
                     <tr>
-                      <th scope="row">P${p.id}</th>
+                      <th scope="row">C${p.id}</th>
                       <td>${(p.projectInfo.title)!'Untitled'}</td>
                       <td class="">[#if p.getLeader(action.getActualPhase())?has_content]${(p.getLeader(action.getActualPhase()).institution.acronym)!p.getLeader(action.getActualPhase()).institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]</td>
                       <td> <a href="${projectUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
