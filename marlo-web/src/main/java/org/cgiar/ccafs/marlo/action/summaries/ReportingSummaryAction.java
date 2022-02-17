@@ -2840,7 +2840,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
           }
 
-          if (deliverable.getProjectOutcomes() != null && !deliverable.getProjectOutcomes().isEmpty()) {
+          if (deliverable.getProjectOutcomes() != null) {
             for (DeliverableProjectOutcome projectOutcome : deliverable.getProjectOutcomes()) {
 
               // Fill projectOutcomes List
