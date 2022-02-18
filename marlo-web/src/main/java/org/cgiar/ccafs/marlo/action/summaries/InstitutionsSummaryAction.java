@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.DeliverableStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
@@ -143,7 +144,8 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
   private void createIntitutionsProjectsList() {
 
     // Status of projects
-    String[] statuses = {ProjectStatusEnum.Ongoing.getStatusId(), ProjectStatusEnum.Extended.getStatusId()};
+    String[] statuses = {ProjectStatusEnum.Ongoing.getStatusId(), ProjectStatusEnum.Extended.getStatusId(),
+      DeliverableStatusEnum.COMPLETE.getStatusId(), DeliverableStatusEnum.PARTIALLY_COMPLETE.getStatusId()};
 
     // Get projects with the status defined
     List<Project> projectList =
