@@ -991,11 +991,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   public void validateProjectDeliverables(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
-
     Phase phase = action.getActualPhase();
+    boolean isManagement =
+      project.getProjecInfoPhase(phase) != null && project.getProjecInfoPhase(phase).getAdministrative() != null
+        && project.getProjecInfoPhase(phase).getAdministrative();
 
     List<Deliverable> deliverables;
-
     if (project.getDeliverables() != null) {
 
       List<DeliverableInfo> infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
@@ -1008,7 +1009,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         }
       }
 
-      deliverableValidator.validate(action, project, action.isNotEmpty(deliverables));
+      deliverableValidator.validate(action, project, action.isNotEmpty(deliverables), isManagement);
 
       for (Deliverable deliverable : deliverables) {
 
@@ -1217,7 +1218,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         deliverableValidator.validate(action, deliverable, false);
       }
     } else {
-      deliverableValidator.validate(action, project, false);
+      deliverableValidator.validate(action, project, false, isManagement);
     }
   }
 

@@ -375,9 +375,9 @@ public class DeliverableValidator extends BaseValidator {
 
   }
 
-  public void validate(BaseAction action, Project project, boolean hasDeliverables) {
+  public void validate(BaseAction action, Project project, boolean hasDeliverables, boolean isManagement) {
     if (project != null && project.getId() != null) {
-      if (hasDeliverables == false) {
+      if (hasDeliverables == false && !isManagement) {
         action.addMissingField(APConstants.STATUS_EMPTY_DELIVERABLE_LIST);
         this.saveMissingFieldsIndicator(project, action.getActualPhase().getDescription(),
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
