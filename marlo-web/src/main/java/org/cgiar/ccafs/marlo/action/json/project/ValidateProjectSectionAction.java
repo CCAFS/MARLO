@@ -273,11 +273,11 @@ public class ValidateProjectSectionAction extends BaseAction {
           section = new HashMap<String, Object>();
           section.put("sectionName", ProjectSectionStatusEnum.DELIVERABLES);
           section.put("missingFields", "");
+          boolean isManagement =
+            projectInfo != null && projectInfo.getAdministrative() != null && projectInfo.getAdministrative();
 
           if (project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()).isEmpty()
-            && project.getProjecInfoPhase(this.getActualPhase()) != null
-            && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
-            && !project.getProjecInfoPhase(this.getActualPhase()).getAdministrative()) {
+            && project.getProjecInfoPhase(this.getActualPhase()) != null && !isManagement) {
             section.put("missingFields", section.get("missingFields") + "-" + "deliveralbes");
           }
 
