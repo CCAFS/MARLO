@@ -225,58 +225,61 @@ public class ProjectInnovationValidator extends BaseValidator {
         } else {
           // Validate Evidence Link (URL)
           // Validate stage different to 1 and 3
+          boolean hasDeliverables = true;
           boolean validEvidenceLinks = true;
-          if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
-            .getId() != 1
-            && projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
-              .getId() != 3) {
-            if (action.isNotEmpty(projectInnovation.getInnovationLinks())) {
-              for (int i = 0; i < projectInnovation.getInnovationLinks().size(); i++) {
-                ProjectInnovationEvidenceLink link = projectInnovation.getInnovationLinks().get(i);
-                if (link == null || link.getLink() == null || !Patterns.WEB_URL.matcher(link.getLink()).find()) {
-                  if (struts) {
-                    // Does not work. On load there is not an specific way we can know the links are going to
-                    // be loaded in the same order they were saved
-                    /*
-                     * action.addMessage(action.getText("Evidence Link"));
-                     * action.addMissingField("Evidence Link");
-                     * action.getInvalidFields().put("input-innovation.innovationLinks[" + i + "].link",
-                     * InvalidFieldsMessages.EMPTYFIELD);
-                     */
-                    validEvidenceLinks = false;
-                  }
+
+          if (action.isNotEmpty(projectInnovation.getInnovationLinks())) {
+            for (int i = 0; i < projectInnovation.getInnovationLinks().size(); i++) {
+              ProjectInnovationEvidenceLink link = projectInnovation.getInnovationLinks().get(i);
+              if (link == null || link.getLink() == null || !Patterns.WEB_URL.matcher(link.getLink()).find()) {
+                if (struts) {
+                  // Does not work. On load there is not an specific way we can know the links are going to
+                  // be loaded in the same order they were saved
+                  /*
+                   * action.addMessage(action.getText("Evidence Link"));
+                   * action.addMissingField("Evidence Link");
+                   * action.getInvalidFields().put("input-innovation.innovationLinks[" + i + "].link",
+                   * InvalidFieldsMessages.EMPTYFIELD);
+                   */
+                  validEvidenceLinks = false;
                 }
               }
-              if (!validEvidenceLinks) {
-                action.addMessage(action.getText("Evidence Link"));
-                action.addMissingField("Evidence Link");
-                action.getInvalidFields().put("innovation.projectInnovationInfo.evidenceLink",
-                  InvalidFieldsMessages.EMPTYFIELD);
-              }
-            } else {
+            }
+            if (!validEvidenceLinks) {
               action.addMessage(action.getText("Evidence Link"));
               action.addMissingField("Evidence Link");
               action.getInvalidFields().put("innovation.projectInnovationInfo.evidenceLink",
-                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Evidence Link"}));
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          } else {
+            validEvidenceLinks = false;
+            /*
+             * action.addMessage(action.getText("Evidence Link"));
+             * action.addMissingField("Evidence Link");
+             * action.getInvalidFields().put("innovation.projectInnovationInfo.evidenceLink",
+             * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Evidence Link"}));
+             */
+          }
+
+          // Validate deliverables
+          if (action.isEmpty(projectInnovation.getProjectInnovationDeliverables())) {
+            hasDeliverables = false;
+            if (struts) {
+              /*
+               * action.addMessage(action.getText("projectInnovations.evidenceLink"));
+               * action.addMissingField("projectInnovations.evidenceLink");
+               * action.getInvalidFields().put("input-innovation.projectInnovationInfo.evidenceLink",
+               * InvalidFieldsMessages.EMPTYFIELD);
+               */
             }
           }
 
-          // Validate evidence link and deliverables for stage 1 and 3
-          if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
-            .getId() == 1
-            || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
-              .getId() == 3) {
-
-            if (!validEvidenceLinks && ((projectInnovation.getProjectInnovationDeliverables() != null
-              && projectInnovation.getProjectInnovationDeliverables().isEmpty())
-              || (projectInnovation.getProjectInnovationDeliverables() == null))) {
-              if (struts) {
-                action.addMessage(action.getText("projectInnovations.evidenceLink"));
-                action.addMissingField("projectInnovations.evidenceLink");
-                action.getInvalidFields().put("input-innovation.projectInnovationInfo.evidenceLink",
-                  InvalidFieldsMessages.EMPTYFIELD);
-              }
-            }
+          // validate evidences (either deliverables and/or links)
+          if (!(hasDeliverables || validEvidenceLinks)) {
+            action.addMessage(action.getText("projectInnovations.evidenceLink"));
+            action.addMissingField("projectInnovations.evidenceLink");
+            action.getInvalidFields().put("input-innovation.projectInnovationInfo.evidenceLink",
+              InvalidFieldsMessages.EMPTYFIELD);
           }
         }
       }
@@ -491,6 +494,7 @@ public class ProjectInnovationValidator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
     }
+
     this.saveMissingFields(project, projectInnovation, action.getActualPhase().getDescription(),
       action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
       ProjectSectionStatusEnum.INNOVATIONS.getStatus(), action);
