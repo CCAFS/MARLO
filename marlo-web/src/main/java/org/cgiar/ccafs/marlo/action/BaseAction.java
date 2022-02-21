@@ -3860,6 +3860,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         Phase phase = this.getActualPhase();
         List<Deliverable> deliverables = new ArrayList<>();
+        boolean isManagement =
+          project.getProjecInfoPhase(phase) != null && project.getProjecInfoPhase(phase).getAdministrative() != null
+            && project.getProjecInfoPhase(phase).getAdministrative();
 
         if (project.getDeliverables() != null) {
 
@@ -3918,7 +3921,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         }
 
-        returnValue = this.isNotEmpty(project.getDeliverables()) && this.isNotEmpty(deliverables);
+        returnValue = (this.isNotEmpty(project.getDeliverables()) && this.isNotEmpty(deliverables)) || isManagement;
 
         break;
 
