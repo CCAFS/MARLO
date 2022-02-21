@@ -141,7 +141,7 @@
               [@utils.tableText value=(item.projectExpectedStudyInfo.studyType.name)!"" /]
             </td>
             <td class="owner text-center">
-              [#if isOwner] <small><nobr>This Cluster</nobr></small>  [#else][#if item.project?has_content]P${item.project.id}[#else]Not defined[/#if][/#if]
+              [#if isOwner] <small><nobr>This Cluster</nobr></small>  [#else][#if item.project?has_content]C${item.project.id}[#else]Not defined[/#if][/#if]
             </td>
             <td class="year">
               [@utils.tableText value=(item.projectExpectedStudyInfo.year)!"" /]
