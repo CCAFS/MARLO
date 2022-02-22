@@ -379,14 +379,14 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       }
     }
     // Uncomment this line to allow reporting replication to upkeep
-    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-    // Phase upkeepPhase = currentPhase.getNext().getNext();
-    // if (upkeepPhase != null) {
-    // this.addProjectOutcomePhase(upkeepPhase, projectOutcome.getProject().getId(), projectOutcome);
-    // }
-    // }
-    // }
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.addProjectOutcomePhase(upkeepPhase, projectOutcome.getProject().getId(), projectOutcome);
+        }
+      }
+    }
     return resultProjectOutcome;
   }
 
