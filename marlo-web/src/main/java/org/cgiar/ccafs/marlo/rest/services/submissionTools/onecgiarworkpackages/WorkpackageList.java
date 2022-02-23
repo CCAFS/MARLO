@@ -17,7 +17,7 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.services.submissionTools.workpackages;
+package org.cgiar.ccafs.marlo.rest.services.submissionTools.onecgiarworkpackages;
 
 import java.io.Serializable;
 import java.util.List;
@@ -28,14 +28,14 @@ public class WorkpackageList implements Serializable {
    * 
    */
   private static final long serialVersionUID = 1L;
-  private List<Workpackage> workpackages;
+  private List<Workpackage> workPackagesProposal;
 
-  public List<Workpackage> getWorkpackages() {
-    return workpackages;
+  public List<Workpackage> getWorkPackagesProposal() {
+    return workPackagesProposal;
   }
 
-  public void setWorkpackages(List<Workpackage> workpackages) {
-    this.workpackages = workpackages;
+  public void setWorkPackagesProposal(List<Workpackage> workPackagesProposal) {
+    this.workPackagesProposal = workPackagesProposal;
   }
 
 

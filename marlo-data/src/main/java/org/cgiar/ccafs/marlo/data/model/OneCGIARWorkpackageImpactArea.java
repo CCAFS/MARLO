@@ -17,26 +17,50 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.services.submissionTools.workpackages;
+package org.cgiar.ccafs.marlo.data.model;
 
-import java.io.Serializable;
-import java.util.List;
 
-public class WorkpackageList implements Serializable {
+public class OneCGIARWorkpackageImpactArea extends MarloAuditableEntity implements java.io.Serializable {
 
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
-  private List<Workpackage> workpackages;
 
-  public List<Workpackage> getWorkpackages() {
-    return workpackages;
+  private String workpackageId;
+
+  private Long initiativeId;
+
+
+  private ImpactArea impactArea;
+
+
+  public ImpactArea getImpactArea() {
+    return impactArea;
   }
 
-  public void setWorkpackages(List<Workpackage> workpackages) {
-    this.workpackages = workpackages;
+
+  public Long getInitiativeId() {
+    return initiativeId;
   }
 
 
+  public String getWorkpackageId() {
+    return workpackageId;
+  }
+
+
+  public void setImpactArea(ImpactArea impactArea) {
+    this.impactArea = impactArea;
+  }
+
+
+  public void setInitiativeId(Long initiativeId) {
+    this.initiativeId = initiativeId;
+  }
+
+
+  public void setWorkpackageId(String workpackageId) {
+    this.workpackageId = workpackageId;
+  }
 }

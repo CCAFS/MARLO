@@ -17,26 +17,33 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.services.submissionTools.workpackages;
+package org.cgiar.ccafs.marlo.data.manager.impl;
 
-import java.io.Serializable;
+import org.cgiar.ccafs.marlo.data.dao.OneCGIARWorkpackageImpactAreaDAO;
+import org.cgiar.ccafs.marlo.data.manager.OneCGIARWorkpackageImpactAreaManager;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARWorkpackageImpactArea;
+
 import java.util.List;
 
-public class WorkpackageList implements Serializable {
+import javax.inject.Inject;
+import javax.inject.Named;
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
-  private List<Workpackage> workpackages;
+@Named
+public class OneCGIARWorkpackageImpactAreaManagerImpl implements OneCGIARWorkpackageImpactAreaManager {
 
-  public List<Workpackage> getWorkpackages() {
-    return workpackages;
+  private OneCGIARWorkpackageImpactAreaDAO oneCGIARWorkpackageImpactAreaDAO;
+
+
+  @Inject
+  public OneCGIARWorkpackageImpactAreaManagerImpl(OneCGIARWorkpackageImpactAreaDAO oneCGIARWorkpackageImpactAreaDAO) {
+    super();
+    this.oneCGIARWorkpackageImpactAreaDAO = oneCGIARWorkpackageImpactAreaDAO;
   }
 
-  public void setWorkpackages(List<Workpackage> workpackages) {
-    this.workpackages = workpackages;
-  }
 
+  @Override
+  public List<OneCGIARWorkpackageImpactArea> getAllByWorkpackage(String workpackage, Long initiative) {
+    return oneCGIARWorkpackageImpactAreaDAO.getAllByWorkpackage(workpackage, initiative);
+  }
 
 }

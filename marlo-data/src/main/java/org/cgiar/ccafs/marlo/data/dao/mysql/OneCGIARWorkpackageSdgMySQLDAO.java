@@ -17,26 +17,36 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.services.submissionTools.workpackages;
+package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import java.io.Serializable;
+import org.cgiar.ccafs.marlo.data.dao.OneCGIARWorkpackageSdgDAO;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARWorkpackageSdg;
+
 import java.util.List;
 
-public class WorkpackageList implements Serializable {
+import javax.inject.Inject;
+import javax.inject.Named;
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
-  private List<Workpackage> workpackages;
+import org.hibernate.SessionFactory;
 
-  public List<Workpackage> getWorkpackages() {
-    return workpackages;
+@Named
+public class OneCGIARWorkpackageSdgMySQLDAO extends AbstractMarloDAO<OneCGIARWorkpackageSdg, Long>
+  implements OneCGIARWorkpackageSdgDAO {
+
+  @Inject
+  public OneCGIARWorkpackageSdgMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
-  public void setWorkpackages(List<Workpackage> workpackages) {
-    this.workpackages = workpackages;
+  @Override
+  public List<OneCGIARWorkpackageSdg> getAllByWorkpackage(String workpackage, Long initiative) {
+    String query = "from " + OneCGIARWorkpackageSdg.class.getName() + " WHERE workpackage_Id='" + workpackage
+      + "' and initiative_id=" + initiative;
+    List<OneCGIARWorkpackageSdg> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
   }
-
 
 }
