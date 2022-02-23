@@ -110,11 +110,9 @@ public class ProjectInnovationEvidenceLinkMySQLDAO extends AbstractMarloDAO<Proj
     createQuery.setParameter("innovationId", innovationID);
     createQuery.setParameter("duLink", link);
 
-    Object findSingleResult = super.findSingleResult(ProjectInnovationEvidenceLink.class, createQuery);
-    ProjectInnovationEvidenceLink projectInnovationEvidenceLinkResult =
-      (ProjectInnovationEvidenceLink) findSingleResult;
+    List<ProjectInnovationEvidenceLink> findAll = super.findAll(createQuery);
 
-    return projectInnovationEvidenceLinkResult;
+    return (findAll != null && findAll.size() > 0) ? findAll.get(0) : null;
   }
 
   @Override
