@@ -4030,7 +4030,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
 
         crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
-          .filter(c -> c.isActive() && c.getYear().intValue() == this.getSelectedPhase().getYear())
+          .filter(c -> c != null && c.getId() != null && c.isActive()
+            && ((c.getYear() != null && c.getYear().intValue() == this.getSelectedPhase().getYear())
+              || (c.getExtendedYear() != null && c.getExtendedYear().intValue() == this.getSelectedPhase().getYear())))
           .collect(Collectors.toList()));
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));

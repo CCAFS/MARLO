@@ -19,14 +19,51 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
+import org.cgiar.ccafs.marlo.data.model.OneCGIARWorkpackageImpactArea;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARWorkpackageScienceGroup;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARWorkpackageSdg;
+import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasDTO;
+import org.cgiar.ccafs.marlo.rest.dto.SDGsDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ScienceGroupDTO;
 import org.cgiar.ccafs.marlo.rest.dto.WorkPackagesDTO;
 import org.cgiar.ccafs.marlo.rest.services.submissionTools.workpackages.Workpackage;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330")
+@Mapper(componentModel = "jsr330", uses = {OneCGIARScienceGorupMapper.class})
 public interface WorkpackagesMapper {
 
+  @Mappings({@Mapping(source = "impactArea.id", target = "id"),
+    @Mapping(source = "impactArea.description", target = "description"),
+    @Mapping(source = "impactArea.financialCode", target = "financialCode"),
+    @Mapping(source = "impactArea.name", target = "name")})
+  public ImpactAreasDTO
+    oneCGIARWorkpackageImpactAreaToImpactAreasDTO(OneCGIARWorkpackageImpactArea oneCGIARWorkpackageImpactArea);
+
+  @Mappings({@Mapping(source = "scienceGroup.id", target = "code"),
+    @Mapping(source = "scienceGroup.description", target = "description"),
+    @Mapping(source = "scienceGroup.financialCode", target = "financialCode"),
+    @Mapping(source = "scienceGroup.parentCode", target = "parent")})
+  public ScienceGroupDTO
+    oneCGIARWorkpackageScienceGroupToScienceGroupDTO(OneCGIARWorkpackageScienceGroup oneCGIARWorkpackageScienceGroup);
+
+
+  @Mappings({@Mapping(source = "sdg.smoCode", target = "usndCode"),
+    @Mapping(source = "sdg.shortName", target = "shortName"),
+    @Mapping(source = "sdg.financialCode", target = "financialCode"),
+    @Mapping(source = "sdg.fullName", target = "fullName")})
+  public SDGsDTO oneCGIARWorkpackageSdgToSDGsDTO(OneCGIARWorkpackageSdg oneCGIARWorkpackageSdg);
+
+  @Mappings({@Mapping(source = "scienceGroupList", target = "scienceGroupList"),
+    @Mapping(source = "sdgList", target = "sdgList"), @Mapping(source = "impactAreaList", target = "impactAreaList")})
+  public abstract WorkPackagesDTO oneCGIARWorkpackageToWorkPackagesDTO(
+    org.cgiar.ccafs.marlo.rest.services.submissionTools.onecgiarworkpackages.Workpackage workpackage);
+
+  @Mappings({@Mapping(source = "scienceGroupList", target = "scienceGroupList"),
+    @Mapping(source = "sdgList", target = "sdgList"), @Mapping(source = "impactAreaList", target = "impactAreaList")})
   public abstract WorkPackagesDTO workpackageToWorkPackagesDTO(Workpackage workpackage);
+
 
 }

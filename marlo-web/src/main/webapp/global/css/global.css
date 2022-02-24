@@ -38,9 +38,9 @@ select.input-sm {
   line-height: 24px;
 }
 
-.form-group {
+/* .form-group {
   margin-bottom: 10px;
-}
+} */
 
 .container:not(.loginPage) {
   position: relative;
@@ -4401,7 +4401,7 @@ li.fileUploaded span {
 
 .icon-20.project {
   background-image: url(../../global/images/summaries/summaries-icons.png);
-  background-position: -28px 2px;
+  background-position: -28px 0px;
   background-size: 360%;
   vertical-align: middle;
 }

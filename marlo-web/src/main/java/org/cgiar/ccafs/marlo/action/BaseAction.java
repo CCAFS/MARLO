@@ -132,6 +132,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.MarloAuditableEntity;
 import org.cgiar.ccafs.marlo.data.model.MarloMessage;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PolicyMilestone;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis2019SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
@@ -144,10 +145,12 @@ import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -332,12 +335,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
+
   @Inject
   private CustomParameterManager customParameterManager;
 
   @Inject
   private DeliverableTypeRuleManager deliverableTypeRuleManager;
-
   @Inject
   private DeliverableInfoManager deliverableInfoManager;
 
@@ -364,6 +367,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private DeliverableManager deliverableManager;
+
   private boolean draft;
 
   @Inject
@@ -373,19 +377,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ProjectBudgetManager projectBudgetManager;
-
   @Inject
   private ProjectPartnerPersonManager partnerPersonManager;
 
   @Inject
   private UserManager userManager;
+
   @Inject
   private FileDBManager fileDBManager;
-  private boolean fullEditable; // If user is able to edit all the form.
 
+  private boolean fullEditable; // If user is able to edit all the form.
   @Inject
   private FundingSourceManager fundingSourceManager;
-
   private HashMap<String, String> invalidFields;
 
   // User actions
@@ -395,15 +398,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private String justification;
 
   protected boolean next;
+
   private Map<String, Parameter> parameters;
+
   @Inject
   private ProjectComponentLessonManager projectComponentLessonManager;
   @Inject
   private ProjectManager projectManager;
-
   @Inject
   private ProjectOutcomeManager projectOutcomeManager;
-
   @Inject
   private PowbSynthesisManager powbSynthesisManager;
 
@@ -412,12 +415,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private LiaisonInstitutionManager liaisonInstitutionManager;
+
   @Inject
   private DeliverableTypeManager deliverableTypeManager;
+
   private boolean reportingActive;
-
   protected HttpServletRequest request;
-
   @Inject
   private BudgetTypeManager budgetTypeManager;
 
@@ -432,12 +435,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ICenterOutcomeManager outcomeService;
+
   @Inject
   private ICenterOutputManager outputService;
 
   @Inject
   private ICenterSectionStatusManager secctionStatusService;
-
   @Inject
   private ICenterCycleManager cycleService;
 
@@ -449,18 +452,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ICenterSectionStatusManager sectionStatusService;
+
   @Inject
   private ICapacityDevelopmentService capacityDevelopmentService;
 
   @Inject
   private ProjectExpectedStudyManager projectExpectedStudyManager;
-
   @Inject
   private ProjectInnovationManager projectInnovationManager;
+
   private String centerSession;
 
   private Long centerID;
-
   private CenterSubmission centerSubmission;
 
   /*********************************************************/
@@ -469,24 +472,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean save;
 
   private boolean saveable; // If user is able to see the save, cancel, delete
+
   // buttons
   @Inject
   private SectionStatusManager sectionStatusManager;
+
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
-
   private Map<String, Object> session;
-
   private Submission submission;
+
   protected boolean submit;
 
   private String url;
-
   @Inject
   private RoleManager roleManager;
+
   @Inject
   private IpProgramManager ipProgramManager;
+
   @Inject
   private IpLiaisonInstitutionManager ipLiaisonInstitutionManager;
   private List<Map<String, Object>> usersToActive;
@@ -496,21 +501,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private ReportSynthesisManager reportSynthesisManager;
   @Inject
   private MarloMessageManager marloMessageManager;
-
   @Inject
   private ReportSynthesisFlagshipProgressDeliverableManager flagshipProgressDeliverableManager;
   @Inject
   private ReportSynthesisFlagshipProgressInnovationManager flagshipProgressInnovationManager;
+
   @Inject
   private ReportSynthesisFlagshipProgressPolicyManager flagshipProgressPolicyManager;
   @Inject
   private ReportSynthesisFlagshipProgressStudyManager flagshipProgressStudyManager;
   @Inject
   private ReportSynthesisMeliaStudyManager reportSynthesisMeliaStudyManager;
-
   private StringBuilder validationMessage = new StringBuilder();
-
   private StringBuilder missingFields = new StringBuilder();
+
   private StringBuilder synthesisFlagships = new StringBuilder();
 
   public BaseAction() {
@@ -2779,6 +2783,39 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.differences;
   }
 
+  public List<ProjectExpectedStudy> getexpectedProjectOutcomes(Long id) {
+    List<ProjectExpectedStudy> expectedStudies = new ArrayList<>();
+    ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
+
+    try {
+      for (ProjectExpectedStudy expectedStudy : projectOutcome.getProject().getProjectExpectedStudies().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+          && ps.getProjectExpectedStudyInfo(this.getActualPhase()).isActive())
+        .collect(Collectors.toList())) {
+        if (expectedStudy.getProjectExpectedStudyMilestones() != null) {
+          expectedStudy.setMilestones(new ArrayList<>(expectedStudy.getProjectExpectedStudyMilestones().stream()
+            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+        }
+        if (expectedStudy != null && expectedStudy.getMilestones() != null
+          && !expectedStudy.getMilestones().isEmpty()) {
+          for (ProjectExpectedStudyMilestone projectExpectedStudyMilestone : expectedStudy.getMilestones()) {
+            if (projectExpectedStudyMilestone != null && projectExpectedStudyMilestone.getCrpMilestone() != null
+              && projectExpectedStudyMilestone.getCrpMilestone().getId() != null
+              && projectExpectedStudyMilestone.getCrpMilestone().getCrpProgramOutcome() != null
+              && projectExpectedStudyMilestone.getCrpMilestone().getCrpProgramOutcome().getId() != null
+              && projectExpectedStudyMilestone.getCrpMilestone().getCrpProgramOutcome().getId()
+                .compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
+              expectedStudies.add(expectedStudy);
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return expectedStudies;
+  }
+
   public List<Integer> getExpectedStudiesYears(Long expectedStudy) {
     List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList =
       this.projectExpectedStudyInfoManager.findAll().stream()
@@ -2911,6 +2948,38 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return false;
+  }
+
+  public List<ProjectInnovation> getInnovationProjectOutcomes(Long id) {
+    List<ProjectInnovation> innovations = new ArrayList<>();
+    ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
+
+    try {
+      for (ProjectInnovation innovation : projectOutcome.getProject().getProjectInnovations().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(this.getActualPhase()) != null
+          && ps.getProjectInnovationInfo(this.getActualPhase()).isActive())
+        .collect(Collectors.toList())) {
+        if (innovation.getProjectInnovationMilestones() != null) {
+          innovation.setMilestones(new ArrayList<>(innovation.getProjectInnovationMilestones().stream()
+            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+        }
+        if (innovation != null && innovation.getMilestones() != null && !innovation.getMilestones().isEmpty()) {
+          for (ProjectInnovationMilestone innovationStudyProjectOutcome : innovation.getMilestones()) {
+            if (innovationStudyProjectOutcome != null && innovationStudyProjectOutcome.getCrpMilestone() != null
+              && innovationStudyProjectOutcome.getCrpMilestone().getId() != null
+              && innovationStudyProjectOutcome.getCrpMilestone().getCrpProgramOutcome() != null
+              && innovationStudyProjectOutcome.getCrpMilestone().getCrpProgramOutcome().getId() != null
+              && innovationStudyProjectOutcome.getCrpMilestone().getCrpProgramOutcome().getId()
+                .compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
+              innovations.add(innovation);
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return innovations;
   }
 
   public SectionStatus getInnovationStatus(long innovationID) {
@@ -3288,6 +3357,38 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return this.crpManager.findAll().stream().filter(c -> c.isActive() && c.getGlobalUnitType().getId() == 3)
         .collect(Collectors.toList());
     }
+  }
+
+  public List<ProjectPolicy> getPoliciesProjectOutcomes(Long id) {
+    List<ProjectPolicy> projectPolicies = new ArrayList<>();
+    ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
+
+    try {
+      for (ProjectPolicy policy : projectOutcome.getProject().getProjectPolicies().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectPolicyInfo(this.getActualPhase()) != null
+          && ps.getProjectPolicyInfo(this.getActualPhase()).isActive())
+        .collect(Collectors.toList())) {
+        if (policy.getPolicyMilestones() != null) {
+          policy.setMilestones(new ArrayList<>(policy.getPolicyMilestones().stream()
+            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+        }
+        if (policy != null && policy.getMilestones() != null && !policy.getMilestones().isEmpty()) {
+          for (PolicyMilestone policyMilestone : policy.getMilestones()) {
+            if (policyMilestone != null && policyMilestone.getCrpMilestone() != null
+              && policyMilestone.getCrpMilestone().getId() != null
+              && policyMilestone.getCrpMilestone().getCrpProgramOutcome() != null
+              && policyMilestone.getCrpMilestone().getCrpProgramOutcome().getId() != null
+              && policyMilestone.getCrpMilestone().getCrpProgramOutcome().getId()
+                .compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
+              projectPolicies.add(policy);
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return projectPolicies;
   }
 
   public List<Integer> getPoliciesYears(Long policy) {
@@ -3759,6 +3860,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         Phase phase = this.getActualPhase();
         List<Deliverable> deliverables = new ArrayList<>();
+        boolean isManagement =
+          project.getProjecInfoPhase(phase) != null && project.getProjecInfoPhase(phase).getAdministrative() != null
+            && project.getProjecInfoPhase(phase).getAdministrative();
 
         if (project.getDeliverables() != null) {
 
@@ -3817,7 +3921,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         }
 
-        returnValue = this.isNotEmpty(project.getDeliverables()) && this.isNotEmpty(deliverables);
+        returnValue = (this.isNotEmpty(project.getDeliverables()) && this.isNotEmpty(deliverables)) || isManagement;
 
         break;
 
