@@ -381,6 +381,16 @@ public class SubmissionToolsControlLists {
     return this.projectedBenefitsItem.getDepthScales();
   }
 
+  @ApiOperation(tags = {"Submission Tool Control Lists"},
+    value = "${SubmissionToolsControlLists.Initiatives.all.value}", response = InitiativesDTO.class,
+    responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/onecgiar-workpackages", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<WorkPackagesDTO>> getOneCGIARWorkpackages() {
+    return this.workpackagesItem.getOneCGIARWorkpackages();
+  }
+
   @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdgTarget.all.value}",
     response = ProjectedBenefitsDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
