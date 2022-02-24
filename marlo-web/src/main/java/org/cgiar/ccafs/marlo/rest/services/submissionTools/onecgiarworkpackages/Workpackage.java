@@ -17,7 +17,7 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.services.submissionTools.workpackages;
+package org.cgiar.ccafs.marlo.rest.services.submissionTools.onecgiarworkpackages;
 
 import org.cgiar.ccafs.marlo.data.model.OneCGIARWorkpackageImpactArea;
 import org.cgiar.ccafs.marlo.data.model.OneCGIARWorkpackageScienceGroup;

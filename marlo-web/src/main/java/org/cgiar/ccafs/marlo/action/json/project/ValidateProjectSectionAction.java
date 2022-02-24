@@ -407,8 +407,12 @@ public class ValidateProjectSectionAction extends BaseAction {
           section.put("sectionName", sectionName);
           section.put("missingFields", "");
 
-          List<ProjectInnovation> innovations =
-            project.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+          List<ProjectInnovation> innovations = project.getProjectInnovations().stream().filter(c -> c != null
+            && c.getId() != null && c.isActive() && c.getProjectInnovationInfo(this.getActualPhase()) != null
+            && c.getProjectInnovationInfo(this.getActualPhase()).getId() != null
+            && c.getProjectInnovationInfo(this.getActualPhase()).getYear() != null && c
+              .getProjectInnovationInfo(this.getActualPhase()).getYear().intValue() == this.getActualPhase().getYear())
+            .collect(Collectors.toList());
           for (ProjectInnovation projectInnovation : innovations) {
             sectionStatus = sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(), cycle,
               this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);

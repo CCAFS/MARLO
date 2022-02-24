@@ -19,6 +19,9 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools;
 
+import org.cgiar.ccafs.marlo.data.manager.OneCGIARWorkpackageImpactAreaManager;
+import org.cgiar.ccafs.marlo.data.manager.OneCGIARWorkpackageScienceGroupManager;
+import org.cgiar.ccafs.marlo.data.manager.OneCGIARWorkpackageSdgManager;
 import org.cgiar.ccafs.marlo.rest.dto.WorkPackagesDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
@@ -57,16 +60,76 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class WorkpackagesItem<T> {
 
-  private WorkpackagesMapper WorkpackagesMapper;
+  private WorkpackagesMapper workpackagesMapper;
+  private OneCGIARWorkpackageImpactAreaManager oneCGIARWorkpackageImpactAreaManager;
+  private OneCGIARWorkpackageSdgManager oneCGIARWorkpackageSdgManager;
+  private OneCGIARWorkpackageScienceGroupManager oneCGIARWorkpackageScienceGroupManager;
   protected APConfig config;
 
   @Inject
-  public WorkpackagesItem(org.cgiar.ccafs.marlo.rest.mappers.WorkpackagesMapper workpackagesMapper, APConfig config) {
+  public WorkpackagesItem(org.cgiar.ccafs.marlo.rest.mappers.WorkpackagesMapper workpackagesMapper,
+    OneCGIARWorkpackageImpactAreaManager oneCGIARWorkpackageImpactAreaManager,
+    OneCGIARWorkpackageSdgManager oneCGIARWorkpackageSdgManager,
+    OneCGIARWorkpackageScienceGroupManager oneCGIARWorkpackageScienceGroupManager, APConfig config) {
     super();
-    WorkpackagesMapper = workpackagesMapper;
+    this.workpackagesMapper = workpackagesMapper;
+    this.oneCGIARWorkpackageImpactAreaManager = oneCGIARWorkpackageImpactAreaManager;
+    this.oneCGIARWorkpackageSdgManager = oneCGIARWorkpackageSdgManager;
+    this.oneCGIARWorkpackageScienceGroupManager = oneCGIARWorkpackageScienceGroupManager;
     this.config = config;
   }
 
+
+  public ResponseEntity<List<WorkPackagesDTO>> getOneCGIARWorkpackages() {
+
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    List<WorkPackagesDTO> workpackageListDTO = new ArrayList<WorkPackagesDTO>();
+    List<org.cgiar.ccafs.marlo.rest.services.submissionTools.onecgiarworkpackages.Workpackage> oneCGIARworkpackageList =
+      new ArrayList<org.cgiar.ccafs.marlo.rest.services.submissionTools.onecgiarworkpackages.Workpackage>();
+    org.cgiar.ccafs.marlo.rest.services.submissionTools.onecgiarworkpackages.Response response = null;
+    String url = config.getUrlSubmissionTools();
+    if (url != null) {
+      try {
+        JsonElement json = this.getSubmissionElement(url + "stages-control/proposal/packages");
+        response = new Gson().fromJson(json,
+          org.cgiar.ccafs.marlo.rest.services.submissionTools.onecgiarworkpackages.Response.class);
+        if (response.getResponse() != null) {
+          org.cgiar.ccafs.marlo.rest.services.submissionTools.onecgiarworkpackages.WorkpackageList workpackageList =
+            response.getResponse();
+          if (workpackageList.getWorkPackagesProposal() != null) {
+            for (org.cgiar.ccafs.marlo.rest.services.submissionTools.onecgiarworkpackages.Workpackage workpackage : workpackageList
+              .getWorkPackagesProposal()) {
+              workpackage.setScienceGroupList(oneCGIARWorkpackageScienceGroupManager
+                .getAllByWorkpackage(workpackage.getAcronym(), workpackage.getInitiativeId()));
+              workpackage.setSdgList(oneCGIARWorkpackageSdgManager.getAllByWorkpackage(workpackage.getAcronym(),
+                workpackage.getInitiativeId()));
+              workpackage.setImpactAreaList(oneCGIARWorkpackageImpactAreaManager
+                .getAllByWorkpackage(workpackage.getAcronym(), workpackage.getInitiativeId()));
+              oneCGIARworkpackageList.add(workpackage);
+            }
+            workpackageListDTO = oneCGIARworkpackageList.stream()
+              .map(init -> this.workpackagesMapper.oneCGIARWorkpackageToWorkPackagesDTO(init))
+              .collect(Collectors.toList());
+          }
+
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+        fieldErrors.add(new FieldErrorDTO("getWorkPackages", "JSON element",
+          "Error trying to get data from service  " + e.getMessage()));
+      }
+
+    }
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+    return Optional.ofNullable(workpackageListDTO).map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+      .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
+  }
 
   public JsonElement getSubmissionElement(String url) throws MalformedURLException, IOException {
     URL submissionToolsUrl = new URL(url);
@@ -85,6 +148,7 @@ public class WorkpackagesItem<T> {
     return element;
   }
 
+
   public ResponseEntity<List<WorkPackagesDTO>> getWorkPackages() {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     List<WorkPackagesDTO> workpackageListDTO = new ArrayList<WorkPackagesDTO>();
@@ -98,7 +162,7 @@ public class WorkpackagesItem<T> {
           WorkpackageList workpackageList = response.getResponse();
           if (workpackageList.getWorkpackages() != null) {
             workpackageListDTO = workpackageList.getWorkpackages().stream()
-              .map(init -> this.WorkpackagesMapper.workpackageToWorkPackagesDTO(init)).collect(Collectors.toList());
+              .map(init -> this.workpackagesMapper.workpackageToWorkPackagesDTO(init)).collect(Collectors.toList());
           }
 
         }

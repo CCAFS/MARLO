@@ -516,6 +516,9 @@
     <mapping resource="xmls/OneCGIARUser.hbm.xml"/>
     <mapping resource="xmls/OneCGIARInnovationUseLevel.hbm.xml"/>
     <mapping resource="xmls/OneCGIARInvestmentType.hbm.xml"/>
+    <mapping resource="xmls/OneCGIARWorkpackageScienceGroup.hbm.xml"/>
+    <mapping resource="xmls/OneCGIARWorkpackageImpactArea.hbm.xml"/>
+    <mapping resource="xmls/OneCGIARWorkpackageSdg.hbm.xml"/>
     
     <!-- Annual Report 2021 -->
     <mapping resource="xmls/ProjectExpectedStudyReferences.hbm.xml" />
