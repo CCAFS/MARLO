@@ -139,8 +139,8 @@ function attachEvents() {
     function addItem() {
       var $list = $(this).parent('.linksBlock').find('.linksList');
       var $element = $(this).parent('.linksBlock').parent().find('#multiInput-links-template').clone(true).removeAttr("id");
-      var $listLength = $list.children().length;
-      if ($listLength <= 9) {
+      // var $listLength = $list.children().length;
+      // if ($listLength <= 9) {
         // Remove template tag
         $element.find('input, textarea').each(function (i, e) {
           e.name = (e.name).replace("_TEMPLATE_", "");
@@ -150,7 +150,7 @@ function attachEvents() {
         $element.appendTo($list).hide().show(350);
         // Update indexes
         updateIndexes(this);
-      }
+      // }
     }
     function removeItem() {
       var $parent = $(this).parent('.multiInput.links');
