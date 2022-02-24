@@ -113,6 +113,7 @@ function disableEnableRequiredTag(key, tag) {
 function disabledUncheckedCheckmarkColor() {
   $('input[id^="disabled-"]').each((index, item) => {
     if ($(item).prop('checked') == false) {
+      $(item).prop('disabled', false);
       $(item).closest('.inputContainer').find('.checkmark').css('border', '2px solid #ff0000');
     }
   });
