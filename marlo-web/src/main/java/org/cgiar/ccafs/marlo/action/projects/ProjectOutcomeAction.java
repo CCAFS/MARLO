@@ -206,6 +206,16 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   public int getIndexMilestone(long milestoneId, int year) {
+    return this.getIndexMilestone(milestoneId, year, 0);
+  }
+
+  public int getIndexMilestone(long milestoneId, int year, long stackSize) {
+    if (stackSize > 25) {
+      throw new RuntimeException(
+        String.format("Error trying to calculate the index for milestone %s from outcome %s in year %s!", milestoneId,
+          projectOutcome.getId(), year));
+    }
+
     int i = 0;
 
     for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
@@ -223,7 +233,7 @@ public class ProjectOutcomeAction extends BaseAction {
     projectMilestone.setCrpMilestone(crpMilestoneManager.getCrpMilestoneById(milestoneId));
     projectOutcome.getMilestones().add(projectMilestone);
 
-    return this.getIndexMilestone(milestoneId, year);
+    return this.getIndexMilestone(milestoneId, year, stackSize + 1);
   }
 
 
@@ -747,7 +757,8 @@ public class ProjectOutcomeAction extends BaseAction {
     }
 
     if (this.isNotEmpty(projectOutcome.getMilestones())) {
-      for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
+      List<ProjectMilestone> projectMilestonesIncoming = new ArrayList<>(projectOutcome.getMilestones());
+      for (ProjectMilestone projectMilestone : projectMilestonesIncoming) {
         if (projectMilestone != null) {
           // Add new entity
           if (projectMilestone.getId() == null) {
@@ -762,7 +773,7 @@ public class ProjectOutcomeAction extends BaseAction {
             }
             projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
             // This add projectMilestone to generate correct auditlog.
-            projectOutcome.getProjectMilestones().add(projectMilestone);
+            // projectOutcome.getProjectMilestones().add(projectMilestone);
             // We should add this new milestone to the managed entity also
             if (this.isEmpty(this.projectOutcomeDB.getMilestones())) {
               this.projectOutcomeDB.setMilestones(new ArrayList<>());

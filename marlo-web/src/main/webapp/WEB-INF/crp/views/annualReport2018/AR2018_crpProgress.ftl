@@ -61,12 +61,16 @@
               [#-- Word Document Tag --]
               [#if PMU]
                 [#assign guideSheetURL = "https://docs.google.com/document/d/1bywPVopMJrNf3DkUBOiXJSadTQ6AG3WY/edit?usp=sharing&ouid=105658504509873937053&rtpof=true&sd=true" /]
-                <small class="pull-left"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> SLO contributions  -  Guideline </a> </small>
-                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                <div style="height: 21px;">
+                  <small class="pull-left"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> SLO contributions  -  Guideline </a> </small>
+                  [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                </div>
               [#else]
                 [#assign guideSheetURL = "https://docs.google.com/document/d/1bywPVopMJrNf3DkUBOiXJSadTQ6AG3WY/edit?usp=sharing&ouid=105658504509873937053&rtpof=true&sd=true" /]
-                <small class="pull-left"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> SLO contributions  -  Guideline </a> </small>
-                [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                <div style="height: 21px;">
+                  <small class="pull-left"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> SLO contributions  -  Guideline </a> </small>
+                  [@utilities.tagPMU label="annualReport.pmuBadge" tooltip="annualReport.pmuBadge.tooltip"/]
+                </div>
               [/#if]
               [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.overallContribution" help="${customLabel}.overallContribution.help" className="limitWords-${calculateLimitWords(400)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
               <br />

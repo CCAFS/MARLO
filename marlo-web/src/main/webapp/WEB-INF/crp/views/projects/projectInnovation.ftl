@@ -4,7 +4,7 @@
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20211126A",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20220107A",
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
@@ -179,10 +179,12 @@
           
           [#-- Is clear lead  --]
           [#assign isClearLead = (innovation.projectInnovationInfo.clearLead)!false /]
-
+          
+          [#if editable]
            <div class="form-group isClearLead">
             [@customForm.checkmark id="isClearLeadToAddRequired" name="clearLead" i18nkey="projectInnovations.clearLead" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(innovation.projectInnovationInfo.clearLead)!false cssClass="isClearLead" cssClassLabel=""  /]
            </div>
+          [/#if]
           [#-- Lead Organization --]
           <div class="form-group lead-organization" style="display:${isClearLead?string('none','block')}">
             [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="composedName" className="" editable=editable required=true /]

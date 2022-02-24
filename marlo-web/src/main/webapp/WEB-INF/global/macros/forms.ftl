@@ -128,7 +128,7 @@
   </div>
 [/#macro]
 
-[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" editable=true]
+[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" editable=true isPlannedColl=false]
   <div class="select ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
@@ -193,31 +193,39 @@
               [/#if]
             [/#if]
           [#else]
-            [#if name?contains(".id")]
-              [#assign customName]${name?replace('.id','')}[/#assign]
-            [#else]
-              [#assign customName]${name}[/#assign]
-            [/#if]
-            [#assign customValue][@s.property value="${customName}.${displayFieldName}"/][/#assign]
-            [#if value=="-NULL"] 
-              [#if customValue?has_content] 
-                ${customValue}  
-              [#elseif forcedValue?has_content]
-                ${forcedValue}
+            [#if isPlannedColl]
+              [#if valueName?has_content]
+                ${valueName} 
               [#else]
-                ${requiredText} [@s.text name="form.values.fieldEmpty" /]  
+                ${requiredText} [@s.text name="form.values.fieldEmpty" /]
               [/#if]
             [#else]
-              [#if customValue?has_content]
-                ${customValue}
-              [#elseif value=="-1"]
-                ${requiredText} [@s.text name="form.values.fieldEmpty" /]
+              [#if name?contains(".id")]
+                [#assign customName]${name?replace('.id','')}[/#assign]
               [#else]
-                ${valueName} 
-              [/#if] 
+                [#assign customName]${name}[/#assign]
+              [/#if]
+              [#assign customValue][@s.property value="${customName}.${displayFieldName}"/][/#assign]
+              [#if value=="-NULL"] 
+                [#if customValue?has_content] 
+                  ${customValue}  
+                [#elseif forcedValue?has_content]
+                  ${forcedValue}
+                [#else]
+                  ${requiredText} [@s.text name="form.values.fieldEmpty" /]  
+                [/#if]
+              [#else]
+                [#if customValue?has_content]
+                  ${customValue}
+                [#elseif value=="-1"]
+                  ${requiredText} [@s.text name="form.values.fieldEmpty" /]
+                [#else]
+                  ${valueName} 
+                [/#if] 
+              [/#if]
+              </p>
             [/#if]
-            </p>
-          [/#if]
+        [/#if]
       [/#if]  
     </div> 
   </div>
@@ -502,7 +510,7 @@
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
     </label>
     [#elseif checked]
-      <p>${label}</p>
+      <p>[@s.text name="${label}" /]</p>
     [/#if]
   </div>
 [/#macro]
@@ -841,5 +849,27 @@
     <span class="pull-left" style="width:45%; margin-left: 10px">[@customForm.input name="${customName}.link" placeholder="global.webSiteLink.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
     [#if editable]<div class="removeElement sm removeIcon removeLink ${class}" title="Remove"></div>[/#if]
     <div class="clearfix"></div>
+  </div>
+[/#macro]
+
+[#macro textAreaReferences name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false]
+  <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
+    [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
+    [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
+    [#-- Get Custom Value --]
+    [#assign customValue][#if value=="-NULL"][@s.property value="${name?string}"/][#else]${value}[/#if][/#assign]
+  	[#if showTitle]
+      <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass} [#if powbInclude]powb-label[/#if]"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
+        [#--  Help Text --]
+        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+        [#if powbInclude]
+          <span class="powb-doc badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
+        [/#if]
+      </label>
+    [/#if]
+    [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
+    [#if editable]
+      <textarea rows="4" name="${name}" id="${name}" [#if readOnly] readonly="readonly"[/#if] [#if disabled]disabled="disabled"[/#if]  class="[#if className != "-NULL"]${className}[/#if] form-control input-sm ${required?string('required','optional')} [#if allowTextEditor]allowTextEditor[/#if]" placeholder="[@s.text name=placeholder /]" />${customValue}</textarea>
+    [/#if] 
   </div>
 [/#macro]

@@ -484,8 +484,10 @@ function justificationByStatus(statusId) {
             } else {
               showNewExpectedComponent(true, true);
             }
-            if (statusId == 3) {
+            if (statusId == 3 && newExpectedYear == '-1') {
               showNewExpectedComponent(false, true);
+            } else {
+              showNewExpectedComponent(true, true);
             }
             if (statusId == 4 && newExpectedYear == '2021') {
               showExpectedComponent(true, true);
@@ -575,6 +577,12 @@ function validateDeliverableStatus() {
       if ($('#actualYear').html() != '2021') {
         $statuses.find('option').prop("disabled", true); // Disable All
       } else {
+        var statusReadOnly = $('input[name="deliverable.deliverableInfo.status"]').siblings('p');
+
+        if (statusReadOnly) {
+          statusReadOnly.html('Ready to be reported on');
+        }
+        
         $statuses.find('option[value="2"]').html('Ready to be reported on');
         selectYearExpected.find('option[value="2022"]').prop("disabled", true);
         selectYearNewExpected.find('option[value="2017"]').prop("disabled", true);
@@ -714,11 +722,11 @@ var deliverablePartnersModule = (function () {
 
   function loadQualityAssessmentStatus(ajaxURL, arrName) {
     var currentCrpID = $('#actualCrpID').html();
-  
+
     if (currentCrpID != '-1') {
-  
+
       var finalAjaxURL = ajaxURL + currentCrpID;
-  
+
       $.ajax({
         url: baseURL + finalAjaxURL,
         async: false,
@@ -726,11 +734,11 @@ var deliverablePartnersModule = (function () {
           if (data && Object.keys(data).length != 0) {
             var newData = data[arrName].map(function (x) {
               var arr = [];
-  
+
               arr.push(x.id);
               arr.push(x.assessmentStatus);
               arr.push(x.updatedAt);
-  
+
               return arr;
             });
             updateQualityAssessmentStatusData(newData);
@@ -739,14 +747,14 @@ var deliverablePartnersModule = (function () {
       });
     }
   }
-  
+
   function updateQualityAssessmentStatusData(data) {
     data.map(function (x) {
       if (x[0] == $('#deliverableID').html()) {
         var container = document.getElementsByClassName('containerTitleElementsProject')[0];
         var element = document.getElementById('qualityAssessedIcon');
         var date, status, statusClass;
-  
+
         switch (x[1]) {
           case 'pending':
             status = 'Pending assessment';
@@ -773,29 +781,29 @@ var deliverablePartnersModule = (function () {
           default:
             break;
         }
-  
+
         if (element) {
           var pTag = document.createElement('p');
           var text = document.createTextNode(status);
-  
+
           element.innerHTML = '';
           element.classList.remove('pendingForReview-mode');
           element.classList.add(statusClass);
           pTag.style.margin = '0';
           pTag.appendChild(text);
           element.appendChild(pTag);
-  
+
           if ((x[1] == 'quality_assessed') || (x[1] == 'automatically_validated') || (x[1] == 'pending')) {
             var pMessageTag = document.createElement('p');
             if (x[1] == 'quality_assessed') {
               var textMessage = document.createTextNode('As this item has already been Quality Assessed, no changes are recommended');
-            } else if (x[1] == 'automatically_validated'){
+            } else if (x[1] == 'automatically_validated') {
               var textMessage = document.createTextNode('As this item has already been Automatically Validated, no changes are recommended');
               element.style.backgroundPosition = '655px';
             } else {
               var textMessage = document.createTextNode('As this item is being assessed by the SMO, no changes are recommended');
             }
-            
+
             pMessageTag.classList.add('messageQAInfo');
             pMessageTag.appendChild(textMessage);
             container.appendChild(pMessageTag);

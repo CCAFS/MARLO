@@ -187,7 +187,7 @@
                   </div>
                   
                   [#if PMU]
-                    [#if actualPhaseAR2021]
+                    [#if actualPhaseAR2021 && editable]
                       [#assign qaIncluded = (!(reportSynthesis.reportSynthesisCrossCuttingDimension.isQAIncluded))!false]
                       <div class="containerTitleElements">
                         <span id="isCheckedAR" style="display: none;">${(qaIncluded)?c}</span>

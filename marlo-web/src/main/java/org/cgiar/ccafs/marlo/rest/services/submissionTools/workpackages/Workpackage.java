@@ -19,7 +19,12 @@
 
 package org.cgiar.ccafs.marlo.rest.services.submissionTools.workpackages;
 
+import org.cgiar.ccafs.marlo.data.model.OneCGIARWorkpackageImpactArea;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARWorkpackageScienceGroup;
+import org.cgiar.ccafs.marlo.data.model.OneCGIARWorkpackageSdg;
+
 import java.io.Serializable;
+import java.util.List;
 
 public class Workpackage implements Serializable {
 
@@ -42,17 +47,34 @@ public class Workpackage implements Serializable {
 
   private String acronym;
 
+  // notmapped
+
+  private List<OneCGIARWorkpackageScienceGroup> scienceGroupList;
+
+  private List<OneCGIARWorkpackageSdg> sdgList;
+
+  private List<OneCGIARWorkpackageImpactArea> impactAreaList;
+
+
   public String getAcronym() {
     return acronym;
   }
+
 
   public Long getId() {
     return id;
   }
 
+
+  public List<OneCGIARWorkpackageImpactArea> getImpactAreaList() {
+    return impactAreaList;
+  }
+
+
   public Long getInitiativeId() {
     return initiativeId;
   }
+
 
   public String getName() {
     return name;
@@ -62,9 +84,19 @@ public class Workpackage implements Serializable {
     return pathway_content;
   }
 
+
   public String getResults() {
     return results;
   }
+
+  public List<OneCGIARWorkpackageScienceGroup> getScienceGroupList() {
+    return scienceGroupList;
+  }
+
+  public List<OneCGIARWorkpackageSdg> getSdgList() {
+    return sdgList;
+  }
+
 
   public Long getStageId() {
     return stageId;
@@ -78,21 +110,40 @@ public class Workpackage implements Serializable {
     this.id = id;
   }
 
+  public void setImpactAreaList(List<OneCGIARWorkpackageImpactArea> impactAreaList) {
+    this.impactAreaList = impactAreaList;
+  }
+
+
   public void setInitiativeId(Long initiativeId) {
     this.initiativeId = initiativeId;
   }
+
 
   public void setName(String name) {
     this.name = name;
   }
 
+
   public void setPathway_content(String pathway_content) {
     this.pathway_content = pathway_content;
   }
 
+
   public void setResults(String results) {
     this.results = results;
   }
+
+
+  public void setScienceGroupList(List<OneCGIARWorkpackageScienceGroup> scienceGroupList) {
+    this.scienceGroupList = scienceGroupList;
+  }
+
+
+  public void setSdgList(List<OneCGIARWorkpackageSdg> sdgList) {
+    this.sdgList = sdgList;
+  }
+
 
   public void setStageId(Long stageId) {
     this.stageId = stageId;

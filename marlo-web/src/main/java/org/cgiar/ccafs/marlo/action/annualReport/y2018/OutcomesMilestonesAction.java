@@ -265,11 +265,13 @@ public class OutcomesMilestonesAction extends BaseAction {
         Project project = projectMilestone.getProjectOutcome().getProject();
         if (project.getProjecInfoPhase(this.getActualPhase()) != null) {
           if (project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
-            .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+            .parseLong(DeliverableStatusEnum.ON_GOING.getStatusId())
             || project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
-              .parseLong(ProjectStatusEnum.Extended.getStatusId())
+              .parseLong(DeliverableStatusEnum.EXTENDED.getStatusId())
             || project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
-              .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
+              .parseLong(DeliverableStatusEnum.COMPLETE.getStatusId())
+            || project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
+              .parseLong(DeliverableStatusEnum.PARTIALLY_COMPLETE.getStatusId())) {
             if (project.getProjecInfoPhase(this.getActualPhase()).getEndDate() != null) {
               Calendar cal = Calendar.getInstance();
               cal.setTime(project.getProjecInfoPhase(this.getActualPhase()).getEndDate());
