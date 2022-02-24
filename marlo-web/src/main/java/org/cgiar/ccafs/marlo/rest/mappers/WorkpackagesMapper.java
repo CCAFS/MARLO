@@ -45,7 +45,7 @@ public interface WorkpackagesMapper {
   @Mappings({@Mapping(source = "scienceGroup.id", target = "code"),
     @Mapping(source = "scienceGroup.description", target = "description"),
     @Mapping(source = "scienceGroup.financialCode", target = "financialCode"),
-    @Mapping(source = "scienceGroup.parentCode", target = "parent")})
+    @Mapping(source = "scienceGroup.parentScienceGroup", target = "parent")})
   public ScienceGroupDTO
     oneCGIARWorkpackageScienceGroupToScienceGroupDTO(OneCGIARWorkpackageScienceGroup oneCGIARWorkpackageScienceGroup);
 
