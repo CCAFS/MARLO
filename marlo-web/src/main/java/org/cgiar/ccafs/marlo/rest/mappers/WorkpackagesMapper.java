@@ -32,7 +32,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330")
+@Mapper(componentModel = "jsr330", uses = {OneCGIARScienceGorupMapper.class})
 public interface WorkpackagesMapper {
 
   @Mappings({@Mapping(source = "impactArea.id", target = "id"),
