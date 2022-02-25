@@ -328,6 +328,7 @@ $(document).ready(function () {
   $('input[id^="milestone-"]').on('click', selectIndividualMilestones);
   $('#selectAllStudies').on('click', selectDeselectAllStudies);
   $('input[id^="study-"]').on('click', selectIndividualStudies);
+  $('input[id^="disabled-study-"]').on('click', selectIndividualDisabledStudies);
   $('#selectAllMelias').on('click', selectDeselectAllMelias);
   $('input[id^="melia-"]').on('click', selectIndividualMelias);
 
@@ -576,6 +577,16 @@ function selectIndividualStudies() {
   } else {
     $('#selectAllStudies').prop('checked', false);
   }
+}
+
+function selectIndividualDisabledStudies() {
+  let name = $(this).attr('name');
+  
+  $(this).prop('disabled', true);
+  $(this).next().next().prop('checked', true)
+  $(this).next().next().prop('name', name);
+  $(this).parent().parent().attr('title', 'In order to take out this OICR from the Annual Report, please make sure there are no related policies or innovations mapped to it that are also part of the Annual Report.');
+  $(this).closest('.inputContainer').find('.checkmark').css('border', '1px solid #9f9d9d');
 }
 
 function selectDeselectAllMelias() {
