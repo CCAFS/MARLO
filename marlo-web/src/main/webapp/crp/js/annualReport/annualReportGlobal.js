@@ -586,6 +586,7 @@ function selectIndividualDisabledStudies() {
   $(this).next().next().prop('checked', true)
   $(this).next().next().prop('name', name);
   $(this).parent().parent().attr('title', 'In order to take out this OICR from the Annual Report, please make sure there are no related policies or innovations mapped to it that are also part of the Annual Report.');
+  $(this).closest('.inputContainer').find('.checkmark').css('border', '1px solid #9f9d9d');
 }
 
 function selectDeselectAllMelias() {
