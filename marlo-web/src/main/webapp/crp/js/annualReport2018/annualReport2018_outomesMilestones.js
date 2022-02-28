@@ -1,6 +1,6 @@
 $(document).ready(init);
 
-var markers, inputMilestoneStatus, isOICR;
+var markers, inputMilestoneStatus, isOICR, multiInputOutcomesMilestones;
 var oicrsAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=4&crpID=';
 var oicrsArrName = 'fullItemsAssessmentStatus';
 var milestoneAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=7&crpID=';
@@ -16,6 +16,7 @@ function init() {
   // if ($('#actualPhaseAR2021').html() == 'true' ) {
   //   $('textarea[name*="evidenceLink"]').prop('disabled', true);
   // }
+  multiInputOutcomesMilestones = $('.multiInput').find('span input');
   inputMilestoneStatus = $('input.milestoneStatus');
   loadInputMilestoneStatus();
   inputMilestoneStatus.on('change', function () {
@@ -133,8 +134,14 @@ function attachEvents() {
     // Events
     $('.addButtonLink').on('click', addItem);
     $('.removeLink.links').on('click', removeItem);
-    $('.multiInput').find('span input').on('input', validateURL);
+    $('.multiInput').find('span input').on('input', function () {
+      validateURL(this);
+    });
     validateEmptyLinks();
+
+    multiInputOutcomesMilestones.each((index, item) => {
+      validateURL(item);
+    });
 
     // Functions
     function addItem() {
@@ -178,20 +185,20 @@ function attachEvents() {
         warningTag.show();
       }
     }
-    function validateURL() {
-      var url = this.value;
+    function validateURL(item) {
+      var url = item.value;
       var expression = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
       var regex = new RegExp(expression);
       var res = "";
-      var warningTag = $(this).parent().parent().parent().parent().parent().parent().find('#warningEmptyLinksTag');
-
+      var warningTag = $(item).parent().parent().parent().parent().parent().parent().find('#warningEmptyLinksTag');
+      
       if (url.match(regex)) {
         res = "Valid URL";
-        $(this).css('border', 'none');
+        $(item).css('border', 'none');
         warningTag.hide();
       } else {
         res = "Invalid URL";
-        $(this).css('border', '1px solid red');
+        $(item).css('border', '1px solid red');
         warningTag.show();
       }
     }
