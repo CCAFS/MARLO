@@ -1250,6 +1250,7 @@ public class InnovationItem<T> {
           }
         }
 
+
         // save Evidence links
         List<ProjectInnovationEvidenceLink> projectInnovationEvidenceLinkListDB =
           this.projectInnovationEvidenceLinkManager.getProjectInnovationEvidenceLinkByPhase(innovation.getId(),
@@ -1271,6 +1272,8 @@ public class InnovationItem<T> {
 
           }
         }
+
+
         if (fieldErrors.isEmpty()) {
           // SAVE innovation info
           innovation = this.projectInnovationManager.saveProjectInnovation(innovation);
@@ -1376,6 +1379,56 @@ public class InnovationItem<T> {
                 projectInnovationEvidenceLinkManager.deleteProjectInnovationEvidenceLink(obj.getId());
               }
             }
+
+            // verify if was included in synthesis PMU
+            LiaisonInstitution liaisonInstitution = this.liaisonInstitutionManager
+              .findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
+            if (liaisonInstitution != null) {
+              boolean existing = true;
+              ReportSynthesis reportSynthesis =
+                reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+              if (reportSynthesis != null) {
+                ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress =
+                  reportSynthesis.getReportSynthesisFlagshipProgress();
+                if (reportSynthesisFlagshipProgress == null) {
+                  reportSynthesisFlagshipProgress = new ReportSynthesisFlagshipProgress();
+                  reportSynthesisFlagshipProgress.setReportSynthesis(reportSynthesis);
+                  reportSynthesisFlagshipProgress.setCreatedBy(user);
+                  existing = false;
+                  reportSynthesisFlagshipProgress = reportSynthesisFlagshipProgressManager
+                    .saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+                }
+
+                final Long innovationBD = innovationID;
+                ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation =
+                  reportSynthesisFlagshipProgress.getReportSynthesisFlagshipProgressInnovations().stream()
+                    .filter(c -> c.isActive() && c.getProjectInnovation().getId().longValue() == innovationBD)
+                    .findFirst().orElse(null);
+                if (reportSynthesisFlagshipProgressInnovation != null && existing) {
+                  reportSynthesisFlagshipProgressInnovation =
+                    reportSynthesisFlagshipProgressInnovationManager.getReportSynthesisFlagshipProgressInnovationById(
+                      reportSynthesisFlagshipProgressInnovation.getId());
+                  reportSynthesisFlagshipProgressInnovation.setActive(false);
+                  reportSynthesisFlagshipProgressInnovation = reportSynthesisFlagshipProgressInnovationManager
+                    .saveReportSynthesisFlagshipProgressInnovation(reportSynthesisFlagshipProgressInnovation);
+                } else {
+                  reportSynthesisFlagshipProgressInnovation = new ReportSynthesisFlagshipProgressInnovation();
+                  reportSynthesisFlagshipProgressInnovation.setCreatedBy(user);
+                  reportSynthesisFlagshipProgressInnovation.setProjectInnovation(innovation);
+                  reportSynthesisFlagshipProgressInnovation
+                    .setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+
+                  reportSynthesisFlagshipProgressInnovation = reportSynthesisFlagshipProgressInnovationManager
+                    .saveReportSynthesisFlagshipProgressInnovation(reportSynthesisFlagshipProgressInnovation);
+                  reportSynthesisFlagshipProgressInnovation.setActive(false);
+                  reportSynthesisFlagshipProgressInnovationManager
+                    .saveReportSynthesisFlagshipProgressInnovation(reportSynthesisFlagshipProgressInnovation);
+
+                }
+              }
+            }
+
+
           }
         }
       }
