@@ -2711,6 +2711,51 @@ public class ExpectedStudiesItem<T> {
                   projectExpectedStudyReferenceManager.deleteProjectExpectedStudyReference(obj.getId());
                 }
               }
+
+
+              // verify if was included in synthesis PMU
+              LiaisonInstitution liaisonInstitution = this.liaisonInstitutionManager
+                .findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());
+              if (liaisonInstitution != null) {
+                boolean existing = true;
+                ReportSynthesis reportSynthesis =
+                  reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+                if (reportSynthesis != null) {
+                  ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress =
+                    reportSynthesis.getReportSynthesisFlagshipProgress();
+                  if (reportSynthesisFlagshipProgress == null) {
+                    reportSynthesisFlagshipProgress = new ReportSynthesisFlagshipProgress();
+                    reportSynthesisFlagshipProgress.setReportSynthesis(reportSynthesis);
+                    reportSynthesisFlagshipProgress.setCreatedBy(user);
+                    existing = false;
+                    reportSynthesisFlagshipProgress = reportSynthesisFlagshipProgressManager
+                      .saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+                  }
+                  final Long study = expectedStudyID;
+                  ReportSynthesisFlagshipProgressStudy reportSynthesisFlagshipProgressStudy =
+                    reportSynthesisFlagshipProgress.getReportSynthesisFlagshipProgressStudies().stream()
+                      .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == study).findFirst()
+                      .orElse(null);
+                  if (reportSynthesisFlagshipProgressStudy != null && existing) {
+                    reportSynthesisFlagshipProgressStudy = reportSynthesisFlagshipProgressStudyManager
+                      .getReportSynthesisFlagshipProgressStudyById(reportSynthesisFlagshipProgressStudy.getId());
+                    reportSynthesisFlagshipProgressStudy.setActive(false);
+                    reportSynthesisFlagshipProgressStudy = reportSynthesisFlagshipProgressStudyManager
+                      .saveReportSynthesisFlagshipProgressStudy(reportSynthesisFlagshipProgressStudy);
+                  } else {
+                    reportSynthesisFlagshipProgressStudy = new ReportSynthesisFlagshipProgressStudy();
+                    reportSynthesisFlagshipProgressStudy.setCreatedBy(user);
+                    reportSynthesisFlagshipProgressStudy.setProjectExpectedStudy(projectExpectedStudy);
+                    reportSynthesisFlagshipProgressStudy
+                      .setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgress);
+                    reportSynthesisFlagshipProgressStudy = reportSynthesisFlagshipProgressStudyManager
+                      .saveReportSynthesisFlagshipProgressStudy(reportSynthesisFlagshipProgressStudy);
+                    reportSynthesisFlagshipProgressStudy.setActive(false);
+                    reportSynthesisFlagshipProgressStudyManager
+                      .saveReportSynthesisFlagshipProgressStudy(reportSynthesisFlagshipProgressStudy);
+                  }
+                }
+              }
             }
           }
         }
