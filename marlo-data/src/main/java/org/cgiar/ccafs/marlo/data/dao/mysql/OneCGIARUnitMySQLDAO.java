@@ -39,6 +39,27 @@ public class OneCGIARUnitMySQLDAO extends AbstractMarloDAO<OneCGIARUnit, Long> i
   }
 
   @Override
+  public void deleteOneCGIARUnit(long oneCGIARUnitId) {
+    /*
+     * OneCGIARUnit oneCGIARUnit = this.getUnitById(oneCGIARUnitId);
+     * oneCGIARUnit.setActive(false);
+     * this.save(oneCGIARUnit);
+     */
+    OneCGIARUnit oneCGIARUnit = this.getUnitById(oneCGIARUnitId);
+    this.delete(oneCGIARUnit);
+  }
+
+  @Override
+  public boolean existOneCGIARUnit(long oneCGIARUnitID) {
+    OneCGIARUnit oneCGIARUnit = this.getUnitById(oneCGIARUnitID);
+    if (oneCGIARUnit == null) {
+      return false;
+    }
+    return true;
+
+  }
+
+  @Override
   public List<OneCGIARUnit> getAll() {
     String query = "from " + OneCGIARUnit.class.getName();
     List<OneCGIARUnit> list = super.findAll(query);
@@ -50,7 +71,7 @@ public class OneCGIARUnitMySQLDAO extends AbstractMarloDAO<OneCGIARUnit, Long> i
 
   @Override
   public OneCGIARUnit getUnitByFinancialCode(String financialCode) {
-    String query = "select oca from OneCGIARUnit oca where financialCode = :financialCode";
+    String query = "select ocu from OneCGIARUnit ocu where financialCode = :financialCode";
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("financialCode", financialCode);
 
@@ -88,4 +109,13 @@ public class OneCGIARUnitMySQLDAO extends AbstractMarloDAO<OneCGIARUnit, Long> i
     return results;
   }
 
+  @Override
+  public OneCGIARUnit save(OneCGIARUnit oneCGIARUnit) {
+    if (oneCGIARUnit.getId() == null) {
+      super.saveEntity(oneCGIARUnit);
+    } else {
+      oneCGIARUnit = super.update(oneCGIARUnit);
+    }
+    return oneCGIARUnit;
+  }
 }

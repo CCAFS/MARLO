@@ -27,6 +27,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -35,6 +36,27 @@ public class ImpactAreasMySQLDAO extends AbstractMarloDAO<ImpactArea, Long> impl
   @Inject
   public ImpactAreasMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
+  }
+
+  @Override
+  public void deleteImpactArea(long impactAreaId) {
+    /*
+     * ImpactArea impactArea = this.getImpactAreaById(impactAreaId);
+     * impactArea.setActive(false);
+     * this.save(impactArea);
+     */
+    ImpactArea impactArea = this.getImpactAreaById(impactAreaId);
+    this.delete(impactArea);
+  }
+
+  @Override
+  public boolean existImpactArea(long impactAreaID) {
+    ImpactArea impactArea = this.getImpactAreaById(impactAreaID);
+    if (impactArea == null) {
+      return false;
+    }
+    return true;
+
   }
 
   @Override
@@ -48,8 +70,30 @@ public class ImpactAreasMySQLDAO extends AbstractMarloDAO<ImpactArea, Long> impl
   }
 
   @Override
+  public ImpactArea getImpactAreaByFinancialCode(String financialCode) {
+    String query = "select ia from ImpactArea ia where financialCode = :financialCode";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("financialCode", financialCode);
+
+    List<ImpactArea> results = super.findAll(createQuery);
+
+    ImpactArea impactArea = (results != null && !results.isEmpty()) ? results.get(0) : null;
+
+    return impactArea;
+  }
+
+  @Override
   public ImpactArea getImpactAreaById(long id) {
     return super.find(ImpactArea.class, id);
   }
 
+  @Override
+  public ImpactArea save(ImpactArea impactArea) {
+    if (impactArea.getId() == null) {
+      super.saveEntity(impactArea);
+    } else {
+      impactArea = super.update(impactArea);
+    }
+    return impactArea;
+  }
 }

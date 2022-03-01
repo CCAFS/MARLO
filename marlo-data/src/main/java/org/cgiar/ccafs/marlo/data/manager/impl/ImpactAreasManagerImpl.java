@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named
@@ -32,20 +33,40 @@ public class ImpactAreasManagerImpl implements ImpactAreasManager {
 
   private ImpactAreasDAO impactAreasDAO;
 
-
+  @Inject
   public ImpactAreasManagerImpl(ImpactAreasDAO impactAreasDAO) {
     super();
     this.impactAreasDAO = impactAreasDAO;
   }
 
   @Override
-  public List<ImpactArea> getAll() {
-    return impactAreasDAO.getAll();
+  public void deleteImpactArea(Long impactAreaId) {
+    this.impactAreasDAO.deleteImpactArea(impactAreaId.longValue());
   }
 
   @Override
-  public ImpactArea getImpactAreaById(long id) {
-    return impactAreasDAO.getImpactAreaById(id);
+  public boolean existImpactArea(Long impactAreaID) {
+    return this.impactAreasDAO.existImpactArea(impactAreaID.longValue());
+  }
+
+  @Override
+  public List<ImpactArea> getAll() {
+    return this.impactAreasDAO.getAll();
+  }
+
+  @Override
+  public ImpactArea getImpactAreaByFinancialCode(String financialCode) {
+    return this.impactAreasDAO.getImpactAreaByFinancialCode(financialCode);
+  }
+
+  @Override
+  public ImpactArea getImpactAreaById(Long id) {
+    return this.impactAreasDAO.getImpactAreaById(id.longValue());
+  }
+
+  @Override
+  public ImpactArea save(ImpactArea impactArea) {
+    return this.impactAreasDAO.save(impactArea);
   }
 
 }

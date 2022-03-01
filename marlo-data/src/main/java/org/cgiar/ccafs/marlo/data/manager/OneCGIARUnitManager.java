@@ -25,13 +25,68 @@ import java.util.List;
 
 public interface OneCGIARUnitManager {
 
+  /**
+   * This method removes a specific oneCGIARUnit value from the database.
+   * 
+   * @param oneCGIARUnitId is the oneCGIARUnit identifier.
+   * @return true if the oneCGIARUnit was successfully deleted, false otherwise.
+   */
+  public void deleteOneCGIARUnit(Long oneCGIARUnitId);
+
+  /**
+   * This method validate if the oneCGIARUnit identify with the given id exists in the system.
+   * 
+   * @param oneCGIARUnitID is a oneCGIARUnit identifier.
+   * @return true if the oneCGIARUnit exists, false otherwise.
+   */
+  public boolean existOneCGIARUnit(Long oneCGIARUnitID);
+
+  /**
+   * This method gets a list of oneCGIARUnit that are active
+   * 
+   * @return a list from OneCGIARUnit; null if no records exists
+   */
   public List<OneCGIARUnit> getAll();
 
+  /**
+   * This method gets a OneCGIARUnit object by a given financialCode identifier.
+   * 
+   * @param financialCode is the unit financialCode identifier.
+   * @return a OneCGIARUnit object.
+   */
   public OneCGIARUnit getUnitByFinancialCode(String financialCode);
 
+  /**
+   * This method gets a OneCGIARUnit object by a given identifier.
+   * 
+   * @param id is the unit identifier.
+   * @return a OneCGIARUnit object.
+   */
   public OneCGIARUnit getUnitById(Long id);
 
+  /**
+   * This method gets a list of OneCGIARUnit objects by a given unit parent identifier.
+   * 
+   * @param parentId is the unit parent identifier.
+   * @return a list from OneCGIARUnit; empty list if no records exists.
+   */
   public List<OneCGIARUnit> getUnitsByParent(Long parentId);
 
+  /**
+   * This method gets a list of OneCGIARUnit objects by a given science group identifier.
+   * 
+   * @param parentId is the science group identifier.
+   * @return a list from OneCGIARUnit; empty list if no records exists.
+   */
   public List<OneCGIARUnit> getUnitsByScienceGroup(Long scienceGroupId);
+
+  /**
+   * This method saves the information of the given oneCGIARUnit
+   * 
+   * @param oneCGIARUnit - is the oneCGIARUnit object with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the oneCGIARUnit was
+   *         updated
+   *         or -1 is some error occurred.
+   */
+  public OneCGIARUnit save(OneCGIARUnit oneCGIARUnit);
 }

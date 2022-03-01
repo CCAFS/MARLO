@@ -53,6 +53,13 @@ public interface BudgetTypeManager {
 
   public List<BudgetType> findAllFundingSourcesCGIAR();
 
+  /**
+   * This method gets a BudgetType object by a given financialCode identifier.
+   * 
+   * @param financialCode is the account financialCode identifier.
+   * @return a BudgetType object.
+   */
+  public BudgetType getBudgetTypeByFinancialCode(String financialCode);
 
   /**
    * This method gets a budgetType object by a given budgetType identifier.
