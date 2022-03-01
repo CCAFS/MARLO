@@ -27,6 +27,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -38,7 +39,28 @@ public class SdgMySQLDAO extends AbstractMarloDAO<Sdg, Long> implements SdgDAO {
   }
 
   @Override
-  public List<Sdg> findAll() {
+  public void deleteSdg(long sdgId) {
+    /*
+     * Sdg sdg = this.getSdgById(sdgId);
+     * sdg.setActive(false);
+     * this.save(sdg);
+     */
+    Sdg sdg = this.getSdgById(sdgId);
+    this.delete(sdg);
+  }
+
+  @Override
+  public boolean existSdg(long sdgID) {
+    Sdg sdg = this.getSdgById(sdgID);
+    if (sdg == null) {
+      return false;
+    }
+    return true;
+
+  }
+
+  @Override
+  public List<Sdg> getAll() {
     String query = "from " + Sdg.class.getName();
     List<Sdg> list = super.findAll(query);
     if (list.size() > 0) {
@@ -48,9 +70,44 @@ public class SdgMySQLDAO extends AbstractMarloDAO<Sdg, Long> implements SdgDAO {
   }
 
   @Override
-  public Sdg getSDGById(Long id) {
+  public Sdg getSdgByFinancialCode(String financialCode) {
+    String query = "select sdg from Sdg sdg where financialCode = :financialCode";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("financialCode", financialCode);
+
+    List<Sdg> results = super.findAll(createQuery);
+
+    Sdg sdg = (results != null && !results.isEmpty()) ? results.get(0) : null;
+
+    return sdg;
+  }
+
+  @Override
+  public Sdg getSdgById(long id) {
     return super.find(Sdg.class, id);
   }
 
+  @Override
+  public Sdg getSdgBySmoCode(String smoCode) {
+    String query = "select sdg from Sdg sdg where smoCode = :smoCode";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("smoCode", smoCode);
+
+    List<Sdg> results = super.findAll(createQuery);
+
+    Sdg sdg = (results != null && !results.isEmpty()) ? results.get(0) : null;
+
+    return sdg;
+  }
+
+  @Override
+  public Sdg save(Sdg sdg) {
+    if (sdg.getId() == null) {
+      super.saveEntity(sdg);
+    } else {
+      sdg = super.update(sdg);
+    }
+    return sdg;
+  }
 
 }

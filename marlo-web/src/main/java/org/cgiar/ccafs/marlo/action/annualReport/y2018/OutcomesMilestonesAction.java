@@ -942,7 +942,10 @@ public class OutcomesMilestonesAction extends BaseAction {
                     }
                   }
 
-                  milestone.setLinks(progressOutcomeMilestoneLinks);
+                  milestone.setLinks(progressOutcomeMilestoneLinks
+                    .stream().filter(l -> l != null && l.getId() != null).sorted((o1, o2) -> Comparator
+                      .comparing(ReportSynthesisFlagshipProgressOutcomeMilestoneLink::getId).compare(o1, o2))
+                    .collect(Collectors.toList()));
                 }
               }
 
