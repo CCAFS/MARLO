@@ -49,14 +49,31 @@ function checkHyperlinks() {
 }
 
 function validateURL(item) {
+  multiInputInnovations = $('.multiInput').find('span input');
   var url = item.value;
   var expression = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/i;
   var regex = new RegExp(expression);
   var res = "";
+  let resultToReturn = false;
+
   if (url) {
     if (url.match(regex)) {
-      res = "Valid URL";
-      $(item).css('border', 'none');
+      for (let i = 0; i < multiInputInnovations.length; i++) {
+        for (let j = 0; j < multiInputInnovations.length; j++) {
+          // prevents the element from comparing with itself
+          if (i !== j) {
+            // check if elements' values are equal
+            if (multiInputInnovations[i].value === multiInputInnovations[j].value) {
+              // duplicate element present  
+              resultToReturn = true;
+              $(multiInputInnovations[i]).css('border', '1px solid red');
+              $(multiInputInnovations[j]).css('border', '1px solid red');
+            }
+          }
+        }
+      }
+      // res = "Valid URL";
+      // $(item).css('border', 'none');
       // console.log(res);
     } else {
       res = "Invalid URL";
