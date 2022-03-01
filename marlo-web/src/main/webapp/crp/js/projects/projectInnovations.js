@@ -54,7 +54,6 @@ function validateURL(item) {
   var expression = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/i;
   var regex = new RegExp(expression);
   var res = "";
-  let resultToReturn = false;
 
   if (url) {
     if (url.match(regex)) {
@@ -64,23 +63,28 @@ function validateURL(item) {
           if (i !== j) {
             // check if elements' values are equal
             if (multiInputInnovations[i].value === multiInputInnovations[j].value) {
-              // duplicate element present  
-              resultToReturn = true;
+              // duplicate element present 
+              res = "Invalid URL"; 
+              // console.log(res);
               $(multiInputInnovations[i]).css('border', '1px solid red');
               $(multiInputInnovations[j]).css('border', '1px solid red');
+            } else {
+              if (url !== multiInputInnovations[i].value) {
+                res = "Valid URL";
+                // console.log(res);
+                $(multiInputInnovations[i]).css('border', 'none');
+                $(item).css('border', 'none');
+              }
             }
           }
         }
       }
-      // res = "Valid URL";
-      // $(item).css('border', 'none');
-      // console.log(res);
     } else {
       res = "Invalid URL";
       $(item).css('border', '1px solid red');
-      // console.log(res);
     }
   } else {
+    res = "Empty URL";
     $(item).css('border', '1px solid red');
   }
 }
