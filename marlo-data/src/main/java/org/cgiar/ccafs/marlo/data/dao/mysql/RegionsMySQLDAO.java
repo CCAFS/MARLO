@@ -27,6 +27,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -65,6 +66,19 @@ public class RegionsMySQLDAO extends AbstractMarloDAO<Region, Long> implements R
       return list;
     }
     return null;
+  }
+
+  @Override
+  public Region getRegionByAcronym(String acronym) {
+    String query = "select r from Region r where acronym = :acronym";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("acronym", acronym);
+
+    List<Region> results = super.findAll(createQuery);
+
+    Region oneCGIARAccount = (results != null && !results.isEmpty()) ? results.get(0) : null;
+
+    return oneCGIARAccount;
   }
 
   @Override

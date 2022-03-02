@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.FlagshipProgramItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GeneralAcronymItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GeographicScopeItem;
@@ -28,6 +30,7 @@ import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.FlagshipProgramDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GeneralAcronymDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewCGIAREntityDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -36,11 +39,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +55,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -62,8 +69,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Named
 public class GeneralLists {
 
-
   private static final Logger LOG = LoggerFactory.getLogger(GeneralLists.class);
+
+  private final UserManager userManager;
 
   private LocationItem<GeneralLists> locationItem;
   private GeographicScopeItem<GeneralLists> geographicScopeItem;
@@ -78,15 +86,56 @@ public class GeneralLists {
   @Inject
   public GeneralLists(LocationItem<GeneralLists> countryItem, GeographicScopeItem<GeneralLists> geographicScopeItem,
     GlobalUnitItem<GeneralLists> globalUnitItem, GlobalUnitTypeItem<GeneralLists> globalUnitTypeItem,
-    FlagshipProgramItem<GeneralLists> flagshipProgramItem, GeneralAcronymItem<GeneralLists> generalAcronymItem) {
+    FlagshipProgramItem<GeneralLists> flagshipProgramItem, GeneralAcronymItem<GeneralLists> generalAcronymItem,
+    UserManager userManager) {
     this.locationItem = countryItem;
     this.geographicScopeItem = geographicScopeItem;
     this.globalUnitItem = globalUnitItem;
     this.globalUnitTypeItem = globalUnitTypeItem;
     this.flagshipProgramItem = flagshipProgramItem;
     this.generalAcronymItem = generalAcronymItem;
+    this.userManager = userManager;
   }
 
+  @ApiOperation(tags = {"${GeneralLists.acronyms.acronym.value}"}, value = "${GeneralLists.cgiar-entities.POST.value}",
+    response = CGIAREntityDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/cgiar-entities", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> createEntity(
+    @ApiParam(value = "${GeneralLists.cgiar-entities.POST.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${GeneralLists.cgiar-entities.POST.param.newEntity}",
+      required = true) @Valid @RequestBody NewCGIAREntityDTO newCGIAREntityDTO) {
+
+    Long globalUnitID = this.globalUnitItem.createGlobalUnit(newCGIAREntityDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(globalUnitID, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("GeneralLists.cgiar-entities.GET.id.404"));
+    }
+
+    return response;
+  }
+
+  @ApiOperation(tags = {"${GeneralLists.acronyms.acronym.value}"},
+    value = "${GeneralLists.cgiar-entities.DELETE.value}", response = CGIAREntityDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/cgiar-entities/{acronym}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<CGIAREntityDTO> deleteEntityByAcronym(
+    @ApiParam(value = "${GeneralLists.cgiar-entities.DELETE.param.CGIAR.value}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${GeneralLists.cgiar-entities.DELETE.param.id}", required = true) @PathVariable String acronym) {
+
+    ResponseEntity<CGIAREntityDTO> response =
+      this.globalUnitItem.deleteGlobalUnitByAcronym(acronym, CGIAREntity, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("GeneralLists.cgiar-entities.code.404"));
+    }
+
+    return response;
+  }
 
   /**
    * find Acronyms by acronym *
@@ -107,7 +156,6 @@ public class GeneralLists {
     }
     return response;
   }
-
 
   /**
    * Find a country requesting numeric ISO Codeby id
@@ -132,6 +180,7 @@ public class GeneralLists {
     return response;
 
   }
+
 
   /**
    * Find a Flagship or Program by smo code
@@ -194,11 +243,12 @@ public class GeneralLists {
       "Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)",
       "Table 11 - Update on Actions Taken in Response to Relevant Evaluations", "Table 12 - Examples of W1/2 Use",
       "Table 13 - CRP Financial Report"},
-    value = "${GeneralLists.cgiar-entities.code.value}", response = CGIAREntityDTO.class)
+    value = "${GeneralLists.cgiar-entities.GET.value}", response = CGIAREntityDTO.class)
   @RequestMapping(value = "/cgiar-entities/{code}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<CGIAREntityDTO> findGlobalUnitByCGIARId(
-    @ApiParam(value = "${GeneralLists.cgiar-entities.code.param.code}", required = true) @PathVariable String code) {
+  public ResponseEntity<CGIAREntityDTO>
+    findGlobalUnitByCGIARId(@ApiParam(value = "${GeneralLists.cgiar-entities.GET.financialCode.value}",
+      required = true) @PathVariable String code) {
     ResponseEntity<CGIAREntityDTO> response = this.globalUnitItem.findGlobalUnitByCGIRARId(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("GeneralLists.cgiar-entities.code.404"));
@@ -244,7 +294,6 @@ public class GeneralLists {
     return response;
   }
 
-
   /**
    * Get All the Acronym items *
    * 
@@ -258,6 +307,7 @@ public class GeneralLists {
   public List<GeneralAcronymDTO> getAllAcronyms() {
     return this.generalAcronymItem.getAllGeneralAcronyms();
   }
+
 
   /**
    * Get All the Country items *
@@ -274,7 +324,6 @@ public class GeneralLists {
     return this.locationItem.getAllCountries();
   }
 
-
   /**
    * Get All the Flagship or Program items *
    * 
@@ -290,6 +339,7 @@ public class GeneralLists {
   public List<FlagshipProgramDTO> getAllFlagshipsPrograms() {
     return this.flagshipProgramItem.getAllCrpPrograms();
   }
+
 
   /**
    * Get All the Geographic Scope items *
@@ -327,7 +377,7 @@ public class GeneralLists {
     value = "${GeneralLists.cgiar-entities.all.value}", response = CGIAREntityDTO.class, responseContainer = "List")
   @RequestMapping(value = "/cgiar-entities", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<CGIAREntityDTO>> getAllGlobalUnits(
-    @ApiParam(value = "${GeneralLists.cgiar-entities.all.param.typeId}") @RequestParam(value = "typeId",
+    @ApiParam(value = "${GeneralLists.cgiar-entities.GET.typeId.value}") @RequestParam(value = "typeId",
       required = false) Long typeId) {
     ResponseEntity<List<CGIAREntityDTO>> response = this.globalUnitItem.getAllGlobaUnits(typeId);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
@@ -375,6 +425,35 @@ public class GeneralLists {
   @RequestMapping(value = "/un-regions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<RegionDTO> getAllRegions() {
     return this.locationItem.getAllRegions();
+  }
+
+  private User getCurrentUser() {
+    Subject subject = SecurityUtils.getSubject();
+    Long principal = (Long) subject.getPrincipal();
+    User user = this.userManager.getUser(principal);
+    return user;
+  }
+
+  @ApiOperation(tags = {"${GeneralLists.acronyms.acronym.value}"}, value = "${GeneralLists.cgiar-entities.PUT.value}",
+    response = CGIAREntityDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/cgiar-entities/{acronym}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> putEntityByAcronym(
+    @ApiParam(value = "${GeneralLists.cgiar-entities.PUT.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${GeneralLists.cgiar-entities.PUT.id.value}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${GeneralLists.cgiar-entities.PUT.param.newEntity}",
+      required = true) @Valid @RequestBody NewCGIAREntityDTO newAccountDTO) {
+
+    Long globalUnitId = this.globalUnitItem.putGlobalUnitById(id, newAccountDTO, CGIAREntity, this.getCurrentUser());
+
+    ResponseEntity<Long> response = new ResponseEntity<Long>(globalUnitId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("GeneralLists.cgiar-entities.GET.id.404"));
+    }
+
+    return response;
   }
 
 }

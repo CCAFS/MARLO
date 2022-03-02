@@ -13,25 +13,48 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+package org.cgiar.ccafs.marlo.rest.dto;
+
+import io.swagger.annotations.ApiModelProperty;
+
 /**************
- * @author Diego Perez - CIAT/CCAFS
+ * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+public class NewImpactAreaDTO {
 
-import org.cgiar.ccafs.marlo.data.model.OneCGIARUser;
-import org.cgiar.ccafs.marlo.rest.dto.BeneficiariesDTO;
-import org.cgiar.ccafs.marlo.rest.dto.OneCGIARUserDTO;
+  @ApiModelProperty(notes = "Impact area name", position = 1)
+  private String name;
 
-import org.mapstruct.Mapper;
+  @ApiModelProperty(notes = "Impact area description", position = 2)
+  private String description;
 
-@Mapper(componentModel = "jsr330", uses = {OneCGIARScienceGroupMapper.class})
-public interface OneCGIARUsersMapper {
-
-
-  public abstract BeneficiariesDTO oneCGIARUserToBeneficiariesDTO(OneCGIARUser oneCGIARUser);
-
-  public abstract OneCGIARUserDTO oneCGIARUserToOneCGIARUserDTO(OneCGIARUser oneCGIARUser);
+  @ApiModelProperty(notes = "Impact area financial Code", position = 3)
+  private String financialCode;
 
 
+  public String getDescription() {
+    return description;
+  }
+
+  public String getFinancialCode() {
+    return financialCode;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public void setFinancialCode(String financialCode) {
+    this.financialCode = financialCode;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 }

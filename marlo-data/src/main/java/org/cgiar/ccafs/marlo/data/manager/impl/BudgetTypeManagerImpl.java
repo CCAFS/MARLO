@@ -68,6 +68,11 @@ public class BudgetTypeManagerImpl implements BudgetTypeManager {
   }
 
   @Override
+  public BudgetType getBudgetTypeByFinancialCode(String financialCode) {
+    return budgetTypeDAO.getBudgetTypeByFinancialCode(financialCode);
+  }
+
+  @Override
   public BudgetType getBudgetTypeById(long budgetTypeID) {
 
     return budgetTypeDAO.find(budgetTypeID);

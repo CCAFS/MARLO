@@ -8,6 +8,9 @@
       <column name="id" />
       <generator class="identity" />
     </id>
+    <property name="acronym" type="string" >
+      <column name="acronym" sql-type="TEXT" />
+    </property>
     <property name="name" type="string" >
       <column name="name" sql-type="TEXT" />
     </property>
