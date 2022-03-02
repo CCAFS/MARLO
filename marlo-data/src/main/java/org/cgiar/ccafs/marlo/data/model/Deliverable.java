@@ -399,24 +399,40 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   }
 
   public String getDisseminationUrl(Phase phase) {
-    String url = null;
+    String url = "<b>Not disseminated</b>";
     DeliverableDissemination disseminationPhase = this.getDissemination(phase);
     if (disseminationPhase != null) {
-      url = StringUtils.trimToNull(disseminationPhase.getDisseminationUrl());
-    }
+      if (disseminationPhase.getAlreadyDisseminated() != null && disseminationPhase.getAlreadyDisseminated()) {
+        url = StringUtils.trimToNull(disseminationPhase.getDisseminationUrl());
 
-    if (url == null) {
-      if (!ListUtils.emptyIfNull(this.getMetadataElements(phase)).isEmpty()) {
-        this.setMetadataElements(this.getMetadataElements(phase));
-        url = StringUtils.trimToNull(this.getMetadataValue(APConstants.METADATAELEMENTDOI));
         if (url == null) {
-          url = StringUtils.trimToNull(this.getMetadataValue(APConstants.METADATAELEMENTHANDLE));
+          if (!ListUtils.emptyIfNull(this.getMetadataElements(phase)).isEmpty()) {
+            this.setMetadataElements(this.getMetadataElements(phase));
+            url = StringUtils.trimToNull(this.getMetadataValue(APConstants.METADATAELEMENTDOI));
+            if (url == null) {
+              url = StringUtils.trimToNull(this.getMetadataValue(APConstants.METADATAELEMENTHANDLE));
+            }
+          }
+        }
+
+        if (url == null && disseminationPhase != null) {
+          url = StringUtils.trimToNull(disseminationPhase.getArticleUrl());
+        }
+
+        if (url == null) {
+          url = "<b>Not provided</b>";
+        }
+      } else {
+        if (disseminationPhase.getConfidential() != null && disseminationPhase.getConfidential()) {
+          url = StringUtils.trimToNull(disseminationPhase.getConfidentialUrl());
+        } else {
+          url = "<b>Not disseminated</b>";
+        }
+
+        if (url == null) {
+          url = "<b>Confidential; no ULR provided</b>";
         }
       }
-    }
-
-    if (url == null && disseminationPhase != null) {
-      url = StringUtils.trimToNull(disseminationPhase.getArticleUrl());
     }
 
     return url;
