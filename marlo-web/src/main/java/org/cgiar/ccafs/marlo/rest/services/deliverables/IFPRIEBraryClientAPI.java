@@ -31,6 +31,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -234,6 +235,18 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
         String keywords = jo.get("loc").toString();
         if (!keywords.equals("{}")) {
           jo.put("keywords", keywords);
+        }
+      }
+
+      // get volume/issue
+      if (jo.has("seriea") && jo.get("seriea") != null) {
+        String volumeIssue = jo.get("seriea").toString();
+        if (!volumeIssue.equals("{}")) {
+          String[] volumeIssueArray = StringUtils.split(volumeIssue, "(");
+          if (volumeIssueArray.length > 1) {
+            jo.put("volume", volumeIssueArray[0]);
+            jo.put("issue", RegExUtils.removeAll(volumeIssueArray[1], "\\)"));
+          }
         }
       }
 
