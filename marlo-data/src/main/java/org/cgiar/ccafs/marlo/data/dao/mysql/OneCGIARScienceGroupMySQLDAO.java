@@ -27,6 +27,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -36,6 +37,21 @@ public class OneCGIARScienceGroupMySQLDAO extends AbstractMarloDAO<OneCGIARScien
   @Inject
   public OneCGIARScienceGroupMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
+  }
+
+  @Override
+  public void deleteOneCGIARScienceGroup(long oneCGIARScienceGroupId) {
+    OneCGIARScienceGroup oneCGIARScienceGroup = this.getScienceGroupById(oneCGIARScienceGroupId);
+    this.delete(oneCGIARScienceGroup);
+  }
+
+  @Override
+  public boolean existOneCGIARScienceGroup(long oneCGIARScienceGroupID) {
+    OneCGIARScienceGroup oneCGIARScienceGroup = this.getScienceGroupById(oneCGIARScienceGroupID);
+    if (oneCGIARScienceGroup == null) {
+      return false;
+    }
+    return true;
   }
 
   @Override
@@ -49,8 +65,43 @@ public class OneCGIARScienceGroupMySQLDAO extends AbstractMarloDAO<OneCGIARScien
   }
 
   @Override
+  public OneCGIARScienceGroup getScienceGroupByFinanceCode(String financeCode) {
+    String query = "select ocsg from OneCGIARScienceGroup ocsg where financeCode = :financeCode";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("financeCode", financeCode);
+
+    List<OneCGIARScienceGroup> results = super.findAll(createQuery);
+
+    OneCGIARScienceGroup oneCGIARScienceGroup = (results != null && !results.isEmpty()) ? results.get(0) : null;
+
+    return oneCGIARScienceGroup;
+  }
+
+
+  @Override
   public OneCGIARScienceGroup getScienceGroupById(long id) {
     return super.find(OneCGIARScienceGroup.class, id);
+  }
+
+  @Override
+  public List<OneCGIARScienceGroup> getScienceGroupsByParent(long parentId) {
+    String query = "select ocsg from OneCGIARScienceGroup ocsg where parentScienceGroup.id = :parentId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("parentId", parentId);
+
+    List<OneCGIARScienceGroup> results = super.findAll(createQuery);
+
+    return results;
+  }
+
+  @Override
+  public OneCGIARScienceGroup save(OneCGIARScienceGroup oneCGIARScienceGroup) {
+    if (oneCGIARScienceGroup.getId() == null) {
+      super.saveEntity(oneCGIARScienceGroup);
+    } else {
+      oneCGIARScienceGroup = super.update(oneCGIARScienceGroup);
+    }
+    return oneCGIARScienceGroup;
   }
 
 }

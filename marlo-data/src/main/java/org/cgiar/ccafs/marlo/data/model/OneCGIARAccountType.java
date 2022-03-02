@@ -30,6 +30,7 @@ public class OneCGIARAccountType extends MarloAuditableEntity implements Seriali
    */
   private static final long serialVersionUID = -298267617036222045L;
   private String name;
+  private String acronym;
 
 
   @Override
@@ -54,6 +55,11 @@ public class OneCGIARAccountType extends MarloAuditableEntity implements Seriali
     return true;
   }
 
+
+  public String getAcronym() {
+    return acronym;
+  }
+
   public String getName() {
     return name;
   }
@@ -64,6 +70,11 @@ public class OneCGIARAccountType extends MarloAuditableEntity implements Seriali
     int result = 1;
     result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
+  }
+
+
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
   }
 
   public void setName(String name) {

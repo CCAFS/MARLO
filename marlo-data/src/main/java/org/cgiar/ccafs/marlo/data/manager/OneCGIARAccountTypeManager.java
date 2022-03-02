@@ -25,7 +25,52 @@ import java.util.List;
 
 public interface OneCGIARAccountTypeManager {
 
-  public OneCGIARAccountType getAccountTypeById(long id);
+  /**
+   * This method removes a specific oneCGIARAccountType value from the database.
+   * 
+   * @param oneCGIARAccountTypeId is the oneCGIARAccountType identifier.
+   * @return true if the oneCGIARAccountType was successfully deleted, false otherwise.
+   */
+  public void deleteOneCGIARAccountType(Long oneCGIARAccountTypeId);
 
+  /**
+   * This method validate if the oneCGIARAccountType identify with the given id exists in the system.
+   * 
+   * @param oneCGIARAccountTypeID is a oneCGIARAccountType identifier.
+   * @return true if the oneCGIARAccountType exists, false otherwise.
+   */
+  public boolean existOneCGIARAccountType(Long oneCGIARAccountTypeID);
+
+  /**
+   * This method gets a OneCGIARAccountType object by a given acronym.
+   * 
+   * @param acronym is the account type acronym.
+   * @return a OneCGIARAccountType object.
+   */
+  public OneCGIARAccountType getAccountTypeByAcronym(String acronym);
+
+  /**
+   * This method gets a OneCGIARAccountType object by a given identifier.
+   * 
+   * @param id is the account type identifier.
+   * @return a OneCGIARAccountType object.
+   */
+  public OneCGIARAccountType getAccountTypeById(Long id);
+
+  /**
+   * This method gets a list of OneCGIARAccountType that are active
+   * 
+   * @return a list from OneCGIARAccountType; null if no records exists
+   */
   public List<OneCGIARAccountType> getAll();
+
+  /**
+   * This method saves the information of the given oneCGIARAccountType
+   * 
+   * @param oneCGIARAccountType - is the oneCGIARAccountType object with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the oneCGIARAccountType was
+   *         updated
+   *         or -1 is some error occurred.
+   */
+  public OneCGIARAccountType save(OneCGIARAccountType oneCGIARAccountType);
 }

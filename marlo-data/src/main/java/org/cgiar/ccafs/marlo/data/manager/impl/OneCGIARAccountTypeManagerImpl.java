@@ -40,14 +40,33 @@ public class OneCGIARAccountTypeManagerImpl implements OneCGIARAccountTypeManage
   }
 
   @Override
-  public OneCGIARAccountType getAccountTypeById(long id) {
-    return oneCGIARAccountTypeDAO.getAccountTypeById(id);
+  public void deleteOneCGIARAccountType(Long oneCGIARAccountTypeId) {
+    this.oneCGIARAccountTypeDAO.deleteOneCGIARAccountType(oneCGIARAccountTypeId.longValue());
+  }
+
+  @Override
+  public boolean existOneCGIARAccountType(Long oneCGIARAccountTypeID) {
+    return this.oneCGIARAccountTypeDAO.existOneCGIARAccountType(oneCGIARAccountTypeID.longValue());
+  }
+
+  @Override
+  public OneCGIARAccountType getAccountTypeByAcronym(String acronym) {
+    return this.oneCGIARAccountTypeDAO.getAccountTypeByAcronym(acronym);
+  }
+
+  @Override
+  public OneCGIARAccountType getAccountTypeById(Long id) {
+    return oneCGIARAccountTypeDAO.getAccountTypeById(id.longValue());
   }
 
   @Override
   public List<OneCGIARAccountType> getAll() {
-
     return oneCGIARAccountTypeDAO.getAll();
+  }
+
+  @Override
+  public OneCGIARAccountType save(OneCGIARAccountType oneCGIARAccountType) {
+    return this.oneCGIARAccountTypeDAO.save(oneCGIARAccountType);
   }
 
 }

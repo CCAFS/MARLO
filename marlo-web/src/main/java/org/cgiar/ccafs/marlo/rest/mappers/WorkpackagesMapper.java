@@ -32,7 +32,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330", uses = {OneCGIARScienceGorupMapper.class})
+@Mapper(componentModel = "jsr330", uses = {OneCGIARScienceGroupMapper.class})
 public interface WorkpackagesMapper {
 
   @Mappings({@Mapping(source = "impactArea.id", target = "id"),
@@ -45,7 +45,7 @@ public interface WorkpackagesMapper {
   @Mappings({@Mapping(source = "scienceGroup.id", target = "code"),
     @Mapping(source = "scienceGroup.description", target = "description"),
     @Mapping(source = "scienceGroup.financialCode", target = "financialCode"),
-    @Mapping(source = "scienceGroup.parentCode", target = "parent")})
+    @Mapping(source = "scienceGroup.parentScienceGroup", target = "parent")})
   public ScienceGroupDTO
     oneCGIARWorkpackageScienceGroupToScienceGroupDTO(OneCGIARWorkpackageScienceGroup oneCGIARWorkpackageScienceGroup);
 
