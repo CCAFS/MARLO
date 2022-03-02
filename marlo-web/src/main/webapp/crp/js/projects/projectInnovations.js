@@ -1,4 +1,4 @@
-var multiInputInnovations;
+var multiInputInnovations, deliverableURLs;
 var innovationAjaxURL = '/qaAssessmentStatus.do?year=2021&indicatorTypeID=1&crpID=';
 var innovationArrName = 'fullItemsAssessmentStatus';
 
@@ -25,6 +25,7 @@ $(document).ready(function () {
   $('.innovationContributingCRP select').on('change', checkContributingCRP);
   checkContributingCRP();
   multiInputInnovations = $('.multiInput').find('span input');
+  deliverableURLs = $('.deliverableURL');
   checkHyperlinks();
 });
 
@@ -57,23 +58,34 @@ function validateURL(item) {
 
   if (url) {
     if (url.match(regex)) {
-      for (let i = 0; i < multiInputInnovations.length; i++) {
-        for (let j = 0; j < multiInputInnovations.length; j++) {
-          // prevents the element from comparing with itself
-          if (i !== j) {
-            // check if elements' values are equal
-            if (multiInputInnovations[i].value === multiInputInnovations[j].value) {
-              // duplicate element present 
-              res = "Invalid URL"; 
-              // console.log(res);
-              $(multiInputInnovations[i]).css('border', '1px solid red');
-              $(multiInputInnovations[j]).css('border', '1px solid red');
-            } else {
-              if (url !== multiInputInnovations[i].value) {
-                res = "Valid URL";
-                // console.log(res);
-                $(multiInputInnovations[i]).css('border', 'none');
-                $(item).css('border', 'none');
+      for (let k = 0; k < deliverableURLs.length; k++) {
+        for (let i = 0; i < multiInputInnovations.length; i++) {
+          if (multiInputInnovations[i].value === deliverableURLs[k].innerHTML) {
+            res = "Invalid URL"; 
+            $(multiInputInnovations[i]).css('border', '1px solid red');
+          } else {
+            if (url !== deliverableURLs[k].innerHTML) {
+              res = "Valid URL";
+              $(item).css('border', 'none');
+            }
+          }
+
+          for (let j = 0; j < multiInputInnovations.length; j++) {
+            // prevents the element from comparing with itself
+            if (i !== j) {
+              // check if elements' values are equal
+              if (multiInputInnovations[i].value === multiInputInnovations[j].value) {
+                // duplicate element present 
+                res = "Invalid URL";
+                $(multiInputInnovations[i]).css('border', '1px solid red');
+                $(multiInputInnovations[j]).css('border', '1px solid red');
+              } else {
+                // if (url !== multiInputInnovations[i].value) {
+                //   res = "Valid URL";
+                //   console.log(res)
+                //   $(multiInputInnovations[i]).css('border', 'none');
+                //   $(item).css('border', 'none');
+                // }
               }
             }
           }

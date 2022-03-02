@@ -802,7 +802,7 @@
           <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
           <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
           [#-- Title --]
-          <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'} [#if deliverableURL != ""]- ${deliverableURL}[/#if]</span>
+          <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'} [#if deliverableURL != ""]- <span class="deliverableURL">${deliverableURL}</span>[/#if]</span>
           </div>
           </div>
       </li>  
@@ -814,7 +814,7 @@
     [#-- Remove button --]
     [#if isEditable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
     [#-- Title --]
-    <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'} [#if deliverableURL != ""]- ${deliverableURL}[/#if]</span>
+    <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'} [#if deliverableURL != ""]- <span class="deliverableURL">${deliverableURL}</span>[/#if]</span>
   </li>
   [/#if]
 [/#macro]
