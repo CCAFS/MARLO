@@ -773,6 +773,7 @@
   [#if id?has_content]
     [#local composedID = "${type}-${id}" /]
   [/#if]
+  [#local url][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${(element.deliverable.id)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
   [#if hasPrimary]
     [#attempt]
      [#if template]
@@ -802,7 +803,7 @@
           <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
           <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
           [#-- Title --]
-          <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'} [#if deliverableURL != ""]- <span class="deliverableURL">${deliverableURL}</span>[/#if]</span>
+          <span class="elementName">[#if deliverableURL == ""]${(element[type][displayFieldName])!'{elementNameUndefined}'}[#else]<a href="${url}" target="_blank" style="color: #1da5ce; text-decoration: underline; font-weight: bold;">(D${(element[type][keyFieldName])!})</a> <b>${(element[type].getDeliverableInfo().getDeliverableType().getName())!}</b> - ${(element[type].getDeliverableInfo().getTitle())!} - <span class="deliverableURL">${deliverableURL}</span>[/#if]</span>
           </div>
           </div>
       </li>  
@@ -814,7 +815,7 @@
     [#-- Remove button --]
     [#if isEditable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
     [#-- Title --]
-    <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'} [#if deliverableURL != ""]- <span class="deliverableURL">${deliverableURL}</span>[/#if]</span>
+    <span class="elementName">[#if deliverableURL == ""]${(element[type][displayFieldName])!'{elementNameUndefined}'}[#else]<a href="${url}" target="_blank" style="color: #1da5ce; text-decoration: underline; font-weight: bold;">(D${(element[type][keyFieldName])!})</a> <b>${(element[type].getDeliverableInfo().getDeliverableType().getName())!}</b> - ${(element[type].getDeliverableInfo().getTitle())!} - <span class="deliverableURL">${deliverableURL}</span>[/#if]</span>
   </li>
   [/#if]
 [/#macro]
@@ -900,7 +901,7 @@
           [#if hasPrimary]<label class="primary-label">[#if editable]Set as primary [#else] Primary[/#if]</label>[/#if]
       [#if editable || forceEditable]
           [#list elementList as item]
-            [#assign deliverableURL = (item.deliverable.getDisseminationUrl(actualPhase))!'null']
+            [#assign deliverableURL = (item.deliverable.getDisseminationUrl(actualPhase))!'not defined']
             [@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel hasPrimary=hasPrimary isEditable=(editable || forceEditable) deliverableURL=deliverableURL/]
           [/#list]
         [/#if]
