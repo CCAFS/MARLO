@@ -1322,7 +1322,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 // OICRs Table
                 List<ProjectExpectedStudy> expectedStudies = new ArrayList<>();
                 List<ProjectExpectedStudy> expectedStudiesTemp = new ArrayList<>();
-                expectedStudiesTemp = projectExpectedStudyManager.getStudiesByPhase(this.getSelectedPhase());
+                expectedStudiesTemp = projectExpectedStudyManager.getAllStudiesByPhase(this.getSelectedPhase().getId());
 
                 if (expectedStudiesTemp != null) {
                   expectedStudiesTemp = expectedStudiesTemp.stream()
@@ -1341,9 +1341,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                       expectedStudy.setProjectOutcomes(
                         new ArrayList<>(expectedStudy.getProjectExpectedStudyProjectOutcomes().stream()
                           .filter(o -> o.getProjectExpectedStudy() != null
-                            && o.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()) != null
-                            && o.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase())
-                              .getStatus() != null)
+                            && o.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()) != null)
                           .collect(Collectors.toList())));
                     }
 
