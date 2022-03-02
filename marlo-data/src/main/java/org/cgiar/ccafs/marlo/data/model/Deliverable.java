@@ -408,9 +408,9 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
         if (url == null) {
           if (!ListUtils.emptyIfNull(this.getMetadataElements(phase)).isEmpty()) {
             this.setMetadataElements(this.getMetadataElements(phase));
-            url = StringUtils.trimToNull(this.getMetadataValue(APConstants.METADATAELEMENTDOI));
+            url = StringUtils.trimToNull(this.getMetadataValueByEncondedName(APConstants.METADATAELEMENTDOI));
             if (url == null) {
-              url = StringUtils.trimToNull(this.getMetadataValue(APConstants.METADATAELEMENTHANDLE));
+              url = StringUtils.trimToNull(this.getMetadataValueByEncondedName(APConstants.METADATAELEMENTHANDLE));
             }
           }
         }
