@@ -24,7 +24,6 @@ $(document).ready(function () {
   $('input[name="innovation.projectInnovationInfo.evidenceLink"]').siblings('p').css('display', 'none');
   $('.innovationContributingCRP select').on('change', checkContributingCRP);
   checkContributingCRP();
-  multiInputInnovations = $('.multiInput').find('span input');
   deliverableURLs = $('.deliverableURL');
   checkHyperlinks();
 });
@@ -44,27 +43,29 @@ function checkContributingCRP() {
 }
 
 function checkHyperlinks() {
+  multiInputInnovations = $('.multiInput').find('span input').not(document.getElementById('_TEMPLATE_innovation.innovationLinks[-1].link'));
+
   multiInputInnovations.each((index, item) => {
     validateURL(item);
   });
 }
 
 function validateURL(item) {
-  multiInputInnovations = $('.multiInput').find('span input');
+  multiInputInnovations = $('.multiInput').find('span input').not(document.getElementById('_TEMPLATE_innovation.innovationLinks[-1].link'));
   var url = item.value;
   var expression = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/i;
   var regex = new RegExp(expression);
   var res = "";
 
-  if (url) {
+  if (url && url != undefined && url != '') {
     if (url.match(regex)) {
       for (let k = 0; k < deliverableURLs.length; k++) {
         for (let i = 0; i < multiInputInnovations.length; i++) {
           if (multiInputInnovations[i].value === deliverableURLs[k].innerHTML) {
-            res = "Invalid URL"; 
+            res = "Invalid URL";
             $(multiInputInnovations[i]).css('border', '1px solid red');
           } else {
-            if (url !== deliverableURLs[k].innerHTML) {
+            if (multiInputInnovations[i].value !== deliverableURLs[k].innerHTML) {
               res = "Valid URL";
               $(item).css('border', 'none');
             }
@@ -99,6 +100,7 @@ function validateURL(item) {
     res = "Empty URL";
     $(item).css('border', '1px solid red');
   }
+  console.log(res);
 }
 
 function attachEvents() {
@@ -116,6 +118,7 @@ function attachEvents() {
     $('.multiInput').find('span input').on('input', function () {
       validateURL(this);
     });
+    $('button[name="save"]').on('click', wrongEvidenceLinks);
 
     // Functions
     function addItem() {
@@ -133,6 +136,8 @@ function attachEvents() {
         // Update indexes
         updateIndexes(this);
       }
+      var lastItem = $list.children('div:last').find('span input');
+      validateURL(lastItem);
     }
     function removeItem() {
       var $parent = $(this).parent('.multiInput.links');
@@ -143,6 +148,7 @@ function attachEvents() {
         // Update indexes
         updateIndexes($addBtn);
       });
+      checkHyperlinks();
     }
     function updateIndexes(list) {
       $(list).parent('.linksBlock').find('.linksList').find('.multiInput').each(function (i, element) {
@@ -150,7 +156,40 @@ function attachEvents() {
         $(element).setNameIndexes(1, i);
       });
     }
+    function wrongEvidenceLinks(e) {
+      let wrongLinks = false;
 
+      multiInputInnovations.each((index, item) => {
+        if ($(item).css('border') != '0px none rgb(85, 85, 85)') {
+          wrongLinks = true;
+        }
+      });
+
+      if (wrongLinks) {
+        e.preventDefault();
+        $('button[name="save"').removeClass('disabled animated flipInY');
+        $('button[name="save"').find('span.glyphicon.glyphicon-floppy-disk').show();
+        $('button[name="save"').find('span.saveText').html('Save');
+        var message = 'Some of the evidences provided (links) seem to be wrong, duplicated or empty, please check and adjust before saving again.';
+        noty({
+          text: message,
+          type: 'confirm',
+          dismissQueue: true,
+          layout: 'center',
+          theme: 'relax',
+          modal: true,
+          buttons: [
+            {
+              addClass: 'btn btn-primary',
+              text: 'Ok',
+              onClick: function ($noty) {
+                $noty.close();
+              }
+            }
+          ]
+        });
+      }
+    }
   })();
 
   // 
