@@ -641,6 +641,7 @@ public final class APConstants {
 
   // POWB Synthesis
   public static final String POWB_FOLDER = "powbSynthesis";
+  public static final String POWB_ACRONYM = "AWPB";
   // Studies
   public static final String STUDIES_FOLDER = "studies";
   // Projects
