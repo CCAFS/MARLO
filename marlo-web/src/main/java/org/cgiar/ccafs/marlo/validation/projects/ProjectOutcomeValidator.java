@@ -363,7 +363,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
           }
           if (action.getActualPhase() != null && action.getActualPhase().getName() != null
             && (!action.getActualPhase().getName().equals("POWB")
-              && !action.getActualPhase().getName().equals("APWB"))) {
+              && !action.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
             if (projectMilestone.getAchievedValue() == null
               || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue()))) {
               action.addMessage(action.getText("projectOutcomeMilestone.requeried.achievedValue", params));
