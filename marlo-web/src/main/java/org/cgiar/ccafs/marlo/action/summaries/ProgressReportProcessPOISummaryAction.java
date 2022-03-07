@@ -1286,10 +1286,22 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                   for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
                     if (deliverableShared != null && deliverableShared.getDeliverable() != null
                       && deliverableShared.getDeliverable().getDeliverableProjectOutcomes() != null) {
-                      deliverableShared.getDeliverable().setProjectOutcomes(
-                        new ArrayList<>(deliverableShared.getDeliverable().getDeliverableProjectOutcomes().stream()
-                          .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-                          .collect(Collectors.toList())));
+
+                      // For reporting phase use just deliverables completed
+                      if (this.getSelectedPhase().isReporting()) {
+                        deliverableShared.getDeliverable().setProjectOutcomes(
+                          new ArrayList<>(deliverableShared.getDeliverable().getDeliverableProjectOutcomes().stream()
+                            .filter(o -> o.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
+                              && o.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
+                              && o.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus() == 3
+                              && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+                            .collect(Collectors.toList())));
+                      } else {
+                        deliverableShared.getDeliverable().setProjectOutcomes(
+                          new ArrayList<>(deliverableShared.getDeliverable().getDeliverableProjectOutcomes().stream()
+                            .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+                            .collect(Collectors.toList())));
+                      }
                       for (DeliverableProjectOutcome deliverableProjectOutcome : deliverableShared.getDeliverable()
                         .getProjectOutcomes()) {
                         if (deliverableProjectOutcome != null && deliverableProjectOutcome.getProjectOutcome() != null
@@ -1477,7 +1489,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       fileName.append("AR Year Report_");
     } else {
       // POWB - APWB
-      fileName.append("APWB Year Report_");
+      fileName.append(APConstants.POWB_ACRONYM + " Year Report_");
     }
 
 
