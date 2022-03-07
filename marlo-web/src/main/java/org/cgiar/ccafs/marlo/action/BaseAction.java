@@ -6478,7 +6478,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isPOWB() {
     if (this.getActualPhase() != null && this.getActualPhase().getName() != null
-      && (this.getActualPhase().getName().equals("POWB") || this.getActualPhase().getName().equals("APWB"))) {
+      && (this.getActualPhase().getName().equals("POWB") || this.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
       return true;
     } else {
       return false;
