@@ -19,9 +19,11 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -48,20 +50,23 @@ public class EditInnovationInterceptor extends AbstractInterceptor implements Se
   private Map<String, Object> session;
   private GlobalUnit crp;
   private long innovationId = 0;
+  private Phase phase;
 
   private ProjectInnovationManager projectInnovationManager;
   private ProjectManager projectManager;
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
   private final LiaisonUserManager liaisonUserManager;
+  private final PhaseManager phaseManager;
 
   @Inject
   public EditInnovationInterceptor(ProjectInnovationManager projectInnovationManager, ProjectManager projectManager,
-    GlobalUnitManager crpManager, LiaisonUserManager liaisonUserManager) {
+    GlobalUnitManager crpManager, LiaisonUserManager liaisonUserManager, PhaseManager phaseManager) {
     this.projectInnovationManager = projectInnovationManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.liaisonUserManager = liaisonUserManager;
+    this.phaseManager = phaseManager;
   }
 
   @Override
@@ -94,6 +99,8 @@ public class EditInnovationInterceptor extends AbstractInterceptor implements Se
     innovationId = Long.parseLong(projectParameter);
 
     ProjectInnovation projectInnovation = projectInnovationManager.getProjectInnovationById(innovationId);
+    phase = baseAction.getActualPhase();
+    phase = phaseManager.getPhaseById(phase.getId());
 
     if (projectInnovation != null && projectInnovation.isActive()) {
 
@@ -140,6 +147,10 @@ public class EditInnovationInterceptor extends AbstractInterceptor implements Se
         hasPermissionToEdit = false;
       }
 
+      projectInnovation.getProjectInnovationInfo(phase);
+      if (projectInnovation.getProjectInnovationInfo() == null) {
+        throw new NullPointerException();
+      }
 
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
         canSwitchProject = true;
