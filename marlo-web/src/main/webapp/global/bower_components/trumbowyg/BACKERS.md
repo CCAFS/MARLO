@@ -2,24 +2,18 @@
 
 Trumbowyg is an MIT-licensed open source project and completely free to use.
 
-However, the amount of effort needed to maintain and develop new features for 
-the project is not sustainable without proper financial backing. 
+However, the amount of effort needed to maintain and develop new features for
+the project is not sustainable without proper financial backing.
 You can support it's ongoing development by being a backer or a sponsor:
- 
+
 - [Become a backer or sponsor on Patreon](https://www.patreon.com/alexandredemode)
-- [One-time donation via PayPal](https://www.paypal.me/alexandredemode/20eur)
+- [One-time donation via PayPal](https://www.paypal.me/demodealexandre/20eur)
 
 <h2 align="center">Gold sponsors</h2>
 
 <p align="center">
     <a href="https://avot.nl/?ref=trumbowyg">
         <img src="https://rawcdn.githack.com/Alex-D/Trumbowyg/develop/sponsors/avot.svg" alt="avot®" width="200px"/>
-    </a>
-</p>
-
-<p align="center">
-    <a href="https://bookingninja.io/?ref=trumbowyg">
-        <img src="https://rawcdn.githack.com/Alex-D/Trumbowyg/develop/sponsors/bookingninja.png" alt="BookingNinja" width="200px"/>
     </a>
 </p>
 

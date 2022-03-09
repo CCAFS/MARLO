@@ -93,10 +93,14 @@ function updateDeliverables() {
     return;
   }
 
+  var entity = $entitySelect.find(":selected").text();
+  //console.log(entity);
+
   $.ajax({
-      url: baseURL + "/" + $('select#entityID').val() + ".do",
+      url: baseURL + "/" + $entitySelect.val() + ".do",
       data: {
-        selectedPhaseID: phaseID
+        selectedPhaseID: phaseID,
+        includePublications : entity.includes("WOS")
       },
       beforeSend: function() {
         $('.loading').fadeIn();

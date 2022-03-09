@@ -833,6 +833,7 @@ public final class APConstants {
 
   public static final String READY_FOR_QA_BUTTON_VISIBLE = "ready_for_qa_button_visible";
 
+  public static final String INCLUDE_PUBLICATIONS = "includePublications";
 
   public static String getFilterBy() {
     return FILTER_BY;
