@@ -33,27 +33,38 @@
 
     $.extend(true, $.trumbowyg, {
         langs: {
+            // jshint camelcase:false
             en: {
                 insertAudio: 'Insert Audio'
             },
             da: {
                 insertAudio: 'Indsæt lyd'
             },
+            et: {
+                insertAudio: 'Lisa helifail'
+            },
             fr: {
                 insertAudio: 'Insérer un son'
             },
-            ru: {
-                insertAudio: 'Вставить аудио'
+            hu: {
+                insertAudio: 'Audio beszúrás'
             },
             ja: {
                 insertAudio: '音声の挿入'
             },
-            tr: {
-                insertAudio: 'Ses Ekle'
+            ko: {
+                insertAudio: '소리 넣기'
             },
             pt_br: {
                 insertAudio: 'Inserir áudio'
-            }
+            },
+            ru: {
+                insertAudio: 'Вставить аудио'
+            },
+            tr: {
+                insertAudio: 'Ses Ekle'
+            },
+            // jshint camelcase:true
         },
         plugins: {
             insertAudio: {
