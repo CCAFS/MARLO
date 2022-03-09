@@ -94,7 +94,7 @@ function updateDeliverables() {
   }
 
   var entity = $entitySelect.find(":selected").text();
-  console.log(entity);
+  //console.log(entity);
 
   $.ajax({
       url: baseURL + "/" + $entitySelect.val() + ".do",
