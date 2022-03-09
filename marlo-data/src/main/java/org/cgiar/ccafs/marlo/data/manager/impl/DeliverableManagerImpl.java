@@ -153,6 +153,11 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
+  public List<Deliverable> getDeliverablesByPhase(long phase, boolean includePublications) {
+    return this.deliverableDAO.getDeliverablesByPhase(phase, includePublications);
+  }
+
+  @Override
   public List<Deliverable> getDeliverablesByProjectAndPhase(Long phaseId, Long projectId) {
     return deliverableDAO.getDeliverablesByProjectAndPhase(phaseId, projectId);
   }
