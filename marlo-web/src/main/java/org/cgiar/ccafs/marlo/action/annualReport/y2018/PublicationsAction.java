@@ -476,12 +476,11 @@ public class PublicationsAction extends BaseAction {
         count++;
       }
 
-      LOG.debug(Arrays.toString(emptyFields.toArray()));
-
       if (count == 0) {
         return true;
       } else {
         emptyFields.add("ID:" + deliverable.getId());
+        LOG.debug(Arrays.toString(emptyFields.toArray()));
         return false;
       }
 

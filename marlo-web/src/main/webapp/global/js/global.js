@@ -373,7 +373,7 @@ jQuery.fn.setTrumbowyg = function() {
     $editor.trumbowyg({
         btns: [
           [
-              'link', 'strong', 'em'
+            'link', 'strong', 'em', 
           ]
         ],
         plugins: {
