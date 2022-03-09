@@ -46,8 +46,6 @@
         html = html.replace(/<b(\s+|>)/g, '<strong$1');
         // Replace closing bold tags with closing strong
         html = html.replace(/<\/b(\s+|>)/g, '</strong$1');
-        // Replace opening a href tags with a space in front 
-        html = html.replace(/<a(\s+|>)/g, ' <a$1');
 
         // Replace italic tags with em
         html = html.replace(/<i(\s+|>)/g, '<em$1');
@@ -62,9 +60,8 @@
         // strip out extra spaces -cgCraft
         html = html.replace(/ <\//gi, '</');
 
-        while (html.indexOf('  ') !== -1) {
-            html = html.split('  ').join(' ');
-        }
+        // Remove multiple spaces
+        html.replace(/\s+/g, ' ');
 
         // strip &nbsp; -cgCraft
         html = html.replace(/^\s*|\s*$/g, '');
@@ -80,7 +77,7 @@
             return match;
         });
 
-        // Final cleanout for MS Word crud
+        // Final clean out for MS Word crud
         html = html.replace(/<\?xml[^>]*>/g, '');
         html = html.replace(/<[^ >]+:[^>]*>/g, '');
         html = html.replace(/<\/[^ >]+:[^>]*>/g, '');
@@ -99,12 +96,48 @@
         plugins: {
             cleanPaste: {
                 init: function (trumbowyg) {
-                    trumbowyg.pasteHandlers.push(function () {
+                    trumbowyg.pasteHandlers.push(function (pasteEvent) {
                         setTimeout(function () {
-                          try {
-                              trumbowyg.$ed.html(cleanIt(trumbowyg.$ed.html()));
-                          } catch (c) {
-                          }
+                            try {
+                                trumbowyg.saveRange();
+
+                                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
+                                pastedData = clipboardData.getData('Text'),
+                                node = trumbowyg.doc.getSelection().focusNode,
+                                range = trumbowyg.doc.createRange(),
+                                cleanedPaste = cleanIt(pastedData.trim()),
+                                newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
+
+                                if (trumbowyg.$ed.html() === '') {
+                                    // simply append if there is no content in editor
+                                    trumbowyg.$ed[0].appendChild(newNode);
+                                } else {
+                                    // insert pasted content behind last focused node
+                                    range.setStartAfter(node);
+                                    range.setEndAfter(node);
+                                    trumbowyg.doc.getSelection().removeAllRanges();
+                                    trumbowyg.doc.getSelection().addRange(range);
+
+                                    trumbowyg.range.insertNode(newNode);
+                                }
+
+                                // now set cursor right after pasted content
+                                range = trumbowyg.doc.createRange();
+                                range.setStartAfter(newNode);
+                                range.setEndAfter(newNode);
+                                trumbowyg.doc.getSelection().removeAllRanges();
+                                trumbowyg.doc.getSelection().addRange(range);
+
+                                // prevent defaults
+                                pasteEvent.stopPropagation();
+                                pasteEvent.preventDefault();
+
+                                // save new node as focused node
+                                trumbowyg.saveRange();
+                                trumbowyg.syncCode();
+                                trumbowyg.$c.trigger('tbwchange');
+                            } catch (c) {
+                            }
                         }, 0);
                     });
                 }
