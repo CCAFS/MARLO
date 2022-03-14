@@ -49,7 +49,7 @@
                 <div class="selectList">   
                   <select name="deliverableID" id="deliverableID">
                     [#list deliverables as deliverable ]
-                      <option value="${(deliverable.id)!}">D${(deliverable.id)!} (P${(deliverable.project.id)!}) - ${(deliverable.deliverableInfo.title)!}</option>
+                      <option value="${(deliverable.id)!}">D${(deliverable.id)!} (C${(deliverable.project.id)!}) - ${(deliverable.deliverableInfo.title)!}</option>
                     [/#list]  
                   </select>
                 </div>
@@ -92,7 +92,7 @@
             </div>
         
             <div class="col-md-12 ma-bot">
-              [@customForm.radioFlat id="anotherProject" name="moveToSelection" label="Move to another project" value="project"
+              [@customForm.radioFlat id="anotherProject" name="moveToSelection" label="Move to another cluster" value="project"
               checked=false cssClass="editable-no" cssClassLabel="radio-label-no"/]
             </div>
         
@@ -100,20 +100,20 @@
         
               <div class="col-md-6">
                 <label for="" class="title">
-                  Current project:
+                  Current cluster:
                 </label>
                 <p id="currentProject">P${(deliverables[0].project.id)!} - ${(deliverables[0].project.projectInfo.title)!}</p>
               </div>
         
               <div class="col-md-6">
-                <!-- [@customForm.select name="Select project" value="name" label="Project" listName="projects" header=true multiple=false
+                <!-- [@customForm.select name="Select cluster" value="name" label="Cluster" listName="projects" header=true multiple=false
                 required=false className="form-control" editable=editable || editStatus/] -->
-                <label for="projectID">Select project:</label>
+                <label for="projectID">Select cluster:</label>
                  <div class="form-group">
                   <div class="selectList">   
                     <select name="projectID" id="projectID">
                       [#list projects as project ]
-                        <option value="${project.id}" >P${project.id} - ${(project.projectInfo.title)!}</option>
+                        <option value="${project.id}" >C${project.id} - ${(project.projectInfo.title)!}</option>
                       [/#list]  
                     </select>
                   </div>

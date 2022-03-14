@@ -4,7 +4,6 @@
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/projects/projectContributionCrp.js?20211110", 
-  "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
@@ -616,7 +615,7 @@
               [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.upkeepAchievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) /]
             </div>
           [#else]
-           [#if !isYearRequired(milestoneYear)]
+           [#if isYearRequired(milestoneYear)]
             <div class="col-md-4">
               [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear)/]
             </div>
@@ -630,7 +629,7 @@
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
         <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) className="limitWords-100 ${(reportingActive)?string('fieldFocus','')}" editable=(editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
+          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable=(editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
         </div>
         [/#if]
       </div>
@@ -796,8 +795,10 @@
         <th id="tb-type">[@s.text name="Youth" /]</th>
         <th id="tb-type">[@s.text name="total Participants" /]</th>
         <th id="tb-training-period">[@s.text name="Training Period" /]</th>
+        [#--  
         <th id="tb-training-period">[@s.text name="Event Focus" /]</th>
         <th id="tb-training-period">[@s.text name="Likely Outcomes" /]</th>
+        --]
       </tr>
     </thead>
     <tbody>
@@ -849,7 +850,7 @@
           [#-- Number of african --]
           <td class="text-center">
             ${(item.african?number?string(",##0"))!0}
-            <p><i><small>(${(item.africanPercentage?number?string(",##0"))!0}% )</small></i><p>
+            [#--<p><i><small>(${(item.africanPercentage?number?string(",##0"))!0}% )</small></i><p>--]
             [#if isEstimateAfricans ]
               <i><small> (Estimated value)</small></i>
             [/#if]
@@ -857,7 +858,7 @@
           [#-- Number of youth --]
           <td class="text-center">
             ${(item.youth?number?string(",##0"))!0}
-            <p><i><small>(${(item.youthPercentage?number?string(",##0"))!0}% )</small></i></p>
+            [#--<p><i><small>(${(item.youthPercentage?number?string(",##0"))!0}% )</small></i></p>--]
             [#if isEstimateYouth ]
               <i><small> (Estimated value)</small></i>
             [/#if]
@@ -874,12 +875,16 @@
             [@utils.tableText value=(item.repIndTrainingTerm.name)!"" /]
           </td>
           [#-- Training period of time --]
+          [#--  
           <td class="text-center">
             [@utils.tableText value=(item.focus)!"" /]
           </td>
+          --]
           [#-- Training period of time --]
+          [#--  
           <td class="text-center">
             [@utils.tableText value=(item.likelyOutcomes)!"" /]
+            --]
           </td>
         </tr>
       [/#list]

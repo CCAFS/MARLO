@@ -425,9 +425,11 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
   public ProjectOutcomeIndicator getIndicator(Long indicatorID) {
-    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
-      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
-        return projectOutcomeIndicator;
+    if (projectOutcome.getIndicators() != null) {
+      for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+        if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+          return projectOutcomeIndicator;
+        }
       }
     }
     ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
@@ -472,9 +474,12 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
   public ProjectOutcomeIndicator getPreIndicator(Long indicatorID) {
-    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
-      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
-        return projectOutcomeIndicator;
+    if (projectOutcome.getIndicators() != null) {
+      for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+        if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+          && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+          return projectOutcomeIndicator;
+        }
       }
     }
     ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
@@ -492,8 +497,12 @@ public class ProjectOutcomeAction extends BaseAction {
       ProjectOutcomeIndicator projectOutcomeIndicator = this.getPrevIndicator(indicatorID);
       int i = 0;
       for (ProjectOutcomeIndicator projectOutcomeIndicatorList : projectOutcomeLastPhase.getIndicators()) {
-        if (projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
-          .getCrpProgramOutcomeIndicator().getId().longValue()) {
+        if (projectOutcomeIndicator != null && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+          && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId() != null
+          && projectOutcomeIndicatorList != null && projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator() != null
+          && projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId() != null
+          && projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
+            .getCrpProgramOutcomeIndicator().getId().longValue()) {
           return i;
         }
         i++;
@@ -504,7 +513,8 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public ProjectOutcomeIndicator getPrevIndicator(Long indicatorID) {
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeLastPhase.getIndicators()) {
-      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+      if (projectOutcomeIndicator != null && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+        && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
         return projectOutcomeIndicator;
       }
     }
@@ -938,50 +948,56 @@ public class ProjectOutcomeAction extends BaseAction {
                 totalParticipants += numberParticipant;
 
                 // Total Formal Training
-                if (deliverable.getDeliverableParticipant().getRepIndTypeActivity() != null
-                  && deliverable.getDeliverableParticipant().getRepIndTypeActivity().getIsFormal()) {
+                if (deliverable.getDeliverableParticipant().getRepIndTypeActivity() != null) {
+                  // && deliverable.getDeliverableParticipant().getRepIndTypeActivity().getIsFormal()
                   totalParticipantFormalTraining += numberParticipant;
 
                   // Total Female and Male per terms
-                  if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm() != null) {
-                    Double numberFemales = 0.0;
-                    if (deliverable.getDeliverableParticipant().getFemales() != null) {
-                      totalFemales += deliverable.getDeliverableParticipant().getFemales();
-                      numberFemales = deliverable.getDeliverableParticipant().getFemales();
-                    }
-                    if (deliverable.getDeliverableParticipant().getAfrican() != null) {
-                      totalAfricans += deliverable.getDeliverableParticipant().getAfrican();
-                      if (numberParticipant != null) {
-                        double africanPercentaje = Math
-                          .round(((100 * deliverable.getDeliverableParticipant().getAfrican())) / numberParticipant);
-                        deliverable.getDeliverableParticipant().setAfricanPercentage(africanPercentaje);
-                      }
-                    }
-                    if (deliverable.getDeliverableParticipant().getYouth() != null) {
-                      totalYouth += deliverable.getDeliverableParticipant().getYouth();
-                      if (numberParticipant != null) {
-                        double youthPercentaje =
-                          Math.round(((100 * deliverable.getDeliverableParticipant().getYouth())) / numberParticipant);
-                        deliverable.getDeliverableParticipant().setYouthPercentage(youthPercentaje);
-                      }
-                    }
-                    if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
-                      .equals(APConstants.REP_IND_TRAINING_TERMS_SHORT)) {
-                      totalParticipantFormalTrainingShortFemale += numberFemales;
-                      totalParticipantFormalTrainingShortMale += (numberParticipant - numberFemales);
-                    }
-                    if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
-                      .equals(APConstants.REP_IND_TRAINING_TERMS_LONG)) {
-                      totalParticipantFormalTrainingLongFemale += numberFemales;
-                      totalParticipantFormalTrainingLongMale += (numberParticipant - numberFemales);
-                    }
-                    if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
-                      .equals(APConstants.REP_IND_TRAINING_TERMS_PHD)) {
-                      totalParticipantFormalTrainingPhdFemale += numberFemales;
-                      totalParticipantFormalTrainingPhdMale += (numberParticipant - numberFemales);
-                    }
-
+                  // if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm() != null) {
+                  Double numberFemales = 0.0;
+                  if (deliverable.getDeliverableParticipant().getFemales() != null) {
+                    totalFemales += deliverable.getDeliverableParticipant().getFemales();
+                    numberFemales = deliverable.getDeliverableParticipant().getFemales();
                   }
+                  if (deliverable.getDeliverableParticipant().getAfrican() != null) {
+                    totalAfricans += deliverable.getDeliverableParticipant().getAfrican();
+                    if (numberParticipant != null) {
+                      double africanPercentaje =
+                        Math.round(((100 * deliverable.getDeliverableParticipant().getAfrican())) / numberParticipant);
+                      deliverable.getDeliverableParticipant().setAfricanPercentage(africanPercentaje);
+                    }
+                  }
+                  if (deliverable.getDeliverableParticipant().getYouth() != null) {
+                    totalYouth += deliverable.getDeliverableParticipant().getYouth();
+                    if (numberParticipant != null) {
+                      double youthPercentaje =
+                        Math.round(((100 * deliverable.getDeliverableParticipant().getYouth())) / numberParticipant);
+                      deliverable.getDeliverableParticipant().setYouthPercentage(youthPercentaje);
+                    }
+                  }
+                  /*
+                   * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                   * .equals(APConstants.REP_IND_TRAINING_TERMS_SHORT)) {
+                   * }
+                   * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                   * .equals(APConstants.REP_IND_TRAINING_TERMS_LONG)) {
+                   * }
+                   * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                   * .equals(APConstants.REP_IND_TRAINING_TERMS_PHD)) {
+                   * }
+                   */
+                  totalParticipantFormalTrainingShortFemale += numberFemales;
+                  totalParticipantFormalTrainingShortMale += (numberParticipant - numberFemales);
+
+
+                  totalParticipantFormalTrainingLongFemale += numberFemales;
+                  totalParticipantFormalTrainingLongMale += (numberParticipant - numberFemales);
+
+
+                  totalParticipantFormalTrainingPhdFemale += numberFemales;
+                  totalParticipantFormalTrainingPhdMale += (numberParticipant - numberFemales);
+
+                  // }
                 }
 
                 // Add deliverable participant to list
@@ -1209,9 +1225,14 @@ public class ProjectOutcomeAction extends BaseAction {
 
           } else {
             // Update existing entity
-            ProjectOutcomeIndicator projectOutcomeIndicatorDB =
-              projectOutcomeIndicatorManager.getProjectOutcomeIndicatorById(projectOutcomeIndicator.getId());
+            ProjectOutcomeIndicator projectOutcomeIndicatorDB = new ProjectOutcomeIndicator();
 
+            if (projectOutcomeIndicator != null && projectOutcomeIndicator.getId() != null
+              && projectOutcomeIndicatorManager
+                .getProjectOutcomeIndicatorById(projectOutcomeIndicator.getId()) != null) {
+              projectOutcomeIndicatorDB =
+                projectOutcomeIndicatorManager.getProjectOutcomeIndicatorById(projectOutcomeIndicator.getId());
+            }
             projectOutcomeIndicatorDB.setProjectOutcome(projectOutcomeDB);
 
             // update existing fields
@@ -1228,6 +1249,7 @@ public class ProjectOutcomeAction extends BaseAction {
               projectOutcomeIndicatorManager.saveProjectOutcomeIndicator(projectOutcomeIndicatorDB);
             // This add projectOutcomeIndicator to generate correct auditlog.
             projectOutcome.getProjectOutcomeIndicators().add(projectOutcomeIndicatorDB);
+
           }
 
 

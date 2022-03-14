@@ -419,7 +419,7 @@ public class DeliverableValidator extends BaseValidator {
          * }
          */
         if (!action.isPOWB()) {
-          if (deliverable.getDeliverableParticipant() != null) {
+          if (deliverable.getDeliverableParticipant() != null && deliverable.getDeliverableParticipant() != null) {
             this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
           } else {
             action.addMessage("hasParticipants");
@@ -723,8 +723,9 @@ public class DeliverableValidator extends BaseValidator {
   }
 
   private void validateDeliverableParticipant(DeliverableParticipant deliverableParticipant, BaseAction action) {
-    if (deliverableParticipant.getHasParticipants()) {
-      if (!this.isValidString(deliverableParticipant.getEventActivityName())) {
+    if (deliverableParticipant.getHasParticipants() != null && deliverableParticipant.getHasParticipants()) {
+      if (deliverableParticipant.getEventActivityName() != null
+        && !this.isValidString(deliverableParticipant.getEventActivityName())) {
         action.addMessage(action.getText("involveParticipants.title"));
         action.getInvalidFields().put("input-deliverable.deliverableParticipant.eventActivityName",
           InvalidFieldsMessages.EMPTYFIELD);

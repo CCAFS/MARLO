@@ -425,7 +425,7 @@ public class OutcomesMilestonesAction extends BaseAction {
     if (current != null) {
       while (current.getName() != null
         && ((!StringUtils.containsIgnoreCase(current.getName(), "POWB"))
-          && (!StringUtils.containsIgnoreCase(current.getName(), "APWB")))
+          && (!StringUtils.containsIgnoreCase(current.getName(), APConstants.POWB_ACRONYM)))
         && current.getYear() != this.getCurrentCycleYear() + 1) {
         current = current.getNext();
       }

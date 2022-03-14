@@ -93,7 +93,7 @@
 
 [#-- MARLO Blog --]
 <div class="newsButton">
-  <a href="https://marlo-news.blogspot.com" target="__blank">
+  <a href="https://marlo-aiccra-news.blogspot.com" target="__blank">
      <b> [@s.text name="footer.checkBlog" /] </b> <span class="fa fa-external-link-square"></span>
   </a>
 </div>

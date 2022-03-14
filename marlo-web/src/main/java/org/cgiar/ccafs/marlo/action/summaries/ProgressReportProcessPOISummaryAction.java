@@ -32,9 +32,11 @@ import org.cgiar.ccafs.marlo.data.manager.PowbExpectedCrpProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbFinancialPlannedBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
@@ -53,6 +55,9 @@ import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbTocListDTO;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -80,6 +85,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -239,6 +245,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
   private CrpMilestoneManager crpMilestoneManager;
   private ClusterTypeManager clusterTypeManager;
   private DeliverableManager deliverableManager;
+  private ProjectDeliverableSharedManager projectDeliverableSharedManager;
+  private ProjectExpectedStudyProjectOutcomeManager projectExpectedStudyProjectOutcomeManager;
 
 
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
@@ -276,7 +284,9 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager, ProjectOutcomeManager projectOutcomeManager,
     CrpMilestoneManager crpMilestoneManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
     LocalizedTextProvider localizedTextProvider, ClusterTypeManager clusterTypeManager,
-    DeliverableManager deliverableManager, ProjectMilestoneManager projectMilestoneManager) {
+    DeliverableManager deliverableManager, ProjectMilestoneManager projectMilestoneManager,
+    ProjectDeliverableSharedManager projectDeliverableSharedManager,
+    ProjectExpectedStudyProjectOutcomeManager projectExpectedStudyProjectOutcomeManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -305,6 +315,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     this.clusterTypeManager = clusterTypeManager;
     this.deliverableManager = deliverableManager;
     this.projectMilestoneManager = projectMilestoneManager;
+    this.projectDeliverableSharedManager = projectDeliverableSharedManager;
+    this.projectExpectedStudyProjectOutcomeManager = projectExpectedStudyProjectOutcomeManager;
   }
 
   private void createCoverTable() {
@@ -409,9 +421,15 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           disseminationURL = deliverable.getDissemination(this.getSelectedPhase()).getDisseminationUrl();
         }
 
+        // Tag for shared deliverable
+        String sharedTag = "";
+        if (deliverable.getProject() != null && !deliverable.getProject().getId().equals(projectID)) {
+          sharedTag = " (Shared from C" + deliverable.getProject().getId() + ") ";
+        }
+
         if (deliverable.getDissemination(this.getSelectedPhase()).getConfidential() != null
           && deliverable.getDissemination(this.getSelectedPhase()).getConfidential()) {
-          POIField[] sData = {new POIField("D" + deliverable.getId() + "", ParagraphAlignment.LEFT, false),
+          POIField[] sData = {new POIField("D" + deliverable.getId() + sharedTag + "", ParagraphAlignment.LEFT, false),
             new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
             new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
               ParagraphAlignment.LEFT, false),
@@ -419,7 +437,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           data = Arrays.asList(sData);
           datas.add(data);
         } else if (disseminationURL.isEmpty()) {
-          POIField[] sData = {new POIField("D" + deliverable.getId() + "", ParagraphAlignment.LEFT, false),
+          POIField[] sData = {new POIField("D" + deliverable.getId() + sharedTag + "", ParagraphAlignment.LEFT, false),
             new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
             new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
               ParagraphAlignment.LEFT, false),
@@ -427,14 +445,66 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
           data = Arrays.asList(sData);
           datas.add(data);
         } else {
-          POIField[] sData = {new POIField("D" + deliverable.getId() + "", ParagraphAlignment.CENTER, false),
-            new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
-            new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
-              ParagraphAlignment.CENTER, false),
-            new POIField(disseminationURL, ParagraphAlignment.LEFT, false, "0000", disseminationURL)};
+          POIField[] sData =
+            {new POIField("D" + deliverable.getId() + sharedTag + "", ParagraphAlignment.CENTER, false),
+              new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
+              new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
+                ParagraphAlignment.CENTER, false),
+              new POIField(disseminationURL, ParagraphAlignment.LEFT, false, "0000", disseminationURL)};
           data = Arrays.asList(sData);
           datas.add(data);
         }
+      }
+      String text = "Progress";
+      poiSummary.textTable(document, headers, datas, false, text);
+    }
+  }
+
+  private void createOICRsTable(List<ProjectExpectedStudy> studies) {
+
+    List<List<POIField>> headers = new ArrayList<>();
+
+    String blackColor = "000000";
+
+    Boolean bold = true;
+
+    bold = true;
+    POIField[] sHeader1 = {
+      new POIField(this.getText("summaries.progressReport2020.deliverablesTable.Title1"), ParagraphAlignment.CENTER,
+        bold, blackColor),
+      new POIField(this.getText("summaries.progressReport2020.deliverablesTable.Title2"), ParagraphAlignment.CENTER,
+        bold, blackColor),
+      new POIField(this.getText("summaries.progressReport2020.deliverablesTable.Title3"), ParagraphAlignment.CENTER,
+        bold, blackColor)};
+
+    List<POIField> header1 = Arrays.asList(sHeader1);
+    // List<POIField> header2 = Arrays.asList(sHeader2);
+    headers.add(header1);
+    // headers.add(header2);
+
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    data = new ArrayList<>();
+
+
+    if (studies != null && !studies.isEmpty()) {
+
+      for (ProjectExpectedStudy study : studies) {
+
+
+        // Tag for shared deliverable
+        String sharedTag = "";
+        if (study.getProject() != null && !study.getProject().getId().equals(projectID)) {
+          sharedTag = " (Shared from C" + study.getProject().getId() + ") ";
+        }
+
+        POIField[] sData = {new POIField("" + study.getId() + sharedTag + "", ParagraphAlignment.CENTER, false),
+          new POIField(study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle(), ParagraphAlignment.LEFT,
+            false),
+          new POIField(study.getProjectExpectedStudyInfo().getStatusName(), ParagraphAlignment.CENTER, false)};
+        data = Arrays.asList(sData);
+        datas.add(data);
+
       }
       String text = "Progress";
       poiSummary.textTable(document, headers, datas, false, text);
@@ -1004,6 +1074,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                   expected2023 = Math.round(projectOutcome.getExpectedValue()) + "";
                 }
                 String milestoneNarrativeTarget = "";
+                String milestoneNarrativeAchieved = "";
                 List<ProjectMilestone> projectMilestones = new ArrayList<>();
                 projectMilestones = projectMilestoneManager.findAll().stream()
                   .filter(m -> m.isActive() && m.getYear() == this.getSelectedPhase().getYear()
@@ -1031,6 +1102,9 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                     if (milestone.getNarrativeTarget() != null) {
                       milestoneNarrativeTarget = milestone.getNarrativeTarget();
                     }
+                    if (milestone.getNarrativeAchieved() != null) {
+                      milestoneNarrativeAchieved = milestone.getNarrativeAchieved();
+                    }
                   }
                 }
                 this.createTableIndicators(overall2023, expected2023, expected2021, progress2021);
@@ -1054,20 +1128,40 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
                 // Project Milestone narrative
 
+                if (this.getSelectedPhase().isReporting()) {
+                  // Get Narrative Achieved - Reporting phase
+                  if (milestoneNarrativeAchieved != null) {
+                    poiSummary.textLineBreak(document, 1);
+                    poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
+                      this.getText("summaries.progressReport2020.projectMilestone.narrativeAchieved") + " "
+                        + this.getSelectedPhase().getYear() + ":");
 
-                if (milestoneNarrativeTarget != null) {
-                  poiSummary.textLineBreak(document, 1);
-                  poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
-                    this.getText("summaries.progressReport2020.projectMilestone.narrativeTarget") + " "
-                      + this.getSelectedPhase().getYear() + ":");
+                    paragraph = document.createParagraph();
+                    paragraph.setAlignment(ParagraphAlignment.BOTH);
+                    run = paragraph.createRun();
+                    run.setText(milestoneNarrativeAchieved);
+                    run.setBold(false);
+                    run.setFontSize(11);
+                    run.setFontFamily("Calibri");
+                    run.setColor("000000");
+                  }
+                } else {
+                  if (milestoneNarrativeTarget != null) {
+                    // Get Narrative Target - Not Reporting phase
+                    poiSummary.textLineBreak(document, 1);
+                    poiSummary.textParagraphFontBoldCalibri(document.createParagraph(),
+                      this.getText("summaries.progressReport2020.projectMilestone.narrativeTarget") + " "
+                        + this.getSelectedPhase().getYear() + ":");
 
-                  paragraph = document.createParagraph();
-                  run = paragraph.createRun();
-                  run.setText(milestoneNarrativeTarget);
-                  run.setBold(false);
-                  run.setFontSize(11);
-                  run.setFontFamily("Calibri");
-                  run.setColor("000000");
+                    paragraph = document.createParagraph();
+                    paragraph.setAlignment(ParagraphAlignment.BOTH);
+                    run = paragraph.createRun();
+                    run.setText(milestoneNarrativeTarget);
+                    run.setBold(false);
+                    run.setFontSize(11);
+                    run.setFontFamily("Calibri");
+                    run.setColor("000000");
+                  }
                 }
 
                 // Indicators
@@ -1137,16 +1231,34 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 // Deliverables Table
                 List<Deliverable> deliverables = new ArrayList<>();
 
-                /*
-                 * Get mapped deliverables
-                 */
+                List<ProjectDeliverableShared> deliverablesShared = this.projectDeliverableSharedManager
+                  .getByProjectAndPhase(projectID, this.getSelectedPhase().getId()) != null
+                    ? this.projectDeliverableSharedManager
+                      .getByProjectAndPhase(projectID, this.getSelectedPhase().getId()).stream()
+                      .filter(px -> px.isActive() && px.getDeliverable().isActive()
+                        && px.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null)
+                      .collect(Collectors.toList())
+                    : Collections.emptyList();
+
                 try {
                   for (Deliverable deliverable : projectOutcome.getProject()
-                    .getCurrentDeliverables(this.getActualPhase())) {
+                    .getCurrentDeliverables(this.getSelectedPhase())) {
                     if (deliverable.getDeliverableProjectOutcomes() != null) {
-                      deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes()
-                        .stream().filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
-                        .collect(Collectors.toList())));
+                      if (this.getSelectedPhase().isReporting()) {
+                        // For reporting phase use just deliverables completed
+                        deliverable
+                          .setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
+                            .filter(o -> o.getDeliverable() != null
+                              && o.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
+                              && o.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
+                              && o.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus() == 3
+                              && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+                            .collect(Collectors.toList())));
+                      } else {
+                        deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes()
+                          .stream().filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+                          .collect(Collectors.toList())));
+                      }
                     }
                     if (deliverable != null && deliverable.getProjectOutcomes() != null
                       && !deliverable.getProjectOutcomes().isEmpty()) {
@@ -1154,11 +1266,106 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                         && !deliverable.getProjectOutcomes().isEmpty()) {
                         for (DeliverableProjectOutcome deliverableProjectOutcome : deliverable.getProjectOutcomes()) {
                           if (deliverableProjectOutcome != null && deliverableProjectOutcome.getProjectOutcome() != null
-                            && deliverableProjectOutcome.getProjectOutcome().getId() != null
-                            && deliverableProjectOutcome.getProjectOutcome().getId()
+                            && deliverableProjectOutcome.getProjectOutcome().getId() != null && projectOutcome != null
+                            && projectOutcome.getId() != null && deliverableProjectOutcome.getProjectOutcome().getId()
                               .compareTo(projectOutcome.getId()) == 0) {
                             deliverables.add(deliverable);
                           }
+                        }
+
+
+                      }
+                    }
+                  }
+                } catch (Exception e) {
+
+                }
+
+                // deliverables shared
+                if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+                  for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+                    if (deliverableShared != null && deliverableShared.getDeliverable() != null
+                      && deliverableShared.getDeliverable().getDeliverableProjectOutcomes() != null) {
+
+                      // For reporting phase use just deliverables completed
+                      if (this.getSelectedPhase().isReporting()) {
+                        deliverableShared.getDeliverable().setProjectOutcomes(
+                          new ArrayList<>(deliverableShared.getDeliverable().getDeliverableProjectOutcomes().stream()
+                            .filter(o -> o.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
+                              && o.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
+                              && o.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus() == 3
+                              && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+                            .collect(Collectors.toList())));
+                      } else {
+                        deliverableShared.getDeliverable().setProjectOutcomes(
+                          new ArrayList<>(deliverableShared.getDeliverable().getDeliverableProjectOutcomes().stream()
+                            .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+                            .collect(Collectors.toList())));
+                      }
+                      for (DeliverableProjectOutcome deliverableProjectOutcome : deliverableShared.getDeliverable()
+                        .getProjectOutcomes()) {
+                        if (deliverableProjectOutcome != null && deliverableProjectOutcome.getProjectOutcome() != null
+                          && deliverableProjectOutcome.getProjectOutcome().getId() != null
+                          && deliverableProjectOutcome.getProjectOutcome().getCrpProgramOutcome() != null
+                          && deliverableProjectOutcome.getProjectOutcome().getCrpProgramOutcome().getId() != null
+                          && projectOutcome.getCrpProgramOutcome() != null
+                          && projectOutcome.getCrpProgramOutcome().getId() != null
+                          && deliverableProjectOutcome.getProjectOutcome().getCrpProgramOutcome().getId()
+                            .compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
+                          deliverables.add(deliverableShared.getDeliverable());
+                        }
+                      }
+                    }
+                  }
+                }
+
+                if (deliverables != null && !deliverables.isEmpty()) {
+
+                  if (deliverables != null && !deliverables.isEmpty()) {
+                    poiSummary.textLineBreak(document, 1);
+                    poiSummary.textParagraphFontCalibri(document.createParagraph(),
+                      this.getText("summaries.progressReport2020.deliverableStatus") + ":");
+                    this.createDeliverablesTable(deliverables);
+                  }
+                }
+                poiSummary.textLineBreak(document, 3);
+
+
+                // OICRs Table
+                List<ProjectExpectedStudy> expectedStudies = new ArrayList<>();
+                List<ProjectExpectedStudy> expectedStudiesTemp = new ArrayList<>();
+                expectedStudiesTemp = projectExpectedStudyManager.getAllStudiesByPhase(this.getSelectedPhase().getId());
+
+                if (expectedStudiesTemp != null) {
+                  expectedStudiesTemp = expectedStudiesTemp.stream()
+                    .filter(e -> e != null && e.getProject() != null && e.getProject().getId().equals(projectID)
+                      && e.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null
+                      && e.getProjectExpectedStudyInfo(this.getSelectedPhase()).isActive()
+                      && e.getProjectExpectedStudyInfo(this.getSelectedPhase()).getPhase().getId()
+                        .equals(this.getSelectedPhase().getId()))
+                    .collect(Collectors.toList());
+                }
+
+                try {
+                  for (ProjectExpectedStudy expectedStudy : expectedStudiesTemp) {
+                    if (expectedStudy.getProjectExpectedStudyProjectOutcomes() != null) {
+
+                      expectedStudy.setProjectOutcomes(
+                        new ArrayList<>(expectedStudy.getProjectExpectedStudyProjectOutcomes().stream()
+                          .filter(o -> o.getProjectExpectedStudy() != null
+                            && o.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()) != null)
+                          .collect(Collectors.toList())));
+                    }
+
+                    if (expectedStudy != null && expectedStudy.getProjectOutcomes() != null
+                      && !expectedStudy.getProjectOutcomes().isEmpty()) {
+
+                      for (ProjectExpectedStudyProjectOutcome studyOutcomes : expectedStudy.getProjectOutcomes()) {
+                        if (studyOutcomes != null && studyOutcomes.getProjectOutcome() != null
+                          && studyOutcomes.getProjectOutcome().getId() != null && projectOutcome != null
+                          && projectOutcome.getId() != null
+                          && studyOutcomes.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+                          expectedStudies.add(studyOutcomes.getProjectExpectedStudy());
                         }
                       }
                     }
@@ -1166,29 +1373,12 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 } catch (Exception e) {
 
                 }
-                /*
-                 * 
-                 */
 
-                /*
-                 * deliverables =
-                 * deliverableManager.getDeliverablesByProjectAndPhase(this.getSelectedPhase().getId(), projectID);
-                 */
-                if (deliverables != null && !deliverables.isEmpty()) {
-                  /*
-                   * deliverables = deliverables.stream()
-                   * .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()).isActive()
-                   * && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome() != null
-                   * && d.getDeliverableInfo(this.getSelectedPhase()).getCrpProgramOutcome().getId()
-                   * .equals(projectOutcome.getCrpProgramOutcome().getId()))
-                   * .collect(Collectors.toList());
-                   */
-                  if (deliverables != null && !deliverables.isEmpty()) {
-                    poiSummary.textLineBreak(document, 1);
-                    poiSummary.textParagraphFontCalibri(document.createParagraph(),
-                      this.getText("summaries.progressReport2020.deliverableStatus") + ":");
-                    this.createDeliverablesTable(deliverables);
-                  }
+                if (expectedStudies != null && !expectedStudies.isEmpty()) {
+                  poiSummary.textLineBreak(document, 1);
+                  poiSummary.textParagraphFontCalibri(document.createParagraph(),
+                    this.getText("summaries.progressReport2020.oicrStatus") + ":");
+                  this.createOICRsTable(expectedStudies);
                 }
                 poiSummary.textLineBreak(document, 3);
               }
@@ -1299,7 +1489,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       fileName.append("AR Year Report_");
     } else {
       // POWB - APWB
-      fileName.append("APWB Year Report_");
+      fileName.append(APConstants.POWB_ACRONYM + " Year Report_");
     }
 
 
