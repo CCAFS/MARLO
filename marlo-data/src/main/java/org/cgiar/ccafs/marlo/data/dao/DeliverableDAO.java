@@ -74,6 +74,14 @@ public interface DeliverableDAO {
    */
   public List<Deliverable> getDeliverablesByPhase(long phase);
 
+  /**
+   * This method gets a list of Deliverable that are active by a given phase, including publications if
+   * {@code includePublications} is true
+   * 
+   * @return a list from Deliverable null if no exist records
+   */
+  public List<Deliverable> getDeliverablesByPhase(long phase, boolean includePublications);
+
   public List<Deliverable> getDeliverablesByProjectAndPhase(long phaseId, long projectId);
 
   /**
