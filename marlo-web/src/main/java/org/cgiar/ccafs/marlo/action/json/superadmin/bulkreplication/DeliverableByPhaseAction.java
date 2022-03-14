@@ -2,6 +2,7 @@ package org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication;
 
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -15,6 +16,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +32,7 @@ public class DeliverableByPhaseAction extends BaseAction {
   // Parameters
   private List<Map<String, Object>> entityByPhaseList;
   private long selectedPhaseID;
+  private boolean includePublications = false;
 
   // Managers
   private DeliverableManager deliverableManager;
@@ -51,7 +55,8 @@ public class DeliverableByPhaseAction extends BaseAction {
     if (selectedPhaseID != -1) {
       Phase phase = phaseManager.getPhaseById(selectedPhaseID);
       // Get deliverables by Phase
-      List<Deliverable> deliverablesbyPhaseList = deliverableManager.getDeliverablesByPhase(selectedPhaseID);
+      List<Deliverable> deliverablesbyPhaseList =
+        deliverableManager.getDeliverablesByPhase(selectedPhaseID, includePublications);
 
       if (deliverablesbyPhaseList != null && !deliverablesbyPhaseList.isEmpty()) {
         deliverablesbyPhaseList.sort((d1, d2) -> d1.getId().compareTo(d2.getId()));
@@ -64,7 +69,12 @@ public class DeliverableByPhaseAction extends BaseAction {
               deliverableMap.put("title", deliverable.getDeliverableInfo().getTitle());
               deliverableMap.put("composedName",
                 "D" + deliverable.getId() + ": " + deliverable.getDeliverableInfo().getTitle());
-              deliverableMap.put("project", deliverable.getProject().getId());
+              if (includePublications && (deliverable.getIsPublication() != null && deliverable.getIsPublication())) {
+                deliverableMap.put("project", "Publication");
+              } else {
+                deliverableMap.put("project",
+                  deliverable.getProject() != null ? deliverable.getProject().getId() : "None");
+              }
               this.entityByPhaseList.add(deliverableMap);
             }
           } catch (Exception e) {
@@ -90,7 +100,10 @@ public class DeliverableByPhaseAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
+    Map<String, Parameter> parameters = this.getParameters();
+    Boolean includePub =
+      Boolean.valueOf(StringUtils.trim(parameters.get(APConstants.INCLUDE_PUBLICATIONS).getMultipleValues()[0]));
+    this.includePublications = includePub == null ? false : includePub.booleanValue();
   }
 
 

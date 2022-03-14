@@ -2,7 +2,7 @@
 [#assign title = "MARLO Bulk Replication" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloBulk.js?20181203" ] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloBulk.js?20220309" ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "bulkReplication" /]
