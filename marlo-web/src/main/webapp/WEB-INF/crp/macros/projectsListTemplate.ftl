@@ -32,7 +32,9 @@
           <th id="projectBudget">[@s.text name="projectsList.BILATERALprojectBudget" /]</th> --]
         [/#if]
         <th id="projectActionStatus">[@s.text name="projectsList.projectActionStatus" /]</th>
+        [#--  
         <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
+        --]
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
         [#if isPlanning]
           <th id="projectBudget">[@s.text name="planning.projects.completion" /]</th>
@@ -65,7 +67,7 @@
             [#if project.projectInfo.administrative]<span class="label label-primary">[@s.text name="project.management" /]</span>[/#if]
             [#if hasClusterType]
               [#if (project.projectInfo.clusterType.id) == 1]<span class="label label-default">[@s.text name="project.countryProject" /]</span>[/#if]
-              [#if (project.projectInfo.clusterType.id) == 2]<span class="label label-warning">[@s.text name="project.flagshipProject" /]</span>[/#if]
+              [#if (project.projectInfo.clusterType.id) == 2]<span class="label label-warning">[@s.text name="project.themeProject" /]</span>[/#if]
               [#if (project.projectInfo.clusterType.id) == 4]<span class="label label-success">[@s.text name="project.regionalProject" /]</span>[/#if]
             [/#if]
             [#if project.projectInfo.title?has_content]
@@ -178,6 +180,7 @@
           </td>
 
           [#-- Summary PDF download --]
+          [#--  
           <td>
             [#if action.getActualPhase().crp.id != 29]
               <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
@@ -185,6 +188,7 @@
               </a>
             [/#if]
           </td>
+          --]
           [#-- Delete Project--]
           <td>
             [#if canEdit && isProjectNew && action.deletePermission(project.id) && action.getActualPhase().editable && project.projectInfo.phase.id=action.getActualPhase().id]

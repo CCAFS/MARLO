@@ -30,7 +30,7 @@
         [#-- Is Complete --]
         [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
         [#-- To Report --]
-        [#local toReport = reportingActive && !isDeliverableComplete ]
+        [#local toReport = reportingActive && (deliverable.deliverableInfo.isRequiredToBeReported())]
 
         <tr>
           [#-- ID --]
@@ -159,7 +159,7 @@
         [#-- Is Complete --]
         [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
         [#-- To Report --]
-        [#local toReport = reportingActive && !isDeliverableComplete ]
+        [#local toReport = reportingActive && (deliverable.deliverableInfo.isRequiredToBeReported()) ]
 
         <tr>
           [#-- ID --]
@@ -232,7 +232,7 @@
         [#-- isDeliverableComplete --]
         [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
         [#-- To Report --]
-        [#local toReport = reportingActive && !isDeliverableComplete ]
+        [#local toReport = reportingActive && (deliverable.deliverableInfo.isRequiredToBeReported()) ]
 
         <tr>
           [#-- ID --]

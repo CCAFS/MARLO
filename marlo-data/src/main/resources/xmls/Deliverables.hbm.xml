@@ -255,5 +255,13 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableAltmetricInfo" />
     </set>
+    <set name="deliverableProjectOutcomes" table="deliverable_project_outcomes"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="deliverable_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome" />
+    </set>
 	</class>
 </hibernate-mapping>

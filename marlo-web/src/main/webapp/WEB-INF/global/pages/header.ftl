@@ -115,7 +115,7 @@
                 <div class="clearfix"></div>
               [#else]
                <div id="title" >AICCRA</div>    
-                <div id="subTitle" class="visible-md-block visible-lg-block">Accelerating the Impact of CGIAR Climate Research for Africa project</div>
+                <div id="subTitle" class="visible-md-block visible-lg-block">Accelerating Impacts of CGIAR Climate Research for Africa project</div>
                 <div class="clearfix"></div>
               [/#if]
               </a>

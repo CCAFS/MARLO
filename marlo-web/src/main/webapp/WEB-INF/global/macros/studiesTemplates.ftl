@@ -2,7 +2,7 @@
 [#macro studyMacro element name index=-1 template=false fromProject=true ]
   [#local customName = "${name}"/]
   [#local customId = "study-${template?string('template',index)}" /]
-  [#local isOutcomeCaseStudy = ((element.projectExpectedStudyInfo.studyType.id == 1)!false) && (reportingActive || upKeepActive)/]
+  [#local isOutcomeCaseStudy = ((element.projectExpectedStudyInfo.studyType.id == 1)!false)/]
   [#local isNew = (action.isEvidenceNew(element.id))!false /]
   
   [#local isPolicy = ((element.projectExpectedStudyInfo.isContribution)!false) ]
@@ -148,7 +148,6 @@
     </div>
     <div class="borderBox">
       [#-- 0. Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
-      [#if isOutcomeCaseStudy]
         <div class="form-group">
           <div class="optionPublicComponent form-group" style="display:block">         
             <br />
@@ -163,11 +162,10 @@
             <div class="message text-center" style="display:none">Copied!</div>
           </div>
         </div>
-      [/#if]
 
       [#-- 1. Title (up to 25 words) --]
       <div class="form-group">
-        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className="limitWords-25" helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
+        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className="limitWords-30" helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
       </div>
       
       [#-- Who is commissioning this study --]
@@ -180,17 +178,18 @@
       [#-- 2. Short outcome/impact statement (up to 80 words) --]
       [#if isOutcomeCaseStudy]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.outcomeImpactStatement" i18nkey="study.outcomeStatement" help="study.outcomeStatement.help" className="limitWords-80" helpIcon=false required=true editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.outcomeImpactStatement" i18nkey="study.outcomeStatement" help="study.outcomeStatement.help" className="limitWords-80" helpIcon=false required=false editable=editable /]
       </div>
       [/#if]
       
       [#-- 3. Outcome story for communications use. REPLACED "comunicationsMaterial" --]
       [#if isOutcomeCaseStudy]
       <div class="form-group">
+      [#--  
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.comunicationsMaterial" i18nkey="study.outcomestory" help="study.outcomestory.help" className="limitWords-400" helpIcon=false required=true editable=editable /]
       
         <br />
-        
+        --]
         <label for="">[@s.text name="study.outcomestoryLinks" /]:
           [@customForm.req required=false /]
           [@customForm.helpLabel name="study.outcomestoryLinks.help" paramText="<a href='https://hdl.handle.net/10568/99384' target='_blank'>Personal data use authorization form</a>" showIcon=false editable=editable/]
@@ -328,18 +327,24 @@
       </div>
       
       [#-- Milestones --]
-        [#if isOutcomeCaseStudy]
+        [#--[#if isOutcomeCaseStudy]  --]
         <div class="form-group">          
-          <label for="">[@s.text name="study.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.milestones.help" showIcon=false editable=editable/]</label>
+          <label for="">[@s.text name="study.outcomes" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.outcomes.help" showIcon=false editable=editable/]</label>
           [#assign studyMilestoneLink = "studyMilestoneLink"]
           [#assign showMilestoneIndicator = (expectedStudy.projectExpectedStudyInfo.hasMilestones?string)!"" /]
           [@customForm.radioFlat id="${studyMilestoneLink}-yes" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
           [@customForm.radioFlat id="${studyMilestoneLink}-no" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
       </div>
-        
+        [#--  
        <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
           [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="study.milestones"  listName="milestones" keyFieldName="id" displayFieldName="composedName" hasPrimary=true /]
           <div class="note">[@s.text name="study.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+         <br/>      
+        </div>
+        --]
+       <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
+          [@customForm.elementsListComponent name="${customName}.projectOutcomes" elementType="projectOutcome" elementList=(element.projectOutcomes)![] label="study.outcomes"  listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName"/]
+          <div class="note">[@s.text name="study.outcomes.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
          <br/>      
         </div>
         
@@ -348,8 +353,16 @@
          <div class="note">[@s.text name="study.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
          <br/>
         </div>--]
-        [/#if]
-      
+        [#-- [/#if] --]
+        
+      [#-- Performacen indicators    
+        <div class="form-group">
+          <label for="">[@s.text name="Performance Indicators" /]:</label>
+            <div class="form-group simpleBox">
+              [@customForm.elementsListComponent name="${customName}.projectOutcomes" elementType="projectOutcome" elementList=(element.projectOutcomes)![] label="study.outcomes"  listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName" required=false/]
+            </div>          
+        </div>
+  --]   
 
       [#-- 7. Key Contributors  --]
       <div class="form-group">

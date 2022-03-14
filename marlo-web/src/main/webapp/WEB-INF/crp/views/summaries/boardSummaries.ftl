@@ -18,7 +18,8 @@
 [#assign reportsTypes = [
   [#-- PROJECT REPORTS --]
   { "slug": "projects", "active": true, "title":"summaries.board.options.projects", "reportsList": [
-    { "active": true,
+  
+    { "active": false,
       "available": !centerGlobalUnit,
       "title": "summaries.board.report.projectPortfolio", 
       "description": "summaries.board.report.projectPortfolio.description",
@@ -28,6 +29,7 @@
       "cycles": [ "Planning", "Reporting" ],
       "allowProjectID": true
     },
+    
     { "active": true,
       "available": action.isAiccra(),
       "title": "summaries.board.report.progressSummary.title", 
@@ -107,6 +109,7 @@
       "formats": [ "Excel" ],
       "cycles": [ "Reporting" ]
     },
+    [#--  
     { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.innovations", 
@@ -116,6 +119,7 @@
       "formats": [ "Excel" ],
       "cycles": [ "Reporting" ]
     },
+    --]
     { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.projectActivities", 

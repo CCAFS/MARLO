@@ -217,6 +217,50 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return false;
   }
 
+  public Boolean isRequiredToBeReported() {
+    if (this.getStatus() == null) {
+      return true;
+    }
+
+    if (this.getStatus() != null
+      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+      if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
+        if (this.getNewExpectedYear() == this.getPhase().getYear()) {
+          return true;
+        }
+      } else {
+        return true;
+      }
+    }
+
+    if (this.getStatus() != null
+      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
+        if (this.getNewExpectedYear() == this.getPhase().getYear()) {
+          return true;
+        }
+      } else {
+        if (this.getYear() == this.getPhase().getYear()) {
+          return true;
+        }
+      }
+    }
+
+    if (this.getStatus() != null
+      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+      return false;
+    }
+
+    if (this.getStatus() != null
+      && (this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+      if (this.getYear() == this.getPhase().getYear()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   /**
    * Check if the deliverable is required for the current cycle
    * Used in BaseAction.isDeliverableComplete to know if the Deliverable is Complete

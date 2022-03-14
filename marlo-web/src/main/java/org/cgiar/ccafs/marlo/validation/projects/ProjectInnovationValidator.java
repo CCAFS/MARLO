@@ -21,7 +21,6 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -105,41 +104,42 @@ public class ProjectInnovationValidator extends BaseValidator {
     if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()) != null
       && (projectInnovation.getProjectInnovationInfo().getHasMilestones() != null
         && projectInnovation.getProjectInnovationInfo().getHasMilestones() == true
-        && (projectInnovation.getMilestones() == null || projectInnovation.getMilestones().isEmpty()))
+        && (projectInnovation.getProjectOutcomes() == null || projectInnovation.getProjectOutcomes().isEmpty()))
       || projectInnovation.getProjectInnovationInfo().getHasMilestones() == null) {
-      action.addMessage(action.getText("milestones"));
-      action.addMissingField("innovation.milestones");
-      action.getInvalidFields().put("list-innovation.milestones",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+      action.addMessage(action.getText("projectOutcomes"));
+      action.addMissingField("innovation.projectOutcomes");
+      action.getInvalidFields().put("list-innovation.projectOutcomes",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"projectOutcomes"}));
     }
 
     if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()) != null
       && (projectInnovation.getProjectInnovationInfo().getHasMilestones() == null)) {
-      action.addMessage(action.getText("milestones"));
-      action.addMissingField("innovation.milestones");
-      action.getInvalidFields().put("list-innovation.milestones",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+      action.addMessage(action.getText("projectOutcomes"));
+      action.addMissingField("innovation.projectOutcomes");
+      action.getInvalidFields().put("list-innovation.projectOutcomes",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"projectOutcomes"}));
     } else {
 
       // Validate primary milestones
-      if (projectInnovation.getMilestones() != null
-        && (projectInnovation.getProjectInnovationInfo().getHasMilestones() != null
-          && projectInnovation.getProjectInnovationInfo().getHasMilestones() == true
-          && !projectInnovation.getMilestones().isEmpty())) {
-        int count = 0;
-        for (ProjectInnovationMilestone innovationMilestone : projectInnovation.getMilestones()) {
-          if (innovationMilestone.getPrimary() != null && innovationMilestone.getPrimary()) {
-            count++;
-          }
-        }
-
-        if (count == 0) {
-          action.addMessage(action.getText("milestones"));
-          action.addMissingField("innovation.milestones");
-          action.getInvalidFields().put("list-innovation.milestones",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
-        }
-      }
+      /*
+       * if (projectInnovation.getMilestones() != null
+       * && (projectInnovation.getProjectInnovationInfo().getHasMilestones() != null
+       * && projectInnovation.getProjectInnovationInfo().getHasMilestones() == true
+       * && !projectInnovation.getMilestones().isEmpty())) {
+       * int count = 0;
+       * for (ProjectInnovationMilestone innovationMilestone : projectInnovation.getMilestones()) {
+       * if (innovationMilestone.getPrimary() != null && innovationMilestone.getPrimary()) {
+       * count++;
+       * }
+       * }
+       * if (count == 0) {
+       * action.addMessage(action.getText("milestones"));
+       * action.addMissingField("innovation.milestones");
+       * action.getInvalidFields().put("list-innovation.milestones",
+       * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+       * }
+       * }
+       */
     }
 
     // Validate SubIdos

@@ -116,6 +116,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableTypeRule;
@@ -148,10 +149,12 @@ import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -963,13 +966,80 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
 
           for (Deliverable deliverable : projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase())) {
-            if (deliverable.getDeliverableInfo() != null
-              && deliverable.getDeliverableInfo().getCrpProgramOutcome() != null && deliverable.getDeliverableInfo()
-                .getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
-
-              canDelete = false;
-              break;
+            if (deliverable.getDeliverableProjectOutcomes() != null) {
+              deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
+                .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
             }
+            if (deliverable != null && deliverable.getProjectOutcomes() != null
+              && !deliverable.getProjectOutcomes().isEmpty()) {
+              if (deliverable != null && deliverable.getProjectOutcomes() != null
+                && !deliverable.getProjectOutcomes().isEmpty()) {
+                for (DeliverableProjectOutcome deliverableProjectOutcome : deliverable.getProjectOutcomes()) {
+                  if (deliverableProjectOutcome != null && deliverableProjectOutcome.getProjectOutcome() != null
+                    && deliverableProjectOutcome.getProjectOutcome().getId() != null
+                    && deliverableProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+
+                    canDelete = false;
+                    break;
+                  }
+                }
+              }
+            }
+          }
+
+
+          try {
+            for (ProjectExpectedStudy expectedStudy : projectOutcome.getProject().getProjectExpectedStudies().stream()
+              .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+                && ps.getProjectExpectedStudyInfo(this.getActualPhase()).isActive())
+              .collect(Collectors.toList())) {
+              if (expectedStudy.getProjectExpectedStudyProjectOutcomes() != null) {
+                expectedStudy.setProjectOutcomes(new ArrayList<>(expectedStudy.getProjectExpectedStudyProjectOutcomes()
+                  .stream().filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
+                  .collect(Collectors.toList())));
+              }
+              if (expectedStudy != null && expectedStudy.getProjectOutcomes() != null
+                && !expectedStudy.getProjectOutcomes().isEmpty()) {
+                for (ProjectExpectedStudyProjectOutcome expectedStudyProjectOutcome : expectedStudy
+                  .getProjectOutcomes()) {
+                  if (expectedStudyProjectOutcome != null && expectedStudyProjectOutcome.getProjectOutcome() != null
+                    && expectedStudyProjectOutcome.getProjectOutcome().getId() != null
+                    && expectedStudyProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+                    canDelete = false;
+                    break;
+                  }
+                }
+              }
+            }
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+
+          try {
+            for (ProjectInnovation innovation : projectOutcome.getProject().getProjectInnovations().stream()
+              .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(this.getActualPhase()) != null
+                && ps.getProjectInnovationInfo(this.getActualPhase()).isActive())
+              .collect(Collectors.toList())) {
+              if (innovation.getProjectInnovationProjectOutcomes() != null) {
+                innovation.setProjectOutcomes(new ArrayList<>(innovation.getProjectInnovationProjectOutcomes().stream()
+                  .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
+                  .collect(Collectors.toList())));
+              }
+              if (innovation != null && innovation.getProjectOutcomes() != null
+                && !innovation.getProjectOutcomes().isEmpty()) {
+                for (ProjectInnovationProjectOutcome innovationStudyProjectOutcome : innovation.getProjectOutcomes()) {
+                  if (innovationStudyProjectOutcome != null && innovationStudyProjectOutcome.getProjectOutcome() != null
+                    && innovationStudyProjectOutcome.getProjectOutcome().getId() != null
+                    && innovationStudyProjectOutcome.getProjectOutcome().getId()
+                      .compareTo(projectOutcome.getId()) == 0) {
+                    canDelete = false;
+                    break;
+                  }
+                }
+              }
+            }
+          } catch (Exception e) {
+            e.printStackTrace();
           }
 
           return canDelete;
@@ -2756,11 +2826,38 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           deliverables = new ArrayList<>();
           ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
 
-          for (Deliverable deliverable : projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase())) {
-            if (deliverable.getDeliverableInfo() != null
-              && deliverable.getDeliverableInfo().getCrpProgramOutcome() != null && deliverable.getDeliverableInfo()
-                .getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
-              deliverables.add(deliverable);
+          /*
+           * Commented for implement the new relationship deliverable_project_outcomes
+           * for (Deliverable deliverable : projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase())) {
+           * if (deliverable.getDeliverableInfo() != null
+           * && deliverable.getDeliverableInfo().getCrpProgramOutcome() != null && deliverable.getDeliverableInfo()
+           * .getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
+           * deliverables.add(deliverable);
+           * }
+           * }
+           */
+
+          // New method for new relationship deliverable_project_outcomes table
+          List<Deliverable> deliverablesTemp = null;
+          deliverablesTemp = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
+          if (this.isReportingActive()) {
+            deliverablesTemp = deliverablesTemp.stream().filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
+              && d.getDeliverableInfo(this.getActualPhase()).getStatus() == 3).collect(Collectors.toList());
+          }
+          for (Deliverable deliverable : deliverablesTemp) {
+            if (deliverable.getDeliverableProjectOutcomes() != null) {
+              deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
+                .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+            }
+            if (deliverable != null && deliverable.getProjectOutcomes() != null
+              && !deliverable.getProjectOutcomes().isEmpty()) {
+              for (DeliverableProjectOutcome deliverableProjectOutcome : deliverable.getProjectOutcomes()) {
+                if (deliverableProjectOutcome != null && deliverableProjectOutcome.getProjectOutcome() != null
+                  && deliverableProjectOutcome.getProjectOutcome().getId() != null
+                  && deliverableProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+                  deliverables.add(deliverable);
+                }
+              }
             }
           }
 
@@ -2916,6 +3013,37 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.differences;
   }
 
+  public List<ProjectExpectedStudy> getexpectedProjectOutcomes(Long id) {
+    List<ProjectExpectedStudy> expectedStudies = new ArrayList<>();
+    ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
+
+    try {
+      for (ProjectExpectedStudy expectedStudy : projectOutcome.getProject().getProjectExpectedStudies().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+          && ps.getProjectExpectedStudyInfo(this.getActualPhase()).isActive())
+        .collect(Collectors.toList())) {
+        if (expectedStudy.getProjectExpectedStudyProjectOutcomes() != null) {
+          expectedStudy
+            .setProjectOutcomes(new ArrayList<>(expectedStudy.getProjectExpectedStudyProjectOutcomes().stream()
+              .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+        }
+        if (expectedStudy != null && expectedStudy.getProjectOutcomes() != null
+          && !expectedStudy.getProjectOutcomes().isEmpty()) {
+          for (ProjectExpectedStudyProjectOutcome expectedStudyProjectOutcome : expectedStudy.getProjectOutcomes()) {
+            if (expectedStudyProjectOutcome != null && expectedStudyProjectOutcome.getProjectOutcome() != null
+              && expectedStudyProjectOutcome.getProjectOutcome().getId() != null
+              && expectedStudyProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+              expectedStudies.add(expectedStudy);
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return expectedStudies;
+  }
+
   public List<Integer> getExpectedStudiesYears(Long expectedStudy) {
     List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList =
       this.projectExpectedStudyInfoManager.findAll().stream()
@@ -3050,6 +3178,36 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+  public List<ProjectInnovation> getInnovationProjectOutcomes(Long id) {
+    List<ProjectInnovation> innovations = new ArrayList<>();
+    ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
+
+    try {
+      for (ProjectInnovation innovation : projectOutcome.getProject().getProjectInnovations().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(this.getActualPhase()) != null
+          && ps.getProjectInnovationInfo(this.getActualPhase()).isActive())
+        .collect(Collectors.toList())) {
+        if (innovation.getProjectInnovationProjectOutcomes() != null) {
+          innovation.setProjectOutcomes(new ArrayList<>(innovation.getProjectInnovationProjectOutcomes().stream()
+            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+        }
+        if (innovation != null && innovation.getProjectOutcomes() != null
+          && !innovation.getProjectOutcomes().isEmpty()) {
+          for (ProjectInnovationProjectOutcome innovationStudyProjectOutcome : innovation.getProjectOutcomes()) {
+            if (innovationStudyProjectOutcome != null && innovationStudyProjectOutcome.getProjectOutcome() != null
+              && innovationStudyProjectOutcome.getProjectOutcome().getId() != null
+              && innovationStudyProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+              innovations.add(innovation);
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return innovations;
+  }
+
   public SectionStatus getInnovationStatus(long innovationID) {
 
     ProjectInnovation innovation = this.projectInnovationManager.getProjectInnovationById(innovationID);
@@ -3125,10 +3283,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<GlobalUnitType> getListGlobalUnitTypes() {
 
     List<GlobalUnitType> globalUnitTypes = this.globalUnitTypeManager.findAll();
+
     for (GlobalUnitType globalUnitType : globalUnitTypes) {
-      globalUnitType.setGlobalUnitsList(
-        globalUnitType.getGlobalUnits().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      globalUnitType.getGlobalUnitsList().sort((i1, i2) -> i1.getAcronym().compareTo(i2.getAcronym()));
+      globalUnitType.setGlobalUnitsList(globalUnitType.getGlobalUnits().stream()
+        .filter(c -> c.isActive() && c.getAcronym().equals("AICCRA")).collect(Collectors.toList()));
     }
 
     return globalUnitTypes;
@@ -3811,70 +3969,102 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     SectionStatus sectionStatus;
     Project project;
 
-    if (ProjectSectionStatusEnum.value(section.toUpperCase()) == null) {
-      return false;
-    }
-    switch (ProjectSectionStatusEnum.value(section.toUpperCase())) {
-      case OUTCOMES:
-        project = this.projectManager.getProjectById(projectID);
+    if (section != null && !section.isEmpty()) {
+      if (ProjectSectionStatusEnum.value(section.toUpperCase()) == null) {
+        return false;
+      }
+      switch (ProjectSectionStatusEnum.value(section.toUpperCase())) {
+        case OUTCOMES:
+          project = this.projectManager.getProjectById(projectID);
 
-        // Validate LP6 Contribution question
-        if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingActive()) {
+          // Validate LP6 Contribution question
+          if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingActive()) {
 
-          List<ProjectLp6Contribution> projectLp6Contributions = project.getProjectLp6Contributions().stream()
-            .filter(pl -> pl.isActive() && pl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-          if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
-            ProjectLp6Contribution projectLp6Contribution = projectLp6Contributions.get(0);
-            if (projectLp6Contribution.getContribution() == null) {
+            List<ProjectLp6Contribution> projectLp6Contributions = project.getProjectLp6Contributions().stream()
+              .filter(pl -> pl.isActive() && pl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+            if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
+              ProjectLp6Contribution projectLp6Contribution = projectLp6Contributions.get(0);
+              if (projectLp6Contribution.getContribution() == null) {
+                return false;
+              }
+            } else {
+              return false;
+            }
+
+          }
+
+          List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+            .collect(Collectors.toList());
+
+          project.setOutcomes(projectOutcomes);
+
+          if (!(project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
+            && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue() == true)) {
+            if (project.getOutcomes().isEmpty()) {
               return false;
             }
           } else {
-            return false;
+            return true;
           }
 
-        }
-
-        List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList());
-
-        project.setOutcomes(projectOutcomes);
-
-        if (!(project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
-          && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue() == true)) {
-          if (project.getOutcomes().isEmpty()) {
-            return false;
+          for (ProjectOutcome projectOutcome : project.getOutcomes()) {
+            sectionStatus = this.sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(),
+              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+            if (sectionStatus == null) {
+              return false;
+            }
+            if (sectionStatus.getMissingFields().length() != 0) {
+              return false;
+            }
           }
-        } else {
-          return true;
-        }
 
-        for (ProjectOutcome projectOutcome : project.getOutcomes()) {
-          sectionStatus = this.sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(),
-            this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
-          if (sectionStatus == null) {
-            return false;
+          returnValue = true;
+          break;
+
+        case CASESTUDIES:
+          project = this.projectManager.getProjectById(projectID);
+          List<CaseStudyProject> caseStudies =
+            project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+          List<CaseStudy> caStudies = new ArrayList<>();
+
+          for (CaseStudyProject caseStudyProject : caseStudies) {
+            if (caseStudyProject.isActive()
+              && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
+              caStudies.add(caseStudyProject.getCaseStudy());
+              sectionStatus =
+                this.sectionStatusManager.getSectionStatusByCaseStudy(caseStudyProject.getCaseStudy().getId(),
+                  this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+              if (sectionStatus == null) {
+                return false;
+
+              }
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+
+              }
+            }
           }
-          if (sectionStatus.getMissingFields().length() != 0) {
-            return false;
+          if (caStudies.isEmpty()) {
+            return true;
           }
-        }
+          returnValue = true;
+          break;
 
-        returnValue = true;
-        break;
+        case HIGHLIGHTS:
+          project = this.projectManager.getProjectById(projectID);
+          List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
+            .filter(d -> d.getProjectHighlightInfo(this.getActualPhase()) != null && d.isActive()
+              && d.getProjectHighlightInfo(this.getActualPhase()).getYear().intValue() == this.getCurrentCycleYear())
+            .collect(Collectors.toList());
+          if (highlights.isEmpty()) {
+            return true;
+          }
 
-      case CASESTUDIES:
-        project = this.projectManager.getProjectById(projectID);
-        List<CaseStudyProject> caseStudies =
-          project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-        List<CaseStudy> caStudies = new ArrayList<>();
+          for (ProjectHighlight highlight : highlights) {
 
-        for (CaseStudyProject caseStudyProject : caseStudies) {
-          if (caseStudyProject.isActive() && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
-            caStudies.add(caseStudyProject.getCaseStudy());
-            sectionStatus =
-              this.sectionStatusManager.getSectionStatusByCaseStudy(caseStudyProject.getCaseStudy().getId(),
-                this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+            sectionStatus = this.sectionStatusManager.getSectionStatusByProjectHighlight(highlight.getId(),
+              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
             if (sectionStatus == null) {
               return false;
 
@@ -3883,341 +4073,313 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               return false;
 
             }
-          }
-        }
-        if (caStudies.isEmpty()) {
-          return true;
-        }
-        returnValue = true;
-        break;
-
-      case HIGHLIGHTS:
-        project = this.projectManager.getProjectById(projectID);
-        List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
-          .filter(d -> d.getProjectHighlightInfo(this.getActualPhase()) != null && d.isActive()
-            && d.getProjectHighlightInfo(this.getActualPhase()).getYear().intValue() == this.getCurrentCycleYear())
-          .collect(Collectors.toList());
-        if (highlights.isEmpty()) {
-          return true;
-        }
-
-        for (ProjectHighlight highlight : highlights) {
-
-          sectionStatus = this.sectionStatusManager.getSectionStatusByProjectHighlight(highlight.getId(),
-            this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
-          if (sectionStatus == null) {
-            return false;
-
-          }
-          if (sectionStatus.getMissingFields().length() > 0) {
-            return false;
 
           }
 
-        }
+          returnValue = true;
+          break;
+        case DELIVERABLES:
+          project = this.projectManager.getProjectById(projectID);
 
-        returnValue = true;
-        break;
-      case DELIVERABLES:
-        project = this.projectManager.getProjectById(projectID);
+          Phase phase = this.getActualPhase();
+          List<Deliverable> deliverables = new ArrayList<>();
 
-        Phase phase = this.getActualPhase();
-        List<Deliverable> deliverables = new ArrayList<>();
+          if (project.getDeliverables() != null) {
 
-        if (project.getDeliverables() != null) {
+            List<DeliverableInfo> infos =
+              this.deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
 
-          List<DeliverableInfo> infos =
-            this.deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
-
-          if (infos != null && !infos.isEmpty()) {
-            for (DeliverableInfo deliverableInfo : infos) {
-              Deliverable deliverable = deliverableInfo.getDeliverable();
-              deliverable.setDeliverableInfo(deliverableInfo);
-              deliverables.add(deliverable);
+            if (infos != null && !infos.isEmpty()) {
+              for (DeliverableInfo deliverableInfo : infos) {
+                Deliverable deliverable = deliverableInfo.getDeliverable();
+                deliverable.setDeliverableInfo(deliverableInfo);
+                deliverables.add(deliverable);
+              }
             }
           }
-        }
 
-        for (Deliverable deliverable : deliverables) {
+          for (Deliverable deliverable : deliverables) {
 
-          if (!this.isDeliverableComplete(deliverable.getId(), this.getActualPhase().getId())) {
-            return false;
+            if (!this.isDeliverableComplete(deliverable.getId(), this.getActualPhase().getId())) {
+              return false;
+            }
+
+            // sectionStatus =
+            // this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
+            // this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(),
+            // section);
+            // if (sectionStatus == null) {
+            //
+            // return false;
+            // } else {
+            // if (deliverable.getDeliverableInfo(phase).getStatus() != null &&
+            // deliverable.getDeliverableInfo(phase)
+            // .getStatus().intValue() ==
+            // Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+            // if (deliverable.getDeliverableInfo(phase).getYear() >
+            // this.getActualPhase().getYear()) {
+            // sectionStatus.setMissingFields("");
+            // }
+            // }
+            //
+            // if (this.isPlanningActive() && !this.isUpKeepActive()) {
+            // if (deliverable.getDeliverableInfo(phase).getStatus() != null &&
+            // deliverable.getDeliverableInfo(phase)
+            // .getStatus().intValue() ==
+            // Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+            // sectionStatus.setMissingFields("");
+            // }
+            // }
+            // }
+            //
+            // if (sectionStatus.getMissingFields().length() != 0) {
+            // return false;
+            // }
           }
 
-          // sectionStatus =
-          // this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
-          // this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(),
-          // section);
-          // if (sectionStatus == null) {
-          //
-          // return false;
-          // } else {
-          // if (deliverable.getDeliverableInfo(phase).getStatus() != null &&
-          // deliverable.getDeliverableInfo(phase)
-          // .getStatus().intValue() ==
-          // Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-          // if (deliverable.getDeliverableInfo(phase).getYear() >
-          // this.getActualPhase().getYear()) {
-          // sectionStatus.setMissingFields("");
-          // }
-          // }
-          //
-          // if (this.isPlanningActive() && !this.isUpKeepActive()) {
-          // if (deliverable.getDeliverableInfo(phase).getStatus() != null &&
-          // deliverable.getDeliverableInfo(phase)
-          // .getStatus().intValue() ==
-          // Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-          // sectionStatus.setMissingFields("");
-          // }
-          // }
-          // }
-          //
-          // if (sectionStatus.getMissingFields().length() != 0) {
-          // return false;
-          // }
-        }
+          returnValue = true;
 
-        returnValue = true;
+          break;
 
-        break;
+        case ACTIVITIES:
+          project = this.projectManager.getProjectById(projectID);
 
-      case ACTIVITIES:
-        project = this.projectManager.getProjectById(projectID);
+          project.setProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
+            .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
 
-        project.setProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
-          .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+          if (project.getProjectActivities().isEmpty()) {
+            return true;
+          }
 
-        if (project.getProjectActivities().isEmpty()) {
-          return true;
-        }
+          sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
+            this.getCurrentCycleYear(), this.isUpKeepActive(), section);
 
-        sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-          this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+          if (this.isAiccra()) {
+            // Check if exist deliverables without activities
+            List<Deliverable> deliverablesMissingActivity = new ArrayList<>();
 
-        if (this.isAiccra()) {
-          // Check if exist deliverables without activities
-          List<Deliverable> deliverablesMissingActivity = new ArrayList<>();
-
-          project.getCurrentDeliverables(this.getActualPhase()).stream()
-            .filter(
-              (deliverable) -> (deliverable.getDeliverableActivities().isEmpty()
+            project.getCurrentDeliverables(this.getActualPhase()).stream()
+              .filter((deliverable) -> (deliverable.getDeliverableActivities().isEmpty()
                 || deliverable.getDeliverableActivities().stream().filter(da -> da.isActive())
                   .collect(Collectors.toList()).isEmpty()
                 || deliverable.getDeliverableActivities().stream()
                   .filter(da -> da.getPhase().getId().equals(this.getActualPhase().getId())
                     && da.getActivity().isActive() && da.isActive())
                   .collect(Collectors.toList()).isEmpty()))
-            .forEachOrdered((_item) -> {
-              deliverablesMissingActivity.add(_item);
-            });
+              .forEachOrdered((_item) -> {
+                deliverablesMissingActivity.add(_item);
+              });
 
 
-          if (deliverablesMissingActivity != null && !deliverablesMissingActivity.isEmpty()) {
-            // this.addMessage(this.getText("missingDeliverableActivity", "deliverable.missing.activity"));
-            // this.getInvalidFields().put("list-deliverable.missing.activity.alert", InvalidFieldsMessages.EMPTYFIELD);
-            /*
-             * SectionStatus status = null;
-             * status = new SectionStatus();
-             * status.setCycle(this.getCurrentCycle());
-             * status.setYear(this.getCurrentCycleYear());
-             * status.setUpkeep(this.isUpKeepActive());
-             * status.setProject(project);
-             * status.setSectionName(ProjectSectionStatusEnum.ACTIVITIES.getStatus());
-             * status.setMissingFields("missingDeliverableActivity");
-             * sectionStatusManager.saveSectionStatus(status);
-             */
-            return false;
+            if (deliverablesMissingActivity != null && !deliverablesMissingActivity.isEmpty()) {
+              // this.addMessage(this.getText("missingDeliverableActivity", "deliverable.missing.activity"));
+              // this.getInvalidFields().put("list-deliverable.missing.activity.alert",
+              // InvalidFieldsMessages.EMPTYFIELD);
+              /*
+               * SectionStatus status = null;
+               * status = new SectionStatus();
+               * status.setCycle(this.getCurrentCycle());
+               * status.setYear(this.getCurrentCycleYear());
+               * status.setUpkeep(this.isUpKeepActive());
+               * status.setProject(project);
+               * status.setSectionName(ProjectSectionStatusEnum.ACTIVITIES.getStatus());
+               * status.setMissingFields("missingDeliverableActivity");
+               * sectionStatusManager.saveSectionStatus(status);
+               */
+              return false;
+            }
           }
-        }
 
 
-        if (sectionStatus != null) {
-          if (sectionStatus.getMissingFields().length() == 0) {
+          if (sectionStatus != null) {
+            if (sectionStatus.getMissingFields().length() == 0) {
+              return true;
+            }
+          }
+          break;
+
+        case BUDGET:
+          if (this.isReportingActive()) {
             return true;
-          }
-        }
-        break;
-
-      case BUDGET:
-        if (this.reportingActive) {
-          return true;
-        } else {
-          if (!this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
-            return true;
-          }
-          project = this.projectManager.getProjectById(projectID);
-          if (project.getProjectBudgets().stream()
-            .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getActualPhase()))
-            .collect(Collectors.toList()).isEmpty()) {
-            return false;
-          }
-          if (this.isReportingActive() && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
-            if (project.getProjectBudgetExecutions().stream()
+          } else {
+            if (!this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+              return true;
+            }
+            project = this.projectManager.getProjectById(projectID);
+            if (project.getProjectBudgets().stream()
               .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getActualPhase()))
               .collect(Collectors.toList()).isEmpty()) {
               return false;
             }
-          }
-
-          sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-            this.getCurrentCycleYear(), this.isUpKeepActive(), section);
-          if (sectionStatus != null) {
-            if (sectionStatus.getMissingFields().length() == 0) {
-              return true;
+            if (this.isReportingActive() && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+              if (project.getProjectBudgetExecutions().stream()
+                .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getActualPhase()))
+                .collect(Collectors.toList()).isEmpty()) {
+                return false;
+              }
             }
-          }
-        }
-        break;
 
-      case DESCRIPTION:
-      case LOCATIONS:
-
-        sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-          this.getCurrentCycleYear(), this.isUpKeepActive(), section);
-        if (sectionStatus != null) {
-          if (sectionStatus.getMissingFields().length() == 0) {
-            return true;
-          }
-        } else {
-          if (this.isReportingActive()) {
-            return true;
-          }
-        }
-
-        break;
-
-      case EXPECTEDSTUDIES:
-
-        project = this.projectManager.getProjectById(projectID);
-        List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
-
-        // Load Studies
-        List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
-          .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null)
-          .collect(Collectors.toList());
-        if (studies != null && studies.size() > 0) {
-          allProjectStudies.addAll(studies);
-        }
-
-        List<ProjectExpectedStudy> projectStudies = new ArrayList<ProjectExpectedStudy>();
-
-        if (allProjectStudies != null && allProjectStudies.size() > 0) {
-          // Editable project studies: Current cycle year-1 will be
-          // editable except Complete and Cancelled.
-          // Every study of the current cycle year will be editable
-          projectStudies = allProjectStudies.stream()
-            .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
-              && ps.getProjectExpectedStudyInfo().getStatus() != null
-              && ps.getProjectExpectedStudyInfo().getYear() >= this.getCurrentCycleYear())
-            .collect(Collectors.toList());
-        }
-
-        if (projectStudies.isEmpty()) {
-          return true;
-        }
-
-        for (ProjectExpectedStudy projectExpectedStudy : projectStudies) {
-          sectionStatus = this.sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
-            this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
-          if (sectionStatus != null) {
-            if (sectionStatus.getMissingFields().length() != 0) {
-              return false;
+            sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
+              this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+            if (sectionStatus != null) {
+              if (sectionStatus.getMissingFields().length() == 0) {
+                return true;
+              }
             }
-          } else {
-            return false;
-          }
-        }
-        returnValue = true;
-        break;
-
-      case INNOVATIONS:
-
-        project = this.projectManager.getProjectById(projectID);
-        List<ProjectInnovation> innovations = project.getProjectInnovations().stream()
-          .filter(c -> c.getProjectInnovationInfo(this.getActualPhase()) != null && c.isActive()
-            && c.getProjectInnovationInfo(this.getActualPhase()).getYear().intValue() == this.getCurrentCycleYear())
-          .collect(Collectors.toList());
-
-        if (innovations.isEmpty()) {
-          return true;
-        }
-
-        for (ProjectInnovation projectInnovation : innovations) {
-          sectionStatus = this.sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(),
-            this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
-          if (sectionStatus != null) {
-            if (sectionStatus.getMissingFields().length() != 0) {
-              return false;
-            }
-          } else {
-            return false;
-          }
-        }
-        returnValue = true;
-
-        break;
-
-      case POLICIES:
-
-        project = this.projectManager.getProjectById(projectID);
-        List<ProjectPolicy> policies = project.getProjectPolicies().stream()
-          .filter(c -> c.getProjectPolicyInfo(this.getActualPhase()) != null && c.isActive()
-            && c.getProjectPolicyInfo(this.getActualPhase()).getYear().intValue() == this.getCurrentCycleYear())
-          .collect(Collectors.toList());
-
-        for (ProjectPolicy projectPolicy : policies) {
-          sectionStatus = this.sectionStatusManager.getSectionStatusByProjectPolicy(projectPolicy.getId(),
-            this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
-          if (sectionStatus != null) {
-            if (sectionStatus.getMissingFields().length() != 0) {
-              return false;
-            }
-          } else {
-            return false;
-          }
-        }
-        returnValue = true;
-
-        break;
-
-      case LEVERAGES:
-
-        sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-          this.getCurrentCycleYear(), this.isUpKeepActive(), section);
-        if (sectionStatus != null) {
-          if (sectionStatus.getMissingFields().length() == 0) {
-            return true;
-          }
-        } else {
-          return true;
-        }
-        returnValue = false;
-
-        break;
-
-      case BUDGETBYFLAGSHIP:
-        if (this.isAiccra()) {
-          return true;
-        } else {
-          sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-            this.getCurrentCycleYear(), this.isUpKeepActive(), section);
-          if (sectionStatus != null) {
-            if (sectionStatus.getMissingFields().length() == 0) {
-              return true;
-            }
-          }
-        }
-        break;
-      default:
-        sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-          this.getCurrentCycleYear(), this.isUpKeepActive(), section);
-        if (sectionStatus != null) {
-          if (sectionStatus.getMissingFields().length() == 0) {
-            return true;
           }
           break;
 
-        }
+        case DESCRIPTION:
+        case LOCATIONS:
+
+          sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
+            this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+          if (sectionStatus != null) {
+            if (sectionStatus.getMissingFields().length() == 0) {
+              return true;
+            }
+          } else {
+            if (this.isReportingActive()) {
+              return true;
+            }
+          }
+
+          break;
+
+        case EXPECTEDSTUDIES:
+
+          project = this.projectManager.getProjectById(projectID);
+          List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
+
+          // Load Studies
+          List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
+            .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+            .collect(Collectors.toList());
+          if (studies != null && studies.size() > 0) {
+            allProjectStudies.addAll(studies);
+          }
+
+          List<ProjectExpectedStudy> projectStudies = new ArrayList<ProjectExpectedStudy>();
+
+          if (allProjectStudies != null && allProjectStudies.size() > 0) {
+            // Editable project studies: Current cycle year-1 will be
+            // editable except Complete and Cancelled.
+            // Every study of the current cycle year will be editable
+            projectStudies = allProjectStudies.stream()
+              .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
+                && ps.getProjectExpectedStudyInfo().getStatus() != null
+                && ps.getProjectExpectedStudyInfo().getYear() >= this.getCurrentCycleYear())
+              .collect(Collectors.toList());
+          }
+
+          if (projectStudies.isEmpty()) {
+            return true;
+          }
+
+          for (ProjectExpectedStudy projectExpectedStudy : projectStudies) {
+            sectionStatus =
+              this.sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
+                this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+            if (sectionStatus != null) {
+              if (sectionStatus.getMissingFields() != null && sectionStatus.getMissingFields().length() != 0) {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          }
+          returnValue = true;
+          break;
+
+        case INNOVATIONS:
+
+          project = this.projectManager.getProjectById(projectID);
+          List<ProjectInnovation> innovations = project.getProjectInnovations().stream()
+            .filter(c -> c.getProjectInnovationInfo(this.getActualPhase()) != null && c.isActive()
+              && c.getProjectInnovationInfo(this.getActualPhase()).getYear().intValue() == this.getCurrentCycleYear())
+            .collect(Collectors.toList());
+
+          if (innovations.isEmpty()) {
+            return true;
+          }
+
+          for (ProjectInnovation projectInnovation : innovations) {
+            sectionStatus = this.sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(),
+              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+            if (sectionStatus != null) {
+              if (sectionStatus.getMissingFields().length() != 0) {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          }
+          returnValue = true;
+
+          break;
+
+        case POLICIES:
+
+          project = this.projectManager.getProjectById(projectID);
+          List<ProjectPolicy> policies = project.getProjectPolicies().stream()
+            .filter(c -> c.getProjectPolicyInfo(this.getActualPhase()) != null && c.isActive()
+              && c.getProjectPolicyInfo(this.getActualPhase()).getYear().intValue() == this.getCurrentCycleYear())
+            .collect(Collectors.toList());
+
+          for (ProjectPolicy projectPolicy : policies) {
+            sectionStatus = this.sectionStatusManager.getSectionStatusByProjectPolicy(projectPolicy.getId(),
+              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+            if (sectionStatus != null) {
+              if (sectionStatus.getMissingFields().length() != 0) {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          }
+          returnValue = true;
+
+          break;
+
+        case LEVERAGES:
+
+          sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
+            this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+          if (sectionStatus != null) {
+            if (sectionStatus.getMissingFields().length() == 0) {
+              return true;
+            }
+          } else {
+            return true;
+          }
+          returnValue = false;
+
+          break;
+
+        case BUDGETBYFLAGSHIP:
+          if (this.isAiccra()) {
+            return true;
+          } else {
+            sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
+              this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+            if (sectionStatus != null) {
+              if (sectionStatus.getMissingFields().length() == 0) {
+                return true;
+              }
+            }
+          }
+          break;
+        default:
+          sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
+            this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+          if (sectionStatus != null) {
+            if (sectionStatus.getMissingFields().length() == 0) {
+              return true;
+            }
+            break;
+
+          }
+      }
     }
     return returnValue;
 
@@ -6312,6 +6474,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
+  }
+
+  public boolean isPOWB() {
+    if (this.getActualPhase() != null && this.getActualPhase().getName() != null
+      && (this.getActualPhase().getName().equals("POWB") || this.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public boolean isPowb2019() {

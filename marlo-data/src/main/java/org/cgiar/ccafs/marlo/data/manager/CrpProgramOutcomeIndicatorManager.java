@@ -60,6 +60,8 @@ public interface CrpProgramOutcomeIndicatorManager {
    */
   public CrpProgramOutcomeIndicator getCrpProgramOutcomeIndicatorById(long crpProgramOutcomeIndicatorID);
 
+  public List<CrpProgramOutcomeIndicator> getCrpProgramOutcomeIndicatorByOutcome(CrpProgramOutcome crpProgramOutcome);
+
   public List<CrpProgramOutcomeIndicator> getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(String indicator,
     CrpProgramOutcome crpProgramOutcome);
 
