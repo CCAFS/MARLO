@@ -21,7 +21,9 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCommunicationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
@@ -32,8 +34,12 @@ import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
+import org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -91,6 +97,8 @@ public class ProjectOutcomeAction extends BaseAction {
   private ProjectNextuserManager projectNextuserManager;
   private ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager;
   private CrpMilestoneManager crpMilestoneManager;
+  private PhaseManager phaseManager;
+  private DeliverableParticipantManager deliverableParticipantManager;
 
   // Front-end
   private long projectID;
@@ -102,11 +110,26 @@ public class ProjectOutcomeAction extends BaseAction {
   private List<SrfTargetUnit> targetUnits;
   private CrpProgramOutcome crpProgramOutcome;
   private ProjectOutcome projectOutcome;
+  private ProjectOutcome projectOutcomeLastPhase;
   private ProjectOutcomeValidator projectOutcomeValidator;
   private String transaction;
   private ProjectOutcome projectOutcomeDB;
   private boolean editOutcomeExpectedValue;
   private boolean editMilestoneExpectedValue;
+  private List<DeliverableParticipant> deliverableParticipants;
+
+  // capdev component
+  private Double totalParticipants = new Double(0);
+  private Double totalParticipantFormalTraining = new Double(0);
+  private Double totalParticipantFormalTrainingShortMale = new Double(0);
+  private Double totalParticipantFormalTrainingLongMale = new Double(0);
+  private Double totalParticipantFormalTrainingPhdMale = new Double(0);
+  private Double totalParticipantFormalTrainingShortFemale = new Double(0);
+  private Double totalParticipantFormalTrainingLongFemale = new Double(0);
+  private Double totalParticipantFormalTrainingPhdFemale = new Double(0);
+  private Double totalFemales = new Double(0);
+  private Double totalAfricans = new Double(0);
+  private Double totalYouth = new Double(0);
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -114,7 +137,8 @@ public class ProjectOutcomeAction extends BaseAction {
     SrfTargetUnitManager srfTargetUnitManager, ProjectMilestoneManager projectMilestoneManager,
     ProjectCommunicationManager projectCommunicationManager, AuditLogManager auditLogManager,
     CrpMilestoneManager crpMilestoneManager, ProjectNextuserManager projectNextuserManager,
-    ProjectOutcomeValidator projectOutcomeValidator, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager) {
+    ProjectOutcomeValidator projectOutcomeValidator, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager,
+    PhaseManager phaseManager, DeliverableParticipantManager deliverableParticipantManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -128,6 +152,8 @@ public class ProjectOutcomeAction extends BaseAction {
     this.projectNextuserManager = projectNextuserManager;
     this.projectOutcomeValidator = projectOutcomeValidator;
     this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
+    this.phaseManager = phaseManager;
+    this.deliverableParticipantManager = deliverableParticipantManager;
   }
 
   public void addAllCrpMilestones() {
@@ -333,13 +359,17 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
-public String getBaseLineFileURL(String outcomeID) {
- return config.getDownloadURL() + "/file.do?" +this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
-}
+  public String getBaseLineFileURL(String outcomeID) {
+    return config.getDownloadURL() + "/file.do?" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
+  }
 
-public String getBaseLineFileUrlPath(String outcomeID) {
-  return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
-}
+  public String getBaseLineFileUrlPath(String outcomeID) {
+    return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
+  }
+
+  public List<DeliverableParticipant> getDeliverableParticipants() {
+    return deliverableParticipants;
+  }
 
   public int getIndexCommunication(int year) {
 
@@ -362,13 +392,15 @@ public String getBaseLineFileUrlPath(String outcomeID) {
   public int getIndexIndicator(Long indicatorID) {
 
     ProjectOutcomeIndicator projectOutcomeIndicator = this.getIndicator(indicatorID);
-    int i = 0;
-    for (ProjectOutcomeIndicator projectOutcomeIndicatorList : projectOutcome.getIndicators()) {
-      if (projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
-        .getCrpProgramOutcomeIndicator().getId().longValue()) {
-        return i;
+    if (projectOutcomeIndicator != null && projectOutcome.getIndicators() != null) {
+      int i = 0;
+      for (ProjectOutcomeIndicator projectOutcomeIndicatorList : projectOutcome.getIndicators()) {
+        if (projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
+          .getCrpProgramOutcomeIndicator().getId().longValue()) {
+          return i;
+        }
+        i++;
       }
-      i++;
     }
     return 0;
   }
@@ -393,18 +425,18 @@ public String getBaseLineFileUrlPath(String outcomeID) {
   }
 
   public ProjectOutcomeIndicator getIndicator(Long indicatorID) {
-    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
-      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
-        return projectOutcomeIndicator;
+    if (projectOutcome.getIndicators() != null) {
+      for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+        if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+          return projectOutcomeIndicator;
+        }
       }
     }
     ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
     projectOutcomeIndicator.setCrpProgramOutcomeIndicator(new CrpProgramOutcomeIndicator(indicatorID));
     projectOutcome.getIndicators().add(projectOutcomeIndicator);
     return projectOutcomeIndicator;
-
   }
-
 
   public ProjectMilestone getMilestone(long milestoneId, int year) {
     ProjectMilestone projectMilestone = new ProjectMilestone();
@@ -430,6 +462,7 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     return milestones;
   }
 
+
   public List<CrpMilestone> getMilestonesbyYear(int year) {
     List<CrpMilestone> milestoneList =
       milestones.stream().filter(c -> c.getYear() >= year).collect(Collectors.toList());
@@ -440,9 +473,62 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     return milestonesProject;
   }
 
+  public ProjectOutcomeIndicator getPreIndicator(Long indicatorID) {
+    if (projectOutcome.getIndicators() != null) {
+      for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+        if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+          && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+          return projectOutcomeIndicator;
+        }
+      }
+    }
+    ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
+    projectOutcomeIndicator.setCrpProgramOutcomeIndicator(new CrpProgramOutcomeIndicator(indicatorID));
+    projectOutcome.getIndicators().add(projectOutcomeIndicator);
+    return projectOutcomeIndicator;
+
+  }
+
+  public int getPrevIndexIndicator(Long indicatorID) {
+    if (this.getPrevIndicator(indicatorID) == null && this.getPrevIndicator(indicatorID - 1) != null) {
+      indicatorID = indicatorID - 1;
+    }
+    if (this.getPrevIndicator(indicatorID) != null) {
+      ProjectOutcomeIndicator projectOutcomeIndicator = this.getPrevIndicator(indicatorID);
+      int i = 0;
+      for (ProjectOutcomeIndicator projectOutcomeIndicatorList : projectOutcomeLastPhase.getIndicators()) {
+        if (projectOutcomeIndicator != null && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+          && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId() != null
+          && projectOutcomeIndicatorList != null && projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator() != null
+          && projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId() != null
+          && projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
+            .getCrpProgramOutcomeIndicator().getId().longValue()) {
+          return i;
+        }
+        i++;
+      }
+    }
+    return 0;
+  }
+
+  public ProjectOutcomeIndicator getPrevIndicator(Long indicatorID) {
+    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeLastPhase.getIndicators()) {
+      if (projectOutcomeIndicator != null && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+        && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+        return projectOutcomeIndicator;
+      }
+    }
+    ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
+    projectOutcomeIndicator.setCrpProgramOutcomeIndicator(new CrpProgramOutcomeIndicator(indicatorID));
+    projectOutcomeLastPhase.getIndicators().add(projectOutcomeIndicator);
+    return projectOutcomeIndicator;
+
+  }
+
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -453,9 +539,12 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     return projectOutcome;
   }
 
-
   public long getProjectOutcomeID() {
     return projectOutcomeID;
+  }
+
+  public ProjectOutcome getProjectOutcomeLastPhase() {
+    return projectOutcomeLastPhase;
   }
 
   /**
@@ -482,6 +571,51 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     return targetUnits;
   }
 
+  public Double getTotalAfricans() {
+    return totalAfricans;
+  }
+
+  public Double getTotalFemales() {
+    return totalFemales;
+  }
+
+  public Double getTotalParticipantFormalTraining() {
+    return totalParticipantFormalTraining;
+  }
+
+  public Double getTotalParticipantFormalTrainingLongFemale() {
+    return totalParticipantFormalTrainingLongFemale;
+  }
+
+  public Double getTotalParticipantFormalTrainingLongMale() {
+    return totalParticipantFormalTrainingLongMale;
+  }
+
+  public Double getTotalParticipantFormalTrainingPhdFemale() {
+    return totalParticipantFormalTrainingPhdFemale;
+  }
+
+  public Double getTotalParticipantFormalTrainingPhdMale() {
+    return totalParticipantFormalTrainingPhdMale;
+  }
+
+  public Double getTotalParticipantFormalTrainingShortFemale() {
+    return totalParticipantFormalTrainingShortFemale;
+  }
+
+
+  public Double getTotalParticipantFormalTrainingShortMale() {
+    return totalParticipantFormalTrainingShortMale;
+  }
+
+  public Double getTotalParticipants() {
+    return totalParticipants;
+  }
+
+  public Double getTotalYouth() {
+    return totalYouth;
+  }
+
   public String getTransaction() {
     return transaction;
   }
@@ -489,6 +623,7 @@ public String getBaseLineFileUrlPath(String outcomeID) {
   public boolean isEditMilestoneExpectedValue() {
     return editMilestoneExpectedValue;
   }
+
 
   public boolean isEditOutcomeExpectedValue() {
     return editOutcomeExpectedValue;
@@ -524,7 +659,6 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     }
     return editable;
   }
-
 
   public ProjectCommunication loadProjectCommunication(int year) {
 
@@ -597,7 +731,6 @@ public String getBaseLineFileUrlPath(String outcomeID) {
       projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
     }
 
-
     if (projectOutcome != null) {
 
       Path path = this.getAutoSaveFilePath();
@@ -664,6 +797,27 @@ public String getBaseLineFileUrlPath(String outcomeID) {
          * .collect(Collectors.toList()));
          * } else {
          */
+
+        if (this.isReportingActive()) {
+          Phase previousPhase = phaseManager.findPreviousPhase(this.getActualPhase().getId());
+          // get Project outcome for the last phase
+          List<ProjectOutcome> outcomesLastPhase = new ArrayList<>();
+          outcomesLastPhase = projectOutcomeManager
+            .getProjectOutcomeByProgramOutcomeAndProject(projectOutcome.getCrpProgramOutcome().getId(), projectID);
+          if (outcomesLastPhase != null && !outcomesLastPhase.isEmpty() && previousPhase != null) {
+            outcomesLastPhase = outcomesLastPhase.stream()
+              .filter(o -> o.getPhase() != null && o.getPhase().getId().equals(previousPhase.getId()))
+              .collect(Collectors.toList());
+          }
+          if (outcomesLastPhase != null && !outcomesLastPhase.isEmpty() && outcomesLastPhase.get(0) != null) {
+            projectOutcomeLastPhase = outcomesLastPhase.get(0);
+            if (projectOutcomeLastPhase != null && projectOutcomeLastPhase.getId() != null) {
+              projectOutcomeLastPhase = projectOutcomeManager.getProjectOutcomeById(projectOutcomeLastPhase.getId());
+            }
+            projectOutcomeLastPhase.setIndicators(projectOutcomeLastPhase.getProjectOutcomeIndicators().stream()
+              .filter(c -> c.isActive()).collect(Collectors.toList()));
+          }
+        }
         projectOutcome.setIndicators(
           projectOutcome.getProjectOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         // }
@@ -680,11 +834,7 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     if (projectOutcome.getMilestones() != null) {
       for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
         CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(crpMilestone.getCrpMilestone().getId());
-        /*
-         * if ((milestone.getYear() != null && milestone.getYear().intValue() == this.getCurrentCycleYear())
-         * || (milestone.getExtendedYear() != null
-         * && milestone.getExtendedYear().intValue() == this.getCurrentCycleYear())) {
-         */
+
         milestone.setIndex(crpMilestone.getId());
         crpMilestones.add(milestone);
         // }
@@ -695,9 +845,47 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     milestonesProject.addAll(crpMilestones);
     milestonesProject.sort(Comparator.comparing(CrpMilestone::getYear));
     // Collections.sort(milestonesProject, (m1, m2) -> m1.getIndex().compareTo(m2.getIndex()));
-    if (projectOutcome != null)
 
-    {
+    if (this.isReportingActive()) {
+      if (projectOutcomeLastPhase != null) {
+        CrpProgramOutcome crpProgramOutcomeLastPhase;
+        crpProgramOutcomeLastPhase =
+          crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcomeLastPhase.getCrpProgramOutcome().getId());
+
+        projectOutcomeLastPhase.setCrpProgramOutcome(crpProgramOutcomeLastPhase);
+      }
+
+      /*
+       * Loading basic List
+       */
+      if (projectOutcomeLastPhase != null && projectOutcomeLastPhase.getCrpProgramOutcome() != null
+        && projectOutcomeLastPhase.getCrpProgramOutcome().getId() != null) {
+        projectOutcomeLastPhase.setCrpProgramOutcome(
+          crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcomeLastPhase.getCrpProgramOutcome().getId()));
+      }
+
+      if (projectOutcomeLastPhase != null && projectOutcomeLastPhase.getCrpProgramOutcome() != null
+        && projectOutcomeLastPhase.getCrpProgramOutcome().getCrpProgramOutcomeIndicators() != null
+        && projectOutcomeLastPhase.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream()
+          .filter(c -> c.isActive()).sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator())))
+          .collect(Collectors.toList()) != null) {
+        projectOutcomeLastPhase.getCrpProgramOutcome()
+          .setIndicators(projectOutcomeLastPhase.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream()
+            .filter(c -> c.isActive()).sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator())))
+            .collect(Collectors.toList()));
+      }
+
+      /*
+       * List<CrpProgramOutcomeIndicator> indicators = new ArrayList<>();
+       * indicators = crpProgramOutcomeIndicatorManager
+       * .getCrpProgramOutcomeIndicatorByOutcome(projectOutcomeLastPhase.getCrpProgramOutcome());
+       * if (indicators != null && !indicators.isEmpty()) {
+       * projectOutcomeLastPhase.getCrpProgramOutcome().setIndicators(indicators);
+       * }
+       */
+    }
+
+    if (projectOutcome != null) {
       crpProgramOutcome =
         crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId());
 
@@ -711,6 +899,116 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     if (this.isAiccra()) {
       this.addAllCrpMilestones();
     }
+
+    /*
+     * Deliverable Participants list - capdev
+     */
+
+    deliverableParticipants = new ArrayList<>();
+
+    /*
+     * Check deliverables mapped to this indicator and add the deliverable participants to deliverableParticipants list
+     */
+    for (Deliverable deliverable : projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase())) {
+      if (deliverable.getDeliverableProjectOutcomes() != null) {
+        deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
+          .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+
+        // Set deliverable participants
+        if (deliverable.getDeliverableParticipants() != null) {
+          List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+          if (deliverableParticipants.size() > 0) {
+            deliverable.setDeliverableParticipant(
+              deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipants.get(0).getId()));
+          }
+        }
+      }
+      if (deliverable.getDeliverableParticipant() != null
+        && deliverable.getDeliverableParticipant().getHasParticipants() != null
+        && deliverable.getDeliverableParticipant().getHasParticipants()) {
+        if (deliverable != null && deliverable.getProjectOutcomes() != null
+          && !deliverable.getProjectOutcomes().isEmpty()) {
+          if (deliverable != null && deliverable.getProjectOutcomes() != null
+            && !deliverable.getProjectOutcomes().isEmpty()) {
+            for (DeliverableProjectOutcome deliverableProjectOutcome : deliverable.getProjectOutcomes()) {
+              if (deliverableProjectOutcome != null && deliverableProjectOutcome.getProjectOutcome() != null
+                && deliverableProjectOutcome.getProjectOutcome().getId() != null
+                && deliverableProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+
+                // Graphs
+
+                // Total Participants
+                Double numberParticipant = 0.0;
+                if (deliverable.getDeliverableParticipant().getParticipants() != null) {
+                  numberParticipant = deliverable.getDeliverableParticipant().getParticipants();
+                }
+
+                totalParticipants += numberParticipant;
+
+                // Total Formal Training
+                if (deliverable.getDeliverableParticipant().getRepIndTypeActivity() != null) {
+                  // && deliverable.getDeliverableParticipant().getRepIndTypeActivity().getIsFormal()
+                  totalParticipantFormalTraining += numberParticipant;
+
+                  // Total Female and Male per terms
+                  // if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm() != null) {
+                  Double numberFemales = 0.0;
+                  if (deliverable.getDeliverableParticipant().getFemales() != null) {
+                    totalFemales += deliverable.getDeliverableParticipant().getFemales();
+                    numberFemales = deliverable.getDeliverableParticipant().getFemales();
+                  }
+                  if (deliverable.getDeliverableParticipant().getAfrican() != null) {
+                    totalAfricans += deliverable.getDeliverableParticipant().getAfrican();
+                    if (numberParticipant != null) {
+                      double africanPercentaje =
+                        Math.round(((100 * deliverable.getDeliverableParticipant().getAfrican())) / numberParticipant);
+                      deliverable.getDeliverableParticipant().setAfricanPercentage(africanPercentaje);
+                    }
+                  }
+                  if (deliverable.getDeliverableParticipant().getYouth() != null) {
+                    totalYouth += deliverable.getDeliverableParticipant().getYouth();
+                    if (numberParticipant != null) {
+                      double youthPercentaje =
+                        Math.round(((100 * deliverable.getDeliverableParticipant().getYouth())) / numberParticipant);
+                      deliverable.getDeliverableParticipant().setYouthPercentage(youthPercentaje);
+                    }
+                  }
+                  /*
+                   * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                   * .equals(APConstants.REP_IND_TRAINING_TERMS_SHORT)) {
+                   * }
+                   * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                   * .equals(APConstants.REP_IND_TRAINING_TERMS_LONG)) {
+                   * }
+                   * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                   * .equals(APConstants.REP_IND_TRAINING_TERMS_PHD)) {
+                   * }
+                   */
+                  totalParticipantFormalTrainingShortFemale += numberFemales;
+                  totalParticipantFormalTrainingShortMale += (numberParticipant - numberFemales);
+
+
+                  totalParticipantFormalTrainingLongFemale += numberFemales;
+                  totalParticipantFormalTrainingLongMale += (numberParticipant - numberFemales);
+
+
+                  totalParticipantFormalTrainingPhdFemale += numberFemales;
+                  totalParticipantFormalTrainingPhdMale += (numberParticipant - numberFemales);
+
+                  // }
+                }
+
+                // Add deliverable participant to list
+                deliverableParticipants.add(deliverable.getDeliverableParticipant());
+              }
+            }
+          }
+        }
+      }
+    }
+
 
     /*
      * Loading basic List
@@ -748,6 +1046,9 @@ public String getBaseLineFileUrlPath(String outcomeID) {
       if (projectOutcome.getIndicators() != null) {
         projectOutcome.getIndicators().clear();
       }
+      if (projectOutcomeLastPhase != null && projectOutcomeLastPhase.getIndicators() != null) {
+        projectOutcomeLastPhase.getIndicators().clear();
+      }
       /**
        * Hack to fix ManyToOne issue as a result of issue #1124
        */
@@ -756,6 +1057,7 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     }
 
   }
+
 
   @Override
   public String save() {
@@ -775,7 +1077,6 @@ public String getBaseLineFileUrlPath(String outcomeID) {
       }
 
       this.saveProjectOutcome();
-      // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setModificationJustification(this.getJustification());
       projectOutcome.setOrder(this.defineProjectOutcomeOrder(projectOutcome));
@@ -890,11 +1191,7 @@ public String getBaseLineFileUrlPath(String outcomeID) {
             // This add projectCommunication to generate correct auditlog.
             projectOutcome.getProjectCommunications().add(projectCommunicationDB);
           }
-
-
         }
-
-
       }
     }
   }
@@ -928,9 +1225,14 @@ public String getBaseLineFileUrlPath(String outcomeID) {
 
           } else {
             // Update existing entity
-            ProjectOutcomeIndicator projectOutcomeIndicatorDB =
-              projectOutcomeIndicatorManager.getProjectOutcomeIndicatorById(projectOutcomeIndicator.getId());
+            ProjectOutcomeIndicator projectOutcomeIndicatorDB = new ProjectOutcomeIndicator();
 
+            if (projectOutcomeIndicator != null && projectOutcomeIndicator.getId() != null
+              && projectOutcomeIndicatorManager
+                .getProjectOutcomeIndicatorById(projectOutcomeIndicator.getId()) != null) {
+              projectOutcomeIndicatorDB =
+                projectOutcomeIndicatorManager.getProjectOutcomeIndicatorById(projectOutcomeIndicator.getId());
+            }
             projectOutcomeIndicatorDB.setProjectOutcome(projectOutcomeDB);
 
             // update existing fields
@@ -943,11 +1245,11 @@ public String getBaseLineFileUrlPath(String outcomeID) {
               projectOutcomeIndicatorDB.setAchievedNarrative(projectOutcomeIndicator.getAchievedNarrative());
             }
 
-
             projectOutcomeIndicatorDB =
               projectOutcomeIndicatorManager.saveProjectOutcomeIndicator(projectOutcomeIndicatorDB);
             // This add projectOutcomeIndicator to generate correct auditlog.
             projectOutcome.getProjectOutcomeIndicators().add(projectOutcomeIndicatorDB);
+
           }
 
 
@@ -967,7 +1269,6 @@ public String getBaseLineFileUrlPath(String outcomeID) {
       }
       if (!projectOutcome.getMilestones().contains(projectMilestone)) {
         projectMilestoneManager.deleteProjectMilestone(projectMilestone.getId());
-
       }
     }
 
@@ -1010,33 +1311,33 @@ public String getBaseLineFileUrlPath(String outcomeID) {
                   projectMilestoneDB.setExpectedUnit(projectMilestone.getExpectedUnit());
                   projectMilestoneDB.setExpectedValue(projectMilestone.getExpectedValue());
                   projectMilestoneDB.setAchievedValue(projectMilestone.getAchievedValue());
-                  projectMilestoneDB.setSettedValue(projectMilestone.getSettedValue());
+                  if (this.canAccessSuperAdmin()) {
+                    projectMilestoneDB.setSettedValue(projectMilestone.getSettedValue());
+                  }
                 }
               }
 
             }
             // Reporting phase
             else {
-
               projectMilestoneDB.setAchievedValue(projectMilestone.getAchievedValue());
               projectMilestoneDB.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
             }
-
-
             projectMilestoneDB.setCrpMilestone(projectMilestone.getCrpMilestone());
             projectMilestoneDB.setExpectedValue(projectMilestone.getExpectedValue());
             projectMilestoneDB.setAchievedValue(projectMilestone.getAchievedValue());
+            if (this.canAccessSuperAdmin()) {
+              projectMilestoneDB.setSettedValue(projectMilestone.getSettedValue());
+            }
             projectMilestoneDB = projectMilestoneManager.saveProjectMilestone(projectMilestoneDB);
             // This add projectMilestone to generate correct auditlog.
             projectOutcome.getProjectMilestones().add(projectMilestoneDB);
-
           }
-
         }
-
       }
     }
   }
+
 
   public void saveNextUsers(ProjectOutcome projectOutcomeDB) {
 
@@ -1087,6 +1388,7 @@ public String getBaseLineFileUrlPath(String outcomeID) {
       }
     }
   }
+
 
   private ProjectOutcome saveProjectOutcome() {
 
@@ -1166,10 +1468,14 @@ public String getBaseLineFileUrlPath(String outcomeID) {
 
   }
 
+
+  public void setDeliverableParticipants(List<DeliverableParticipant> deliverableParticipants) {
+    this.deliverableParticipants = deliverableParticipants;
+  }
+
   public void setEditMilestoneExpectedValue(boolean editMilestoneExpectedValue) {
     this.editMilestoneExpectedValue = editMilestoneExpectedValue;
   }
-
 
   public void setEditOutcomeExpectedValue(boolean editOutcomeExpectedValue) {
     this.editOutcomeExpectedValue = editOutcomeExpectedValue;
@@ -1179,7 +1485,6 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     this.milestones = milestones;
   }
 
-
   public void setMilestonesProject(List<CrpMilestone> milestonesProject) {
     this.milestonesProject = milestonesProject;
   }
@@ -1188,11 +1493,9 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     this.project = project;
   }
 
-
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
-
 
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
@@ -1202,8 +1505,56 @@ public String getBaseLineFileUrlPath(String outcomeID) {
     this.projectOutcomeID = projectOutcomeID;
   }
 
+  public void setProjectOutcomeLastPhase(ProjectOutcome projectOutcomeLastPhase) {
+    this.projectOutcomeLastPhase = projectOutcomeLastPhase;
+  }
+
   public void setTargetUnits(List<SrfTargetUnit> targetUnits) {
     this.targetUnits = targetUnits;
+  }
+
+  public void setTotalAfricans(Double totalAfricans) {
+    this.totalAfricans = totalAfricans;
+  }
+
+  public void setTotalFemales(Double totalFemales) {
+    this.totalFemales = totalFemales;
+  }
+
+  public void setTotalParticipantFormalTraining(Double totalParticipantFormalTraining) {
+    this.totalParticipantFormalTraining = totalParticipantFormalTraining;
+  }
+
+  public void setTotalParticipantFormalTrainingLongFemale(Double totalParticipantFormalTrainingLongFemale) {
+    this.totalParticipantFormalTrainingLongFemale = totalParticipantFormalTrainingLongFemale;
+  }
+
+  public void setTotalParticipantFormalTrainingLongMale(Double totalParticipantFormalTrainingLongMale) {
+    this.totalParticipantFormalTrainingLongMale = totalParticipantFormalTrainingLongMale;
+  }
+
+  public void setTotalParticipantFormalTrainingPhdFemale(Double totalParticipantFormalTrainingPhdFemale) {
+    this.totalParticipantFormalTrainingPhdFemale = totalParticipantFormalTrainingPhdFemale;
+  }
+
+  public void setTotalParticipantFormalTrainingPhdMale(Double totalParticipantFormalTrainingPhdMale) {
+    this.totalParticipantFormalTrainingPhdMale = totalParticipantFormalTrainingPhdMale;
+  }
+
+  public void setTotalParticipantFormalTrainingShortFemale(Double totalParticipantFormalTrainingShortFemale) {
+    this.totalParticipantFormalTrainingShortFemale = totalParticipantFormalTrainingShortFemale;
+  }
+
+  public void setTotalParticipantFormalTrainingShortMale(Double totalParticipantFormalTrainingShortMale) {
+    this.totalParticipantFormalTrainingShortMale = totalParticipantFormalTrainingShortMale;
+  }
+
+  public void setTotalParticipants(Double totalParticipants) {
+    this.totalParticipants = totalParticipants;
+  }
+
+  public void setTotalYouth(Double totalYouth) {
+    this.totalYouth = totalYouth;
   }
 
   public void setTransaction(String transaction) {

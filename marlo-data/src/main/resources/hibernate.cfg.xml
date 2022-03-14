@@ -479,5 +479,8 @@
     <mapping resource="xmls/ActivitiesTitles.hbm.xml" />
     <mapping resource="xmls/ClusterTypes.hbm.xml" />
     <mapping resource="xmls/ProjectDeliverableShared.hbm.xml" />
+    <mapping resource="xmls/ProjectExpectedStudyProjectOutcomes.hbm.xml" />
+    <mapping resource="xmls/ProjectInnovationProjectOutcomes.hbm.xml" />
+    <mapping resource="xmls/DeliverableProjectOutcomes.hbm.xml" />
   </session-factory>
 </hibernate-configuration>

@@ -140,6 +140,14 @@ public class APConfig {
   @Value("${clarisa.wos.password}")
   private String CLARISA_WOS_PASSWORD;
 
+  // Clarisa API Configurations
+  @Value("${clarisa.api.host}")
+  private String CLARISA_API_HOST;
+  @Value("${clarisa.api.username}")
+  private String CLARISA_API_USERNAME;
+  @Value("${clarisa.api.password}")
+  private String CLARISA_API_PASSWORD;
+  
   public APConfig() {
   }
 
@@ -706,6 +714,30 @@ public class APConfig {
       return false;
     }
     return MYSQL_SHOW_SQL.equals("true");
+  }
+
+  public String getClarisaAPIHost() {
+    if (CLARISA_API_HOST == null) {
+      LOG.error("there is not a Clarisa API host configured.");
+      return null;
+    }
+    return CLARISA_API_HOST;
+  }
+
+  public String getClarisaAPIUsername() {
+    if (CLARISA_API_USERNAME == null) {
+      LOG.error("there is not a Clarisa API username configured.");
+      return null;
+    }
+    return CLARISA_API_USERNAME;
+  }
+
+  public String getClarisaAPIPassword() {
+    if (CLARISA_API_PASSWORD == null) {
+      LOG.error("there is not a Clarisa API password configured.");
+      return null;
+    }
+    return CLARISA_API_PASSWORD;
   }
 
 }

@@ -25,10 +25,11 @@ function checkDOI() {
     }
     // ^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}[-._;()/:A-Z0-9]+$|^(doi\:)?10.\d{4,9}[-._;()/:A-Z0-9]+$)
     // ^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}[-._;()/:A-Z0-9]+$|^10.\d{4,9}[-._;()/:A-Z0-9]+$)
-    //    /^10.\d{4,9}[-._;()/:A-Z0-9]+$/i           comienza
-    //    /10.\d{4,9}[-._;()/:A-Z0-9]+$/i            si lo contiene
+    // /^10.\d{4,9}[-._;()/:A-Z0-9]+$/i comienza
+    // /10.\d{4,9}[-._;()/:A-Z0-9]+$/i si lo contiene
 
-    // nuevo doi ^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}\/[-._;():A-Z0-9]+$|^10\.\d{4,9}\/[-._;():A-Z0-9]+$)
+    // nuevo doi
+    // ^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}\/[-._;():A-Z0-9]+$|^10\.\d{4,9}\/[-._;():A-Z0-9]+$)
     var result = /^((https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.+[a-zA-Z0-9.-]+\/10\.\d{4,9}\/[-._;()/:A-Z0-9]+$|^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$)/i.test($('#doi-bridge').val());
    
       if ( result  ) {
@@ -521,7 +522,7 @@ function justificationByStatus(statusId) {
     $statusDescription.slideUp(400);
   }
 
-  if(reportingActive || upKeepActive) {
+  if(true) {
     // Validate the new extended year
     if(isDeliverableNew) {
       showNewExpectedComponent(isStatusExtended(statusId) && upKeepActive);

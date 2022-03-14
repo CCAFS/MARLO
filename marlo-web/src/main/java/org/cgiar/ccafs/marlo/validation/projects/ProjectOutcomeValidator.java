@@ -144,22 +144,28 @@ public class ProjectOutcomeValidator extends BaseValidator {
   public void validateAiccraProjectOutcomeIndicator(BaseAction action, ProjectOutcome projectOutcome,
     ProjectOutcomeIndicator projectOutcomeIndicator, int i) {
 
-    if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
+    if (projectOutcomeIndicator != null && projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
       && projectOutcome.getCrpProgramOutcome().getDescription() != null) {
       String programOutcome = projectOutcome.getCrpProgramOutcome().getDescription();
 
       // PDO 1 and 3
-      if (programOutcome.contains("PDO indicator 1") || programOutcome.contains("PDO indicator 3")) {
+      if (programOutcome.contains("PDO Indicator 1") || programOutcome.contains("PDO Indicator 3")) {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
-        if (action.isPlanningActive()) {
+        // if (action.isPlanningActive()) {
+        if (projectOutcomeIndicator.getNarrative() != null) {
           if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
             && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
             action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
             action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
               InvalidFieldsMessages.EMPTYFIELD);
           }
+        } else {
+          action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+          action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
+        // }
         /*
          * if (i == 0) {
          * if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
@@ -173,9 +179,11 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
           if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
             && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
-            action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-              InvalidFieldsMessages.EMPTYFIELD);
+            /*
+             * action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
+             * action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
+             * InvalidFieldsMessages.EMPTYFIELD);
+             */
           }
 
 
@@ -192,10 +200,11 @@ public class ProjectOutcomeValidator extends BaseValidator {
       }
 
       // PDO 2
-      if (programOutcome.contains("PDO indicator 2")) {
+      if (programOutcome.contains("PDO Indicator 2")) {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
-        if (action.isPlanningActive()) {
+        // if (action.isPlanningActive()) {
+        if (projectOutcomeIndicator.getNarrative() != null) {
           if (i != 0) {
             if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
               && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
@@ -204,16 +213,23 @@ public class ProjectOutcomeValidator extends BaseValidator {
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
+        } else {
+          action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+          action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
+        // }
 
         if (action.isReportingActive()) {
 
-          if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
-            && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
-            action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
+          // if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
+          // && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
+          /*
+           * action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
+           * action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
+           * InvalidFieldsMessages.EMPTYFIELD);
+           */
+          // }
         }
       }
 
@@ -221,25 +237,33 @@ public class ProjectOutcomeValidator extends BaseValidator {
       if (programOutcome.contains("IPI 1.1") || programOutcome.contains("IPI 1.4")) {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
-        if (action.isPlanningActive()) {
+        // if (action.isPlanningActive()) {
 
+        if (projectOutcomeIndicator.getNarrative() != null) {
           if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
             && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
             action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
             action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
               InvalidFieldsMessages.EMPTYFIELD);
           }
+        } else {
+          action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+          action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
+        // }
 
 
         if (action.isReportingActive()) {
 
-          if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
-            && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
-            action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
+          // if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
+          // && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
+          /*
+           * action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
+           * action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
+           * InvalidFieldsMessages.EMPTYFIELD);
+           */
+          // }
         }
       }
 
@@ -247,48 +271,63 @@ public class ProjectOutcomeValidator extends BaseValidator {
       if (programOutcome.contains("IPI 1.2") || programOutcome.contains("IPI 2.2")) {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
-        if (action.isPlanningActive()) {
-
+        // if (action.isPlanningActive()) {
+        if (projectOutcomeIndicator.getNarrative() != null) {
           if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
             && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
             action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
             action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
               InvalidFieldsMessages.EMPTYFIELD);
           }
+        } else {
+          action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+          action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
+        // }
 
 
         if (action.isReportingActive()) {
-          if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
-            && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
-            action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
+          // if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
+          // && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
+          /*
+           * action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
+           * action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
+           * InvalidFieldsMessages.EMPTYFIELD);
+           */
+          // }
         }
       }
 
-      // IPI 2.3, IPI 3.1, IPI 3.2, IPI 3.4, IPI 3.5
-      if (programOutcome.contains("IPI 2.3") || programOutcome.contains("IPI 3.1") || programOutcome.contains("IPI 3.2")
-        || programOutcome.contains("IPI 3.4") || programOutcome.contains("IPI 3.5")) {
+      // IPI 2.1, 2.3, IPI 3.1, IPI 3.2, IPI 3.4, IPI 3.5
+      if (programOutcome.contains("IPI 2.1") || programOutcome.contains("IPI 2.3") || programOutcome.contains("IPI 3.1")
+        || programOutcome.contains("IPI 3.2") || programOutcome.contains("IPI 3.4")
+        || programOutcome.contains("IPI 3.5")) {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
-        if (action.isPlanningActive()) {
-
+        // if (action.isPlanningActive()) {
+        if (projectOutcomeIndicator.getNarrative() != null) {
           if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
             && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
             action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
             action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
               InvalidFieldsMessages.EMPTYFIELD);
           }
+        } else {
+          action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+          action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
+        // }
 
         if (action.isReportingActive()) {
           if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
             && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
-            action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-              InvalidFieldsMessages.EMPTYFIELD);
+            /*
+             * action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
+             * action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
+             * InvalidFieldsMessages.EMPTYFIELD);
+             */
           }
         }
       }
@@ -322,15 +361,19 @@ public class ProjectOutcomeValidator extends BaseValidator {
             action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
               InvalidFieldsMessages.EMPTYFIELD);
           }
-          if (projectMilestone.getAchievedValue() == null
-            || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue()))) {
-            action.addMessage(action.getText("projectOutcomeMilestone.requeried.achievedValue", params));
-            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-          if (projectMilestone.getAchievedValue() != null && projectMilestone.getAchievedValue() < 0) {
-            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
-              InvalidFieldsMessages.EMPTYFIELD);
+          if (action.getActualPhase() != null && action.getActualPhase().getName() != null
+            && (!action.getActualPhase().getName().equals("POWB")
+              && !action.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
+            if (projectMilestone.getAchievedValue() == null
+              || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue()))) {
+              action.addMessage(action.getText("projectOutcomeMilestone.requeried.achievedValue", params));
+              action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+            if (projectMilestone.getAchievedValue() != null && projectMilestone.getAchievedValue() < 0) {
+              action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
           }
         }
 
@@ -343,12 +386,22 @@ public class ProjectOutcomeValidator extends BaseValidator {
           }
         }
 
-        if (action.isReportingActive()) {
+        if (action.isReportingActive() && projectMilestone.getYear() == action.getActualPhase().getYear()) {
           if (!(this.isValidString(projectMilestone.getNarrativeAchieved())
-            && this.wordCount(projectMilestone.getNarrativeAchieved()) <= 100)) {
+            && this.wordCount(projectMilestone.getNarrativeAchieved()) <= 150)) {
             action.addMessage(action.getText("projectOutcomeMilestone.achievedNarrative", params));
             action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeAchieved",
               InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          // Validate achived value in reporting phase
+          if (action.getActualPhase().getYear() == projectMilestone.getYear()) {
+            if (projectMilestone.getAchievedValue() == null
+              || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue()))) {
+              action.addMessage(action.getText("projectOutcomeMilestone.requeried.achievedValue", params));
+              action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
           }
         }
 
@@ -554,9 +607,11 @@ public class ProjectOutcomeValidator extends BaseValidator {
     if (action.isReportingActive()) {
       if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
         && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) > 100)) {
-        action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-        action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-          InvalidFieldsMessages.EMPTYFIELD);
+        /*
+         * action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
+         * action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
+         * InvalidFieldsMessages.EMPTYFIELD);
+         */
       }
       if (projectOutcomeIndicator.getValueReporting() == null
         || projectOutcomeIndicator.getValueReporting().longValue() < 0) {

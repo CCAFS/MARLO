@@ -31,7 +31,7 @@
 		<jta-version>1.1</jta-version>
 		<commons-logging-version>1.2</commons-logging-version>
 		<xml-apis-version>1.4.01</xml-apis-version>
-		<apache-shiro-version>1.2.4</apache-shiro-version>
+		<apache-shiro-version>1.7.1</apache-shiro-version>
 		<groovy-version>2.4.6</groovy-version>
 		<jasperreports-fonts-version>6.0.0</jasperreports-fonts-version>
 		<jasper-reports-version>6.2.2</jasper-reports-version>
@@ -66,6 +66,7 @@
 		<geoip2.version>2.12.0</geoip2.version>
 		<javax.inject.version>1</javax.inject.version>
 		<tomcat.version>8.0.53</tomcat.version>
+		<log4j.version>2.16.0</log4j.version>
 	</properties>
 	<developers>
 		<developer>
@@ -127,6 +128,12 @@
 				<groupId>${project.groupId}</groupId>
 				<artifactId>marlo-web</artifactId>
 				<version>${project.version}</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
+			<dependency>
+			    <groupId>org.apache.logging.log4j</groupId>
+			    <artifactId>log4j-api</artifactId>
+			    <version>${log4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.struts</groupId>

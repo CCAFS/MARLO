@@ -1109,6 +1109,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
 
+        deliverable.setProjectOutcomes(deliverable.getDeliverableProjectOutcomes().stream()
+          .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
         List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers =
           deliverable.getDeliverableCrossCuttingMarkers().stream()
             .filter(dc -> dc.isActive() && dc.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
@@ -1204,7 +1207,10 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           }
 
         }
-        deliverableValidator.validate(action, deliverable, false);
+        if (deliverable != null && deliverable.getDeliverableInfo() != null
+          && deliverable.getDeliverableInfo().isRequiredToComplete()) {
+          deliverableValidator.validate(action, deliverable, false);
+        }
       }
     }
 

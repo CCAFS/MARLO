@@ -679,20 +679,39 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
 
     List<ARInnovationsEvidence> innovationsPMU = new ArrayList<ARInnovationsEvidence>();
     LinkedHashSet<ProjectInnovation> AllInnovations = new LinkedHashSet<>();
+    LiaisonInstitution liaisonInstitutionPMU = null;
+    List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
 
-    LiaisonInstitution liaisonInstitutionPMU = this.getLoggedCrp().getLiaisonInstitutions().stream()
-      .filter(o -> o.isActive() && o.getAcronym() != null && o.getAcronym().equals("PMU")).collect(Collectors.toList())
-      .get(0);
-
-    List<LiaisonInstitution> liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
+    /*
+     * if (this.getLoggedCrp().getLiaisonInstitutions() != null &&
+     * !this.getLoggedCrp().getLiaisonInstitutions().isEmpty()
+     * && this.getLoggedCrp().getLiaisonInstitutions().stream()
+     * .filter(o -> o.isActive() && o.getAcronym() != null && o.getAcronym().equals("PMU"))
+     * .collect(Collectors.toList()) != null
+     * && this.getLoggedCrp().getLiaisonInstitutions().stream()
+     * .filter(o -> o.isActive() && o.getAcronym() != null && o.getAcronym().equals("PMU"))
+     * .collect(Collectors.toList()).get(0) != null) {
+     * liaisonInstitutionPMU = this.getLoggedCrp().getLiaisonInstitutions().stream()
+     * .filter(o -> o.isActive() && o.getAcronym() != null && o.getAcronym().equals("PMU"))
+     * .collect(Collectors.toList()).get(0);
+     * }
+     */
+    if (this.getLoggedCrp().getLiaisonInstitutions() != null && this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-      .collect(Collectors.toList());
-    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+      .collect(Collectors.toList()) != null) {
+      liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() != null && c.isActive()
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList());
+      liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+    }
 
-
-    ReportSynthesis reportSynthesisPMU =
-      reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), liaisonInstitutionPMU.getId());
+    ReportSynthesis reportSynthesisPMU = null;
+    if (liaisonInstitutionPMU != null && liaisonInstitutionPMU.getId() != null) {
+      reportSynthesisPMU =
+        reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), liaisonInstitutionPMU.getId());
+    }
 
 
     if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {

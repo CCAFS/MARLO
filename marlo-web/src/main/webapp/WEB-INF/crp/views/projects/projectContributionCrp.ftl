@@ -1,15 +1,20 @@
 [#ftl]
-[#assign title = "Project Outcome Contribution to CRP" /]
+[#assign title = "Cluster Contribution to Indicators" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2"] /]
+[#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20210302", 
-  "${baseUrlCdn}/global/js/autoSave.js", 
-  "${baseUrlCdn}/global/js/fieldsValidation.js"
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20211110", 
+  "${baseUrlCdn}/global/js/fieldsValidation.js",
+  "https://www.gstatic.com/charts/loader.js",
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_ccDimensions.js?2021123a" 
   ] 
 /] 
 [#assign customCSS = [ 
-  "${baseUrlMedia}/css/projects/projectContributionCrp.css"
+  "${baseUrlMedia}/css/projects/projectContributionCrp.css",
+  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20211110"
   ] 
 /]
 [#assign currentSection = "projects" /]
@@ -46,7 +51,6 @@
         
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-          
           [#-- Back --]
           <small class="pull-right">
             <a href="[@s.url action='${crpSession}/contributionsCrpList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
@@ -95,14 +99,14 @@
                     [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive/]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
-                    <div class="input"><p>${(projectOutcome.expectedValue)!'Prefilled if available'}</p></div>
+                    <div class="input"><p>${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
                   [/#if]
                 [#else]
                   [#if editable]
                     [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
-                    <div class="input"><p>${(projectOutcome.expectedValue)!'Prefilled if available'}</p></div>
+                    <div class="input"><p>${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
                   [/#if]
                 [/#if]
                 </div>
@@ -137,7 +141,7 @@
                     [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue ${reportingActive?string('fieldFocus','')}" required=true /]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.achievedValue" /]:</label>
-                    <div class="input"><p>${(projectOutcome.achievedValue)!'Prefilled if available'}</p></div>
+                    <div class="input"><p>${(projectOutcome.achievedValue)!'No achieved value indicated'}</p></div>
                   [/#if]
                 </div>
                 <div class="col-md-7">
@@ -164,7 +168,8 @@
                   <div class="" id="baseline">
                     <div class="form-group text-right">
                       [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                        <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
+                        <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a>
+                        [#-- (projectOutcome.crpProgramOutcome.file.fileName)! --] 
                       [#else]
                         <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
                       [/#if]
@@ -172,7 +177,7 @@
                     [#-- Indicators --]
                     [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
                     [#if action.isAiccra()]
-                      [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
+                      [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index AREditable=true/]
                     [#else]
                       [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
                     [/#if]
@@ -183,7 +188,7 @@
              [/#if]
             
           </div>
-          
+                    
           [#-- Project Milestones and Communications contributions per year--]
           <h4 class="headTitle"> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
           
@@ -207,8 +212,7 @@
               [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone${reportingActive?string('.reporting', '')}"  listName="" keyFieldName="id" displayFieldName="title" className="" value="" /]
             </div>
             [/#if]
-          </div>
-          
+          </div>        
           
           [#-- Communications --]
           [#if reportingActive && action.hasSpecificities('crp_show_project_outcome_communications') ]  
@@ -227,36 +231,223 @@
             </div>
           </div>
           [/#if]          
-                    
-          [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
-          <h4 class="headTitle">Progress to Targets</h4>
-          <div class="nextUsersBlock borderBox">
-            <div class="nextUsersList">
-            [#-- Baseline Indicators --]
-            [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
-              <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
-              <div class="form-group">
-                <div class="" id="baseline">
-                  <div class="form-group text-right">
-                    [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                      <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
-                    [#else]
-                      <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
+           
+          <br>       
+          [#if reportingActive]
+            <div class="deliverableTabs"> 
+              <ul class="nav nav-tabs" role="tablist"> 
+                 <li role="presentation" class=""><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Progress ${currentCycleYear}</a></li>                       
+                 <li role="presentation" class="active"><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Reporting ${currentCycleYear}</a></li>                            
+              </ul>
+              
+              <div class="tab-content ">          
+                [#-- Progress tab --]  
+                  <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade">
+                    [#if action.isAiccra()  && projectOutcomeLastPhase?has_content && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
+                      [#-- 
+                      && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content
+                      --]
+                      <h4 class="headTitle">Progress to Targets</h4>
+                      <div class="nextUsersBlock borderBox">
+                        <div class="nextUsersList">
+                          [#-- Baseline Indicators --]
+                          [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcomeLastPhase.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content)!false)]
+                            <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
+                            <div class="form-group">
+                              <div class="" id="baseline">
+                                <div class="form-group text-right">
+                                  [#if (projectOutcomeLastPhase.crpProgramOutcome.file.fileName??)!false]
+                                    <a href="${action.getBaseLineFileURL((projectOutcomeLastPhase.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcomeLastPhase.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a> 
+                                  [#else]
+                                    <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
+                                  [/#if]
+                                </div>
+                                [#-- Indicators --]
+                                [#list projectOutcomeLastPhase.crpProgramOutcome.indicators as  indicator   ]
+                                  [#if action.isAiccra()]
+                                    [@baselineAiccraPrevIndicatorMacro element=indicator name="projectOutcomeLastPhase.indicators" index=indicator_index  AREditable=false/]
+                                  [#else]
+                                    [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
+                                  [/#if]
+                                [/#list]
+                              </div>
+                            </div>
+                          [/#if]
+                        </div>           
+                      </div>
                     [/#if]
-                  </div>
-                  [#-- Indicators --]
-                  [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
-                  [#if action.isAiccra()]
-                    [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
-                  [#else]
-                    [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
-                  [/#if]
-                  [/#list]
+                  </div>  
+                  [#-- Reporting tab --]
+                  
+                    <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade in active">
+                      [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
+                        <h4 class="headTitle">Progress to Targets</h4>
+                        <div class="nextUsersBlock borderBox">
+                          <div class="nextUsersList">
+                            [#-- Baseline Indicators --]
+                            [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
+                              <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
+                              <div class="form-group">
+                                <div class="" id="baseline">
+                                  <div class="form-group text-right">
+                                    [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
+                                      <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a> 
+                                    [#else]
+                                      <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
+                                    [/#if]
+                                  </div>
+                                  [#-- Indicators --]
+                                  [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
+                                    [#if action.isAiccra()]
+                                      [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index AREditable=true/]
+                                    [#else]
+                                      [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
+                                    [/#if]
+                                  [/#list]
+                                </div>
+                              </div>
+                            [/#if]
+                          </div>           
+                        </div>
+                      [#else]
+                        <h5 class="headTitle">No Progress to Target indicators added</h5>
+                      [/#if]
+                    </div>
+                  
+                        
+              </div>   
+            </div>
+          [#else]     
+            [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
+                <h4 class="headTitle">Progress to Targets</h4>
+                <div class="nextUsersBlock borderBox">
+                      <div class="nextUsersList">
+                        [#-- Baseline Indicators --]
+                        [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
+                          <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
+                          <div class="form-group">
+                            <div class="" id="baseline">
+                              <div class="form-group text-left">
+                                [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
+                                  <p><b>Baseline Instructions:</b></p>
+                                  <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a>
+                                  [#-- ${ (projectOutcome.crpProgramOutcome.file.fileName)!} --]
+                                  <p><br></p> 
+                                [#else]
+                                  <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
+                                [/#if]
+                              </div>
+                              [#-- Indicators --]
+                              [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
+                                [#if action.isAiccra()]
+                                  [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  AREditable=true/]
+                                [#else]
+                                  [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
+                                [/#if]
+                              [/#list]
+                            </div>
+                          </div>
+                        [/#if]
+                      </div>           
                 </div>
-              </div>
             [/#if]
-            </div>           
-          </div>
+          [/#if]        
+          
+          [#-- capdev --]
+          [#if totalParticipants?number > 0]
+          <h4 class="headTitle"> Capacity Development</h4>
+          <div class="borderBox">
+                   [#-- CapDevCharts--]
+                    <div class="form-group row">
+                      <div class="col-md-4">
+                        <div id="" class="simpleBox numberBox">
+                            <label for="">Total of Participants</label><br />
+                            <span>${(totalParticipants?number?string(",##0"))!0}</span>
+                         </div>
+                        <div id="" class="simpleBox numberBox">
+                            <label for="">Total of Females</label><br />
+                            <span>${(totalFemales?number?string(",##0"))!0}</span>
+                         </div>
+                        <div id="" class="simpleBox numberBox">
+                            <label for="">Total of Africans</label><br />
+                            <span>${(totalAfricans?number?string(",##0"))!0}</span>
+                         </div>
+                         [#--  
+                         <div id="" class="simpleBox numberBox">
+                            <label for="">Participants in [@s.text name="totalParticipantFormalTraining" /]</label><br />
+                            <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
+                         </div>
+                         --]
+                      </div>
+                      <div class="col-md-8">
+                        [#-- Trainees in Short-Term --]
+                        [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
+                        <div id="chart12" class="chartBox simpleBox">
+                          [#assign chartData = [
+                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
+                            {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
+                          ] /] 
+                          <ul class="chartData" style="display:none">
+                            <li>
+                              <span>[@s.text name="{customLabel}" /]</span>
+                              <span>[@s.text name="Short-Term" /]</span>
+                              <span class="json">{"role":"annotation"}</span>
+                            </li>
+                            [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
+                              [#list chartData as data]
+                                <li>
+                                  <span>${data.name}</span>
+                                  <span class="number">${data.value}</span>
+                                  <span>${data.value}</span>
+                                </li>
+                              [/#list]
+                            [/#if]
+                          </ul>
+                        </div>
+                        [/#if]
+                        <br />
+                        [#-- Trainees in Long-Term --]
+                        [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
+                        <div id="chart13" class="chartBox simpleBox">
+                          [#assign chartData = [
+                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
+                            {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
+                          ] /] 
+                          <ul class="chartData" style="display:none">
+                            <li>
+                              <span>[@s.text name="chart13" /]</span>
+                              <span>[@s.text name="Long-Term" /]</span>
+                              <span class="json">{"role":"annotation"}</span>
+                              <span>[@s.text name="PhD" /]</span>
+                              <span class="json">{"role":"annotation"}</span>
+                            </li>
+                            [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
+                              [#list chartData as data]
+                                <li><span>${data.name}</span>
+                                <span class="number">${data.value}</span>
+                                <span>${data.value}</span>
+                                <span class="number">${data.valuePhD}</span>
+                                <span>${data.valuePhD}</span></li>
+                              [/#list]
+                            [/#if]
+                          </ul>
+                         </div>
+                         [/#if]
+                      </div>
+                    </div>
+                    
+                    [#-- Deliverables Participants & Trainees --]
+                    <div class="form-group">
+                      <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Deliverables Participants & Trainees" /]</h4>
+                      <div class="viewMoreSyntesis-block">
+                      
+                      <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
+                        [@tableParticipantsTrainingsMacro list=(deliverableParticipants)![] /]
+                      </div>
+                      
+                     </div>
+                    </div> 
+          </div>  
           [/#if]
           
           [#-- Next Users --]
@@ -400,7 +591,7 @@
         
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
           <div class="col-md-4">
-            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=false /]
+            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) /]
           </div>
           
           <div class="col-md-4">
@@ -421,22 +612,24 @@
           [#-- REPORTING BLOCK --]
           [#if action.isUpKeepActive() && action.isAiccra()]
             <div class="col-md-4">
-              [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.upkeepAchievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) /]
+              [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.upkeepAchievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) /]
             </div>
           [#else]
+           [#if isYearRequired(milestoneYear)]
             <div class="col-md-4">
-              [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) /]
+              [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear)/]
             </div>
+           [/#if]
           [/#if]
         </div>
         
         <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isYearRequired(milestoneYear) className="limitWords-100" editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
+          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isYearRequired(milestoneYear) className="limitWords-100" editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false/]
         </div>
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
         <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) className="limitWords-100 ${(reportingActive)?string('fieldFocus','')}" editable=(editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
+          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable=(editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
         </div>
         [/#if]
       </div>
@@ -491,8 +684,8 @@
 
 [#macro baselineIndicatorMacro element name index isTemplate=false]
   <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox" style="display:${isTemplate?string('none','block')}">
-    [#local indexIndicator = action.getIndexIndicator(element.id) /]
-    [#local projectOutcomeIndicator  = action.getIndicator(element.id) /]
+    [#local indexIndicator = action.getIndexIndicator(element.id)! /]
+    [#local projectOutcomeIndicator  = action.getIndicator(element.id)! /]
     [#local customName = "${name}[${indexIndicator}]" /]
     <div class="leftHead gray sm">
       <span class="index">${index+1}</span>
@@ -524,7 +717,7 @@
   </div>
 [/#macro]
 
-[#macro baselineAiccraIndicatorMacro element name index isTemplate=false]
+[#macro baselineAiccraIndicatorMacro element name index isTemplate=false AREditable=true]
   <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox" style="display:${isTemplate?string('none','block')}">
     [#local indexIndicator = action.getIndexIndicator(element.id) /]
     [#local projectOutcomeIndicator  = action.getIndicator(element.id) /]
@@ -554,14 +747,156 @@
     --]
     
       <div class="form-group">
-        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && !reportingActive /]
+        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && AREditable/]
+        [#-- && !reportingActive  --]
       </div>
+      [#--  
       [#if reportingActive]
         <div class="form-group">
           [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeBaseline.achievedNarrative" required=true className="limitWords-100" editable=editable /]
         </div>
       [/#if]
+      --]
   </div>
+[/#macro]
+
+[#macro baselineAiccraPrevIndicatorMacro element name index isTemplate=false AREditable=true]
+  <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox" style="display:${isTemplate?string('none','block')}">
+    [#local indexIndicator = action.getPrevIndexIndicator(element.id) /]
+    [#local projectOutcomePrevIndicator  = action.getPrevIndicator(element.id) /]
+    [#local customName = "${name}[${indexIndicator}]" /]
+    <div class="leftHead gray sm">
+      <span class="index">${index+1}</span>
+    </div>
+    <div class="form-group grayBox">
+      <strong>${element.indicator}</strong>
+    </div>
+    <input type="hidden" name="${customName}.id" value="${(projectOutcomePrevIndicator.id)!}" >
+    <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomePrevIndicator.crpProgramOutcomeIndicator.id)!}" >
+        
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomePrevIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && AREditable/]
+        [#-- && !reportingActive  --]
+      </div>
+
+  </div>
+[/#macro]
+
+[#macro tableParticipantsTrainingsMacro list]
+  <table id="tableParticipantsTrainingsMacro" class="annual-report-table table-border">
+    <thead>
+      <tr class="subHeader">
+        <th id="tb-id">[@s.text name="Activity Event" /]</th>
+        <th id="tb-title">[@s.text name="Activity Type" /]</th>        
+        <th id="tb-organization-type">[@s.text name="Participants Type" /]</th>
+        <th id="tb-type">[@s.text name="Males" /]</th>
+        <th id="tb-type">[@s.text name="Females" /]</th>
+        <th id="tb-type">[@s.text name="Africans" /]</th>
+        <th id="tb-type">[@s.text name="Youth" /]</th>
+        <th id="tb-type">[@s.text name="total Participants" /]</th>
+        <th id="tb-training-period">[@s.text name="Training Period" /]</th>
+        [#--  
+        <th id="tb-training-period">[@s.text name="Event Focus" /]</th>
+        <th id="tb-training-period">[@s.text name="Likely Outcomes" /]</th>
+        --]
+      </tr>
+    </thead>
+    <tbody>
+    [#-- Loading --]
+    [#if list?has_content]
+      [#list list as item]
+        [#local URL][@s.url namespace="/clusters" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${(item.deliverable.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        <tr>
+          [#-- Title of Innovation --]
+          <td class="">
+            [@utils.tableText value=(item.eventActivityName)!"" /] 
+            [#-- Deliverable ID --]
+            <br /><i style="opacity:0.5"><small>(From D${(item.deliverable.id)!''})</small></i>
+            <a href="${URL}" target="_blank" class="pull-right"> <span class="glyphicon glyphicon-new-window"></span> </a>
+          </td>
+          [#-- Activity Type --]
+          <td class="">
+            <small>[@utils.tableText value=(item.repIndTypeActivity.name)!"" /]</small>
+          </td>          
+          [#-- Type of participants --]
+          <td class="text-center">
+            [@utils.tableText value=(item.repIndTypeParticipant.name)!"" /]
+          </td>          
+          [#assign knowFemale = (item.dontKnowFemale)!false]
+          [#assign hasFemale = (item.females?has_content)!false]
+          [#assign isEstimateTotalParticipants = (item.estimateParticipants?has_content)!false]
+          [#assign isEstimateFemales = (item.estimateFemales?has_content)!false]
+          [#assign isEstimateAfricans = (item.estimateAfrican?has_content)!false]
+          [#assign isEstimateYouth = (item.estimateYouth?has_content)!false]
+          [#-- Total Participants --]
+          <td class="text-center">
+            [#if knowFemale && !hasFemale ]
+              <i><small>Not specified</small></i>
+              [#else]
+              ${(item.males?number?string(",##0"))!0}
+            [/#if]
+          </td>
+          [#-- Number of females --]
+          <td class="text-center">
+          [#if knowFemale && !hasFemale ]
+            <i><small>Not specified</small></i>
+            [#else]
+            ${(item.females?number?string(",##0"))!0}
+            [#if isEstimateFemales ]
+              <i><small> (Estimated value)</small></i>
+            [/#if]
+          [/#if]
+          </td>
+          [#-- Number of african --]
+          <td class="text-center">
+            ${(item.african?number?string(",##0"))!0}
+            [#--<p><i><small>(${(item.africanPercentage?number?string(",##0"))!0}% )</small></i><p>--]
+            [#if isEstimateAfricans ]
+              <i><small> (Estimated value)</small></i>
+            [/#if]
+          </td>
+          [#-- Number of youth --]
+          <td class="text-center">
+            ${(item.youth?number?string(",##0"))!0}
+            [#--<p><i><small>(${(item.youthPercentage?number?string(",##0"))!0}% )</small></i></p>--]
+            [#if isEstimateYouth ]
+              <i><small> (Estimated value)</small></i>
+            [/#if]
+          </td>
+          [#-- Total Participants --]
+          <td class="text-center">
+            ${(item.participants?number?string(",##0"))!0}
+            [#if isEstimateTotalParticipants ]
+              <i><small> (Estimated value)</small></i>
+            [/#if]
+          </td>
+          [#-- Training period of time --]
+          <td class="text-center">
+            [@utils.tableText value=(item.repIndTrainingTerm.name)!"" /]
+          </td>
+          [#-- Training period of time --]
+          [#--  
+          <td class="text-center">
+            [@utils.tableText value=(item.focus)!"" /]
+          </td>
+          --]
+          [#-- Training period of time --]
+          [#--  
+          <td class="text-center">
+            [@utils.tableText value=(item.likelyOutcomes)!"" /]
+            --]
+          </td>
+        </tr>
+      [/#list]
+    [#else]
+      <tr>
+        <td class="text-center" colspan="5">
+          <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+        </td>
+      </tr>
+    [/#if]
+    </tbody>
+  </table>
 [/#macro]
 
 [#-- Get if the year is required--]

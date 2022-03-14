@@ -127,7 +127,7 @@ function getProjectsByCycleYear(parent, phaseID) {
       },
       success: function(m) {
         $.each(m.projects, function(i,e) {
-          $parent.find(".allProjectsSelect").addOption(e.id, "P" + e.id + " - " + e.description);
+          $parent.find(".allProjectsSelect").addOption(e.id, "C" + e.id + " - " + e.description);
         })
       },
       complete: function() {
