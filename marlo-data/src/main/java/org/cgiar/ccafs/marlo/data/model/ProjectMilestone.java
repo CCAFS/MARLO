@@ -24,6 +24,8 @@ public class ProjectMilestone extends MarloAuditableEntity implements java.io.Se
   @Expose
   private Double expectedValue;
   @Expose
+  private Double progressValue;
+  @Expose
   private Double settedValue;
   @Expose
   private SrfTargetUnit expectedUnit;
@@ -34,6 +36,8 @@ public class ProjectMilestone extends MarloAuditableEntity implements java.io.Se
   private String narrativeTarget;
   @Expose
   private String narrativeAchieved;
+  @Expose
+  private String narrativeProgress;
 
 
   @Expose
@@ -99,10 +103,18 @@ public class ProjectMilestone extends MarloAuditableEntity implements java.io.Se
   }
 
 
+  public String getNarrativeProgress() {
+    return narrativeProgress;
+  }
+
   public String getNarrativeTarget() {
     return narrativeTarget;
   }
 
+
+  public Double getProgressValue() {
+    return progressValue;
+  }
 
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
@@ -152,8 +164,16 @@ public class ProjectMilestone extends MarloAuditableEntity implements java.io.Se
     this.narrativeAchieved = narrativeAchieved;
   }
 
+  public void setNarrativeProgress(String narrativeProgress) {
+    this.narrativeProgress = narrativeProgress;
+  }
+
   public void setNarrativeTarget(String narrativeTarget) {
     this.narrativeTarget = narrativeTarget;
+  }
+
+  public void setProgressValue(Double progressValue) {
+    this.progressValue = progressValue;
   }
 
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
