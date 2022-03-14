@@ -46,6 +46,9 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
   private String smoCode;
 
   @Expose
+  private int orderIndex;
+
+  @Expose
   private int programType;
 
 
@@ -255,6 +258,10 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return this.name;
   }
 
+  public int getOrderIndex() {
+    return orderIndex;
+  }
+
   public List<CrpProgramOutcome> getOutcomes() {
     return this.outcomes;
   }
@@ -263,10 +270,10 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return this.powbs;
   }
 
+
   public int getProgramType() {
     return this.programType;
   }
-
 
   public Set<ProjectFocus> getProjectFocuses() {
     return this.projectFocuses;
@@ -280,10 +287,10 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return this.researchImpacts;
   }
 
+
   public Set<CenterTopic> getResearchTopics() {
     return this.researchTopics;
   }
-
 
   public Set<SectionStatus> getSectionStatuses() {
     return this.sectionStatuses;
@@ -293,10 +300,10 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return this.selectedCountries;
   }
 
+
   public String getSmoCode() {
     return this.smoCode;
   }
-
 
   public Set<Submission> getSubmissions() {
     return this.submissions;
@@ -306,10 +313,10 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return this.synthesis;
   }
 
+
   public List<CenterTopic> getTopics() {
     return this.topics;
   }
-
 
   public double getW1() {
     return this.w1;
@@ -327,10 +334,10 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     this.action = action;
   }
 
+
   public void setBaseLine(Boolean baseLine) {
     this.baseLine = baseLine;
   }
-
 
   public void setCenterFunds(double centerFunds) {
     this.centerFunds = centerFunds;
@@ -340,10 +347,10 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     this.centerOutputs = centerOutputs;
   }
 
+
   public void setCenterSectionStatuses(Set<CenterSectionStatus> centerSectionStatuses) {
     this.centerSectionStatuses = centerSectionStatuses;
   }
-
 
   public void setCenterSubmissions(Set<CenterSubmission> centerSubmissions) {
     this.centerSubmissions = centerSubmissions;
@@ -407,6 +414,10 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setOrderIndex(int orderIndex) {
+    this.orderIndex = orderIndex;
   }
 
   public void setOutcomes(List<CrpProgramOutcome> outcomes) {

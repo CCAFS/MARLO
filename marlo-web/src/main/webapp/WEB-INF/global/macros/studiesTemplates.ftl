@@ -148,7 +148,6 @@
     </div>
     <div class="borderBox">
       [#-- 0. Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
-      [#if isOutcomeCaseStudy]
         <div class="form-group">
           <div class="optionPublicComponent form-group" style="display:block">         
             <br />
@@ -163,7 +162,6 @@
             <div class="message text-center" style="display:none">Copied!</div>
           </div>
         </div>
-      [/#if]
 
       [#-- 1. Title (up to 25 words) --]
       <div class="form-group">

@@ -117,6 +117,7 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
     masterReport.getParameterValues().put("i8nColumnR", this.getText("involveParticipants.estimate.female"));
     masterReport.getParameterValues().put("i8nColumnS", this.getText("involveParticipants.participantsType"));
     masterReport.getParameterValues().put("i8nColumnT", this.getText("involveParticipants.trainingPeriod"));
+    masterReport.getParameterValues().put("i8nColumnU", this.getText("involveParticipants.performanceIndicator"));
 
     masterReport.getParameterValues().put("i8nHeader",
       this.getLoggedCrp().getAcronym() + " " + this.getSelectedPhase().getName() + " " + this.getSelectedYear() + " "
@@ -234,14 +235,17 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
      * paramR - Female Estimate (Possible <Not applicable>)
      * paramS - Type of Participant(s)
      * paramT - Training period of time
+     * paramU - Performance Indicator
      * deliverableURL
      * NOTE : does not mater the order into the implementation (ex: the paramO will be setup first that the paramA)
      */
     TypedTableModel model = new TypedTableModel(
       new String[] {"paramA", "paramB", "paramC", "paramD", "paramE", "paramF", "paramG", "paramH", "paramI", "paramJ",
         "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "paramT",
-        "deliverableURL"},
+        "deliverableURL", "paramU", "indicatorURL", "africansNumber", "africansEstimate", "youthNumber",
+        "youthEstimate", "eventFocus", "likelyOutcomes"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class},
       0);
@@ -258,8 +262,9 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
       for (Deliverable deliverable : deliverables) {
         String paramA = null, paramB = null, paramC = null, paramD = null, paramE = null, paramF = null, paramG = null,
           paramH = null, paramI = null, paramJ = null, paramK = null, paramL = null, paramM = null, paramN = null,
-          paramO = null, paramP = null, paramQ = null, paramR = null, paramS = null, paramT = null,
-          deliverableURL = null;
+          paramO = null, paramP = null, paramQ = null, paramR = null, paramS = null, paramT = null, paramU = null,
+          deliverableURL = null, indicatorURL = null, africansNumber = null, africansEstimate = null,
+          youthNumber = null, youthEstimate = null, eventFocus = null, likelyOutcomes = null;
 
         // paramA - DeliverableID
         paramA = "D" + deliverable.getId();
@@ -453,11 +458,67 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
               paramR = "No";
             }
           }
+          // Number of africans (Possible <Not applicable>)
+          if (deliverableParticipant.getAfrican() != null) {
+            africansNumber = deliverableParticipant.getAfrican() + "";
+          }
+          // africans Estimate (Possible <Not applicable>)
+          if (deliverableParticipant.getEstimateAfrican() != null) {
+            if (deliverableParticipant.getEstimateAfrican()) {
+              africansEstimate = "Yes";
+            } else {
+              africansEstimate = "No";
+            }
+          }
+          // Number of youth (Possible <Not applicable>)
+          if (deliverableParticipant.getYouth() != null) {
+            youthNumber = deliverableParticipant.getYouth() + "";
+          }
+          // youth Estimate (Possible <Not applicable>)
+          if (deliverableParticipant.getEstimateYouth() != null) {
+            if (deliverableParticipant.getEstimateYouth()) {
+              youthEstimate = "Yes";
+            } else {
+              youthEstimate = "No";
+            }
+          }
+
+          // Event Focus
+          if (deliverableParticipant.getFocus() != null) {
+            eventFocus = deliverableParticipant.getFocus();
+          }
+
+          // Likely Outcomes
+          if (deliverableParticipant.getLikelyOutcomes() != null) {
+            likelyOutcomes = deliverableParticipant.getLikelyOutcomes();
+          }
           // }
           // paramS - Type of Participant(s)
           if (deliverableParticipant.getRepIndTypeParticipant() != null) {
             paramS = deliverableParticipant.getRepIndTypeParticipant().getName();
           }
+
+          // paramU - Performance Indicator
+          if (deliverable.getDeliverableProjectOutcomes() != null) {
+            deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
+              .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+          }
+
+          if (deliverable.getProjectOutcomes() != null && deliverable.getProjectOutcomes().get(0) != null
+            && deliverable.getProjectOutcomes().get(0).getProjectOutcome() != null
+            && deliverable.getProjectOutcomes().get(0).getProjectOutcome().getCrpProgramOutcome() != null && deliverable
+              .getProjectOutcomes().get(0).getProjectOutcome().getCrpProgramOutcome().getDescription() != null) {
+            paramU =
+              deliverable.getProjectOutcomes().get(0).getProjectOutcome().getCrpProgramOutcome().getDescription();
+
+            if (deliverable.getProjectOutcomes().get(0).getProjectOutcome().getId() != null) {
+              indicatorURL = this.getBaseUrl() + "/clusters/" + this.getSelectedPhase().getCrp().getAcronym()
+                + "/contributionCrp.do?projectOutcomeID="
+                + deliverable.getProjectOutcomes().get(0).getProjectOutcome().getId() + "&phaseID="
+                + this.getSelectedPhase().getId();
+            }
+          }
+
 
           // Generate the deliverable url of MARLO
           // Publication
@@ -473,7 +534,8 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
 
 
           model.addRow(new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ,
-            paramK, paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, deliverableURL});
+            paramK, paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, deliverableURL, paramU,
+            indicatorURL, africansNumber, africansEstimate, youthNumber, youthEstimate, eventFocus, likelyOutcomes});
         }
       }
     }

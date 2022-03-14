@@ -145,7 +145,7 @@
           <li><strong>Copyright </strong>
             <h5>Copyright&copy;2013-2019 International Center for Tropical Agriculture (CIAT) on behalf of The Alliance.</h5>
             <p>MARLO (Managing Agricultural Research for Learning and Outcomes) is an online platform initially conceive to assist CGIAR Research Programs and CGIAR Centers in their strategic results-based program planning to reporting and learning. MARLO has been developed under the CGIAR Research Program on Climate Change, Agriculture and Food Security (CCAFS), led by the Technology Integration unit at The Alliance</p>
-            <p>Considering the nature of the platform and its adoption in the CGIAR through the CGIAR Research Programs, we decide to implement this version for this project funded by the World Bank called “Accelerating the Impact of the CGIAR Climate Research for Africa Project (AICCRA).” </p>
+            <p>Considering the nature of the platform and its adoption in the CGIAR through the CGIAR Research Programs, we decide to implement this version for this project funded by the World Bank called “Accelerating Impacts of the CGIAR Climate Research for Africa Project (AICCRA).” </p>
           </li>
         </ol>
          

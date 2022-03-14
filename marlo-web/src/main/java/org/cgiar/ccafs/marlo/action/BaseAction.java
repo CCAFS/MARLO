@@ -2838,7 +2838,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
            */
 
           // New method for new relationship deliverable_project_outcomes table
-          for (Deliverable deliverable : projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase())) {
+          List<Deliverable> deliverablesTemp = null;
+          deliverablesTemp = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
+          if (this.isReportingActive()) {
+            deliverablesTemp = deliverablesTemp.stream().filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
+              && d.getDeliverableInfo(this.getActualPhase()).getStatus() == 3).collect(Collectors.toList());
+          }
+          for (Deliverable deliverable : deliverablesTemp) {
             if (deliverable.getDeliverableProjectOutcomes() != null) {
               deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
                 .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
@@ -4193,7 +4199,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           break;
 
         case BUDGET:
-          if (this.reportingActive) {
+          if (this.isReportingActive()) {
             return true;
           } else {
             if (!this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
@@ -6472,7 +6478,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isPOWB() {
     if (this.getActualPhase() != null && this.getActualPhase().getName() != null
-      && (this.getActualPhase().getName().equals("POWB") || this.getActualPhase().getName().equals("APWB"))) {
+      && (this.getActualPhase().getName().equals("POWB") || this.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
       return true;
     } else {
       return false;
