@@ -33,6 +33,9 @@
          <property name="expectedValue" type="java.lang.Double">
             <column name="expected_value" precision="10" scale="2"/>
         </property>
+         <property name="progressValue" type="java.lang.Double">
+            <column name="progress_value" precision="10" scale="2"/>
+        </property>
          <property name="settedValue" type="java.lang.Double">
             <column name="setted_value" precision="10" scale="2"/>
         </property>
@@ -51,6 +54,9 @@
         </property>
         <property name="narrativeAchieved" type="string">
             <column name="narrative_achieved" sql-type="TEXT" />
+        </property>
+        <property name="narrativeProgress" type="string">
+            <column name="narrative_progress" sql-type="TEXT" />
         </property>
         
           
