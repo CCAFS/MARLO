@@ -48,7 +48,7 @@ $(document).ready(function() {
 
   $('.primarySelect').on("change", function(){
     $($(this).parents('.panel-body')).find(".radio-input").each(function(i,e) {
-    if ($(this).parents('.panel-body').find('.list').find('li').size() == 1) {
+    if ($(this).parents('.panel-body').find('.list').find('li').length == 1) {
       $(e).attr('checked',true);
     }
     });
