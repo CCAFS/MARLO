@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.DeliverableStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -37,6 +38,8 @@ import java.util.HashMap;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Christian Garcia - CIAT/CCAFS
@@ -444,27 +447,38 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         }
 
         // Validate References Cited
-        if (action.isNotEmpty(projectExpectedStudy.getReferences())) {
-          boolean validReferences = true;
-          for (int i = 0; i < projectExpectedStudy.getReferences().size(); i++) {
-            ProjectExpectedStudyReference reference = projectExpectedStudy.getReferences().get(i);
-            if (reference == null || !this.isValidString(reference.getReference()) || reference.getLink() == null
-              || !Patterns.WEB_URL.matcher(reference.getLink()).find()) {
-              validReferences = false;
+        if (action.getActualPhase() != null && action.getActualPhase().getYear() == 2021) {
+          if (action.isNotEmpty(projectExpectedStudy.getReferences())) {
+            boolean validReferences = true;
+            for (int i = 0; i < projectExpectedStudy.getReferences().size(); i++) {
+              ProjectExpectedStudyReference reference = projectExpectedStudy.getReferences().get(i);
+              if (reference == null || !this.isValidString(reference.getReference()) || reference.getLink() == null
+                || !Patterns.WEB_URL.matcher(reference.getLink()).find()) {
+                validReferences = false;
+              }
             }
-          }
 
-          if (!validReferences) {
+            if (!validReferences) {
+              action.addMessage(action.getText("References Cited"));
+              action.addMissingField("study.referencesCited");
+              action.getInvalidFields().put("expectedStudy.projectExpectedStudyInfo.referencesText",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          } else {
             action.addMessage(action.getText("References Cited"));
             action.addMissingField("study.referencesCited");
             action.getInvalidFields().put("expectedStudy.projectExpectedStudyInfo.referencesText",
               InvalidFieldsMessages.EMPTYFIELD);
           }
         } else {
-          action.addMessage(action.getText("References Cited"));
-          action.addMissingField("study.referencesCited");
-          action.getInvalidFields().put("expectedStudy.projectExpectedStudyInfo.referencesText",
-            InvalidFieldsMessages.EMPTYFIELD);
+          if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
+            && StringUtils.isEmpty(
+              projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getReferencesText())) {
+            action.addMessage(action.getText("References Cited"));
+            action.addMissingField("study.referencesCited");
+            action.getInvalidFields().put("expectedStudy.projectExpectedStudyInfo.referencesText",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
 
         // Validate Describe Gender
@@ -588,11 +602,13 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
          * }
          */
         // Validate Contributing Flagships/Modules
-        if (projectExpectedStudy.getFlagships() == null || projectExpectedStudy.getFlagships().isEmpty()) {
-          action.addMessage(action.getText("expectedStudy.contributingFlagships"));
-          action.addMissingField("expectedStudy.flagships");
-          action.getInvalidFields().put("list-expectedStudy.flagships",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"flagships"}));
+        if (!action.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+          if (projectExpectedStudy.getFlagships() == null || projectExpectedStudy.getFlagships().isEmpty()) {
+            action.addMessage(action.getText("expectedStudy.contributingFlagships"));
+            action.addMissingField("expectedStudy.flagships");
+            action.getInvalidFields().put("list-expectedStudy.flagships",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"flagships"}));
+          }
         }
       } else {
         // Validate Srf Targets Selection
