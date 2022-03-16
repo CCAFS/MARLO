@@ -897,7 +897,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
 
     if (this.isAiccra()) {
-      this.addAllCrpMilestones();
+      // this.addAllCrpMilestones();
     }
 
     /*

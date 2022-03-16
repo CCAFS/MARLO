@@ -13,7 +13,7 @@
   [#if libraryName="datatables" ]<link rel="stylesheet" href="${baseUrlCdn}/global/bower_components/datatables/media/css/jquery.dataTables.css" />[/#if]
   [#if libraryName="dropzone" ]<link rel="stylesheet" href="${baseUrlCdn}/global/bower_components/dropzone/dist/min/dropzone.min.css" />[/#if]
   [#if libraryName="animate.css" ]<link rel="stylesheet" href="${baseUrlCdn}/global/bower_components/animate.css/animate.css" />[/#if]
-  [#if libraryName="bootstrap" ]<link rel="stylesheet" href="${baseUrlCdn}/global/bower_components/bootstrap/dist/css/bootstrap.min.css" />[/#if]
+  [#if libraryName="bootstrap" ]<link rel="stylesheet" href="${baseUrlCdn}/global/bower_components/bootstrap/dist/css/bootstrap.min.css?20220316a" />[/#if]
   [#if libraryName="flat-flags" ]<link rel="stylesheet" href="${baseUrlCdn}/global/bower_components/flat-flags/css/main.css" />[/#if]
   [#if libraryName="flag-icon-css" ]<link rel="stylesheet" href="${baseUrlCdn}/global/bower_components/flag-icon-css/css/flag-icon.min.css" />[/#if]
   [#if libraryName="bootstrap-select" ]<link rel="stylesheet" href="${baseUrlCdn}/global/bower_components/bootstrap-select/dist/css/bootstrap-select.css" />[/#if]
