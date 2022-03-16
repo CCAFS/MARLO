@@ -156,10 +156,11 @@ function init() {
         data: {
           deliverableTypeId: option.val(),
           phaseID: phaseID
-        }
-      }).success(function (m) {
-        for (var i = 0; i < m.deliverableSubTypes.length; i++) {
-          $subTypeSelect.addOption(m.deliverableSubTypes[i].id, m.deliverableSubTypes[i].name)
+        },
+        success: function (m) {
+          for (var i = 0; i < m.deliverableSubTypes.length; i++) {
+            $subTypeSelect.addOption(m.deliverableSubTypes[i].id, m.deliverableSubTypes[i].name)
+          }
         }
       });
     }

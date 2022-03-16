@@ -55,7 +55,7 @@ public class GlobalUnitTypeItem<T> {
    */
   public ResponseEntity<CGIAREntityTypeDTO> findGlobalUnitTypeById(Long id) {
     GlobalUnitType globalUnitType = this.globalUnitTypeManager.getGlobalUnitTypeById(id);
-    return Optional.ofNullable(globalUnitType).filter(c -> c.getId() <= 4)
+    return Optional.ofNullable(globalUnitType).filter(c -> c.isVisible())
       .map(this.globalUnitTypeMapper::globalUnitTypeToCGIAREntityTypeDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
@@ -69,7 +69,7 @@ public class GlobalUnitTypeItem<T> {
   public List<CGIAREntityTypeDTO> getAllGlobalUnitTypes() {
     if (this.globalUnitTypeManager.findAll() != null) {
       List<GlobalUnitType> globalUnitTypes = new ArrayList<>(
-        this.globalUnitTypeManager.findAll().stream().filter(c -> c.getId() <= 4).collect(Collectors.toList()));
+        this.globalUnitTypeManager.findAll().stream().filter(c -> c.isVisible()).collect(Collectors.toList()));
       // FIXME: Should change the way to compare which CRP/PTF/Center will
       // show on API
       List<CGIAREntityTypeDTO> cgiarEntityTypeList = globalUnitTypes.stream()
