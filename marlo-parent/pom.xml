@@ -33,7 +33,7 @@
 		<xml-apis-version>1.4.01</xml-apis-version>
 		<apache-shiro-version>1.7.1</apache-shiro-version>
 		<groovy-version>2.4.6</groovy-version>
-		<jasperreports-fonts-version>6.17.0</jasperreports-fonts-version>
+		<jasperreports-fonts-version>6.0.0</jasperreports-fonts-version>
 		<jasper-reports-version>6.2.2</jasper-reports-version>
 		<com.google.code.gson-version>2.6.2</com.google.code.gson-version>
 		<pusher-http-java>1.0.0</pusher-http-java>
@@ -471,6 +471,11 @@
 				<version>${jasperreports-fonts-version}</version>
 			</dependency>
 			<!-- End jasper -->
+			<dependency>
+			    <groupId>com.lowagie.org.olap4j</groupId>
+			    <artifactId>olap4j</artifactId>
+			    <version>0.9.7.309-JS-3</version>
+            </dependency>
 			<!-- gson -->
 			<dependency>
 				<groupId>com.google.code.gson</groupId>
