@@ -477,6 +477,8 @@
     <mapping resource="xmls/DeliverableMetadataExternalSources.hbm.xml" />
     <mapping resource="xmls/DeliverableAffiliations.hbm.xml" />
     <mapping resource="xmls/DeliverableAltmetricInfo.hbm.xml" />
+    
+    <!-- Alliance related indicators -->
     <mapping resource="xmls/Nexus.hbm.xml" />
     <mapping resource="xmls/AllianceLeverOutcomes.hbm.xml" />
     <mapping resource="xmls/AllianceLevers.hbm.xml" />
@@ -484,6 +486,11 @@
     <mapping resource="xmls/ProjectExpectedStudyLeverOutcomes.hbm.xml" />
     <mapping resource="xmls/ProjectExpectedStudyLevers.hbm.xml" />
     <mapping resource="xmls/ProjectExpectedStudySdgTargets.hbm.xml" />
+    <mapping resource="xmls/ProjectExpectedStudyActionAreaOutcomeIndicator.hbm.xml" />
+    <mapping resource="xmls/ProjectExpectedStudyFundingSource.hbm.xml" />
+    <mapping resource="xmls/ProjectExpectedStudyImpactAreaIndicator.hbm.xml" />
+    <mapping resource="xmls/ProjectExpectedStudyInitiative.hbm.xml" />
+    
     <mapping resource="xmls/ProjectDeliverableShared.hbm.xml" />
     <mapping resource="xmls/Glossary.hbm.xml" />
     <!-- One CGIAR data -->    

@@ -28,6 +28,7 @@ public class ActionAreaOutcomeIndicator extends MarloAuditableEntity implements 
   public ActionAreaOutcome actionAreaOutcome;
   private OutcomeIndicator outcomeIndicator;
   private ActionArea actionArea;
+  private String showName;
 
   public ActionArea getActionArea() {
     return actionArea;
@@ -39,6 +40,10 @@ public class ActionAreaOutcomeIndicator extends MarloAuditableEntity implements 
 
   public OutcomeIndicator getOutcomeIndicator() {
     return outcomeIndicator;
+  }
+
+  public String getShowName() {
+    return showName;
   }
 
 
@@ -56,5 +61,8 @@ public class ActionAreaOutcomeIndicator extends MarloAuditableEntity implements 
     this.outcomeIndicator = outcomeIndicator;
   }
 
+  public void setShowName(String showName) {
+    this.showName = showName;
+  }
 
 }

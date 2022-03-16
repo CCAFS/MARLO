@@ -300,29 +300,31 @@
           <label for="">[@s.text name="study.relevantTo" /]:[@customForm.req required=editable /]
           </label> 
         [/#if]
+        [#if !action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
         [#-- Sub IDOs (maxLimit=2 if OICR, else 3) --]
-        <div class="form-group simpleBox">
-          [#local isPrimary = ((actualPhase.name == "AR" && actualPhase.year == 2021)?then('false', 'true'))?boolean]
-          [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=(isOutcomeCaseStudy?then(2,3)) keyFieldName="id" displayFieldName="composedName" hasPrimary=isPrimary/]
-        </div> 
-        
-        [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
-        [#-- <div class="form-group simpleBox">
-          [@customForm.primaryListComponent name="${customName}.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(element.subIdos)!"" label="policy.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
-        </div>--] 
-        
-        [#-- SRF Targets (maxLimit=2)  --]
-        <div class="form-group simpleBox stageProcessOne">
-          <label for="">[@s.text name="study.targetsOption" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.targetsOption.help" showIcon=false editable=editable/]</label><br />
-          [#local targetsOption = (element.projectExpectedStudyInfo.isSrfTarget)!""]
-          [#list ["targetsOptionYes", "targetsOptionNo", "targetsOptionTooEarlyToSay"] as option]
-            [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.isSrfTarget" i18nkey="study.${option}" value="${option}" checked=(option == targetsOption) cssClass="radioType-targetsOption" cssClassLabel="font-normal" editable=editable /] 
-          [/#list]
-          [#local showTargetsComponent = (element.projectExpectedStudyInfo.isSrfTarget == "targetsOptionYes")!false /]
-          <div class="srfTargetsComponent" style="display:${showTargetsComponent?string('block', 'none')}">
-            [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.stratgicResultsLink.srfTargets" listName="targets" maxLimit=2  keyFieldName="id" displayFieldName="title" required=editable && !(isPolicy && stageProcessOne)/]          
+          <div class="form-group simpleBox">
+            [#local isPrimary = ((actualPhase.name == "AR" && actualPhase.year == 2021)?then('false', 'true'))?boolean]
+            [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=(isOutcomeCaseStudy?then(2,3)) keyFieldName="id" displayFieldName="composedName" hasPrimary=isPrimary/]
+          </div> 
+          
+          [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
+          [#-- <div class="form-group simpleBox">
+            [@customForm.primaryListComponent name="${customName}.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(element.subIdos)!"" label="policy.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
+          </div>--] 
+          
+          [#-- SRF Targets (maxLimit=2)  --]
+          <div class="form-group simpleBox stageProcessOne">
+            <label for="">[@s.text name="study.targetsOption" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.targetsOption.help" showIcon=false editable=editable/]</label><br />
+            [#local targetsOption = (element.projectExpectedStudyInfo.isSrfTarget)!""]
+            [#list ["targetsOptionYes", "targetsOptionNo", "targetsOptionTooEarlyToSay"] as option]
+              [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.isSrfTarget" i18nkey="study.${option}" value="${option}" checked=(option == targetsOption) cssClass="radioType-targetsOption" cssClassLabel="font-normal" editable=editable /] 
+            [/#list]
+            [#local showTargetsComponent = (element.projectExpectedStudyInfo.isSrfTarget == "targetsOptionYes")!false /]
+            <div class="srfTargetsComponent" style="display:${showTargetsComponent?string('block', 'none')}">
+              [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.stratgicResultsLink.srfTargets" listName="targets" maxLimit=2  keyFieldName="id" displayFieldName="title" required=editable && !(isPolicy && stageProcessOne)/]          
+            </div>
           </div>
-        </div>
+        [/#if]
         
         [#-- Comments  --]
         [#if isOutcomeCaseStudy]
@@ -343,20 +345,32 @@
        
           [#-- Sdg Targets  --]
           [@customForm.elementsListComponent name="${customName}.sdgTargets" elementType="sdgTarget" elementList=element.sdgTargets label="study.sdgTargets"  listName="sdgTargetList" keyFieldName="id" displayFieldName="showName" required=false/]
+          
+          [#-- Action Area Outcome Indicators  --]
+          [@customForm.elementsListComponent name="${customName}.actionAreaIndicators" elementType="outcomeIndicator" elementList=element.actionAreaIndicators label="study.actionAreaOutcomeIndicators"  listName="actionAreaOutcomeIndicatorList" keyFieldName="id" displayFieldName="showName" required=false/]
+          
+          [#-- Funding Sources  --]
+          [@customForm.elementsListComponent name="${customName}.fundingSources" elementType="fundingSource" elementList=element.fundingSources label="study.fundingSources"  listName="fundingSourceList" keyFieldName="id" displayFieldName="composedName" required=false/]
+          
+          [#-- Impact Area Indicators  --]
+          [@customForm.elementsListComponent name="${customName}.impactAreaIndicators" elementType="impactAreaIndicator" elementList=element.impactAreaIndicators label="study.impactAreaIndicators"  listName="impactAreaIndicatorList" keyFieldName="id" displayFieldName="showName" required=false/]
+          
+          [#-- Initiatives  --]
+          [@customForm.elementsListComponent name="${customName}.initiatives" elementType="initiative" elementList=element.initiatives label="study.initiatives"  listName="initiativeList" keyFieldName="id" displayFieldName="composedName" required=false/]
         </div>
       [/#if]
       
       [#-- Milestones --]
-        [#if isOutcomeCaseStudy]
+      [#if isOutcomeCaseStudy && !action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
         <div class="form-group">          
           <label for="">[@s.text name="study.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.milestones.help" showIcon=false editable=editable/]</label>
           [#assign studyMilestoneLink = "studyMilestoneLink"]
           [#assign showMilestoneIndicator = (expectedStudy.projectExpectedStudyInfo.hasMilestones)!false /]
           [@customForm.radioFlat id="${studyMilestoneLink}-yes" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == true) cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
           [@customForm.radioFlat id="${studyMilestoneLink}-no" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == false) cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
-      </div>
+        </div>
       
-       <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == true)?string('block','none')}">
+        <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == true)?string('block','none')}">
           [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="study.milestones"  listName="milestones" keyFieldName="id" displayFieldName="composedNameWithFlagship" hasPrimary=true required=true/]
           <div class="note">[@s.text name="study.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
          <br/>      
@@ -367,27 +381,28 @@
          <div class="note">[@s.text name="study.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
          <br/>
         </div>--]
-        [/#if]
-      
+      [/#if]
 
       [#-- 7. Key Contributors  --]
       <div class="form-group">
         [#if isOutcomeCaseStudy || !fromProject]
           <label for="">[@s.text name="study.${isOutcomeCaseStudy?string('keyContributors','keyContributorsOther')}" /]:</label>
         [/#if]
-        [#-- CRPs --]
-        <span id="actualCRP" style="display: none;">${action.getLoggedCrp().acronym}</span>
-        [#if isOutcomeCaseStudy]
-        <div class="form-group simpleBox oicrContributingCRP">
-          [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false /]
-        </div>
-        [/#if]
-        [#-- Centers --]
-        [#if isOutcomeCaseStudy]
-        <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="study.keyContributors.centers"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
-          <div class="note">[@s.text name="study.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
-        </div>
+        [#if !action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
+          [#-- CRPs --]
+          <span id="actualCRP" style="display: none;">${action.getLoggedCrp().acronym}</span>
+          [#if isOutcomeCaseStudy]
+          <div class="form-group simpleBox oicrContributingCRP">
+            [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false /]
+          </div>
+          [/#if]
+          [#-- Centers --]
+          [#if isOutcomeCaseStudy]
+          <div class="form-group simpleBox">
+            [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="study.keyContributors.centers"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
+            <div class="note">[@s.text name="study.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+          </div>
+          [/#if]
         [/#if]
         [#-- Flagships or Levers (Alliance) --]
         [#if (isOutcomeCaseStudy || !fromProject) && !action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
