@@ -81,6 +81,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.EvidenceTag;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactAreaIndicator;
@@ -715,6 +716,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     if (this.expectedStudy != null) {
 
       Phase phase = this.phaseManager.getPhaseById(this.getActualPhase().getId());
+      this.expectedStudyDB = this.projectExpectedStudyManager.getProjectExpectedStudyById(this.expectedID);
+
+      if (this.expectedStudyDB.getProject() != null) {
+        this.projectID = this.expectedStudyDB.getProject().getId();
+        this.project = this.projectManager.getProjectById(this.projectID);
+        this.project.getProjecInfoPhase(phase);
+      }
 
       Path path = this.getAutoSaveFilePath();
 
@@ -1280,36 +1288,59 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           actionAreaOutcomeIndicatorList = this.actionAreaOutcomeIndicatorManager.getAll();
           for (ActionAreaOutcomeIndicator actionAreaOutcomeIndicator : actionAreaOutcomeIndicatorList) {
             String showName = "";
-            showName = String.valueOf(actionAreaOutcomeIndicator.getId());
+
+            if (actionAreaOutcomeIndicator.getActionArea() != null
+              && actionAreaOutcomeIndicator.getActionArea().getId() != null
+              && StringUtils.isNotBlank(actionAreaOutcomeIndicator.getActionArea().getName())) {
+              showName = "<b>" + actionAreaOutcomeIndicator.getActionArea().getName() + ":</b> ";
+            }
+
+            if (actionAreaOutcomeIndicator.getActionAreaOutcome() != null
+              && actionAreaOutcomeIndicator.getActionAreaOutcome().getId() != null
+              && StringUtils.isNotBlank(actionAreaOutcomeIndicator.getActionAreaOutcome().getSmoCode())) {
+              showName += "(<i>" + actionAreaOutcomeIndicator.getActionAreaOutcome().getSmoCode() + ")</i> ";
+            }
+
+            if (actionAreaOutcomeIndicator.getOutcomeIndicator() != null
+              && actionAreaOutcomeIndicator.getOutcomeIndicator().getId() != null && StringUtils
+                .isNotBlank(actionAreaOutcomeIndicator.getOutcomeIndicator().getOutcomeIndicatorStatement())) {
+              showName += " -  " + actionAreaOutcomeIndicator.getOutcomeIndicator().getOutcomeIndicatorStatement();
+            }
+
+            actionAreaOutcomeIndicator.setShowName(showName);
+          }
+
+          // Funding Sources
+          Set<Integer> statusTypes = new HashSet<>();
+          statusTypes.add(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
+          statusTypes.add(Integer.parseInt(FundingStatusEnum.Extended.getStatusId()));
+
+          if (this.getProject() != null) {
+            fundingSourceList = this.getProject().getProjectBudgets().stream()
+              .filter(pb -> pb != null && pb.getId() != null && pb.isActive() && pb.getFundingSource() != null
+                && pb.getFundingSource().getId() != null && pb.getFundingSource().isActive() && pb.getPhase() != null
+                && pb.getPhase().getId() != null && pb.getPhase().equals(this.getActualPhase()))
+              .map(pb -> pb.getFundingSource()).collect(Collectors.toList());
+          } else {
+            fundingSourceList = this.fundingSourceManager.getGlobalUnitFundingSourcesByPhaseAndTypes(
+              this.getCurrentGlobalUnit(), this.getActualPhase(), statusTypes);
+          }
+
+          for (FundingSource fundingSource : fundingSourceList) {
             /*
+             * String showName = "";
+             * showName = String.valueOf(fundingSource.getComposedName());
              * if (actionAreaOutcomeIndicator.getTarget_code() != null && !sdgTarget.getTarget_code().isEmpty()) {
              * showName = sdgTarget.getTarget_code();
              * }
              * if (sdgTarget.getTarget() != null && !sdgTarget.getTarget().isEmpty()) {
              * showName += " -  " + sdgTarget.getTarget();
              * }
+             * fundingSource.set(showName);
              */
-            actionAreaOutcomeIndicator.setShowName(showName);
+            fundingSource.getFundingSourceInfo(this.getActualPhase());
           }
 
-          // Funding Sources
-          fundingSourceList = this.getProject().getProjectBudgets().stream()
-            .filter(pb -> pb != null && pb.getId() != null && pb.isActive() && pb.getFundingSource() != null
-              && pb.getFundingSource().getId() != null && pb.getFundingSource().isActive())
-            .map(pb -> pb.getFundingSource()).collect(Collectors.toList());
-          /*
-           * for(FundingSource fundingSource : fundingSourceList) {
-           * String showName = "";
-           * showName = String.valueOf(fundingSource.getComposedName());
-           * if (actionAreaOutcomeIndicator.getTarget_code() != null && !sdgTarget.getTarget_code().isEmpty()) {
-           * showName = sdgTarget.getTarget_code();
-           * }
-           * if (sdgTarget.getTarget() != null && !sdgTarget.getTarget().isEmpty()) {
-           * showName += " -  " + sdgTarget.getTarget();
-           * }
-           * fundingSource.set(showName);
-           * }
-           */
 
           // Impact Area Indicators
           impactAreaIndicatorList = this.impactAreaIndicatorManager.findAll();
@@ -1515,13 +1546,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.institutions =
         this.institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
 
-      this.expectedStudyDB = this.projectExpectedStudyManager.getProjectExpectedStudyById(this.expectedID);
-
-      if (this.expectedStudyDB.getProject() != null) {
-        this.projectID = this.expectedStudyDB.getProject().getId();
-        this.project = this.projectManager.getProjectById(this.projectID);
-        this.project.getProjecInfoPhase(phase);
-      }
 
       if (this.project != null) {
         Project projectL = this.projectManager.getProjectById(this.projectID);
@@ -1792,15 +1816,19 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       this.expectedStudy.setProject(this.project);
 
-      this.saveCrps(this.expectedStudyDB, phase);
       if (!this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+        this.saveCrps(this.expectedStudyDB, phase);
         this.saveFlagships(this.expectedStudyDB, phase);
       }
       this.saveRegions(this.expectedStudyDB, phase);
       this.saveProjects(this.expectedStudyDB, phase);
-      this.saveSubIdos(this.expectedStudyDB, phase);
+      if (!this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+        this.saveSubIdos(this.expectedStudyDB, phase);
+      }
       this.saveInstitutions(this.expectedStudyDB, phase);
-      this.saveSrfTargets(this.expectedStudyDB, phase);
+      if (!this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+        this.saveSrfTargets(this.expectedStudyDB, phase);
+      }
 
       // AR 2018 Save Relations
       this.savePolicies(this.expectedStudyDB, phase);
@@ -1809,8 +1837,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveQuantifications(this.expectedStudyDB, phase);
 
       // AR 2019 Save
-      this.saveCenters(this.expectedStudyDB, phase);
-      this.saveMilestones(this.expectedStudyDB, phase);
+      if (!this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+        this.saveCenters(this.expectedStudyDB, phase);
+        this.saveMilestones(this.expectedStudyDB, phase);
+      }
 
       // AR2021 Save
       if (this.isSelectedPhaseAR2021()) {
@@ -1826,6 +1856,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.saveLevers(this.expectedStudyDB, phase);
         this.saveLeverOutcomes(this.expectedStudyDB, phase);
         this.saveSdgTargets(this.expectedStudyDB, phase);
+        this.saveActionAreaOutcomeIndicators(this.expectedStudyDB, phase);
+        this.saveFundingSources(this.expectedStudyDB, phase);
+        this.saveImpactAreaIndicators(this.expectedStudyDB, phase);
+        this.saveInitiatives(this.expectedStudyDB, phase);
       }
 
       boolean haveRegions = false;
@@ -2064,6 +2098,61 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
   /**
+   * Save Expected Studies Action Area Outcome Indicators Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  private void saveActionAreaOutcomeIndicators(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (this.isNotEmpty(projectExpectedStudy.getProjectExpectedStudyActionAreaOutcomeIndicators())) {
+      List<ProjectExpectedStudyActionAreaOutcomeIndicator> actionAreaOutcomeIndicatorPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyActionAreaOutcomeIndicators().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyActionAreaOutcomeIndicator actionAreaOutcomeIndicator : actionAreaOutcomeIndicatorPrev) {
+        if (this.expectedStudy.getActionAreaIndicators() == null
+          || !this.expectedStudy.getActionAreaIndicators().contains(actionAreaOutcomeIndicator)
+            && actionAreaOutcomeIndicator.getId() != null) {
+          this.projectExpectedStudyActionAreaOutcomeIndicatorManager
+            .deleteProjectExpectedStudyActionAreaOutcomeIndicator(actionAreaOutcomeIndicator.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.expectedStudy.getActionAreaIndicators() != null) {
+      for (ProjectExpectedStudyActionAreaOutcomeIndicator actionAreaOutcomeIndicator : this.expectedStudy
+        .getActionAreaIndicators()) {
+        if (actionAreaOutcomeIndicator != null && actionAreaOutcomeIndicator.getOutcomeIndicator() != null
+          && actionAreaOutcomeIndicator.getOutcomeIndicator().getId() != null) {
+          if (actionAreaOutcomeIndicator.getId() == null) {
+            ProjectExpectedStudyActionAreaOutcomeIndicator actionAreaOutcomeIndicatorSave =
+              new ProjectExpectedStudyActionAreaOutcomeIndicator();
+            actionAreaOutcomeIndicatorSave.setProjectExpectedStudy(projectExpectedStudy);
+            actionAreaOutcomeIndicatorSave.setPhase(phase);
+
+            ActionAreaOutcomeIndicator outcomeIndicator = this.actionAreaOutcomeIndicatorManager
+              .getActionAreaOutcomeIndicatorById(actionAreaOutcomeIndicator.getOutcomeIndicator().getId());
+
+            if (outcomeIndicator != null) {
+              actionAreaOutcomeIndicatorSave.setOutcomeIndicator(outcomeIndicator);
+
+              actionAreaOutcomeIndicatorSave = this.projectExpectedStudyActionAreaOutcomeIndicatorManager
+                .saveProjectExpectedStudyActionAreaOutcomeIndicator(actionAreaOutcomeIndicatorSave);
+              // This is to add ActionAreaOutcomeIndicatorSave to generate correct
+              // auditlog.
+              this.expectedStudy.getProjectExpectedStudyActionAreaOutcomeIndicators()
+                .add(actionAreaOutcomeIndicatorSave);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Save Expected Studies Centers/PPA partners Information
    * 
    * @param projectExpectedStudy
@@ -2196,6 +2285,56 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
   /**
+   * Save Expected Studies Funding Source Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  private void saveFundingSources(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (this.isNotEmpty(projectExpectedStudy.getProjectExpectedStudyFundingSources())) {
+      List<ProjectExpectedStudyFundingSource> fundingSourcePrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyFundingSources().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyFundingSource fundingSource : fundingSourcePrev) {
+        if (this.expectedStudy.getFundingSources() == null
+          || !this.expectedStudy.getFundingSources().contains(fundingSource) && fundingSource.getId() != null) {
+          this.projectExpectedStudyFundingSourceManager.deleteProjectExpectedStudyFundingSource(fundingSource.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.expectedStudy.getFundingSources() != null) {
+      for (ProjectExpectedStudyFundingSource fundingSource : this.expectedStudy.getFundingSources()) {
+        if (fundingSource != null && fundingSource.getFundingSource() != null
+          && fundingSource.getFundingSource().getId() != null) {
+          if (fundingSource.getId() == null) {
+            ProjectExpectedStudyFundingSource fundingSourceSave = new ProjectExpectedStudyFundingSource();
+            fundingSourceSave.setProjectExpectedStudy(projectExpectedStudy);
+            fundingSourceSave.setPhase(phase);
+
+            FundingSource funding =
+              this.fundingSourceManager.getFundingSourceById(fundingSource.getFundingSource().getId());
+
+            if (funding != null) {
+              fundingSourceSave.setFundingSource(funding);
+
+              fundingSourceSave =
+                this.projectExpectedStudyFundingSourceManager.saveProjectExpectedStudyFundingSource(fundingSourceSave);
+              // This is to add FundingSourceSave to generate correct
+              // auditlog.
+              this.expectedStudy.getProjectExpectedStudyFundingSources().add(fundingSourceSave);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Save Expected Studies Geographic Scopes Information
    * 
    * @param projectExpectedStudy
@@ -2239,6 +2378,107 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
 
+  }
+
+  /**
+   * Save Expected Studies Impact Area Indicators Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  private void saveImpactAreaIndicators(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (this.isNotEmpty(projectExpectedStudy.getProjectExpectedStudyImpactAreaIndicators())) {
+      List<ProjectExpectedStudyImpactAreaIndicator> impactAreaIndicatorPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyImpactAreaIndicators().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyImpactAreaIndicator impactAreaIndicator : impactAreaIndicatorPrev) {
+        if (this.expectedStudy.getImpactAreaIndicators() == null
+          || !this.expectedStudy.getImpactAreaIndicators().contains(impactAreaIndicator)
+            && impactAreaIndicator.getId() != null) {
+          this.projectExpectedStudyImpactAreaIndicatorManager
+            .deleteProjectExpectedStudyImpactAreaIndicator(impactAreaIndicator.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.expectedStudy.getImpactAreaIndicators() != null) {
+      for (ProjectExpectedStudyImpactAreaIndicator impactAreaIndicator : this.expectedStudy.getImpactAreaIndicators()) {
+        if (impactAreaIndicator != null && impactAreaIndicator.getImpactAreaIndicator() != null
+          && impactAreaIndicator.getImpactAreaIndicator().getId() != null) {
+          if (impactAreaIndicator.getId() == null) {
+            ProjectExpectedStudyImpactAreaIndicator impactAreaIndicatorSave =
+              new ProjectExpectedStudyImpactAreaIndicator();
+            impactAreaIndicatorSave.setProjectExpectedStudy(projectExpectedStudy);
+            impactAreaIndicatorSave.setPhase(phase);
+
+            ImpactAreaIndicator impactArea = this.impactAreaIndicatorManager
+              .getImpactAreaIndicatorById(impactAreaIndicator.getImpactAreaIndicator().getId());
+
+            if (impactArea != null) {
+              impactAreaIndicatorSave.setImpactAreaIndicator(impactArea);
+
+              impactAreaIndicatorSave = this.projectExpectedStudyImpactAreaIndicatorManager
+                .saveProjectExpectedStudyImpactAreaIndicator(impactAreaIndicatorSave);
+              // This is to add ImpactAreaIndicatorSave to generate correct
+              // auditlog.
+              this.expectedStudy.getProjectExpectedStudyImpactAreaIndicators().add(impactAreaIndicatorSave);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Expected Studies Action Area Outcome Indicators Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  private void saveInitiatives(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (this.isNotEmpty(projectExpectedStudy.getProjectExpectedStudyInitiatives())) {
+      List<ProjectExpectedStudyInitiative> initiativePrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyInitiatives().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyInitiative initiative : initiativePrev) {
+        if (this.expectedStudy.getInitiatives() == null
+          || !this.expectedStudy.getInitiatives().contains(initiative) && initiative.getId() != null) {
+          this.projectExpectedStudyInitiativeManager.deleteProjectExpectedStudyInitiative(initiative.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.expectedStudy.getInitiatives() != null) {
+      for (ProjectExpectedStudyInitiative initiative : this.expectedStudy.getInitiatives()) {
+        if (initiative != null && initiative.getInitiative() != null && initiative.getInitiative().getId() != null) {
+          if (initiative.getId() == null) {
+            ProjectExpectedStudyInitiative initiativeSave = new ProjectExpectedStudyInitiative();
+            initiativeSave.setProjectExpectedStudy(projectExpectedStudy);
+            initiativeSave.setPhase(phase);
+
+            GlobalUnit initiativeDb = this.globalUnitManager.getGlobalUnitById(initiative.getInitiative().getId());
+
+            if (initiativeDb != null) {
+              initiativeSave.setInitiative(initiativeDb);
+
+              initiativeSave =
+                this.projectExpectedStudyInitiativeManager.saveProjectExpectedStudyInitiative(initiativeSave);
+              // This is to add InitiativeSave to generate correct
+              // auditlog.
+              this.expectedStudy.getProjectExpectedStudyInitiatives().add(initiativeSave);
+            }
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -2949,6 +3189,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * Save Expected Studies Srf Targets Information
