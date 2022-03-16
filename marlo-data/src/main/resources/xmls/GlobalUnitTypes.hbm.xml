@@ -26,6 +26,10 @@
         <property name="modificationJustification" type="string">
             <column name="modification_justification" sql-type="TEXT" />
         </property>
+         <property name="visible" type="boolean">
+            <column name="is_visible" not-null="true" />
+        </property>
+        
         <set name="globalUnits" table="global_units" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="global_unit_type_id" not-null="true" />

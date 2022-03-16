@@ -1,0 +1,1 @@
+Alter table global_unit_types ADD is_visible tinyint(1) default 0;
