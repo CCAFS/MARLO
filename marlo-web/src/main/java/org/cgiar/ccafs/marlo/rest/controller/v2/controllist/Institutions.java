@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions.I
 import org.cgiar.ccafs.marlo.rest.dto.CountryOfficeRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionRequestDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionSimple2DTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionSimpleDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionsRelatedDTO;
@@ -268,9 +269,15 @@ public class Institutions {
     value = "${Institutions.institutions.all.value}", response = InstitutionDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<List<InstitutionDTO>> getAllInstitutions() {
-    ResponseEntity<List<InstitutionDTO>> resp = this.institutionItem.getAllInstitutions();
-    return resp;
+  public ResponseEntity<List<InstitutionSimple2DTO>> getAllInstitutions() {
+    try {
+      ResponseEntity<List<InstitutionSimple2DTO>> resp = this.institutionItem.getAllInstitutions();
+      return resp;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+
   }
 
   @ApiOperation(value = "${Institutions.institutionsRelated.all.value}", response = InstitutionsRelatedDTO.class,
