@@ -297,3 +297,7 @@ div#tl-adnyds {
   cursor:not-allowed;
   opacity: 0.4;
 }
+
+.closedLabel {
+  font-size: 70% !important;
+}
