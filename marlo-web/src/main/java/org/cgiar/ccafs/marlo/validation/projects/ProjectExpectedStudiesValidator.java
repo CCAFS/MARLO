@@ -452,6 +452,15 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
+        if (action.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+          if (action.isNotEmpty(projectExpectedStudy.getInitiatives())
+            && projectExpectedStudy.getInitiatives().size() > 3) {
+            action.addMessage(action.getText("Initiatives"));
+            action.addMissingField("study.initiatives");
+            action.getInvalidFields().put("list-expectedStudy.initiatives", InvalidFieldsMessages.WRONGVALUE);
+          }
+        }
+
         // Validate References Cited
         if (action.getActualPhase() != null && action.getActualPhase().getYear() == 2021) {
           if (action.isNotEmpty(projectExpectedStudy.getReferences())) {

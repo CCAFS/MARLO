@@ -356,7 +356,7 @@
           [@customForm.elementsListComponent name="${customName}.impactAreaIndicators" elementType="impactAreaIndicator" elementList=element.impactAreaIndicators label="study.impactAreaIndicators"  listName="impactAreaIndicatorList" keyFieldName="id" displayFieldName="showName" required=false/]
           
           [#-- Initiatives  --]
-          [@customForm.elementsListComponent name="${customName}.initiatives" elementType="initiative" elementList=element.initiatives label="study.initiatives"  listName="initiativeList" keyFieldName="id" displayFieldName="composedName" required=false/]
+          [@customForm.elementsListComponent name="${customName}.initiatives" elementType="initiative" elementList=element.initiatives label="study.initiatives"  listName="initiativeList" keyFieldName="id" displayFieldName="composedName" required=false maxLimit=3/]
         </div>
       [/#if]
       
