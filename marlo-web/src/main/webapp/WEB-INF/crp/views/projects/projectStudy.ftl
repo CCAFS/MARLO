@@ -81,7 +81,11 @@
           <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformation" /]</h3>
           
           <div id="caseStudiesBlock" class="">
-            [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0  /]
+            [#if !action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
+              [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0  /]
+            [#else]
+              [@studies.studyAllianceMacro element=(expectedStudy)!{} name="expectedStudy" index=0  /]
+            [/#if]
           </div> 
           
           [#-- Section Buttons & hidden inputs--]
