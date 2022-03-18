@@ -35,11 +35,13 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.Institutions;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionRequestDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionSimple2DTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionSimpleDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewInstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.InstitutionMapper;
+import org.cgiar.ccafs.marlo.rest.mappers.InstitutionSimpleMapper;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -83,6 +85,7 @@ public class InstitutionItem<T> {
   private GlobalUnitManager globalUnitManager;
   private InstitutionTypeManager institutionTypeManager;
   private CustomParameterManager customParameterManager;
+  private InstitutionSimpleMapper institutionSimpleMapper;
   protected APConfig config;
 
   private boolean messageSent;
@@ -92,8 +95,8 @@ public class InstitutionItem<T> {
   public InstitutionItem(InstitutionTypeManager institutionTypeManager, InstitutionManager institutionManager,
     InstitutionMapper institutionMapper, LocElementManager locElementManager,
     InstitutionLocationManager institutionLocationManager, PartnerRequestManager partnerRequestManager,
-    GlobalUnitManager globalUnitManager, CustomParameterManager customParameterManager, SendMailS sendMail,
-    APConfig config) {
+    InstitutionSimpleMapper institutionSimpleMapper, GlobalUnitManager globalUnitManager,
+    CustomParameterManager customParameterManager, SendMailS sendMail, APConfig config) {
     this.institutionTypeManager = institutionTypeManager;
     this.institutionLocationManager = institutionLocationManager;
     this.institutionManager = institutionManager;
@@ -102,6 +105,7 @@ public class InstitutionItem<T> {
     this.partnerRequestManager = partnerRequestManager;
     this.globalUnitManager = globalUnitManager;
     this.customParameterManager = customParameterManager;
+    this.institutionSimpleMapper = institutionSimpleMapper;
     this.sendMail = sendMail;
     this.config = config;
     // this.fieldErrors = new ArrayList<FieldErrorDTO>();
@@ -265,10 +269,12 @@ public class InstitutionItem<T> {
    * 
    * @return a List of institutions.
    */
-  public ResponseEntity<List<InstitutionDTO>> getAllInstitutions() {
-    List<Institution> institutions = this.institutionManager.findAll();
-    List<InstitutionDTO> institutionDTOs = institutions.stream()
-      .map(institution -> this.institutionMapper.institutionToInstitutionDTO(institution)).collect(Collectors.toList());
+  public ResponseEntity<List<InstitutionSimple2DTO>> getAllInstitutions() {
+    // List<Institution> institutions = this.institutionManager.findAll();
+    List<Institution> institutions = this.institutionManager.getAllInstitutionsSimple2();
+    List<InstitutionSimple2DTO> institutionDTOs = institutions.stream()
+      .map(institution -> this.institutionSimpleMapper.institutionToInstitutionSimple2DTO(institution))
+      .collect(Collectors.toList());
     return Optional.ofNullable(institutionDTOs).map(result -> new ResponseEntity<>(result, HttpStatus.OK))
       .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }

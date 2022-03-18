@@ -21,8 +21,11 @@ public class GlobalUnitType extends MarloAuditableEntity implements java.io.Seri
 
   private Set<GlobalUnit> globalUnits = new HashSet<GlobalUnit>(0);
   private List<GlobalUnit> globalUnitsList;
+  private boolean visible;
+
 
   private Set<Parameter> parameters = new HashSet<Parameter>(0);
+
 
   public GlobalUnitType() {
   }
@@ -71,6 +74,10 @@ public class GlobalUnitType extends MarloAuditableEntity implements java.io.Seri
     return result;
   }
 
+  public boolean isVisible() {
+    return visible;
+  }
+
   public void setGlobalUnits(Set<GlobalUnit> globalUnits) {
     this.globalUnits = globalUnits;
   }
@@ -85,6 +92,10 @@ public class GlobalUnitType extends MarloAuditableEntity implements java.io.Seri
 
   public void setParameters(Set<Parameter> parameters) {
     this.parameters = parameters;
+  }
+
+  public void setVisible(boolean visible) {
+    this.visible = visible;
   }
 
 

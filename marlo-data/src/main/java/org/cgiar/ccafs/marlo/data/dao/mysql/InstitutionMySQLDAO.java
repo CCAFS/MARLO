@@ -18,7 +18,10 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.InstitutionDAO;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionDictionary;
+import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionSource;
+import org.cgiar.ccafs.marlo.data.model.InstitutionType;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -163,6 +166,53 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
       data.setType(map.get("type").toString());
       data.setHqLocation(map.get("hqLocation").toString());
       data.setHqLocationISOalpha2(map.get("hqLocationISOalpha2").toString());
+      institutions.add(data);
+    }
+    return institutions;
+  }
+
+  @Override
+  public List<Institution> getAllInstitutionsSimple2() {
+    String sqlquery =
+      "Select inst.id, inst.name, inst.acronym, inst.website_link,insttypes.id as typeid,insttypes.name as type,"
+        + "GROUP_CONCAT( CONCAT(loc.iso_numeric,'-',loc.name,'-',loc.iso_alpha_2,'-',instloc.is_headquater) SEPARATOR ';') AS locations from institutions inst "
+        + "INNER JOIN institution_types insttypes ON insttypes.id=inst.institution_type_id "
+        + "INNER JOIN institutions_locations instloc ON instloc.institution_id=inst.id  "
+        + "INNER JOIN loc_elements loc ON loc.id=instloc.loc_element_id "
+        + "GROUP BY inst.id, inst.name, inst.acronym, inst.website_link,insttypes.id";
+    List<Institution> institutions = new ArrayList<>();
+
+    List<Map<String, Object>> queryValue = super.findCustomQuery(sqlquery);
+    Institution data = null;
+    InstitutionType type = null;
+    InstitutionLocation location = null;
+    ArrayList<InstitutionLocation> locationList = null;
+    LocElement loc = null;
+    for (Map<String, Object> map : queryValue) {
+      data = new Institution();
+      data.setName(map.get("name").toString());
+      data.setAcronym(map.get("acronym") != null ? map.get("acronym").toString() : "");
+      data.setId(Long.parseLong(map.get("id").toString()));
+      data.setWebsiteLink(map.get("website_link") != null ? map.get("website_link").toString() : "");
+      type = new InstitutionType();
+      type.setId(Long.parseLong(map.get("typeid").toString()));
+      type.setName(map.get("type").toString());
+      data.setInstitutionType(type);
+      locationList = new ArrayList<InstitutionLocation>();
+      for (String locations : map.get("locations") == null ? new ArrayList<String>()
+        : Arrays.asList(map.get("locations").toString().split(";"))) {
+        location = new InstitutionLocation();
+        loc = new LocElement();
+        loc.setIsoNumeric(Long.parseLong(locations.split("-")[0]));
+        loc.setIsoAlpha2(locations.split("-")[2]);
+        loc.setName(locations.split("-")[1]);
+        location.setHeadquater((locations.split("-")[3]).equals("1") ? true : false);
+        location.setInstitution(data);
+        location.setLocElement(loc);
+        locationList.add(location);
+
+      }
+      data.setLocations(locationList);
       institutions.add(data);
     }
     return institutions;

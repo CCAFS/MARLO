@@ -64,6 +64,8 @@ public interface InstitutionManager {
 
   public List<Institution> getAllInstitutionsSimple();
 
+  public List<Institution> getAllInstitutionsSimple2();
+
   /**
    * This method gets a institution object by a given institution identifier.
    * 

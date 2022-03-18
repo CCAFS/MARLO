@@ -70,6 +70,8 @@ public interface InstitutionDAO {
 
   public List<Institution> getAllInstitutionsSimple();
 
+  public List<Institution> getAllInstitutionsSimple2();
+
 
   /**
    * This method saves the information of the given institution
