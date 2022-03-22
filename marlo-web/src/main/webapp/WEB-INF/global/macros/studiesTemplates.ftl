@@ -1090,13 +1090,6 @@
         </div>
       </div>
       [/#if]
-
-      [#--  Contact person    --]
-      [#if isOutcomeCaseStudy]
-      <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.contacts" help="study.contacts.help" className="" helpIcon=false required=editable && !(isPolicy && stageProcessOne) editable=editable /]
-      </div>
-      [/#if]
     </div>
 
     [#-- Part II Mapping to Alliance strategy and structure --]
@@ -1114,7 +1107,7 @@
         [@customForm.elementsListComponent name="${customName}.fundingSources" elementType="fundingSource" elementList=element.fundingSources label="study.fundingSources"  listName="fundingSourceList" keyFieldName="id" displayFieldName="composedName" required=false/]
           
         [#-- Sdg Targets  --]
-        [@customForm.elementsListComponent name="${customName}.sdgTargets" elementType="sdgTarget" elementList=element.sdgTargets label="study.sdgTargets"  listName="sdgTargetList" keyFieldName="id" displayFieldName="showName" required=false/]
+        [@customForm.elementsListComponent name="${customName}.sdgTargets" elementType="sdgTarget" elementList=element.sdgTargets label="study.sdgTargets" maxLimit=3 listName="sdgTargetList" keyFieldName="id" displayFieldName="showName" required=false/]
       </div>
     </div>
 
@@ -1124,14 +1117,23 @@
       <hr>
       <div class="form-group" simpleBox>
         [#-- Action Area Outcome Indicators  --]
-        [@customForm.elementsListComponent name="${customName}.actionAreaIndicators" elementType="outcomeIndicator" elementList=element.actionAreaIndicators label="study.actionAreaOutcomeIndicators"  listName="actionAreaOutcomeIndicatorList" keyFieldName="id" displayFieldName="showName" required=false/]
+        [@customForm.elementsListComponent name="${customName}.actionAreaIndicators" elementType="outcomeIndicator" elementList=element.actionAreaIndicators label="study.actionAreaOutcomeIndicators"  listName="actionAreaOutcomeIndicatorList" keyFieldName="id" displayFieldName="showName" required=false maxLimit=2/]
         
         [#-- Impact Area Indicators  --]
-        [@customForm.elementsListComponent name="${customName}.impactAreaIndicators" elementType="impactAreaIndicator" elementList=element.impactAreaIndicators label="study.impactAreaIndicators"  listName="impactAreaIndicatorList" keyFieldName="id" displayFieldName="showName" required=false/]
+        [@customForm.elementsListComponent name="${customName}.impactAreaIndicators" elementType="impactAreaIndicator" elementList=element.impactAreaIndicators label="study.impactAreaIndicators"  listName="impactAreaIndicatorList" keyFieldName="id" displayFieldName="showName" required=false maxLimit=2/]
         
         [#-- Initiatives  --]
-        [@customForm.elementsListComponent name="${customName}.initiatives" elementType="initiative" elementList=element.initiatives label="study.initiatives"  listName="initiativeList" keyFieldName="id" displayFieldName="composedName" required=false maxLimit=3/]
+        [@customForm.elementsListComponent name="${customName}.initiatives" elementType="initiative" elementList=element.initiatives label="study.initiatives"  listName="initiativeList" keyFieldName="id" displayFieldName="composedName" required=false maxLimit=2/]
       </div>
+    </div>
+
+    <div class="borderBox">
+      [#--  Contact person    --]
+      [#if isOutcomeCaseStudy]
+      <div class="form-group stageProcessOne">
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.contacts" help="study.contacts.help" className="" helpIcon=false required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+      </div>
+      [/#if]
     </div>
   </div>
 [/#macro]
