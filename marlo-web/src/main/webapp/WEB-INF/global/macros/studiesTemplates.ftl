@@ -450,12 +450,14 @@
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         <div class="form-group">
-          <span id="warningEmptyReferencesTag" class="errorTag glyphicon glyphicon-info-sign" style="position: relative; left: 750px;" title="" aria-describedby="ui-id-5"> </span>
-          [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
-
           [#assign isAR2021 = (action.isSelectedPhaseAR2021()!false)]
 
+          [#if isAR2021]<span id="warningEmptyReferencesTag" class="errorTag glyphicon glyphicon-info-sign" style="position: relative; left: 750px;" title="" aria-describedby="ui-id-5"> </span>[/#if]
+          [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+
+
           [#if isAR2021]
+            <label style="margin-top: 5px;">[@s.text name="${customName}.multireferences"][/@s.text]</label>
             <div class="referenceBlock ">
               <div class="referenceList">
                 <div class="row">
