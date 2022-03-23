@@ -1713,24 +1713,44 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         RepIndGenderYouthFocusLevel focusLevel = this.focusLevelManager.getRepIndGenderYouthFocusLevelById(
           this.expectedStudy.getProjectExpectedStudyInfo().getGenderLevel().getId());
         this.expectedStudy.getProjectExpectedStudyInfo().setGenderLevel(focusLevel);
+
+        if (focusLevel != null && focusLevel.getId() != null
+          && !StringUtils.containsAny(focusLevel.getPowbName(), "1", "2")) {
+          this.expectedStudy.getProjectExpectedStudyInfo().setDescribeGender(null);
+        }
       }
 
       if (this.expectedStudy.getProjectExpectedStudyInfo().getCapdevLevel() != null) {
         RepIndGenderYouthFocusLevel focusLevel = this.focusLevelManager.getRepIndGenderYouthFocusLevelById(
           this.expectedStudy.getProjectExpectedStudyInfo().getCapdevLevel().getId());
         this.expectedStudy.getProjectExpectedStudyInfo().setCapdevLevel(focusLevel);
+
+        if (focusLevel != null && focusLevel.getId() != null
+          && !StringUtils.containsAny(focusLevel.getPowbName(), "1", "2")) {
+          this.expectedStudy.getProjectExpectedStudyInfo().setDescribeCapdev(null);
+        }
       }
 
       if (this.expectedStudy.getProjectExpectedStudyInfo().getYouthLevel() != null) {
         RepIndGenderYouthFocusLevel focusLevel = this.focusLevelManager
           .getRepIndGenderYouthFocusLevelById(this.expectedStudy.getProjectExpectedStudyInfo().getYouthLevel().getId());
         this.expectedStudy.getProjectExpectedStudyInfo().setYouthLevel(focusLevel);
+
+        if (focusLevel != null && focusLevel.getId() != null
+          && !StringUtils.containsAny(focusLevel.getPowbName(), "1", "2")) {
+          this.expectedStudy.getProjectExpectedStudyInfo().setDescribeYouth(null);
+        }
       }
 
       if (this.expectedStudy.getProjectExpectedStudyInfo().getClimateChangeLevel() != null) {
         RepIndGenderYouthFocusLevel focusLevel = this.focusLevelManager.getRepIndGenderYouthFocusLevelById(
           this.expectedStudy.getProjectExpectedStudyInfo().getClimateChangeLevel().getId());
         this.expectedStudy.getProjectExpectedStudyInfo().setClimateChangeLevel(focusLevel);
+
+        if (focusLevel != null && focusLevel.getId() != null
+          && !StringUtils.containsAny(focusLevel.getPowbName(), "1", "2")) {
+          this.expectedStudy.getProjectExpectedStudyInfo().setDescribeClimateChange(null);
+        }
       }
 
       if (this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy() != null) {
