@@ -39,6 +39,9 @@ public class InstitutionType extends MarloBaseEntity implements java.io.Serializ
   private Boolean old;
 
   @Expose
+  private Boolean isLegacy;
+
+  @Expose
   private Boolean subDepartmentActive;
 
   @Expose
@@ -85,6 +88,10 @@ public class InstitutionType extends MarloBaseEntity implements java.io.Serializ
 
   public Set<Institution> getInstitutions() {
     return institutions;
+  }
+
+  public Boolean getIsLegacy() {
+    return isLegacy;
   }
 
   @Override
@@ -150,6 +157,10 @@ public class InstitutionType extends MarloBaseEntity implements java.io.Serializ
 
   public void setInstitutions(Set<Institution> institutions) {
     this.institutions = institutions;
+  }
+
+  public void setIsLegacy(Boolean isLegacy) {
+    this.isLegacy = isLegacy;
   }
 
   @Override
