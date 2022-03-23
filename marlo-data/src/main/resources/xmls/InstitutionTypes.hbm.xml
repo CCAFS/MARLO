@@ -20,7 +20,10 @@
     </property>
 		<property name="old" type="java.lang.Boolean">
 			<column name="old" />
-		</property>		
+		</property>
+		<property name="isLegacy" type="java.lang.Boolean">
+			<column name="is_legacy" />
+		</property>
 		<property name="description" type="string">
 			<column name="description" sql-type="TEXT" />
 		</property>

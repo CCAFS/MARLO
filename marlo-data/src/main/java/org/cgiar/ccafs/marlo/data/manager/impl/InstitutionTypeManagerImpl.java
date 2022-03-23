@@ -38,38 +38,35 @@ public class InstitutionTypeManagerImpl implements InstitutionTypeManager {
   @Inject
   public InstitutionTypeManagerImpl(InstitutionTypeDAO institutionTypeDAO) {
     this.institutionTypeDAO = institutionTypeDAO;
-
-
   }
 
   @Override
   public void deleteInstitutionType(long institutionTypeId) {
-
     institutionTypeDAO.deleteInstitutionType(institutionTypeId);
   }
 
   @Override
   public boolean existInstitutionType(long institutionTypeID) {
-
     return institutionTypeDAO.existInstitutionType(institutionTypeID);
   }
 
   @Override
   public List<InstitutionType> findAll() {
-
     return institutionTypeDAO.findAll();
+  }
 
+  @Override
+  public List<InstitutionType> findAllIATITypes() {
+    return this.institutionTypeDAO.findAllIATITypes();
   }
 
   @Override
   public InstitutionType getInstitutionTypeById(long institutionTypeID) {
-
     return institutionTypeDAO.find(institutionTypeID);
   }
 
   @Override
   public InstitutionType saveInstitutionType(InstitutionType institutionType) {
-
     return institutionTypeDAO.save(institutionType);
   }
 

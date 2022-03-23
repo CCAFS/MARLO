@@ -54,6 +54,12 @@ public interface InstitutionTypeDAO {
    */
   public List<InstitutionType> findAll();
 
+  /**
+   * This method gets a list of institutionType that are IATI
+   * 
+   * @return a list from InstitutionType; null if no exist records
+   */
+  public List<InstitutionType> findAllIATITypes();
 
   /**
    * This method saves the information of the given institutionType

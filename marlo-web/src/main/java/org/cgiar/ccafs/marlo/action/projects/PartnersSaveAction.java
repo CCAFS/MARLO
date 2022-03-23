@@ -81,7 +81,7 @@ public class PartnersSaveAction extends BaseAction {
   // Managers
   private LocElementManager locationManager;
 
-  private InstitutionTypeManager institutionManager;
+  private InstitutionTypeManager institutionTypeManager;
   private InstitutionManager institutionsManager;
   private ProjectManager projectManager;
   private FundingSourceManager fundingSourceManager;
@@ -120,7 +120,7 @@ public class PartnersSaveAction extends BaseAction {
     ReportSynthesisManager reportSynthesisManager) {
     super(config);
     this.locationManager = locationManager;
-    this.institutionManager = institutionManager;
+    this.institutionTypeManager = institutionManager;
     this.projectManager = projectManager;
     this.institutionsManager = institutionsManager;
     this.partnerRequestManager = partnerRequestManager;
@@ -314,8 +314,11 @@ public class PartnersSaveAction extends BaseAction {
 
     this.countriesList = locationManager.findAll().stream()
       .filter(c -> c.isActive() && c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
-    this.institutionTypesList =
-      institutionManager.findAll().stream().filter(c -> c.isActive() && !c.getOld()).collect(Collectors.toList());;
+    /*
+     * this.institutionTypesList =
+     * institutionTypeManager.findAll().stream().filter(c -> c.isActive() && !c.getOld()).collect(Collectors.toList());
+     */
+    this.institutionTypesList = institutionTypeManager.findAllIATITypes();
     institutions = institutionsManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
     institutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
@@ -368,8 +371,8 @@ public class PartnersSaveAction extends BaseAction {
 
     partnerRequest.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
     partnerRequestModifications.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
-    partnerRequest.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));
-    partnerRequestModifications.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));
+    partnerRequest.setInstitutionType(institutionTypeManager.getInstitutionTypeById(partnerTypeId));
+    partnerRequestModifications.setInstitutionType(institutionTypeManager.getInstitutionTypeById(partnerTypeId));
     partnerRequest.setOffice(false);
     partnerRequestModifications.setOffice(false);
     partnerRequest.setPhase(this.getActualPhase());

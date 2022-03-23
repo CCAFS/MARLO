@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
@@ -457,37 +458,62 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           elaborationOutcomeImpactStatement =
             htmlParser.plainTextToHtml(projectExpectedStudyInfo.getElaborationOutcomeImpactStatement());
         }
-        // References cited
-        if (("AR".equals(this.getSelectedPhase().getName()) && 2021 == this.getSelectedPhase().getYear())
-          || this.getSelectedPhase().getYear() > 2021) {
-          if (this.isNotEmpty(projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyReferences())) {
-            List<ProjectExpectedStudyReference> currentPhaseReferences =
-              projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyReferences().stream()
-                .filter(l -> l != null && l.getId() != null && l.getPhase() != null && l.getPhase().getId() != null
-                  && l.getPhase().equals(this.getSelectedPhase()))
-                .collect(Collectors.toList());
-            for (ProjectExpectedStudyReference studyReferenceObject : currentPhaseReferences) {
-              if (StringUtils.isNotEmpty(studyReferenceObject.getReference())) {
-                String reference = StringUtils.trimToEmpty(studyReferenceObject.getReference());
-                referenceText = referenceText.append("• ").append(reference).append("\\r\\n");
-              }
-            }
-          } else {
-            referenceText = referenceText.append(notProvided);
-          }
-        } else {
-          if (StringUtils.isNotEmpty(
-            projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getReferencesText())) {
 
-            /*
-             * Get short url calling tinyURL service
-             */
-            referenceText = referenceText.append(
-              projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getReferencesText());
-          } else {
-            referenceText = referenceText.append(notProvided);
+        // References cited
+        if (this.isNotEmpty(projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyReferences())) {
+          List<ProjectExpectedStudyReference> currentPhaseReferences =
+            projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyReferences().stream()
+              .filter(l -> l != null && l.getId() != null && l.getPhase() != null && l.getPhase().getId() != null
+                && l.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList());
+          for (int i = 0; i < currentPhaseReferences.size(); i++) {
+            ProjectExpectedStudyReference studyReferenceObject = currentPhaseReferences.get(i);
+
+            if (!StringUtils.isAllBlank(studyReferenceObject.getReference(), studyReferenceObject.getLink())) {
+              referenceText = referenceText.append("<p>•[").append(i + 1).append("] ")
+                .append(StringUtils.trimToEmpty(studyReferenceObject.getReference())).append(" (")
+                .append(urlShortener.getShortUrlService(StringUtils.trimToEmpty(studyReferenceObject.getLink())))
+                .append(")</p>");
+            }
           }
+        } else if (StringUtils.isNotEmpty(
+          projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getReferencesText())) {
+          String referencePlain =
+            projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getReferencesText();
+          referencePlain = RegExUtils.replaceAll(referencePlain, "(\r|\n)+", "</p><p>");
+          referenceText = referenceText.append("<p>").append(referencePlain).append("</p>");
+        } else {
+          referenceText = referenceText.append(notProvided);
         }
+        /*
+         * if (("AR".equals(this.getSelectedPhase().getName()) && 2021 == this.getSelectedPhase().getYear())
+         * || this.getSelectedPhase().getYear() > 2021) {
+         * if (this.isNotEmpty(projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyReferences()))
+         * {
+         * List<ProjectExpectedStudyReference> currentPhaseReferences =
+         * projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyReferences().stream()
+         * .filter(l -> l != null && l.getId() != null && l.getPhase() != null && l.getPhase().getId() != null
+         * && l.getPhase().equals(this.getSelectedPhase()))
+         * .collect(Collectors.toList());
+         * for (ProjectExpectedStudyReference studyReferenceObject : currentPhaseReferences) {
+         * if (StringUtils.isNotEmpty(studyReferenceObject.getReference())) {
+         * String reference = StringUtils.trimToEmpty(studyReferenceObject.getReference());
+         * referenceText = referenceText.append("• ").append(reference).append("</br>");
+         * }
+         * }
+         * } else {
+         * referenceText = referenceText.append(notProvided);
+         * }
+         * } else {
+         * if (StringUtils.isNotEmpty(
+         * projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getReferencesText())) {
+         * referenceText = referenceText.append(
+         * projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getReferencesText());
+         * } else {
+         * referenceText = referenceText.append(notProvided);
+         * }
+         * }
+         */
 
         // TODO: Add Quantifications in Pentaho/MySQL
 
