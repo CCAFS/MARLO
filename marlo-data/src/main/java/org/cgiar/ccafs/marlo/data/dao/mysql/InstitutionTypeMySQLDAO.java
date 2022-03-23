@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -66,6 +67,17 @@ public class InstitutionTypeMySQLDAO extends AbstractMarloDAO<InstitutionType, L
     }
     return null;
 
+  }
+
+  @Override
+  public List<InstitutionType> findAllIATITypes() {
+    String query = "from " + InstitutionType.class.getName() + " where is_legacy = 0";
+    List<InstitutionType> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+
+    return null;
   }
 
   @Override

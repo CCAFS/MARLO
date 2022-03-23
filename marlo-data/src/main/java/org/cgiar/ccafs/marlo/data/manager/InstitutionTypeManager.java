@@ -51,6 +51,12 @@ public interface InstitutionTypeManager {
    */
   public List<InstitutionType> findAll();
 
+  /**
+   * This method gets a list of institutionType that are IATI
+   * 
+   * @return a list from InstitutionType; null if no exist records
+   */
+  public List<InstitutionType> findAllIATITypes();
 
   /**
    * This method gets a institutionType object by a given institutionType identifier.

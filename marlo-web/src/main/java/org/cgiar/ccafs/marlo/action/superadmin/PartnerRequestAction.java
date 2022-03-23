@@ -287,10 +287,14 @@ public class PartnerRequestAction extends BaseAction {
     } else {
       this.countryOfficesList = new ArrayList<>();
     }
+
     this.countriesList = this.locElementManager.findAll().stream()
       .filter(c -> c.isActive() && c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
-    this.institutionTypesList = this.institutionTypeManager.findAll().stream()
-      .filter(it -> it.isActive() && !it.getOld()).collect(Collectors.toList());
+    /*
+     * this.institutionTypesList = this.institutionTypeManager.findAll().stream()
+     * .filter(it -> it.isActive() && !it.getOld()).collect(Collectors.toList());
+     */
+    this.institutionTypesList = this.institutionTypeManager.findAllIATITypes();
     this.countriesList.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
   }
 
