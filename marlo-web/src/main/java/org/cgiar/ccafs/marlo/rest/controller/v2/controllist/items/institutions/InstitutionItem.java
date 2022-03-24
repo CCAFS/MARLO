@@ -408,12 +408,17 @@ public class InstitutionItem<T> {
     StringBuilder message = new StringBuilder();
 
     // message subject
+    GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(partnerRequest.getCrp().getId());
 
     subject = this.getText("marloRequestInstitution.clarisa.email.subject",
       new String[] {entityAcronym.toUpperCase(), institutionName});
     String ccEmail = user.getEmail();
     if (partnerRequest.getExternalUserMail() != null) {
       ccEmail = partnerRequest.getExternalUserMail();
+      if (globalUnit != null ? globalUnit.getGlobalUnitType().getId().longValue() == APConstants.GLOBAL_UNIT_OFFICES
+        : false) {
+        ccEmail = ccEmail + ", " + user.getEmail();
+      }
     }
     // Message content
     message.append(partnerRequest.getExternalUserName() == null ? (user.getFirstName() + " " + user.getLastName() + " ")
@@ -448,7 +453,7 @@ public class InstitutionItem<T> {
     message.append("This request was sent through CLARISA API  </br>");
     message.append("</br>");
     try {
-      GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(partnerRequest.getCrp().getId());
+
       CustomParameter parameter = customParameterManager
         .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_EMAIL_NOTIFICATIONS, globalUnit.getId());
       Boolean crpNotification = parameter == null ? true : parameter.getValue().equalsIgnoreCase("true");
