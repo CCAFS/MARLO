@@ -856,7 +856,7 @@
         [#-- Levers (Alliance) --]
         [#if isOutcomeCaseStudy]
           <div class="form-group simpleBox">
-            [@customForm.elementsListComponent name="${customName}.levers" elementType="allianceLever" elementList=element.levers label="study.keyContributors.flagships"  listName="leverList" keyFieldName="id" displayFieldName="showName" required=false /]
+            [@customForm.elementsListComponent name="${customName}.levers" elementType="allianceLever" elementList=element.levers label="study.keyContributors.flagships"  listName="leverList" keyFieldName="id" displayFieldName="composedName" required=false /]
           </div>
         [/#if]
         [#-- Regions --]
@@ -1099,7 +1099,7 @@
       <hr>
       <div class="form-group" simpleBox>
         [#-- Lever Outcomes  --]
-        [@customForm.elementsListComponent name="${customName}.leverOutcomes" elementType="leverOutcome" elementList=element.leverOutcomes label="study.leverOutcomes" maxLimit=3 listName="leverOutcomeList" keyFieldName="id" displayFieldName="showName" required=false/]
+        [@customForm.elementsListComponent name="${customName}.leverOutcomes" elementType="leverOutcome" elementList=element.leverOutcomes label="study.leverOutcomes" maxLimit=3 listName="leverOutcomeList" keyFieldName="id" displayFieldName="composedName" required=false/]
      
         [#-- Nexus  --]
         [@customForm.elementsListComponent name="${customName}.nexus" elementType="nexus" elementList=element.nexus label="study.nexus" maxLimit=3 listName="nexusList" keyFieldName="id" displayFieldName="name" required=false/]
@@ -1108,7 +1108,7 @@
         [@customForm.elementsListComponent name="${customName}.fundingSources" elementType="fundingSource" elementList=element.fundingSources label="study.fundingSources"  listName="fundingSourceList" keyFieldName="id" displayFieldName="composedName" required=false/]
           
         [#-- Sdg Targets  --]
-        [@customForm.elementsListComponent name="${customName}.sdgTargets" elementType="sdgTarget" elementList=element.sdgTargets label="study.sdgTargets" maxLimit=3 listName="sdgTargetList" keyFieldName="id" displayFieldName="showName" required=false/]
+        [@customForm.elementsListComponent name="${customName}.sdgTargets" elementType="sdgTarget" elementList=element.sdgTargets label="study.sdgTargets" maxLimit=3 listName="sdgTargetList" keyFieldName="id" displayFieldName="composedName" required=false/]
       </div>
     </div>
 
@@ -1118,10 +1118,10 @@
       <hr>
       <div class="form-group" simpleBox>
         [#-- Action Area Outcome Indicators  --]
-        [@customForm.elementsListComponent name="${customName}.actionAreaIndicators" elementType="outcomeIndicator" elementList=element.actionAreaIndicators label="study.actionAreaOutcomeIndicators"  listName="actionAreaOutcomeIndicatorList" keyFieldName="id" displayFieldName="showName" required=false maxLimit=2/]
+        [@customForm.elementsListComponent name="${customName}.actionAreaIndicators" elementType="outcomeIndicator" elementList=element.actionAreaIndicators label="study.actionAreaOutcomeIndicators"  listName="actionAreaOutcomeIndicatorList" keyFieldName="id" displayFieldName="composedName" required=false maxLimit=2/]
         
         [#-- Impact Area Indicators  --]
-        [@customForm.elementsListComponent name="${customName}.impactAreaIndicators" elementType="impactAreaIndicator" elementList=element.impactAreaIndicators label="study.impactAreaIndicators"  listName="impactAreaIndicatorList" keyFieldName="id" displayFieldName="showName" required=false maxLimit=2/]
+        [@customForm.elementsListComponent name="${customName}.impactAreaIndicators" elementType="impactAreaIndicator" elementList=element.impactAreaIndicators label="study.impactAreaIndicators"  listName="impactAreaIndicatorList" keyFieldName="id" displayFieldName="composedName" required=false maxLimit=2/]
         
         [#-- Initiatives  --]
         [@customForm.elementsListComponent name="${customName}.initiatives" elementType="initiative" elementList=element.initiatives label="study.initiatives"  listName="initiativeList" keyFieldName="id" displayFieldName="composedName" required=false maxLimit=2/]
@@ -1129,10 +1129,13 @@
     </div>
 
     <div class="borderBox">
-      [#--  Contact person    --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
+        [#--  Contact person    --]
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.contacts" help="study.contacts.help" className="" helpIcon=false required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+        
+        [#--  Internal status    --]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.internalStatus" i18nkey="study.internalStatus" help="study.internalStatus.help" className="" helpIcon=false editable=editable /]
       </div>
       [/#if]
     </div>
