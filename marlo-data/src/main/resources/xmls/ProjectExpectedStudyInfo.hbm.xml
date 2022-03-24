@@ -155,6 +155,9 @@
     <property name="otherCrossCuttingSelection" type="string">
       <column name="other_cross_cutting_selection" sql-type="TEXT" />
     </property>
+    <property name="internalStatus" type="string">
+      <column name="internal_status" sql-type="TEXT" />
+    </property>
     <property name="isPublic" type="java.lang.Boolean">
       <column name="is_public" />
     </property>

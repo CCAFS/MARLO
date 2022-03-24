@@ -159,6 +159,7 @@ import javax.inject.Inject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
 
@@ -938,13 +939,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
         // Expected Study Funding Source List Autosave
         if (this.expectedStudy.getFundingSources() != null) {
+          FundingSource fs = null;
           for (ProjectExpectedStudyFundingSource projectExpectedStudyFundingSource : this.expectedStudy
             .getFundingSources()) {
             if (projectExpectedStudyFundingSource != null
               && projectExpectedStudyFundingSource.getFundingSource() != null
               && projectExpectedStudyFundingSource.getFundingSource().getId() != null) {
-              projectExpectedStudyFundingSource.setFundingSource(this.fundingSourceManager
-                .getFundingSourceById(projectExpectedStudyFundingSource.getFundingSource().getId()));
+              fs = this.fundingSourceManager
+                .getFundingSourceById(projectExpectedStudyFundingSource.getFundingSource().getId());
+              fs.getFundingSourceInfo(this.getActualPhase());
+              projectExpectedStudyFundingSource.setFundingSource(fs);
             }
           }
         }
@@ -1214,7 +1218,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           if (this.expectedStudy.getProjectExpectedStudyFundingSources() != null) {
             this.expectedStudy
               .setFundingSources(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyFundingSources().stream()
-                .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+                .filter(o -> o != null && o.getId() != null && o.getFundingSource() != null
+                  && o.getFundingSource().getId() != null && o.getFundingSource().getFundingSourceInfo(phase) != null
+                  && o.getPhase().getId().equals(phase.getId()))
+                .collect(Collectors.toList())));
           }
 
           // Expected Study Impact Area Indicators List
@@ -1229,155 +1236,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             this.expectedStudy.setInitiatives(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyInitiatives()
               .stream().filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
           }
-
-          // Nexus
-          nexusList = nexusManager.findAll();
-
-          // Lever Outcomes
-          leverOutcomeList = leverOutcomeManager.findAll();
-          if (this.isNotEmpty(this.leverOutcomeList)) {
-            leverOutcomeList = leverOutcomeList.stream().sorted((i1, i2) -> i1.getId().compareTo(i2.getId()))
-              .collect(Collectors.toList());
-
-            for (AllianceLeverOutcome leverOutcome : leverOutcomeList) {
-              String showName = "";
-              if (StringUtils.isNotBlank(leverOutcome.getIndicator())) {
-                showName += "Lever " + StringUtils.trimToEmpty(leverOutcome.getIndicator());
-              }
-              if (StringUtils.isNotBlank(leverOutcome.getName())) {
-                showName += " - " + StringUtils.trimToEmpty(leverOutcome.getName());
-              }
-
-              leverOutcome.setShowName(showName);
-            }
-          }
-
-          // Levers
-          leverList = allianceLeverManager.findAll();
-          if (this.isNotEmpty(this.leverList)) {
-            leverList =
-              leverList.stream().sorted((i1, i2) -> i1.getId().compareTo(i2.getId())).collect(Collectors.toList());
-
-            for (AllianceLever lever : leverList) {
-              String showName = "";
-              if (StringUtils.isNotBlank(lever.getIndicator())) {
-                showName += "Lever " + StringUtils.trimToEmpty(lever.getIndicator());
-              }
-              if (StringUtils.isNotBlank(lever.getName())) {
-                showName += " - " + StringUtils.trimToEmpty(lever.getName());
-              }
-
-              lever.setShowName(showName);
-            }
-          }
-
-          // SGD Targets
-          sdgTargetList = sdgTargetsManager.findAll();
-          for (SdgTargets sdgTarget : sdgTargetList) {
-            String showName = "";
-            if (sdgTarget.getTarget_code() != null && !sdgTarget.getTarget_code().isEmpty()) {
-              showName = sdgTarget.getTarget_code();
-            }
-            if (sdgTarget.getTarget() != null && !sdgTarget.getTarget().isEmpty()) {
-              showName += " -  " + sdgTarget.getTarget();
-            }
-            sdgTarget.setShowName(showName);
-          }
-
-          // Action Area Outcome Indicators
-          actionAreaOutcomeIndicatorList = this.actionAreaOutcomeIndicatorManager.getAll();
-          for (ActionAreaOutcomeIndicator actionAreaOutcomeIndicator : actionAreaOutcomeIndicatorList) {
-            String showName = "";
-
-            if (actionAreaOutcomeIndicator.getActionArea() != null
-              && actionAreaOutcomeIndicator.getActionArea().getId() != null
-              && StringUtils.isNotBlank(actionAreaOutcomeIndicator.getActionArea().getName())) {
-              showName = "<b>" + actionAreaOutcomeIndicator.getActionArea().getName() + ":</b> ";
-            }
-
-            if (actionAreaOutcomeIndicator.getActionAreaOutcome() != null
-              && actionAreaOutcomeIndicator.getActionAreaOutcome().getId() != null
-              && StringUtils.isNotBlank(actionAreaOutcomeIndicator.getActionAreaOutcome().getSmoCode())) {
-              showName += "(<i>" + actionAreaOutcomeIndicator.getActionAreaOutcome().getSmoCode() + ")</i> ";
-            }
-
-            if (actionAreaOutcomeIndicator.getOutcomeIndicator() != null
-              && actionAreaOutcomeIndicator.getOutcomeIndicator().getId() != null && StringUtils
-                .isNotBlank(actionAreaOutcomeIndicator.getOutcomeIndicator().getOutcomeIndicatorStatement())) {
-              showName += " -  " + actionAreaOutcomeIndicator.getOutcomeIndicator().getOutcomeIndicatorStatement();
-            }
-
-            actionAreaOutcomeIndicator.setShowName(showName);
-          }
-
-          // Funding Sources
-          Set<Integer> statusTypes = new HashSet<>();
-          statusTypes.add(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
-          statusTypes.add(Integer.parseInt(FundingStatusEnum.Extended.getStatusId()));
-
-          if (this.getProject() != null) {
-            fundingSourceList = this.getProject().getProjectBudgets().stream()
-              .filter(pb -> pb != null && pb.getId() != null && pb.isActive() && pb.getFundingSource() != null
-                && pb.getFundingSource().getId() != null && pb.getFundingSource().isActive() && pb.getPhase() != null
-                && pb.getPhase().getId() != null && pb.getPhase().equals(this.getActualPhase()))
-              .map(pb -> pb.getFundingSource()).collect(Collectors.toList());
-          } else {
-            fundingSourceList = this.fundingSourceManager.getGlobalUnitFundingSourcesByPhaseAndTypes(
-              this.getCurrentGlobalUnit(), this.getActualPhase(), statusTypes);
-          }
-
-          for (FundingSource fundingSource : fundingSourceList) {
-            /*
-             * String showName = "";
-             * showName = String.valueOf(fundingSource.getComposedName());
-             * if (actionAreaOutcomeIndicator.getTarget_code() != null && !sdgTarget.getTarget_code().isEmpty()) {
-             * showName = sdgTarget.getTarget_code();
-             * }
-             * if (sdgTarget.getTarget() != null && !sdgTarget.getTarget().isEmpty()) {
-             * showName += " -  " + sdgTarget.getTarget();
-             * }
-             * fundingSource.set(showName);
-             */
-            fundingSource.getFundingSourceInfo(this.getActualPhase());
-          }
-
-
-          // Impact Area Indicators
-          impactAreaIndicatorList = this.impactAreaIndicatorManager.findAll();
-          for (ImpactAreaIndicator impactAreaIndicator : impactAreaIndicatorList) {
-            String showName = "";
-            showName = impactAreaIndicator.getIndicatorStatement();
-            /*
-             * if (actionAreaOutcomeIndicator.getTarget_code() != null && !sdgTarget.getTarget_code().isEmpty()) {
-             * showName = sdgTarget.getTarget_code();
-             * }
-             * if (sdgTarget.getTarget() != null && !sdgTarget.getTarget().isEmpty()) {
-             * showName += " -  " + sdgTarget.getTarget();
-             * }
-             */
-            impactAreaIndicator.setShowName(showName);
-          }
-
-          // Initiatives
-          initiativeList = this.globalUnitManager.findAll().stream()
-            .filter(gu -> gu != null && gu.getId() != null && gu.getGlobalUnitType() != null
-              && gu.getGlobalUnitType().getId() != null
-              && gu.getGlobalUnitType().getId().equals(APConstants.GLOBAL_UNIT_INITIATIVES))
-            .collect(Collectors.toList());
-          /*
-           * for(GlobalUnit initiatives : initiativeList) {
-           * String showName = "";
-           * showName = initiatives.getComposedName();
-           * if (actionAreaOutcomeIndicator.getTarget_code() != null && !sdgTarget.getTarget_code().isEmpty()) {
-           * showName = sdgTarget.getTarget_code();
-           * }
-           * if (sdgTarget.getTarget() != null && !sdgTarget.getTarget().isEmpty()) {
-           * showName += " -  " + sdgTarget.getTarget();
-           * }
-           * initiatives.setShowName(showName);
-           * }
-           */
-
         }
       }
 
@@ -1462,6 +1320,52 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         centers = centersTemp;
       }
 
+      if (this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+        // Nexus
+        nexusList = nexusManager.findAll();
+
+        // Lever Outcomes
+        leverOutcomeList = leverOutcomeManager.findAll();
+
+        // Levers
+        leverList = allianceLeverManager.findAll();
+
+        // SGD Targets
+        sdgTargetList = sdgTargetsManager.findAll();
+
+        // Action Area Outcome Indicators
+        actionAreaOutcomeIndicatorList = this.actionAreaOutcomeIndicatorManager.getAll();
+
+        // Funding Sources
+        Set<Integer> statusTypes = new HashSet<>();
+        statusTypes.add(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
+        statusTypes.add(Integer.parseInt(FundingStatusEnum.Extended.getStatusId()));
+
+        if (this.getProject() != null) {
+          fundingSourceList = this.getProject().getProjectBudgets().stream()
+            .filter(pb -> pb != null && pb.getId() != null && pb.isActive() && pb.getFundingSource() != null
+              && pb.getFundingSource().getId() != null && pb.getFundingSource().isActive() && pb.getPhase() != null
+              && pb.getPhase().getId() != null && pb.getPhase().equals(this.getActualPhase()))
+            .map(pb -> pb.getFundingSource()).distinct().collect(Collectors.toList());
+        } else {
+          fundingSourceList = this.fundingSourceManager.getGlobalUnitFundingSourcesByPhaseAndTypes(
+            this.getCurrentGlobalUnit(), this.getActualPhase(), statusTypes);
+        }
+
+        for (FundingSource fs : ListUtils.emptyIfNull(fundingSourceList)) {
+          fs.getFundingSourceInfo(phase);
+        }
+
+        // Impact Area Indicators
+        impactAreaIndicatorList = this.impactAreaIndicatorManager.findAll();
+
+        // Initiatives
+        initiativeList = this.globalUnitManager.findAll().stream()
+          .filter(gu -> gu != null && gu.getId() != null && gu.getGlobalUnitType() != null
+            && gu.getGlobalUnitType().getId() != null
+            && gu.getGlobalUnitType().getId().equals(APConstants.GLOBAL_UNIT_INITIATIVES))
+          .collect(Collectors.toList());
+      }
 
       this.tags = this.evidenceTagManager.findAll();
       this.innovationsList = new ArrayList<>();
@@ -1494,7 +1398,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               this.policyList.add(projectPolicy);
             }
           }
-
         }
       }
 

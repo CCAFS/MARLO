@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import com.google.gson.annotations.Expose;
+import org.apache.commons.lang3.StringUtils;
 
 public class AllianceLever extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
 
@@ -32,23 +33,22 @@ public class AllianceLever extends MarloBaseEntity implements java.io.Serializab
   @Expose
   private String indicator;
 
-  private String showName;
-
   public AllianceLever() {
   }
 
   public String getComposedName() {
     String composedName = "";
     if (this.getId() == null || this.getId() == -1) {
-      return "";
+      return "<Not defined>";
     } else {
-      if (this.getIndicator() != null && !this.getIndicator().isEmpty()) {
-        composedName.concat(this.getIndicator() + " ");
+      if (StringUtils.isNotBlank(this.getIndicator())) {
+        composedName += "Lever " + StringUtils.trimToEmpty(this.getIndicator());
       }
-      if (this.getName() != null && !this.getName().isEmpty()) {
-        composedName.concat(this.getName() + " ");
+      if (StringUtils.isNotBlank(this.getName())) {
+        composedName += " - " + StringUtils.trimToEmpty(this.getName());
       }
     }
+
     return composedName;
   }
 
@@ -83,10 +83,6 @@ public class AllianceLever extends MarloBaseEntity implements java.io.Serializab
     return this.name;
   }
 
-  public String getShowName() {
-    return showName;
-  }
-
   @Override
   public boolean isActive() {
     return true;
@@ -104,7 +100,4 @@ public class AllianceLever extends MarloBaseEntity implements java.io.Serializab
     this.name = name;
   }
 
-  public void setShowName(String showName) {
-    this.showName = showName;
-  }
 }
