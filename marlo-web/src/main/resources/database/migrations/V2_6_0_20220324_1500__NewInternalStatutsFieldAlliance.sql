@@ -1,0 +1,1 @@
+alter table project_expected_study_info add internal_status text;

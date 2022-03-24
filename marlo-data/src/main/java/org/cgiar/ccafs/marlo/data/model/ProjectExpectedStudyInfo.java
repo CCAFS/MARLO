@@ -158,6 +158,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   @Expose
   private String editableLink;
 
+  @Expose
+  private String internalStatus;
+
 
   public ProjectExpectedStudyInfo() {
   }
@@ -230,16 +233,13 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return describeYouth;
   }
 
-
   public String getEditableLink() {
     return editableLink;
   }
 
-
   public String getElaborationOutcomeImpactStatement() {
     return elaborationOutcomeImpactStatement;
   }
-
 
   public EvidenceTag getEvidenceTag() {
     return evidenceTag;
@@ -258,6 +258,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
 
   public Boolean getHasMilestones() {
     return hasMilestones;
+  }
+
+
+  public String getInternalStatus() {
+    return internalStatus;
   }
 
 
@@ -283,6 +288,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return sb.toString();
   }
 
+
   public String getMELIAPublications() {
     return MELIAPublications;
   }
@@ -291,7 +297,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public String getModificationJustification() {
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -310,6 +315,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return otherCrossCuttingSelection;
   }
 
+
   public String getOtherStudyType() {
     return otherStudyType;
   }
@@ -321,7 +327,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public String getOutcomeImpactStatement() {
     return outcomeImpactStatement;
   }
-
 
   public String getOutcomeStory() {
     return outcomeStory;
@@ -342,10 +347,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return projectExpectedStudy;
   }
 
+
   public String getQuantification() {
     return quantification;
   }
-
 
   public FileDB getReferencesFile() {
     return referencesFile;
@@ -381,6 +386,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return repIndStageProcess;
   }
 
+
   public RepIndStageStudy getRepIndStageStudy() {
     return repIndStageStudy;
   }
@@ -388,7 +394,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public String getScopeComments() {
     return scopeComments;
   }
-
 
   public GeneralStatus getStatus() {
     return status;
@@ -427,6 +432,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return youthLevel;
   }
 
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -439,7 +445,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public boolean isActive() {
     return true;
   }
-
 
   public void setCapdevLevel(RepIndGenderYouthFocusLevel capdevLevel) {
     this.capdevLevel = capdevLevel;
@@ -460,10 +465,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.commissioningStudy = commissioningStudy;
   }
 
+
   public void setComunicationsMaterial(String comunicationsMaterial) {
     this.comunicationsMaterial = comunicationsMaterial;
   }
-
 
   public void setContacts(String contacts) {
     this.contacts = contacts;
@@ -473,6 +478,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public void setDescribeCapdev(String describeCapdev) {
     this.describeCapdev = describeCapdev;
   }
+
 
   public void setDescribeClimateChange(String describeClimateChange) {
     this.describeClimateChange = describeClimateChange;
@@ -508,6 +514,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
 
   public void setHasMilestones(Boolean hasMilestones) {
     this.hasMilestones = hasMilestones;
+  }
+
+  public void setInternalStatus(String internalStatus) {
+    this.internalStatus = internalStatus;
   }
 
   public void setIsContribution(Boolean isContribution) {
@@ -696,6 +706,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.setOtherStudyType(projectExpectedStudyInfoUpdate.getOtherStudyType());
     this.setHasCovidAnalysis(projectExpectedStudyInfoUpdate.getHasCovidAnalysis());
     this.setHasMilestones(projectExpectedStudyInfoUpdate.getHasMilestones());
+    this.setInternalStatus(projectExpectedStudyInfoUpdate.getInternalStatus());
   }
 
 }
