@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
+import org.apache.commons.lang3.StringUtils;
 
 public class AllianceLeverOutcome extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
 
@@ -39,8 +40,6 @@ public class AllianceLeverOutcome extends MarloBaseEntity implements java.io.Ser
   @Expose
   private String indicator;
 
-  private String showName;
-
   private Set<ProjectExpectedStudyLeverOutcome> projectExpectedStudyLeverOutcomes =
     new HashSet<ProjectExpectedStudyLeverOutcome>(0);
 
@@ -52,15 +51,16 @@ public class AllianceLeverOutcome extends MarloBaseEntity implements java.io.Ser
   public String getComposedName() {
     String composedName = "";
     if (this.getId() == null || this.getId() == -1) {
-      return "";
+      return "<Not defined>";
     } else {
-      if (this.getIndicator() != null && !this.getIndicator().isEmpty()) {
-        composedName.concat(this.getIndicator() + " ");
+      if (StringUtils.isNotBlank(this.getIndicator())) {
+        composedName += "Lever " + StringUtils.trimToEmpty(this.getIndicator());
       }
-      if (this.getName() != null && !this.getName().isEmpty()) {
-        composedName.concat(this.getName() + " ");
+      if (StringUtils.isNotBlank(this.getName())) {
+        composedName += " - " + StringUtils.trimToEmpty(this.getName());
       }
     }
+
     return composedName;
   }
 
@@ -75,10 +75,7 @@ public class AllianceLeverOutcome extends MarloBaseEntity implements java.io.Ser
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
-
     sb.append("Id : ").append(this.getId());
-
-
     return sb.toString();
   }
 
@@ -103,10 +100,6 @@ public class AllianceLeverOutcome extends MarloBaseEntity implements java.io.Ser
     return projectExpectedStudyLeverOutcomes;
   }
 
-  public String getShowName() {
-    return showName;
-  }
-
   public List<ProjectExpectedStudyLeverOutcome> getStudyLeverOutcomes() {
     return studyLeverOutcomes;
   }
@@ -123,10 +116,10 @@ public class AllianceLeverOutcome extends MarloBaseEntity implements java.io.Ser
     return true;
   }
 
+
   public void setIndicator(String indicator) {
     this.indicator = indicator;
   }
-
 
   public void setLeverCategory(AllianceLever leverCategory) {
     this.leverCategory = leverCategory;
@@ -145,13 +138,8 @@ public class AllianceLeverOutcome extends MarloBaseEntity implements java.io.Ser
     this.projectExpectedStudyLeverOutcomes = projectExpectedStudyLeverOutcomes;
   }
 
-  public void setShowName(String showName) {
-    this.showName = showName;
-  }
-
   public void setStudyLeverOutcomes(List<ProjectExpectedStudyLeverOutcome> studyLeverOutcomes) {
     this.studyLeverOutcomes = studyLeverOutcomes;
   }
-
 
 }

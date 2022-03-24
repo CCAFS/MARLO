@@ -19,6 +19,8 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class ActionAreaOutcomeIndicator extends MarloAuditableEntity implements java.io.Serializable {
 
   /**
@@ -28,7 +30,7 @@ public class ActionAreaOutcomeIndicator extends MarloAuditableEntity implements 
   public ActionAreaOutcome actionAreaOutcome;
   private OutcomeIndicator outcomeIndicator;
   private ActionArea actionArea;
-  private String showName;
+
 
   public ActionArea getActionArea() {
     return actionArea;
@@ -38,12 +40,32 @@ public class ActionAreaOutcomeIndicator extends MarloAuditableEntity implements 
     return actionAreaOutcome;
   }
 
-  public OutcomeIndicator getOutcomeIndicator() {
-    return outcomeIndicator;
+  public String getComposedName() {
+    String composedName = "";
+    if (this.getId() == null || this.getId() == -1) {
+      return "<Not defined>";
+    } else {
+      if (this.getActionArea() != null && this.getActionArea().getId() != null
+        && StringUtils.isNotBlank(this.getActionArea().getName())) {
+        composedName = "<b>" + this.getActionArea().getName() + ":</b> ";
+      }
+
+      if (this.getActionAreaOutcome() != null && this.getActionAreaOutcome().getId() != null
+        && StringUtils.isNotBlank(this.getActionAreaOutcome().getSmoCode())) {
+        composedName += "(<i>" + this.getActionAreaOutcome().getSmoCode() + ")</i> ";
+      }
+
+      if (this.getOutcomeIndicator() != null && this.getOutcomeIndicator().getId() != null
+        && StringUtils.isNotBlank(this.getOutcomeIndicator().getOutcomeIndicatorStatement())) {
+        composedName += " -  " + this.getOutcomeIndicator().getOutcomeIndicatorStatement();
+      }
+    }
+
+    return composedName;
   }
 
-  public String getShowName() {
-    return showName;
+  public OutcomeIndicator getOutcomeIndicator() {
+    return outcomeIndicator;
   }
 
 
@@ -51,18 +73,11 @@ public class ActionAreaOutcomeIndicator extends MarloAuditableEntity implements 
     this.actionArea = actionArea;
   }
 
-
   public void setActionAreaOutcome(ActionAreaOutcome actionAreaOutcome) {
     this.actionAreaOutcome = actionAreaOutcome;
   }
 
-
   public void setOutcomeIndicator(OutcomeIndicator outcomeIndicator) {
     this.outcomeIndicator = outcomeIndicator;
   }
-
-  public void setShowName(String showName) {
-    this.showName = showName;
-  }
-
 }

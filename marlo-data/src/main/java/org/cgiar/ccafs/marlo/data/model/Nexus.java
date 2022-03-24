@@ -40,6 +40,10 @@ public class Nexus extends MarloBaseEntity implements java.io.Serializable {
   public Nexus() {
   }
 
+  public String getComposedName() {
+    return this.getName();
+  }
+
   public String getName() {
     return name;
   }
