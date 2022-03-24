@@ -602,7 +602,9 @@ public class PoliciesAction extends BaseAction {
         }
 
         // if(!this.isPMU()) {
-        this.ensureAllIndicatorsOnSynthesis();
+        if (this.isSelectedPhaseAR2021()) {
+          this.ensureAllIndicatorsOnSynthesis();
+        }
         // }
 
         /*

@@ -1425,63 +1425,56 @@ public class PartnershipsAction extends BaseAction {
     }
 
     // Save form Information
+    /*
+     * if (external.getMainAreas() != null) {
+     * for (ReportSynthesisKeyPartnershipExternalMainArea area : external.getMainAreas()) {
+     * if (area.getId() == null) {
+     * ReportSynthesisKeyPartnershipExternalMainArea areaSave = new ReportSynthesisKeyPartnershipExternalMainArea();
+     * areaSave.setReportSynthesisKeyPartnershipExternal(externalDB);
+     * RepIndPartnershipMainArea mainArea =
+     * repIndPartnershipMainAreaManager.getRepIndPartnershipMainAreaById(area.getPartnerArea().getId());
+     * areaSave.setPartnerArea(mainArea);
+     * reportSynthesisKeyPartnershipExternalMainAreaManager
+     * .saveReportSynthesisKeyPartnershipExternalMainArea(areaSave);
+     * }
+     * }
+     */
+
+    boolean hasOther = false;
     if (external.getMainAreas() != null) {
       for (ReportSynthesisKeyPartnershipExternalMainArea area : external.getMainAreas()) {
+        RepIndPartnershipMainArea mainArea =
+          repIndPartnershipMainAreaManager.getRepIndPartnershipMainAreaById(area.getPartnerArea().getId());
         if (area.getId() == null) {
-
           ReportSynthesisKeyPartnershipExternalMainArea areaSave = new ReportSynthesisKeyPartnershipExternalMainArea();
 
           areaSave.setReportSynthesisKeyPartnershipExternal(externalDB);
-
-          RepIndPartnershipMainArea mainArea =
-            repIndPartnershipMainAreaManager.getRepIndPartnershipMainAreaById(area.getPartnerArea().getId());
-
           areaSave.setPartnerArea(mainArea);
 
+          if (mainArea != null && mainArea.getId() != null && mainArea.getId().equals(APConstants.OTHER_MAIN_AREA)) {
+            hasOther = true;
+          }
 
           reportSynthesisKeyPartnershipExternalMainAreaManager
             .saveReportSynthesisKeyPartnershipExternalMainArea(areaSave);
-
-
-        }
-      }
-
-      boolean hasOther = false;
-      if (external.getMainAreas() != null) {
-        for (ReportSynthesisKeyPartnershipExternalMainArea area : external.getMainAreas()) {
-          RepIndPartnershipMainArea mainArea =
-            repIndPartnershipMainAreaManager.getRepIndPartnershipMainAreaById(area.getPartnerArea().getId());
-          if (area.getId() == null) {
-            ReportSynthesisKeyPartnershipExternalMainArea areaSave =
-              new ReportSynthesisKeyPartnershipExternalMainArea();
-
-            areaSave.setReportSynthesisKeyPartnershipExternal(externalDB);
-            areaSave.setPartnerArea(mainArea);
-
-            if (mainArea != null && mainArea.getId() != null && mainArea.getId().equals(APConstants.OTHER_MAIN_AREA)) {
-              hasOther = true;
-            }
-
-            reportSynthesisKeyPartnershipExternalMainAreaManager
-              .saveReportSynthesisKeyPartnershipExternalMainArea(areaSave);
-          } else {
-            if (mainArea != null && mainArea.getId() != null && mainArea.getId().equals(APConstants.OTHER_MAIN_AREA)) {
-              hasOther = true;
-            }
+        } else {
+          if (mainArea != null && mainArea.getId() != null && mainArea.getId().equals(APConstants.OTHER_MAIN_AREA)) {
+            hasOther = true;
           }
         }
       }
+    }
 
-      if (hasOther) {
-        if (external.getOther() != null) {
-          externalDB.setOther(external.getOther());
-        } else {
-          externalDB.setOther(null);
-        }
+    if (hasOther) {
+      if (external.getOther() != null) {
+        externalDB.setOther(external.getOther());
       } else {
         externalDB.setOther(null);
       }
+    } else {
+      externalDB.setOther(null);
     }
+    // }
   }
 
 
