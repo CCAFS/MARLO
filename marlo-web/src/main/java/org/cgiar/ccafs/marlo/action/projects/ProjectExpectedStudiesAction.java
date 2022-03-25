@@ -160,6 +160,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
 
@@ -1719,15 +1720,18 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       this.expectedStudy.setProject(this.project);
 
+      this.saveCrps(this.expectedStudyDB, phase, this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS));
+
       if (!this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
-        this.saveCrps(this.expectedStudyDB, phase);
         this.saveFlagships(this.expectedStudyDB, phase);
       }
+
       this.saveRegions(this.expectedStudyDB, phase);
       this.saveProjects(this.expectedStudyDB, phase);
       if (!this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
         this.saveSubIdos(this.expectedStudyDB, phase);
       }
+
       this.saveInstitutions(this.expectedStudyDB, phase);
       if (!this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
         this.saveSrfTargets(this.expectedStudyDB, phase);
@@ -1755,12 +1759,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       // Save specifity tables
       if (this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
-        this.saveNexus(this.expectedStudyDB, phase);
         this.saveLevers(this.expectedStudyDB, phase);
         this.saveLeverOutcomes(this.expectedStudyDB, phase);
+        this.saveNexus(this.expectedStudyDB, phase);
+        this.saveFundingSources(this.expectedStudyDB, phase);
         this.saveSdgTargets(this.expectedStudyDB, phase);
         this.saveActionAreaOutcomeIndicators(this.expectedStudyDB, phase);
-        this.saveFundingSources(this.expectedStudyDB, phase);
         this.saveImpactAreaIndicators(this.expectedStudyDB, phase);
         this.saveInitiatives(this.expectedStudyDB, phase);
       }
@@ -2042,10 +2046,24 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .deleteProjectExpectedStudyActionAreaOutcomeIndicator(actionAreaOutcomeIndicator.getId());
         }
       }
+
+      // if radiobutton selected not "yes"
+      if (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
+        && (this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasActionAreaOutcomeIndicatorContribution() == null
+          || !this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasActionAreaOutcomeIndicatorContribution())) {
+        for (ProjectExpectedStudyActionAreaOutcomeIndicator actionAreaOutcomeIndicator : projectExpectedStudy
+          .getProjectExpectedStudyActionAreaOutcomeIndicators().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
+          this.projectExpectedStudyActionAreaOutcomeIndicatorManager
+            .deleteProjectExpectedStudyActionAreaOutcomeIndicator(actionAreaOutcomeIndicator.getId());
+        }
+      }
     }
 
     // Save form Information
-    if (this.expectedStudy.getActionAreaIndicators() != null) {
+    if (this.expectedStudy.getActionAreaIndicators() != null
+      || (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null && BooleanUtils.isTrue(
+        this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasActionAreaOutcomeIndicatorContribution()))) {
       for (ProjectExpectedStudyActionAreaOutcomeIndicator actionAreaOutcomeIndicator : this.expectedStudy
         .getActionAreaIndicators()) {
         if (actionAreaOutcomeIndicator != null && actionAreaOutcomeIndicator.getOutcomeIndicator() != null
@@ -2124,7 +2142,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
    * @param projectExpectedStudy
    * @param phase
    */
-  public void saveCrps(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+  public void saveCrps(ProjectExpectedStudy projectExpectedStudy, Phase phase, boolean isAlliance) {
 
     // Search and deleted form Information
     if (projectExpectedStudy.getProjectExpectedStudyCrps() != null
@@ -2138,23 +2156,37 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           this.projectExpectedStudyCrpManager.deleteProjectExpectedStudyCrp(studyCrp.getId());
         }
       }
+
+      // only alliance, if radiobutton selected not "yes"
+      if (isAlliance && this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
+        && (this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasLegacyCrpContribution() == null
+          || !this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasLegacyCrpContribution())) {
+        for (ProjectExpectedStudyCrp studyCrp : projectExpectedStudy.getProjectExpectedStudyCrps().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
+          this.projectExpectedStudyCrpManager.deleteProjectExpectedStudyCrp(studyCrp.getId());
+        }
+      }
     }
 
+
     // Save form Information
-    if (this.expectedStudy.getCrps() != null) {
-      for (ProjectExpectedStudyCrp studyCrp : this.expectedStudy.getCrps()) {
-        if (studyCrp.getId() == null) {
-          ProjectExpectedStudyCrp studyCrpSave = new ProjectExpectedStudyCrp();
-          studyCrpSave.setProjectExpectedStudy(projectExpectedStudy);
-          studyCrpSave.setPhase(phase);
+    if (!isAlliance || (isAlliance && this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
+      && BooleanUtils.isTrue(this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasLegacyCrpContribution()))) {
+      if (this.expectedStudy.getCrps() != null) {
+        for (ProjectExpectedStudyCrp studyCrp : this.expectedStudy.getCrps()) {
+          if (studyCrp.getId() == null) {
+            ProjectExpectedStudyCrp studyCrpSave = new ProjectExpectedStudyCrp();
+            studyCrpSave.setProjectExpectedStudy(projectExpectedStudy);
+            studyCrpSave.setPhase(phase);
 
-          GlobalUnit globalUnit = this.crpManager.getGlobalUnitById(studyCrp.getGlobalUnit().getId());
+            GlobalUnit globalUnit = this.crpManager.getGlobalUnitById(studyCrp.getGlobalUnit().getId());
 
-          studyCrpSave.setGlobalUnit(globalUnit);
+            studyCrpSave.setGlobalUnit(globalUnit);
 
-          this.projectExpectedStudyCrpManager.saveProjectExpectedStudyCrp(studyCrpSave);
-          // This is to add studyCrpSave to generate correct auditlog.
-          this.expectedStudy.getProjectExpectedStudyCrps().add(studyCrpSave);
+            this.projectExpectedStudyCrpManager.saveProjectExpectedStudyCrp(studyCrpSave);
+            // This is to add studyCrpSave to generate correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyCrps().add(studyCrpSave);
+          }
         }
       }
     }
@@ -2325,10 +2357,24 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .deleteProjectExpectedStudyImpactAreaIndicator(impactAreaIndicator.getId());
         }
       }
+
+      // if radiobutton selected not "yes"
+      if (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
+        && (this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasImpactAreaIndicatorContribution() == null
+          || !this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasImpactAreaIndicatorContribution())) {
+        for (ProjectExpectedStudyImpactAreaIndicator impactAreaIndicator : projectExpectedStudy
+          .getProjectExpectedStudyImpactAreaIndicators().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
+          this.projectExpectedStudyImpactAreaIndicatorManager
+            .deleteProjectExpectedStudyImpactAreaIndicator(impactAreaIndicator.getId());
+        }
+      }
     }
 
     // Save form Information
-    if (this.expectedStudy.getImpactAreaIndicators() != null) {
+    if (this.expectedStudy.getImpactAreaIndicators() != null
+      || (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null && BooleanUtils
+        .isTrue(this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasImpactAreaIndicatorContribution()))) {
       for (ProjectExpectedStudyImpactAreaIndicator impactAreaIndicator : this.expectedStudy.getImpactAreaIndicators()) {
         if (impactAreaIndicator != null && impactAreaIndicator.getImpactAreaIndicator() != null
           && impactAreaIndicator.getImpactAreaIndicator().getId() != null) {
@@ -2376,10 +2422,22 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           this.projectExpectedStudyInitiativeManager.deleteProjectExpectedStudyInitiative(initiative.getId());
         }
       }
+
+      // if radiobutton selected not "yes"
+      if (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
+        && (this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasInitiativeContribution() == null
+          || !this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasInitiativeContribution())) {
+        for (ProjectExpectedStudyInitiative initiative : projectExpectedStudy.getProjectExpectedStudyInitiatives()
+          .stream().filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId()))
+          .collect(Collectors.toList())) {
+          this.projectExpectedStudyInitiativeManager.deleteProjectExpectedStudyInitiative(initiative.getId());
+        }
+      }
     }
 
     // Save form Information
-    if (this.expectedStudy.getInitiatives() != null) {
+    if (this.expectedStudy.getInitiatives() != null || (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
+      && BooleanUtils.isTrue(this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasInitiativeContribution()))) {
       for (ProjectExpectedStudyInitiative initiative : this.expectedStudy.getInitiatives()) {
         if (initiative != null && initiative.getInitiative() != null && initiative.getInitiative().getId() != null) {
           if (initiative.getId() == null) {
@@ -2518,10 +2576,23 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .deleteProjectExpectedStudyLeverOutcome(studyLeverOutcome.getId());
         }
       }
+
+      // if radiobutton selected not "yes"
+      if (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
+        && (this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasLeverOutcomeContribution() == null
+          || !this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasLeverOutcomeContribution())) {
+        for (ProjectExpectedStudyLeverOutcome studyLeverOutcome : projectExpectedStudy
+          .getProjectExpectedStudyLeverOutcomes().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
+          this.projectExpectedStudyLeverOutcomeManager
+            .deleteProjectExpectedStudyLeverOutcome(studyLeverOutcome.getId());
+        }
+      }
     }
 
     // Save form Information
-    if (this.expectedStudy.getLeverOutcomes() != null) {
+    if (this.expectedStudy.getLeverOutcomes() != null || (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
+      && BooleanUtils.isTrue(this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasLeverOutcomeContribution()))) {
       for (ProjectExpectedStudyLeverOutcome studyLeverOutcome : this.expectedStudy.getLeverOutcomes()) {
         if (studyLeverOutcome != null && studyLeverOutcome.getLeverOutcome() != null
           && studyLeverOutcome.getLeverOutcome().getId() != null) {
@@ -2761,10 +2832,21 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           this.projectExpectedStudyNexusManager.deleteProjectExpectedStudyNexus(nexus.getId());
         }
       }
+
+      // if radiobutton selected not "yes"
+      if (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
+        && (this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasNexusContribution() == null
+          || !this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasNexusContribution())) {
+        for (ProjectExpectedStudyNexus nexus : projectExpectedStudy.getProjectExpectedStudyNexus().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
+          this.projectExpectedStudyNexusManager.deleteProjectExpectedStudyNexus(nexus.getId());
+        }
+      }
     }
 
     // Save form Information
-    if (this.expectedStudy.getNexus() != null) {
+    if (this.expectedStudy.getNexus() != null || (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
+      && BooleanUtils.isTrue(this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasNexusContribution()))) {
       for (ProjectExpectedStudyNexus studyNexus : this.expectedStudy.getNexus()) {
         if (studyNexus != null && studyNexus.getNexus() != null && studyNexus.getNexus().getId() != null) {
           if (studyNexus.getId() == null) {
