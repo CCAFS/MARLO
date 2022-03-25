@@ -1098,16 +1098,58 @@
       <h4>[@s.text name="study.partTwo" /]</h4>
       <hr>
       <div class="form-group" simpleBox>
-        [#-- Lever Outcomes  --]
-        [@customForm.elementsListComponent name="${customName}.leverOutcomes" elementType="leverOutcome" elementList=element.leverOutcomes label="study.leverOutcomes" maxLimit=3 listName="leverOutcomeList" keyFieldName="id" displayFieldName="composedName" required=false/]
-     
-        [#-- Nexus  --]
-        [@customForm.elementsListComponent name="${customName}.nexus" elementType="nexus" elementList=element.nexus label="study.nexus" maxLimit=3 listName="nexusList" keyFieldName="id" displayFieldName="name" required=false/]
+        [#-- Lever Outcomes --]
+        <div class="form-group">
+          [#-- Lever Outcomes Question --]
+          <div class="form-group">
+            <label for="">[@s.text name="study.leverOutcomes.question" /]:[@customForm.req required=editable /]</label>
+            [#assign isLeverOutcome = "isLeverOutcome"]
+            [#assign showLeverOutcomeDropdown = (element.projectExpectedStudyInfo.hasLeverOutcomeContribution?string)!"" /]
+            [@customForm.radioFlat id="${isLeverOutcome}-yes" name="${name}.projectExpectedStudyInfo.hasLeverOutcomeContribution" label="Yes" value="true" checked=(showLeverOutcomeDropdown == "true") cssClass="radioType-${isLeverOutcome}" cssClassLabel="radio-label-yes" editable=editable /]
+            [@customForm.radioFlat id="${isLeverOutcome}-no" name="${name}.projectExpectedStudyInfo.hasLeverOutcomeContribution" label="No" value="false" checked=(showLeverOutcomeDropdown == "false") cssClass="radioType-${isLeverOutcome}" cssClassLabel="radio-label-no" editable=editable /]
+          </div>        
+          [#-- Lever Outcomes List --]
+          <div class="form-group simpleBox block-${isLeverOutcome}" style="display:${(showLeverOutcomeDropdown == "true")?string('block','none')}">
+            [@customForm.elementsListComponent name="${customName}.leverOutcomes" elementType="leverOutcome" elementList=element.leverOutcomes label="study.leverOutcomes" maxLimit=3 listName="leverOutcomeList" keyFieldName="id" displayFieldName="composedName" required=true/]
+          </div>
+        </div>
 
-        [#-- Funding Sources  --]
-        [@customForm.elementsListComponent name="${customName}.fundingSources" elementType="fundingSource" elementList=element.fundingSources label="study.fundingSources"  listName="fundingSourceList" keyFieldName="id" displayFieldName="composedName" required=false/]
+        [#-- Nexus --]
+        <div class="form-group">
+          [#-- Nexus Question --]
+          <div class="form-group">
+            <label for="">[@s.text name="study.nexus.question" /]:[@customForm.req required=editable /]</label>
+            [#assign isNexus = "isNexus"]
+            [#assign showNexusDropdown = (element.projectExpectedStudyInfo.hasNexusContribution?string)!"" /]
+            [@customForm.radioFlat id="${isNexus}-yes" name="${name}.projectExpectedStudyInfo.hasNexusContribution" label="Yes" value="true" checked=(showNexusDropdown == "true") cssClass="radioType-${isNexus}" cssClassLabel="radio-label-yes" editable=editable /]
+            [@customForm.radioFlat id="${isNexus}-no" name="${name}.projectExpectedStudyInfo.hasNexusContribution" label="No" value="false" checked=(showNexusDropdown == "false") cssClass="radioType-${isNexus}" cssClassLabel="radio-label-no" editable=editable /]
+          </div>        
+          [#-- Nexus List --]
+          <div class="form-group simpleBox block-${isNexus}" style="display:${(showNexusDropdown == "true")?string('block','none')}">
+            [@customForm.elementsListComponent name="${customName}.nexus" elementType="nexus" elementList=element.nexus label="study.nexus" maxLimit=3 listName="nexusList" keyFieldName="id" displayFieldName="name" required=true/]
+          </div>
+        </div>
+
+        [#-- Funding Sources --]
+        [@customForm.elementsListComponent name="${customName}.fundingSources" elementType="fundingSource" elementList=element.fundingSources label="study.fundingSources"  listName="fundingSourceList" keyFieldName="id" displayFieldName="composedName" required=true/]
+        
+        [#-- Legacy CRP/PFT --]
+        <div class="form-group">
+          [#-- Legacy CRP/PFT Question --]
+          <div class="form-group">
+            <label for="">[@s.text name="study.legacyCrp.question" /]:[@customForm.req required=editable /]</label>
+            [#assign isLegacyCrp = "isLegacyCrp"]
+            [#assign showLegacyCrpDropdown = (element.projectExpectedStudyInfo.hasLegacyCrpContribution?string)!"" /]
+            [@customForm.radioFlat id="${isLegacyCrp}-yes" name="${name}.projectExpectedStudyInfo.hasLegacyCrpContribution" label="Yes" value="true" checked=(showLegacyCrpDropdown == "true") cssClass="radioType-${isLegacyCrp}" cssClassLabel="radio-label-yes" editable=editable /]
+            [@customForm.radioFlat id="${isLegacyCrp}-no" name="${name}.projectExpectedStudyInfo.hasLegacyCrpContribution" label="No" value="false" checked=(showLegacyCrpDropdown == "false") cssClass="radioType-${isLegacyCrp}" cssClassLabel="radio-label-no" editable=editable /]
+          </div>        
+          [#-- Legacy CRP/PFT List --]
+          <div class="form-group simpleBox block-${isLegacyCrp}" style="display:${(showLegacyCrpDropdown == "true")?string('block','none')}">
+            [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.legacyCrp" maxLimit=2 listName="crps" keyFieldName="id" displayFieldName="composedName" required=true/]
+          </div>
+        </div>
           
-        [#-- Sdg Targets  --]
+        [#-- Sdg Targets --]
         [@customForm.elementsListComponent name="${customName}.sdgTargets" elementType="sdgTarget" elementList=element.sdgTargets label="study.sdgTargets" maxLimit=3 listName="sdgTargetList" keyFieldName="id" displayFieldName="composedName" required=false/]
       </div>
     </div>
@@ -1117,14 +1159,53 @@
       <h4>[@s.text name="study.partThree" /]</h4>
       <hr>
       <div class="form-group" simpleBox>
-        [#-- Action Area Outcome Indicators  --]
-        [@customForm.elementsListComponent name="${customName}.actionAreaIndicators" elementType="outcomeIndicator" elementList=element.actionAreaIndicators label="study.actionAreaOutcomeIndicators"  listName="actionAreaOutcomeIndicatorList" keyFieldName="id" displayFieldName="composedName" required=false maxLimit=2/]
+        [#-- Action Area Outcome Indicators --]
+        <div class="form-group">
+          [#-- Action Area Outcome Indicators Question --]
+          <div class="form-group">
+            <label for="">[@s.text name="study.actionAreaOutcomeIndicators.question" /]:[@customForm.req required=editable /]</label>
+            [#assign isActionAreOutcomeIndicator = "isActionAreOutcomeIndicator"]
+            [#assign showActionAreaOutcomeIndicatorDropdown = (element.projectExpectedStudyInfo.hasActionAreaOutcomeIndicatorContribution?string)!"" /]
+            [@customForm.radioFlat id="${isActionAreOutcomeIndicator}-yes" name="${name}.projectExpectedStudyInfo.hasActionAreaOutcomeIndicatorContribution" label="Yes" value="true" checked=(showActionAreaOutcomeIndicatorDropdown == "true") cssClass="radioType-${isActionAreOutcomeIndicator}" cssClassLabel="radio-label-yes" editable=editable /]
+            [@customForm.radioFlat id="${isActionAreOutcomeIndicator}-no" name="${name}.projectExpectedStudyInfo.hasActionAreaOutcomeIndicatorContribution" label="No" value="false" checked=(showActionAreaOutcomeIndicatorDropdown == "false") cssClass="radioType-${isActionAreOutcomeIndicator}" cssClassLabel="radio-label-no" editable=editable /]
+          </div>        
+          [#-- Action Area Outcome Indicators List --]
+          <div class="form-group simpleBox block-${isActionAreOutcomeIndicator}" style="display:${(showActionAreaOutcomeIndicatorDropdown == "true")?string('block','none')}">
+            [@customForm.elementsListComponent name="${customName}.actionAreaIndicators" elementType="outcomeIndicator" elementList=element.actionAreaIndicators label="study.actionAreaOutcomeIndicators"  listName="actionAreaOutcomeIndicatorList" keyFieldName="id" displayFieldName="composedName" required=false maxLimit=2/]
+          </div>
+        </div>
         
-        [#-- Impact Area Indicators  --]
-        [@customForm.elementsListComponent name="${customName}.impactAreaIndicators" elementType="impactAreaIndicator" elementList=element.impactAreaIndicators label="study.impactAreaIndicators"  listName="impactAreaIndicatorList" keyFieldName="id" displayFieldName="composedName" required=false maxLimit=2/]
+        [#-- Impact Area Indicators --]
+        <div class="form-group">
+          [#-- Impact Area Indicators Question --]
+          <div class="form-group">
+            <label for="">[@s.text name="study.impactAreaIndicators.question" /]:[@customForm.req required=editable /]</label>
+            [#assign isImpactAreaIndicator = "isImpactAreaIndicator"]
+            [#assign showImpactAreaDropdown = (element.projectExpectedStudyInfo.hasImpactAreaIndicatorContribution?string)!"" /]
+            [@customForm.radioFlat id="${isImpactAreaIndicator}-yes" name="${name}.projectExpectedStudyInfo.hasImpactAreaIndicatorContribution" label="Yes" value="true" checked=(showImpactAreaDropdown == "true") cssClass="radioType-${isImpactAreaIndicator}" cssClassLabel="radio-label-yes" editable=editable /]
+            [@customForm.radioFlat id="${isImpactAreaIndicator}-no" name="${name}.projectExpectedStudyInfo.hasImpactAreaIndicatorContribution" label="No" value="false" checked=(showImpactAreaDropdown == "false") cssClass="radioType-${isImpactAreaIndicator}" cssClassLabel="radio-label-no" editable=editable /]
+          </div>        
+          [#-- Impact Area Indicators List --]
+          <div class="form-group simpleBox block-${isImpactAreaIndicator}" style="display:${(showImpactAreaDropdown == "true")?string('block','none')}">
+            [@customForm.elementsListComponent name="${customName}.impactAreaIndicators" elementType="impactAreaIndicator" elementList=element.impactAreaIndicators label="study.impactAreaIndicators"  listName="impactAreaIndicatorList" keyFieldName="id" displayFieldName="composedName" required=false maxLimit=2/]
+          </div>
+        </div>
         
-        [#-- Initiatives  --]
-        [@customForm.elementsListComponent name="${customName}.initiatives" elementType="initiative" elementList=element.initiatives label="study.initiatives"  listName="initiativeList" keyFieldName="id" displayFieldName="composedName" required=false maxLimit=2/]
+        [#-- Initiatives --]
+        <div class="form-group">
+          [#-- Initiatives Question --]
+          <div class="form-group">
+            <label for="">[@s.text name="study.initiatives.question" /]:[@customForm.req required=editable /]</label>
+            [#assign isInitiative = "isInitiative"]
+            [#assign showInitiative = (element.projectExpectedStudyInfo.hasInitiativeContribution?string)!"" /]
+            [@customForm.radioFlat id="${isInitiative}-yes" name="${name}.projectExpectedStudyInfo.hasInitiativeContribution" label="Yes" value="true" checked=(showInitiative == "true") cssClass="radioType-${isInitiative}" cssClassLabel="radio-label-yes" editable=editable /]
+            [@customForm.radioFlat id="${isInitiative}-no" name="${name}.projectExpectedStudyInfo.hasInitiativeContribution" label="No" value="false" checked=(showInitiative == "false") cssClass="radioType-${isInitiative}" cssClassLabel="radio-label-no" editable=editable /]
+          </div>        
+          [#-- Initiatives List --]
+          <div class="form-group simpleBox block-${isInitiative}" style="display:${(showInitiative == "true")?string('block','none')}">
+            [@customForm.elementsListComponent name="${customName}.initiatives" elementType="initiative" elementList=element.initiatives label="study.initiatives"  listName="initiativeList" keyFieldName="id" displayFieldName="composedName" required=false maxLimit=2/]
+          </div>
+        </div>
       </div>
     </div>
 
