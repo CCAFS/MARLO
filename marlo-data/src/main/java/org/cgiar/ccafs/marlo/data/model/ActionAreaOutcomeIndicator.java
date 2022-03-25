@@ -50,13 +50,9 @@ public class ActionAreaOutcomeIndicator extends MarloAuditableEntity implements 
         composedName = "<b>" + this.getActionArea().getName() + ":</b> ";
       }
 
-      if (this.getActionAreaOutcome() != null && this.getActionAreaOutcome().getId() != null
-        && StringUtils.isNotBlank(this.getActionAreaOutcome().getSmoCode())) {
-        composedName += "(<i>" + this.getActionAreaOutcome().getSmoCode() + ")</i> ";
-      }
-
       if (this.getOutcomeIndicator() != null && this.getOutcomeIndicator().getId() != null
         && StringUtils.isNotBlank(this.getOutcomeIndicator().getOutcomeIndicatorStatement())) {
+        composedName += "(<i>" + this.getOutcomeIndicator().getSmoCode() + ")</i> ";
         composedName += " -  " + this.getOutcomeIndicator().getOutcomeIndicatorStatement();
       }
     }
