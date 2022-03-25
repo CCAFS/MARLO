@@ -170,5 +170,24 @@
     <property name="editableLink" type="string">
 			<column name="editable_link" length="500" />
 		</property>
+		
+		<property name="hasLeverOutcomeContribution" type="java.lang.Boolean">
+        <column name="has_lever_outcome_contribution" />
+    </property>
+		<property name="hasNexusContribution" type="java.lang.Boolean">
+        <column name="has_nexus_contribution" />
+    </property>
+		<property name="hasLegacyCrpContribution" type="java.lang.Boolean">
+        <column name="has_legacy_crp_contribution" />
+    </property>
+		<property name="hasActionAreaOutcomeIndicatorContribution" type="java.lang.Boolean">
+        <column name="has_action_area_outcome_indicator_contribution" />
+    </property>
+		<property name="hasImpactAreaIndicatorContribution" type="java.lang.Boolean">
+        <column name="has_impact_area_indicator_contribution" />
+    </property>
+		<property name="hasInitiativeContribution" type="java.lang.Boolean">
+        <column name="has_initiative_contribution" />
+    </property>
 	</class>
 </hibernate-mapping>
