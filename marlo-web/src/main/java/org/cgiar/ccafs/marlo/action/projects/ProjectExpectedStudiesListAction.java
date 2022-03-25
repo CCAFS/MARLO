@@ -172,7 +172,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     expectedID = projectExpectedStudy.getId();
 
     if (expectedID > 0) {
-      if (studyTypeID == 1L) {
+      if (studyTypeID == 1L && !this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
         ProjectExpectedStudyCrp studyCrp = new ProjectExpectedStudyCrp();
 
         studyCrp.setGlobalUnit(this.loggedCrp);
