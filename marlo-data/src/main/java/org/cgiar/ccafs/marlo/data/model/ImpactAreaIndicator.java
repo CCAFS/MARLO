@@ -19,6 +19,8 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class ImpactAreaIndicator extends MarloAuditableEntity implements java.io.Serializable {
 
 
@@ -31,6 +33,7 @@ public class ImpactAreaIndicator extends MarloAuditableEntity implements java.io
   private String targetUnit;
   private String targetValue;
   private Boolean isProjectedBenefits;
+  private String smoCode;
 
   public ImpactAreaIndicator() {
     super();
@@ -49,7 +52,20 @@ public class ImpactAreaIndicator extends MarloAuditableEntity implements java.io
   }
 
   public String getComposedName() {
-    return this.getIndicatorStatement();
+    String composedName = "";
+    if (this.getId() == null || this.getId() == -1) {
+      return "<Not defined>";
+    } else {
+      if (StringUtils.isNotBlank(this.getSmoCode())) {
+        composedName = StringUtils.trimToEmpty(this.getSmoCode());
+      }
+
+      if (StringUtils.isNotBlank(this.getIndicatorStatement())) {
+        composedName += " - " + StringUtils.trimToEmpty(this.getIndicatorStatement());
+      }
+    }
+
+    return composedName;
   }
 
   public ImpactArea getImpactArea() {
@@ -64,6 +80,10 @@ public class ImpactAreaIndicator extends MarloAuditableEntity implements java.io
     return isProjectedBenefits;
   }
 
+  public String getSmoCode() {
+    return smoCode;
+  }
+
   public String getTargetUnit() {
     return targetUnit;
   }
@@ -76,10 +96,10 @@ public class ImpactAreaIndicator extends MarloAuditableEntity implements java.io
     return targetYear;
   }
 
-
   public void setImpactArea(ImpactArea impactArea) {
     this.impactArea = impactArea;
   }
+
 
   public void setIndicatorStatement(String indicatorStatement) {
     this.indicatorStatement = indicatorStatement;
@@ -87,6 +107,10 @@ public class ImpactAreaIndicator extends MarloAuditableEntity implements java.io
 
   public void setIsProjectedBenefits(Boolean isProjectedBenefits) {
     this.isProjectedBenefits = isProjectedBenefits;
+  }
+
+  public void setSmoCode(String smoCode) {
+    this.smoCode = smoCode;
   }
 
   public void setTargetUnit(String targetUnit) {
