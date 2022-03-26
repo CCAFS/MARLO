@@ -142,7 +142,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     } else {
       if (info.getHasLegacyCrpContribution()
-        && (action.isEmpty(projectExpectedStudy.getCrps()) && projectExpectedStudy.getCrps().size() > 2)) {
+        && (action.isEmpty(projectExpectedStudy.getCrps()) || projectExpectedStudy.getCrps().size() > 2)) {
         action.addMessage(action.getText("Legacy CRP"));
         action.addMissingField("Legacy CRP List");
         action.getInvalidFields().put("list-expectedStudy.crps", InvalidFieldsMessages.WRONGVALUE);
