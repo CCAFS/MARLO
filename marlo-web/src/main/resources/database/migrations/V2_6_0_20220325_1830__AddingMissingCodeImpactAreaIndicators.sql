@@ -1,0 +1,22 @@
+alter table st_impact_areas_indicators add smo_code varchar(20) DEFAULT NULL;
+
+update st_impact_areas_indicators set smo_code='1.1' where id=1;
+update st_impact_areas_indicators set smo_code='1.2' where id=2;
+update st_impact_areas_indicators set smo_code='1.3' where id=3;
+update st_impact_areas_indicators set smo_code='1.4' where id=4;
+update st_impact_areas_indicators set smo_code='2.1' where id=5;
+update st_impact_areas_indicators set smo_code='2.2' where id=6;
+update st_impact_areas_indicators set smo_code='3.1' where id=7;
+update st_impact_areas_indicators set smo_code='3.2' where id=8;
+update st_impact_areas_indicators set smo_code='3.3' where id=9;
+update st_impact_areas_indicators set smo_code='3.4' where id=10;
+update st_impact_areas_indicators set smo_code='4.1' where id=11;
+update st_impact_areas_indicators set smo_code='4.2' where id=12;
+update st_impact_areas_indicators set smo_code='4.3' where id=13;
+update st_impact_areas_indicators set smo_code='4.4' where id=14;
+update st_impact_areas_indicators set smo_code='5.1' where id=15;
+update st_impact_areas_indicators set smo_code='5.2' where id=16;
+update st_impact_areas_indicators set smo_code='5.3' where id=17;
+update st_impact_areas_indicators set smo_code='5.4' where id=18;
+update st_impact_areas_indicators set smo_code='5.5' where id=19;
+update st_impact_areas_indicators set smo_code='4.5' where id=20;
