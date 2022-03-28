@@ -509,6 +509,10 @@
 			<id>Internal project repo</id>
 			<url>file://${basedir}/src/main/resources/libs/</url>
 		</repository>
+		<repository>
+            <id>jaspersoft-third-party</id>
+            <url>https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/</url>
+        </repository>
 
 		<!-- Maven repo -->
 
