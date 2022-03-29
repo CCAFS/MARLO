@@ -106,5 +106,8 @@
         <property name="innovationNumber" type="java.lang.Long">
 			<column name="number_of_innovations" />
 		</property>
+		<property name="hasLegacyCrpContribution" type="java.lang.Boolean">
+        <column name="has_legacy_crp_contribution" />
+    </property>
 	</class>
 </hibernate-mapping>
