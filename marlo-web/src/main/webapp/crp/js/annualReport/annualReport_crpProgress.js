@@ -21,27 +21,27 @@ function attachEvents() {
     var additionalContribution = $('.TA_additionalContribution');
     additionalContribution.css('display', 'none');
   }
-  
+
   // Add item
   $('.addSloTarget').on('change', addSloTarget);
-  
+
   // Remove item
   $('.removeSloTarget').on('click', removeSloTarget);
-  
+
   if ($('#actualPhase').html() == 'true' && $('#isSubmitted').html() == 'true') {
     loadQualityAssessmentStatus(sloAjaxURL, sloArrName);
   }
 
-  $('.qaStatus-button').on('click', function(){
+  $('.qaStatus-button').on('click', function () {
     updateQAStatus($(this));
   });
 }
 
-function updateQAStatus(element){
+function updateQAStatus(element) {
   let $stat = element.siblings('.onoffswitch-radio');
   container = element.siblings('.sloContainerTitleStatusMessage');
 
-  if($stat.val() == 'true'){
+  if ($stat.val() == 'true') {
     element.removeClass('includeARButton');
     element.addClass('removeARButton');
     element.html('Remove from QA');
@@ -93,42 +93,41 @@ function updateQualityAssessmentStatusData(data) {
       var containerElements = isCheckedARComponent.parentElement;
       var removeARBtn = isCheckedARComponent.nextElementSibling;
       var date, status, statusClass;
-  
-      switch (x[1]) {
-        case 'pending':
-          status = 'Pending assessment';
-          statusClass = 'pending-mode';
-          break;
-        case 'pending_crp':
-          status = 'Pending CRP response';
-          statusClass = 'pending-mode';
-          break;
-        case 'in_progress':
-          status = 'Quality Assessed (Requires 2nd assessment)';
-          statusClass = 'qualityAssessed-mode';
-          break;
-        case 'quality_assessed':
-          date = new Date((x[2].split('T')[0])).toDateString();
-          status = 'SLO Target was Quality Assessed on ' + date;
-          statusClass = 'qualityAssessed-mode';
-          break;
-  
-        default:
-          break;
-      }
-  
+
       if (element && isCheckedAR == 'true') {
+        switch (x[1]) {
+          case 'pending':
+            status = 'Pending assessment';
+            statusClass = 'pending-mode';
+            break;
+          case 'pending_crp':
+            status = 'Pending CRP response';
+            statusClass = 'pending-mode';
+            break;
+          case 'in_progress':
+            status = 'Quality Assessed (Requires 2nd assessment)';
+            statusClass = 'qualityAssessed-mode';
+            break;
+          case 'quality_assessed':
+            date = new Date((x[2].split('T')[0])).toDateString();
+            status = 'SLO Target was Quality Assessed on ' + date;
+            statusClass = 'qualityAssessed-mode';
+            break;
+
+          default:
+            break;
+        }
+
         var pTag = document.createElement('p');
         var text = document.createTextNode(status);
-        
-        
+
         element.innerHTML = '';
         element.classList.remove('pendingForReview-mode');
         element.classList.add(statusClass);
         pTag.appendChild(text);
         element.appendChild(pTag);
         element.style.backgroundPosition = '442px';
-        
+
         if (x[1] == 'quality_assessed' || x[1] == 'pending') {
           var pMessageTag = document.createElement('p');
           container = element.parentElement;
@@ -146,7 +145,7 @@ function updateQualityAssessmentStatusData(data) {
           pMessageTag.classList.add('messageQAInfo');
           pMessageTag.appendChild(textMessage);
           container.appendChild(pMessageTag);
-        } 
+        }
       }
     }
   });
