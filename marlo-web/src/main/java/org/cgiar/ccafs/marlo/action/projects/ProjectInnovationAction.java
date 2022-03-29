@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSdgTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -51,6 +52,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.SdgTargetsManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
@@ -76,6 +78,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSdgTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -91,6 +94,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
+import org.cgiar.ccafs.marlo.data.model.SdgTargets;
 import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -165,6 +169,10 @@ public class ProjectInnovationAction extends BaseAction {
   // AR2021 managers
   private ProjectInnovationEvidenceLinkManager projectInnovationEvidenceLinkManager;
 
+  // Alliance managers
+  private ProjectInnovationSdgTargetManager projectInnovationSdgTargetManager;
+  private SdgTargetsManager sdgTargetsManager;
+
   // Variables
   private long projectID;
   private long innovationID;
@@ -232,7 +240,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationSubIdoManager projectInnovationSubIdoManager, SrfIdoManager srfIdoManager,
     ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
     ProjectInnovationEvidenceLinkManager projectInnovationEvidenceLinkManager,
-    ProjectDeliverableSharedManager projectDeliverableSharedManager) {
+    ProjectDeliverableSharedManager projectDeliverableSharedManager,
+    ProjectInnovationSdgTargetManager projectInnovationSdgTargetManager, SdgTargetsManager sdgTargetsManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -272,7 +281,8 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectInnovationEvidenceLinkManager = projectInnovationEvidenceLinkManager;
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
-
+    this.projectInnovationSdgTargetManager = projectInnovationSdgTargetManager;
+    this.sdgTargetsManager = sdgTargetsManager;
   }
 
   /**
@@ -1249,12 +1259,17 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveSubIdos(innovationDB, phase);
       this.saveCrps(innovationDB, phase);
       this.saveProjects(innovationDB, phase);
-      this.saveCenters(innovationDB, phase);
-      this.saveMilestones(innovationDB, phase);
+      if (!this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+        this.saveCenters(innovationDB, phase);
+        this.saveMilestones(innovationDB, phase);
+      }
       this.saveStudies(innovationDB, phase);
 
       // AR2021 save
       this.saveLink(innovationDB, phase);
+      if (this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+        this.saveSdgTargets(innovationDB, phase);
+      }
 
       this.saveGeographicScope(innovationDB, phase);
 
@@ -1981,6 +1996,50 @@ public class ProjectInnovationAction extends BaseAction {
           // This is to add innovationCrpSave to generate correct
           // auditlog.
           innovation.getProjectInnovationRegions().add(innovationRegionSave);
+        }
+      }
+    }
+  }
+
+  private void saveSdgTargets(ProjectInnovation innovation, Phase phase) {
+
+    // Search and deleted form Information
+    if (innovation.getProjectInnovationSdgTargets() != null && !innovation.getProjectInnovationSdgTargets().isEmpty()) {
+      List<ProjectInnovationSdgTarget> sdgTargetPrev =
+        new ArrayList<>(innovation.getProjectInnovationSdgTargets().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectInnovationSdgTarget studySdgTarget : sdgTargetPrev) {
+        if (this.innovation.getSdgTargets() == null
+          || !this.innovation.getSdgTargets().contains(studySdgTarget) && studySdgTarget.getId() != null) {
+          this.projectInnovationSdgTargetManager.deleteProjectInnovationSdgTarget(studySdgTarget.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.innovation.getSdgTargets() != null) {
+      for (ProjectInnovationSdgTarget studySdgTarget : this.innovation.getSdgTargets()) {
+        if (studySdgTarget != null && studySdgTarget.getSdgTarget() != null
+          && studySdgTarget.getSdgTarget().getId() != null) {
+          if (studySdgTarget.getId() == null) {
+            ProjectInnovationSdgTarget studySdgTargetSave = new ProjectInnovationSdgTarget();
+            studySdgTargetSave.setProjectInnovation(innovation);
+            studySdgTargetSave.setPhase(phase);
+
+            SdgTargets sdgTarget = this.sdgTargetsManager.getSDGTargetsById(studySdgTarget.getSdgTarget().getId());
+
+            if (sdgTarget != null) {
+              studySdgTargetSave.setSdgTarget(sdgTarget);
+
+              studySdgTargetSave =
+                this.projectInnovationSdgTargetManager.saveProjectInnovationSdgTarget(studySdgTargetSave);
+              this.projectInnovationSdgTargetManager.replicate(studySdgTargetSave, phase.getNext());
+              // This is to add studyLinkSave to generate correct
+              // auditlog.
+              this.innovation.getProjectInnovationSdgTargets().add(studySdgTargetSave);
+            }
+          }
         }
       }
     }
