@@ -251,58 +251,83 @@
           </div>
          <br>
           
-         [#-- Milestones Contribution --]
-        <div class="form-group">          
-          <label for="">[@s.text name="innovation.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="innovation.milestones.help" showIcon=false editable=editable/]</label>
-          [#assign innovationMilestoneLink = "innovationMilestoneLink"]
-          [#assign showMilestoneIndicator = (innovation.projectInnovationInfo.hasMilestones)!false /]
-          [@customForm.radioFlat id="${innovationMilestoneLink}-yes" name="innovation.projectInnovationInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == true) cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
-          [@customForm.radioFlat id="${innovationMilestoneLink}-no" name="innovation.projectInnovationInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == false) cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
-        </div> 
-        [#assign isAR2021 = !(action.isSelectedPhaseAR2021())]
-        <div class="form-group simpleBox block-${innovationMilestoneLink}" style="display:${(showMilestoneIndicator == true)?string('block','none')}">
-          [@customForm.elementsListComponent name="innovation.milestones" elementType="crpMilestone" elementList=(innovation.milestones)![] label="innovation.milestones" helpIcon=false listName="milestones" keyFieldName="id" displayFieldName="composedName" required=isAR2021 hasPrimary=true /]
-          [#-- [@customForm.primaryListComponent name="innovation.milestones" checkName="milestonePrimaryId" elementType="crpMilestone" elementList=(innovation.milestones)!"" label="innovation.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestones" keyFieldName="id" displayFieldName="composedName" required=false /] --]
-         <div class="note">[@s.text name="innovation.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
-         <br/>
-        </div> 
-        <span id="actualCRP" style="display: none;">${action.getLoggedCrp().acronym}</span>
+        [#-- Milestones Contribution --]
+        [#if !action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
+          <div class="form-group">          
+            <label for="">[@s.text name="innovation.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="innovation.milestones.help" showIcon=false editable=editable/]</label>
+            [#assign innovationMilestoneLink = "innovationMilestoneLink"]
+            [#assign showMilestoneIndicator = (innovation.projectInnovationInfo.hasMilestones)!false /]
+            [@customForm.radioFlat id="${innovationMilestoneLink}-yes" name="innovation.projectInnovationInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == true) cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
+            [@customForm.radioFlat id="${innovationMilestoneLink}-no" name="innovation.projectInnovationInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == false) cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
+          </div> 
+          [#assign isAR2021 = !(action.isSelectedPhaseAR2021())]
+          <div class="form-group simpleBox block-${innovationMilestoneLink}" style="display:${(showMilestoneIndicator == true)?string('block','none')}">
+            [@customForm.elementsListComponent name="innovation.milestones" elementType="crpMilestone" elementList=(innovation.milestones)![] label="innovation.milestones" helpIcon=false listName="milestones" keyFieldName="id" displayFieldName="composedName" required=isAR2021 hasPrimary=true /]
+            [#-- [@customForm.primaryListComponent name="innovation.milestones" checkName="milestonePrimaryId" elementType="crpMilestone" elementList=(innovation.milestones)!"" label="innovation.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestones" keyFieldName="id" displayFieldName="composedName" required=false /] --]
+          <div class="note">[@s.text name="innovation.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+          <br/>
+          </div> 
+        [/#if]
+
+        [#if !action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
+          <span id="actualCRP" style="display: none;">${action.getLoggedCrp().acronym}</span>
           [#-- Contributing CRPs/Platforms --]
           <div class="form-group innovationContributingCRP">
             [@customForm.elementsListComponent name="innovation.crps" elementType="globalUnit" elementList=innovation.crps label="projectInnovations.contributing"  listName="crpList" keyFieldName="id" displayFieldName="composedName" required=false /]
           </div>
+        [#else]
+          [#-- Legacy CRP/PFT --]
+          <div class="form-group">
+            [#-- Legacy CRP/PFT Question --]
+            <div class="form-group">
+              <label for="">[@s.text name="innovation.legacyCrp.question" /]:[@customForm.req required=editable /]</label>
+              [#assign isLegacyCrp = "isLegacyCrp"]
+              [#assign showLegacyCrpDropdown = (innovation.projectInnovationInfo.hasLegacyCrpContribution?string)!"" /]
+              [@customForm.radioFlat id="${isLegacyCrp}-yes" name="innovation.projectInnovationInfo.hasLegacyCrpContribution" label="Yes" value="true" checked=(showLegacyCrpDropdown == "true") cssClass="radioType-${isLegacyCrp}" cssClassLabel="radio-label-yes" editable=editable /]
+              [@customForm.radioFlat id="${isLegacyCrp}-no" name="innovation.projectInnovationInfo.hasLegacyCrpContribution" label="No" value="false" checked=(showLegacyCrpDropdown == "false") cssClass="radioType-${isLegacyCrp}" cssClassLabel="radio-label-no" editable=editable /]
+            </div>        
+            [#-- Legacy CRP/PFT List --]
+            <div class="form-group simpleBox block-${isLegacyCrp}" style="display:${(showLegacyCrpDropdown == "true")?string('block','none')}">
+              [@customForm.elementsListComponent name="innovation.crps" elementType="globalUnit" elementList=innovation.crps label="innovation.legacyCrp" maxLimit=2 listName="crpList" keyFieldName="id" displayFieldName="composedName" required=true/]
+            </div>
+          </div>
+        [/#if]
           
+        [#if !action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
           [#-- Contributing Centers/ PPA partners  --]
           <div class="form-group">
             [@customForm.elementsListComponent name="innovation.centers" i18nkey="innovation.centers" elementType="institution" elementList=innovation.centers label="projectInnovations.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
             <div class="note">[@s.text name="innovation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
           </div>
+        [/#if]
 
+        [#-- Sub IDOs or SDG Targets (if CRP is Alliance)--]
+        [#if !action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
+          [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
+          <div class="form-group simpleBox">
+            [@customForm.elementsListComponent name="innovation.subIdos" elementType="srfSubIdo" elementList=(innovation.subIdos)![] label="innovation.subIDOs" helpIcon=false listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="composedName" required=true hasPrimary=true/]
+          [#--  <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div> --]
+            [#-- [@customForm.primaryListComponent name="innovation.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(innovation.subIdos)!"" label="innovation.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
+            --]
+          </div> 
+        [#else]
+          [#-- Sdg Targets (maxLimit=3) --]
+          [@customForm.elementsListComponent name="innovation.sdgTargets" elementType="sdgTarget" elementList=innovation.sdgTargets label="policy.sdgTargets" maxLimit=3 listName="sdgTargetList" keyFieldName="id" displayFieldName="composedName" required=true/]
+        [/#if]
+      </div> 
+    </div>
         
-        [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
-        <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="innovation.subIdos" elementType="srfSubIdo" elementList=(innovation.subIdos)![] label="innovation.subIDOs" helpIcon=false listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="composedName" required=true hasPrimary=true/]
-         [#--  <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div> --]
-          [#-- [@customForm.primaryListComponent name="innovation.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(innovation.subIdos)!"" label="innovation.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
-          --]
-        </div> 
-       
-        </div>
-        
-         
-      </div>
-        
-      [#-- Projects shared --]
-      <h3 class="headTitle">[@s.text name="projectInnovations.sharedProjects.title" /]</h3>
-      <div class="borderBox">
-        [@customForm.elementsListComponent name="innovation.sharedInnovations" elementType="project" elementList=(innovation.sharedInnovations)![] label="projectInnovations.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
-      </div>
+    [#-- Projects shared --]
+    <h3 class="headTitle">[@s.text name="projectInnovations.sharedProjects.title" /]</h3>
+    <div class="borderBox">
+      [@customForm.elementsListComponent name="innovation.sharedInnovations" elementType="project" elementList=(innovation.sharedInnovations)![] label="projectInnovations.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
+    </div>
 
       
-      [#-- Section Buttons & hidden inputs--]
-      [#include "/WEB-INF/crp/views/projects/buttons-innovation.ftl" /]
+    [#-- Section Buttons & hidden inputs--]
+    [#include "/WEB-INF/crp/views/projects/buttons-innovation.ftl" /]
         
-      [/@s.form] 
+    [/@s.form] 
   </div>  
 </section>
 

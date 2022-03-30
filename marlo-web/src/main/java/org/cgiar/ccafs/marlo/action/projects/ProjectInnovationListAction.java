@@ -130,12 +130,14 @@ public class ProjectInnovationListAction extends BaseAction {
 
     projectInnovationInfo = projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
 
-    ProjectInnovationCrp projectInnovationThisCrp = new ProjectInnovationCrp();
-    projectInnovationThisCrp.setGlobalUnit(this.getCurrentGlobalUnit());
-    projectInnovationThisCrp.setPhase(this.getActualPhase());
-    projectInnovationThisCrp.setProjectInnovation(projectInnovation);
+    if (!this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+      ProjectInnovationCrp projectInnovationThisCrp = new ProjectInnovationCrp();
+      projectInnovationThisCrp.setGlobalUnit(this.getCurrentGlobalUnit());
+      projectInnovationThisCrp.setPhase(this.getActualPhase());
+      projectInnovationThisCrp.setProjectInnovation(projectInnovation);
 
-    projectInnovationThisCrp = this.projectInnovationCrpManager.saveProjectInnovationCrp(projectInnovationThisCrp);
+      projectInnovationThisCrp = this.projectInnovationCrpManager.saveProjectInnovationCrp(projectInnovationThisCrp);
+    }
 
     innovationID = projectInnovation.getId();
 
