@@ -149,15 +149,15 @@ function attachEvents() {
       var $element = $(this).parent('.linksBlock').parent().find('#multiInput-links-template').clone(true).removeAttr("id");
       // var $listLength = $list.children().length;
       // if ($listLength <= 9) {
-        // Remove template tag
-        $element.find('input, textarea').each(function (i, e) {
-          e.name = (e.name).replace("_TEMPLATE_", "");
-          e.id = (e.id).replace("_TEMPLATE_", "");
-        });
-        // Show the element
-        $element.appendTo($list).hide().show(350);
-        // Update indexes
-        updateIndexes(this);
+      // Remove template tag
+      $element.find('input, textarea').each(function (i, e) {
+        e.name = (e.name).replace("_TEMPLATE_", "");
+        e.id = (e.id).replace("_TEMPLATE_", "");
+      });
+      // Show the element
+      $element.appendTo($list).hide().show(350);
+      // Update indexes
+      updateIndexes(this);
       // }
     }
     function removeItem() {
@@ -191,7 +191,7 @@ function attachEvents() {
       var regex = new RegExp(expression);
       var res = "";
       var warningTag = $(item).parent().parent().parent().parent().parent().parent().find('#warningEmptyLinksTag');
-      
+
       if (url.match(regex)) {
         res = "Valid URL";
         $(item).css('border', 'none');
@@ -268,14 +268,13 @@ function loadQualityAssessmentStatus(ajaxURL, arrName) {
 
             return arr;
           });
-          
+
           if (isOICR == 'true') {
             updateQualityAssessmentStatusData(newData);
           } else {
             if ($('#isPMU').html() == 'true') {
               updateQualityAssessmentStatusData(newData);
             } else {
-              // console.log("FP",newData)
               qualityAssessmentStatusMessage(newData);
             }
           }
@@ -291,39 +290,39 @@ function updateQualityAssessmentStatusData(data) {
     var element = document.getElementById(`QAStatusIcon-${x[0]}`);
     var status, iconSrc;
 
-    switch (x[1]) {
-      case 'pending':
-        status = 'Pending assessment';
-        iconSrc = baseURL + '/global/images/pending-icon.svg';
-        break;
-      case 'pending_crp':
-        status = 'Pending CRP response';
-        iconSrc = baseURL + '/global/images/pending-icon.svg';
-        break;
-      case 'in_progress':
-        status = 'Quality Assessed (Requires 2nd assessment)';
-        iconSrc = baseURL + '/global/images/quality-assessed-icon.svg';
-        break;
-      case 'quality_assessed':
-        status = 'Quality Assessed';
-        iconSrc = baseURL + '/global/images/quality-assessed-icon.svg';
-        if (isOICR == 'true') {
-          $(`<input name='reportSynthesis.reportSynthesisFlagshipProgress.studiesValue' type='hidden' value='${x[0]}'/>`).insertAfter(`#study-${x[0]}`);
-          $(`#study-${x[0]}`).prop('disabled', true);
-          $(`#study-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
-        } else {
-          var milestoneID = $(`#milestoneID-${x[0]}`).html();
-          $(`<input name='reportSynthesis.reportSynthesisFlagshipProgress.milestonesValue' type='hidden' value='${milestoneID}'/>`).insertAfter(`#milestone-${x[0]}`);
-          $(`#milestone-${x[0]}`).prop('disabled', true);
-          $(`#milestone-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
-        }
-        break;
-
-      default:
-        break;
-    }
-
     if (element && isCheckedAR == '1') {
+      switch (x[1]) {
+        case 'pending':
+          status = 'Pending assessment';
+          iconSrc = baseURL + '/global/images/pending-icon.svg';
+          break;
+        case 'pending_crp':
+          status = 'Pending CRP response';
+          iconSrc = baseURL + '/global/images/pending-icon.svg';
+          break;
+        case 'in_progress':
+          status = 'Quality Assessed (Requires 2nd assessment)';
+          iconSrc = baseURL + '/global/images/quality-assessed-icon.svg';
+          break;
+        case 'quality_assessed':
+          status = 'Quality Assessed';
+          iconSrc = baseURL + '/global/images/quality-assessed-icon.svg';
+          if (isOICR == 'true') {
+            $(`<input name='reportSynthesis.reportSynthesisFlagshipProgress.studiesValue' type='hidden' value='${x[0]}'/>`).insertAfter(`#study-${x[0]}`);
+            $(`#study-${x[0]}`).prop('disabled', true);
+            $(`#study-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
+          } else {
+            var milestoneID = $(`#milestoneID-${x[0]}`).html();
+            $(`<input name='reportSynthesis.reportSynthesisFlagshipProgress.milestonesValue' type='hidden' value='${milestoneID}'/>`).insertAfter(`#milestone-${x[0]}`);
+            $(`#milestone-${x[0]}`).prop('disabled', true);
+            $(`#milestone-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
+          }
+          break;
+
+        default:
+          break;
+      }
+
       var imgTag = document.createElement('img');
       var br = document.createElement('br');
       var spanTag = document.createElement('span');
@@ -348,30 +347,30 @@ function qualityAssessmentStatusMessage(data) {
       var element = document.getElementById(`qualityAssessedIcon-${x[0]}`);
       var date, status, statusClass;
 
-      switch (x[1]) {
-        case 'pending':
-          status = 'Pending assessment';
-          statusClass = 'pending-mode';
-          break;
-        case 'pending_crp':
-          status = 'Pending CRP response';
-          statusClass = 'pending-mode';
-          break;
-        case 'in_progress':
-          status = 'Quality Assessed (Requires 2nd assessment)';
-          statusClass = 'qualityAssessed-mode';
-          break;
-        case 'quality_assessed':
-          date = new Date((x[2].split('T')[0])).toDateString();
-          status = 'Milestone was Quality Assessed on ' + date;
-          statusClass = 'qualityAssessed-mode';
-          break;
-
-        default:
-          break;
-      }
-
       if (element) {
+        switch (x[1]) {
+          case 'pending':
+            status = 'Pending assessment';
+            statusClass = 'pending-mode';
+            break;
+          case 'pending_crp':
+            status = 'Pending CRP response';
+            statusClass = 'pending-mode';
+            break;
+          case 'in_progress':
+            status = 'Quality Assessed (Requires 2nd assessment)';
+            statusClass = 'qualityAssessed-mode';
+            break;
+          case 'quality_assessed':
+            date = new Date((x[2].split('T')[0])).toDateString();
+            status = 'Milestone was Quality Assessed on ' + date;
+            statusClass = 'qualityAssessed-mode';
+            break;
+
+          default:
+            break;
+        }
+
         var pTag = document.createElement('p');
         var text = document.createTextNode(status);
 

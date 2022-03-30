@@ -50,7 +50,7 @@ function updateQualityAssessmentStatusData(data) {
     var isCheckedAR = $(`#isCheckedAR-${x[0]}`).html();
     var element = document.getElementById(`QAStatusIcon-${x[0]}`);
     var status, iconSrc;
-    console.log('isCheckedAR', isCheckedAR);
+    
     if (element && isCheckedAR == '1') {
       switch (x[1]) {
         case 'pending':
