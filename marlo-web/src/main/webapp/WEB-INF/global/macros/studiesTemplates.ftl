@@ -1150,7 +1150,7 @@
         </div>
           
         [#-- Sdg Targets --]
-        [@customForm.elementsListComponent name="${customName}.sdgTargets" elementType="sdgTarget" elementList=element.sdgTargets label="study.sdgTargets" maxLimit=3 listName="sdgTargetList" keyFieldName="id" displayFieldName="composedName" required=false/]
+        [@customForm.elementsListComponent name="${customName}.sdgTargets" elementType="sdgTarget" elementList=element.sdgTargets label="study.sdgTargets" maxLimit=3 listName="sdgTargetList" keyFieldName="id" displayFieldName="composedName" required=true/]
       </div>
     </div>
 
