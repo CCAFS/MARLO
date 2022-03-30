@@ -127,12 +127,14 @@ public class ProjectPolicyListAction extends BaseAction {
 
     projectPolicyInfo = projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
 
-    ProjectPolicyCrp projectPolicyThisCrp = new ProjectPolicyCrp();
-    projectPolicyThisCrp.setGlobalUnit(this.getCurrentGlobalUnit());
-    projectPolicyThisCrp.setPhase(this.getActualPhase());
-    projectPolicyThisCrp.setProjectPolicy(projectPolicy);
+    if (!this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+      ProjectPolicyCrp projectPolicyThisCrp = new ProjectPolicyCrp();
+      projectPolicyThisCrp.setGlobalUnit(this.getCurrentGlobalUnit());
+      projectPolicyThisCrp.setPhase(this.getActualPhase());
+      projectPolicyThisCrp.setProjectPolicy(projectPolicy);
 
-    projectPolicyThisCrp = this.projectPolicyCrpManager.saveProjectPolicyCrp(projectPolicyThisCrp);
+      projectPolicyThisCrp = this.projectPolicyCrpManager.saveProjectPolicyCrp(projectPolicyThisCrp);
+    }
 
     policyID = projectPolicy.getId();
 

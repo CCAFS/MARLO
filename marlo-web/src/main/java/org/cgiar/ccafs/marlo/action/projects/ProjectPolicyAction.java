@@ -40,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyOwnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySdgTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
@@ -47,6 +48,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
+import org.cgiar.ccafs.marlo.data.manager.SdgTargetsManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
@@ -74,6 +76,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyOwner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicySdgTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
@@ -81,6 +84,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPolicyType;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
+import org.cgiar.ccafs.marlo.data.model.SdgTargets;
 import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -104,6 +108,7 @@ import javax.inject.Inject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -148,6 +153,10 @@ public class ProjectPolicyAction extends BaseAction {
   private SrfIdoManager srfIdoManager;
   private ProjectInnovationSharedManager projectInnovationSharedManager;
 
+  // Alliance managers
+  private ProjectPolicySdgTargetManager projectPolicySdgTargetManager;
+  private SdgTargetsManager sdgTargetsManager;
+
   // Variables
   private GlobalUnit loggedCrp;
   private Project project;
@@ -180,6 +189,8 @@ public class ProjectPolicyAction extends BaseAction {
   private List<Institution> centers;
   private HashMap<Long, String> idoList;
 
+  private List<SdgTargets> sdgTargetList;
+
   @Inject
   public ProjectPolicyAction(APConfig config, GlobalUnitManager globalUnitManager,
     ProjectPolicyManager projectPolicyManager, ProjectPolicyInfoManager projectPolicyInfoManager,
@@ -200,7 +211,8 @@ public class ProjectPolicyAction extends BaseAction {
     ProjectPolicyRegionManager projectPolicyRegionManager, PolicyMilestoneManager policyMilestoneManager,
     CrpMilestoneManager crpMilestoneManager, ProjectPolicyCenterManager projectPolicyCenterManager,
     InstitutionManager institutionManager, SrfIdoManager srfIdoManager,
-    ProjectInnovationSharedManager projectInnovationSharedManager) {
+    ProjectInnovationSharedManager projectInnovationSharedManager,
+    ProjectPolicySdgTargetManager projectPolicySdgTargetManager, SdgTargetsManager sdgTargetsManager) {
     super(config);
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -235,6 +247,8 @@ public class ProjectPolicyAction extends BaseAction {
     this.institutionManager = institutionManager;
     this.srfIdoManager = srfIdoManager;
     this.projectInnovationSharedManager = projectInnovationSharedManager;
+    this.projectPolicySdgTargetManager = projectPolicySdgTargetManager;
+    this.sdgTargetsManager = sdgTargetsManager;
   }
 
   /**
@@ -398,6 +412,10 @@ public class ProjectPolicyAction extends BaseAction {
 
   public List<LocElement> getRegions() {
     return regions;
+  }
+
+  public List<SdgTargets> getSdgTargetList() {
+    return sdgTargetList;
   }
 
   public List<SrfIdo> getSrfIdos() {
@@ -610,6 +628,17 @@ public class ProjectPolicyAction extends BaseAction {
           }
         }
 
+        // Policy SDG Targets List Autosave
+        if (this.policy.getSdgTargets() != null) {
+          for (ProjectPolicySdgTarget projectPolicySdgTarget : this.policy.getSdgTargets()) {
+            if (projectPolicySdgTarget != null && projectPolicySdgTarget.getSdgTarget() != null
+              && projectPolicySdgTarget.getSdgTarget().getId() != null) {
+              projectPolicySdgTarget
+                .setSdgTarget(this.sdgTargetsManager.getSDGTargetsById(projectPolicySdgTarget.getSdgTarget().getId()));
+            }
+          }
+        }
+
         this.setDraft(true);
 
       } else {
@@ -729,6 +758,15 @@ public class ProjectPolicyAction extends BaseAction {
             .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
+        // Load Information (SDG Targets) for Alliance Global unit - Just for active specificity
+        if (this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+          // Policy SDG Targets List
+          if (this.policy.getProjectPolicySdgTargets() != null) {
+            this.policy.setSdgTargets(new ArrayList<>(this.policy.getProjectPolicySdgTargets().stream()
+              .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          }
+        }
+
       }
 
       if (!this.isDraft()) {
@@ -790,6 +828,11 @@ public class ProjectPolicyAction extends BaseAction {
         }
       }
       centers = centersTemp;
+
+      if (this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+        // SGD Targets
+        sdgTargetList = sdgTargetsManager.findAll();
+      }
 
       Project projectL = projectManager.getProjectById(projectID);
 
@@ -990,6 +1033,10 @@ public class ProjectPolicyAction extends BaseAction {
         policy.getCenters().clear();
       }
 
+      if (policy.getSdgTargets() != null) {
+        policy.getSdgTargets().clear();
+      }
+
       // HTTP Post info Values
       policy.getProjectPolicyInfo().setRepIndPolicyInvestimentType(null);
       policy.getProjectPolicyInfo().setRepIndStageProcess(null);
@@ -1016,17 +1063,23 @@ public class ProjectPolicyAction extends BaseAction {
       Path path = this.getAutoSaveFilePath();
 
       policy.setProject(project);
-      this.saveCrps(policyDB, phase);
+      this.saveCrps(policyDB, phase, this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS));
       this.saveOwners(policyDB, phase);
       this.saveSubIdos(policyDB, phase);
       this.saveCrossCutting(policyDB, phase);
       this.saveInnovations(policyDB, phase);
-      this.saveMilestones(policyDB, phase);
       this.saveEvidence(policyDB, phase);
-      this.saveCenters(policyDB, phase);
+      if (!this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+        this.saveMilestones(policyDB, phase);
+        this.saveCenters(policyDB, phase);
+      }
 
       // Save Geographic Scope Data
       this.saveGeographicScopes(policyDB, phase);
+
+      if (this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+        this.saveSdgTargets(this.policyDB, phase);
+      }
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -1304,7 +1357,7 @@ public class ProjectPolicyAction extends BaseAction {
    * @param projectPolicy
    * @param phase
    */
-  public void saveCrps(ProjectPolicy projectPolicy, Phase phase) {
+  public void saveCrps(ProjectPolicy projectPolicy, Phase phase, boolean isAlliance) {
 
     // Search and deleted form Information
     if (projectPolicy.getProjectPolicyCrps() != null && projectPolicy.getProjectPolicyCrps().size() > 0) {
@@ -1317,18 +1370,46 @@ public class ProjectPolicyAction extends BaseAction {
           projectPolicyCrpManager.deleteProjectPolicyCrp(policyCrp.getId());
         }
       }
+
+      // only alliance, if radiobutton selected not "yes"
+      if (isAlliance && this.policy.getProjectPolicyInfo(phase) != null
+        && (this.policy.getProjectPolicyInfo(phase).getHasLegacyCrpContribution() == null
+          || !this.policy.getProjectPolicyInfo(phase).getHasLegacyCrpContribution())) {
+        for (ProjectPolicyCrp policyCrp : projectPolicy.getProjectPolicyCrps().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
+          this.projectPolicyCrpManager.deleteProjectPolicyCrp(policyCrp.getId());
+        }
+      }
     }
 
-    boolean hasCurrentCrp = false;
     // Save form Information
-    if (policy.getCrps() != null) {
-      for (ProjectPolicyCrp policyCrp : policy.getCrps()) {
-        GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(policyCrp.getGlobalUnit().getId());
-        hasCurrentCrp = hasCurrentCrp || (globalUnit != null && this.getCurrentCrp().equals(globalUnit));
-        if (policyCrp.getId() == null) {
+    if (!isAlliance || (isAlliance && this.policy.getProjectPolicyInfo(phase) != null
+      && BooleanUtils.isTrue(this.policy.getProjectPolicyInfo(phase).getHasLegacyCrpContribution()))) {
+      boolean hasCurrentCrp = false;
+      // Save form Information
+      if (policy.getCrps() != null) {
+        for (ProjectPolicyCrp policyCrp : policy.getCrps()) {
+          GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(policyCrp.getGlobalUnit().getId());
+          hasCurrentCrp = hasCurrentCrp || (globalUnit != null && this.getCurrentCrp().equals(globalUnit));
+          if (policyCrp.getId() == null) {
+            ProjectPolicyCrp policyCrpSave = new ProjectPolicyCrp();
+            policyCrpSave.setProjectPolicy(projectPolicy);
+            policyCrpSave.setPhase(phase);
+
+            policyCrpSave.setGlobalUnit(globalUnit);
+
+            projectPolicyCrpManager.saveProjectPolicyCrp(policyCrpSave);
+            // This is to add innovationCrpSave to generate correct auditlog.
+            policy.getProjectPolicyCrps().add(policyCrpSave);
+          }
+        }
+
+        if (!hasCurrentCrp && !this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
           ProjectPolicyCrp policyCrpSave = new ProjectPolicyCrp();
           policyCrpSave.setProjectPolicy(projectPolicy);
           policyCrpSave.setPhase(phase);
+
+          GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(this.getCurrentCrp().getId());
 
           policyCrpSave.setGlobalUnit(globalUnit);
 
@@ -1336,20 +1417,6 @@ public class ProjectPolicyAction extends BaseAction {
           // This is to add innovationCrpSave to generate correct auditlog.
           policy.getProjectPolicyCrps().add(policyCrpSave);
         }
-      }
-
-      if (!hasCurrentCrp) {
-        ProjectPolicyCrp policyCrpSave = new ProjectPolicyCrp();
-        policyCrpSave.setProjectPolicy(projectPolicy);
-        policyCrpSave.setPhase(phase);
-
-        GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(this.getCurrentCrp().getId());
-
-        policyCrpSave.setGlobalUnit(globalUnit);
-
-        projectPolicyCrpManager.saveProjectPolicyCrp(policyCrpSave);
-        // This is to add innovationCrpSave to generate correct auditlog.
-        policy.getProjectPolicyCrps().add(policyCrpSave);
       }
     }
   }
@@ -1657,6 +1724,47 @@ public class ProjectPolicyAction extends BaseAction {
     }
   }
 
+  private void saveSdgTargets(ProjectPolicy projectPolicy, Phase phase) {
+    // Search and deleted form Information
+    if (projectPolicy.getProjectPolicySdgTargets() != null && !projectPolicy.getProjectPolicySdgTargets().isEmpty()) {
+      List<ProjectPolicySdgTarget> sdgTargetPrev = new ArrayList<>(projectPolicy.getProjectPolicySdgTargets().stream()
+        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectPolicySdgTarget policySdgTarget : sdgTargetPrev) {
+        if (this.policy.getSdgTargets() == null
+          || !this.policy.getSdgTargets().contains(policySdgTarget) && policySdgTarget.getId() != null) {
+          this.projectPolicySdgTargetManager.deleteProjectPolicySdgTarget(policySdgTarget.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.policy.getSdgTargets() != null) {
+      for (ProjectPolicySdgTarget policySdgTarget : this.policy.getSdgTargets()) {
+        if (policySdgTarget != null && policySdgTarget.getSdgTarget() != null
+          && policySdgTarget.getSdgTarget().getId() != null) {
+          if (policySdgTarget.getId() == null) {
+            ProjectPolicySdgTarget policySdgTargetSave = new ProjectPolicySdgTarget();
+            policySdgTargetSave.setProjectPolicy(projectPolicy);
+            policySdgTargetSave.setPhase(phase);
+
+            SdgTargets sdgTarget = this.sdgTargetsManager.getSDGTargetsById(policySdgTarget.getSdgTarget().getId());
+
+            if (sdgTarget != null) {
+              policySdgTargetSave.setSdgTarget(sdgTarget);
+
+              policySdgTargetSave = this.projectPolicySdgTargetManager.saveProjectPolicySdgTarget(policySdgTargetSave);
+              this.projectPolicySdgTargetManager.replicate(policySdgTargetSave, phase.getNext());
+              // This is to add policyLinkSave to generate correct
+              // auditlog.
+              this.policy.getProjectPolicySdgTargets().add(policySdgTargetSave);
+            }
+          }
+        }
+      }
+    }
+  }
+
   /**
    * Save Project Policy SubIdos Information
    * 
@@ -1801,6 +1909,10 @@ public class ProjectPolicyAction extends BaseAction {
 
   public void setRegions(List<LocElement> regions) {
     this.regions = regions;
+  }
+
+  public void setSdgTargetList(List<SdgTargets> sdgTargetList) {
+    this.sdgTargetList = sdgTargetList;
   }
 
   public void setSrfIdos(List<SrfIdo> srfIdos) {
