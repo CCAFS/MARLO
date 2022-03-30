@@ -490,6 +490,9 @@
     <mapping resource="xmls/ProjectExpectedStudyImpactAreaIndicator.hbm.xml" />
     <mapping resource="xmls/ProjectExpectedStudyInitiative.hbm.xml" />
     
+    <mapping resource="xmls/ProjectInnovationSdgTargets.hbm.xml" />
+    <mapping resource="xmls/ProjectPolicySdgTargets.hbm.xml" />
+    
     <mapping resource="xmls/ProjectDeliverableShared.hbm.xml" />
     <mapping resource="xmls/Glossary.hbm.xml" />
     <!-- One CGIAR data -->    
