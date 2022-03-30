@@ -119,6 +119,7 @@ import javax.inject.Inject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -213,6 +214,8 @@ public class ProjectInnovationAction extends BaseAction {
   private List<SrfSubIdo> principalSubIdo;
   private List<SrfIdo> srfIdos;
   private HashMap<Long, String> idoList;
+
+  private List<SdgTargets> sdgTargetList;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -463,6 +466,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<LocElement> getRegions() {
     return regions;
+  }
+
+  public List<SdgTargets> getSdgTargetList() {
+    return sdgTargetList;
   }
 
   public List<SrfIdo> getSrfIdos() {
@@ -772,6 +779,17 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
 
+        // Innovation SDG Targets List Autosave
+        if (this.innovation.getSdgTargets() != null) {
+          for (ProjectInnovationSdgTarget projectInnovationSdgTarget : this.innovation.getSdgTargets()) {
+            if (projectInnovationSdgTarget != null && projectInnovationSdgTarget.getSdgTarget() != null
+              && projectInnovationSdgTarget.getSdgTarget().getId() != null) {
+              projectInnovationSdgTarget.setSdgTarget(
+                this.sdgTargetsManager.getSDGTargetsById(projectInnovationSdgTarget.getSdgTarget().getId()));
+            }
+          }
+        }
+
         this.setDraft(true);
       } else {
         this.setDraft(false);
@@ -916,6 +934,14 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
 
+        // Load Information (SDG Targets) for Alliance Global unit - Just for active specificity
+        if (this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+          // Innovation SDG Targets List
+          if (this.innovation.getProjectInnovationSdgTargets() != null) {
+            this.innovation.setSdgTargets(new ArrayList<>(this.innovation.getProjectInnovationSdgTargets().stream()
+              .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          }
+        }
       }
 
       if (!this.isDraft()) {
@@ -962,6 +988,11 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
       centers = centersTemp;
+
+      if (this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+        // SGD Targets
+        sdgTargetList = sdgTargetsManager.findAll();
+      }
 
       List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
 
@@ -1220,6 +1251,11 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getInnovationLinks() != null) {
         innovation.getInnovationLinks().clear();
       }
+
+      if (innovation.getSdgTargets() != null) {
+        innovation.getSdgTargets().clear();
+      }
+
       // HTTP Post info Values
       // innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
       // innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
@@ -1257,7 +1293,7 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveDeliverables(innovationDB, phase);
       this.saveContributionOrganizations(innovationDB, phase);
       this.saveSubIdos(innovationDB, phase);
-      this.saveCrps(innovationDB, phase);
+      this.saveCrps(innovationDB, phase, this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS));
       this.saveProjects(innovationDB, phase);
       if (!this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
         this.saveCenters(innovationDB, phase);
@@ -1572,7 +1608,7 @@ public class ProjectInnovationAction extends BaseAction {
    * @param projectInnovation
    * @param phase
    */
-  public void saveCrps(ProjectInnovation projectInnovation, Phase phase) {
+  public void saveCrps(ProjectInnovation projectInnovation, Phase phase, boolean isAlliance) {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationCrps() != null
@@ -1586,19 +1622,47 @@ public class ProjectInnovationAction extends BaseAction {
           projectInnovationCrpManager.deleteProjectInnovationCrp(innovationCrp.getId());
         }
       }
+
+      // only alliance, if radiobutton selected not "yes"
+      if (isAlliance && this.innovation.getProjectInnovationInfo(phase) != null
+        && (this.innovation.getProjectInnovationInfo(phase).getHasLegacyCrpContribution() == null
+          || !this.innovation.getProjectInnovationInfo(phase).getHasLegacyCrpContribution())) {
+        for (ProjectInnovationCrp innovationCrp : projectInnovation.getProjectInnovationCrps().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
+          this.projectInnovationCrpManager.deleteProjectInnovationCrp(innovationCrp.getId());
+        }
+      }
     }
 
-    boolean hasCurrentCrp = false;
     // Save form Information
-    if (innovation.getCrps() != null) {
-      for (ProjectInnovationCrp innovationCrp : innovation.getCrps()) {
-        GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(innovationCrp.getGlobalUnit().getId());
-        hasCurrentCrp = hasCurrentCrp || globalUnit != null && this.getCurrentCrp().equals(globalUnit);
-        if (innovationCrp.getId() == null) {
+    if (!isAlliance || (isAlliance && this.innovation.getProjectInnovationInfo(phase) != null
+      && BooleanUtils.isTrue(this.innovation.getProjectInnovationInfo(phase).getHasLegacyCrpContribution()))) {
+      boolean hasCurrentCrp = false;
+      // Save form Information
+      if (innovation.getCrps() != null) {
+        for (ProjectInnovationCrp innovationCrp : innovation.getCrps()) {
+          GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(innovationCrp.getGlobalUnit().getId());
+          hasCurrentCrp = hasCurrentCrp || globalUnit != null && this.getCurrentCrp().equals(globalUnit);
+          if (innovationCrp.getId() == null) {
+            ProjectInnovationCrp innovationCrpSave = new ProjectInnovationCrp();
+            innovationCrpSave.setProjectInnovation(projectInnovation);
+            innovationCrpSave.setPhase(phase);
+
+            innovationCrpSave.setGlobalUnit(globalUnit);
+
+            projectInnovationCrpManager.saveProjectInnovationCrp(innovationCrpSave);
+            // This is to add innovationCrpSave to generate correct
+            // auditlog.
+            innovation.getProjectInnovationCrps().add(innovationCrpSave);
+          }
+        }
+
+        if (!hasCurrentCrp && !this.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
           ProjectInnovationCrp innovationCrpSave = new ProjectInnovationCrp();
           innovationCrpSave.setProjectInnovation(projectInnovation);
           innovationCrpSave.setPhase(phase);
 
+          GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(this.getCurrentCrp().getId());
           innovationCrpSave.setGlobalUnit(globalUnit);
 
           projectInnovationCrpManager.saveProjectInnovationCrp(innovationCrpSave);
@@ -1606,20 +1670,6 @@ public class ProjectInnovationAction extends BaseAction {
           // auditlog.
           innovation.getProjectInnovationCrps().add(innovationCrpSave);
         }
-      }
-
-      if (!hasCurrentCrp) {
-        ProjectInnovationCrp innovationCrpSave = new ProjectInnovationCrp();
-        innovationCrpSave.setProjectInnovation(projectInnovation);
-        innovationCrpSave.setPhase(phase);
-
-        GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(this.getCurrentCrp().getId());
-        innovationCrpSave.setGlobalUnit(globalUnit);
-
-        projectInnovationCrpManager.saveProjectInnovationCrp(innovationCrpSave);
-        // This is to add innovationCrpSave to generate correct
-        // auditlog.
-        innovation.getProjectInnovationCrps().add(innovationCrpSave);
       }
     }
   }
@@ -2282,6 +2332,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setRegions(List<LocElement> regions) {
     this.regions = regions;
+  }
+
+  public void setSdgTargetList(List<SdgTargets> sdgTargetList) {
+    this.sdgTargetList = sdgTargetList;
   }
 
   public void setSrfIdos(List<SrfIdo> srfIdos) {

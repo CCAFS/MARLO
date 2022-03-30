@@ -90,8 +90,8 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   private List<ProjectInnovationEvidenceLink> innovationLinks;
 
   // Alliance fields
-  private List<ProjectInnovationSdgTarget> projectInnovationSdgTargets;
-  private Set<ProjectInnovationSdgTarget> sdgTargets = new HashSet<>(0);
+  private List<ProjectInnovationSdgTarget> sdgTargets;
+  private Set<ProjectInnovationSdgTarget> projectInnovationSdgTargets = new HashSet<>(0);
 
   @Override
   public boolean equals(Object obj) {
@@ -300,7 +300,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return this.projectInnovationRegions;
   }
 
-  public List<ProjectInnovationSdgTarget> getProjectInnovationSdgTargets() {
+  public Set<ProjectInnovationSdgTarget> getProjectInnovationSdgTargets() {
     return projectInnovationSdgTargets;
   }
 
@@ -322,7 +322,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   }
 
 
-  public Set<ProjectInnovationSdgTarget> getSdgTargets() {
+  public List<ProjectInnovationSdgTarget> getSdgTargets() {
     return sdgTargets;
   }
 
@@ -486,7 +486,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.projectInnovationRegions = projectInnovationRegions;
   }
 
-  public void setProjectInnovationSdgTargets(List<ProjectInnovationSdgTarget> projectInnovationSdgTargets) {
+  public void setProjectInnovationSdgTargets(Set<ProjectInnovationSdgTarget> projectInnovationSdgTargets) {
     this.projectInnovationSdgTargets = projectInnovationSdgTargets;
   }
 
@@ -502,7 +502,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.regions = regions;
   }
 
-  public void setSdgTargets(Set<ProjectInnovationSdgTarget> sdgTargets) {
+  public void setSdgTargets(List<ProjectInnovationSdgTarget> sdgTargets) {
     this.sdgTargets = sdgTargets;
   }
 
