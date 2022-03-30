@@ -40,6 +40,8 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   @Expose
   private String editableLink;
 
+  @Expose
+  private Boolean hasLegacyCrpContribution;
 
   public ProjectPolicyInfo() {
 
@@ -79,6 +81,10 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
 
   public String getEditableLink() {
     return editableLink;
+  }
+
+  public Boolean getHasLegacyCrpContribution() {
+    return hasLegacyCrpContribution;
   }
 
   public Boolean getHasMilestones() {
@@ -183,6 +189,10 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
     this.editableLink = editableLink;
   }
 
+  public void setHasLegacyCrpContribution(Boolean hasLegacyCrpContribution) {
+    this.hasLegacyCrpContribution = hasLegacyCrpContribution;
+  }
+
   public void setHasMilestones(Boolean hasMilestones) {
     this.hasMilestones = hasMilestones;
   }
@@ -259,6 +269,7 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
     this.setProjectExpectedStudy(projectPolicyInfoUpdate.getProjectExpectedStudy());
     this.setOther(projectPolicyInfoUpdate.getOther());
     this.setHasMilestones(projectPolicyInfoUpdate.getHasMilestones());
+    this.setHasLegacyCrpContribution(projectPolicyInfoUpdate.getHasLegacyCrpContribution());
   }
 
 }
