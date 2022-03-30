@@ -72,8 +72,8 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   private Set<ProjectPolicyCenter> projectPolicyCenters = new HashSet<ProjectPolicyCenter>(0);
 
   // Alliance fields
-  private List<ProjectPolicySdgTarget> projectPolicySdgTargets;
-  private Set<ProjectPolicySdgTarget> sdgTargets = new HashSet<>(0);
+  private List<ProjectPolicySdgTarget> sdgTargets;
+  private Set<ProjectPolicySdgTarget> projectPolicySdgTargets = new HashSet<>(0);
 
   public List<ProjectPolicyCenter> getCenters() {
     return centers;
@@ -258,7 +258,7 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   }
 
 
-  public List<ProjectPolicySdgTarget> getProjectPolicySdgTargets() {
+  public Set<ProjectPolicySdgTarget> getProjectPolicySdgTargets() {
     return projectPolicySdgTargets;
   }
 
@@ -279,7 +279,7 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   }
 
 
-  public Set<ProjectPolicySdgTarget> getSdgTargets() {
+  public List<ProjectPolicySdgTarget> getSdgTargets() {
     return sdgTargets;
   }
 
@@ -424,7 +424,7 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     this.projectPolicyRegions = projectPolicyRegions;
   }
 
-  public void setProjectPolicySdgTargets(List<ProjectPolicySdgTarget> projectPolicySdgTargets) {
+  public void setProjectPolicySdgTargets(Set<ProjectPolicySdgTarget> projectPolicySdgTargets) {
     this.projectPolicySdgTargets = projectPolicySdgTargets;
   }
 
@@ -437,7 +437,7 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   }
 
 
-  public void setSdgTargets(Set<ProjectPolicySdgTarget> sdgTargets) {
+  public void setSdgTargets(List<ProjectPolicySdgTarget> sdgTargets) {
     this.sdgTargets = sdgTargets;
   }
 

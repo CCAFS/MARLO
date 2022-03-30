@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.PolicyMilestone;
@@ -23,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -84,8 +86,31 @@ public class ProjectPolicyValidator extends BaseValidator {
 
     this.saveMissingFields(project, policy, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.POLICIES.getStatus(), action);
+  }
 
+  private void validateAllianceSpecificFields(BaseAction action, ProjectPolicy policy) {
+    ProjectPolicyInfo info = policy.getProjectPolicyInfo();
 
+    // Legacy CRPs/PTFs
+    if (info.getHasLegacyCrpContribution() == null) {
+      action.addMessage(action.getText("Has Legacy CRP Contribution"));
+      action.addMissingField("Has Legacy CRP");
+      action.getInvalidFields().put("input-policy.projectPolicyInfo.hasLegacyCrpContribution",
+        InvalidFieldsMessages.EMPTYFIELD);
+    } else {
+      if (info.getHasLegacyCrpContribution() && (action.isEmpty(policy.getCrps()) || policy.getCrps().size() > 2)) {
+        action.addMessage(action.getText("Legacy CRP"));
+        action.addMissingField("Legacy CRP List");
+        action.getInvalidFields().put("list-policy.crps", InvalidFieldsMessages.WRONGVALUE);
+      }
+    }
+
+    // SDGs
+    if (action.isEmpty(policy.getSdgTargets())) {
+      action.addMessage(action.getText("SDG"));
+      action.addMissingField("SDG List");
+      action.getInvalidFields().put("list-policy.sdgTargets", InvalidFieldsMessages.EMPTYLIST);
+    }
   }
 
   private void validateCrossCuttingMarkers(BaseAction action, ProjectPolicyCrossCuttingMarker crossCuttingMarker,
@@ -230,54 +255,57 @@ public class ProjectPolicyValidator extends BaseValidator {
      * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"crps"}));
      * }
      */
-    if (projectPolicy.getCenters() == null || projectPolicy.getCenters().isEmpty()) {
-      action.addMessage(action.getText("centers"));
-      action.addMissingField("policy.centers");
-      action.getInvalidFields().put("list-policy.centers",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"centers"}));
-    }
+    if (!action.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+      if (projectPolicy.getCenters() == null || projectPolicy.getCenters().isEmpty()) {
+        action.addMessage(action.getText("centers"));
+        action.addMissingField("policy.centers");
+        action.getInvalidFields().put("list-policy.centers",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"centers"}));
+      }
 
-    // Validate Sub-Idos
-    if (projectPolicy.getSubIdos() == null || projectPolicy.getSubIdos().isEmpty()) {
-      action.addMessage(action.getText("subIdos"));
-      action.addMissingField("policy.subIdos");
-      action.getInvalidFields().put("list-policy.subIdos",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
-    } else {
-      // Validate primary sub-IDO
-      if (projectPolicy.getSubIdos().size() > 1) {
-        // AR2021 adjustment: validate max. 2
-        if (projectPolicy.getSubIdos().size() > 2) {
-          action.addMessage(action.getText("subIdos"));
-          action.addMissingField("policy.subIdos");
-          action.getInvalidFields().put("list-policy.subIdos",
-            action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"subIdos"}));
-        }
+      // Validate Sub-Idos
+      if (projectPolicy.getSubIdos() == null || projectPolicy.getSubIdos().isEmpty()) {
+        action.addMessage(action.getText("subIdos"));
+        action.addMissingField("policy.subIdos");
+        action.getInvalidFields().put("list-policy.subIdos",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+      } else {
+        // Validate primary sub-IDO
+        if (projectPolicy.getSubIdos().size() > 1) {
+          // AR2021 adjustment: validate max. 2
+          if (projectPolicy.getSubIdos().size() > 2) {
+            action.addMessage(action.getText("subIdos"));
+            action.addMissingField("policy.subIdos");
+            action.getInvalidFields().put("list-policy.subIdos",
+              action.getText(InvalidFieldsMessages.WRONGVALUE, new String[] {"subIdos"}));
+          }
 
-        int count = 0;
-        for (ProjectPolicySubIdo studySubIdo : projectPolicy.getSubIdos()) {
-          if (studySubIdo.getPrimary() != null && studySubIdo.getPrimary()) {
-            count++;
+          int count = 0;
+          for (ProjectPolicySubIdo studySubIdo : projectPolicy.getSubIdos()) {
+            if (studySubIdo.getPrimary() != null && studySubIdo.getPrimary()) {
+              count++;
+            }
+          }
+
+          if (count == 0) {
+            action.addMessage(action.getText("subIdos"));
+            action.addMissingField("policy.subIdos");
+            action.getInvalidFields().put("list-policy.subIdos",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
           }
         }
-
-        if (count == 0) {
-          action.addMessage(action.getText("subIdos"));
-          action.addMissingField("policy.subIdos");
-          action.getInvalidFields().put("list-policy.subIdos",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
-        }
       }
-    }
 
-    // validate Milestones
-    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null && baseAction.isSelectedPhaseAR2021()) {
+      // validate Milestones
       if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null
-        && projectPolicy.getProjectPolicyInfo().getHasMilestones() == null) {
-        action.addMessage(action.getText("milestoneList"));
-        action.addMissingField("policy.milestones");
-        action.getInvalidFields().put("list-policy.milestones",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+        && baseAction.isSelectedPhaseAR2021()) {
+        if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()) != null
+          && projectPolicy.getProjectPolicyInfo().getHasMilestones() == null) {
+          action.addMessage(action.getText("milestoneList"));
+          action.addMissingField("policy.milestones");
+          action.getInvalidFields().put("list-policy.milestones",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"milestones"}));
+        }
       }
     }
 
@@ -370,6 +398,10 @@ public class ProjectPolicyValidator extends BaseValidator {
         action.getInvalidFields().put("input-policy.countriesIds",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
       }
+    }
+
+    if (action.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+      this.validateAllianceSpecificFields(action, projectPolicy);
     }
   }
 
