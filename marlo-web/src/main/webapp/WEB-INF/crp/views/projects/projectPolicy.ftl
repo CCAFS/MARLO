@@ -206,49 +206,76 @@
     <br />
     
     [#-- Milestones Contribution --]
-    <div class="form-group">          
-      <label for="">[@s.text name="policy.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="policy.milestones.help" showIcon=false editable=editable/]</label>
-      [#assign policyMilestoneLink = "policyMilestoneLink"]
-      [#assign showMilestoneIndicator = (policy.projectPolicyInfo.hasMilestones)!false /]
-      [@customForm.radioFlat id="${policyMilestoneLink}-yes" name="${customName}.projectPolicyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == true) cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
-      [@customForm.radioFlat id="${policyMilestoneLink}-no" name="${customName}.projectPolicyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == false) cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
-    </div>
-    [#--  [#assign isAR2021 = !(action.isSelectedPhaseAR2021())]  --]
-     <div class="form-group simpleBox block-${policyMilestoneLink}" style="display:${(showMilestoneIndicator == true)?string('block','none')}">
-       [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="policy.milestones" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=true hasPrimary=true/]
-       
-       [#--[@customForm.primaryListComponent name="${customName}.milestones" checkName="milestonePrimaryId" elementType="crpMilestone" elementList=(element.milestones)!"" label="policy.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
-       --]
-       <div class="note">[@s.text name="policy.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
-       <br>
-     </div> 
+    [#if !action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
+      <div class="form-group">          
+        <label for="">[@s.text name="policy.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="policy.milestones.help" showIcon=false editable=editable/]</label>
+        [#assign policyMilestoneLink = "policyMilestoneLink"]
+        [#assign showMilestoneIndicator = (policy.projectPolicyInfo.hasMilestones)!false /]
+        [@customForm.radioFlat id="${policyMilestoneLink}-yes" name="${customName}.projectPolicyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == true) cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
+        [@customForm.radioFlat id="${policyMilestoneLink}-no" name="${customName}.projectPolicyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == false) cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
+      </div>
+      [#--  [#assign isAR2021 = !(action.isSelectedPhaseAR2021())]  --]
+      <div class="form-group simpleBox block-${policyMilestoneLink}" style="display:${(showMilestoneIndicator == true)?string('block','none')}">
+        [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="policy.milestones" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=true hasPrimary=true/]
+        
+        [#--[@customForm.primaryListComponent name="${customName}.milestones" checkName="milestonePrimaryId" elementType="crpMilestone" elementList=(element.milestones)!"" label="policy.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
+        --]
+        <div class="note">[@s.text name="policy.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+        <br>
+      </div> 
 
-    <br />
+      <br />
+    [/#if]
     
     [#-- Contributing Centers/ PPA partners  --]
-    <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=(element.centers)![] label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
-    </div>
+    [#if !action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
+      <div class="form-group">
+        [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=(element.centers)![] label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
+      </div>
+    [/#if]
     
     [#-- Contributing CRPs/PTFs  --]
-    <span id="actualCRP" style="display: none;">${action.getLoggedCrp().acronym}</span>
-    <div class="form-group policyContributingCRP">
-      [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false/]
-    </div>
+    [#if !action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
+      <span id="actualCRP" style="display: none;">${action.getLoggedCrp().acronym}</span>
+      <div class="form-group policyContributingCRP">
+        [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false/]
+      </div>
+    [#else]
+      [#-- Legacy CRP/PFT --]
+      <div class="form-group">
+        [#-- Legacy CRP/PFT Question --]
+        <div class="form-group">
+          <label for="">[@s.text name="policy.legacyCrp.question" /]:[@customForm.req required=editable /]</label>
+          [#assign isLegacyCrp = "isLegacyCrp"]
+          [#assign showLegacyCrpDropdown = (element.projectPolicyInfo.hasLegacyCrpContribution?string)!"" /]
+          [@customForm.radioFlat id="${isLegacyCrp}-yes" name="${name}.projectPolicyInfo.hasLegacyCrpContribution" label="Yes" value="true" checked=(showLegacyCrpDropdown == "true") cssClass="radioType-${isLegacyCrp}" cssClassLabel="radio-label-yes" editable=editable /]
+          [@customForm.radioFlat id="${isLegacyCrp}-no" name="${name}.projectPolicyInfo.hasLegacyCrpContribution" label="No" value="false" checked=(showLegacyCrpDropdown == "false") cssClass="radioType-${isLegacyCrp}" cssClassLabel="radio-label-no" editable=editable /]
+        </div>        
+        [#-- Legacy CRP/PFT List --]
+        <div class="form-group simpleBox block-${isLegacyCrp}" style="display:${(showLegacyCrpDropdown == "true")?string('block','none')}">
+          [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.legacyCrp" maxLimit=2 listName="crps" keyFieldName="id" displayFieldName="composedName" required=true/]
+        </div>
+      </div>
+    [/#if]
 
     
-    [#-- Sub IDOs (maxLimit=2 -Requested for AR2021) --]      
-    <div class="form-group simpleBox">
-      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=(element.subIdos)![] label="policy.subIDOs" helpIcon=false listName="subIdos" maxLimit=2 keyFieldName="id" displayFieldName="composedName" required=true hasPrimary=true /]
-     [#--  <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div> --]
-      [#--[@customForm.primaryListComponent name="${customName}.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(element.subIdos)!"" label="policy.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
-       --]
-    </div>  
-[#--
-    <div class="form-group">
-       [@customForm.select name="${customName}.principalSubIdo" className="setSelect2 principalSubIdo" i18nkey="policy.subIDO.primary" listName="" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
-    </div>--]
-       
+    [#-- Sub IDOs or SDG Targets (if CRP is Alliance)--]
+    [#if !action.hasSpecificities('crp_enable_nexus_lever_sdg_fields')]
+      [#-- Sub IDOs (maxLimit=2 -Requested for AR2021) --]
+      <div class="form-group simpleBox">
+        [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=(element.subIdos)![] label="policy.subIDOs" helpIcon=false listName="subIdos" maxLimit=2 keyFieldName="id" displayFieldName="composedName" required=true hasPrimary=true /]
+      [#--  <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div> --]
+        [#--[@customForm.primaryListComponent name="${customName}.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(element.subIdos)!"" label="policy.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
+        --]
+      </div>  
+      [#--
+      <div class="form-group">
+        [@customForm.select name="${customName}.principalSubIdo" className="setSelect2 principalSubIdo" i18nkey="policy.subIDO.primary" listName="" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
+      </div>--]
+    [#else]
+      [#-- Sdg Targets (maxLimit=3) --]
+      [@customForm.elementsListComponent name="${customName}.sdgTargets" elementType="sdgTarget" elementList=element.sdgTargets label="policy.sdgTargets" maxLimit=3 listName="sdgTargetList" keyFieldName="id" displayFieldName="composedName" required=true/]
+    [/#if]
         
     [#-- CGIAR Cross-cutting Markers  --]
     <div class="form-group">

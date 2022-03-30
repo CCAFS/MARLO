@@ -89,6 +89,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   private List<ProjectInnovationEvidenceLink> innovationLinks;
 
+  // Alliance fields
+  private List<ProjectInnovationSdgTarget> sdgTargets;
+  private Set<ProjectInnovationSdgTarget> projectInnovationSdgTargets = new HashSet<>(0);
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -118,7 +122,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public List<ProjectInnovationCenter> getCenters() {
     return centers;
   }
-
 
   public String getComposedName() {
     if ((this.projectInnovationInfo != null) && (this.projectInnovationInfo.getTitle() != null)
@@ -153,10 +156,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
       .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
   }
 
+
   public List<ProjectInnovationCountry> getCountries() {
     return this.countries;
   }
-
 
   public List<ProjectInnovationCountry> getCountries(Phase phase) {
     return new ArrayList<>(this.getProjectInnovationCountries().stream()
@@ -174,6 +177,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public List<ProjectInnovationCrp> getCrps() {
     return this.crps;
   }
+
 
   public List<ProjectInnovationDeliverable> getDeliverables() {
     return this.deliverables;
@@ -240,16 +244,13 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
       .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
   }
 
-
   public Set<ProjectInnovationDeliverable> getProjectInnovationDeliverables() {
     return this.projectInnovationDeliverables;
   }
 
-
   public Set<ProjectInnovationEvidenceLink> getProjectInnovationEvidenceLinks() {
     return projectInnovationEvidenceLinks;
   }
-
 
   public Set<ProjectInnovationGeographicScope> getProjectInnovationGeographicScopes() {
     return this.projectInnovationGeographicScopes;
@@ -258,6 +259,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public ProjectInnovationInfo getProjectInnovationInfo() {
     return this.projectInnovationInfo;
   }
+
 
   public ProjectInnovationInfo getProjectInnovationInfo(Phase phase) {
     if (this.getProjectInnovationInfo() != null) {
@@ -275,9 +277,11 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     }
   }
 
+
   public Set<ProjectInnovationInfo> getProjectInnovationInfos() {
     return this.projectInnovationInfos;
   }
+
 
   public Set<ProjectInnovationMilestone> getProjectInnovationMilestones() {
     return projectInnovationMilestones;
@@ -296,10 +300,13 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return this.projectInnovationRegions;
   }
 
+  public Set<ProjectInnovationSdgTarget> getProjectInnovationSdgTargets() {
+    return projectInnovationSdgTargets;
+  }
+
   public Set<ProjectInnovationShared> getProjectInnovationShareds() {
     return this.projectInnovationShareds;
   }
-
 
   public Set<ProjectInnovationSubIdo> getProjectInnovationSubIdos() {
     return projectInnovationSubIdos;
@@ -312,6 +319,11 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public List<ProjectInnovationRegion> getRegions(Phase phase) {
     return new ArrayList<>(this.getProjectInnovationRegions().stream()
       .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
+  }
+
+
+  public List<ProjectInnovationSdgTarget> getSdgTargets() {
+    return sdgTargets;
   }
 
   public Set<SectionStatus> getSectionStatuses() {
@@ -474,6 +486,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.projectInnovationRegions = projectInnovationRegions;
   }
 
+  public void setProjectInnovationSdgTargets(Set<ProjectInnovationSdgTarget> projectInnovationSdgTargets) {
+    this.projectInnovationSdgTargets = projectInnovationSdgTargets;
+  }
+
   public void setProjectInnovationShareds(Set<ProjectInnovationShared> projectInnovationShareds) {
     this.projectInnovationShareds = projectInnovationShareds;
   }
@@ -484,6 +500,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   public void setRegions(List<ProjectInnovationRegion> regions) {
     this.regions = regions;
+  }
+
+  public void setSdgTargets(List<ProjectInnovationSdgTarget> sdgTargets) {
+    this.sdgTargets = sdgTargets;
   }
 
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
