@@ -50,31 +50,31 @@ function updateQualityAssessmentStatusData(data) {
     var element = document.getElementById(`QAStatusIcon-${x[0]}`);
     var status, iconSrc;
 
-    switch (x[1]) {
-      case 'pending':
-        status = 'Pending assessment';
-        iconSrc = baseURL + '/global/images/pending-icon.svg';
-        break;
-      case 'pending_crp':
-        status = 'Pending CRP response';
-        iconSrc = baseURL + '/global/images/pending-icon.svg';
-        break;
-      case 'in_progress':
-        status = 'Quality Assessed (Requires 2nd assessment)';
-        iconSrc = baseURL + '/global/images/quality-assessed-icon.svg';
-        break;
-      case 'quality_assessed':
-        status = 'Quality Assessed';
-        iconSrc = baseURL + '/global/images/quality-assessed-icon.svg';
-        $(`#innovation-${x[0]}`).prop('disabled', true);
-        $(`#innovation-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
-        break;
-
-      default:
-        break;
-    }
-
     if (element && isCheckedAR == '1') {
+      switch (x[1]) {
+        case 'pending':
+          status = 'Pending assessment';
+          iconSrc = baseURL + '/global/images/pending-icon.svg';
+          break;
+        case 'pending_crp':
+          status = 'Pending CRP response';
+          iconSrc = baseURL + '/global/images/pending-icon.svg';
+          break;
+        case 'in_progress':
+          status = 'Quality Assessed (Requires 2nd assessment)';
+          iconSrc = baseURL + '/global/images/quality-assessed-icon.svg';
+          break;
+        case 'quality_assessed':
+          status = 'Quality Assessed';
+          iconSrc = baseURL + '/global/images/quality-assessed-icon.svg';
+          $(`#innovation-${x[0]}`).prop('disabled', true);
+          $(`#innovation-${x[0]}`).next('span').attr('title', 'This item cannot be unchecked because it has been already Quality Assessed');
+          break;
+
+        default:
+          break;
+      }
+
       var imgTag = document.createElement('img');
       var br = document.createElement('br');
       var spanTag = document.createElement('span');
