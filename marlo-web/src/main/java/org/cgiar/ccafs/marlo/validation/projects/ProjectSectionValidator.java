@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.SafeguardsManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
@@ -99,6 +100,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.Safeguards;
 import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -139,6 +141,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   private final DeliverableQualityCheckManager deliverableQualityCheckManager;
 
   private final ProjectDescriptionValidator descriptionValidator;
+
+  private final SafeguardValidator safeguardValidator;
 
   private final ProjectPartnersValidator projectPartnerValidator;
 
@@ -202,13 +206,15 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private final ProjectImpactsManager projectImpactsManager;
 
+  private final SafeguardsManager safeguardsManager;
+
   private final ProjectImpactsValidator projectImpactsValidator;
 
   @Inject
   public ProjectSectionValidator(ProjectManager projectManager, ProjectLocationValidator locationValidator,
     ProjectBudgetsValidator projectBudgetsValidator, DeliverableValidator deliverableValidator,
     ProjectOutcomeValidator projectOutcomeValidator, LocElementTypeManager locElementTypeManager,
-    ProjectLocationElementTypeManager projectLocationElementTypeManager,
+    ProjectLocationElementTypeManager projectLocationElementTypeManager, SafeguardsManager safeguardsManager,
     DeliverableQualityCheckManager deliverableQualityCheckManager, ProjectDescriptionValidator descriptionValidator,
     ProjectPartnersValidator projectPartnerValidator, ProjectActivitiesValidator projectActivitiesValidator,
     ProjectLeverageValidator projectLeverageValidator, ProjectHighLightValidator projectHighLightValidator,
@@ -230,7 +236,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     ProjectPolicyCountryManager projectPolicyCountryManager, ProjectPolicyRegionManager projectPolicyRegionManager,
     ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager,
     ProjectInnovationRegionManager projectInnovationRegionManager, ProjectImpactsManager projectImpactsManager,
-    ProjectImpactsValidator projectImpactsValidator) {
+    ProjectImpactsValidator projectImpactsValidator, SafeguardValidator safeguardValidator) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -274,6 +280,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.projectInnovationRegionManager = projectInnovationRegionManager;
     this.projectImpactsManager = projectImpactsManager;
     this.projectImpactsValidator = projectImpactsValidator;
+    this.safeguardValidator = safeguardValidator;
+    this.safeguardsManager = safeguardsManager;
   }
 
 
@@ -1582,6 +1590,27 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
     projectPartnerValidator.validate(action, project, false);
 
+  }
+
+  public void validateSafeguards(BaseAction action, Long projectID) {
+    Project project = projectManager.getProjectById(projectID);
+    Safeguards safeguards = null;
+    List<Safeguards> safeguardsList = new ArrayList<>();
+    if (safeguardsManager.findAll() != null) {
+      safeguardsList = safeguardsManager.findAll().stream()
+        .filter(s -> s != null && s.isActive() && s.getProject() != null && s.getProject().getId() != null
+          && s.getProject().getId().equals(project.getId()) && s.getPhase() != null && s.getPhase().getId() != null
+          && s.getPhase().getId().equals(action.getActualPhase().getId()))
+        .collect(Collectors.toList());
+    }
+    if (safeguardsList != null && !safeguardsList.isEmpty()) {
+      safeguards = safeguardsList.get(0);
+    }
+
+
+    project.setSafeguard(safeguards);
+
+    safeguardValidator.validate(action, project, safeguards, false);
   }
 
 
