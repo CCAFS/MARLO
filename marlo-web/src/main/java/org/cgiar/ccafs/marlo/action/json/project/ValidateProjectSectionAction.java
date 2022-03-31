@@ -124,6 +124,9 @@ public class ValidateProjectSectionAction extends BaseAction {
         case DESCRIPTION:
           this.projectSectionValidator.validateProjectDescription(this, this.getProjectID());
           break;
+        case SAFEGUARDS:
+          this.projectSectionValidator.validateSafeguards(this, this.getProjectID());
+          break;
         case IMPACTS:
           this.projectSectionValidator.validateProjectImpactCovid(this, this.getProjectID());
           break;
