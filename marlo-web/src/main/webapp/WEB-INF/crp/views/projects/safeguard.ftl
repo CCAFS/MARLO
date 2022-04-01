@@ -72,6 +72,7 @@
 
             [#-- Project Title --]
             <div class="form-group">
+            <br>
               [@s.text name="project.safeguards.title"  /]
               </br>
               </br>
@@ -87,10 +88,10 @@
                   <br>
                   <br>
                   <div class="form-group" align="center">
-                        <label for="">[@s.text name="Download Template" /]:</label>
+                        [#--  <label for="">[@s.text name="Download Template" /]:</label> --]
                         <br>
                         <div align="center">
-                          <a href="${baseUrlCdn}/global/documents/E&S_Reporting_Template.xlsx" download><img src="${baseUrlCdn}/global/images/download-summary.png" height="50" align="center"/></a>
+                          <a href="${baseUrlCdn}/global/documents/E&S_Reporting_Template.xlsx" download><img src="${baseUrlCdn}/global/images/word.png" width="100" height="100" /></a>
                         </div>
                   </div>
                 </p>
@@ -122,6 +123,7 @@
         [#macro uploadfileMacro isTemplate=false]
         <div class="form-group fileUploadContainer">
           <label>[@customForm.text name="project.safeguards.uploadText" readText=!editable /]:</label>
+            <br>
             [#local hasFile = safeguard.file?? && safeguard.file.id?? /]
             <input class="fileID" type="hidden" name="doc.file.id" value="${(safeguard.file.id)!}" />
             [#-- Input File --]
