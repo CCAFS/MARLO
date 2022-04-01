@@ -33,7 +33,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
+import org.cgiar.ccafs.marlo.validation.projects.SafeguardValidator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -85,14 +85,14 @@ public class SafeguardAction extends BaseAction {
   private String fileContentType;
   private String fileFileName;
   private String fileReportingFileName;
-  private ProjectDescriptionValidator validator;
+  private SafeguardValidator validator;
   private Safeguards safeguard;
 
   @Inject
   public SafeguardAction(APConfig config, ProjectManager projectManager, UserManager userManager,
     SectionStatusManager sectionStatusManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
-    ProjectDescriptionValidator validator, HistoryComparator historyComparator,
-    ProjectInfoManager projectInfoManagerManager, SafeguardsManager safeguardsManager) {
+    SafeguardValidator validator, HistoryComparator historyComparator, ProjectInfoManager projectInfoManagerManager,
+    SafeguardsManager safeguardsManager) {
     super(config);
     this.projectManager = projectManager;
     this.projectInfoManagerManager = projectInfoManagerManager;
@@ -534,7 +534,7 @@ public class SafeguardAction extends BaseAction {
     this.setInvalidFields(new HashMap<>());
     // if is saving call the validator to check for the missing fields
     if (save) {
-      validator.validate(this, project, true);
+      validator.validate(this, project, safeguard, true);
     }
   }
 
