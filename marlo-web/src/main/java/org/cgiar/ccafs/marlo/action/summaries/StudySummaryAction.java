@@ -127,10 +127,6 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     projectExpectedStudyInfos.add(projectExpectedStudyInfo);
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
-      Resource reportResource =
-        resourceManager.createDirectly(this.getClass().getResource("/pentaho/crp/StudiesPDF.prpt"), MasterReport.class);
-      MasterReport masterReport = (MasterReport) reportResource.getResource();
-
       crp = this.getLoggedCrp().getAcronym();
       if (crp == null || crp.isEmpty()) {
         String[] actionMap = ActionContext.getContext().getName().split("/");
@@ -141,6 +137,15 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       }
 
       String center = crp;
+      boolean isAlliance = "Alliance".equalsIgnoreCase(center);
+
+      Resource reportResource = isAlliance
+        ? resourceManager.createDirectly(this.getClass().getResource("/pentaho/crp/StudiesPDFAlliance.prpt"),
+          MasterReport.class)
+        : resourceManager.createDirectly(this.getClass().getResource("/pentaho/crp/StudiesPDF.prpt"),
+          MasterReport.class);
+      MasterReport masterReport = (MasterReport) reportResource.getResource();
+
 
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
@@ -160,7 +165,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
       // Set i8n for pentaho
-      masterReport = this.addi8nParameters(masterReport);
+      masterReport = this.addi8nParameters(masterReport, isAlliance);
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map
@@ -170,7 +175,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       // Uncomment to see which Subreports are detecting the method getAllSubreports
       // System.out.println("Pentaho SubReports: " + hm);
 
-      this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies");
+      this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies", isAlliance);
 
       PdfReportUtil.createPDF(masterReport, os);
       bytesPDF = os.toByteArray();
@@ -188,13 +193,13 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   }
 
 
-  private void fillSubreport(SubReport subReport, String query) {
+  private void fillSubreport(SubReport subReport, String query, boolean isAlliance) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
     TypedTableModel model = null;
     switch (query) {
       case "case_studies":
-        model = this.getCaseStudiesTableModel(projectExpectedStudyInfos);
+        model = this.getCaseStudiesTableModel(projectExpectedStudyInfos, isAlliance);
         break;
     }
     sdf.addTable(query, model);
