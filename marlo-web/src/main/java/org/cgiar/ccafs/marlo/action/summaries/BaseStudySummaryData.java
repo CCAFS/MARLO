@@ -726,6 +726,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               }
 
               leverOutcomes = String.join("", studyLeverOutcomesSet);
+            } else {
+              leverOutcomes = this.notDefinedHtml;
             }
           }
 
@@ -750,6 +752,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               }
 
               nexus = String.join("", studyNexusSet);
+            } else {
+              nexus = this.notDefinedHtml;
             }
           }
 
@@ -772,6 +776,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
 
             fundingSources = String.join("", studyFundingSourcesSet);
+          } else {
+            fundingSources = this.notDefinedHtml;
           }
 
           // Legacy CRPs/PTFs
@@ -796,6 +802,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
 
             sdgTargets = String.join("", studySdgTargetsSet);
+          } else {
+            sdgTargets = this.notDefinedHtml;
           }
 
           // Action Area Outcome Indicators
@@ -822,6 +830,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               }
 
               actionAreaOutcomeIndicators = String.join("", studyActionAreaOutcomeIndicatorsSet);
+            } else {
+              actionAreaOutcomeIndicators = this.notDefinedHtml;
             }
           }
 
@@ -848,6 +858,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               }
 
               impactAreaIndicators = String.join("", studyImpactAreaIndicatorsSet);
+            } else {
+              impactAreaIndicators = this.notDefinedHtml;
             }
           }
 
@@ -873,6 +885,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               }
 
               initiatives = String.join("", studyInitiativesSet);
+            } else {
+              initiatives = this.notDefinedHtml;
             }
           }
 
@@ -913,7 +927,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           rowObjects.add(internalStatus);
         }
 
-        model.addRow(rowObjects.toArray());
+        Object[] rowObjectsArray = rowObjects.toArray(new Object[0]);
+        model.addRow(rowObjectsArray);
 
       }
     }
