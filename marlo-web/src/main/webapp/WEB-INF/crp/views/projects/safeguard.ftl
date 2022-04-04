@@ -32,9 +32,11 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+
+[#--  
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    [#-- <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div> --]
+    <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div>
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10">
       [#if (project.projectInfo.isProjectEditLeader())!false]
@@ -50,6 +52,7 @@
   </div>
   <div style="display:none" class="viewMore closed"></div>
 </div>
+--]
 
 [#if (!availabePhase)!false]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
@@ -86,7 +89,7 @@
                         [#--  <label for="">[@s.text name="Download Template" /]:</label> --]
                         <br>
                         <div align="left">
-                          <a href="${baseUrlCdn}/global/documents/E&S_Reporting_Template.xlsx" download>[@s.text name="project.safeguards.downloadText"][/@s.text]<br><br><img src="${baseUrlCdn}/global/images/word.png"  /></a>
+                          <a href="${baseUrlCdn}/global/documents/E&S_Reporting_Template.docx" download>[@s.text name="project.safeguards.downloadText"][/@s.text]<br><br><img src="${baseUrlCdn}/global/images/word.png"  /></a>
                         </div>
                   </div>
               </div>
