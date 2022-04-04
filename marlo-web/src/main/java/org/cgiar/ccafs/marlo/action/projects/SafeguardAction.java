@@ -284,17 +284,16 @@ public class SafeguardAction extends BaseAction {
     return transaction;
   }
 
-
   private String getWorkplanRelativePath() {
 
     return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + project.getId() + File.separator
       + config.getProjectWorkplanFolder() + File.separator;
   }
 
-
   public String getWorkplanURL() {
     return config.getDownloadURL() + "/" + this.getWorkplanRelativePath().replace('\\', '/');
   }
+
 
   /**
    * Return the absolute path where the work plan is or should be located.
@@ -304,6 +303,16 @@ public class SafeguardAction extends BaseAction {
    */
   private String getWorplansAbsolutePath() {
     return config.getUploadsBaseFolder() + File.separator + this.getWorkplanRelativePath() + File.separator;
+  }
+
+  public void loadFile() {
+    if (safeguard.getFile() != null) {
+      if (safeguard.getFile().getId() != null) {
+        safeguard.setFile(fileDBManager.getFileDBById(safeguard.getFile().getId()));
+      } else {
+        safeguard.setFile(null);
+      }
+    }
   }
 
 
@@ -422,6 +431,8 @@ public class SafeguardAction extends BaseAction {
             safeguard = safeguardsManager.saveSafeguards(safeguard);
           }
 
+          this.loadFile();
+
           if (safeguard != null && safeguard.getFile() != null && safeguard.getFile().getId() != null) {
             safeguard.setHasFile(true);
           } else {
@@ -444,7 +455,6 @@ public class SafeguardAction extends BaseAction {
      * not delete the items deleted by the user
      */
     if (this.isHttpPost()) {
-      project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
     }
 
   }
@@ -459,6 +469,7 @@ public class SafeguardAction extends BaseAction {
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
+      this.saveSafeguard();
 
       this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
@@ -479,6 +490,20 @@ public class SafeguardAction extends BaseAction {
 
   }
 
+  public void saveSafeguard() {
+    Safeguards safeguardDB = new Safeguards();
+    if (safeguard != null && safeguard.getId() != null) {
+      safeguardDB = safeguardsManager.getSafeguardsById(safeguardID);
+    }
+    safeguard.setPhase(this.getActualPhase());
+    safeguard.setProject(this.getProject());
+    if (safeguardDB != null) {
+      safeguard.setActive(safeguardDB.isActive());
+    } else {
+      safeguard.setActive(true);
+    }
+  }
+
 
   public void setFile(File file) {
     this.file = file;
@@ -489,10 +514,10 @@ public class SafeguardAction extends BaseAction {
     this.fileContentType = fileContentType;
   }
 
-
   public void setFileFileName(String fileFileName) {
     this.fileFileName = fileFileName;
   }
+
 
   public void setFileReporting(File fileReporting) {
     this.fileReporting = fileReporting;
@@ -502,7 +527,6 @@ public class SafeguardAction extends BaseAction {
   public void setFileReportingFileName(String fileReportingFileName) {
     this.fileReportingFileName = fileReportingFileName;
   }
-
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -520,14 +544,15 @@ public class SafeguardAction extends BaseAction {
     this.safeguard = safeguard;
   }
 
+
   public void setSafeguardID(long safeguardID) {
     this.safeguardID = safeguardID;
   }
 
-
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
+
 
   @Override
   public void validate() {

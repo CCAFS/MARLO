@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?20223103",
+  "${baseUrlMedia}/js/projects/safeguards.js?20220404",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
@@ -79,27 +79,22 @@
               [@s.text name="project.safeguards.description"  /]
               <br>
               <br>
-              <br>
               
               <div class="helpMessage infoText2">
                 [#--  <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-transparent-warning.png" />--]
-                <p align="center">
-                  [@s.text name="project.safeguards.downloadText"][/@s.text]
-                  <br>
-                  <br>
-                  <div class="form-group" align="center">
+                  <div class="form-group" align="left">
                         [#--  <label for="">[@s.text name="Download Template" /]:</label> --]
                         <br>
-                        <div align="center">
-                          <a href="${baseUrlCdn}/global/documents/E&S_Reporting_Template.xlsx" download><img src="${baseUrlCdn}/global/images/word.png" width="100" height="100" /></a>
+                        <div align="left">
+                          <a href="${baseUrlCdn}/global/documents/E&S_Reporting_Template.xlsx" download>[@s.text name="project.safeguards.downloadText"][/@s.text]<br><br><img src="${baseUrlCdn}/global/images/word.png"  /></a>
                         </div>
                   </div>
-                </p>
               </div>
               
-              <div align="center">
-              <br>
-                  [@uploadfileMacro isTemplate=false /]
+              <br>   
+              <br>   
+              <div class="form-group" align="center">
+                    [@uploadfileMacro isTemplate=false /]               
               </div>
                            
             </div>          
@@ -115,30 +110,31 @@
 [/#if]
 
 
-[@customForm.inputFile name="fileReporting" template=true /]
-
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
         [#-- Upload a PDF with baseline instructions --]
         [#macro uploadfileMacro isTemplate=false]
-        <div class="form-group fileUploadContainer">
-          <label>[@customForm.text name="project.safeguards.uploadText" readText=!editable /]:</label>
-            <br>
-            [#local hasFile = safeguard.file?? && safeguard.file.id?? /]
-            <input class="fileID" type="hidden" name="doc.file.id" value="${(safeguard.file.id)!}" />
-            [#-- Input File --]
-            [#if editable]
-              <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadBaseLine.do"></div>
-            [/#if]
-            [#-- Uploaded File --]
-            <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
-              <span class="contentResult">[#if safeguard.hasFile??]
-                <a target="_blank" href="${action.getBaseLineFileURL((safeguard.id?string)!-1)}&filename=${(safeguard.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="38px" alt="Download document" /> ${(safeguard.file.fileName)!('No file name')} </a>
-                [/#if]</span>
-              [#if editable]<span class="removeIcon"> </span> [/#if]
-            </p>         
-        </div>
-        <br />
+          [#-- Outcome ID Parameter --]
+          <div class="form-group fileUploadContainer">
+            <label>[@customForm.text name="project.safeguards.uploadText" readText=!editable /]:</label>
+              <br>
+              [#local hasFile = safeguard.file?? && safeguard.file.id?? /]
+              <input class="fileID" type="hidden" name="safeguard.file.id" value="${(safeguard.file.id)!}" />
+              <input type="hidden" class="safeguardID" name="safeguard.id" value="${(safeguard.id)!}"/>
+
+              [#-- Input File --]
+              [#if editable]
+                <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/safeguardUploadFile.do"></div>
+              [/#if]
+              [#-- Uploaded File --]
+              <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
+                <span class="contentResult">[#if safeguard.hasFile??]
+                  <a target="_blank" href="${action.getBaseLineFileURL((safeguard.id?string)!-1)}&filename=${(safeguard.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="38px" alt="Download document" /> ${(safeguard.file.fileName)!('No file name')} </a>
+                  [/#if]</span>
+                [#if editable]<span class="removeIcon"> </span> [/#if]
+              </p>         
+          </div>
+          <br />
         [/#macro]
 
 
