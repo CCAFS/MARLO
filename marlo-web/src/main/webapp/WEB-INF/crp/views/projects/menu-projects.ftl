@@ -59,6 +59,11 @@
       { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': true, 'show': action.getCountProjectFlagships(project.id) && !reportingActive && isCrpProject, "showCheck": isGlobalUnitProject},
       { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingActive && action.hasSpecificities("crp_leverages_module") && isCrpProject, "showCheck": isGlobalUnitProject}
       ]
+    },
+    { 'title': 'Safeguards', 'show':true,
+      'items': [
+      { 'slug': 'safeguards',  'name': 'projects.menu.safeguards',  'action': 'safeguards',  'active': true  ,'show': true, "showCheck": true, "development": true }
+      ]
     }
     
   ]/]
