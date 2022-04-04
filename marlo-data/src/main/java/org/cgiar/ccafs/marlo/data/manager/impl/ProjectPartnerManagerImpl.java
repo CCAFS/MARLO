@@ -368,12 +368,12 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
     // }
     // }
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (projectPartner.getPhase().getNext() != null) {
-        this.addProjectPartnerDAO(projectPartner.getPhase().getNext(), projectPartner.getProject().getId(),
-          projectPartner);
-      }
+    // if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+    if (projectPartner.getPhase().getNext() != null) {
+      this.addProjectPartnerDAO(projectPartner.getPhase().getNext(), projectPartner.getProject().getId(),
+        projectPartner);
     }
+    // }
 
 
     return resultPartner;
