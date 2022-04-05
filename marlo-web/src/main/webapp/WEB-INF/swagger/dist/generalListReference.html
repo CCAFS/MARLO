@@ -121,6 +121,7 @@
         <div class="content">
           <a href="#section2-item1"> <button type="button" class="subCollapsible">Institutions List <span class="getColor">GET</span></button></a>
           <a href="#section2-item2"> <button type="button" class="subCollapsible">Institutions Related List <span class="getColor">GET</span></button></a>
+          <a href="#section2-item3"> <button type="button" class="subCollapsible">Institution Types <span class="getColor">GET</span></button></a>
         </div>
         <a href="#section3" class="collap"> <button type="button" class="collapsible">Research Strategy 2030</button></a>
         <div class="content">
@@ -1108,7 +1109,102 @@
                     </div>
                   </div>
                 </div>
-
+                
+                <!-- Method 2.3 -->
+                <div class="bshadow" id="section2-item3">
+                  <div class="getColorbackground contEndpoint">
+                    <button type="button" class="btn getColorbackground">GET</button> <span class="endpointTitle">/institution-types</span>
+                  </div>
+                  <div class="parameters">
+                    <h3>Functionality</h3>
+                    <h3>Parameters</h3>
+                    <div>No parameters</div>
+                    <table style="width: 70%">
+                      <thead>
+                        <tr>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td colspan="2">
+                            <div>
+                              <p><span><Strong>Request URL: </Strong></span></p>
+                              <div class="URLendpoint">
+                                <div class="fragCode">
+                                  <p><span class="endpoint"></span>/institution-types</p>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="container-c">
+                    <div class="row">
+                      <div class="col-12" style="margin-bottom: 20px;">
+                        <button onclick="institution_types()" type="button" data-bs-toggle="modal" data-bs-target="#exampleRequestModal31" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
+                      </div>
+                      <div class="col-12">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="greenCode">200</span>: <span class="blueCode">OK</span> </p>
+                          </div>
+                          <pre><code>
+  <span class="yellowCode">[</span>
+    <span class="yellowCode">{</span>
+      <span class="blueCode">"code"</span><span class="WhiteCode"> : 0,</span>
+      <span class="blueCode">"name"</span><span class="WhiteCode"> : "string"</span>    
+    <span class="yellowCode">}</span>
+  <span class="yellowCode">]</span>
+                              </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">400</span></p>
+                          </div>
+                          <pre><code>
+  <span class="redCode">Bad Request</span>
+                              </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">401</span></p>
+                          </div>
+                          <pre><code>
+  <span class="redCode">Unauthorized</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">403</span></p>
+                          </div>
+                          <pre><code>
+  <span class="redCode">Forbidden</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">404</span></p>
+                          </div>
+                          <pre><code>
+  <span class="redCode">Not Found</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
               </div>
             </div>
           </div>
@@ -3364,8 +3460,7 @@
 
 
 
-
-  <!-- Modal -->
+  <!-- CGIAR entities -->
   <div class="modal fade" id="exampleRequestModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl">
       <div class="modal-content">
@@ -3406,6 +3501,7 @@
     </div>
   </div>
 
+<!-- CGIAR entities types-->
   <div class="modal fade" id="exampleRequestModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl">
       <div class="modal-content">
@@ -3452,7 +3548,7 @@
     </div>
   </div>
 
-
+  <!-- Countries -->
   <div class="modal fade" id="exampleRequestModal3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl">
       <div class="modal-content">
@@ -3494,6 +3590,7 @@
     </div>
   </div>
 
+<!-- UN Regions -->
   <div class="modal fade" id="exampleRequestModal4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl">
       <div class="modal-content">
@@ -3539,7 +3636,7 @@
     </div>
   </div>
 
-
+  <!-- Institutions -->
   <div class="modal fade" id="exampleRequestModal5" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl">
       <div class="modal-content">
@@ -3586,7 +3683,7 @@
     </div>
   </div>
 
-
+  <!-- Action areas -->
   <div class="modal fade" id="exampleRequestModal6" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl">
       <div class="modal-content">
@@ -3619,6 +3716,7 @@
     </div>
   </div>
 
+  <!-- Impact Areas -->
   <div class="modal fade" id="exampleRequestModal7" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl">
       <div class="modal-content">
@@ -3651,6 +3749,7 @@
     </div>
   </div>
 
+<!-- Impact areas indicators -->
   <div class="modal fade" id="exampleRequestModal8" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl">
       <div class="modal-content">
@@ -3687,6 +3786,7 @@
     </div>
   </div>
 
+<!-- SDG -->
   <div class="modal fade" id="exampleRequestModal9" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl">
       <div class="modal-content">
@@ -4425,6 +4525,38 @@
       </div>
     </div>
   </div>
+  
+  <!-- Institution Types -->
+  <div class="modal fade" id="exampleRequestModal31" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+        <div class="modal-body">
+          <table class="table dataTable" id="institution_types">
+            <thead class="thead-dark">
+              <tr id="#list-print-columns-name">
+                <td>Code</td>
+                <td>Name</td>
+              </tr>
+            </thead>
+            <tbody id="list-print-institution_types">
+            </tbody>
+          </table>
+          <div class="text-center">
+            <div class="spinner-general" id="spinner_institution_types">
+              <div class="spinner-border   text-success" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+              <h4 style="margin-top: 15px;">Loading...</h4>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 <!-- 
@@ -4432,7 +4564,7 @@
 
 <button>Toggle slideUp() and slideDown()</button> -->
 <script src="conf/endpoint.conf.js"></script>
-<script src="js/request.js?20220105a"></script>
+<script src="js/request.js?20220405a"></script>
 <script>
   var coll = document.getElementsByClassName("collap");
   var i;
