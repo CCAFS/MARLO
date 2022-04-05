@@ -1,10 +1,10 @@
 [#ftl]
-[#assign title = "Cluster Description" /]
+[#assign title = "Safeguards" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/projects/safeguards.js?20220404",
+  "${baseUrlMedia}/js/projects/safeguards.js?20220404a",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
@@ -97,7 +97,7 @@
               <br>   
               <br>   
               <div class="form-group" align="center">
-                    [@uploadfileMacro isTemplate=false /]               
+                    [@uploadfileMacro safeguard=safeguard isTemplate=false /]               
               </div>
                            
             </div>          
@@ -116,14 +116,14 @@
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
         [#-- Upload a PDF with baseline instructions --]
-        [#macro uploadfileMacro isTemplate=false]
+        [#macro uploadfileMacro safeguard isTemplate=false]
           [#-- Outcome ID Parameter --]
-          <div class="form-group fileUploadContainer">
+          <div id="safeguard" class="form-group fileUploadContainer">
             <label>[@customForm.text name="project.safeguards.uploadText" readText=!editable /]:</label>
               <br>
               [#local hasFile = safeguard.file?? && safeguard.file.id?? /]
-              <input class="fileID" type="hidden" name="safeguard.file.id" value="${(safeguard.file.id)!}" />
-              <input type="hidden" class="safeguardID" name="safeguard.id" value="${(safeguard.id)!}"/>
+              <input class="fileID" type="hidden" name="${safeguard}.id" value="${(safeguard.file.id)!}" />
+              <input type="hidden" class="safeguardId" name="${safeguard}.id" value="${(safeguard.id)!}"/>
 
               [#-- Input File --]
               [#if editable]
