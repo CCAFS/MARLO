@@ -102,9 +102,9 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
   private long startTime;
   private Long projectPolicyID;
   private ProjectPolicyInfo projectPolicyInfo;
-
   // XLSX bytes
   private byte[] bytesPDF;
+
   // Streams
   InputStream inputStream;
 
@@ -189,7 +189,6 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     return masterReport;
   }
 
-
   @Override
   public String execute() throws Exception {
     if (this.getSelectedPhase() == null) {
@@ -255,6 +254,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     return SUCCESS;
   }
 
+
   private void fillSubreport(SubReport subReport, String query) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
@@ -272,11 +272,11 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     return bytesPDF;
   }
 
-
   @Override
   public int getContentLength() {
     return bytesPDF.length;
   }
+
 
   @Override
   public String getContentType() {
@@ -325,11 +325,11 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     return fileName.toString();
   }
 
-
   private String getInnovationDirectLink(String center, Long innovationId, String phaseId, Long projectId) {
     return this.getBaseUrl() + "/projects/" + center + "/innovation.do?innovationID=" + innovationId + "&phaseID="
       + phaseId + "&projectID=" + projectId;
   }
+
 
   @Override
   public InputStream getInputStream() {
@@ -687,6 +687,11 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
       hasMilestones, milestones, subIdos, centers, crps, genderFocusLevel, genderExplaniation, youthFocusLevel,
       youthExplaniation, deliverableLink, phaseID, loggedCenter});
     return model;
+  }
+
+  @Override
+  public boolean isPublicRoute() {
+    return true;
   }
 
   @Override
