@@ -43,7 +43,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonParser;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -59,6 +62,9 @@ public class IndicatorStatusItem<T> {
   }.getType();
   private static final Type LIST_RESPONSE_TYPE = new TypeToken<ResponseQA<List<IndicatorStatus>>>() {
   }.getType();
+
+  // Logger
+  private static final Logger LOG = LoggerFactory.getLogger(IndicatorStatusItem.class);
 
   protected APConfig config;
 
@@ -151,7 +157,9 @@ public class IndicatorStatusItem<T> {
 
     JsonElement element = null;
     try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
-      element = new JsonParser().parse(reader);
+      String responseString = IOUtils.toString(reader);
+      LOG.debug("QA response: {}", responseString);
+      element = new JsonParser().parse(responseString);
     } catch (FileNotFoundException fnfe) {
       element = JsonNull.INSTANCE;
     }
