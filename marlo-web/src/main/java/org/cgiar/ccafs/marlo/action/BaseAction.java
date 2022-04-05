@@ -6496,6 +6496,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  public boolean isPublicRoute() {
+    return false;
+  }
+
   /**
    * Reusable
    *
