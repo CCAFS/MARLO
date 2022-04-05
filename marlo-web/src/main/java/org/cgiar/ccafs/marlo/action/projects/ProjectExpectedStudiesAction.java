@@ -1604,6 +1604,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.saveSdgTargets(this.expectedStudyDB, phase);
       }
 
+      // try fixing a particular issue pascale is having
+      if (this.isSelectedPhaseAR2021() && this.expectedStudyDB.getProjectExpectedStudyInfo(phase) != null
+        && this.expectedStudy.getProjectExpectedStudyInfo(phase) != null) {
+        this.expectedStudy.getProjectExpectedStudyInfo(phase)
+          .setReferencesText(this.expectedStudyDB.getProjectExpectedStudyInfo(phase).getReferencesText());
+      }
+
       boolean haveRegions = false;
       boolean haveCountries = false;
       if (this.expectedStudy.getGeographicScopes() != null) {
