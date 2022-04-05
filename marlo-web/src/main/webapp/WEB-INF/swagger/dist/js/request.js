@@ -392,13 +392,8 @@ function cgiar_entity_types() {
 			console.log(data);
 			let nameColumns = ['Code', 'Name']
 
-			// $.each(nameColumns, function (index, name) {
-			// console.log("primero1");
-			// $('#list-print-columns-name').append('<th >' + name + '</th>')
-			// });
 
-			$.each(data, function (index, item) {
-				console.log("primero2");
+			$.each(data, function (index, item) {				
 				$('#list-print-cgiar_entity_types').append(
 					'<tr>' + '<td >' + item['code'] + '</td>' + '<td>'
 					+ item['name'] + '</td>' + '</tr>')
@@ -1045,6 +1040,42 @@ function CGIARRegions(){
 					+ '</tr>')
 			});
 			updateDataTable("CGIAR_regions");
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function institution_types() {
+	$.ajax({
+		url: config.endpoint + '/institution-types',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"institution_types");
+			destroyTable("institution_types");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"institution_types");
+			console.log(data);
+			let nameColumns = ['Code', 'Name']
+
+
+			$.each(data, function (index, item) {				
+				$('#list-print-institution_types').append(
+					'<tr>' + '<td >' + item['code'] + '</td>' + '<td>'
+					+ item['name'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("institution_types");
+}, 1000);
+			
 			// end print Data
 			// ********************************************** */
 		},
