@@ -148,8 +148,8 @@ public class SafeguardAction extends BaseAction {
   }
 
   private String getAnualReportRelativePath() {
-    return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + project.getId() + File.separator
-      + config.getAnualReportFolder();
+    return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + safeguard.getId() + File.separator
+      + "safeguard";
   }
 
   public String getAnualReportURL() {
@@ -179,7 +179,7 @@ public class SafeguardAction extends BaseAction {
   }
 
   public String getBaseLineFileUrlPath(String safeguardID) {
-    return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + safeguardID;
+    return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=safeguard&id=" + safeguardID;
   }
 
   /**
@@ -199,7 +199,7 @@ public class SafeguardAction extends BaseAction {
 
 
     return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + project.getId() + File.separator
-      + config.getBilateralProjectContractProposalFolder() + File.separator;
+      + "safeguard" + File.separator;
   }
 
   public File getFile() {
@@ -352,7 +352,7 @@ public class SafeguardAction extends BaseAction {
       this.setDifferences(new ArrayList<>());
       try {
         this.getDifferences().addAll(historyComparator.getDifferencesList(
-          history.getProjecInfoPhase(this.getActualPhase()), transaction, specialList, "project.projectInfo", "", 1));
+          history.getProjecInfoPhase(this.getActualPhase()), transaction, specialList, "safeguards", "", 1));
       } catch (Exception e) {
 
       }
