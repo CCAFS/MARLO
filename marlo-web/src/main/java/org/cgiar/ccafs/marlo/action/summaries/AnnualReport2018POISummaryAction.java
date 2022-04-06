@@ -62,9 +62,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
@@ -1696,60 +1694,84 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       new POIField(this.getText("summaries.annualReport2018.table4Title4"), ParagraphAlignment.CENTER, false)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
+    StringBuffer sbCountries, sbRegions, sbGeo;
+
     for (ProjectInnovation projectInnovation : projectInnovationsTable4) {
-      String title = "", type = "", stage = "", geographic = "", country = "", region = "", url = "";
+      String title = "", type = "", stage = "", url = "";
+      sbCountries = new StringBuffer();
+      sbRegions = new StringBuffer();
+      sbGeo = new StringBuffer();
+      boolean hasRegions = false, hasCountries = false;
 
       if (projectInnovation != null && projectInnovation.getProjectInnovationInfo(this.getSelectedPhase()) != null) {
         if (projectInnovation.getProjectInnovationInfo(this.getSelectedPhase()).getTitle() != null) {
           title = projectInnovation.getId() + " - "
             + projectInnovation.getProjectInnovationInfo(this.getSelectedPhase()).getTitle();
         }
+
         if (projectInnovation.getProjectInnovationInfo(this.getSelectedPhase()).getRepIndInnovationType() != null
           && projectInnovation.getProjectInnovationInfo(this.getSelectedPhase()).getRepIndInnovationType()
             .getName() != null) {
           type =
             projectInnovation.getProjectInnovationInfo(this.getSelectedPhase()).getRepIndInnovationType().getName();
         }
+
         if (projectInnovation.getProjectInnovationInfo(this.getSelectedPhase()).getRepIndStageInnovation() != null
           && projectInnovation.getProjectInnovationInfo(this.getSelectedPhase()).getRepIndStageInnovation()
             .getName() != null) {
           stage =
             projectInnovation.getProjectInnovationInfo(this.getSelectedPhase()).getRepIndStageInnovation().getName();
         }
-        if (projectInnovation.getGeographicScopes(this.getSelectedPhase()) != null) {
-          List<ProjectInnovationGeographicScope> innovationGeographics =
-            projectInnovation.getGeographicScopes(this.getSelectedPhase());
-          for (ProjectInnovationGeographicScope innovationGeographic : innovationGeographics) {
-            if (innovationGeographic != null && innovationGeographic.getRepIndGeographicScope() != null
-              && innovationGeographic.getRepIndGeographicScope().getName() != null) {
-              if (innovationGeographic.getRepIndGeographicScope().getName().contains("Global")) {
-                geographic += innovationGeographic.getRepIndGeographicScope().getName() + ", ";
-              } else {
-                geographic += innovationGeographic.getRepIndGeographicScope().getName() + ": ";
+
+
+        if (projectInnovation.getGeographicScopes() != null) {
+          String geoName = null;
+          for (ProjectInnovationGeographicScope innovationGeographic : projectInnovation.getGeographicScopes()) {
+            if (innovationGeographic != null && innovationGeographic.getId() != null
+              && innovationGeographic.getRepIndGeographicScope() != null
+              && innovationGeographic.getRepIndGeographicScope().getId() != null) {
+              geoName = StringUtils.trimToEmpty(innovationGeographic.getRepIndGeographicScope().getName());
+
+              if (innovationGeographic.getRepIndGeographicScope().getId() == 1) {
+                if (!StringUtils.containsIgnoreCase(sbGeo, geoName)) {
+                  sbGeo.append(geoName);
+                }
+              }
+
+              if (innovationGeographic.getRepIndGeographicScope().getId() == 2) {
+                hasRegions = true;
+                if (!StringUtils.containsIgnoreCase(sbRegions, geoName)) {
+                  sbRegions.append(geoName);
+                }
+              }
+
+              if (innovationGeographic.getRepIndGeographicScope().getId() != 1
+                && innovationGeographic.getRepIndGeographicScope().getId() != 2) {
+                hasCountries = true;
+                if (!StringUtils.containsIgnoreCase(sbCountries, geoName)) {
+                  sbCountries.append(geoName);
+                }
               }
             }
           }
         }
 
-        if (projectInnovation.getRegions(this.getSelectedPhase()) != null) {
-          List<ProjectInnovationRegion> innovationGeographics = projectInnovation.getRegions(this.getSelectedPhase());
-          for (ProjectInnovationRegion innovationGeographic : innovationGeographics) {
-            if (innovationGeographic != null && innovationGeographic.getLocElement() != null
-              && innovationGeographic.getLocElement().getName() != null) {
-              region += innovationGeographic.getLocElement().getName() + ", ";
-            }
-          }
+        if (hasRegions && projectInnovation.getRegions() != null) {
+          sbRegions.append(": ")
+            .append(projectInnovation.getRegions().stream()
+              .filter(
+                r -> r != null && r.getId() != null && r.getLocElement() != null && r.getLocElement().getId() != null)
+              .map(r -> r.getLocElement()).distinct().map(le -> le.getName()).collect(Collectors.joining(", ")))
+            .append(";");
         }
 
-        if (projectInnovation.getCountries(this.getSelectedPhase()) != null) {
-          List<ProjectInnovationCountry> innovationGeographics =
-            projectInnovation.getCountries(this.getSelectedPhase());
-          for (ProjectInnovationCountry innovationGeographic : innovationGeographics) {
-            if (innovationGeographic != null && innovationGeographic.getLocElement() != null
-              && innovationGeographic.getLocElement().getName() != null) {
-              country += innovationGeographic.getLocElement().getName() + ", ";
-            }
-          }
+        if (hasCountries && projectInnovation.getCountries() != null) {
+          sbCountries.append(": ")
+            .append(projectInnovation.getCountries().stream()
+              .filter(
+                r -> r != null && r.getId() != null && r.getLocElement() != null && r.getLocElement().getId() != null)
+              .map(r -> r.getLocElement()).distinct().map(le -> le.getName()).collect(Collectors.joining(", ")))
+            .append(";");
         }
       }
 
@@ -1760,22 +1782,33 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       url = this.getBaseUrl() + "/summaries/" + this.getCrpSession() + "/projectInnovationSummary.do?innovationID="
         + (projectInnovation.getId()).toString() + "&phaseID=" + this.getSelectedPhase().getId();
 
-      if (country != null) {
-        geographic += country;
-      }
-      if (region != null) {
-        geographic += region;
+      if (sbCountries.length() > 0) {
+        if (sbGeo.length() > 0 && sbGeo.charAt(sbGeo.length() - 1) == 'l') {
+          sbGeo.append("; ");
+        }
+
+        sbGeo.append(sbCountries);
       }
 
-      try {
-        geographic = geographic.substring(0, geographic.length() - 2);
-      } catch (Exception e) {
+      if (sbRegions.length() > 0) {
+        if (sbGeo.length() > 0) {
+          if (sbGeo.charAt(sbGeo.length() - 1) == 'l') {
+            sbGeo.append("; ");
+          } else if (sbGeo.charAt(sbGeo.length() - 1) == ';') {
+            sbGeo.append(' ');
+          }
+        }
 
+        sbGeo.append(sbRegions);
+      }
+
+      if (sbGeo.length() > 0 && sbGeo.charAt(sbGeo.length() - 1) != 'l') {
+        sbGeo.deleteCharAt(sbGeo.length() - 1);
       }
 
       POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, false, "0000", url),
         new POIField(type, ParagraphAlignment.CENTER, false), new POIField(stage, ParagraphAlignment.LEFT, false),
-        new POIField(geographic, ParagraphAlignment.LEFT, false)};
+        new POIField(sbGeo.toString(), ParagraphAlignment.LEFT, false)};
       data = Arrays.asList(sData);
       datas.add(data);
     }

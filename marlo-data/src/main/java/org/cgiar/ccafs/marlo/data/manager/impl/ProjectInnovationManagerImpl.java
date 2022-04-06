@@ -19,16 +19,22 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationDAO;
 import org.cgiar.ccafs.marlo.data.dto.InnovationHomeDTO;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovationDTO;
@@ -40,6 +46,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.commons.collections4.ListUtils;
 
 /**
  * @author Christian Garcia
@@ -54,18 +62,25 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
   private ProjectFocusManager projectFocusManager;
   private ProjectManager projectManager;
   private ReportSynthesisManager reportSynthesisManager;
-
+  private ProjectInnovationCountryManager projectInnovationCountryManager;
+  private ProjectInnovationRegionManager projectInnovationRegionManager;
+  private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
 
   @Inject
   public ProjectInnovationManagerImpl(ProjectInnovationDAO projectInnovationDAO, PhaseManager phaseManager,
     CrpProgramManager crpProgramManager, ProjectFocusManager projectFocusManager, ProjectManager projectManager,
-    ReportSynthesisManager reportSynthesisManager) {
+    ReportSynthesisManager reportSynthesisManager, ProjectInnovationCountryManager projectInnovationCountryManager,
+    ProjectInnovationRegionManager projectInnovationRegionManager,
+    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager) {
     this.projectInnovationDAO = projectInnovationDAO;
     this.phaseManager = phaseManager;
     this.crpProgramManager = crpProgramManager;
     this.projectFocusManager = projectFocusManager;
     this.projectManager = projectManager;
     this.reportSynthesisManager = reportSynthesisManager;
+    this.projectInnovationCountryManager = projectInnovationCountryManager;
+    this.projectInnovationRegionManager = projectInnovationRegionManager;
+    this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
   }
 
   @Override
@@ -78,6 +93,55 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
   public boolean existProjectInnovation(long projectInnovationID) {
 
     return projectInnovationDAO.existProjectInnovation(projectInnovationID);
+  }
+
+  private void fillBasicInfo(ProjectInnovation innovation, Phase phase) {
+    // Setup Geographic Scope
+    if (innovation.getProjectInnovationGeographicScopes() != null) {
+      innovation.setGeographicScopes(new ArrayList<>(innovation.getProjectInnovationGeographicScopes().stream()
+        .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+    }
+
+    // Innovation Countries List
+    if (innovation.getProjectInnovationCountries() == null) {
+      innovation.setCountries(new ArrayList<>());
+    } else {
+      List<ProjectInnovationCountry> countries =
+        projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId());
+      innovation.setCountries(countries);
+    }
+
+    if (innovation.getProjectInnovationRegions() == null) {
+      innovation.setRegions(new ArrayList<>());
+    } else {
+      List<ProjectInnovationRegion> geographics =
+        projectInnovationRegionManager.getInnovationRegionbyPhase(innovation.getId(), phase.getId());
+
+      // Load Regions
+      innovation.setRegions(geographics.stream().filter(sc -> sc.getLocElement().getLocElementType().getId() == 1)
+        .collect(Collectors.toList()));
+    }
+
+    // Innovation Contributing organizations List
+    if (innovation.getProjectInnovationContributingOrganization() != null) {
+      innovation.setContributingOrganizations(new ArrayList<>(innovation.getProjectInnovationContributingOrganization()
+        .stream().filter(d -> d.getPhase().getId().equals(phase.getId()))
+        .sorted((o1, o2) -> o1.getInstitution().getComposedName().compareTo(o2.getInstitution().getComposedName()))
+        .collect(Collectors.toList())));
+    }
+
+    // studies
+    if (innovation.getProjectExpectedStudyInnovations() == null) {
+      innovation.setCountries(new ArrayList<>());
+    } else {
+      List<ProjectExpectedStudyInnovation> expectedStudyInnovations = ListUtils
+        .emptyIfNull(projectExpectedStudyInnovationManager.getAllStudyInnovationsByInnovation(innovation.getId()))
+        .stream().filter(ei -> ei != null && ei.getId() != null && ei.isActive() && ei.getPhase() != null
+          && ei.getPhase().getId() != null && ei.getPhase().equals(phase))
+        .collect(Collectors.toList());
+      innovation.setStudies(expectedStudyInnovations);
+    }
+
   }
 
   @Override
@@ -235,11 +299,7 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
 
           for (ProjectInnovation projectInnovation : plannedprojectInnovations) {
             projectInnovation.getProjectInnovationInfo(phaseDB);
-            projectInnovation.setGeographicScopes(projectInnovation.getGeographicScopes(phaseDB));
-            projectInnovation.setCountries(projectInnovation.getCountries(phaseDB));
-            projectInnovation.setRegions(projectInnovation.getRegions(phaseDB));
-            projectInnovation.setContributingOrganizations(projectInnovation.getContributingOrganizations(phaseDB));
-            projectInnovation.setStudies(projectInnovation.getStudies(phaseDB));
+            this.fillBasicInfo(projectInnovation, phaseDB);
             projectInnovations.add(projectInnovation);
           }
         }
@@ -259,10 +319,7 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
 
         ProjectInnovation projectInnovation = reportSynthesisFlagshipProgressInnovationDTO.getProjectInnovation();
         projectInnovation.getProjectInnovationInfo(phaseDB);
-        projectInnovation.setGeographicScopes(projectInnovation.getGeographicScopes(phaseDB));
-        projectInnovation.setCountries(projectInnovation.getCountries(phaseDB));
-        projectInnovation.setRegions(projectInnovation.getRegions(phaseDB));
-        projectInnovation.setContributingOrganizations(projectInnovation.getContributingOrganizations(phaseDB));
+        this.fillBasicInfo(projectInnovation, phaseDB);
 
         projectInnovation.setSelectedFlahsgips(new ArrayList<>());
         // sort selected flagships
@@ -306,10 +363,7 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
 
         for (ProjectInnovation projectInnovation : plannedprojectInnovations) {
           projectInnovation.getProjectInnovationInfo(phaseDB);
-          projectInnovation.setGeographicScopes(projectInnovation.getGeographicScopes(phaseDB));
-          projectInnovation.setCountries(projectInnovation.getCountries(phaseDB));
-          projectInnovation.setRegions(projectInnovation.getRegions(phaseDB));
-          projectInnovation.setContributingOrganizations(projectInnovation.getContributingOrganizations(phaseDB));
+          this.fillBasicInfo(projectInnovation, phaseDB);
           projectInnovations.add(projectInnovation);
         }
       }
