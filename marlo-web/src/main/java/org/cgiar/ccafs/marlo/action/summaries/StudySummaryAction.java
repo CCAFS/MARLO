@@ -101,7 +101,6 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     this.crpManager = crpManager;
   }
 
-
   @Override
   public String execute() throws Exception {
 
@@ -192,7 +191,6 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     return SUCCESS;
   }
 
-
   private void fillSubreport(SubReport subReport, String query, boolean isAlliance) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
@@ -206,14 +204,15 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     subReport.setDataFactory(cdf);
   }
 
+
   public byte[] getBytesPDF() {
     return bytesPDF;
   }
 
-
   public String getCaseStudyUrl(String project) {
     return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath(project).replace('\\', '/');
   }
+
 
   public String getCaseStudyUrlPath(String project) {
 
@@ -230,7 +229,6 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     return "application/pdf";
   }
 
-
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -238,6 +236,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
+
 
   @Override
   public String getFileName() {
@@ -293,6 +292,11 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   private String getStudiesSourceFolder() {
     return APConstants.STUDIES_FOLDER.concat(File.separator).concat(crp).concat(File.separator).concat(File.separator)
       .concat(crp + "_").concat(ProjectSectionStatusEnum.EXPECTEDSTUDY.getStatus()).concat(File.separator);
+  }
+
+  @Override
+  public boolean isPublicRoute() {
+    return true;
   }
 
 
