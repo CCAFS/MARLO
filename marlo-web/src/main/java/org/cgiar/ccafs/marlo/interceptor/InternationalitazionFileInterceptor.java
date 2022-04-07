@@ -37,8 +37,10 @@ import javax.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.LocalizedTextProvider;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
+import org.apache.struts2.dispatcher.mapper.ActionMapping;
 
 public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
@@ -74,8 +76,6 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
-
-
     String language = APConstants.CUSTOM_LAGUAGE;
     String pathFile = APConstants.PATH_CUSTOM_FILES;
     Map<String, Object> session = invocation.getInvocationContext().getSession();
@@ -98,21 +98,30 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
     ServletActionContext.getContext().setLocale(locale);
 
-    if (session.containsKey(APConstants.SESSION_CRP)) {
+    if (!session.isEmpty()) {
+      if (session.containsKey(APConstants.SESSION_CRP)) {
 
-      BaseAction baseAction = (BaseAction) invocation.getAction();
-      parameters = invocation.getInvocationContext().getParameters();
-      GlobalUnit globalUnit = (GlobalUnit) session.get(APConstants.SESSION_CRP);
-      try {
-        String projectParameter = parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0];
-        long projectId = Long.parseLong(projectParameter);
-        Project project = projectManager.getProjectById(projectId);
-        if (project != null && globalUnit.getGlobalUnitType().getId() == 4) {
-          GlobalUnitProject globalUnitProject = globalUnitProjectManager.findByProjectId(project.getId());
-          // GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(globalUnitProject.getGlobalUnit().getId());
-          pathFile = pathFile + globalUnitProject.getGlobalUnit().getAcronym().toLowerCase();
-          this.localizedTextProvider.addDefaultResourceBundle(pathFile);
-        } else {
+        BaseAction baseAction = (BaseAction) invocation.getAction();
+        parameters = invocation.getInvocationContext().getParameters();
+        GlobalUnit globalUnit = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+        try {
+          String projectParameter = parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0];
+          long projectId = Long.parseLong(projectParameter);
+          Project project = projectManager.getProjectById(projectId);
+          if (project != null && globalUnit.getGlobalUnitType().getId() == 4) {
+            GlobalUnitProject globalUnitProject = globalUnitProjectManager.findByProjectId(project.getId());
+            // GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(globalUnitProject.getGlobalUnit().getId());
+            pathFile = pathFile + globalUnitProject.getGlobalUnit().getAcronym().toLowerCase();
+            this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+          } else {
+            if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
+              pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
+              this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+            } else {
+              this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+            }
+          }
+        } catch (Exception e) {
           if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
             pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
             this.localizedTextProvider.addDefaultResourceBundle(pathFile);
@@ -120,12 +129,24 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
             this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
           }
         }
-      } catch (Exception e) {
-        if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
-          pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
-          this.localizedTextProvider.addDefaultResourceBundle(pathFile);
-        } else {
-          this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+      }
+    } else {
+      if (invocation.getAction() != null && (invocation.getAction() instanceof BaseAction)) {
+        BaseAction action = (BaseAction) invocation.getAction();
+        if (action.isPublicRoute()) {
+          ActionMapping actionMapping = (ActionMapping) invocation.getInvocationContext().get("struts.actionMapping");
+          if (actionMapping != null) {
+            String[] names = StringUtils.split(actionMapping.getName(), "/");
+            if (names != null && names.length > 0) {
+              // in theory the crp is always the first parameter in the url
+              String crpAcronym = names[0];
+              GlobalUnit globalUnit = globalUnitManager.findGlobalUnitByAcronym(crpAcronym);
+              if (globalUnit != null) {
+                pathFile = pathFile + StringUtils.lowerCase(crpAcronym);
+                this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+              }
+            }
+          }
         }
       }
     }

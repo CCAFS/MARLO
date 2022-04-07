@@ -196,7 +196,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     return masterReport;
   }
 
-
   @Override
   public String execute() throws Exception {
 
@@ -260,6 +259,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     return SUCCESS;
   }
 
+
   private void fillSubreport(SubReport subReport, String query) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
@@ -277,11 +277,11 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     return bytesPDF;
   }
 
-
   @Override
   public int getContentLength() {
     return bytesPDF.length;
   }
+
 
   @Override
   public String getContentType() {
@@ -316,7 +316,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     return fileName.toString();
   }
 
-
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
@@ -324,6 +323,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     }
     return inputStream;
   }
+
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
@@ -773,6 +773,11 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       crps, genderFocusLevel, genderExplaniation, youthFocusLevel, youthExplaniation, project, oicr, centers,
       hasMilestones, milestones, subIdos, deliverableLink, phaseID, loggedCenter, isNew, innovationNumber});
     return model;
+  }
+
+  @Override
+  public boolean isPublicRoute() {
+    return true;
   }
 
 
