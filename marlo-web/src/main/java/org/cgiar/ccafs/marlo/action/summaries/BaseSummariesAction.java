@@ -75,7 +75,7 @@ public class BaseSummariesAction extends BaseAction {
   private String downloadByUser;
 
   // Managers
-  private GlobalUnitManager crpManager;
+  protected GlobalUnitManager crpManager;
 
 
   private PhaseManager phaseManager;
