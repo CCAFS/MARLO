@@ -78,7 +78,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
    * @param masterReport
    * @return masterReport with i8n parameters added
    */
-  public MasterReport addi8nParameters(MasterReport masterReport, boolean isAlliance) {
+  public MasterReport addi8nParameters(MasterReport masterReport, boolean isAlliance, List<String> allianceArgList) {
     masterReport.getParameterValues().put("i8nStudies", this.getText("menu.studies"));
     masterReport.getParameterValues().put("i8nStudiesRNoData", this.getText("summaries.study.noData"));
     masterReport.getParameterValues().put("i8nStudiesRCaseStudy", this.getText("summaries.study"));
@@ -107,8 +107,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     masterReport.getParameterValues().put("i8nCaseStudiesRTargetOption", this.getText("study.targetsOption"));
     masterReport.getParameterValues().put("i8nStudiesRSRFTargets",
       this.getText("summaries.study.stratgicResultsLink.srfTargets"));
-    masterReport.getParameterValues().put("i8nStudiesRTopLevelCommentst",
-      this.getText("summaries.study.stratgicResultsLink.comments"));
+    masterReport.getParameterValues().put("i8nStudiesRTopLevelCommentst", this.getText("study.activityDescription"));
     masterReport.getParameterValues().put("i8nStudiesRGeographicScope", this.getText("study.geographicScope"));
     masterReport.getParameterValues().put("i8nStudiesRRegion", this.getText("study.region"));
     masterReport.getParameterValues().put("i8nStudiesRContries", this.getText("involveParticipants.countries"));
@@ -153,31 +152,34 @@ public class BaseStudySummaryData extends BaseSummariesAction {
       this.getText("study.quantification.quantificationType-1"));
     masterReport.getParameterValues().put("i8nStudiesRQuantificationType2",
       this.getText("study.quantification.quantificationType-2"));
+    masterReport.getParameterValues().put("i8nStudiesRMELIALinks", this.getText("summaries.study.MELIAPublications"));
 
     if (isAlliance) {
       masterReport.getParameterValues().put("i8nCaseStudiesRPartIII", this.getText("summaries.study.partIII"));
       masterReport.getParameterValues().put("i8nStudiesRInternalStatus", this.getText("study.internalStatus"));
       masterReport.getParameterValues().put("i8nStudiesRHasLeverOutcomesText",
-        this.getText("study.leverOutcomes.question"));
+        this.getText("study.leverOutcomes.question", allianceArgList));
       masterReport.getParameterValues().put("i8nCaseStudiesRLeverOutcomes",
         this.getText("summaries.study.leverOutcomes"));
-      masterReport.getParameterValues().put("i8nStudiesRHasNexusText", this.getText("study.nexus.question"));
+      masterReport.getParameterValues().put("i8nStudiesRHasNexusText",
+        this.getText("study.nexus.question", allianceArgList));
       masterReport.getParameterValues().put("i8nCaseStudiesRNexus", this.getText("summaries.study.nexus"));
       masterReport.getParameterValues().put("i8nCaseStudiesRFundingSources",
         this.getText("summaries.study.fundingSources"));
-      masterReport.getParameterValues().put("i8nStudiesRHasLegacyCrpsText", this.getText("study.legacyCrp.question"));
+      masterReport.getParameterValues().put("i8nStudiesRHasLegacyCrpsText",
+        this.getText("study.legacyCrp.question", allianceArgList));
       masterReport.getParameterValues().put("i8nCaseStudiesRLegacyCrps", this.getText("summaries.study.legacyCrps"));
       masterReport.getParameterValues().put("i8nCaseStudiesRSdgTargets", this.getText("summaries.study.sdgTargets"));
       masterReport.getParameterValues().put("i8nStudiesRHasActionAreaOutcomeIndicatorsText",
-        this.getText("study.actionAreaOutcomeIndicators.question"));
+        this.getText("study.actionAreaOutcomeIndicators.question", allianceArgList));
       masterReport.getParameterValues().put("i8nCaseStudiesRActionAreaOutcomeIndicators",
         this.getText("summaries.study.actionAreaOutcomeIndicators"));
       masterReport.getParameterValues().put("i8nStudiesRHasImpactAreaIndicatorsText",
-        this.getText("study.impactAreaIndicators.question"));
+        this.getText("study.impactAreaIndicators.question", allianceArgList));
       masterReport.getParameterValues().put("i8nCaseStudiesRImpactAreaIndicators",
         this.getText("summaries.study.impactAreaIndicators"));
       masterReport.getParameterValues().put("i8nStudiesRHasInitiativesText",
-        this.getText("study.initiatives.question"));
+        this.getText("study.initiatives.question", allianceArgList));
       masterReport.getParameterValues().put("i8nCaseStudiesRInitiatives", this.getText("summaries.study.initiatives"));
     }
 
@@ -194,15 +196,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
       "youthRelevance", "capacityRelevance", "otherCrossCuttingDimensions", "comunicationsMaterial", "contacts",
       "studyProjects", "tagged", "cgiarInnovation", "cgiarInnovations", "climateRelevance", "link", "links",
       "studyPolicies", "isSrfTargetText", "otherCrossCuttingDimensionsSelection", "isContribution", "isRegional",
-      "isNational", "isOutcomeCaseStudy", "isSrfTarget", "url", "studiesReference"};
+      "isNational", "isOutcomeCaseStudy", "isSrfTarget", "url", "studiesReference", "meliaLinks"};
 
-    Class[] columnClasses =
-      new Class[] {Long.class, Integer.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class};
+    Class[] columnClasses = new Class[] {Long.class, Integer.class, String.class, String.class, String.class,
+      String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+      String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+      String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+      String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+      String.class, String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class,
+      String.class, String.class, String.class};
 
     TypedTableModel model = new TypedTableModel(columnNames, columnClasses, /* inititalRowNumber */0);
 
@@ -253,7 +255,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           otherCrossCuttingDimensions = null, comunicationsMaterial = null, contacts = null, studyProjects = null,
           tagged = null, cgiarInnovation = null, cgiarInnovations = null, climateRelevance = null, link = null,
           links = null, studyPolicies = null, isSrfTargetText = null, otherCrossCuttingDimensionsSelection = null,
-          url = null, studiesReference = null;
+          url = null, studiesReference = null, meliaPublications = null;
 
         Boolean isContribution = false, isRegional = false, isNational = false, isOutcomeCaseStudy = false,
           isSrfTarget = false;
@@ -351,6 +353,19 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         if (projectExpectedStudyInfo.getRepIndStageStudy() != null) {
           stageStudy = projectExpectedStudyInfo.getRepIndStageStudy().getName();
         }
+
+        // Links to MELIA publications
+        if (projectExpectedStudyInfo.getMELIAPublications() != null) {
+          Set<String> studyMeliaLinksSet = new HashSet<>();
+          for (String linkMelia : StringUtils.split(projectExpectedStudyInfo.getMELIAPublications(), "\\R")) {
+            if (StringUtils.isNotBlank(linkMelia)) {
+              studyMeliaLinksSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + urlShortener.detectAndShortenLinks(linkMelia));
+            }
+          }
+
+          meliaPublications = String.join("", studyMeliaLinksSet);
+        }
+
         // SubIdos
         List<ProjectExpectedStudySubIdo> subIdosList =
           projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudySubIdos().stream()
@@ -694,7 +709,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             quantification, genderRelevance, youthRelevance, capacityRelevance, otherCrossCuttingDimensions,
             comunicationsMaterial, contacts, studyProjects, tagged, cgiarInnovation, cgiarInnovations, climateRelevance,
             link, links, studyPolicies, isSrfTargetText, otherCrossCuttingDimensionsSelection, isContribution,
-            isRegional, isNational, isOutcomeCaseStudy, isSrfTarget, url, studiesReference}));
+            isRegional, isNational, isOutcomeCaseStudy, isSrfTarget, url, studiesReference, meliaPublications}));
 
         if (isAlliance) {
           Boolean hasLeverOutcomes, hasNexus, hasLegacyCrps, hasActionAreaOutcomeIndicators, hasImpactAreaIndicators,

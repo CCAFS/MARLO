@@ -112,6 +112,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       return NOT_FOUND;
     }
 
+    List<String> allianceArgList = new ArrayList<>();
 
     if (projectExpectedStudyID == null
       || projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyID) == null
@@ -122,6 +123,12 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     } else {
       projectExpectedStudyInfo = projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyID)
         .getProjectExpectedStudyInfo(this.getSelectedPhase());
+      if (projectExpectedStudyInfo != null) {
+        boolean isOicr =
+          projectExpectedStudyInfo.getStudyType() != null && projectExpectedStudyInfo.getStudyType().getId() != null
+            && projectExpectedStudyInfo.getStudyType().getId().longValue() == 1L;
+        allianceArgList.add(isOicr ? "OICR" : "MELIA");
+      }
     }
     projectExpectedStudyInfos.add(projectExpectedStudyInfo);
     ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -164,7 +171,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
       // Set i8n for pentaho
-      masterReport = this.addi8nParameters(masterReport, isAlliance);
+      masterReport = this.addi8nParameters(masterReport, isAlliance, allianceArgList);
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map
