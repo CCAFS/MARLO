@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -138,7 +139,7 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
       // Set i8n for pentaho
-      masterReport = this.addi8nParameters(masterReport, isAlliance);
+      masterReport = this.addi8nParameters(masterReport, isAlliance, Collections.singletonList("study"));
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map
