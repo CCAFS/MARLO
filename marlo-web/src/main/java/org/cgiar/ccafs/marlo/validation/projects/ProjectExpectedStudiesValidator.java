@@ -399,6 +399,9 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       }
     }
 
+    if (action.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
+      this.validateAllianceSpecificFields(action, projectExpectedStudy);
+    }
 
     if (!(baseAction.isReportingActive() || baseAction.isUpKeepActive())) {
       // Validate Srf Targets Selection
@@ -728,10 +731,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
             action.getInvalidFields().put("list-expectedStudy.flagships",
               action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"flagships"}));
           }
-        }
-
-        if (action.hasSpecificities(APConstants.CRP_ENABLE_NEXUS_LEVER_SDG_FIELDS)) {
-          this.validateAllianceSpecificFields(action, projectExpectedStudy);
         }
       } else {
         // Validate Srf Targets Selection

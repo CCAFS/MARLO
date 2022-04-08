@@ -737,25 +737,25 @@
     </div>
 
     [#-- Part I  Description and all information of the outcome/ impact reported --]
-    <div class="borderBox">
-      [#-- Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
-      [#if isOutcomeCaseStudy]
-        <div class="form-group">
-          <div class="optionPublicComponent form-group" style="display:block">         
-            <br />
-            <div class="input-group">
-              <span class="input-group-btn">
-                <button class="btn btn-default btn-sm copyButton" type="button" style="${editable?string('', 'margin-right: 5px;')}"> <span class="glyphicon glyphicon-duplicate"></span> Copy URL </button>
-              </span>
-              [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
-              [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable readOnly=true/]
-              <!--input type="text" class="form-control input-sm urlInput" value="${summaryPDF}" readonly-->
+    [#if isOutcomeCaseStudy]
+      <div class="borderBox">
+        [#-- Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
+          <div class="form-group">
+            <div class="optionPublicComponent form-group" style="display:block">         
+              <br />
+              <div class="input-group">
+                <span class="input-group-btn">
+                  <button class="btn btn-default btn-sm copyButton" type="button" style="${editable?string('', 'margin-right: 5px;')}"> <span class="glyphicon glyphicon-duplicate"></span> Copy URL </button>
+                </span>
+                [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+                [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable readOnly=true/]
+                <!--input type="text" class="form-control input-sm urlInput" value="${summaryPDF}" readonly-->
+              </div>
+              <div class="message text-center" style="display:none">Copied!</div>
             </div>
-            <div class="message text-center" style="display:none">Copied!</div>
           </div>
-        </div>
-      [/#if]
-    </div>
+      </div>
+    [/#if]
     <div class="borderBox">
       <h4>[@s.text name="study.partOne" /]</h4>
       <hr>
@@ -764,6 +764,13 @@
       <div class="form-group">
         [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className=(isOutcomeCaseStudy?then("limitWords-35","")) helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
       </div>
+
+      [#-- Who is commissioning this study (only MELIAs) --]
+      [#if !isOutcomeCaseStudy]
+      <div class="form-group">
+        [@customForm.input name="${customName}.projectExpectedStudyInfo.commissioningStudy" i18nkey="study.commissioningStudy" help="study.commissioningStudy.help" className="" helpIcon=false required=true editable=editable /]
+      </div>
+      [/#if]
       
       [#-- 4. Short outcome/impact statement (up to 80 words) --]
       [#if isOutcomeCaseStudy]
@@ -1091,6 +1098,17 @@
         </div>
       </div>
       [/#if]
+
+      [#--  Comments for other studies (MELIA only)--]
+      [#if !isOutcomeCaseStudy]
+        <div class="form-group stageProcessOne">
+          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.activityDescription"  placeholder="" className="limitWords-150" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+        </div>
+        
+        <div class="form-group stageProcessOne">
+          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.MELIAPublications" i18nkey="study.MELIAPublications"  placeholder="" help="study.MELIAPublications.help" helpIcon=false className="" required=false editable=editable /]
+        </div>
+      [/#if]
     </div>
 
     [#-- Part II Mapping to Alliance strategy and structure --]
@@ -1102,7 +1120,7 @@
         <div class="form-group">
           [#-- Lever Outcomes Question --]
           <div class="form-group">
-            <label for="">[@s.text name="study.leverOutcomes.question" /]:[@customForm.req required=editable /]</label>
+            <label for="">[@s.text name="study.leverOutcomes.question"][@s.param]${isOutcomeCaseStudy?then('OICR', 'MELIA')}[/@][/@]:[@customForm.req required=editable /]</label>
             [#assign isLeverOutcome = "isLeverOutcome"]
             [#assign showLeverOutcomeDropdown = (element.projectExpectedStudyInfo.hasLeverOutcomeContribution?string)!"" /]
             [@customForm.radioFlat id="${isLeverOutcome}-yes" name="${name}.projectExpectedStudyInfo.hasLeverOutcomeContribution" label="Yes" value="true" checked=(showLeverOutcomeDropdown == "true") cssClass="radioType-${isLeverOutcome}" cssClassLabel="radio-label-yes" editable=editable /]
@@ -1118,7 +1136,7 @@
         <div class="form-group">
           [#-- Nexus Question --]
           <div class="form-group">
-            <label for="">[@s.text name="study.nexus.question" /]:[@customForm.req required=editable /]</label>
+            <label for="">[@s.text name="study.nexus.question"][@s.param]${isOutcomeCaseStudy?then('OICR', 'MELIA')}[/@][/@]:[@customForm.req required=editable /]</label>
             [#assign isNexus = "isNexus"]
             [#assign showNexusDropdown = (element.projectExpectedStudyInfo.hasNexusContribution?string)!"" /]
             [@customForm.radioFlat id="${isNexus}-yes" name="${name}.projectExpectedStudyInfo.hasNexusContribution" label="Yes" value="true" checked=(showNexusDropdown == "true") cssClass="radioType-${isNexus}" cssClassLabel="radio-label-yes" editable=editable /]
@@ -1137,7 +1155,7 @@
         <div class="form-group">
           [#-- Legacy CRP/PFT Question --]
           <div class="form-group">
-            <label for="">[@s.text name="study.legacyCrp.question" /]:[@customForm.req required=editable /]</label>
+            <label for="">[@s.text name="study.legacyCrp.question"][@s.param]${isOutcomeCaseStudy?then('OICR', 'MELIA')}[/@][/@]:[@customForm.req required=editable /]</label>
             [#assign isLegacyCrp = "isLegacyCrp"]
             [#assign showLegacyCrpDropdown = (element.projectExpectedStudyInfo.hasLegacyCrpContribution?string)!"" /]
             [@customForm.radioFlat id="${isLegacyCrp}-yes" name="${name}.projectExpectedStudyInfo.hasLegacyCrpContribution" label="Yes" value="true" checked=(showLegacyCrpDropdown == "true") cssClass="radioType-${isLegacyCrp}" cssClassLabel="radio-label-yes" editable=editable /]
@@ -1163,7 +1181,7 @@
         <div class="form-group">
           [#-- Action Area Outcome Indicators Question --]
           <div class="form-group">
-            <label for="">[@s.text name="study.actionAreaOutcomeIndicators.question" /]:[@customForm.req required=editable /]</label>
+            <label for="">[@s.text name="study.actionAreaOutcomeIndicators.question"][@s.param]${isOutcomeCaseStudy?then('OICR', 'MELIA')}[/@][/@]:[@customForm.req required=editable /]</label>
             [#assign isActionAreOutcomeIndicator = "isActionAreOutcomeIndicator"]
             [#assign showActionAreaOutcomeIndicatorDropdown = (element.projectExpectedStudyInfo.hasActionAreaOutcomeIndicatorContribution?string)!"" /]
             [@customForm.radioFlat id="${isActionAreOutcomeIndicator}-yes" name="${name}.projectExpectedStudyInfo.hasActionAreaOutcomeIndicatorContribution" label="Yes" value="true" checked=(showActionAreaOutcomeIndicatorDropdown == "true") cssClass="radioType-${isActionAreOutcomeIndicator}" cssClassLabel="radio-label-yes" editable=editable /]
@@ -1179,7 +1197,7 @@
         <div class="form-group">
           [#-- Impact Area Indicators Question --]
           <div class="form-group">
-            <label for="">[@s.text name="study.impactAreaIndicators.question" /]:[@customForm.req required=editable /]</label>
+            <label for="">[@s.text name="study.impactAreaIndicators.question"][@s.param]${isOutcomeCaseStudy?then('OICR', 'MELIA')}[/@][/@]:[@customForm.req required=editable /]</label>
             [#assign isImpactAreaIndicator = "isImpactAreaIndicator"]
             [#assign showImpactAreaDropdown = (element.projectExpectedStudyInfo.hasImpactAreaIndicatorContribution?string)!"" /]
             [@customForm.radioFlat id="${isImpactAreaIndicator}-yes" name="${name}.projectExpectedStudyInfo.hasImpactAreaIndicatorContribution" label="Yes" value="true" checked=(showImpactAreaDropdown == "true") cssClass="radioType-${isImpactAreaIndicator}" cssClassLabel="radio-label-yes" editable=editable /]
@@ -1195,7 +1213,7 @@
         <div class="form-group">
           [#-- Initiatives Question --]
           <div class="form-group">
-            <label for="">[@s.text name="study.initiatives.question" /]:[@customForm.req required=editable /]</label>
+            <label for="">[@s.text name="study.initiatives.question"][@s.param]${isOutcomeCaseStudy?then('OICR', 'MELIA')}[/@][/@]:[@customForm.req required=editable /]</label>
             [#assign isInitiative = "isInitiative"]
             [#assign showInitiative = (element.projectExpectedStudyInfo.hasInitiativeContribution?string)!"" /]
             [@customForm.radioFlat id="${isInitiative}-yes" name="${name}.projectExpectedStudyInfo.hasInitiativeContribution" label="Yes" value="true" checked=(showInitiative == "true") cssClass="radioType-${isInitiative}" cssClassLabel="radio-label-yes" editable=editable /]
@@ -1210,15 +1228,15 @@
     </div>
 
     <div class="borderBox">
-      [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         [#--  Contact person    --]
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.contacts" help="study.contacts.help" className="" helpIcon=false required=editable && !(isPolicy && stageProcessOne) editable=editable /]
         
-        [#--  Internal status    --]
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.internalStatus" i18nkey="study.internalStatus" help="study.internalStatus.help" className="" helpIcon=false editable=editable /]
+        [#if isOutcomeCaseStudy]
+          [#--  Internal status    --]
+          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.internalStatus" i18nkey="study.internalStatus" help="study.internalStatus.help" className="" helpIcon=false editable=editable /]
+        [/#if]
       </div>
-      [/#if]
     </div>
   </div>
 [/#macro]
