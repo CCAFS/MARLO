@@ -42,6 +42,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSdgTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.URLShortener;
@@ -64,6 +65,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.opensymphony.xwork2.ActionContext;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -98,11 +101,11 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   private final ProjectInnovationSubIdoManager projectInnovationSubIdoManager;
   private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
 
-
   // Parameters
   private long startTime;
   private Long projectInnovationID;
   private ProjectInnovationInfo projectInnovationInfo;
+  private String crp;
 
   // XLSX bytes
   private byte[] bytesPDF;
@@ -140,7 +143,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
    * @param masterReport
    * @return masterReport with i8n parameters added
    */
-  private MasterReport addi8nParameters(MasterReport masterReport) {
+  private MasterReport addi8nParameters(MasterReport masterReport, boolean isAlliance) {
     masterReport.getParameterValues().put("i8nInnovationNoData", this.getText("summaries.innovation.noData"));
     masterReport.getParameterValues().put("i8nInnovationsRInnovation", this.getText("summaries.innovation"));
     masterReport.getParameterValues().put("i8nInnovationRTitle", this.getText("projectInnovations.title"));
@@ -182,7 +185,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       this.getText("summaries.innovation.evidenceLink"));
     masterReport.getParameterValues().put("i8nInnovationRDeliverables",
       this.getText("projectInnovations.deliverableId"));
-    masterReport.getParameterValues().put("i8nInnovationRCrps", this.getText("projectInnovations.contributing"));
+    masterReport.getParameterValues().put("i8nInnovationRCrps",
+      this.getText(isAlliance ? "innovation.legacyCrp" : "projectInnovations.contributing"));
     masterReport.getParameterValues().put("i8nInnovationRGenderFocusLevel",
       this.getText("projectInnovations.genderRelevance"));
     masterReport.getParameterValues().put("i8nInnovationRNew", this.getText("projectInnovations.isNew"));
@@ -193,6 +197,13 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     masterReport.getParameterValues().put("i8nInnovationRNew",
       this.getText("projectInnovations.youthRelevance.explanation.readText"));
     masterReport.getParameterValues().put("i8nProject", this.getText("summaries.oaprojects.projectTitle"));
+
+    if (isAlliance) {
+      masterReport.getParameterValues().put("i8nInnovationRHasLegacyCrpsText",
+        this.getText("innovation.legacyCrp.question"));
+      masterReport.getParameterValues().put("i8nInnovationRSdgTargets", this.getText("innovation.sdgTargets"));
+    }
+
     return masterReport;
   }
 
@@ -214,10 +225,21 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     }
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
+      crp = this.getLoggedCrp().getAcronym();
+      if (crp == null || crp.isEmpty()) {
+        String[] actionMap = ActionContext.getContext().getName().split("/");
+        if (actionMap.length > 1) {
+          String enteredCrp = actionMap[0];
+          crp = crpManager.findGlobalUnitByAcronym(enteredCrp).getAcronym();
+        }
+      }
+
+      String center = crp;
+      boolean isAlliance = "Alliance".equalsIgnoreCase(center);
+
       Resource reportResource = resourceManager
         .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectInnovationPDF.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = this.getLoggedCrp().getAcronym();
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -234,7 +256,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
       // Set i8n for pentaho
-      masterReport = this.addi8nParameters(masterReport);
+      masterReport = this.addi8nParameters(masterReport, isAlliance);
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map
@@ -243,7 +265,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       this.getAllSubreports(hm, masteritemBand);
       // Uncomment to see which Subreports are detecting the method getAllSubreports
       // System.out.println("Pentaho SubReports: " + hm);
-      this.fillSubreport((SubReport) hm.get("project_innovation"), "project_innovation");
+      this.fillSubreport((SubReport) hm.get("project_innovation"), "project_innovation", isAlliance);
       PdfReportUtil.createPDF(masterReport, os);
       bytesPDF = os.toByteArray();
       os.close();
@@ -260,13 +282,13 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   }
 
 
-  private void fillSubreport(SubReport subReport, String query) {
+  private void fillSubreport(SubReport subReport, String query, boolean isAlliance) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
     TypedTableModel model = null;
     switch (query) {
       case "project_innovation":
-        model = this.getProjectInnovationTableModel();
+        model = this.getProjectInnovationTableModel(isAlliance);
         break;
     }
     sdf.addTable(query, model);
@@ -333,19 +355,21 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     return model;
   }
 
-  private TypedTableModel getProjectInnovationTableModel() {
+  private TypedTableModel getProjectInnovationTableModel(boolean isAlliance) {
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "isRegional", "isNational", "isStage4", "title", "narrative", "stageInnovation",
         "innovationType", "contributionOfCrp", "degreeInnovation", "geographicScope", "region", "countries",
         "organizations", "projectExpectedStudy", "descriptionStage", "leadOrganization", "contributingOrganization",
         "adaptativeResearch", "evidenceLink", "deliverables", "crps", "genderFocusLevel", "genderExplaniation",
         "youthFocusLevel", "youthExplaniation", "project", "oicr", "centers", "hasMilestones", "milestones", "subIdos",
-        "deliverableLink", "phaseID", "center", "isNew", "innovationNumber"},
+        "deliverableLink", "phaseID", "center", "isNew", "innovationNumber", "isAlliance", "hasLegacyCrps",
+        "hasLegacyCrpsText", "sdgTargets"},
       new Class[] {Long.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, Boolean.class,
+        Boolean.class, String.class, String.class},
       0);
     Long id = null;
     String title = null, narrative = null, phaseResearch = null, stageInnovation = null, innovationType = null,
@@ -354,9 +378,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       leadOrganization = null, contributingOrganization = null, adaptativeResearch = null, links = null,
       deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null,
       youthExplaniation = null, project = null, oicr = "", centers = "", hasMilestones = "", milestones = null,
-      subIdos = null, deliverableLink = "", phaseID = "", loggedCenter = "", deliverableID = "", isNew = null,
-      innovationNumber = null;
-    Boolean isRegional = false, isNational = false, isStage4 = false;
+      subIdos = null, deliverableLink = "", phaseID = "", deliverableID = "", isNew = null, innovationNumber = null,
+      hasLegacyCrpsText = "", sdgTargets = "";
+    Boolean isRegional = false, isNational = false, isStage4 = false, hasLegacyCrps = false;
     StringBuffer evidenceLink = new StringBuffer();
     // Id
     id = projectInnovationID;
@@ -540,14 +564,11 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       subIdos = String.join("", subIdosSet);
 
     } else {
-      subIdos = "<Not Defined>";
+      subIdos = this.notDefined;
     }
 
     // phaseID
     phaseID = this.getSelectedPhase().getId().toString();
-
-    // Center
-    loggedCenter = this.getLoggedCrp().getAcronym();
 
     // Geographic Scope
     List<ProjectInnovationGeographicScope> projectInnovationGeographicScopeList =
@@ -703,7 +724,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         if (projectInnovationDeliverable.getDeliverable() != null
           && projectInnovationDeliverable.getDeliverable().getId() != null
           && projectInnovationDeliverable.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null) {
-          String url = this.getBaseUrl() + "/projects/" + loggedCenter + "/deliverable.do?deliverableID="
+          String url = this.getBaseUrl() + "/projects/" + this.crp + "/deliverable.do?deliverableID="
             + projectInnovationDeliverable.getDeliverable().getId() + "&phaseID=" + phaseID;
           url = urlShortener.getShortUrlService(url);
           deliverablesSet
@@ -732,6 +753,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     }
 
     // Contributions CRPS/Platforms
+    hasLegacyCrps = BooleanUtils.isTrue(projectInnovationInfo.getHasLegacyCrpContribution());
+    hasLegacyCrpsText = this.getYesNoStringOrNotDefined(projectInnovationInfo.getHasLegacyCrpContribution(), true);
     List<ProjectInnovationCrp> projectInnovationCrps =
       projectInnovationInfo.getProjectInnovation().getProjectInnovationCrps().stream()
         .filter(o -> o.isActive() && o.getPhase() != null && o.getPhase().equals(this.getSelectedPhase()))
@@ -767,11 +790,35 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       project = projectInnovationInfo.getProjectInnovation().getProject().getComposedName();
     }
 
+    if (isAlliance) {
+      // SDG Target Contribution
+      List<ProjectInnovationSdgTarget> innovationSdgTargets =
+        projectInnovationInfo.getProjectInnovation().getProjectInnovationSdgTargets().stream()
+          .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList());
+
+      Set<String> innovationSdgTargetsSet = new HashSet<>();
+      if (this.isNotEmpty(innovationSdgTargets)) {
+        for (ProjectInnovationSdgTarget projectInnovationSdgTarget : innovationSdgTargets) {
+          if (projectInnovationSdgTarget.getSdgTarget() != null
+            && projectInnovationSdgTarget.getSdgTarget().getId() != null) {
+            innovationSdgTargetsSet
+              .add("<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + projectInnovationSdgTarget.getSdgTarget().getComposedName());
+          }
+        }
+
+        sdgTargets = String.join("", innovationSdgTargetsSet);
+      } else {
+        sdgTargets = this.notDefinedHtml;
+      }
+    }
+
     model.addRow(new Object[] {id, isRegional, isNational, isStage4, title, narrative, stageInnovation, innovationType,
       contributionOfCrp, degreeInnovation, geographicScope, region, countries, organizations, projectExpectedStudies,
       descriptionStage, leadOrganization, contributingOrganization, adaptativeResearch, evidenceLink, deliverables,
       crps, genderFocusLevel, genderExplaniation, youthFocusLevel, youthExplaniation, project, oicr, centers,
-      hasMilestones, milestones, subIdos, deliverableLink, phaseID, loggedCenter, isNew, innovationNumber});
+      hasMilestones, milestones, subIdos, deliverableLink, phaseID, this.crp, isNew, innovationNumber, isAlliance,
+      hasLegacyCrps, hasLegacyCrpsText, sdgTargets});
     return model;
   }
 
