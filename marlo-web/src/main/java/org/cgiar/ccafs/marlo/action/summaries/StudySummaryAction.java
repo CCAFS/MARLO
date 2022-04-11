@@ -101,7 +101,6 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     this.crpManager = crpManager;
   }
 
-
   @Override
   public String execute() throws Exception {
 
@@ -113,6 +112,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       return NOT_FOUND;
     }
 
+    List<String> allianceArgList = new ArrayList<>();
 
     if (projectExpectedStudyID == null
       || projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyID) == null
@@ -123,14 +123,16 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     } else {
       projectExpectedStudyInfo = projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyID)
         .getProjectExpectedStudyInfo(this.getSelectedPhase());
+      if (projectExpectedStudyInfo != null) {
+        boolean isOicr =
+          projectExpectedStudyInfo.getStudyType() != null && projectExpectedStudyInfo.getStudyType().getId() != null
+            && projectExpectedStudyInfo.getStudyType().getId().longValue() == 1L;
+        allianceArgList.add(isOicr ? "OICR" : "MELIA");
+      }
     }
     projectExpectedStudyInfos.add(projectExpectedStudyInfo);
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
-      Resource reportResource =
-        resourceManager.createDirectly(this.getClass().getResource("/pentaho/crp/StudiesPDF.prpt"), MasterReport.class);
-      MasterReport masterReport = (MasterReport) reportResource.getResource();
-
       crp = this.getLoggedCrp().getAcronym();
       if (crp == null || crp.isEmpty()) {
         String[] actionMap = ActionContext.getContext().getName().split("/");
@@ -141,6 +143,15 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       }
 
       String center = crp;
+      boolean isAlliance = "Alliance".equalsIgnoreCase(center);
+
+      Resource reportResource = isAlliance
+        ? resourceManager.createDirectly(this.getClass().getResource("/pentaho/crp/StudiesPDFAlliance.prpt"),
+          MasterReport.class)
+        : resourceManager.createDirectly(this.getClass().getResource("/pentaho/crp/StudiesPDF.prpt"),
+          MasterReport.class);
+      MasterReport masterReport = (MasterReport) reportResource.getResource();
+
 
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
@@ -160,7 +171,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
       // Set i8n for pentaho
-      masterReport = this.addi8nParameters(masterReport);
+      masterReport = this.addi8nParameters(masterReport, isAlliance, allianceArgList);
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map
@@ -170,7 +181,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       // Uncomment to see which Subreports are detecting the method getAllSubreports
       // System.out.println("Pentaho SubReports: " + hm);
 
-      this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies");
+      this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies", isAlliance);
 
       PdfReportUtil.createPDF(masterReport, os);
       bytesPDF = os.toByteArray();
@@ -187,28 +198,28 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     return SUCCESS;
   }
 
-
-  private void fillSubreport(SubReport subReport, String query) {
+  private void fillSubreport(SubReport subReport, String query, boolean isAlliance) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
     TypedTableModel model = null;
     switch (query) {
       case "case_studies":
-        model = this.getCaseStudiesTableModel(projectExpectedStudyInfos);
+        model = this.getCaseStudiesTableModel(projectExpectedStudyInfos, isAlliance);
         break;
     }
     sdf.addTable(query, model);
     subReport.setDataFactory(cdf);
   }
 
+
   public byte[] getBytesPDF() {
     return bytesPDF;
   }
 
-
   public String getCaseStudyUrl(String project) {
     return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath(project).replace('\\', '/');
   }
+
 
   public String getCaseStudyUrlPath(String project) {
 
@@ -225,7 +236,6 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     return "application/pdf";
   }
 
-
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -233,6 +243,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
+
 
   @Override
   public String getFileName() {
@@ -288,6 +299,11 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   private String getStudiesSourceFolder() {
     return APConstants.STUDIES_FOLDER.concat(File.separator).concat(crp).concat(File.separator).concat(File.separator)
       .concat(crp + "_").concat(ProjectSectionStatusEnum.EXPECTEDSTUDY.getStatus()).concat(File.separator);
+  }
+
+  @Override
+  public boolean isPublicRoute() {
+    return true;
   }
 
 

@@ -136,5 +136,13 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyCenter" />
     </set> 
+    <set name="projectPolicySdgTargets" table="project_policy_sdg_targets"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="policy_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectPolicySdgTarget" />
+    </set>
 	</class>
 </hibernate-mapping>
