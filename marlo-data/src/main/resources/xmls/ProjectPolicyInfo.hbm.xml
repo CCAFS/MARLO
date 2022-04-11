@@ -63,5 +63,8 @@
     <property name="editableLink" type="string">
 			<column name="editable_link" length="500" />
 		</property>
+		<property name="hasLegacyCrpContribution" type="java.lang.Boolean">
+        <column name="has_legacy_crp_contribution" />
+    </property>
 	</class>
 </hibernate-mapping>

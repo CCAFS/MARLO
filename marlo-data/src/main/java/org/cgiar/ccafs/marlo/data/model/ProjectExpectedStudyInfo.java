@@ -158,6 +158,28 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   @Expose
   private String editableLink;
 
+  @Expose
+  private String internalStatus;
+
+  // Alliance specific questions
+  @Expose
+  private Boolean hasLeverOutcomeContribution;
+
+  @Expose
+  private Boolean hasNexusContribution;
+
+  @Expose
+  private Boolean hasLegacyCrpContribution;
+
+  @Expose
+  private Boolean hasActionAreaOutcomeIndicatorContribution;
+
+  @Expose
+  private Boolean hasImpactAreaIndicatorContribution;
+
+  @Expose
+  private Boolean hasInitiativeContribution;
+
 
   public ProjectExpectedStudyInfo() {
   }
@@ -190,7 +212,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return capdevLevel;
   }
 
-
   public String getCgiarInnovation() {
     return cgiarInnovation;
   }
@@ -215,44 +236,57 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return describeCapdev;
   }
 
-
   public String getDescribeClimateChange() {
     return describeClimateChange;
   }
-
 
   public String getDescribeGender() {
     return describeGender;
   }
 
-
   public String getDescribeYouth() {
     return describeYouth;
   }
-
 
   public String getEditableLink() {
     return editableLink;
   }
 
-
   public String getElaborationOutcomeImpactStatement() {
     return elaborationOutcomeImpactStatement;
   }
-
 
   public EvidenceTag getEvidenceTag() {
     return evidenceTag;
   }
 
-
   public RepIndGenderYouthFocusLevel getGenderLevel() {
     return genderLevel;
   }
 
+  public Boolean getHasActionAreaOutcomeIndicatorContribution() {
+    return hasActionAreaOutcomeIndicatorContribution;
+  }
 
   public Boolean getHasCovidAnalysis() {
     return hasCovidAnalysis;
+  }
+
+  public Boolean getHasImpactAreaIndicatorContribution() {
+    return hasImpactAreaIndicatorContribution;
+  }
+
+  public Boolean getHasInitiativeContribution() {
+    return hasInitiativeContribution;
+  }
+
+  public Boolean getHasLegacyCrpContribution() {
+    return hasLegacyCrpContribution;
+  }
+
+
+  public Boolean getHasLeverOutcomeContribution() {
+    return hasLeverOutcomeContribution;
   }
 
 
@@ -261,10 +295,17 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   }
 
 
+  public Boolean getHasNexusContribution() {
+    return hasNexusContribution;
+  }
+
+  public String getInternalStatus() {
+    return internalStatus;
+  }
+
   public Boolean getIsContribution() {
     return isContribution;
   }
-
 
   public Boolean getIsPublic() {
     return isPublic;
@@ -283,9 +324,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return sb.toString();
   }
 
+
   public String getMELIAPublications() {
     return MELIAPublications;
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -310,9 +353,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return otherCrossCuttingSelection;
   }
 
+
   public String getOtherStudyType() {
     return otherStudyType;
   }
+
 
   public FileDB getOutcomeFile() {
     return outcomeFile;
@@ -321,7 +366,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public String getOutcomeImpactStatement() {
     return outcomeImpactStatement;
   }
-
 
   public String getOutcomeStory() {
     return outcomeStory;
@@ -346,11 +390,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return quantification;
   }
 
-
   public FileDB getReferencesFile() {
     return referencesFile;
   }
-
 
   public String getReferencesText() {
     return referencesText;
@@ -376,14 +418,15 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return repIndRegion;
   }
 
-
   public RepIndStageProcess getRepIndStageProcess() {
     return repIndStageProcess;
   }
 
+
   public RepIndStageStudy getRepIndStageStudy() {
     return repIndStageStudy;
   }
+
 
   public String getScopeComments() {
     return scopeComments;
@@ -417,15 +460,14 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return topLevelComments;
   }
 
-
   public Integer getYear() {
     return year;
   }
 
-
   public RepIndGenderYouthFocusLevel getYouthLevel() {
     return youthLevel;
   }
+
 
   @Override
   public int hashCode() {
@@ -434,6 +476,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
+
 
   @Override
   public boolean isActive() {
@@ -460,31 +503,34 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.commissioningStudy = commissioningStudy;
   }
 
+
   public void setComunicationsMaterial(String comunicationsMaterial) {
     this.comunicationsMaterial = comunicationsMaterial;
   }
-
 
   public void setContacts(String contacts) {
     this.contacts = contacts;
   }
 
-
   public void setDescribeCapdev(String describeCapdev) {
     this.describeCapdev = describeCapdev;
   }
+
 
   public void setDescribeClimateChange(String describeClimateChange) {
     this.describeClimateChange = describeClimateChange;
   }
 
+
   public void setDescribeGender(String describeGender) {
     this.describeGender = describeGender;
   }
 
+
   public void setDescribeYouth(String describeYouth) {
     this.describeYouth = describeYouth;
   }
+
 
   public void setEditableLink(String editableLink) {
     this.editableLink = editableLink;
@@ -494,20 +540,50 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.elaborationOutcomeImpactStatement = elaborationOutcomeImpactStatement;
   }
 
+
   public void setEvidenceTag(EvidenceTag evidenceTag) {
     this.evidenceTag = evidenceTag;
   }
 
+
   public void setGenderLevel(RepIndGenderYouthFocusLevel genderLevel) {
     this.genderLevel = genderLevel;
+  }
+
+  public void setHasActionAreaOutcomeIndicatorContribution(Boolean hasActionAreaOutcomeIndicatorContribution) {
+    this.hasActionAreaOutcomeIndicatorContribution = hasActionAreaOutcomeIndicatorContribution;
   }
 
   public void setHasCovidAnalysis(Boolean hasCovidAnalysis) {
     this.hasCovidAnalysis = hasCovidAnalysis;
   }
 
+  public void setHasImpactAreaIndicatorContribution(Boolean hasImpactAreaIndicatorContribution) {
+    this.hasImpactAreaIndicatorContribution = hasImpactAreaIndicatorContribution;
+  }
+
+  public void setHasInitiativeContribution(Boolean hasInitiativeContribution) {
+    this.hasInitiativeContribution = hasInitiativeContribution;
+  }
+
+  public void setHasLegacyCrpContribution(Boolean hasLegacyCrpContribution) {
+    this.hasLegacyCrpContribution = hasLegacyCrpContribution;
+  }
+
+  public void setHasLeverOutcomeContribution(Boolean hasLeverOutcomeContribution) {
+    this.hasLeverOutcomeContribution = hasLeverOutcomeContribution;
+  }
+
   public void setHasMilestones(Boolean hasMilestones) {
     this.hasMilestones = hasMilestones;
+  }
+
+  public void setHasNexusContribution(Boolean hasNexusContribution) {
+    this.hasNexusContribution = hasNexusContribution;
+  }
+
+  public void setInternalStatus(String internalStatus) {
+    this.internalStatus = internalStatus;
   }
 
   public void setIsContribution(Boolean isContribution) {
@@ -696,6 +772,15 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.setOtherStudyType(projectExpectedStudyInfoUpdate.getOtherStudyType());
     this.setHasCovidAnalysis(projectExpectedStudyInfoUpdate.getHasCovidAnalysis());
     this.setHasMilestones(projectExpectedStudyInfoUpdate.getHasMilestones());
+
+    this.setInternalStatus(projectExpectedStudyInfoUpdate.getInternalStatus());
+    this.setHasActionAreaOutcomeIndicatorContribution(
+      projectExpectedStudyInfoUpdate.getHasActionAreaOutcomeIndicatorContribution());
+    this.setHasImpactAreaIndicatorContribution(projectExpectedStudyInfoUpdate.getHasImpactAreaIndicatorContribution());
+    this.setHasInitiativeContribution(projectExpectedStudyInfoUpdate.getHasInitiativeContribution());
+    this.setHasLegacyCrpContribution(projectExpectedStudyInfoUpdate.getHasLegacyCrpContribution());
+    this.setHasLeverOutcomeContribution(projectExpectedStudyInfoUpdate.getHasLeverOutcomeContribution());
+    this.setHasNexusContribution(projectExpectedStudyInfoUpdate.getHasNexusContribution());
   }
 
 }

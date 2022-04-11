@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.ibm.icu.util.Calendar;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -74,7 +75,7 @@ public class BaseSummariesAction extends BaseAction {
   private String downloadByUser;
 
   // Managers
-  private GlobalUnitManager crpManager;
+  protected GlobalUnitManager crpManager;
 
 
   private PhaseManager phaseManager;
@@ -257,7 +258,6 @@ public class BaseSummariesAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public String getSelectedCycle() {
     return selectedCycle;
   }
@@ -266,9 +266,13 @@ public class BaseSummariesAction extends BaseAction {
     return selectedPhase;
   }
 
-
   public int getSelectedYear() {
     return selectedYear;
+  }
+
+
+  public String getYesNoStringOrNotDefined(Boolean booleanToConvert, boolean htmlVersion) {
+    return BooleanUtils.toString(booleanToConvert, "Yes", "No", htmlVersion ? notDefinedHtml : notDefined);
   }
 
   public void setDownloadByUser(String downloadByUser) {

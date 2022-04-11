@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicySdgTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.URLShortener;
@@ -62,6 +63,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.opensymphony.xwork2.ActionContext;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -97,14 +100,15 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
 
   private final URLShortener shortener;
 
-
   // Parameters
   private long startTime;
   private Long projectPolicyID;
   private ProjectPolicyInfo projectPolicyInfo;
+  private String crp;
 
   // XLSX bytes
   private byte[] bytesPDF;
+
   // Streams
   InputStream inputStream;
 
@@ -136,7 +140,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
    * @param masterReport
    * @return masterReport with i8n parameters added
    */
-  private MasterReport addi8nParameters(MasterReport masterReport) {
+  private MasterReport addi8nParameters(MasterReport masterReport, boolean isAlliance) {
     masterReport.getParameterValues().put("i8nPolicyNoData", this.getText("summaries.projectPolicy.noData"));
     masterReport.getParameterValues().put("i8nPolicyRPolicy", this.getText("projectPolicies.title"));
     masterReport.getParameterValues().put("i8nPolicyRNew", this.getText("projectPolicy.isNew"));
@@ -161,7 +165,13 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     masterReport.getParameterValues().put("i8nPolicySubIdos", this.getText("projectInnovations.subIdos"));
     masterReport.getParameterValues().put("i8nPolicyContributionCenters",
       this.getText("projectInnovations.contributingCenters"));
-    masterReport.getParameterValues().put("i8nPolicyRCrps", this.getText("projectPolicy.contributingCRP"));
+    masterReport.getParameterValues().put("i8nPolicyRCrps",
+      this.getText(isAlliance ? "policy.legacyCrp" : "projectPolicy.contributingCRP"));
+
+    if (isAlliance) {
+      masterReport.getParameterValues().put("i8nPolicyRHasLegacyCrpsText", this.getText("policy.legacyCrp.question"));
+      masterReport.getParameterValues().put("i8nPolicyRSdgTargets", this.getText("policy.sdgTargets"));
+    }
     // masterReport.getParameterValues().put("i8nPolicyREvidenceLink",
     // this.getText("summaries.innovation.evidenceLink"));
     // masterReport.getParameterValues().put("i8nPolicyLeadOrganization",
@@ -189,7 +199,6 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     return masterReport;
   }
 
-
   @Override
   public String execute() throws Exception {
     if (this.getSelectedPhase() == null) {
@@ -208,10 +217,21 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
+      crp = this.getLoggedCrp().getAcronym();
+      if (crp == null || crp.isEmpty()) {
+        String[] actionMap = ActionContext.getContext().getName().split("/");
+        if (actionMap.length > 1) {
+          String enteredCrp = actionMap[0];
+          crp = crpManager.findGlobalUnitByAcronym(enteredCrp).getAcronym();
+        }
+      }
+
+      String center = crp;
+      boolean isAlliance = "Alliance".equalsIgnoreCase(center);
+
       Resource reportResource = resourceManager
         .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectPolicyPDF.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = this.getLoggedCrp().getAcronym();
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -229,7 +249,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
       // Set i8n for pentaho
-      masterReport = this.addi8nParameters(masterReport);
+      masterReport = this.addi8nParameters(masterReport, isAlliance);
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map
@@ -238,7 +258,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
       this.getAllSubreports(hm, masteritemBand);
       // Uncomment to see which Subreports are detecting the method getAllSubreports
       // System.out.println("Pentaho SubReports: " + hm);
-      this.fillSubreport((SubReport) hm.get("project_policy"), "project_policy");
+      this.fillSubreport((SubReport) hm.get("project_policy"), "project_policy", isAlliance);
       PdfReportUtil.createPDF(masterReport, os);
       bytesPDF = os.toByteArray();
       os.close();
@@ -255,13 +275,14 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     return SUCCESS;
   }
 
-  private void fillSubreport(SubReport subReport, String query) {
+
+  private void fillSubreport(SubReport subReport, String query, boolean isAlliance) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
     TypedTableModel model = null;
     switch (query) {
       case "project_policy":
-        model = this.getProjectPolicyTableModel();
+        model = this.getProjectPolicyTableModel(isAlliance);
         break;
     }
     sdf.addTable(query, model);
@@ -272,11 +293,11 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     return bytesPDF;
   }
 
-
   @Override
   public int getContentLength() {
     return bytesPDF.length;
   }
+
 
   @Override
   public String getContentType() {
@@ -325,11 +346,11 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     return fileName.toString();
   }
 
-
   private String getInnovationDirectLink(String center, Long innovationId, String phaseId, Long projectId) {
     return this.getBaseUrl() + "/projects/" + center + "/innovation.do?innovationID=" + innovationId + "&phaseID="
       + phaseId + "&projectID=" + projectId;
   }
+
 
   @Override
   public InputStream getInputStream() {
@@ -348,16 +369,18 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     return model;
   }
 
-  private TypedTableModel getProjectPolicyTableModel() {
+  private TypedTableModel getProjectPolicyTableModel(boolean isAlliance) {
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "isRegional", "isNational", "title", "project", "narrative", "isNew", "stagePolicy",
         "policyType", "policyAmount", "geographicScope", "region", "countries", "projectExpectedStudy", "innovations",
         "descriptionStage", "hasMilestones", "milestones", "subIdos", "centers", "crps", "genderFocusLevel",
-        "genderExplanation", "youthFocusLevel", "youthExplanation", "deliverableLink", "phaseID", "center"},
+        "genderExplanation", "youthFocusLevel", "youthExplanation", "deliverableLink", "phaseID", "center",
+        "isAlliance", "hasLegacyCrps", "hasLegacyCrpsText", "sdgTargets"},
       new Class[] {Long.class, Boolean.class, Boolean.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, Boolean.class, Boolean.class,
+        String.class, String.class},
       0);
 
     Long id = null;
@@ -365,17 +388,14 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
       countries = null, projectExpectedStudies = "", descriptionStage = null, deliverables = null, crps = null,
       genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null, youthExplaniation = null,
       project = null, centers = "", hasMilestones = "", milestones = null, subIdos = null, deliverableLink = "",
-      phaseID = "", loggedCenter = "", isNew = null, policyAmount = "";
-    Boolean isRegional = false, isNational = false;
+      phaseID = "", isNew = null, policyAmount = "", hasLegacyCrpsText = "", sdgTargets = "";
+    Boolean isRegional = false, isNational = false, hasLegacyCrps = false;
 
     // Id
     id = projectPolicyID;
 
     // phaseID
     phaseID = this.getSelectedPhase().getId().toString();
-
-    // Center
-    loggedCenter = this.getLoggedCrp().getAcronym();
 
     // Project
     if (projectPolicyInfo.getProjectPolicy().getProject() != null) {
@@ -416,7 +436,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
 
     if (studyPolicies != null && !studyPolicies.isEmpty()) {
       for (ProjectExpectedStudyPolicy studyPolicy : studyPolicies) {
-        String url = this.getExpectedStudyPDFLink(loggedCenter, studyPolicy.getProjectExpectedStudy().getId(),
+        String url = this.getExpectedStudyPDFLink(this.crp, studyPolicy.getProjectExpectedStudy().getId(),
           this.getSelectedPhase());
         projectExpectedStudies += "<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyPolicy.getProjectExpectedStudy().getId()
           + " - " + studyPolicy.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getTitle()
@@ -594,9 +614,8 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
         if (projectPolicyInnovation.getProjectInnovation() != null
           && projectPolicyInnovation.getProjectInnovation().getId() != null
           && projectPolicyInnovation.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()) != null) {
-          String url =
-            this.getInnovationDirectLink(loggedCenter, projectPolicyInnovation.getProjectInnovation().getId(), phaseID,
-              projectPolicyInfo.getProjectPolicy().getProject().getId());
+          String url = this.getInnovationDirectLink(this.crp, projectPolicyInnovation.getProjectInnovation().getId(),
+            phaseID, projectPolicyInfo.getProjectPolicy().getProject().getId());
 
           deliverablesSet
             .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● I" + projectPolicyInnovation.getProjectInnovation().getId() + " - "
@@ -633,6 +652,8 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     }
 
     // Contributions CRPS/Platforms
+    hasLegacyCrps = BooleanUtils.isTrue(projectPolicyInfo.getHasLegacyCrpContribution());
+    hasLegacyCrpsText = this.getYesNoStringOrNotDefined(projectPolicyInfo.getHasLegacyCrpContribution(), true);
     List<ProjectPolicyCrp> projectPolicyCrps = projectPolicyInfo.getProjectPolicy().getProjectPolicyCrps().stream()
       .filter(o -> o.isActive() && o.getPhase() != null && o.getPhase().equals(this.getSelectedPhase()))
       .collect(Collectors.toList());
@@ -682,11 +703,37 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
       }
     }
 
+    if (isAlliance) {
+      // SDG Target Contribution
+      List<ProjectPolicySdgTarget> policySdgTargets = projectPolicyInfo.getProjectPolicy().getProjectPolicySdgTargets()
+        .stream().filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList());
+
+      Set<String> policySdgTargetsSet = new HashSet<>();
+      if (this.isNotEmpty(policySdgTargets)) {
+        for (ProjectPolicySdgTarget projectPolicySdgTarget : policySdgTargets) {
+          if (projectPolicySdgTarget.getSdgTarget() != null && projectPolicySdgTarget.getSdgTarget().getId() != null) {
+            policySdgTargetsSet
+              .add("<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + projectPolicySdgTarget.getSdgTarget().getComposedName());
+          }
+        }
+
+        sdgTargets = String.join("", policySdgTargetsSet);
+      } else {
+        sdgTargets = this.notDefinedHtml;
+      }
+    }
+
     model.addRow(new Object[] {id, isRegional, isNational, title, project, narrative, isNew, stagePolicy, policyType,
       policyAmount, geographicScope, region, countries, projectExpectedStudies, deliverables, descriptionStage,
       hasMilestones, milestones, subIdos, centers, crps, genderFocusLevel, genderExplaniation, youthFocusLevel,
-      youthExplaniation, deliverableLink, phaseID, loggedCenter});
+      youthExplaniation, deliverableLink, phaseID, this.crp, isAlliance, hasLegacyCrps, hasLegacyCrpsText, sdgTargets});
     return model;
+  }
+
+  @Override
+  public boolean isPublicRoute() {
+    return true;
   }
 
   @Override

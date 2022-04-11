@@ -92,6 +92,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   @Expose
   private String editableLink;
 
+  @Expose
+  private Boolean hasLegacyCrpContribution;
 
   public ProjectInnovationInfo() {
   }
@@ -143,7 +145,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return clearLead;
   }
 
-
   public String getDescriptionStage() {
     return descriptionStage;
   }
@@ -151,6 +152,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public String getEditableLink() {
     return editableLink;
   }
+
 
   public String getEvidenceLink() {
     return evidenceLink;
@@ -160,13 +162,17 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return evidencesLink;
   }
 
-
   public String getGenderExplaniation() {
     return genderExplaniation;
   }
 
   public RepIndGenderYouthFocusLevel getGenderFocusLevel() {
     return genderFocusLevel;
+  }
+
+
+  public Boolean getHasLegacyCrpContribution() {
+    return hasLegacyCrpContribution;
   }
 
   public Boolean getHasMilestones() {
@@ -220,15 +226,14 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return projectInnovation;
   }
 
-
   public RepIndDegreeInnovation getRepIndDegreeInnovation() {
     return repIndDegreeInnovation;
   }
 
+
   public RepIndGeographicScope getRepIndGeographicScope() {
     return repIndGeographicScope;
   }
-
 
   public RepIndInnovationType getRepIndInnovationType() {
     return repIndInnovationType;
@@ -310,8 +315,13 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.genderExplaniation = genderExplaniation;
   }
 
+
   public void setGenderFocusLevel(RepIndGenderYouthFocusLevel genderFocusLevel) {
     this.genderFocusLevel = genderFocusLevel;
+  }
+
+  public void setHasLegacyCrpContribution(Boolean hasLegacyCrpContribution) {
+    this.hasLegacyCrpContribution = hasLegacyCrpContribution;
   }
 
   public void setHasMilestones(Boolean hasMilestones) {
@@ -434,6 +444,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setLeadOrganization(projectInnovationInfoUpdate.getLeadOrganization());
     this.setHasMilestones(projectInnovationInfoUpdate.getHasMilestones());
     this.setInnovationNumber(projectInnovationInfoUpdate.getInnovationNumber());
+    this.setHasLegacyCrpContribution(projectInnovationInfoUpdate.getHasLegacyCrpContribution());
   }
 }
 

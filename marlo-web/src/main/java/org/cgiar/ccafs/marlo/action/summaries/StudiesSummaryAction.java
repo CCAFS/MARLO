@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -119,6 +120,7 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
       }
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
+      boolean isAlliance = "Alliance".equalsIgnoreCase(center);
 
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
@@ -137,7 +139,7 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
       // Set i8n for pentaho
-      masterReport = this.addi8nParameters(masterReport);
+      masterReport = this.addi8nParameters(masterReport, isAlliance, Collections.singletonList("study"));
       // Get details band
       ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map
@@ -147,7 +149,7 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
       // Uncomment to see which Subreports are detecting the method getAllSubreports
       // System.out.println("Pentaho SubReports: " + hm);
       this.loadProjectExpectedStudyInfos();
-      this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies");
+      this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies", isAlliance);
 
       if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
         ExcelReportUtil.createXLSX(masterReport, os);
@@ -171,13 +173,13 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
   }
 
 
-  private void fillSubreport(SubReport subReport, String query) {
+  private void fillSubreport(SubReport subReport, String query, boolean isAlliance) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
     TypedTableModel model = null;
     switch (query) {
       case "case_studies":
-        model = this.getCaseStudiesTableModel(projectExpectedStudyInfos);
+        model = this.getCaseStudiesTableModel(projectExpectedStudyInfos, isAlliance);
         break;
     }
     sdf.addTable(query, model);

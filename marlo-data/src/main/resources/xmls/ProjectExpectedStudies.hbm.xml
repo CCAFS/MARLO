@@ -194,6 +194,34 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgTarget" />
     </set>
+    <set name="projectExpectedStudyActionAreaOutcomeIndicators" table="project_expected_study_outcome_indicators" 
+    	inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyActionAreaOutcomeIndicator" />
+    </set>
+    <set name="projectExpectedStudyFundingSources" table="project_expected_study_funding_sources" 
+    	inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFundingSource" />
+    </set>
+    <set name="projectExpectedStudyImpactAreaIndicators" table="project_expected_study_impact_area_indicators" 
+    	inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyImpactAreaIndicator" />
+    </set>
+    <set name="projectExpectedStudyInitiatives" table="project_expected_study_initiatives" 
+    	inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInitiative" />
+    </set>
     <set name="projectExpectedStudyQuantifications" table="project_expected_study_quantifications"
       inverse="true" lazy="true" fetch="select">
       <key>

@@ -19,6 +19,8 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class ActionAreaOutcomeIndicator extends MarloAuditableEntity implements java.io.Serializable {
 
   /**
@@ -29,12 +31,33 @@ public class ActionAreaOutcomeIndicator extends MarloAuditableEntity implements 
   private OutcomeIndicator outcomeIndicator;
   private ActionArea actionArea;
 
+
   public ActionArea getActionArea() {
     return actionArea;
   }
 
   public ActionAreaOutcome getActionAreaOutcome() {
     return actionAreaOutcome;
+  }
+
+  public String getComposedName() {
+    String composedName = "";
+    if (this.getId() == null || this.getId() == -1) {
+      return "<Not defined>";
+    } else {
+      if (this.getActionArea() != null && this.getActionArea().getId() != null
+        && StringUtils.isNotBlank(this.getActionArea().getName())) {
+        composedName = "<b>" + this.getActionArea().getName() + ":</b> ";
+      }
+
+      if (this.getOutcomeIndicator() != null && this.getOutcomeIndicator().getId() != null
+        && StringUtils.isNotBlank(this.getOutcomeIndicator().getOutcomeIndicatorStatement())) {
+        composedName += "(<i>" + this.getOutcomeIndicator().getSmoCode() + ")</i> ";
+        composedName += " -  " + this.getOutcomeIndicator().getOutcomeIndicatorStatement();
+      }
+    }
+
+    return composedName;
   }
 
   public OutcomeIndicator getOutcomeIndicator() {
@@ -46,15 +69,11 @@ public class ActionAreaOutcomeIndicator extends MarloAuditableEntity implements 
     this.actionArea = actionArea;
   }
 
-
   public void setActionAreaOutcome(ActionAreaOutcome actionAreaOutcome) {
     this.actionAreaOutcome = actionAreaOutcome;
   }
 
-
   public void setOutcomeIndicator(OutcomeIndicator outcomeIndicator) {
     this.outcomeIndicator = outcomeIndicator;
   }
-
-
 }
