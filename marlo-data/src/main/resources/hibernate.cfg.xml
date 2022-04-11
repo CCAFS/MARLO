@@ -482,5 +482,6 @@
     <mapping resource="xmls/ProjectExpectedStudyProjectOutcomes.hbm.xml" />
     <mapping resource="xmls/ProjectInnovationProjectOutcomes.hbm.xml" />
     <mapping resource="xmls/DeliverableProjectOutcomes.hbm.xml" />
+    <mapping resource="xmls/Safeguard.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
