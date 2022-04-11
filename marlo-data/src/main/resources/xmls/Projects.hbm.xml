@@ -268,6 +268,13 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.GlobalUnitProject" />
 		</set>
+		<set name="safeguards" table="safeguards"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Safeguards" />
+		</set>
 		<one-to-one name="centerProject"
 			class="org.cgiar.ccafs.marlo.data.model.CenterProject" cascade="save-update"></one-to-one>
 		<set name="projectExpectedStudies" table="project_expected_studies"

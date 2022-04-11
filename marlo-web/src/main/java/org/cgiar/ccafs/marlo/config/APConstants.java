@@ -503,6 +503,7 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectLp6Contributions)";
 
   // End
+  public static final String SAFEGUARD_REQUEST_ID = "safeguardID";
   public static final String PROJECT_REQUEST_ID = "projectID";
   public static final String PROJECT_SCAPE_GLOBAL = "3";
 
