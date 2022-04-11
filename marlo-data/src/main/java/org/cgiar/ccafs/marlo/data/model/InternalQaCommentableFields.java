@@ -3,6 +3,9 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.annotations.Expose;
 
 /**
@@ -35,6 +38,14 @@ public class InternalQaCommentableFields extends MarloBaseEntity implements java
     this.frontName = frontName;
   }
 
+
+  public Map<String, Object> convertToMap() {
+    ObjectMapper oMapper = new ObjectMapper();
+
+    Map<String, Object> map = oMapper.convertValue(this, Map.class);
+
+    return map;
+  }
 
   public String getFieldName() {
     return fieldName;
