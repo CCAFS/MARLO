@@ -737,7 +737,6 @@
     </div>
 
     [#-- Part I  Description and all information of the outcome/ impact reported --]
-    [#if isOutcomeCaseStudy]
       <div class="borderBox">
         [#-- Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
           <div class="form-group">
@@ -748,14 +747,13 @@
                   <button class="btn btn-default btn-sm copyButton" type="button" style="${editable?string('', 'margin-right: 5px;')}"> <span class="glyphicon glyphicon-duplicate"></span> Copy URL </button>
                 </span>
                 [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
-                [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable readOnly=true/]
+                [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.link" paramText=isOutcomeCaseStudy?then("OICR", "MELIA") className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable readOnly=true/]
                 <!--input type="text" class="form-control input-sm urlInput" value="${summaryPDF}" readonly-->
               </div>
               <div class="message text-center" style="display:none">Copied!</div>
             </div>
           </div>
       </div>
-    [/#if]
     <div class="borderBox">
       <h4>[@s.text name="study.partOne" /]</h4>
       <hr>
