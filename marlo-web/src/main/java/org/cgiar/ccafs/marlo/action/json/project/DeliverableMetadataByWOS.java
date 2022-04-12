@@ -470,6 +470,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
     externalSource.setIsiStatus(this.getBooleanStringOrNotAvailable(this.response.getIsISI()));
     externalSource.setJournalName(this.response.getJournalName());
     externalSource.setVolume(this.response.getVolume());
+    externalSource.setIssue(this.response.getIssue());
     externalSource.setPages(this.response.getPages());
     externalSource.setSource(this.response.getSource());
 

@@ -436,6 +436,7 @@ public class DeliverablesItem<T> {
                 deliverableMetadataExternalSources.setPhase(phase);
                 deliverableMetadataExternalSources.setCreatedBy(user);
                 deliverableMetadataExternalSources.setVolume(publication.getVolume());
+                deliverableMetadataExternalSources.setIssue(publication.getIssue());
                 if (publication.getGardian() != null) {
                   deliverableMetadataExternalSources
                     .setGardianAccessibility(publication.getGardian().getAccessibility());
@@ -809,6 +810,7 @@ public class DeliverablesItem<T> {
                 deliverableMetadataExternalSources.setPhase(phase);
                 deliverableMetadataExternalSources.setCreatedBy(user);
                 deliverableMetadataExternalSources.setVolume(publication.getVolume());
+                deliverableMetadataExternalSources.setIssue(publication.getIssue());
                 if (publication.getGardian() != null) {
                   deliverableMetadataExternalSources
                     .setGardianAccessibility(publication.getGardian().getAccessibility());
@@ -1687,6 +1689,7 @@ public class DeliverablesItem<T> {
               deliverableMetadataExternalSources.setPhase(phase);
               deliverableMetadataExternalSources.setCreatedBy(user);
               deliverableMetadataExternalSources.setVolume(publication.getVolume());
+              deliverableMetadataExternalSources.setIssue(publication.getIssue());
               if (publication.getGardian() != null) {
                 deliverableMetadataExternalSources.setGardianAccessibility(publication.getGardian().getAccessibility());
                 deliverableMetadataExternalSources.setGardianFindability(publication.getGardian().getFindability());
@@ -2181,6 +2184,7 @@ public class DeliverablesItem<T> {
                 deliverableMetadataExternalSources.setPhase(phase);
                 deliverableMetadataExternalSources.setCreatedBy(user);
                 deliverableMetadataExternalSources.setVolume(publication.getVolume());
+                deliverableMetadataExternalSources.setIssue(publication.getIssue());
                 if (publication.getGardian() != null) {
                   deliverableMetadataExternalSources
                     .setGardianAccessibility(publication.getGardian().getAccessibility());
