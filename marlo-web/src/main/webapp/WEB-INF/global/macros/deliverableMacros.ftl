@@ -530,6 +530,10 @@
                     <td id="td-WOS-Volume" ></td>
                   </tr>
                   <tr>
+                    <th scope="row">Issue</th>
+                    <td id="td-WOS-Issue" ></td>
+                  </tr>
+                  <tr>
                     <th  scope="row">Pages</th>
                     <td id="td-WOS-Pages"></td>
                   </tr>
