@@ -1,0 +1,1 @@
+alter table deliverable_metadata_external_sources add column issue text after volume;

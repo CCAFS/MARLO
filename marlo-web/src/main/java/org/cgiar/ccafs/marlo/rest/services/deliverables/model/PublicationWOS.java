@@ -36,6 +36,8 @@ public class PublicationWOS implements Serializable {
 
   private String volume;
 
+  private String issue;
+
   private String is_oa;
 
   private String oa_link;
@@ -86,14 +88,17 @@ public class PublicationWOS implements Serializable {
     return gardian;
   }
 
-
   public String getIs_isi() {
     return is_isi;
   }
 
-
   public String getIs_oa() {
     return is_oa;
+  }
+
+
+  public String getIssue() {
+    return issue;
   }
 
 
@@ -169,6 +174,11 @@ public class PublicationWOS implements Serializable {
 
   public void setIs_oa(String is_oa) {
     this.is_oa = is_oa;
+  }
+
+
+  public void setIssue(String issue) {
+    this.issue = issue;
   }
 
 
