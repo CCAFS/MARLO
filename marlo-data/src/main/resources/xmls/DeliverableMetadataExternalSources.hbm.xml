@@ -78,6 +78,9 @@
 		<property name="volume" type="string">
 			<column name="volume" sql-type="TEXT" />
 		</property>
+		<property name="issue" type="string">
+			<column name="issue" sql-type="TEXT" />
+		</property>
 		<property name="pages" type="string">
 			<column name="pages" sql-type="TEXT" />
 		</property>

@@ -47,6 +47,7 @@ public class DeliverableMetadataExternalSources extends MarloAuditableEntity
   private String isiStatus;
   private String journalName;
   private String volume;
+  private String issue;
   private String pages;
   private Date createDate;
 
@@ -60,6 +61,7 @@ public class DeliverableMetadataExternalSources extends MarloAuditableEntity
   private Set<DeliverableAffiliation> deliverableAffiliations;
   private Set<DeliverableAffiliationsNotMapped> deliverableAffiliationsNotMapped;
   private Set<ExternalSourceAuthor> externalSourceAuthors;
+
 
   public DeliverableMetadataExternalSources() {
 
@@ -80,6 +82,7 @@ public class DeliverableMetadataExternalSources extends MarloAuditableEntity
     this.setTitle(other.getTitle());
     this.setUrl(other.getUrl());
     this.setVolume(other.getVolume());
+    this.setIssue(other.getIssue());
     this.setActive(other.isActive());
     this.setCreatedBy(other.getCreatedBy());
     this.setCreateDate(other.getCreateDate());
@@ -112,7 +115,6 @@ public class DeliverableMetadataExternalSources extends MarloAuditableEntity
     return true;
   }
 
-
   public Date getCreateDate() {
     return createDate;
   }
@@ -120,6 +122,7 @@ public class DeliverableMetadataExternalSources extends MarloAuditableEntity
   public Deliverable getDeliverable() {
     return deliverable;
   }
+
 
   public Set<DeliverableAffiliation> getDeliverableAffiliations() {
     return deliverableAffiliations;
@@ -159,6 +162,10 @@ public class DeliverableMetadataExternalSources extends MarloAuditableEntity
 
   public String getIsiStatus() {
     return isiStatus;
+  }
+
+  public String getIssue() {
+    return issue;
   }
 
   public String getJournalName() {
@@ -269,6 +276,10 @@ public class DeliverableMetadataExternalSources extends MarloAuditableEntity
     this.isiStatus = isISI;
   }
 
+  public void setIssue(String issue) {
+    this.issue = issue;
+  }
+
   public void setJournalName(String journalName) {
     this.journalName = journalName;
   }
@@ -320,7 +331,8 @@ public class DeliverableMetadataExternalSources extends MarloAuditableEntity
       .add("publicationType", this.getPublicationType()).add("publicationYear", this.getPublicationYear())
       .add("openAccessStatus", this.getOpenAccessStatus()).add("openAccessLink", this.getOpenAccessLink())
       .add("isiStatus", this.getIsiStatus()).add("journalName", this.getJournalName()).add("volume", this.getVolume())
-      .add("pages", this.getPages()).add("gardianFindability", this.getGardianFindability())
+      .add("issue", this.getIssue()).add("pages", this.getPages())
+      .add("gardianFindability", this.getGardianFindability())
       .add("gardianAccessibility", this.getGardianAccessibility())
       .add("gardianInteroperability", this.getGardianInteroperability())
       .add("gardianReusability", this.getGardianReusability()).add("gardianTitle", this.getGardianTitle()).toString();
