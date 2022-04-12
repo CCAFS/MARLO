@@ -89,12 +89,11 @@
                         [#--  <label for="">[@s.text name="Download Template" /]:</label> --]
                         <br>
                         <div align="left">
-                          <a href="${baseUrlCdn}/global/documents/E&S_Reporting_Template.docx" download>[@s.text name="project.safeguards.downloadText"][/@s.text]<br><br><img src="${baseUrlCdn}/global/images/word.png"  /></a>
+                          <a href="${baseUrlCdn}/global/documents/E&S_Reporting_Template.docx" download>[@s.text name="project.safeguards.downloadText"][/@s.text]<img src="${baseUrlCdn}/global/images/word.png" style="float: none !important;"/></a>
                         </div>
                   </div>
               </div>
               
-              <br>   
               <br>   
               <div class="form-group" align="center">
                     [@uploadfileMacro safeguard=safeguard isTemplate=false /]               
@@ -119,15 +118,18 @@
         [#macro uploadfileMacro safeguard isTemplate=false]
           [#-- Outcome ID Parameter --]
           <div id="safeguard" class="form-group fileUploadContainer">
+            <div class="uploadPDFTitleContainer">
+            <img src="${baseUrlCdn}/global/images/pdf.png" class="fileIcon"/>
             <label>[@customForm.text name="project.safeguards.uploadText" readText=!editable /]:</label>
+            </div>
               <br>
               [#local hasFile = safeguard.file?? && safeguard.file.id?? /]
-              <input class="fileID" type="hidden" name="${safeguard}.id" value="${(safeguard.file.id)!}" />
+              <input class="fileID" type="hidden" name="${safeguard}.id" value="${(safeguard.file.id)!}"/>
               <input type="hidden" class="safeguardId" name="${safeguard}.id" value="${(safeguard.id)!}"/>
 
               [#-- Input File --]
               [#if editable]
-                <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/safeguardUploadFile.do"></div>
+                <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/safeguardUploadFile.do" accept="application/pdf"></div>
               [/#if]
               [#-- Uploaded File --]
               <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
