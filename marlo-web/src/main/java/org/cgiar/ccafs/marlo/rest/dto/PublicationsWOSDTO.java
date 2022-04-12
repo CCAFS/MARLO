@@ -55,16 +55,18 @@ public class PublicationsWOSDTO {
   private String journalName;
   @ApiModelProperty(notes = "Publication Volume", position = 10)
   private String volume;
+  @ApiModelProperty(notes = "Publication Issue", position = 11)
+  private String issue;
 
-  @ApiModelProperty(notes = "Publication Pages", position = 11)
+  @ApiModelProperty(notes = "Publication Pages", position = 12)
   private String pages;
-  @ApiModelProperty(notes = "Publication Authors", position = 12)
+  @ApiModelProperty(notes = "Publication Authors", position = 13)
   private List<AuthorsWOSDTO> authors;
-  @ApiModelProperty(notes = "Publication Institutions", position = 13)
+  @ApiModelProperty(notes = "Publication Institutions", position = 14)
   private List<InstitutionsWOSDTO> organizations;
-  @ApiModelProperty(notes = "Publication Altmetrics Details", position = 14)
+  @ApiModelProperty(notes = "Publication Altmetrics Details", position = 15)
   private PublicationAltmetricsWOSDTO altmetric;
-  @ApiModelProperty(notes = "Publication gardian", position = 15)
+  @ApiModelProperty(notes = "Publication gardian", position = 16)
   private PublicationGardianWOSDTO gardian;
 
   public PublicationAltmetricsWOSDTO getAltmetric() {
@@ -80,11 +82,9 @@ public class PublicationsWOSDTO {
     return doi;
   }
 
-
   public PublicationGardianWOSDTO getGardian() {
     return gardian;
   }
-
 
   public String getIs_isi() {
     return is_isi;
@@ -93,6 +93,11 @@ public class PublicationsWOSDTO {
 
   public String getIs_oa() {
     return is_oa;
+  }
+
+
+  public String getIssue() {
+    return issue;
   }
 
 
@@ -173,6 +178,11 @@ public class PublicationsWOSDTO {
 
   public void setIs_oa(String is_oa) {
     this.is_oa = is_oa;
+  }
+
+
+  public void setIssue(String issue) {
+    this.issue = issue;
   }
 
 
