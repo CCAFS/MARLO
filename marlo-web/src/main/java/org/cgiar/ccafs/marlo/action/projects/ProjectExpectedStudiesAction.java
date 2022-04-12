@@ -2071,8 +2071,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     if (this.expectedStudy.getActionAreaIndicators() != null
       || (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null && BooleanUtils.isTrue(
         this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasActionAreaOutcomeIndicatorContribution()))) {
-      for (ProjectExpectedStudyActionAreaOutcomeIndicator actionAreaOutcomeIndicator : this.expectedStudy
-        .getActionAreaIndicators()) {
+      for (ProjectExpectedStudyActionAreaOutcomeIndicator actionAreaOutcomeIndicator : ListUtils
+        .emptyIfNull(this.expectedStudy.getActionAreaIndicators())) {
         if (actionAreaOutcomeIndicator != null && actionAreaOutcomeIndicator.getOutcomeIndicator() != null
           && actionAreaOutcomeIndicator.getOutcomeIndicator().getId() != null) {
           if (actionAreaOutcomeIndicator.getId() == null) {
@@ -2180,7 +2180,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     if (!isAlliance || (isAlliance && this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
       && BooleanUtils.isTrue(this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasLegacyCrpContribution()))) {
       if (this.expectedStudy.getCrps() != null) {
-        for (ProjectExpectedStudyCrp studyCrp : this.expectedStudy.getCrps()) {
+        for (ProjectExpectedStudyCrp studyCrp : ListUtils.emptyIfNull(this.expectedStudy.getCrps())) {
           if (studyCrp.getId() == null) {
             ProjectExpectedStudyCrp studyCrpSave = new ProjectExpectedStudyCrp();
             studyCrpSave.setProjectExpectedStudy(projectExpectedStudy);
@@ -2382,7 +2382,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     if (this.expectedStudy.getImpactAreaIndicators() != null
       || (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null && BooleanUtils
         .isTrue(this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasImpactAreaIndicatorContribution()))) {
-      for (ProjectExpectedStudyImpactAreaIndicator impactAreaIndicator : this.expectedStudy.getImpactAreaIndicators()) {
+      for (ProjectExpectedStudyImpactAreaIndicator impactAreaIndicator : ListUtils
+        .emptyIfNull(this.expectedStudy.getImpactAreaIndicators())) {
         if (impactAreaIndicator != null && impactAreaIndicator.getImpactAreaIndicator() != null
           && impactAreaIndicator.getImpactAreaIndicator().getId() != null) {
           if (impactAreaIndicator.getId() == null) {
@@ -2445,7 +2446,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     // Save form Information
     if (this.expectedStudy.getInitiatives() != null || (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
       && BooleanUtils.isTrue(this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasInitiativeContribution()))) {
-      for (ProjectExpectedStudyInitiative initiative : this.expectedStudy.getInitiatives()) {
+      for (ProjectExpectedStudyInitiative initiative : ListUtils.emptyIfNull(this.expectedStudy.getInitiatives())) {
         if (initiative != null && initiative.getInitiative() != null && initiative.getInitiative().getId() != null) {
           if (initiative.getId() == null) {
             ProjectExpectedStudyInitiative initiativeSave = new ProjectExpectedStudyInitiative();
@@ -2600,7 +2601,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     // Save form Information
     if (this.expectedStudy.getLeverOutcomes() != null || (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
       && BooleanUtils.isTrue(this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasLeverOutcomeContribution()))) {
-      for (ProjectExpectedStudyLeverOutcome studyLeverOutcome : this.expectedStudy.getLeverOutcomes()) {
+      for (ProjectExpectedStudyLeverOutcome studyLeverOutcome : ListUtils
+        .emptyIfNull(this.expectedStudy.getLeverOutcomes())) {
         if (studyLeverOutcome != null && studyLeverOutcome.getLeverOutcome() != null
           && studyLeverOutcome.getLeverOutcome().getId() != null) {
           if (studyLeverOutcome.getId() == null) {
@@ -2854,7 +2856,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     // Save form Information
     if (this.expectedStudy.getNexus() != null || (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
       && BooleanUtils.isTrue(this.expectedStudy.getProjectExpectedStudyInfo(phase).getHasNexusContribution()))) {
-      for (ProjectExpectedStudyNexus studyNexus : this.expectedStudy.getNexus()) {
+      for (ProjectExpectedStudyNexus studyNexus : ListUtils.emptyIfNull(this.expectedStudy.getNexus())) {
         if (studyNexus != null && studyNexus.getNexus() != null && studyNexus.getNexus().getId() != null) {
           if (studyNexus.getId() == null) {
             ProjectExpectedStudyNexus nexusSave = new ProjectExpectedStudyNexus();
