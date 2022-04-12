@@ -7132,3 +7132,15 @@ li.currentSection#bi::before{
   transition: box-shadow 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
   background: #fff;
 }
+
+.uploadPDFTitleContainer {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+}
+
+img.fileIcon {
+  padding: 5px;
+  width: 45px;
+}
