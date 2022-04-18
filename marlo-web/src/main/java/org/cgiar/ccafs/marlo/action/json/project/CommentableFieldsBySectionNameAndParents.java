@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.InternalQaCommentableFields;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -62,17 +63,22 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
   public String execute() throws Exception {
 
     List<InternalQaCommentableFields> fields;
-    if (parentName != null && sectionName != null) {
+    if (parentId != null && sectionName != null) {
+      try {
+        fields = internalQaCommentableFieldsManager.findAll().stream()
+          .filter(qa -> qa != null && qa.isActive() && qa.getParentId() != null && qa.getParentId().equals(parentId)
+            && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
+          .collect(Collectors.toList());
+      } catch (Exception e) {
+        fields = new ArrayList<>();
+      }
 
-      fields = internalQaCommentableFieldsManager.findAll().stream()
-        .filter(qa -> qa != null && qa.isActive() && qa.getParentName() != null && qa.getParentName().equals(parentName)
-          && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
-        .collect(Collectors.toList());
-
-      if (fields != null) {
+      if (fields != null && !fields.isEmpty()) {
         for (InternalQaCommentableFields field : fields) {
           this.fieldsMap = new HashMap<>();
           this.fieldsMap.put("fieldName", field.getFrontName());
+          this.fieldsMap.put("description", field.getFieldName());
+          this.fieldsMap.put("sectionName", field.getSectionName());
         }
       } else {
         this.fieldsMap = Collections.emptyMap();
