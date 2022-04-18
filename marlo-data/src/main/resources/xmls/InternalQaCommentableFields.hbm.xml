@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 30, 2018 10:52:36 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.InternalQaCommentableFields"
+		table="internal_qa_commentable_fields" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<property name="sectionName" type="string">
+            <column name="section_name" sql-type="TEXT" />
+        </property>
+		<property name="parentName" type="string">
+            <column name="parent_name" sql-type="TEXT" />
+        </property>
+		<property name="parentId" type="string">
+            <column name="parent_id" sql-type="TEXT" />
+        </property>
+		<property name="tableName" type="string">
+            <column name="table_name" sql-type="TEXT" />
+        </property>
+		<property name="fieldName" type="string">
+            <column name="field_name" sql-type="TEXT" />
+        </property>
+		<property name="frontName" type="string">
+            <column name="front_name" sql-type="TEXT" />
+        </property>
+           <property name="active" type="boolean">
+          <column name="is_active" not-null="true" />
+        </property>
+	</class>
+</hibernate-mapping>
