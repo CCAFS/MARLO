@@ -18,21 +18,28 @@ public class InternalQaCommentableFields extends MarloBaseEntity implements java
 
   @Expose
   private String sectionName;
+  @Expose
   private String parentName;
-  private String parendId;
+  @Expose
+  private String parentId;
+  @Expose
   private String tableName;
+  @Expose
   private String fieldName;
+  @Expose
   private String frontName;
+  @Expose
+  private boolean active;
 
   public InternalQaCommentableFields() {
   }
 
-  public InternalQaCommentableFields(String sectionName, String parentName, String parendId, String tableName,
+  public InternalQaCommentableFields(String sectionName, String parentName, String parentId, String tableName,
     String fieldName, String frontName) {
     super();
     this.sectionName = sectionName;
     this.parentName = parentName;
-    this.parendId = parendId;
+    this.parentId = parentId;
     this.tableName = tableName;
     this.fieldName = fieldName;
     this.frontName = frontName;
@@ -74,8 +81,8 @@ public class InternalQaCommentableFields extends MarloBaseEntity implements java
     return u;
   }
 
-  public String getParendId() {
-    return parendId;
+  public String getParentId() {
+    return parentId;
   }
 
   public String getParentName() {
@@ -95,6 +102,10 @@ public class InternalQaCommentableFields extends MarloBaseEntity implements java
     return true;
   }
 
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+
   public void setFieldName(String fieldName) {
     this.fieldName = fieldName;
   }
@@ -108,8 +119,8 @@ public class InternalQaCommentableFields extends MarloBaseEntity implements java
     // TODO Auto-generated method stub
   }
 
-  public void setParendId(String parendId) {
-    this.parendId = parendId;
+  public void setParentId(String parentId) {
+    this.parentId = parentId;
   }
 
   public void setParentName(String parentName) {

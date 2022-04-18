@@ -15,7 +15,7 @@
 		<property name="parentName" type="string">
             <column name="parent_name" sql-type="TEXT" />
         </property>
-		<property name="parendId" type="string">
+		<property name="parentId" type="string">
             <column name="parent_id" sql-type="TEXT" />
         </property>
 		<property name="tableName" type="string">
@@ -26,6 +26,9 @@
         </property>
 		<property name="frontName" type="string">
             <column name="front_name" sql-type="TEXT" />
+        </property>
+           <property name="active" type="boolean">
+          <column name="is_active" not-null="true" />
         </property>
 	</class>
 </hibernate-mapping>
