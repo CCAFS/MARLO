@@ -62,7 +62,7 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
   @Override
   public String execute() throws Exception {
 
-    List<InternalQaCommentableFields> fields;
+    List<InternalQaCommentableFields> fields = new ArrayList<>();
     if (parentId != null && sectionName != null) {
       try {
         fields = internalQaCommentableFieldsManager.findAll().stream()
@@ -72,19 +72,44 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
       } catch (Exception e) {
         fields = new ArrayList<>();
       }
-
-      if (fields != null && !fields.isEmpty()) {
-        for (InternalQaCommentableFields field : fields) {
-          this.fieldsMap = new HashMap<>();
-          this.fieldsMap.put("fieldName", field.getFrontName());
-          this.fieldsMap.put("description", field.getFieldName());
-          this.fieldsMap.put("sectionName", field.getSectionName());
-        }
-      } else {
-        this.fieldsMap = Collections.emptyMap();
-      }
-
     }
+
+    if (sectionName != null) {
+      try {
+        fields = internalQaCommentableFieldsManager.findAll().stream()
+          .filter(
+            qa -> qa != null && qa.isActive() && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
+          .collect(Collectors.toList());
+      } catch (Exception e) {
+        fields = new ArrayList<>();
+      }
+    }
+
+
+    if (fields != null && !fields.isEmpty()) {
+      for (InternalQaCommentableFields field : fields) {
+        this.fieldsMap = new HashMap<>();
+        if (field.getFrontName() != null) {
+          this.fieldsMap.put("fieldName", field.getFrontName());
+        } else {
+          this.fieldsMap.put("fieldName", "");
+        }
+        if (field.getFieldName() != null) {
+          this.fieldsMap.put("description", field.getFieldName());
+        } else {
+          this.fieldsMap.put("description", "");
+        }
+        if (field.getSectionName() != null) {
+          this.fieldsMap.put("sectionName", field.getSectionName());
+        } else {
+          this.fieldsMap.put("sectionName", "");
+        }
+      }
+    } else {
+      this.fieldsMap = Collections.emptyMap();
+    }
+
+
     return SUCCESS;
   }
 
