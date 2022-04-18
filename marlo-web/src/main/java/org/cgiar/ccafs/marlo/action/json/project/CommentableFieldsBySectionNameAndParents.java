@@ -22,10 +22,10 @@ import org.cgiar.ccafs.marlo.data.manager.InternalQaCommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.InternalQaCommentableFields;
-import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,8 +41,7 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
    * 
    */
   private static final long serialVersionUID = -4335064142194555431L;
-  private List<Map<String, String>> sources;
-  private List<Project> allProjects;
+  private Map<String, Object> fieldsMap;
   private String parentName;
   private String parentId;
   private String sectionName;
@@ -62,57 +61,51 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
   @Override
   public String execute() throws Exception {
 
-    sources = new ArrayList<>();
+    List<InternalQaCommentableFields> fields;
+    if (parentName != null && sectionName != null) {
 
+      fields = internalQaCommentableFieldsManager.findAll().stream()
+        .filter(qa -> qa != null && qa.isActive() && qa.getParentName() != null && qa.getParentName().equals(parentName)
+          && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
+        .collect(Collectors.toList());
 
-    /**
-     * Read only summary objects (not hibernate entities)
-     */
-    List<InternalQaCommentableFields> summaries;
-
-    summaries = internalQaCommentableFieldsManager.findAll().stream()
-      .filter(qa -> qa != null && qa.isActive() && qa.getParentName() != null && qa.getParentName().equals(parentName)
-        && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
-      .collect(Collectors.toList());
-
-
-    for (InternalQaCommentableFields summary : summaries) {
-
-      /*
-       * String permission =
-       * this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym());
-       * boolean hasPermission = this.hasPermissionNoBase(permission);
-       * summary.setCanSelect(hasPermission);
-       */
-      // sources.add(summary.convertToMap());
+      if (fields != null) {
+        for (InternalQaCommentableFields field : fields) {
+          this.fieldsMap = new HashMap<>();
+          this.fieldsMap.put("fieldName", field.getFrontName());
+        }
+      } else {
+        this.fieldsMap = Collections.emptyMap();
+      }
 
     }
     return SUCCESS;
-
   }
 
-  public List<Map<String, String>> getSources() {
-    return sources;
+
+  public Map<String, Object> getFieldsMap() {
+    return fieldsMap;
   }
 
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
 
-    if (parameters.get(APConstants.QUERY_PARAMETER).isDefined()) {
-      parentName = StringUtils.trim(parameters.get(APConstants.QUERY_PARAMETER).getMultipleValues()[0]);
+    if (parameters.get(APConstants.PARENT_REQUEST_NAME).isDefined()) {
+      parentName = StringUtils.trim(parameters.get(APConstants.PARENT_REQUEST_NAME).getMultipleValues()[0]);
     }
-    if (parameters.get(APConstants.QUERY_PARAMETER).isDefined()) {
-      parentId = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.QUERY_PARAMETER).getMultipleValues()[0]));
+    if (parameters.get(APConstants.PARENT_REQUEST_ID).isDefined()) {
+      parentId =
+        StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PARENT_REQUEST_ID).getMultipleValues()[0]));
     }
-    if (parameters.get(APConstants.QUERY_PARAMETER).isDefined()) {
+    if (parameters.get(APConstants.SECTION_REQUEST_NAME).isDefined()) {
       sectionName =
-        StringUtils.trim(StringUtils.trim(parameters.get(APConstants.QUERY_PARAMETER).getMultipleValues()[0]));
+        StringUtils.trim(StringUtils.trim(parameters.get(APConstants.SECTION_REQUEST_NAME).getMultipleValues()[0]));
     }
   }
 
-  public void setSources(List<Map<String, String>> sources) {
-    this.sources = sources;
+  public void setFieldsMap(Map<String, Object> fieldsMap) {
+    this.fieldsMap = fieldsMap;
   }
 
 }
