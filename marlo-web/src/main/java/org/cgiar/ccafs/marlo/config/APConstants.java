@@ -221,6 +221,9 @@ public final class APConstants {
   public static final long INSTITUTION_CGIAR_CENTER_TYPE = 3;
   public static final long INSTITUTION_DONOR_TYPE = 5;
   public static final String INSTITUTION_REQUEST_ID = "institutionID";
+  public static final String PARENT_REQUEST_ID = "parentID";
+  public static final String PARENT_REQUEST_NAME = "parentName";
+  public static final String SECTION_REQUEST_NAME = "sectionName";
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
   public static final String PARTNER_REQUEST_ID = "requestID";
   public static final String PARTNER_REQUEST_SEND_NOTIFICATION = "sendNotification";

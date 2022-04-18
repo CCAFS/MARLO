@@ -620,7 +620,7 @@ $fileUpload.fileupload({
         $ub.find('.fileUpload').hide();
         // Set file ID
         $ub.find('input.fileID').val(r.fileID);
-        $ub.find('input.safeguardID').val(r.safeguardID);
+        $ub.find('input.safeguardId').val(r.safeguardID);
       }
     },
     progressall: function(e,data) {
@@ -643,7 +643,7 @@ $uploadBlock.find('.removeIcon').on('click', function() {
   $ub.find('.textMessage').hide();
   $ub.find('.fileUpload').show();
   $ub.find('input.fileID').val('');
-  $ub.find('input.safeguardID').val('');
+  $ub.find('input.safeguardId').val('');
 });
 
 /**
