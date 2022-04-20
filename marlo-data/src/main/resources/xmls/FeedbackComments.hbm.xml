@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 30, 2018 10:52:36 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.FeedbackComment"
+		table="internal_qa_commentable_fields" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<property name="comment" type="string">
+            <column name="comment" sql-type="TEXT" />
+        </property>
+	</class>
+</hibernate-mapping>
