@@ -26,11 +26,15 @@ function init() {
   attachEvents();
 
   $('img.qaComment').on('click', function (event) {
+    var popUpTitle = $(this).attr('description');
+    $('textarea[id="Comment on"]').prev('label').html(`Comment on "${popUpTitle}":`);
+
     if (event.pageX < 1000) {
       $('#qaPopup').css('left', event.pageX);  
     } else {
       $('#qaPopup').css('left', 'min(100vw - 100px, 78vw)');  
     }
+
     $('#qaPopup').css('top', event.pageY);
     $('#qaPopup').show();
   });
@@ -65,6 +69,7 @@ function loadQAComments(ajaxURL, arrayName) {
         var newData = data[arrayName].map(function (x) {
           var arr = [];
           arr.push(x.fieldName);
+          arr.push(x.description);
           return arr;
         });
         showQAComments(newData);
@@ -76,6 +81,7 @@ function loadQAComments(ajaxURL, arrayName) {
 function showQAComments(data) {
   data.map(function (x) {
     var commentIcon = $(`img[name="${x[0]}"]`);
+    commentIcon.attr('description', `${x[1]}`)
     commentIcon.show();
   });
 }
