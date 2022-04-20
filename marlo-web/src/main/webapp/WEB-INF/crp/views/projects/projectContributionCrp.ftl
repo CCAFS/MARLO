@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20211110", 
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220420a", 
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
@@ -38,6 +38,14 @@
 [#if (!availabePhase)!false]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
+
+<div id="qaPopup">
+  <div class="closeComment"></div>
+  <br>
+  [@customForm.textArea name="Comment on" required=false className="limitWords-100" editable=editable /]
+  <br>
+  <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment"></div>
+</div>
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -93,7 +101,7 @@
             <h5 class="sectionSubTitle">[@s.text name="projectOutcome.contributionToThisOutcome" /]</h5>
             <div class="form-group">
               <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
-                <div class="col-md-5">
+                <div class="col-md-5 input-container">
                 [#if !action.isAiccra()]
                   [#if editable]
                     [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive/]
@@ -124,7 +132,7 @@
                 </div>
                 [/#if]
               </div>
-              <div class="form-group">
+              <div class="form-group text-area-container">
                 [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-100" editable=editable && (!reportingActive || (!(projectOutcome.narrativeTarget?has_content)!false))/]
               </div>
               
@@ -481,7 +489,7 @@
             </div>
             [/#if]
             [#-- Planning/Reporting lessons --]
-            <div class="fullBlock">
+            <div class="fullBlock text-area-container">
               <input type="hidden" name="projectOutcome.projectComponentLesson.id" value=${(projectOutcome.projectComponentLesson.id)!"-1"} />
               <input type="hidden" name="projectOutcome.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
               <input type="hidden" name="projectOutcome.projectComponentLesson.componentName" value="${actionName}">
@@ -590,11 +598,11 @@
         <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" class="crpMilestoneId" />
         
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
-          <div class="col-md-4">
+          <div class="col-md-4 input-container">
             [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) /]
           </div>
           
-          <div class="col-md-4">
+          <div class="col-md-4 input-container">
             [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
           </div>
       
@@ -612,12 +620,12 @@
           [#-- REPORTING BLOCK --]
           [#if reportingActive]
             [#if !isYearRequired(milestoneYear) && action.isAiccra()]
-              <div class="col-md-4">
+              <div class="col-md-4 input-container">
                 [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) /]
               </div>
             [#else]
              [#if isYearRequired(milestoneYear)]
-              <div class="col-md-4">
+              <div class="col-md-4 input-container">
                 [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) && reportingActive/]
               </div>
              [/#if]
@@ -625,12 +633,12 @@
           [/#if]
         </div>
         
-        <div class="form-group">
+        <div class="form-group text-area-container">
           [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isYearRequired(milestoneYear) className="limitWords-100" editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false/]
         </div>
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
-        <div class="form-group">
+        <div class="form-group text-area-container">
           [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable=(editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
         </div>
         [/#if]
@@ -654,15 +662,15 @@
      
     <div class="form-group">
       [#-- Title --]
-      <div class="form-group">
+      <div class="form-group input-container">
         [@customForm.input name="${customName}.nextUser" i18nkey="projectOutcomeNextUser.title" help="projectOutcomeNextUser.title.help" required=true className="limitWords-20" editable=editable && (!reportingActive || (!element.nextUser?has_content)!true) /]
       </div>
       [#-- Knowledge, attitude, skills and practice changes expected in this next user --]
-      <div class="form-group">
+      <div class="form-group text-area-container">
         [@customForm.textArea name="${customName}.knowledge" i18nkey="projectOutcomeNextUser.knowledge" help="projectOutcomeNextUser.knowledge.help" required=true className="limitWords-100" editable=editable && (!reportingActive || (!element.knowledge?has_content)!true) /]
       </div>
       [#-- Strategies will be used to encourage and enable this next user to utilize deliverables and adopt changes --]
-      <div class="form-group">
+      <div class="form-group text-area-container">
         [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" help="projectOutcomeNextUser.strategies.help" required=true className="limitWords-100" editable=editable && (!reportingActive || (!element.strategies?has_content)!true) /]
       </div>
      
@@ -672,10 +680,10 @@
     [#if reportingActive]
       <br /> 
       <div class="" id="nextUserYear-${currentCycleYear}">
-        <div class="form-group">
+        <div class="form-group text-area-container">
           [@customForm.textArea name="${customName}.knowledgeReport" i18nkey="projectOutcomeNextUser.reportOnProgress" help="" required=true className="limitWords-200 ${reportingActive?string('fieldFocus','')}" editable=editable /]
         </div>
-        <div class="form-group">
+        <div class="form-group text-area-container">
           [@customForm.textArea name="${customName}.strategiesReport" i18nkey="projectOutcomeNextUser.strategiesEncourage" help="" required=true className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable /]
         </div> 
         <div class="clearfix"></div>
@@ -748,7 +756,7 @@
     [/#if]
     --]
     
-      <div class="form-group">
+      <div class="form-group text-area-container">
         [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && AREditable/]
         [#-- && !reportingActive  --]
       </div>
@@ -776,7 +784,7 @@
     <input type="hidden" name="${customName}.id" value="${(projectOutcomePrevIndicator.id)!}" >
     <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomePrevIndicator.crpProgramOutcomeIndicator.id)!}" >
         
-      <div class="form-group">
+      <div class="form-group text-area-container">
         [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomePrevIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && AREditable/]
         [#-- && !reportingActive  --]
       </div>
