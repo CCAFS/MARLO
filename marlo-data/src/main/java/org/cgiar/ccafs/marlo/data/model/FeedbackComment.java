@@ -22,6 +22,11 @@ public class FeedbackComment extends MarloBaseEntity implements java.io.Serializ
   public FeedbackComment() {
   }
 
+  public FeedbackComment(String comment) {
+    super();
+    this.comment = comment;
+  }
+
   public Map<String, Object> convertToMap() {
     ObjectMapper oMapper = new ObjectMapper();
     Map<String, Object> map = oMapper.convertValue(this, Map.class);
