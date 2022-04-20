@@ -1,5 +1,8 @@
-var milestonesCount, outcomeID;
 $(document).ready(init);
+
+var milestonesCount, outcomeID;
+var contributionCRPAjaxURL = '/fieldsBySectionAndParent.do?sectionName=projectContributionCrp';
+var arrayName = 'fieldsMap';
 
 function init() {
   milestonesCount = $('form .outcomeMilestoneYear').length;
@@ -21,6 +24,20 @@ function init() {
 
   // Attaching events functions
   attachEvents();
+
+  $('img.qaComment').on('click', function (event) {
+    if (event.pageX < 1000) {
+      $('#qaPopup').css('left', event.pageX);  
+    } else {
+      $('#qaPopup').css('left', 'min(100vw - 100px, 78vw)');  
+    }
+    $('#qaPopup').css('top', event.pageY);
+    $('#qaPopup').show();
+  });
+
+  $('div.closeComment').on('click', () => {
+    $('#qaPopup').hide();
+  });
 }
 
 function attachEvents() {
@@ -35,6 +52,32 @@ function attachEvents() {
 
   // Remove a next user
   $('.removeNextUser').on('click', removeNextUser);
+
+  loadQAComments(contributionCRPAjaxURL, arrayName);
+}
+
+function loadQAComments(ajaxURL, arrayName) {
+  $.ajax({
+    url: baseURL + ajaxURL,
+    async: false,
+    success: function (data) {
+      if (data && Object.keys(data).length != 0) {
+        var newData = data[arrayName].map(function (x) {
+          var arr = [];
+          arr.push(x.fieldName);
+          return arr;
+        });
+        showQAComments(newData);
+      }
+    }
+  });
+}
+
+function showQAComments(data) {
+  data.map(function (x) {
+    var commentIcon = $(`img[name="${x[0]}"]`);
+    commentIcon.show();
+  });
 }
 
 /** FUNCTIONS * */
