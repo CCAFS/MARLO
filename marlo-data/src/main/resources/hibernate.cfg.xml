@@ -484,5 +484,6 @@
     <mapping resource="xmls/DeliverableProjectOutcomes.hbm.xml" />
     <mapping resource="xmls/Safeguard.hbm.xml" />
     <mapping resource="xmls/InternalQaCommentableFields.hbm.xml" />
+    <mapping resource="xmls/FeedbackComments.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
