@@ -378,7 +378,7 @@ jQuery.fn.setTrumbowyg = function() {
         ],
         plugins: {
           allowTagsFromPaste: {
-            allowedTags: ['a', 'p', 'br', 'b', 'strong', 'i', 'em']
+            allowedTags: ['a', 'br', 'b', 'strong', 'i', 'em']
           }
         },
         urlProtocol: true,
