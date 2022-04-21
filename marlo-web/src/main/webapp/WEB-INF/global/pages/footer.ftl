@@ -41,7 +41,7 @@
     
     [#-- Global Javascript --]
     <script type="text/javascript" src="${baseUrlCdn}/global/js/utils.js?20210203" ></script>
-    <script type="text/javascript" src="${baseUrlCdn}/global/js/global.js?20220314" ></script>
+    <script type="text/javascript" src="${baseUrlCdn}/global/js/global.js?20220421" ></script>
     [#if logged]
       [#-- Pusher app --]
       <script type="text/javascript" src="${baseUrlCdn}/global/js/pusher-app.js" ></script>
