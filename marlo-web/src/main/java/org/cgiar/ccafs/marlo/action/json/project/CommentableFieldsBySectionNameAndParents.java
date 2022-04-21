@@ -106,6 +106,11 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
         } else {
           fieldsMap.put("sectionName", "");
         }
+        if (field.getId() != null) {
+          fieldsMap.put("fieldID", field.getId());
+        } else {
+          fieldsMap.put("fieldID", "");
+        }
         this.fieldsMap.add(fieldsMap);
       }
     } else {
