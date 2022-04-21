@@ -224,6 +224,7 @@ public final class APConstants {
   public static final String PARENT_REQUEST_ID = "parentID";
   public static final String PARENT_REQUEST_NAME = "parentName";
   public static final String SECTION_REQUEST_NAME = "sectionName";
+  public static final String FRONT_REQUEST_NAME = "frontName";
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
   public static final String PARTNER_REQUEST_ID = "requestID";
   public static final String PARTNER_REQUEST_SEND_NOTIFICATION = "sendNotification";
