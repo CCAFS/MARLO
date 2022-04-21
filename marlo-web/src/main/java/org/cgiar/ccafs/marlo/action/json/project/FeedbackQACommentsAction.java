@@ -50,6 +50,7 @@ public class FeedbackQACommentsAction extends BaseAction {
   private String sectionName;
   private String frontName;
   private String phaseId;
+  private String fieldId;
   private InternalQaCommentableFieldsManager internalQaCommentableFieldsManager;
   private FeedbackQACommentManager commentManager;
 
@@ -70,66 +71,31 @@ public class FeedbackQACommentsAction extends BaseAction {
     List<FeedbackQAComment> feedbackComments = new ArrayList<>();
     List<InternalQaCommentableFields> fields = new ArrayList<>();
 
-    // @param = frontName/sectionName/parentID/phaseID
-    if (phaseId != null) {
-      if (frontName != null && sectionName != null && parentId != null) {
-        try {
-          fields = internalQaCommentableFieldsManager.findAll().stream()
-            .filter(qa -> qa != null && qa.isActive() && qa.getParentId() != null && qa.getParentId().equals(parentId)
-              && qa.getSectionName() != null && qa.getSectionName().equals(sectionName) && qa.getFrontName() != null
-              && qa.getFrontName().equals(frontName))
-            .collect(Collectors.toList());
+    // @param = sectionName/parentID/phaseID
+    if (sectionName != null && parentId != null && phaseId != null) {
+      try {
+        fields = internalQaCommentableFieldsManager.findAll().stream()
+          .filter(qa -> qa != null && qa.isActive() && qa.getParentId() != null && qa.getParentId().equals(parentId)
+            && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
+          .collect(Collectors.toList());
 
-          if (fields != null && !fields.isEmpty() && fields.get(0) != null && fields.get(0).getId() != null) {
-            fieldId = fields.get(0).getId();
+        if (fields != null && !fields.isEmpty()) {
+          for (InternalQaCommentableFields field : fields) {
+            fieldId = field.getId();
             long fieldIdLocal = fieldId;
 
             // Get comments for field
-
             if (fieldId != null) {
-              feedbackComments =
-                commentManager.findAll().stream()
-                  .filter(c -> c.getField() != null && c.getField().getId() != null
-                    && c.getField().getId().equals(fieldIdLocal) && c.getPhase() != null
-                    && c.getPhase().getId().equals(Long.getLong(phaseId)))
-                  .collect(Collectors.toList());
-
-            }
-          }
-        } catch (Exception e) {
-          logger.error("unable to get feedback comments - without phase parameter", e);
-          fields = new ArrayList<>();
-        }
-      }
-    } else {
-
-      // @param = frontName/sectionName/parentID
-
-      if (frontName != null && sectionName != null && parentId != null) {
-        try {
-          fields = internalQaCommentableFieldsManager.findAll().stream()
-            .filter(qa -> qa != null && qa.isActive() && qa.getParentId() != null && qa.getParentId().equals(parentId)
-              && qa.getSectionName() != null && qa.getSectionName().equals(sectionName) && qa.getFrontName() != null
-              && qa.getFrontName().equals(frontName))
-            .collect(Collectors.toList());
-
-          if (fields != null && !fields.isEmpty() && fields.get(0) != null && fields.get(0).getId() != null) {
-            fieldId = fields.get(0).getId();
-            long fieldIdLocal = fieldId;
-
-            // Get comments for field
-
-            if (fieldId != null) {
-              feedbackComments = commentManager.findAll().stream().filter(
+              feedbackComments.addAll(commentManager.findAll().stream().filter(
                 c -> c.getField() != null && c.getField().getId() != null && c.getField().getId().equals(fieldIdLocal))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
 
             }
           }
-        } catch (Exception e) {
-          logger.error("unable to get feedback comments", e);
-          fields = new ArrayList<>();
         }
+      } catch (Exception e) {
+        logger.error("unable to get feedback comments", e);
+        fields = new ArrayList<>();
       }
     }
 
@@ -149,12 +115,12 @@ public class FeedbackQACommentsAction extends BaseAction {
           fieldsMap.put("comment", "");
         }
         if (comment.getReply() != null && comment.getReply().getComment() != null) {
-          fieldsMap.put("reply", comment.getReply().getComment() != null);
+          fieldsMap.put("reply", comment.getReply().getComment());
         } else {
           fieldsMap.put("reply", "");
         }
         if (comment.getStatus() != null) {
-          fieldsMap.put("status", comment.getStatus() != null);
+          fieldsMap.put("status", comment.getStatus());
         } else {
           fieldsMap.put("status", "");
         }
@@ -199,6 +165,9 @@ public class FeedbackQACommentsAction extends BaseAction {
     }
     if (parameters.get(APConstants.PHASE_ID).isDefined()) {
       phaseId = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+    }
+    if (parameters.get(APConstants.FIELD_REQUEST_ID).isDefined()) {
+      fieldId = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FIELD_REQUEST_ID).getMultipleValues()[0]));
     }
   }
 
