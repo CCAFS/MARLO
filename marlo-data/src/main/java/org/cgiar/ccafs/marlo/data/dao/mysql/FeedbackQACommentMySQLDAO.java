@@ -60,7 +60,7 @@ public class FeedbackQACommentMySQLDAO extends AbstractMarloDAO<FeedbackQACommen
 
   @Override
   public List<FeedbackQAComment> findAll() {
-    String query = "from " + FeedbackQAComment.class.getName() + " where is_active=1";
+    String query = "from " + FeedbackQAComment.class.getName();
     List<FeedbackQAComment> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

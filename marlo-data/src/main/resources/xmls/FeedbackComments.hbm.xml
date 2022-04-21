@@ -4,7 +4,7 @@
 <!-- Generated Apr 30, 2018 10:52:36 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.FeedbackComment"
-		table="internal_qa_commentable_fields" optimistic-lock="none">
+		table="feedback_comments" optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />

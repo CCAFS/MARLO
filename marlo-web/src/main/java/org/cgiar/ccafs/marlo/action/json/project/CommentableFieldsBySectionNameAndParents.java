@@ -33,6 +33,8 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CommentableFieldsBySectionNameAndParents extends BaseAction {
 
@@ -40,6 +42,7 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
    * 
    */
   private static final long serialVersionUID = -4335064142194555431L;
+  private final Logger logger = LoggerFactory.getLogger(CommentableFieldsBySectionNameAndParents.class);
   private List<Map<String, Object>> fieldsMap;
   private String parentId;
   private String sectionName;
@@ -67,6 +70,7 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
             && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
           .collect(Collectors.toList());
       } catch (Exception e) {
+        logger.error("unable to get fields - with parentID parameter", e);
         fields = new ArrayList<>();
       }
     }
@@ -78,6 +82,7 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
             qa -> qa != null && qa.isActive() && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
           .collect(Collectors.toList());
       } catch (Exception e) {
+        logger.error("unable to get fields", e);
         fields = new ArrayList<>();
       }
     }
