@@ -26,6 +26,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.Borders;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
@@ -160,7 +162,6 @@ public class POISummary {
     }
   }
 
-
   public void convertHTMLTags(XWPFDocument document, String text, XWPFTableCell cell) {
     if (text != null && text.isEmpty()) {
       text = text.trim();
@@ -264,7 +265,8 @@ public class POISummary {
                 textIndicatorLink = "link";
               }
               try {
-                url = text.substring(text.indexOf("=", j) + 2, text.indexOf(">", j) - 1);
+                int possibleStart = this.indexOfFromIndex(text, j, "\"", "'");
+                url = text.substring(possibleStart + 1, this.indexOfFromIndex(text, possibleStart + 1, "\"", "'"));
 
                 if (!url.contains("http://") && !url.contains("https://")) {
                   url = "http://" + url;
@@ -401,6 +403,7 @@ public class POISummary {
             paragraphRun.setItalic(true);
             break;
           case "<em>":
+            paragraphRun.setItalic(true);
             break;
           case "<u>":
             paragraphRun.setUnderline(UnderlinePatterns.SINGLE);
@@ -470,6 +473,7 @@ public class POISummary {
             paragraphRun.setItalic(false);
             break;
           case "</em>":
+            paragraphRun.setItalic(false);
             break;
           case "</u>":
             paragraphRun.setUnderline(UnderlinePatterns.NONE);
@@ -561,6 +565,17 @@ public class POISummary {
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
+  }
+
+  private int indexOfFromIndex(String string, int beginningIndex, String... toMatch) {
+    int index = -1;
+
+    for (String tm : ArrayUtils.nullToEmpty(toMatch)) {
+      int currentIndex = StringUtils.indexOf(string, tm, beginningIndex);
+      index = currentIndex > index ? currentIndex : index;
+    }
+
+    return index;
   }
 
 
