@@ -808,6 +808,13 @@ section {
   font-size: 14px;
 }
 
+.services .publication{
+  line-height: 24px;
+  font-size: 14px;
+  text-align: justify;
+  padding: 0 15%;
+}
+
 /*--------------------------------------------------------------
 # Our Portfolio
 --------------------------------------------------------------*/
@@ -967,7 +974,7 @@ section {
 # Our Team
 --------------------------------------------------------------*/
 .team {
-  background: #fff;
+  background: #f5f9fc;
   padding: 60px 0 30px 0;
 }
 .team .member {
@@ -1304,4 +1311,81 @@ section {
 }
 #footer .credits a {
   color: #9eccf4;
+}
+
+
+.publications-list {
+    display: flex;
+    background-color: #fff;
+    justify-content: center;
+    align-items: center;
+    gap: 4em;
+    width: 100%;
+    padding: 2em 1em;
+}
+
+.img-publication {
+    height: 100%;
+}
+
+.img-landscape-container{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.img-landscape {
+    height: 50%;
+}
+.publication-info{
+    width: auto;
+    display: flex;
+    flex-direction: column;
+   
+}
+.publication-card{
+    display: flex;
+    width: 300px;
+    height: 200px;
+    border-radius: 2px;
+    box-sizing: border-box;
+    border-top: 4px solid #20B38E;
+    background-color: white;
+    box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+.publication-card-landscape{
+    display: flex;
+    width: 320px;
+    height: 200px;
+    border-radius: 2px;
+    box-sizing: border-box;
+    border-top: 4px solid #20B38E;
+    background-color: white;
+    box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
+}
+.publication-title{
+    padding: 0 .5em .5em .5em;
+    box-sizing: border-box;
+    margin: 0;
+    flex:1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+.publication-header{
+    margin: 0;
+    padding: .5em;
+    background-color: #e3e8ec;
+    font-weight: 700;
+    font-size: 14px;
+}
+.publication-link{
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    color: #124572;
 }
