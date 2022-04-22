@@ -28,8 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.InternalQaCommentableFields;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -46,12 +45,12 @@ public class SaveFeedbackCommentsAction extends BaseAction {
    */
   private static final long serialVersionUID = -4335064142194555431L;
   private final Logger logger = LoggerFactory.getLogger(SaveFeedbackCommentsAction.class);
-  private List<Map<String, Object>> comments;
-  private String phaseId;
-  private String fieldId;
+  private Map<String, Object> save;
+  private Long phaseId;
+  private Long fieldId;
   private String comment;
   private String status;
-  private String replyId;
+  private Long replyId;
   private InternalQaCommentableFieldsManager internalQaCommentableFieldsManager;
   private FeedbackQACommentManager commentQAManager;
   private FeedbackCommentManager commentManager;
@@ -71,16 +70,16 @@ public class SaveFeedbackCommentsAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    // @param = comment/parentID/phaseID
+    // @param = comment/parentID/phaseID/fieldID
 
-    Map<String, Object> fieldsMap;
-    if (comments != null) {
+    save = new HashMap<String, Object>();
+    if (fieldId != null) {
 
       // Create feedback Comment save object
       FeedbackQAComment qaComment = new FeedbackQAComment();
       qaComment.setComment(comment);
       if (phaseId != null) {
-        Phase phase = phaseManager.getPhaseById(Long.getLong(phaseId));
+        Phase phase = phaseManager.getPhaseById(phaseId);
         qaComment.setPhase(phase);
       }
 
@@ -89,52 +88,75 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
 
       if (replyId != null) {
-        FeedbackComment reply = commentManager.getFeedbackCommentById(Long.getLong(replyId));
+        FeedbackComment reply = commentManager.getFeedbackCommentById(replyId);
         qaComment.setReply(reply);
       }
 
       if (fieldId != null) {
         InternalQaCommentableFields field =
-          internalQaCommentableFieldsManager.getInternalQaCommentableFieldsById(Long.getLong(fieldId));
+          internalQaCommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
         qaComment.setField(field);
       }
 
       qaComment.setScreen(0);
       qaComment.setObject(0);
-      commentQAManager.saveFeedbackQAComment(qaComment);
-    }
+      qaComment = commentQAManager.saveFeedbackQAComment(qaComment);
 
-    fieldsMap = Collections.emptyMap();
+      if (qaComment.getId() != null) {
+        save.put("save", true);
+        save.put("id", qaComment.getId());
+      } else {
+        save.put("save", false);
+      }
+    } else {
+      save.put("save", false);
+    }
     return SUCCESS;
   }
 
-  public List<Map<String, Object>> getComments() {
-    return comments;
+  public Map<String, Object> getSave() {
+    return save;
   }
 
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
 
-    if (parameters.get(APConstants.PHASE_ID).isDefined()) {
-      phaseId = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
-    }
+
     if (parameters.get(APConstants.COMMENT_REQUEST).isDefined()) {
       comment = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.COMMENT_REQUEST).getMultipleValues()[0]));
     }
     if (parameters.get(APConstants.STATUS_REQUEST).isDefined()) {
       status = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.STATUS_REQUEST).getMultipleValues()[0]));
     }
-    if (parameters.get(APConstants.FIELD_REQUEST_ID).isDefined()) {
-      fieldId = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FIELD_REQUEST_ID).getMultipleValues()[0]));
+    try {
+      if (parameters.get(APConstants.PHASE_ID).isDefined()) {
+        phaseId = Long
+          .parseLong(StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0])));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get phaseID", e);
     }
-    if (parameters.get(APConstants.REPLY_ID_REQUEST).isDefined()) {
-      replyId = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.REPLY_ID_REQUEST).getMultipleValues()[0]));
+    try {
+      if (parameters.get(APConstants.FIELD_REQUEST_ID).isDefined()) {
+        fieldId = Long.parseLong(
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FIELD_REQUEST_ID).getMultipleValues()[0])));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get fieldID", e);
+    }
+    try {
+      if (parameters.get(APConstants.REPLY_ID_REQUEST).isDefined()) {
+        replyId = Long.parseLong(
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.REPLY_ID_REQUEST).getMultipleValues()[0])));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get replyID", e);
     }
   }
 
-  public void setComments(List<Map<String, Object>> comments) {
-    this.comments = comments;
+  public void setSave(Map<String, Object> save) {
+    this.save = save;
   }
 
 }
