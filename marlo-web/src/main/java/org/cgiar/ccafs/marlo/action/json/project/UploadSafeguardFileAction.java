@@ -18,7 +18,9 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
+import org.cgiar.ccafs.marlo.data.manager.SafeguardsManager;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
+import org.cgiar.ccafs.marlo.data.model.Safeguards;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.FileManager;
 
@@ -49,6 +51,7 @@ public class UploadSafeguardFileAction extends BaseAction {
   // Manager
 
   private FileDBManager fileDBManager;
+  private SafeguardsManager safeguardsManager;
 
 
   // Model
@@ -65,9 +68,9 @@ public class UploadSafeguardFileAction extends BaseAction {
 
 
   @Inject
-  public UploadSafeguardFileAction(APConfig config, FileDBManager fileDBManager) {
+  public UploadSafeguardFileAction(APConfig config, FileDBManager fileDBManager, SafeguardsManager safeguardsManager) {
     super(config);
-
+    this.safeguardsManager = safeguardsManager;
     this.fileDBManager = fileDBManager;
     this.config = config;
 
@@ -81,6 +84,19 @@ public class UploadSafeguardFileAction extends BaseAction {
     saved = (fileDB.getId() != null) && fileDB.getId().longValue() > 0 ? true : false;
     FileManager.copyFile(file, this.getBaseLineFilePath() + fileDB.getFileName());
     fileID = fileDB.getId();
+    try {
+
+      Safeguards safeguard = new Safeguards();
+      if (safeguardsManager.existSafeguards(Long.parseLong(safeguardID))) {
+        safeguard = safeguardsManager.getSafeguardsById(Long.parseLong(safeguardID));
+        if (safeguard != null && safeguard.getId() != null && fileDB != null) {
+          safeguard.setFile(fileDB);
+          safeguardsManager.saveSafeguards(safeguard);
+        }
+      }
+    } catch (Exception e) {
+      LOG.error("unable to get phaseID", e);
+    }
     return SUCCESS;
   }
 
