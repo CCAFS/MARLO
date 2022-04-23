@@ -13,7 +13,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<ciat-adauth.version>2.3</ciat-adauth.version>
 		<hibernate-core-version>4.3.5.Final</hibernate-core-version>
-		<org.springframework-version>4.3.24.RELEASE</org.springframework-version>
+		<org.springframework-version>5.3.19</org.springframework-version>
 		<junit.version>4.13.1</junit.version>
 		<logback-classic.version>1.1.7</logback-classic.version>
 		<janino.version>2.7.8</janino.version>
