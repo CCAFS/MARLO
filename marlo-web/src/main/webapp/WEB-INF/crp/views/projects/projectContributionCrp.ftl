@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220420b", 
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220425a", 
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
@@ -68,6 +68,10 @@
           
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="projectOutcome.projectContribution" /] </h3>
+
+          <span id="parentID" style="display: none;">${projectOutcomeID!}</span>
+          <span id="phaseID" style="display: none;">${phaseID!}</span>
+
           [#-- Outcomen name --]
           [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
 
