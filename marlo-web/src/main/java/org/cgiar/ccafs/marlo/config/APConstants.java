@@ -227,6 +227,7 @@ public final class APConstants {
   public static final String FIELD_REQUEST_ID = "fieldID";
   public static final String FRONT_REQUEST_NAME = "frontName";
   public static final String COMMENT_REQUEST = "comment";
+  public static final String COMMENT_REQUEST_ID = "commentID";
   public static final String STATUS_REQUEST = "status";
   public static final String REPLY_ID_REQUEST = "replyID";
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
