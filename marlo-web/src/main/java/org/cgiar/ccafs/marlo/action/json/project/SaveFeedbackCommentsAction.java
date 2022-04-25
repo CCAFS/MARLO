@@ -52,6 +52,8 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private String status;
   private Long replyId;
   private Long commentId;
+  private Long objectId;
+  private Long parentId;
   private InternalQaCommentableFieldsManager internalQaCommentableFieldsManager;
   private FeedbackQACommentManager commentQAManager;
   private FeedbackCommentManager commentManager;
@@ -107,6 +109,10 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       if (replyId != null) {
         FeedbackComment reply = commentManager.getFeedbackCommentById(replyId);
         qaComment.setReply(reply);
+      }
+
+      if (parentId != null) {
+        qaComment.setObject(parentId);
       }
 
       if (fieldId != null) {
@@ -174,6 +180,22 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       if (parameters.get(APConstants.COMMENT_REQUEST_ID).isDefined()) {
         commentId = Long.parseLong(
           StringUtils.trim(StringUtils.trim(parameters.get(APConstants.COMMENT_REQUEST_ID).getMultipleValues()[0])));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get replyID", e);
+    }
+    try {
+      if (parameters.get(APConstants.OBJECT_REQUEST_ID).isDefined()) {
+        objectId = Long.parseLong(
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.OBJECT_REQUEST_ID).getMultipleValues()[0])));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get replyID", e);
+    }
+    try {
+      if (parameters.get(APConstants.PARENT_REQUEST_ID).isDefined()) {
+        parentId = Long.parseLong(
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PARENT_REQUEST_ID).getMultipleValues()[0])));
       }
     } catch (Exception e) {
       logger.error("unable to get replyID", e);
