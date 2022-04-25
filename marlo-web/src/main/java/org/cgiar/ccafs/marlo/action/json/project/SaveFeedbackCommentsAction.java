@@ -51,6 +51,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private String comment;
   private String status;
   private Long replyId;
+  private Long commentId;
   private InternalQaCommentableFieldsManager internalQaCommentableFieldsManager;
   private FeedbackQACommentManager commentQAManager;
   private FeedbackCommentManager commentManager;
@@ -71,13 +72,29 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     // @param = comment/parentID/phaseID/fieldID
+    // @param (optional) = commentID
 
     save = new HashMap<String, Object>();
     if (fieldId != null) {
 
       // Create feedback Comment save object
       FeedbackQAComment qaComment = new FeedbackQAComment();
+
+      // get existing object from database
+      try {
+        if (commentId != null) {
+          FeedbackQAComment qaCommentDB = commentQAManager.getFeedbackQACommentById(commentId);
+          if (qaCommentDB != null && qaCommentDB.getId() != null) {
+            qaComment = qaCommentDB;
+          }
+        }
+      } catch (Exception e) {
+        logger.error("unable to get existing Feedback QA comment object from DB", e);
+      }
+
       qaComment.setComment(comment);
+
+
       if (phaseId != null) {
         Phase phase = phaseManager.getPhaseById(phaseId);
         qaComment.setPhase(phase);
@@ -149,6 +166,14 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       if (parameters.get(APConstants.REPLY_ID_REQUEST).isDefined()) {
         replyId = Long.parseLong(
           StringUtils.trim(StringUtils.trim(parameters.get(APConstants.REPLY_ID_REQUEST).getMultipleValues()[0])));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get replyID", e);
+    }
+    try {
+      if (parameters.get(APConstants.COMMENT_REQUEST_ID).isDefined()) {
+        commentId = Long.parseLong(
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.COMMENT_REQUEST_ID).getMultipleValues()[0])));
       }
     } catch (Exception e) {
       logger.error("unable to get replyID", e);

@@ -51,7 +51,7 @@ public class DeleteFeedbackCommentsAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    // @param = comment/parentID/phaseID/fieldID
+    // @param = commentID
 
     delete = new HashMap<String, Object>();
     if (commentId != null) {
