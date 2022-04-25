@@ -46,11 +46,11 @@ public class FeedbackQACommentsAction extends BaseAction {
   private static final long serialVersionUID = -4335064142194555431L;
   private final Logger logger = LoggerFactory.getLogger(FeedbackQACommentsAction.class);
   private List<Map<String, Object>> comments;
-  private String parentId;
+  private Long parentId;
   private String sectionName;
   private String frontName;
-  private String phaseId;
-  private String fieldId;
+  private Long phaseId;
+  private Long fieldId;
   private InternalQaCommentableFieldsManager internalQaCommentableFieldsManager;
   private FeedbackQACommentManager commentManager;
 
@@ -75,8 +75,8 @@ public class FeedbackQACommentsAction extends BaseAction {
     if (sectionName != null && parentId != null && phaseId != null) {
       try {
         fields = internalQaCommentableFieldsManager.findAll().stream()
-          .filter(qa -> qa != null && qa.isActive() && qa.getParentId() != null && qa.getParentId().equals(parentId)
-            && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
+          .filter(
+            qa -> qa != null && qa.isActive() && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
           .collect(Collectors.toList());
 
         if (fields != null && !fields.isEmpty()) {
@@ -86,8 +86,10 @@ public class FeedbackQACommentsAction extends BaseAction {
 
             // Get comments for field
             if (fieldId != null) {
-              feedbackComments.addAll(commentManager.findAll().stream().filter(
-                c -> c.getField() != null && c.getField().getId() != null && c.getField().getId().equals(fieldIdLocal))
+              feedbackComments.addAll(commentManager.findAll().stream()
+                .filter(c -> c.getField() != null && c.getField().getId() != null
+                  && c.getField().getId().equals(fieldIdLocal) && c.getPhase() != null && c.getPhase().getId() != null
+                  && c.getPhase().getId().equals(phaseId) && c.getObject() == parentId)
                 .collect(Collectors.toList()));
 
             }
@@ -152,8 +154,8 @@ public class FeedbackQACommentsAction extends BaseAction {
      * }
      */
     if (parameters.get(APConstants.PARENT_REQUEST_ID).isDefined()) {
-      parentId =
-        StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PARENT_REQUEST_ID).getMultipleValues()[0]));
+      parentId = Long.parseLong(
+        StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PARENT_REQUEST_ID).getMultipleValues()[0])));
     }
     if (parameters.get(APConstants.SECTION_REQUEST_NAME).isDefined()) {
       sectionName =
@@ -164,10 +166,12 @@ public class FeedbackQACommentsAction extends BaseAction {
         StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FRONT_REQUEST_NAME).getMultipleValues()[0]));
     }
     if (parameters.get(APConstants.PHASE_ID).isDefined()) {
-      phaseId = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+      phaseId =
+        Long.parseLong(StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0])));
     }
     if (parameters.get(APConstants.FIELD_REQUEST_ID).isDefined()) {
-      fieldId = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FIELD_REQUEST_ID).getMultipleValues()[0]));
+      fieldId = Long.parseLong(
+        StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FIELD_REQUEST_ID).getMultipleValues()[0])));
     }
   }
 
