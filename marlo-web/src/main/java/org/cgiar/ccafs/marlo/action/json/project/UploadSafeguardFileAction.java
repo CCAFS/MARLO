@@ -91,8 +91,10 @@ public class UploadSafeguardFileAction extends BaseAction {
         safeguard = safeguardsManager.getSafeguardsById(Long.parseLong(safeguardID));
         if (safeguard != null && safeguard.getId() != null && fileDB != null) {
           safeguard.setFile(fileDB);
-          safeguardsManager.saveSafeguards(safeguard);
+        } else {
+          safeguard.setFile(null);
         }
+        safeguardsManager.saveSafeguards(safeguard);
       }
     } catch (Exception e) {
       LOG.error("unable to get phaseID", e);
