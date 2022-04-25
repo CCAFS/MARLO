@@ -66,10 +66,9 @@ function attachEvents() {
 
   $('.sendCommentContainer').on('click', function () {
     var comment = $('textarea[id="Comment on"]').next().html();
-    // var removeStr = ['.<br>.', '&nbsp;'];
-    var cleanComment = comment.replace('.<br>.', '');
-    // var cleanComment = comment.filter();
-    // console.log(cleanComment);
+    var cleanComment = comment.replaceAll('.<br>.', '');
+    cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
+
     saveQAComment(cleanComment, fieldID);
   });
 }
@@ -103,14 +102,13 @@ function showQAComments(data) {
 }
 
 function saveQAComment(comment, fieldID) {
-  console.log(parentID, comment, phaseID, fieldID)
   var finalAjaxURL = `/saveFeedbackComments.do?sectionName=projectContributionCrp&parentID=${parentID}&comment=${comment}&phaseID=${phaseID}&fieldID=${fieldID}`;
 
   $.ajax({
     url: baseURL + finalAjaxURL,
     async: false,
     success: function (data) {
-      
+
     }
   });
 }
