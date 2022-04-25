@@ -1,8 +1,9 @@
 $(document).ready(init);
 
-var milestonesCount, outcomeID;
+var milestonesCount, outcomeID, parentID, phaseID;
 var contributionCRPAjaxURL = '/fieldsBySectionAndParent.do?sectionName=projectContributionCrp';
 var arrayName = 'fieldsMap';
+let fieldID = '';
 
 function init() {
   milestonesCount = $('form .outcomeMilestoneYear').length;
@@ -25,8 +26,12 @@ function init() {
   // Attaching events functions
   attachEvents();
 
+  parentID = $('#parentID').html();
+  phaseID = $('#phaseID').html();
+
   $('img.qaComment').on('click', function (event) {
     var popUpTitle = $(this).attr('description');
+    fieldID = $(this).attr('fieldID');
     $('textarea[id="Comment on"]').prev('label').html(`Comment on "${popUpTitle}":`);
 
     if (event.pageX < 1000) {
@@ -58,6 +63,15 @@ function attachEvents() {
   $('.removeNextUser').on('click', removeNextUser);
 
   loadQAComments(contributionCRPAjaxURL, arrayName);
+
+  $('.sendCommentContainer').on('click', function () {
+    var comment = $('textarea[id="Comment on"]').next().html();
+    // var removeStr = ['.<br>.', '&nbsp;'];
+    var cleanComment = comment.replace('.<br>.', '');
+    // var cleanComment = comment.filter();
+    // console.log(cleanComment);
+    saveQAComment(cleanComment, fieldID);
+  });
 }
 
 function loadQAComments(ajaxURL, arrayName) {
@@ -68,6 +82,7 @@ function loadQAComments(ajaxURL, arrayName) {
       if (data && Object.keys(data).length != 0) {
         var newData = data[arrayName].map(function (x) {
           var arr = [];
+          arr.push(x.fieldID);
           arr.push(x.fieldName);
           arr.push(x.description);
           return arr;
@@ -80,9 +95,23 @@ function loadQAComments(ajaxURL, arrayName) {
 
 function showQAComments(data) {
   data.map(function (x) {
-    var commentIcon = $(`img[name="${x[0]}"]`);
-    commentIcon.attr('description', `${x[1]}`)
+    var commentIcon = $(`img[name="${x[1]}"]`);
+    commentIcon.attr('fieldID', `${x[0]}`);
+    commentIcon.attr('description', `${x[2]}`);
     commentIcon.show();
+  });
+}
+
+function saveQAComment(comment, fieldID) {
+  console.log(parentID, comment, phaseID, fieldID)
+  var finalAjaxURL = `/saveFeedbackComments.do?sectionName=projectContributionCrp&parentID=${parentID}&comment=${comment}&phaseID=${phaseID}&fieldID=${fieldID}`;
+
+  $.ajax({
+    url: baseURL + finalAjaxURL,
+    async: false,
+    success: function (data) {
+      
+    }
   });
 }
 
