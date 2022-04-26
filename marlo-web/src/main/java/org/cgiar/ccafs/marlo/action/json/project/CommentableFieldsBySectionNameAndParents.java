@@ -19,8 +19,6 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.InternalQaCommentableFieldsManager;
-import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.InternalQaCommentableFields;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -35,6 +33,8 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CommentableFieldsBySectionNameAndParents extends BaseAction {
 
@@ -42,25 +42,25 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
    * 
    */
   private static final long serialVersionUID = -4335064142194555431L;
-  private Map<String, Object> fieldsMap;
-  private String parentName;
+  private final Logger logger = LoggerFactory.getLogger(CommentableFieldsBySectionNameAndParents.class);
+  private List<Map<String, Object>> fieldsMap;
   private String parentId;
   private String sectionName;
-  private PhaseManager phaseManager;
   private InternalQaCommentableFieldsManager internalQaCommentableFieldsManager;
 
-  @Inject
-  public CommentableFieldsBySectionNameAndParents(APConfig config, PhaseManager phaseManager,
-    ProjectManager projectManager, InternalQaCommentableFieldsManager internalQaCommentableFieldsManager) {
-    super(config);
-    this.phaseManager = phaseManager;
-    this.internalQaCommentableFieldsManager = internalQaCommentableFieldsManager;
 
+  @Inject
+  public CommentableFieldsBySectionNameAndParents(APConfig config,
+    InternalQaCommentableFieldsManager internalQaCommentableFieldsManager) {
+    super(config);
+    this.internalQaCommentableFieldsManager = internalQaCommentableFieldsManager;
   }
 
 
   @Override
   public String execute() throws Exception {
+    fieldsMap = new ArrayList<Map<String, Object>>();
+    Map<String, Object> fieldsMap;
 
     List<InternalQaCommentableFields> fields = new ArrayList<>();
     if (parentId != null && sectionName != null) {
@@ -70,6 +70,7 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
             && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
           .collect(Collectors.toList());
       } catch (Exception e) {
+        logger.error("unable to get fields - with parentID parameter", e);
         fields = new ArrayList<>();
       }
     }
@@ -81,6 +82,7 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
             qa -> qa != null && qa.isActive() && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
           .collect(Collectors.toList());
       } catch (Exception e) {
+        logger.error("unable to get fields", e);
         fields = new ArrayList<>();
       }
     }
@@ -88,43 +90,49 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
 
     if (fields != null && !fields.isEmpty()) {
       for (InternalQaCommentableFields field : fields) {
-        this.fieldsMap = new HashMap<>();
+        fieldsMap = new HashMap<String, Object>();
         if (field.getFrontName() != null) {
-          this.fieldsMap.put("fieldName", field.getFrontName());
+          fieldsMap.put("fieldName", field.getFrontName());
         } else {
-          this.fieldsMap.put("fieldName", "");
+          fieldsMap.put("fieldName", "");
         }
         if (field.getFieldName() != null) {
-          this.fieldsMap.put("description", field.getFieldName());
+          fieldsMap.put("description", field.getFieldName());
         } else {
-          this.fieldsMap.put("description", "");
+          fieldsMap.put("description", "");
         }
         if (field.getSectionName() != null) {
-          this.fieldsMap.put("sectionName", field.getSectionName());
+          fieldsMap.put("sectionName", field.getSectionName());
         } else {
-          this.fieldsMap.put("sectionName", "");
+          fieldsMap.put("sectionName", "");
         }
+        if (field.getId() != null) {
+          fieldsMap.put("fieldID", field.getId());
+        } else {
+          fieldsMap.put("fieldID", "");
+        }
+        this.fieldsMap.add(fieldsMap);
       }
     } else {
-      this.fieldsMap = Collections.emptyMap();
+      fieldsMap = Collections.emptyMap();
     }
 
 
     return SUCCESS;
   }
 
-
-  public Map<String, Object> getFieldsMap() {
+  public List<Map<String, Object>> getFieldsMap() {
     return fieldsMap;
   }
 
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
-
-    if (parameters.get(APConstants.PARENT_REQUEST_NAME).isDefined()) {
-      parentName = StringUtils.trim(parameters.get(APConstants.PARENT_REQUEST_NAME).getMultipleValues()[0]);
-    }
+    /*
+     * if (parameters.get(APConstants.PARENT_REQUEST_NAME).isDefined()) {
+     * parentName = StringUtils.trim(parameters.get(APConstants.PARENT_REQUEST_NAME).getMultipleValues()[0]);
+     * }
+     */
     if (parameters.get(APConstants.PARENT_REQUEST_ID).isDefined()) {
       parentId =
         StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PARENT_REQUEST_ID).getMultipleValues()[0]));
@@ -135,7 +143,7 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
     }
   }
 
-  public void setFieldsMap(Map<String, Object> fieldsMap) {
+  public void setFieldsMap(List<Map<String, Object>> fieldsMap) {
     this.fieldsMap = fieldsMap;
   }
 

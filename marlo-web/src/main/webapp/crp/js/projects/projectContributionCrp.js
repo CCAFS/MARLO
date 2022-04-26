@@ -1,5 +1,9 @@
-var milestonesCount, outcomeID;
 $(document).ready(init);
+
+var milestonesCount, outcomeID, parentID, phaseID;
+var contributionCRPAjaxURL = '/fieldsBySectionAndParent.do?sectionName=projectContributionCrp';
+var arrayName = 'fieldsMap';
+let fieldID = '';
 
 function init() {
   milestonesCount = $('form .outcomeMilestoneYear').length;
@@ -21,6 +25,28 @@ function init() {
 
   // Attaching events functions
   attachEvents();
+
+  parentID = $('#parentID').html();
+  phaseID = $('#phaseID').html();
+
+  $('img.qaComment').on('click', function (event) {
+    var popUpTitle = $(this).attr('description');
+    fieldID = $(this).attr('fieldID');
+    $('textarea[id="Comment on"]').prev('label').html(`Comment on "${popUpTitle}":`);
+
+    if (event.pageX < 1000) {
+      $('#qaPopup').css('left', event.pageX);  
+    } else {
+      $('#qaPopup').css('left', 'min(100vw - 100px, 78vw)');  
+    }
+
+    $('#qaPopup').css('top', event.pageY);
+    $('#qaPopup').show();
+  });
+
+  $('div.closeComment').on('click', () => {
+    $('#qaPopup').hide();
+  });
 }
 
 function attachEvents() {
@@ -35,6 +61,56 @@ function attachEvents() {
 
   // Remove a next user
   $('.removeNextUser').on('click', removeNextUser);
+
+  loadQAComments(contributionCRPAjaxURL, arrayName);
+
+  $('.sendCommentContainer').on('click', function () {
+    var comment = $('textarea[id="Comment on"]').next().html();
+    var cleanComment = comment.replaceAll('.<br>.', '');
+    cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
+
+    saveQAComment(cleanComment, fieldID);
+  });
+}
+
+function loadQAComments(ajaxURL, arrayName) {
+  $.ajax({
+    url: baseURL + ajaxURL,
+    async: false,
+    success: function (data) {
+      if (data && Object.keys(data).length != 0) {
+        var newData = data[arrayName].map(function (x) {
+          var arr = [];
+          arr.push(x.fieldID);
+          arr.push(x.fieldName);
+          arr.push(x.description);
+          return arr;
+        });
+        showQAComments(newData);
+      }
+    }
+  });
+}
+
+function showQAComments(data) {
+  data.map(function (x) {
+    var commentIcon = $(`img[name="${x[1]}"]`);
+    commentIcon.attr('fieldID', `${x[0]}`);
+    commentIcon.attr('description', `${x[2]}`);
+    commentIcon.show();
+  });
+}
+
+function saveQAComment(comment, fieldID) {
+  var finalAjaxURL = `/saveFeedbackComments.do?sectionName=projectContributionCrp&parentID=${parentID}&comment=${comment}&phaseID=${phaseID}&fieldID=${fieldID}`;
+
+  $.ajax({
+    url: baseURL + finalAjaxURL,
+    async: false,
+    success: function (data) {
+
+    }
+  });
 }
 
 /** FUNCTIONS * */

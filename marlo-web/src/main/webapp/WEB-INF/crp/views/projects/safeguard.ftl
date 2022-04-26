@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/projects/safeguards.js?20220404a",
+  "${baseUrlMedia}/js/projects/safeguards.js?20220422a",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
@@ -96,6 +96,8 @@
               
               <br>   
               <div class="form-group" align="center">
+               <input type="hidden"  name="safeguard" value="${(safeguard)!}"  />
+               <input type="hidden"  name="safeguardID" value="${(safeguard.id)!}"  />
                     [@uploadfileMacro safeguard=safeguard isTemplate=false /]               
               </div>
                            
@@ -104,6 +106,8 @@
                    
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
+         
+
 
           [/@s.form]
       </div>
@@ -125,7 +129,7 @@
               <br>
               [#local hasFile = safeguard.file?? && safeguard.file.id?? /]
               <input class="fileID" type="hidden" name="${safeguard}.id" value="${(safeguard.file.id)!}"/>
-              <input type="hidden" class="safeguardId" name="${safeguard}.id" value="${(safeguard.id)!}"/>
+              <input type="hidden" class="safeguardID" name="${safeguard}.id" value="${(safeguard.id)!}"/>
 
               [#-- Input File --]
               [#if editable]
