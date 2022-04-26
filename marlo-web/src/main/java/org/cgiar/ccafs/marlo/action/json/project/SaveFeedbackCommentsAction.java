@@ -122,7 +122,6 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
 
       qaComment.setScreen(0);
-      qaComment.setObject(0);
       qaComment = commentQAManager.saveFeedbackQAComment(qaComment);
 
       if (qaComment.getId() != null) {

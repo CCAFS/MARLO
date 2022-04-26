@@ -75,7 +75,7 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
       }
     }
 
-    if (sectionName != null) {
+    if (sectionName != null && internalQaCommentableFieldsManager.findAll() != null) {
       try {
         fields = internalQaCommentableFieldsManager.findAll().stream()
           .filter(
