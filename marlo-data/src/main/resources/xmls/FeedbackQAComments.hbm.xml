@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 30, 2018 10:52:36 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.FeedbackQAComment"
+		table="feedback_qa_comments" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
+		<many-to-one name="field" class="org.cgiar.ccafs.marlo.data.model.InternalQaCommentableFields" fetch="select">
+            <column name="field_id" />
+        </many-to-one>
+		<property name="screen" type="java.lang.Long">
+            <column name="screen_id" />
+        </property>
+		<property name="object" type="java.lang.Long">
+            <column name="object_id" />
+        </property>
+        <property name="comment" type="string">
+            <column name="comment" sql-type="TEXT" />
+        </property>
+        <property name="status" type="string">
+            <column name="status" sql-type="TEXT" />
+        </property>
+        <many-to-one name="reply" class="org.cgiar.ccafs.marlo.data.model.FeedbackComment" fetch="select">
+            <column name="reply_id" />
+        </many-to-one>
+	</class>
+</hibernate-mapping>
