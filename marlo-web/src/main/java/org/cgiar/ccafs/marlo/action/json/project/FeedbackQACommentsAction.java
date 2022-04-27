@@ -131,6 +131,11 @@ public class FeedbackQACommentsAction extends BaseAction {
         } else {
           fieldsMap.put("frontName", "");
         }
+        if (comment.getUser() != null && comment.getUser().getFirstName() != null) {
+          fieldsMap.put("userName", comment.getUser().getFirstName() + " " + comment.getUser().getLastName());
+        } else {
+          fieldsMap.put("userName", "");
+        }
         this.comments.add(fieldsMap);
       }
     } else {
