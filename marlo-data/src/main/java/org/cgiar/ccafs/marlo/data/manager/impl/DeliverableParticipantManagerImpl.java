@@ -91,6 +91,11 @@ public class DeliverableParticipantManagerImpl implements DeliverableParticipant
   }
 
   @Override
+  public List<DeliverableParticipant> getCapDevTable(Phase phase) {
+    return this.deliverableParticipantDAO.getCapDevTable(phase.getId());
+  }
+
+  @Override
   public DeliverableParticipant getDeliverableParticipantById(long deliverableParticipantID) {
 
     return deliverableParticipantDAO.find(deliverableParticipantID);

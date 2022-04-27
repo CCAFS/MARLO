@@ -61,6 +61,8 @@ public interface DeliverableParticipantDAO {
 
   public DeliverableParticipant findDeliverableParticipantByPhaseAndDeliverable(Phase phase, Deliverable deliverable);
 
+  public List<DeliverableParticipant> getCapDevTable(Long phaseId);
+
   /**
    * This method gets a list of DeliverableParticipant that are active by a given phase
    * 
