@@ -256,7 +256,7 @@ public class ProgressTowardsItem<T> {
           } else {
             srfSloIndicatorTarget = srfSloIndicator.getSrfSloIndicatorTargets().stream()
               .sorted((t1, t2) -> Integer.compare(t1.getYear(), t2.getYear()))
-              .filter(t -> t.getYear() > Calendar.getInstance().get(Calendar.YEAR)).findFirst().orElse(null);
+              .filter(t -> t.getYear() >= Calendar.getInstance().get(Calendar.YEAR)).findFirst().orElse(null);
             // TODO write a better error message
             if (srfSloIndicatorTarget == null) {
               fieldErrors.add(new FieldErrorDTO("createProgressTowards", "SrfSloIndicatorTargetEntity",
