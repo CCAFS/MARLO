@@ -22,12 +22,15 @@ import org.cgiar.ccafs.marlo.data.manager.FeedbackCommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.InternalQaCommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.InternalQaCommentableFields;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,21 +57,26 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private Long commentId;
   private Long objectId;
   private Long parentId;
+  private String reply;
+  private Long userId;
+  private Date date;
   private InternalQaCommentableFieldsManager internalQaCommentableFieldsManager;
   private FeedbackQACommentManager commentQAManager;
   private FeedbackCommentManager commentManager;
   private PhaseManager phaseManager;
+  private UserManager userManager;
 
 
   @Inject
   public SaveFeedbackCommentsAction(APConfig config,
     InternalQaCommentableFieldsManager internalQaCommentableFieldsManager, FeedbackQACommentManager commentQAManager,
-    FeedbackCommentManager commentManager, PhaseManager phaseManager) {
+    FeedbackCommentManager commentManager, PhaseManager phaseManager, UserManager userManager) {
     super(config);
     this.internalQaCommentableFieldsManager = internalQaCommentableFieldsManager;
     this.commentQAManager = commentQAManager;
     this.commentManager = commentManager;
     this.phaseManager = phaseManager;
+    this.userManager = userManager;
   }
 
   @Override
@@ -115,10 +123,25 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         qaComment.setObject(parentId);
       }
 
+      if (userId != null) {
+        try {
+          User user = userManager.getUser(userId);
+          if (user != null) {
+            qaComment.setUser(this.getCurrentUser());
+          }
+        } catch (Exception e) {
+          logger.error("unable to set User object", e);
+        }
+      }
+
       if (fieldId != null) {
         InternalQaCommentableFields field =
           internalQaCommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
         qaComment.setField(field);
+      }
+      date = new Date();
+      if (date != null) {
+        qaComment.setCommentDate(date);
       }
 
       qaComment.setScreen(0);
@@ -198,6 +221,21 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
     } catch (Exception e) {
       logger.error("unable to get replyID", e);
+    }
+    try {
+      if (parameters.get(APConstants.COMMENT_REPLY).isDefined()) {
+        reply = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.COMMENT_REPLY).getMultipleValues()[0]));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get comment", e);
+    }
+    try {
+      if (parameters.get(APConstants.COMMENT_USER_ID).isDefined()) {
+        userId = Long.parseLong(
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.COMMENT_USER_ID).getMultipleValues()[0])));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get comment", e);
     }
   }
 

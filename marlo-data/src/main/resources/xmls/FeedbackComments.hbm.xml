@@ -12,5 +12,13 @@
 		<property name="comment" type="string">
             <column name="comment" sql-type="TEXT" />
         </property>
+        <many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="user_id" not-null="true">
+                <comment>This field is a link to the table users</comment>
+            </column>
+        </many-to-one>
+        <property name="commentDate" type="date">
+            <column name="comment_date" length="10" />
+        </property>
 	</class>
 </hibernate-mapping>
