@@ -89,6 +89,7 @@ function loadCommentsByUser(name) {
         $('textarea[id="Comment on"]').hide();
         $('textarea[id="Comment on"]').next().next('p.charCount').hide();
         $('.commentContainer').show();
+        $('.commentContainer .commentTitle').html(`Comment by ${qaComments[i].userName} at ${qaComments[i].date}`);
         $('.commentContainer p.commentReadonly').html(`${qaComments[i].comment}`);
         $('textarea[id="Comment on"]').attr('readonly','readonly');
         $('.sendCommentContainer').css('display','none');
