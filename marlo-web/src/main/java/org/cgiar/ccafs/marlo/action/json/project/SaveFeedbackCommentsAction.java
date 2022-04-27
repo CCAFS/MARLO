@@ -60,7 +60,6 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private String reply;
   private Long userId;
   private Date date;
-  private String status;
   private InternalQaCommentableFieldsManager internalQaCommentableFieldsManager;
   private FeedbackQACommentManager commentQAManager;
   private FeedbackCommentManager commentManager;
