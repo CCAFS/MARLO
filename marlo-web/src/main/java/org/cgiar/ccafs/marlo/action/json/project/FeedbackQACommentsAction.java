@@ -85,7 +85,7 @@ public class FeedbackQACommentsAction extends BaseAction {
             long fieldIdLocal = fieldId;
 
             // Get comments for field
-            if (fieldId != null) {
+            if (fieldId != null && commentManager.findAll() != null) {
               feedbackComments.addAll(commentManager.findAll().stream()
                 .filter(c -> c.getField() != null && c.getField().getId() != null
                   && c.getField().getId().equals(fieldIdLocal) && c.getPhase() != null && c.getPhase().getId() != null
