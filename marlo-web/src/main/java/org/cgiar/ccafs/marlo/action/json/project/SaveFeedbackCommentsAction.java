@@ -60,6 +60,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private String reply;
   private Long userId;
   private Date date;
+  private String status;
   private InternalQaCommentableFieldsManager internalQaCommentableFieldsManager;
   private FeedbackQACommentManager commentQAManager;
   private FeedbackCommentManager commentManager;
@@ -121,6 +122,10 @@ public class SaveFeedbackCommentsAction extends BaseAction {
 
       if (parentId != null) {
         qaComment.setObject(parentId);
+      }
+
+      if (status != null) {
+        qaComment.setStatus(status);
       }
 
       if (userId != null) {
@@ -235,7 +240,15 @@ public class SaveFeedbackCommentsAction extends BaseAction {
           StringUtils.trim(StringUtils.trim(parameters.get(APConstants.COMMENT_USER_ID).getMultipleValues()[0])));
       }
     } catch (Exception e) {
-      logger.error("unable to get comment", e);
+      logger.error("unable to get user", e);
+    }
+    try {
+      if (parameters.get(APConstants.COMMENT_STATUS_REQUEST).isDefined()) {
+        status =
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.COMMENT_STATUS_REQUEST).getMultipleValues()[0]));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get user", e);
     }
   }
 
