@@ -1,6 +1,6 @@
 $(document).ready(init);
 
-var milestonesCount, outcomeID, parentID, phaseID;
+var milestonesCount, outcomeID, parentID, phaseID, userID;
 var sectionName = 'projectContributionCrp';
 var contributionCRPAjaxURL = `/fieldsBySectionAndParent.do?sectionName=${sectionName}`;
 var arrayName = 'fieldsMap';
@@ -27,6 +27,7 @@ function init() {
 
   parentID = $('#parentID').html();
   phaseID = $('#phaseID').html();
+  userID = $('#userID').html();
 
   // Attaching events functions
   attachEvents();
@@ -36,29 +37,9 @@ function init() {
     var popUpTitle = $(this).attr('description');
     fieldID = $(this).attr('fieldID');
     $('textarea[id="Comment on"]').prev('label').html(`Comment on "${popUpTitle}":`);
+    $('.sendCommentContainer').attr('name', name);
 
-    for (let i = 0; i < qaComments.length; i++) {
-      if(qaComments[i].frontName == name) {
-        if (qaComments[i].comment && qaComments[i].comment != '') {
-          $('textarea[id="Comment on"]').hide();
-          $('textarea[id="Comment on"]').next().next('p.charCount').hide();
-          $('.commentContainer').show();
-          $('.commentContainer p.commentReadonly').html(`${qaComments[i].comment}`);
-          $('textarea[id="Comment on"]').attr('readonly','readonly');
-          $('.sendCommentContainer').css('display','none');
-          $('.optionsContainer').css('display','flex');
-          break;
-        }
-      } else {
-        $('textarea[id="Comment on"]').show();
-        $('textarea[id="Comment on"]').next().next('p.charCount').show();
-        $('.commentContainer').hide();
-        $('textarea[id="Comment on"]').val('');
-        $('textarea[id="Comment on"]').removeAttr('readonly');
-        $('.sendCommentContainer').css('display','flex');
-        $('.optionsContainer').css('display','none');
-      }
-    }
+    loadCommentsByUser(name);
 
     if (event.pageX < 1000) {
       $('#qaPopup').css('left', event.pageX);  
@@ -92,12 +73,38 @@ function attachEvents() {
   getQAComments();
 
   $('.sendCommentContainer').on('click', function () {
+    var name = $(this).attr('name');
     var comment = $('textarea[id="Comment on"]').next().html();
     var cleanComment = comment.replaceAll('.<br>.', '');
     cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
 
-    saveQAComment(cleanComment, fieldID);
+    saveQAComment(cleanComment, fieldID, name);
   });
+}
+
+function loadCommentsByUser(name) {
+  for (let i = 0; i < qaComments.length; i++) {
+    if(qaComments[i].frontName == name) {
+      if (qaComments[i].comment && qaComments[i].comment != '') {
+        $('textarea[id="Comment on"]').hide();
+        $('textarea[id="Comment on"]').next().next('p.charCount').hide();
+        $('.commentContainer').show();
+        $('.commentContainer p.commentReadonly').html(`${qaComments[i].comment}`);
+        $('textarea[id="Comment on"]').attr('readonly','readonly');
+        $('.sendCommentContainer').css('display','none');
+        $('.optionsContainer').css('display','flex');
+        break;
+      }
+    } else {
+      $('textarea[id="Comment on"]').show();
+      $('textarea[id="Comment on"]').next().next('p.charCount').show();
+      $('.commentContainer').hide();
+      $('textarea[id="Comment on"]').val('');
+      $('textarea[id="Comment on"]').removeAttr('readonly');
+      $('.sendCommentContainer').css('display','flex');
+      $('.optionsContainer').css('display','none');
+    }
+  }
 }
 
 function loadQACommentsIcons(ajaxURL, arrayName) {
@@ -128,21 +135,22 @@ function showQAComments(data) {
   });
 }
 
-function saveQAComment(comment, fieldID) {
-  var finalAjaxURL = `/saveFeedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&comment=${comment}&phaseID=${phaseID}&fieldID=${fieldID}`;
+function saveQAComment(comment, fieldID, name) {
+  var finalAjaxURL = `/saveFeedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&comment=${comment}&phaseID=${phaseID}&fieldID=${fieldID}&userID=${userID}`;
 
   $.ajax({
     url: baseURL + finalAjaxURL,
     async: false,
     success: function (data) {
       getQAComments();
+      loadCommentsByUser(name);
     }
   });
 }
 
 function getQAComments() {
   var finalAjaxURL = `/feedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&phaseID=${phaseID}`;
-
+  
   $.ajax({
     url: baseURL + finalAjaxURL,
     async: false,
