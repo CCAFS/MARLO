@@ -3,6 +3,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.Date;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,12 +31,16 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   private String status;
   @Expose
   private FeedbackComment reply;
+  @Expose
+  private User user;
+  @Expose
+  private Date commentDate;
 
   public FeedbackQAComment() {
   }
 
   public FeedbackQAComment(Phase phase, InternalQaCommentableFields field, long screen, long object, String comment,
-    String status, FeedbackComment reply) {
+    String status, FeedbackComment reply, User user, Date commentDate) {
     super();
     this.phase = phase;
     this.field = field;
@@ -44,6 +49,8 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     this.comment = comment;
     this.status = status;
     this.reply = reply;
+    this.user = user;
+    this.commentDate = commentDate;
   }
 
   public Map<String, Object> convertToMap() {
@@ -55,6 +62,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
 
   public String getComment() {
     return comment;
+  }
+
+  public Date getCommentDate() {
+    return commentDate;
   }
 
   public InternalQaCommentableFields getField() {
@@ -100,6 +111,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     return status;
   }
 
+  public User getUser() {
+    return user;
+  }
+
   @Override
   public boolean isActive() {
     return true;
@@ -107,6 +122,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
 
   public void setComment(String comment) {
     this.comment = comment;
+  }
+
+  public void setCommentDate(Date commentDate) {
+    this.commentDate = commentDate;
   }
 
   public void setField(InternalQaCommentableFields field) {
@@ -136,6 +155,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
 
   public void setStatus(String status) {
     this.status = status;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
   }
 }
 

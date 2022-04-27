@@ -30,5 +30,13 @@
         <many-to-one name="reply" class="org.cgiar.ccafs.marlo.data.model.FeedbackComment" fetch="select">
             <column name="reply_id" />
         </many-to-one>
+        <many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="user_id">
+                <comment>This field is a link to the table users</comment>
+            </column>
+        </many-to-one>
+         <property name="commentDate" type="date">
+            <column name="comment_date" length="10" />
+        </property>
 	</class>
 </hibernate-mapping>
