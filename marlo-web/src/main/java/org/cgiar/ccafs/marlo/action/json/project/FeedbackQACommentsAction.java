@@ -136,6 +136,12 @@ public class FeedbackQACommentsAction extends BaseAction {
         } else {
           fieldsMap.put("userName", "");
         }
+        if (comment.getCommentDate() != null && comment.getCommentDate().toString() != null) {
+          String dateString = comment.getCommentDate().toString();
+          fieldsMap.put("date", dateString);
+        } else {
+          fieldsMap.put("date", "");
+        }
         this.comments.add(fieldsMap);
       }
     } else {
