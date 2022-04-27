@@ -60,6 +60,9 @@ public interface DeliverableParticipantManager {
    */
   public List<DeliverableParticipant> findDeliverableParticipantByDeliverableAndPhase(Long deliverableID, Long phaseID);
 
+  public List<DeliverableParticipant> getCapDevTable(Phase phase);
+
+
   /**
    * This method gets a deliverableParticipant object by a given deliverableParticipant identifier.
    * 
@@ -67,7 +70,6 @@ public interface DeliverableParticipantManager {
    * @return a DeliverableParticipant object.
    */
   public DeliverableParticipant getDeliverableParticipantById(long deliverableParticipantID);
-
 
   /**
    * This method gets a list of DeliverableParticipant that are active by a given phase
