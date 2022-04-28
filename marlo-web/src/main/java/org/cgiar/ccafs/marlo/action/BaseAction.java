@@ -1301,8 +1301,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     // TODO: Update the permissions for manage feedback comments
     if (this.canAccessSuperAdmin()) {
       response = true;
-    } else {
-      response = false;
+    }
+
+    if (this.getRolesList() != null && !this.getRolesList().isEmpty()) {
+      for (Role role : this.getRolesList()) {
+        if (role != null && role.getAcronym() != null) {
+          // FPL & FPM roles can comment
+
+          if (role.getAcronym().equals("PL") || role.getAcronym().equals("PC")) {
+            response = true;
+          }
+        }
+      }
     }
     return response;
   }
