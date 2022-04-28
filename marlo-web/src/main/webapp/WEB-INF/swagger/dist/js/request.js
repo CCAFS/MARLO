@@ -320,7 +320,7 @@ function sdgtarget(){
 					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
 					+ item['sdgTargetCode'] + '</td>' + '<td>'
 					+ item['sdgTarget'] + '</td>' + '<td>'
-					+ item['sdg'].smoCode + '</td>' +'<td>'
+					+ item['sdg'].usndCode + '</td>' +'<td>'
 					+ item['sdg'].shortName + '</td>' +'</tr>')
 			});
 setTimeout(() => {
