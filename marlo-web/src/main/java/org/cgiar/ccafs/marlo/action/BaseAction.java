@@ -1295,6 +1295,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+  public boolean canManageFeedback() {
+    boolean response = false;
+
+    // TODO: Update the permissions for manage feedback comments
+    if (this.canAccessSuperAdmin()) {
+      response = true;
+    } else {
+      response = false;
+    }
+    return response;
+  }
+
   public boolean canModifiedProjectStatus() {
     String actionName = this.getActionName();
     if (actionName.contains(ProjectSectionStatusEnum.DESCRIPTION.getStatus()) && this.hasPermission("statusDescription")
@@ -6478,7 +6490,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isPOWB() {
     if (this.getActualPhase() != null && this.getActualPhase().getName() != null
-      && (this.getActualPhase().getName().equals("POWB") || this.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
+      && (this.getActualPhase().getName().equals("POWB")
+        || this.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
       return true;
     } else {
       return false;
