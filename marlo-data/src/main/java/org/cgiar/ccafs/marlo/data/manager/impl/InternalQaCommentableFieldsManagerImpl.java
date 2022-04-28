@@ -17,7 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.InternalQaCommentableFieldsDAO;
 import org.cgiar.ccafs.marlo.data.manager.InternalQaCommentableFieldsManager;
-import org.cgiar.ccafs.marlo.data.model.InternalQaCommentableFields;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 
 import java.util.List;
 
@@ -55,22 +55,22 @@ public class InternalQaCommentableFieldsManagerImpl implements InternalQaComment
   }
 
   @Override
-  public List<InternalQaCommentableFields> findAll() {
+  public List<FeedbackQACommentableFields> findAll() {
 
     return internalQaCommentableFieldsDAO.findAll();
 
   }
 
   @Override
-  public InternalQaCommentableFields getInternalQaCommentableFieldsById(long internalQaCommentableFieldsID) {
+  public FeedbackQACommentableFields getInternalQaCommentableFieldsById(long internalQaCommentableFieldsID) {
 
     return internalQaCommentableFieldsDAO.find(internalQaCommentableFieldsID);
   }
 
   @Override
-  public InternalQaCommentableFields saveInternalQaCommentableFields(InternalQaCommentableFields internalQaCommentableFields) {
+  public FeedbackQACommentableFields saveInternalQaCommentableFields(FeedbackQACommentableFields feedbackQACommentableFields) {
 
-    return internalQaCommentableFieldsDAO.save(internalQaCommentableFields);
+    return internalQaCommentableFieldsDAO.save(feedbackQACommentableFields);
   }
 
 

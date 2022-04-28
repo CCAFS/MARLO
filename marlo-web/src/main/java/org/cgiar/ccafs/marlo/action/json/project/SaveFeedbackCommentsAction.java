@@ -23,9 +23,9 @@ import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.InternalQaCommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.FeedbackComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
-import org.cgiar.ccafs.marlo.data.model.InternalQaCommentableFields;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -110,21 +110,25 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         qaComment.setPhase(phase);
       }
 
+      Boolean statusBoolean = null;
+      if (status == "0") {
+        statusBoolean = false;
+      }
+      if (status == "1") {
+        statusBoolean = true;
+      }
+
       if (status != null) {
-        qaComment.setStatus(status);
+        qaComment.setStatus(statusBoolean);
       }
 
       if (replyId != null) {
-        FeedbackComment reply = commentManager.getFeedbackCommentById(replyId);
+        FeedbackQAReply reply = commentManager.getFeedbackCommentById(replyId);
         qaComment.setReply(reply);
       }
 
       if (parentId != null) {
-        qaComment.setObject(parentId);
-      }
-
-      if (status != null) {
-        qaComment.setStatus(status);
+        qaComment.setParentId(parentId);
       }
 
       if (userId != null) {
@@ -139,7 +143,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
 
       if (fieldId != null) {
-        InternalQaCommentableFields field =
+        FeedbackQACommentableFields field =
           internalQaCommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
         qaComment.setField(field);
       }

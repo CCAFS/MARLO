@@ -16,7 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.model.FeedbackComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 
 import java.util.List;
 
@@ -43,25 +43,25 @@ public interface FeedbackCommentDAO {
    * This method gets a feedbackComment object by a given feedbackComment identifier.
    * 
    * @param feedbackCommentID is the feedbackComment identifier.
-   * @return a FeedbackComment object.
+   * @return a FeedbackQAReply object.
    */
-  public FeedbackComment find(long id);
+  public FeedbackQAReply find(long id);
 
   /**
    * This method gets a list of feedbackComment that are active
    * 
-   * @return a list from FeedbackComment null if no exist records
+   * @return a list from FeedbackQAReply null if no exist records
    */
-  public List<FeedbackComment> findAll();
+  public List<FeedbackQAReply> findAll();
 
 
   /**
    * This method saves the information of the given feedbackComment
    * 
-   * @param feedbackComment - is the feedbackComment object with the new information to be added/updated.
+   * @param feedbackQAReply - is the feedbackComment object with the new information to be added/updated.
    * @return a number greater than 0 representing the new ID assigned by the database, 0 if the feedbackComment was
    *         updated
    *         or -1 is some error occurred.
    */
-  public FeedbackComment save(FeedbackComment feedbackComment);
+  public FeedbackQAReply save(FeedbackQAReply feedbackQAReply);
 }

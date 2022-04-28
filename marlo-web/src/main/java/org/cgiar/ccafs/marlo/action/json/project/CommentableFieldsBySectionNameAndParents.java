@@ -19,7 +19,7 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.InternalQaCommentableFieldsManager;
-import org.cgiar.ccafs.marlo.data.model.InternalQaCommentableFields;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
     fieldsMap = new ArrayList<Map<String, Object>>();
     Map<String, Object> fieldsMap;
 
-    List<InternalQaCommentableFields> fields = new ArrayList<>();
+    List<FeedbackQACommentableFields> fields = new ArrayList<>();
     if (parentId != null && sectionName != null) {
       try {
         fields = internalQaCommentableFieldsManager.findAll().stream()
@@ -89,7 +89,7 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
 
 
     if (fields != null && !fields.isEmpty()) {
-      for (InternalQaCommentableFields field : fields) {
+      for (FeedbackQACommentableFields field : fields) {
         fieldsMap = new HashMap<String, Object>();
         if (field.getFrontName() != null) {
           fieldsMap.put("fieldName", field.getFrontName());
