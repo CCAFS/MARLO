@@ -18,10 +18,8 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.FeedbackCommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -37,62 +35,60 @@ import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SaveFeedbackReplyAction extends BaseAction {
+public class SaveCommentStatusAction extends BaseAction {
 
   /**
    * 
    */
   private static final long serialVersionUID = -4335064142194555431L;
-  private final Logger logger = LoggerFactory.getLogger(SaveFeedbackReplyAction.class);
+  private final Logger logger = LoggerFactory.getLogger(SaveCommentStatusAction.class);
   private Map<String, Object> save;
-  private Long replyId;
-  private String reply;
   private Long userId;
+  private String status;
   private Date date;
   private Long commentId;
-  private FeedbackCommentManager commentManager;
   private FeedbackQACommentManager commentQAManager;
   private UserManager userManager;
 
   @Inject
-  public SaveFeedbackReplyAction(APConfig config, FeedbackQACommentManager commentQAManager,
-    FeedbackCommentManager commentManager, UserManager userManager) {
+  public SaveCommentStatusAction(APConfig config, FeedbackQACommentManager commentQAManager, UserManager userManager) {
     super(config);
-    this.commentManager = commentManager;
-    this.userManager = userManager;
     this.commentQAManager = commentQAManager;
+    this.userManager = userManager;
   }
 
   @Override
   public String execute() throws Exception {
-    // @param = reply/commentID/userID
-    // @param (optional) = replyID
+    // @param = status/commentID/userID
 
     save = new HashMap<String, Object>();
-    if (reply != null && commentId != null) {
+    if (status != null && commentId != null) {
 
-      // Create feedback Comment save object
-      FeedbackQAReply feedbackReply = new FeedbackQAReply();
+      FeedbackQAComment commentSave = new FeedbackQAComment();
 
       // get existing object from database
       try {
-        if (replyId != null) {
-          FeedbackQAReply replyDB = commentManager.getFeedbackCommentById(replyId);
-          if (replyDB != null && replyDB.getId() != null) {
-            feedbackReply = replyDB;
-          }
+        FeedbackQAComment commentDB = commentQAManager.getFeedbackQACommentById(commentId);
+        if (commentDB != null && commentDB.getId() != null) {
+          commentSave = commentDB;
         }
       } catch (Exception e) {
         logger.error("unable to get existing Feedback comment object from DB", e);
       }
-
-      feedbackReply.setComment(reply);
+      Boolean statusBoolean = null;
+      if (status == "0") {
+        statusBoolean = false;
+      }
+      if (status == "1") {
+        statusBoolean = true;
+      }
+      commentSave.setStatus(statusBoolean);
 
       if (userId != null) {
         try {
           User user = userManager.getUser(userId);
           if (user != null) {
-            feedbackReply.setUser(this.getCurrentUser());
+            commentSave.setUser(this.getCurrentUser());
           }
         } catch (Exception e) {
           logger.error("unable to set User object", e);
@@ -101,23 +97,14 @@ public class SaveFeedbackReplyAction extends BaseAction {
 
       date = new Date();
       if (date != null) {
-        feedbackReply.setCommentDate(date);
+        commentSave.setApprovalDate(date);
       }
 
-      feedbackReply = commentManager.saveFeedbackComment(feedbackReply);
+      commentSave = commentQAManager.saveFeedbackQAComment(commentSave);
 
-      if (feedbackReply.getId() != null) {
-        FeedbackQAComment comment = new FeedbackQAComment();
-        try {
-          comment = commentQAManager.getFeedbackQACommentById(commentId);
-          comment.setReply(feedbackReply);
-          commentQAManager.saveFeedbackQAComment(comment);
-        } catch (Exception e) {
-          logger.error("unable to set the reply to comment", e);
-        }
-
+      if (commentSave.getId() != null) {
         save.put("save", true);
-        save.put("id", feedbackReply.getId());
+        save.put("id", commentSave.getId());
       } else {
         save.put("save", false);
       }
@@ -136,14 +123,6 @@ public class SaveFeedbackReplyAction extends BaseAction {
     Map<String, Parameter> parameters = this.getParameters();
 
     try {
-      if (parameters.get(APConstants.REPLY_ID_REQUEST).isDefined()) {
-        replyId = Long.parseLong(
-          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.REPLY_ID_REQUEST).getMultipleValues()[0])));
-      }
-    } catch (Exception e) {
-      logger.error("unable to get replyID", e);
-    }
-    try {
       if (parameters.get(APConstants.COMMENT_REQUEST_ID).isDefined()) {
         commentId = Long.parseLong(
           StringUtils.trim(StringUtils.trim(parameters.get(APConstants.COMMENT_REQUEST_ID).getMultipleValues()[0])));
@@ -152,16 +131,16 @@ public class SaveFeedbackReplyAction extends BaseAction {
       logger.error("unable to get replyID", e);
     }
     try {
-      if (parameters.get(APConstants.COMMENT_REPLY).isDefined()) {
-        reply = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.COMMENT_REPLY).getMultipleValues()[0]));
-      }
-    } catch (Exception e) {
-      logger.error("unable to get comment", e);
-    }
-    try {
       if (parameters.get(APConstants.COMMENT_USER_ID).isDefined()) {
         userId = Long.parseLong(
           StringUtils.trim(StringUtils.trim(parameters.get(APConstants.COMMENT_USER_ID).getMultipleValues()[0])));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get user", e);
+    }
+    try {
+      if (parameters.get(APConstants.STATUS_REQUEST).isDefined()) {
+        status = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.STATUS_REQUEST).getMultipleValues()[0]));
       }
     } catch (Exception e) {
       logger.error("unable to get user", e);

@@ -17,7 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.FeedbackCommentDAO;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackCommentManager;
-import org.cgiar.ccafs.marlo.data.model.FeedbackComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 
 import java.util.List;
 
@@ -55,22 +55,22 @@ public class FeedbackCommentManagerImpl implements FeedbackCommentManager {
   }
 
   @Override
-  public List<FeedbackComment> findAll() {
+  public List<FeedbackQAReply> findAll() {
 
     return feedbackCommentDAO.findAll();
 
   }
 
   @Override
-  public FeedbackComment getFeedbackCommentById(long feedbackCommentID) {
+  public FeedbackQAReply getFeedbackCommentById(long feedbackCommentID) {
 
     return feedbackCommentDAO.find(feedbackCommentID);
   }
 
   @Override
-  public FeedbackComment saveFeedbackComment(FeedbackComment feedbackComment) {
+  public FeedbackQAReply saveFeedbackComment(FeedbackQAReply feedbackQAReply) {
 
-    return feedbackCommentDAO.save(feedbackComment);
+    return feedbackCommentDAO.save(feedbackQAReply);
   }
 
 

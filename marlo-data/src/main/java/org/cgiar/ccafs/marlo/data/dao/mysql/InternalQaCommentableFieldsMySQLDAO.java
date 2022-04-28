@@ -17,7 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.InternalQaCommentableFieldsDAO;
-import org.cgiar.ccafs.marlo.data.model.InternalQaCommentableFields;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class InternalQaCommentableFieldsMySQLDAO extends AbstractMarloDAO<InternalQaCommentableFields, Long>
+public class InternalQaCommentableFieldsMySQLDAO extends AbstractMarloDAO<FeedbackQACommentableFields, Long>
   implements InternalQaCommentableFieldsDAO {
 
 
@@ -38,14 +38,14 @@ public class InternalQaCommentableFieldsMySQLDAO extends AbstractMarloDAO<Intern
 
   @Override
   public void deleteInternalQaCommentableFields(long internalQaCommentableFieldsId) {
-    InternalQaCommentableFields internalQaCommentableFields = this.find(internalQaCommentableFieldsId);
-    this.delete(internalQaCommentableFields);
+    FeedbackQACommentableFields feedbackQACommentableFields = this.find(internalQaCommentableFieldsId);
+    this.delete(feedbackQACommentableFields);
   }
 
   @Override
   public boolean existInternalQaCommentableFields(long internalQaCommentableFieldsID) {
-    InternalQaCommentableFields internalQaCommentableFields = this.find(internalQaCommentableFieldsID);
-    if (internalQaCommentableFields == null) {
+    FeedbackQACommentableFields feedbackQACommentableFields = this.find(internalQaCommentableFieldsID);
+    if (feedbackQACommentableFields == null) {
       return false;
     }
     return true;
@@ -53,15 +53,15 @@ public class InternalQaCommentableFieldsMySQLDAO extends AbstractMarloDAO<Intern
   }
 
   @Override
-  public InternalQaCommentableFields find(long id) {
-    return super.find(InternalQaCommentableFields.class, id);
+  public FeedbackQACommentableFields find(long id) {
+    return super.find(FeedbackQACommentableFields.class, id);
 
   }
 
   @Override
-  public List<InternalQaCommentableFields> findAll() {
-    String query = "from " + InternalQaCommentableFields.class.getName() + " where is_active=1";
-    List<InternalQaCommentableFields> list = super.findAll(query);
+  public List<FeedbackQACommentableFields> findAll() {
+    String query = "from " + FeedbackQACommentableFields.class.getName() + " where is_active=1";
+    List<FeedbackQACommentableFields> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,15 +70,15 @@ public class InternalQaCommentableFieldsMySQLDAO extends AbstractMarloDAO<Intern
   }
 
   @Override
-  public InternalQaCommentableFields save(InternalQaCommentableFields internalQaCommentableFields) {
-    if (internalQaCommentableFields.getId() == null) {
-      super.saveEntity(internalQaCommentableFields);
+  public FeedbackQACommentableFields save(FeedbackQACommentableFields feedbackQACommentableFields) {
+    if (feedbackQACommentableFields.getId() == null) {
+      super.saveEntity(feedbackQACommentableFields);
     } else {
-      internalQaCommentableFields = super.update(internalQaCommentableFields);
+      feedbackQACommentableFields = super.update(feedbackQACommentableFields);
     }
 
 
-    return internalQaCommentableFields;
+    return feedbackQACommentableFields;
   }
 
 
