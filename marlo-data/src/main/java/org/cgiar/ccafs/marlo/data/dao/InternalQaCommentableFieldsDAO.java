@@ -16,7 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.model.InternalQaCommentableFields;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 
 import java.util.List;
 
@@ -43,25 +43,25 @@ public interface InternalQaCommentableFieldsDAO {
    * This method gets a internalQaCommentableFields object by a given internalQaCommentableFields identifier.
    * 
    * @param internalQaCommentableFieldsID is the internalQaCommentableFields identifier.
-   * @return a InternalQaCommentableFields object.
+   * @return a FeedbackQACommentableFields object.
    */
-  public InternalQaCommentableFields find(long id);
+  public FeedbackQACommentableFields find(long id);
 
   /**
    * This method gets a list of internalQaCommentableFields that are active
    * 
-   * @return a list from InternalQaCommentableFields null if no exist records
+   * @return a list from FeedbackQACommentableFields null if no exist records
    */
-  public List<InternalQaCommentableFields> findAll();
+  public List<FeedbackQACommentableFields> findAll();
 
 
   /**
    * This method saves the information of the given internalQaCommentableFields
    * 
-   * @param internalQaCommentableFields - is the internalQaCommentableFields object with the new information to be added/updated.
+   * @param feedbackQACommentableFields - is the internalQaCommentableFields object with the new information to be added/updated.
    * @return a number greater than 0 representing the new ID assigned by the database, 0 if the internalQaCommentableFields was
    *         updated
    *         or -1 is some error occurred.
    */
-  public InternalQaCommentableFields save(InternalQaCommentableFields internalQaCommentableFields);
+  public FeedbackQACommentableFields save(FeedbackQACommentableFields feedbackQACommentableFields);
 }

@@ -12,23 +12,37 @@
 		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
             <column name="id_phase" />
         </many-to-one>
-		<many-to-one name="field" class="org.cgiar.ccafs.marlo.data.model.InternalQaCommentableFields" fetch="select">
+		<many-to-one name="field" class="org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields" fetch="select">
             <column name="field_id" />
         </many-to-one>
 		<property name="screen" type="java.lang.Long">
             <column name="screen_id" />
         </property>
-		<property name="object" type="java.lang.Long">
-            <column name="object_id" />
+		<property name="parentId" type="java.lang.Long">
+            <column name="parent_id" />
         </property>
         <property name="comment" type="string">
             <column name="comment" sql-type="TEXT" />
         </property>
-        <property name="status" type="string">
-            <column name="status" sql-type="TEXT" />
+        <property name="fieldValue" type="string">
+            <column name="field_value" sql-type="TEXT" />
         </property>
-        <many-to-one name="reply" class="org.cgiar.ccafs.marlo.data.model.FeedbackComment" fetch="select">
+        <property name="status" type="java.lang.Boolean">
+            <column name="status" />
+        </property>
+        <many-to-one name="reply" class="org.cgiar.ccafs.marlo.data.model.FeedbackQAReply" fetch="select">
             <column name="reply_id" />
         </many-to-one>
+        <many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="user_id">
+                <comment>This field is a link to the table users</comment>
+            </column>
+        </many-to-one>
+         <property name="commentDate" type="date">
+            <column name="comment_date" />
+        </property>
+         <property name="approvalDate" type="date">
+            <column name="approval_date"/>
+        </property>
 	</class>
 </hibernate-mapping>

@@ -117,6 +117,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private boolean editOutcomeExpectedValue;
   private boolean editMilestoneExpectedValue;
   private List<DeliverableParticipant> deliverableParticipants;
+  private Long userID;
 
   // capdev component
   private Double totalParticipants = new Double(0);
@@ -620,10 +621,14 @@ public class ProjectOutcomeAction extends BaseAction {
     return transaction;
   }
 
+  public Long getUserID() {
+    return userID;
+  }
+
+
   public boolean isEditMilestoneExpectedValue() {
     return editMilestoneExpectedValue;
   }
-
 
   public boolean isEditOutcomeExpectedValue() {
     return editOutcomeExpectedValue;
@@ -684,6 +689,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -1049,6 +1055,10 @@ public class ProjectOutcomeAction extends BaseAction {
       if (projectOutcomeLastPhase != null && projectOutcomeLastPhase.getIndicators() != null) {
         projectOutcomeLastPhase.getIndicators().clear();
       }
+
+      if (this.getCurrentUser() != null && this.getCurrentUser().getId() != null) {
+        userID = this.getCurrentUser().getId();
+      }
       /**
        * Hack to fix ManyToOne issue as a result of issue #1124
        */
@@ -1057,7 +1067,6 @@ public class ProjectOutcomeAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
@@ -1126,6 +1135,7 @@ public class ProjectOutcomeAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
+
 
   public void saveCommunications(ProjectOutcome projectOutcomeDB) {
 
@@ -1196,7 +1206,6 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
-
   public void saveIndicators(ProjectOutcome projectOutcomeDB) {
 
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeDB.getProjectOutcomeIndicators().stream()
@@ -1258,6 +1267,7 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
   }
+
 
   private void saveMilestones(ProjectOutcome projectOutcomeDB) {
 
@@ -1469,7 +1479,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-
   public void setDeliverableParticipants(List<DeliverableParticipant> deliverableParticipants) {
     this.deliverableParticipants = deliverableParticipants;
   }
@@ -1560,6 +1569,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  public void setUserID(Long userID) {
+    this.userID = userID;
   }
 
   @Override
