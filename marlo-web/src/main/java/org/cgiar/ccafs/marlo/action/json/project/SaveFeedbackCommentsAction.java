@@ -18,9 +18,9 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.FeedbackCommentManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
-import org.cgiar.ccafs.marlo.data.manager.InternalQaCommentableFieldsManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
@@ -60,19 +60,19 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private String reply;
   private Long userId;
   private Date date;
-  private InternalQaCommentableFieldsManager internalQaCommentableFieldsManager;
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
   private FeedbackQACommentManager commentQAManager;
-  private FeedbackCommentManager commentManager;
+  private FeedbackQAReplyManager commentManager;
   private PhaseManager phaseManager;
   private UserManager userManager;
 
 
   @Inject
   public SaveFeedbackCommentsAction(APConfig config,
-    InternalQaCommentableFieldsManager internalQaCommentableFieldsManager, FeedbackQACommentManager commentQAManager,
-    FeedbackCommentManager commentManager, PhaseManager phaseManager, UserManager userManager) {
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentQAManager,
+    FeedbackQAReplyManager commentManager, PhaseManager phaseManager, UserManager userManager) {
     super(config);
-    this.internalQaCommentableFieldsManager = internalQaCommentableFieldsManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.commentQAManager = commentQAManager;
     this.commentManager = commentManager;
     this.phaseManager = phaseManager;
@@ -144,7 +144,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
 
       if (fieldId != null) {
         FeedbackQACommentableFields field =
-          internalQaCommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
+          feedbackQACommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
         qaComment.setField(field);
       }
       date = new Date();

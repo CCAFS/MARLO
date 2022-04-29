@@ -19,7 +19,7 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
-import org.cgiar.ccafs.marlo.data.manager.InternalQaCommentableFieldsManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -51,15 +51,15 @@ public class FeedbackQACommentsAction extends BaseAction {
   private String frontName;
   private Long phaseId;
   private Long fieldId;
-  private InternalQaCommentableFieldsManager internalQaCommentableFieldsManager;
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
   private FeedbackQACommentManager commentManager;
 
 
   @Inject
   public FeedbackQACommentsAction(APConfig config,
-    InternalQaCommentableFieldsManager internalQaCommentableFieldsManager, FeedbackQACommentManager commentManager) {
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentManager) {
     super(config);
-    this.internalQaCommentableFieldsManager = internalQaCommentableFieldsManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.commentManager = commentManager;
   }
 
@@ -74,7 +74,7 @@ public class FeedbackQACommentsAction extends BaseAction {
     // @param = sectionName/parentID/phaseID
     if (sectionName != null && parentId != null && phaseId != null) {
       try {
-        fields = internalQaCommentableFieldsManager.findAll().stream()
+        fields = feedbackQACommentableFieldsManager.findAll().stream()
           .filter(
             qa -> qa != null && qa.isActive() && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
           .collect(Collectors.toList());

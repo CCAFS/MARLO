@@ -16,7 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.dao.FeedbackCommentDAO;
+import org.cgiar.ccafs.marlo.data.dao.FeedbackQAReplyDAO;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 
 import java.util.List;
@@ -27,7 +27,7 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class FeedbackCommentMySQLDAO extends AbstractMarloDAO<FeedbackQAReply, Long> implements FeedbackCommentDAO {
+public class FeedbackCommentMySQLDAO extends AbstractMarloDAO<FeedbackQAReply, Long> implements FeedbackQAReplyDAO {
 
 
   @Inject

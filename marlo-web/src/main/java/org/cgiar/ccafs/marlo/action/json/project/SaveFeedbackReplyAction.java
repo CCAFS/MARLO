@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.FeedbackCommentManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
@@ -50,13 +50,13 @@ public class SaveFeedbackReplyAction extends BaseAction {
   private Long userId;
   private Date date;
   private Long commentId;
-  private FeedbackCommentManager commentManager;
+  private FeedbackQAReplyManager commentManager;
   private FeedbackQACommentManager commentQAManager;
   private UserManager userManager;
 
   @Inject
   public SaveFeedbackReplyAction(APConfig config, FeedbackQACommentManager commentQAManager,
-    FeedbackCommentManager commentManager, UserManager userManager) {
+    FeedbackQAReplyManager commentManager, UserManager userManager) {
     super(config);
     this.commentManager = commentManager;
     this.userManager = userManager;

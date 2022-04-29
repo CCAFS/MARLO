@@ -16,7 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.dao.InternalQaCommentableFieldsDAO;
+import org.cgiar.ccafs.marlo.data.dao.FeedbackQACommentableFieldsDAO;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 
 import java.util.List;
@@ -28,7 +28,7 @@ import org.hibernate.SessionFactory;
 
 @Named
 public class InternalQaCommentableFieldsMySQLDAO extends AbstractMarloDAO<FeedbackQACommentableFields, Long>
-  implements InternalQaCommentableFieldsDAO {
+  implements FeedbackQACommentableFieldsDAO {
 
 
   @Inject
