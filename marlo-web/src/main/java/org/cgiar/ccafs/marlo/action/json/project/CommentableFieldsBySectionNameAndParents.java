@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.InternalQaCommentableFieldsManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -46,14 +46,14 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
   private List<Map<String, Object>> fieldsMap;
   private String parentId;
   private String sectionName;
-  private InternalQaCommentableFieldsManager internalQaCommentableFieldsManager;
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
 
 
   @Inject
   public CommentableFieldsBySectionNameAndParents(APConfig config,
-    InternalQaCommentableFieldsManager internalQaCommentableFieldsManager) {
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager) {
     super(config);
-    this.internalQaCommentableFieldsManager = internalQaCommentableFieldsManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
   }
 
 
@@ -65,7 +65,7 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
     List<FeedbackQACommentableFields> fields = new ArrayList<>();
     if (parentId != null && sectionName != null) {
       try {
-        fields = internalQaCommentableFieldsManager.findAll().stream()
+        fields = feedbackQACommentableFieldsManager.findAll().stream()
           .filter(qa -> qa != null && qa.isActive() && qa.getParentId() != null && qa.getParentId().equals(parentId)
             && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
           .collect(Collectors.toList());
@@ -75,9 +75,9 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
       }
     }
 
-    if (sectionName != null && internalQaCommentableFieldsManager.findAll() != null) {
+    if (sectionName != null && feedbackQACommentableFieldsManager.findAll() != null) {
       try {
-        fields = internalQaCommentableFieldsManager.findAll().stream()
+        fields = feedbackQACommentableFieldsManager.findAll().stream()
           .filter(
             qa -> qa != null && qa.isActive() && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
           .collect(Collectors.toList());

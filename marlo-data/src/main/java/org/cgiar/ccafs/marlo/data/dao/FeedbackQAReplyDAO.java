@@ -21,7 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 import java.util.List;
 
 
-public interface FeedbackCommentDAO {
+public interface FeedbackQAReplyDAO {
 
   /**
    * This method removes a specific feedbackComment value from the database.
