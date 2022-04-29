@@ -17,7 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.FeedbackCommentDAO;
-import org.cgiar.ccafs.marlo.data.model.FeedbackComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class FeedbackCommentMySQLDAO extends AbstractMarloDAO<FeedbackComment, Long> implements FeedbackCommentDAO {
+public class FeedbackCommentMySQLDAO extends AbstractMarloDAO<FeedbackQAReply, Long> implements FeedbackCommentDAO {
 
 
   @Inject
@@ -37,14 +37,14 @@ public class FeedbackCommentMySQLDAO extends AbstractMarloDAO<FeedbackComment, L
 
   @Override
   public void deleteFeedbackComment(long feedbackCommentId) {
-    FeedbackComment feedbackComment = this.find(feedbackCommentId);
-    this.delete(feedbackComment);
+    FeedbackQAReply feedbackQAReply = this.find(feedbackCommentId);
+    this.delete(feedbackQAReply);
   }
 
   @Override
   public boolean existFeedbackComment(long feedbackCommentID) {
-    FeedbackComment feedbackComment = this.find(feedbackCommentID);
-    if (feedbackComment == null) {
+    FeedbackQAReply feedbackQAReply = this.find(feedbackCommentID);
+    if (feedbackQAReply == null) {
       return false;
     }
     return true;
@@ -52,15 +52,15 @@ public class FeedbackCommentMySQLDAO extends AbstractMarloDAO<FeedbackComment, L
   }
 
   @Override
-  public FeedbackComment find(long id) {
-    return super.find(FeedbackComment.class, id);
+  public FeedbackQAReply find(long id) {
+    return super.find(FeedbackQAReply.class, id);
 
   }
 
   @Override
-  public List<FeedbackComment> findAll() {
-    String query = "from " + FeedbackComment.class.getName();
-    List<FeedbackComment> list = super.findAll(query);
+  public List<FeedbackQAReply> findAll() {
+    String query = "from " + FeedbackQAReply.class.getName();
+    List<FeedbackQAReply> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,15 +69,15 @@ public class FeedbackCommentMySQLDAO extends AbstractMarloDAO<FeedbackComment, L
   }
 
   @Override
-  public FeedbackComment save(FeedbackComment feedbackComment) {
-    if (feedbackComment.getId() == null) {
-      super.saveEntity(feedbackComment);
+  public FeedbackQAReply save(FeedbackQAReply feedbackQAReply) {
+    if (feedbackQAReply.getId() == null) {
+      super.saveEntity(feedbackQAReply);
     } else {
-      feedbackComment = super.update(feedbackComment);
+      feedbackQAReply = super.update(feedbackQAReply);
     }
 
 
-    return feedbackComment;
+    return feedbackQAReply;
   }
 
 

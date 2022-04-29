@@ -3,6 +3,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.Date;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,31 +20,41 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   @Expose
   private Phase phase;
   @Expose
-  private InternalQaCommentableFields field;
+  private FeedbackQACommentableFields field;
   @Expose
   private long screen;
   @Expose
-  private long object;
+  private long parentId;
   @Expose
   private String comment;
   @Expose
-  private String status;
+  private String fieldValue;
   @Expose
-  private FeedbackComment reply;
+  private Boolean status;
+  @Expose
+  private FeedbackQAReply reply;
+  @Expose
+  private User user;
+  @Expose
+  private Date commentDate;
+  @Expose
+  private Date approvalDate;
 
   public FeedbackQAComment() {
   }
 
-  public FeedbackQAComment(Phase phase, InternalQaCommentableFields field, long screen, long object, String comment,
-    String status, FeedbackComment reply) {
+  public FeedbackQAComment(Phase phase, FeedbackQACommentableFields field, long screen, long parentId, String comment,
+    Boolean status, FeedbackQAReply reply, User user, Date commentDate) {
     super();
     this.phase = phase;
     this.field = field;
     this.screen = screen;
-    this.object = object;
+    this.parentId = parentId;
     this.comment = comment;
     this.status = status;
     this.reply = reply;
+    this.user = user;
+    this.commentDate = commentDate;
   }
 
   public Map<String, Object> convertToMap() {
@@ -53,12 +64,24 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     return map;
   }
 
+  public Date getApprovalDate() {
+    return approvalDate;
+  }
+
   public String getComment() {
     return comment;
   }
 
-  public InternalQaCommentableFields getField() {
+  public Date getCommentDate() {
+    return commentDate;
+  }
+
+  public FeedbackQACommentableFields getField() {
     return field;
+  }
+
+  public String getFieldValue() {
+    return fieldValue;
   }
 
   @Override
@@ -80,15 +103,15 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     return u;
   }
 
-  public long getObject() {
-    return object;
+  public long getParentId() {
+    return parentId;
   }
 
   public Phase getPhase() {
     return phase;
   }
 
-  public FeedbackComment getReply() {
+  public FeedbackQAReply getReply() {
     return reply;
   }
 
@@ -96,8 +119,12 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     return screen;
   }
 
-  public String getStatus() {
+  public Boolean getStatus() {
     return status;
+  }
+
+  public User getUser() {
+    return user;
   }
 
   @Override
@@ -105,12 +132,24 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     return true;
   }
 
+  public void setApprovalDate(Date approvalDate) {
+    this.approvalDate = approvalDate;
+  }
+
   public void setComment(String comment) {
     this.comment = comment;
   }
 
-  public void setField(InternalQaCommentableFields field) {
+  public void setCommentDate(Date commentDate) {
+    this.commentDate = commentDate;
+  }
+
+  public void setField(FeedbackQACommentableFields field) {
     this.field = field;
+  }
+
+  public void setFieldValue(String fieldValue) {
+    this.fieldValue = fieldValue;
   }
 
   @Override
@@ -118,15 +157,15 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     // TODO Auto-generated method stub
   }
 
-  public void setObject(long object) {
-    this.object = object;
+  public void setParentId(long parentId) {
+    this.parentId = parentId;
   }
 
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
 
-  public void setReply(FeedbackComment reply) {
+  public void setReply(FeedbackQAReply reply) {
     this.reply = reply;
   }
 
@@ -134,8 +173,12 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     this.screen = screen;
   }
 
-  public void setStatus(String status) {
+  public void setStatus(Boolean status) {
     this.status = status;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
   }
 }
 

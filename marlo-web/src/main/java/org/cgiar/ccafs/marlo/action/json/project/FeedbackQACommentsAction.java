@@ -21,7 +21,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.InternalQaCommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
-import org.cgiar.ccafs.marlo.data.model.InternalQaCommentableFields;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -69,7 +69,7 @@ public class FeedbackQACommentsAction extends BaseAction {
     Map<String, Object> fieldsMap;
     Long fieldId = null;
     List<FeedbackQAComment> feedbackComments = new ArrayList<>();
-    List<InternalQaCommentableFields> fields = new ArrayList<>();
+    List<FeedbackQACommentableFields> fields = new ArrayList<>();
 
     // @param = sectionName/parentID/phaseID
     if (sectionName != null && parentId != null && phaseId != null) {
@@ -80,16 +80,16 @@ public class FeedbackQACommentsAction extends BaseAction {
           .collect(Collectors.toList());
 
         if (fields != null && !fields.isEmpty()) {
-          for (InternalQaCommentableFields field : fields) {
+          for (FeedbackQACommentableFields field : fields) {
             fieldId = field.getId();
             long fieldIdLocal = fieldId;
 
             // Get comments for field
-            if (fieldId != null) {
+            if (fieldId != null && commentManager.findAll() != null) {
               feedbackComments.addAll(commentManager.findAll().stream()
                 .filter(c -> c.getField() != null && c.getField().getId() != null
                   && c.getField().getId().equals(fieldIdLocal) && c.getPhase() != null && c.getPhase().getId() != null
-                  && c.getPhase().getId().equals(phaseId) && c.getObject() == parentId)
+                  && c.getPhase().getId().equals(phaseId) && c.getParentId() == parentId)
                 .collect(Collectors.toList()));
 
             }
@@ -130,6 +130,17 @@ public class FeedbackQACommentsAction extends BaseAction {
           fieldsMap.put("frontName", comment.getField().getFrontName());
         } else {
           fieldsMap.put("frontName", "");
+        }
+        if (comment.getUser() != null && comment.getUser().getFirstName() != null) {
+          fieldsMap.put("userName", comment.getUser().getFirstName() + " " + comment.getUser().getLastName());
+        } else {
+          fieldsMap.put("userName", "");
+        }
+        if (comment.getCommentDate() != null && comment.getCommentDate().toString() != null) {
+          String dateString = comment.getCommentDate().toString();
+          fieldsMap.put("date", dateString);
+        } else {
+          fieldsMap.put("date", "");
         }
         this.comments.add(fieldsMap);
       }
