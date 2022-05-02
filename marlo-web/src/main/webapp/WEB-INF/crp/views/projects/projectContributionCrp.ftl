@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220427c", 
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220502a", 
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
@@ -43,16 +43,32 @@
   <div class="closeComment"></div>
   <br>
   [@customForm.textArea name="Comment on" required=false className="limitWords-100" editable=editable /]
-  <div class="commentContainer">
-    <div class="commentTitle">Comment by xxxxx at 02/24/2022</div>
-    <p class="commentReadonly">Testing.</p>
+  <div class="commentCheckContainer">
+    <div class="commentContainer">
+      <div class="commentTitle"></div>
+      <p class="commentReadonly"></p>
+    </div>
+    <div class="checkContainer">
+      <img src="${baseUrlCdn}/global/images/correct.png" class="agreeComment">
+      <img src="${baseUrlCdn}/global/images/remove.png" class="disagreeComment">
+    </div>
   </div>
+  <div class="replyContainer">
+    <br>
+    [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
+    <div class="replyTextContainer">
+      <div class="replyTitle"></div>
+      <p class="replyReadonly"></p>
+    </div>
+    <br>
+    <div id="sendReplyContainer" class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+  </div>  
   <br>
-  <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+  <div id="sendCommentContainer" class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
   <div class="optionsContainer">
-    <img src="${baseUrlCdn}/global/images/correct.png" class="agreeComment qaOptions" title="Agree">
-    <img src="${baseUrlCdn}/global/images/remove.png" class="disagreeComment qaOptions" title="Disagree">
-    <img src="${baseUrlCdn}/global/images/auto-reply.png" class="replyComment qaOptions" title="Reply">
+    <img id="agreeCommentBtn" src="${baseUrlCdn}/global/images/correct.png" class="qaOptions" title="Agree">
+    <img id="disagreeCommentBtn" src="${baseUrlCdn}/global/images/remove.png" class="qaOptions" title="Disagree">
+    <img id="replyCommentBtn" src="${baseUrlCdn}/global/images/auto-reply.png" class="qaOptions" title="Reply">
   </div>
 </div>
 <section class="container">
@@ -81,6 +97,7 @@
           <span id="parentID" style="display: none;">${projectOutcomeID!}</span>
           <span id="phaseID" style="display: none;">${phaseID!}</span>
           <span id="userID" style="display: none;">${currentUser.id!}</span>
+          <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback()?c)!}</span>
 
           [#-- Outcomen name --]
           [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]

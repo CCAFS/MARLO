@@ -7173,14 +7173,22 @@ img.qaComment {
   z-index: 9999;
 }
 
-.commentContainer {
+.commentCheckContainer {
+  display: flex;
+}
+
+.commentContainer, .replyTextContainer {
   display: none;
   background: white;
   border: 1px solid #D1D1D1;
   border-radius: 3px;
 }
 
-.commentTitle {
+.replyTextContainer {
+  margin-left: 23px;
+}
+
+.commentTitle, .replyTitle {
   width: 100%;
   padding: 4px 10px;
   background: #0b7ba6;
@@ -7190,9 +7198,22 @@ img.qaComment {
   border-radius: 3px 3px 0 0;
 }
 
-.commentReadonly {
+.commentReadonly, .replyReadonly {
   font-size: 13px;
   padding: 4px 10px;
+}
+
+.checkContainer {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.agreeComment, .disagreeComment {
+  display: none;
+  width: 20px;
+  margin-left: 3px;
 }
 
 .sendCommentContainer {
