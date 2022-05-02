@@ -18,15 +18,17 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -60,7 +62,9 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private String reply;
   private Long userId;
   private Date date;
+  private Long projectId;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+  private ProjectManager projectManager;
   private FeedbackQACommentManager commentQAManager;
   private FeedbackQAReplyManager commentManager;
   private PhaseManager phaseManager;
@@ -70,13 +74,15 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   @Inject
   public SaveFeedbackCommentsAction(APConfig config,
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentQAManager,
-    FeedbackQAReplyManager commentManager, PhaseManager phaseManager, UserManager userManager) {
+    FeedbackQAReplyManager commentManager, PhaseManager phaseManager, UserManager userManager,
+    ProjectManager projectManager) {
     super(config);
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.commentQAManager = commentQAManager;
     this.commentManager = commentManager;
     this.phaseManager = phaseManager;
     this.userManager = userManager;
+    this.projectManager = projectManager;
   }
 
   @Override
@@ -129,6 +135,20 @@ public class SaveFeedbackCommentsAction extends BaseAction {
 
       if (parentId != null) {
         qaComment.setParentId(parentId);
+      }
+
+      if (projectId != null) {
+        try {
+          Project project = new Project();
+          project = projectManager.getProjectById(projectId);
+          if (project != null) {
+            qaComment.setProject(project);
+          }
+        } catch (Exception e) {
+          logger.error("unable to set Project object", e);
+
+        }
+        qaComment.setProject(null);
       }
 
       if (userId != null) {
@@ -249,6 +269,14 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       if (parameters.get(APConstants.COMMENT_STATUS_REQUEST).isDefined()) {
         status =
           StringUtils.trim(StringUtils.trim(parameters.get(APConstants.COMMENT_STATUS_REQUEST).getMultipleValues()[0]));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get user", e);
+    }
+    try {
+      if (parameters.get(APConstants.PROJECT_ID).isDefined()) {
+        projectId = Long
+          .parseLong(StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PROJECT_ID).getMultipleValues()[0])));
       }
     } catch (Exception e) {
       logger.error("unable to get user", e);
