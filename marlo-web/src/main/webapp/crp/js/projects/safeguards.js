@@ -3,6 +3,7 @@ var currentSubIdo;
 var saveObj;
 var expandAllOutcomesbol = false;
 var expandAllMilesetonesbol = false;
+var safeguardID2;
 
 function init() {
 
@@ -248,6 +249,8 @@ function attachEvents() {
       $elementBlocks.slideUp();
     }
   });
+  
+  safeguardID2 = $('.safeguardID').val();
 }
 
 function validateDecimalsContributions() {
@@ -630,9 +633,10 @@ $fileUpload.fileupload({
 
 // Prepare data
 $fileUpload.bind('fileuploadsubmit', function(e,data) {
-  var safeguardID = $(e.target).parents('#safeguard').find('.safeguardID').val();
+  // var safeguardID = $(e.target).parents('#safeguard').find('.safeguardID').val();
+  
   data.formData = {
-    safeguardID: safeguardID
+    safeguardID: safeguardID2
   };
 });
 
