@@ -76,10 +76,10 @@ public class SaveCommentStatusAction extends BaseAction {
         logger.error("unable to get existing Feedback comment object from DB", e);
       }
       Boolean statusBoolean = null;
-      if (status == "0") {
+      if (status.equals("0")) {
         statusBoolean = false;
       }
-      if (status == "1") {
+      if (status.equals("1")) {
         statusBoolean = true;
       }
       commentSave.setStatus(statusBoolean);
