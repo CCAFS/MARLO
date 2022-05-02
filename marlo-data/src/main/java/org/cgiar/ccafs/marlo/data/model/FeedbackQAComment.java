@@ -39,6 +39,8 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   private Date commentDate;
   @Expose
   private Date approvalDate;
+  @Expose
+  private Project project;
 
   public FeedbackQAComment() {
   }
@@ -111,6 +113,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     return phase;
   }
 
+  public Project getProject() {
+    return project;
+  }
+
   public FeedbackQAReply getReply() {
     return reply;
   }
@@ -165,6 +171,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     this.phase = phase;
   }
 
+  public void setProject(Project project) {
+    this.project = project;
+  }
+
   public void setReply(FeedbackQAReply reply) {
     this.reply = reply;
   }
@@ -180,5 +190,6 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   public void setUser(User user) {
     this.user = user;
   }
+
 }
 
