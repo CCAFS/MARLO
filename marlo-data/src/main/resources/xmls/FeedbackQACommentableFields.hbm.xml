@@ -12,11 +12,14 @@
 		<property name="sectionName" type="string">
             <column name="section_name" sql-type="TEXT" />
         </property>
-		<property name="parentName" type="string">
-            <column name="parent_name" sql-type="TEXT" />
+		<property name="sectionDescription" type="string">
+            <column name="section_description" sql-type="TEXT" />
         </property>
-		<property name="parentId" type="string">
-            <column name="parent_id" sql-type="TEXT" />
+		<property name="parentFieldDescription" type="string">
+            <column name="parent_field_description" sql-type="TEXT" />
+        </property>
+		<property name="parentFieldIdentifier" type="string">
+            <column name="parent_field_identifier" sql-type="TEXT" />
         </property>
 		<property name="tableName" type="string">
             <column name="table_name" sql-type="TEXT" />
@@ -24,8 +27,8 @@
 		<property name="fieldName" type="string">
             <column name="field_name" sql-type="TEXT" />
         </property>
-		<property name="frontName" type="string">
-            <column name="front_name" sql-type="TEXT" />
+		<property name="fieldDescription" type="string">
+            <column name="field_Description" sql-type="TEXT" />
         </property>
            <property name="active" type="boolean">
           <column name="is_active" not-null="true" />

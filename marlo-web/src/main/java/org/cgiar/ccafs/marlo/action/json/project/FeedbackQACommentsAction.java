@@ -19,9 +19,11 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
-import org.cgiar.ccafs.marlo.data.manager.InternalQaCommentableFieldsManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -51,16 +53,19 @@ public class FeedbackQACommentsAction extends BaseAction {
   private String frontName;
   private Long phaseId;
   private Long fieldId;
-  private InternalQaCommentableFieldsManager internalQaCommentableFieldsManager;
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
   private FeedbackQACommentManager commentManager;
+  private FeedbackQAReplyManager feedbackQAReplyManager;
 
 
   @Inject
   public FeedbackQACommentsAction(APConfig config,
-    InternalQaCommentableFieldsManager internalQaCommentableFieldsManager, FeedbackQACommentManager commentManager) {
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentManager,
+    FeedbackQAReplyManager feedbackQAReplyManager) {
     super(config);
-    this.internalQaCommentableFieldsManager = internalQaCommentableFieldsManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.commentManager = commentManager;
+    this.feedbackQAReplyManager = feedbackQAReplyManager;
   }
 
   @Override
@@ -74,7 +79,7 @@ public class FeedbackQACommentsAction extends BaseAction {
     // @param = sectionName/parentID/phaseID
     if (sectionName != null && parentId != null && phaseId != null) {
       try {
-        fields = internalQaCommentableFieldsManager.findAll().stream()
+        fields = feedbackQACommentableFieldsManager.findAll().stream()
           .filter(
             qa -> qa != null && qa.isActive() && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
           .collect(Collectors.toList());
@@ -126,12 +131,13 @@ public class FeedbackQACommentsAction extends BaseAction {
         } else {
           fieldsMap.put("status", "");
         }
-        if (comment.getField() != null && comment.getField().getFrontName() != null) {
-          fieldsMap.put("frontName", comment.getField().getFrontName());
+        if (comment.getField() != null && comment.getField().getFieldDescription() != null) {
+          fieldsMap.put("frontName", comment.getField().getFieldDescription());
         } else {
           fieldsMap.put("frontName", "");
         }
-        if (comment.getUser() != null && comment.getUser().getFirstName() != null) {
+        if (comment.getUser() != null && comment.getUser().getFirstName() != null
+          && comment.getUser().getLastName() != null) {
           fieldsMap.put("userName", comment.getUser().getFirstName() + " " + comment.getUser().getLastName());
         } else {
           fieldsMap.put("userName", "");
@@ -141,6 +147,26 @@ public class FeedbackQACommentsAction extends BaseAction {
           fieldsMap.put("date", dateString);
         } else {
           fieldsMap.put("date", "");
+        }
+        if (comment.getReply() != null && comment.getReply().getId() != null) {
+          FeedbackQAReply reply = new FeedbackQAReply();
+          if (feedbackQAReplyManager.existFeedbackComment(comment.getReply().getId())) {
+            reply = feedbackQAReplyManager.getFeedbackCommentById(comment.getReply().getId());
+          }
+          if (reply != null) {
+            if (reply.getUser() != null && reply.getUser().getFirstName() != null
+              && reply.getUser().getLastName() != null) {
+              fieldsMap.put("userName_reply", comment.getUser().getFirstName() + " " + comment.getUser().getLastName());
+            } else {
+              fieldsMap.put("userName_reply", "");
+            }
+            if (reply.getCommentDate() != null && comment.getCommentDate().toString() != null) {
+              String dateString = comment.getCommentDate().toString();
+              fieldsMap.put("date_reply", dateString);
+            } else {
+              fieldsMap.put("date_reply", "");
+            }
+          }
         }
         this.comments.add(fieldsMap);
       }

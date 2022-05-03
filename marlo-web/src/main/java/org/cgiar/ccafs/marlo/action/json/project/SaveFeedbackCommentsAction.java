@@ -18,15 +18,17 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.FeedbackCommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
-import org.cgiar.ccafs.marlo.data.manager.InternalQaCommentableFieldsManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -58,25 +60,31 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private Long objectId;
   private Long parentId;
   private String reply;
+  private String link;
+  private String fieldDescription;
   private Long userId;
   private Date date;
-  private InternalQaCommentableFieldsManager internalQaCommentableFieldsManager;
+  private Long projectId;
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+  private ProjectManager projectManager;
   private FeedbackQACommentManager commentQAManager;
-  private FeedbackCommentManager commentManager;
+  private FeedbackQAReplyManager commentManager;
   private PhaseManager phaseManager;
   private UserManager userManager;
 
 
   @Inject
   public SaveFeedbackCommentsAction(APConfig config,
-    InternalQaCommentableFieldsManager internalQaCommentableFieldsManager, FeedbackQACommentManager commentQAManager,
-    FeedbackCommentManager commentManager, PhaseManager phaseManager, UserManager userManager) {
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentQAManager,
+    FeedbackQAReplyManager commentManager, PhaseManager phaseManager, UserManager userManager,
+    ProjectManager projectManager) {
     super(config);
-    this.internalQaCommentableFieldsManager = internalQaCommentableFieldsManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.commentQAManager = commentQAManager;
     this.commentManager = commentManager;
     this.phaseManager = phaseManager;
     this.userManager = userManager;
+    this.projectManager = projectManager;
   }
 
   @Override
@@ -121,6 +129,15 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       if (status != null) {
         qaComment.setStatus(statusBoolean);
       }
+      if (link != null) {
+        qaComment.setLink(link);
+      }
+      if (fieldDescription != null) {
+        qaComment.setFieldDescription(fieldDescription);
+      }
+      if (status != null) {
+        qaComment.setStatus(statusBoolean);
+      }
 
       if (replyId != null) {
         FeedbackQAReply reply = commentManager.getFeedbackCommentById(replyId);
@@ -129,6 +146,20 @@ public class SaveFeedbackCommentsAction extends BaseAction {
 
       if (parentId != null) {
         qaComment.setParentId(parentId);
+      }
+
+      if (projectId != null) {
+        try {
+          Project project = new Project();
+          project = projectManager.getProjectById(projectId);
+          if (project != null) {
+            qaComment.setProject(project);
+          }
+        } catch (Exception e) {
+          logger.error("unable to set Project object", e);
+
+        }
+        qaComment.setProject(null);
       }
 
       if (userId != null) {
@@ -144,7 +175,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
 
       if (fieldId != null) {
         FeedbackQACommentableFields field =
-          internalQaCommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
+          feedbackQACommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
         qaComment.setField(field);
       }
       date = new Date();
@@ -152,7 +183,6 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         qaComment.setCommentDate(date);
       }
 
-      qaComment.setScreen(0);
       qaComment = commentQAManager.saveFeedbackQAComment(qaComment);
 
       if (qaComment.getId() != null) {
@@ -252,6 +282,28 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
     } catch (Exception e) {
       logger.error("unable to get user", e);
+    }
+    try {
+      if (parameters.get(APConstants.PROJECT_ID).isDefined()) {
+        projectId = Long
+          .parseLong(StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PROJECT_ID).getMultipleValues()[0])));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get user", e);
+    }
+    try {
+      if (parameters.get(APConstants.LINK).isDefined()) {
+        link = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.LINK).getMultipleValues()[0]));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get url", e);
+    }
+    try {
+      if (parameters.get(APConstants.FIELD_DESCRIPTION).isDefined()) {
+        fieldDescription = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.LINK).getMultipleValues()[0]));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get field Description", e);
     }
   }
 

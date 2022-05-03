@@ -22,8 +22,6 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   @Expose
   private FeedbackQACommentableFields field;
   @Expose
-  private long screen;
-  @Expose
   private long parentId;
   @Expose
   private String comment;
@@ -39,22 +37,14 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   private Date commentDate;
   @Expose
   private Date approvalDate;
+  @Expose
+  private Project project;
+  @Expose
+  private String link;
+  @Expose
+  private String fieldDescription;
 
   public FeedbackQAComment() {
-  }
-
-  public FeedbackQAComment(Phase phase, FeedbackQACommentableFields field, long screen, long parentId, String comment,
-    Boolean status, FeedbackQAReply reply, User user, Date commentDate) {
-    super();
-    this.phase = phase;
-    this.field = field;
-    this.screen = screen;
-    this.parentId = parentId;
-    this.comment = comment;
-    this.status = status;
-    this.reply = reply;
-    this.user = user;
-    this.commentDate = commentDate;
   }
 
   public Map<String, Object> convertToMap() {
@@ -80,8 +70,16 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     return field;
   }
 
+  public String getFieldDescription() {
+    return fieldDescription;
+  }
+
   public String getFieldValue() {
     return fieldValue;
+  }
+
+  public String getLink() {
+    return link;
   }
 
   @Override
@@ -111,12 +109,12 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     return phase;
   }
 
-  public FeedbackQAReply getReply() {
-    return reply;
+  public Project getProject() {
+    return project;
   }
 
-  public long getScreen() {
-    return screen;
+  public FeedbackQAReply getReply() {
+    return reply;
   }
 
   public Boolean getStatus() {
@@ -148,8 +146,16 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     this.field = field;
   }
 
+  public void setFieldDescription(String fieldDescription) {
+    this.fieldDescription = fieldDescription;
+  }
+
   public void setFieldValue(String fieldValue) {
     this.fieldValue = fieldValue;
+  }
+
+  public void setLink(String link) {
+    this.link = link;
   }
 
   @Override
@@ -165,12 +171,12 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     this.phase = phase;
   }
 
-  public void setReply(FeedbackQAReply reply) {
-    this.reply = reply;
+  public void setProject(Project project) {
+    this.project = project;
   }
 
-  public void setScreen(long screen) {
-    this.screen = screen;
+  public void setReply(FeedbackQAReply reply) {
+    this.reply = reply;
   }
 
   public void setStatus(Boolean status) {
@@ -180,5 +186,6 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   public void setUser(User user) {
     this.user = user;
   }
+
 }
 

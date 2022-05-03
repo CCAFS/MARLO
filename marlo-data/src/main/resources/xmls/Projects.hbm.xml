@@ -74,6 +74,13 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
 		</set>
+		<set name="feedbackQAComments" table="feedback_qa_comments" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.FeedbackQAComment" />
+		</set>
 		<set name="projectScopes" table="project_scopes" inverse="true"
 			lazy="true" fetch="select">
 			<key>

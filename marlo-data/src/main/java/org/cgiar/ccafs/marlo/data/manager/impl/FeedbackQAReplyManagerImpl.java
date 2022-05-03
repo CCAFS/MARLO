@@ -15,8 +15,8 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.data.dao.FeedbackCommentDAO;
-import org.cgiar.ccafs.marlo.data.manager.FeedbackCommentManager;
+import org.cgiar.ccafs.marlo.data.dao.FeedbackQAReplyDAO;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 
 import java.util.List;
@@ -28,16 +28,16 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class FeedbackCommentManagerImpl implements FeedbackCommentManager {
+public class FeedbackQAReplyManagerImpl implements FeedbackQAReplyManager {
 
 
-  private FeedbackCommentDAO feedbackCommentDAO;
+  private FeedbackQAReplyDAO feedbackQAReplyDAO;
   // Managers
 
 
   @Inject
-  public FeedbackCommentManagerImpl(FeedbackCommentDAO feedbackCommentDAO) {
-    this.feedbackCommentDAO = feedbackCommentDAO;
+  public FeedbackQAReplyManagerImpl(FeedbackQAReplyDAO feedbackQAReplyDAO) {
+    this.feedbackQAReplyDAO = feedbackQAReplyDAO;
 
 
   }
@@ -45,32 +45,32 @@ public class FeedbackCommentManagerImpl implements FeedbackCommentManager {
   @Override
   public void deleteFeedbackComment(long feedbackCommentId) {
 
-    feedbackCommentDAO.deleteFeedbackComment(feedbackCommentId);
+    feedbackQAReplyDAO.deleteFeedbackComment(feedbackCommentId);
   }
 
   @Override
   public boolean existFeedbackComment(long feedbackCommentID) {
 
-    return feedbackCommentDAO.existFeedbackComment(feedbackCommentID);
+    return feedbackQAReplyDAO.existFeedbackComment(feedbackCommentID);
   }
 
   @Override
   public List<FeedbackQAReply> findAll() {
 
-    return feedbackCommentDAO.findAll();
+    return feedbackQAReplyDAO.findAll();
 
   }
 
   @Override
   public FeedbackQAReply getFeedbackCommentById(long feedbackCommentID) {
 
-    return feedbackCommentDAO.find(feedbackCommentID);
+    return feedbackQAReplyDAO.find(feedbackCommentID);
   }
 
   @Override
   public FeedbackQAReply saveFeedbackComment(FeedbackQAReply feedbackQAReply) {
 
-    return feedbackCommentDAO.save(feedbackQAReply);
+    return feedbackQAReplyDAO.save(feedbackQAReply);
   }
 
 
