@@ -60,6 +60,8 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private Long objectId;
   private Long parentId;
   private String reply;
+  private String link;
+  private String fieldDescription;
   private Long userId;
   private Date date;
   private Long projectId;
@@ -124,6 +126,15 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         statusBoolean = true;
       }
 
+      if (status != null) {
+        qaComment.setStatus(statusBoolean);
+      }
+      if (link != null) {
+        qaComment.setLink(link);
+      }
+      if (fieldDescription != null) {
+        qaComment.setFieldDescription(fieldDescription);
+      }
       if (status != null) {
         qaComment.setStatus(statusBoolean);
       }
@@ -280,6 +291,20 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
     } catch (Exception e) {
       logger.error("unable to get user", e);
+    }
+    try {
+      if (parameters.get(APConstants.LINK).isDefined()) {
+        link = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.LINK).getMultipleValues()[0]));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get url", e);
+    }
+    try {
+      if (parameters.get(APConstants.FIELD_DESCRIPTION).isDefined()) {
+        fieldDescription = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.LINK).getMultipleValues()[0]));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get field Description", e);
     }
   }
 
