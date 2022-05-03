@@ -1,6 +1,6 @@
 $(document).ready(init);
 
-var milestonesCount, outcomeID, textareaComment, parentID, phaseID, userID, textareaReply;
+var milestonesCount, outcomeID, textareaComment, parentID, phaseID, userID, textareaReply, newData;
 var sectionName = 'projectContributionCrp';
 var contributionCRPAjaxURL = `/fieldsBySectionAndParent.do?sectionName=${sectionName}`;
 var arrayName = 'fieldsMap';
@@ -50,8 +50,8 @@ function attachEvents() {
   // Remove a next user
   $('.removeNextUser').on('click', removeNextUser);
 
-  loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
   getQAComments();
+  loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
 
   $('img.qaComment').on('click', function (event) {
     var name = this.name;
@@ -124,13 +124,13 @@ function hideShowOptionButtons(status) {
       $('#agreeCommentBtn').hide();
       $('img.disagreeComment').hide();
       $('img.agreeComment').show();
-      $('#disagreeCommentBtn').show();
+      $('#disagreeCommentBtn').hide();
       break;
     case false:
       $('#disagreeCommentBtn').hide();
       $('img.agreeComment').hide();
       $('img.disagreeComment').show();
-      $('#agreeCommentBtn').show();
+      $('#agreeCommentBtn').hide();
       break;
     case '':
       $('#agreeCommentBtn').show();
@@ -156,12 +156,12 @@ function loadCommentsByUser(name) {
           $('.commentContainer .commentTitle').html(`Comment by ${qaComments[i].userName} at ${qaComments[i].date}`);
           $('.commentContainer p.commentReadonly').html(`${qaComments[i].comment}`);
           $('#sendCommentContainer').css('display', 'none');
-  
+
           if (userCanManageFeedback == 'true') {
             $('.optionsContainer').css('display', 'flex');
             hideShowOptionButtons(qaComments[i].status);
           }
-  
+
           if (qaComments[i].reply && qaComments[i].reply != '') {
             textareaReply.hide();
             $('.replyContainer').show();
@@ -169,11 +169,13 @@ function loadCommentsByUser(name) {
             $('.replyTextContainer .replyTitle').html(`Comment by ${qaComments[i].userName_reply} at ${qaComments[i].date_reply}`);
             $('.replyTextContainer p.replyReadonly').html(`${qaComments[i].reply}`);
             $('#sendReplyContainer').css('display', 'none');
+            $('#replyCommentBtn').hide();
           } else {
             textareaReply.show();
             $('.replyContainer').hide();
             $('.replyTextContainer').hide();
             $('#sendReplyContainer').css('display', 'flex');
+            $('#replyCommentBtn').show();
           }
           break;
         }
@@ -200,7 +202,7 @@ function loadQACommentsIcons(ajaxURL, arrayName) {
     async: false,
     success: function (data) {
       if (data && Object.keys(data).length != 0) {
-        var newData = data[arrayName].map(function (x) {
+        newData = data[arrayName].map(function (x) {
           var arr = [];
           arr.push(x.fieldID);
           arr.push(x.fieldName);
@@ -215,11 +217,42 @@ function loadQACommentsIcons(ajaxURL, arrayName) {
 
 function showQAComments(data) {
   data.map(function (x) {
-    var commentIcon = $(`img[name="${x[1]}"]`);
+    var commentIcon = $(`img.qaComment[name="${x[1]}"]`);
     commentIcon.attr('fieldID', `${x[0]}`);
     commentIcon.attr('description', `${x[2]}`);
-    commentIcon.show();
+
+    for (let i = 0; i < qaComments.length; i++) {
+      if (x[1] == qaComments[i].frontName) {
+        if (qaComments[i].comment != '') {
+          commentIcon.attr('src', qaCommentsStatus('pending'));
+          if (qaComments[i].reply != '') {
+            commentIcon.attr('src', qaCommentsStatus('pending'));
+          }
+          // false
+          if (qaComments[i].status == ' ') {
+            commentIcon.attr('src', qaCommentsStatus('done'));
+          } else if (qaComments[i].status != '') {
+            // true
+            commentIcon.attr('src', qaCommentsStatus('done'));
+          }
+        }
+      }
+      commentIcon.show();
+    }
   });
+}
+
+function qaCommentsStatus(status) {
+  switch (status) {
+    case 'start':
+      return `${baseURL}/global/images/comment.png`;
+    case 'pending':
+      return `${baseURL}/global/images/comment_yellow.png`;
+    case 'done':
+      return `${baseURL}/global/images/comment_green.png`;
+    default:
+      break;
+  }
 }
 
 function saveQAComment(comment, fieldID, name) {
@@ -231,6 +264,7 @@ function saveQAComment(comment, fieldID, name) {
     success: function (data) {
       getQAComments();
       loadCommentsByUser(name);
+      showQAComments(newData);
     }
   });
 }
@@ -244,6 +278,7 @@ function saveFeedbackReply(reply, name) {
     success: function (data) {
       getQAComments();
       loadCommentsByUser(name);
+      showQAComments(newData);
     }
   });
 }
@@ -257,6 +292,7 @@ function saveCommentStatus(status, name) {
     success: function (data) {
       getQAComments();
       loadCommentsByUser(name);
+      showQAComments(newData);
     }
   });
 }
