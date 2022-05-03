@@ -89,7 +89,7 @@
                         [#--  <label for="">[@s.text name="Download Template" /]:</label> --]
                         <br>
                         <div align="left">
-                          <a href="${baseUrlCdn}/global/documents/E&S_Reporting_Template.docx" download>[@s.text name="project.safeguards.downloadText"][/@s.text]<img src="${baseUrlCdn}/global/images/word.png" style="float: none !important;"/></a>
+                          <a href="${baseUrlCdn}/global/documents/E&S_Reporting_AICCRA_Template.docx" download>[@s.text name="project.safeguards.downloadText"][/@s.text]<img src="${baseUrlCdn}/global/images/word.png" style="float: none !important;"/></a>
                         </div>
                   </div>
               </div>
