@@ -27,12 +27,12 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class InternalQaCommentableFieldsMySQLDAO extends AbstractMarloDAO<FeedbackQACommentableFields, Long>
+public class FeedbackQACommentableFieldsMySQLDAO extends AbstractMarloDAO<FeedbackQACommentableFields, Long>
   implements FeedbackQACommentableFieldsDAO {
 
 
   @Inject
-  public InternalQaCommentableFieldsMySQLDAO(SessionFactory sessionFactory) {
+  public FeedbackQACommentableFieldsMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
   }
 
