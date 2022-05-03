@@ -96,8 +96,6 @@
               
               <br>   
               <div class="form-group" align="center">
-               <input type="hidden"  name="safeguard" value="${(safeguard)!}"  />
-               <input type="hidden"  name="safeguardID" value="${(safeguard.id)!}"  />
                     [@uploadfileMacro safeguard=safeguard isTemplate=false /]               
               </div>
                            
@@ -107,8 +105,6 @@
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
          
-
-
           [/@s.form]
       </div>
     </div>
