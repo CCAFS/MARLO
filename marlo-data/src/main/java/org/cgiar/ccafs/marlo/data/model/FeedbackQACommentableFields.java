@@ -19,30 +19,21 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
   @Expose
   private String sectionName;
   @Expose
-  private String parentName;
+  private String sectionDescription;
   @Expose
-  private String parentId;
+  private String parentFieldDescription;
+  @Expose
+  private String parentFieldIdentifier;
   @Expose
   private String tableName;
   @Expose
   private String fieldName;
   @Expose
-  private String frontName;
+  private String fieldDescription;
   @Expose
   private boolean active;
 
   public FeedbackQACommentableFields() {
-  }
-
-  public FeedbackQACommentableFields(String sectionName, String parentName, String parentId, String tableName,
-    String fieldName, String frontName) {
-    super();
-    this.sectionName = sectionName;
-    this.parentName = parentName;
-    this.parentId = parentId;
-    this.tableName = tableName;
-    this.fieldName = fieldName;
-    this.frontName = frontName;
   }
 
 
@@ -54,12 +45,12 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
     return map;
   }
 
-  public String getFieldName() {
-    return fieldName;
+  public String getFieldDescription() {
+    return fieldDescription;
   }
 
-  public String getFrontName() {
-    return frontName;
+  public String getFieldName() {
+    return fieldName;
   }
 
   @Override
@@ -81,12 +72,16 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
     return u;
   }
 
-  public String getParentId() {
-    return parentId;
+  public String getParentFieldDescription() {
+    return parentFieldDescription;
   }
 
-  public String getParentName() {
-    return parentName;
+  public String getParentFieldIdentifier() {
+    return parentFieldIdentifier;
+  }
+
+  public String getSectionDescription() {
+    return sectionDescription;
   }
 
   public String getSectionName() {
@@ -106,12 +101,12 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
     this.active = active;
   }
 
-  public void setFieldName(String fieldName) {
-    this.fieldName = fieldName;
+  public void setFieldDescription(String fieldDescription) {
+    this.fieldDescription = fieldDescription;
   }
 
-  public void setFrontName(String frontName) {
-    this.frontName = frontName;
+  public void setFieldName(String fieldName) {
+    this.fieldName = fieldName;
   }
 
   @Override
@@ -119,12 +114,16 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
     // TODO Auto-generated method stub
   }
 
-  public void setParentId(String parentId) {
-    this.parentId = parentId;
+  public void setParentFieldDescription(String parentFieldDescription) {
+    this.parentFieldDescription = parentFieldDescription;
   }
 
-  public void setParentName(String parentName) {
-    this.parentName = parentName;
+  public void setParentFieldIdentifier(String parentFieldIdentifier) {
+    this.parentFieldIdentifier = parentFieldIdentifier;
+  }
+
+  public void setSectionDescription(String sectionDescription) {
+    this.sectionDescription = sectionDescription;
   }
 
   public void setSectionName(String sectionName) {

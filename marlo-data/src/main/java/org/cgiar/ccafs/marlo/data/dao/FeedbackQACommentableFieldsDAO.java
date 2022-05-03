@@ -21,7 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import java.util.List;
 
 
-public interface InternalQaCommentableFieldsDAO {
+public interface FeedbackQACommentableFieldsDAO {
 
   /**
    * This method removes a specific internalQaCommentableFields value from the database.

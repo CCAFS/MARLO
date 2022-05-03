@@ -23,7 +23,7 @@ import java.util.List;
  * @author CCAFS
  */
 
-public interface FeedbackCommentManager {
+public interface FeedbackQAReplyManager {
 
 
   /**

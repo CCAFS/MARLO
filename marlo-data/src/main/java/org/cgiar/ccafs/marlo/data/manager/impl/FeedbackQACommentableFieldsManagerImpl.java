@@ -15,8 +15,8 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.data.dao.InternalQaCommentableFieldsDAO;
-import org.cgiar.ccafs.marlo.data.manager.InternalQaCommentableFieldsManager;
+import org.cgiar.ccafs.marlo.data.dao.FeedbackQACommentableFieldsDAO;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 
 import java.util.List;
@@ -28,16 +28,16 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class InternalQaCommentableFieldsManagerImpl implements InternalQaCommentableFieldsManager {
+public class FeedbackQACommentableFieldsManagerImpl implements FeedbackQACommentableFieldsManager {
 
 
-  private InternalQaCommentableFieldsDAO internalQaCommentableFieldsDAO;
+  private FeedbackQACommentableFieldsDAO feedbackQACommentableFieldsDAO;
   // Managers
 
 
   @Inject
-  public InternalQaCommentableFieldsManagerImpl(InternalQaCommentableFieldsDAO internalQaCommentableFieldsDAO) {
-    this.internalQaCommentableFieldsDAO = internalQaCommentableFieldsDAO;
+  public FeedbackQACommentableFieldsManagerImpl(FeedbackQACommentableFieldsDAO feedbackQACommentableFieldsDAO) {
+    this.feedbackQACommentableFieldsDAO = feedbackQACommentableFieldsDAO;
 
 
   }
@@ -45,32 +45,32 @@ public class InternalQaCommentableFieldsManagerImpl implements InternalQaComment
   @Override
   public void deleteInternalQaCommentableFields(long internalQaCommentableFieldsId) {
 
-    internalQaCommentableFieldsDAO.deleteInternalQaCommentableFields(internalQaCommentableFieldsId);
+    feedbackQACommentableFieldsDAO.deleteInternalQaCommentableFields(internalQaCommentableFieldsId);
   }
 
   @Override
   public boolean existInternalQaCommentableFields(long internalQaCommentableFieldsID) {
 
-    return internalQaCommentableFieldsDAO.existInternalQaCommentableFields(internalQaCommentableFieldsID);
+    return feedbackQACommentableFieldsDAO.existInternalQaCommentableFields(internalQaCommentableFieldsID);
   }
 
   @Override
   public List<FeedbackQACommentableFields> findAll() {
 
-    return internalQaCommentableFieldsDAO.findAll();
+    return feedbackQACommentableFieldsDAO.findAll();
 
   }
 
   @Override
   public FeedbackQACommentableFields getInternalQaCommentableFieldsById(long internalQaCommentableFieldsID) {
 
-    return internalQaCommentableFieldsDAO.find(internalQaCommentableFieldsID);
+    return feedbackQACommentableFieldsDAO.find(internalQaCommentableFieldsID);
   }
 
   @Override
   public FeedbackQACommentableFields saveInternalQaCommentableFields(FeedbackQACommentableFields feedbackQACommentableFields) {
 
-    return internalQaCommentableFieldsDAO.save(feedbackQACommentableFields);
+    return feedbackQACommentableFieldsDAO.save(feedbackQACommentableFields);
   }
 
 
