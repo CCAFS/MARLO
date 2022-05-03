@@ -234,6 +234,8 @@ public final class APConstants {
   public static final String STATUS_REQUEST = "status";
   public static final String REPLY_ID_REQUEST = "replyID";
   public static final String COMMENT_STATUS_REQUEST = "status";
+  public static final String LINK = "link";
+  public static final String FIELD_DESCRIPTION = "fieldDescription";
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
   public static final String PARTNER_REQUEST_ID = "requestID";
   public static final String PARTNER_REQUEST_SEND_NOTIFICATION = "sendNotification";
