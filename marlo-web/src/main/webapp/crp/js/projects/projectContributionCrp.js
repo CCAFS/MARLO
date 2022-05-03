@@ -145,48 +145,52 @@ function hideShowOptionButtons(status) {
 }
 
 function loadCommentsByUser(name) {
-  for (let i = 0; i < qaComments.length; i++) {
-    if (qaComments[i].frontName == name) {
-      if (qaComments[i].comment && qaComments[i].comment != '') {
-        commentID = qaComments[i].commentId;
-        textareaComment.hide();
-        textareaComment.next().next('p.charCount').hide();
-        $('.commentContainer').show();
-        $('.commentContainer .commentTitle').html(`Comment by ${qaComments[i].userName} at ${qaComments[i].date}`);
-        $('.commentContainer p.commentReadonly').html(`${qaComments[i].comment}`);
-        $('#sendCommentContainer').css('display', 'none');
-
-        if (userCanManageFeedback == 'true') {
-          $('.optionsContainer').css('display', 'flex');
-          hideShowOptionButtons(qaComments[i].status);
+  if (qaComments.length > 0) {
+    for (let i = 0; i < qaComments.length; i++) {
+      if (qaComments[i].frontName == name) {
+        if (qaComments[i].comment && qaComments[i].comment != '') {
+          commentID = qaComments[i].commentId;
+          textareaComment.hide();
+          textareaComment.next().next('p.charCount').hide();
+          $('.commentContainer').show();
+          $('.commentContainer .commentTitle').html(`Comment by ${qaComments[i].userName} at ${qaComments[i].date}`);
+          $('.commentContainer p.commentReadonly').html(`${qaComments[i].comment}`);
+          $('#sendCommentContainer').css('display', 'none');
+  
+          if (userCanManageFeedback == 'true') {
+            $('.optionsContainer').css('display', 'flex');
+            hideShowOptionButtons(qaComments[i].status);
+          }
+  
+          if (qaComments[i].reply && qaComments[i].reply != '') {
+            textareaReply.hide();
+            $('.replyContainer').show();
+            $('.replyTextContainer').show();
+            $('.replyTextContainer .replyTitle').html(`Comment by ${qaComments[i].userName_reply} at ${qaComments[i].date_reply}`);
+            $('.replyTextContainer p.replyReadonly').html(`${qaComments[i].reply}`);
+            $('#sendReplyContainer').css('display', 'none');
+          } else {
+            textareaReply.show();
+            $('.replyContainer').hide();
+            $('.replyTextContainer').hide();
+            $('#sendReplyContainer').css('display', 'flex');
+          }
+          break;
         }
-
-        if (qaComments[i].reply && qaComments[i].reply != '') {
-          textareaReply.hide();
-          $('.replyContainer').show();
-          $('.replyTextContainer').show();
-          $('.replyTextContainer .replyTitle').html(`Comment by ${qaComments[i].userName_reply} at ${qaComments[i].date_reply}`);
-          $('.replyTextContainer p.replyReadonly').html(`${qaComments[i].reply}`);
-          $('#sendReplyContainer').css('display', 'none');
-        } else {
-          textareaReply.show();
-          $('.replyContainer').hide();
-          $('.replyTextContainer').hide();
-          $('#sendReplyContainer').css('display', 'flex');
-        }
-        break;
+      } else {
+        textareaComment.show();
+        textareaComment.next().next('p.charCount').show();
+        $('.commentContainer').hide();
+        textareaComment.val('');
+        $('textarea[id="Reply"]').val('');
+        $('#sendCommentContainer').css('display', 'flex');
+        $('.optionsContainer').css('display', 'none');
+        hideShowOptionButtons('');
+        $('.replyContainer').hide();
       }
-    } else {
-      textareaComment.show();
-      textareaComment.next().next('p.charCount').show();
-      $('.commentContainer').hide();
-      textareaComment.val('');
-      $('textarea[id="Reply"]').val('');
-      $('#sendCommentContainer').css('display', 'flex');
-      $('.optionsContainer').css('display', 'none');
-      hideShowOptionButtons('');
-      $('.replyContainer').hide();
     }
+  } else {
+    $('.replyContainer').hide();
   }
 }
 
