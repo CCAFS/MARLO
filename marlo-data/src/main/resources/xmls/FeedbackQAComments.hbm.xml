@@ -18,9 +18,6 @@
 			fetch="select">
 			<column name="field_id" />
 		</many-to-one>
-		<property name="screen" type="java.lang.Long">
-			<column name="screen_id" />
-		</property>
 		<property name="parentId" type="java.lang.Long">
 			<column name="parent_id" />
 		</property>

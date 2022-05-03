@@ -22,8 +22,6 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   @Expose
   private FeedbackQACommentableFields field;
   @Expose
-  private long screen;
-  @Expose
   private long parentId;
   @Expose
   private String comment;
@@ -47,20 +45,6 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   private String fieldDescription;
 
   public FeedbackQAComment() {
-  }
-
-  public FeedbackQAComment(Phase phase, FeedbackQACommentableFields field, long screen, long parentId, String comment,
-    Boolean status, FeedbackQAReply reply, User user, Date commentDate) {
-    super();
-    this.phase = phase;
-    this.field = field;
-    this.screen = screen;
-    this.parentId = parentId;
-    this.comment = comment;
-    this.status = status;
-    this.reply = reply;
-    this.user = user;
-    this.commentDate = commentDate;
   }
 
   public Map<String, Object> convertToMap() {
@@ -133,10 +117,6 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     return reply;
   }
 
-  public long getScreen() {
-    return screen;
-  }
-
   public Boolean getStatus() {
     return status;
   }
@@ -197,11 +177,6 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
 
   public void setReply(FeedbackQAReply reply) {
     this.reply = reply;
-  }
-
-
-  public void setScreen(long screen) {
-    this.screen = screen;
   }
 
   public void setStatus(Boolean status) {
