@@ -131,8 +131,8 @@ public class FeedbackQACommentsAction extends BaseAction {
         } else {
           fieldsMap.put("status", "");
         }
-        if (comment.getField() != null && comment.getField().getFrontName() != null) {
-          fieldsMap.put("frontName", comment.getField().getFrontName());
+        if (comment.getField() != null && comment.getField().getFieldDescription() != null) {
+          fieldsMap.put("frontName", comment.getField().getFieldDescription());
         } else {
           fieldsMap.put("frontName", "");
         }

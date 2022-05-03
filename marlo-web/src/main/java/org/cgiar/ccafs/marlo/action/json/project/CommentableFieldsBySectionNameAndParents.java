@@ -44,7 +44,6 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
   private static final long serialVersionUID = -4335064142194555431L;
   private final Logger logger = LoggerFactory.getLogger(CommentableFieldsBySectionNameAndParents.class);
   private List<Map<String, Object>> fieldsMap;
-  private String parentId;
   private String sectionName;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
 
@@ -63,17 +62,6 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
     Map<String, Object> fieldsMap;
 
     List<FeedbackQACommentableFields> fields = new ArrayList<>();
-    if (parentId != null && sectionName != null) {
-      try {
-        fields = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(qa -> qa != null && qa.isActive() && qa.getParentId() != null && qa.getParentId().equals(parentId)
-            && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
-          .collect(Collectors.toList());
-      } catch (Exception e) {
-        logger.error("unable to get fields - with parentID parameter", e);
-        fields = new ArrayList<>();
-      }
-    }
 
     if (sectionName != null && feedbackQACommentableFieldsManager.findAll() != null) {
       try {
@@ -91,8 +79,8 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
     if (fields != null && !fields.isEmpty()) {
       for (FeedbackQACommentableFields field : fields) {
         fieldsMap = new HashMap<String, Object>();
-        if (field.getFrontName() != null) {
-          fieldsMap.put("fieldName", field.getFrontName());
+        if (field.getFieldDescription() != null) {
+          fieldsMap.put("fieldName", field.getFieldDescription());
         } else {
           fieldsMap.put("fieldName", "");
         }
@@ -110,6 +98,16 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
           fieldsMap.put("fieldID", field.getId());
         } else {
           fieldsMap.put("fieldID", "");
+        }
+        if (field.getParentFieldIdentifier() != null) {
+          fieldsMap.put("identifierField", field.getParentFieldIdentifier());
+        } else {
+          fieldsMap.put("identifierField", "");
+        }
+        if (field.getParentFieldIdentifier() != null) {
+          fieldsMap.put("descriptionField", field.getParentFieldIdentifier());
+        } else {
+          fieldsMap.put("descriptionField", "");
         }
         this.fieldsMap.add(fieldsMap);
       }
@@ -133,10 +131,7 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
      * parentName = StringUtils.trim(parameters.get(APConstants.PARENT_REQUEST_NAME).getMultipleValues()[0]);
      * }
      */
-    if (parameters.get(APConstants.PARENT_REQUEST_ID).isDefined()) {
-      parentId =
-        StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PARENT_REQUEST_ID).getMultipleValues()[0]));
-    }
+
     if (parameters.get(APConstants.SECTION_REQUEST_NAME).isDefined()) {
       sectionName =
         StringUtils.trim(StringUtils.trim(parameters.get(APConstants.SECTION_REQUEST_NAME).getMultipleValues()[0]));
