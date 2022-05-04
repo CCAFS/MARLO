@@ -1,6 +1,13 @@
-.outcomesListBlock {width: 82%;}
+.outcomesListBlock {
+    width: 82%;
+}
 
-.addOutcomeBlock {position: absolute;right: 0;bottom: 0;width: 17.5%;}
+.addOutcomeBlock {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 17.5%;
+}
 
 .addNewOutcome {
     position: relative;
@@ -9,15 +16,15 @@
 
 #projectOutcomesList {}
 
-#projectOutcomesList tr{
+#projectOutcomesList tr {
     list-style: none;
     padding-bottom: 9px;
     border-bottom: 1px solid #e7e7e7;
     font-size: 0.95em;
 }
 
-#projectOutcomesList tr a{
-   color: #444;
+#projectOutcomesList tr a {
+    color: #444;
 }
 
 a {}
@@ -53,15 +60,15 @@ ul.nav.nav-tabs.projectOutcomeYear-tabs {
     border: 0;
 }
 
-ul.nav.nav-tabs.projectOutcomeYear-tabs li a{
+ul.nav.nav-tabs.projectOutcomeYear-tabs li a {
     background-color: #f5f5f5;
     line-height: 1em;
     padding: 5px 15px;
     height: 29px;
 }
 
-ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active>a, 
-ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active>a:focus, 
+ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active>a,
+ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active>a:focus,
 ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active>a:hover {
     background-color: #fff;
     line-height: 1em;
@@ -82,19 +89,48 @@ ul.nav.nav-tabs.projectOutcomeYear-tabs>li>a:hover {
 }
 
 i.indicatorText {
-  opacity: 0.7;
+    opacity: 0.7;
 }
 
 .radio-yes-no {
-  margin-top: 5px;
+    margin-top: 5px;
 }
 
 .contributionNarrative {
-  margin-bottom: 18px;
+    margin-bottom: 18px;
 }
 
 #menu-contributionsLP6 {
-  /* background: #ffffff !important; */
-  /* opacity: 0.5; */
-  font-size: 0.85em !important;
+    /* background: #ffffff !important; */
+    /* opacity: 0.5; */
+    font-size: 0.85em !important;
+}
+
+.legendContent {
+    position: relative;
+    -webkit-box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 1px 2px 8px rgba(0, 0, 0, .3);
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    padding: 5px;
+    border: 1px solid #EEE;
+    background: #F8F8F8;
+    margin-bottom: 25px;
+    height: 100%;
+}
+
+.colors {
+    border: 1px dashed #d5d5d5;
+    padding: 5px;
+    min-height: 77px;
+}
+
+.color.col-md-4 {
+    display: flex;
+    justify-content: center;
+}
+
+.qaComment.feedbackStatus {
+    display: block !important;
+    margin-right: 5px;
 }

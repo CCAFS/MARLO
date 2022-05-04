@@ -39,37 +39,7 @@
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
 
-<div id="qaPopup">
-  <div class="closeComment"></div>
-  <br>
-  [@customForm.textArea name="Comment on" required=false className="limitWords-100" editable=editable /]
-  <div class="commentCheckContainer">
-    <div class="commentContainer">
-      <div class="commentTitle"></div>
-      <p class="commentReadonly"></p>
-    </div>
-    <div class="checkContainer">
-      <img src="${baseUrlCdn}/global/images/correct.png" class="agreeComment">
-      <img src="${baseUrlCdn}/global/images/remove.png" class="disagreeComment">
-    </div>
-  </div>
-  <div class="replyContainer">
-    <br>
-    [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
-    <div class="replyTextContainer">
-      <div class="replyTitle"></div>
-      <p class="replyReadonly"></p>
-    </div>
-    <div id="sendReplyContainer" class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
-  </div>  
-  <br>
-  <div id="sendCommentContainer" class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
-  <div class="optionsContainer">
-    <img id="agreeCommentBtn" src="${baseUrlCdn}/global/images/correct.png" class="qaOptions" title="Agree">
-    <img id="disagreeCommentBtn" src="${baseUrlCdn}/global/images/remove.png" class="qaOptions" title="Disagree">
-    <img id="replyCommentBtn" src="${baseUrlCdn}/global/images/auto-reply.png" class="qaOptions" title="Reply">
-  </div>
-</div>
+[@customForm.qaPopUp /]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]

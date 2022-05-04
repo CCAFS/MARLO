@@ -7155,6 +7155,10 @@ img.fileIcon {
   align-items: center;
 }
 
+.text-area-container .input {
+  width: 100%;
+}
+
 img.qaComment {
   display: none;
   width: 25px;
