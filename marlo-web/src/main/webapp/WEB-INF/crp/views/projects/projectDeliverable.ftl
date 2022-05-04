@@ -52,6 +52,9 @@
 [#if !((deliverable.deliverableInfo.id??)!false)]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
+
+[@customForm.qaPopUp /]
+
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
