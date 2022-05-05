@@ -181,12 +181,16 @@ public class UploadSafeguardFileAction extends BaseAction {
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
     try {
-      projectID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_ID).getMultipleValues()[0]));
+      if (parameters.get(APConstants.PROJECT_ID).isDefined()) {
+        projectID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_ID).getMultipleValues()[0]));
+      }
     } catch (Exception e) {
       LOG.info("error getting projectID parameter", e);
     }
     try {
-      phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+      if (parameters.get(APConstants.PHASE_ID).isDefined()) {
+        phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+      }
     } catch (Exception e) {
       LOG.info("error getting projectID parameter", e);
     }
