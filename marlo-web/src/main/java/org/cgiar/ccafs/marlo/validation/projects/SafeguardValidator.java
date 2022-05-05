@@ -82,7 +82,7 @@ public class SafeguardValidator extends BaseValidator {
   }
 
   public void validateFile(BaseAction action, Safeguards safeguard) {
-    if (safeguard.getPhase() != null && safeguard.getFile() == null) {
+    if (safeguard == null || (safeguard != null && safeguard.getPhase() != null && safeguard.getFile() == null)) {
       action.addMessage(action.getText("safeguard.file.id"));
       action.getInvalidFields().put("input-safeguard.file.id", InvalidFieldsMessages.EMPTYFIELD);
     }
