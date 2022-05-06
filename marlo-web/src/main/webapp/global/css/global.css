@@ -411,8 +411,8 @@ p.username-message {
 }
 
 p.checked, label.checked {
-  background: url(../../global/images/icon-check.png) no-repeat 0 40%;
-  padding: 3px 0 3px 23px;
+  background: url(../../global/images/icon-check.png) no-repeat 5px 35%;
+  padding: 3px 0 3px 25px;
   margin-bottom: 5px;
   text-align: justify;
 }
