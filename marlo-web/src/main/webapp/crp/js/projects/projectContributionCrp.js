@@ -237,8 +237,8 @@ function showQAComments(data) {
           }
         }
       }
-      commentIcon.show();
     }
+    commentIcon.show();
   });
 }
 
