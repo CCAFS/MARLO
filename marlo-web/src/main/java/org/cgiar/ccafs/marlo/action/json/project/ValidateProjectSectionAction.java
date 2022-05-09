@@ -125,7 +125,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           this.projectSectionValidator.validateProjectDescription(this, this.getProjectID());
           break;
         case SAFEGUARDS:
-          if (!this.isPlanningActive()) {
+          if (this.isUpKeepActive()) {
             this.projectSectionValidator.validateSafeguards(this, this.getProjectID());
           }
           break;
