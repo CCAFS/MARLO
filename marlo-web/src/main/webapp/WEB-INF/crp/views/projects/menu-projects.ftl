@@ -60,9 +60,9 @@
       { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingActive && action.hasSpecificities("crp_leverages_module") && isCrpProject, "showCheck": isGlobalUnitProject}
       ]
     },
-    { 'title': 'Safeguards', 'show':true,
+    { 'title': 'Safeguards', 'show':reportingActive && isCrpProject,
       'items': [
-      { 'slug': 'safeguards',  'name': 'projects.menu.safeguards',  'action': 'safeguards',  'active': true  ,'show': true, "showCheck": true, "development": true }
+      { 'slug': 'safeguards',  'name': 'projects.menu.safeguards',  'action': 'safeguards',  'active': true  ,'show': reportingActive && isCrpProject, "showCheck": true, "development": true }
       ]
     }
     
