@@ -203,6 +203,8 @@ public class UploadSafeguardFileAction extends BaseAction {
         safeguard = safeguardsManager.getSafeguardsById(Long.parseLong(safeguardID));
         if (safeguard != null && safeguard.getId() != null && fileDB != null) {
           safeguard.setFile(fileDB);
+          safeguard.setLink(this.config.getDownloadURL() + "/file.do?crp=" + this.getCurrentGlobalUnit().getAcronym()
+            + "&category=" + "safeguard&id=" + safeguardID + "&filename=" + fileDB.getFileName());
         } else {
           safeguard.setFile(null);
         }
