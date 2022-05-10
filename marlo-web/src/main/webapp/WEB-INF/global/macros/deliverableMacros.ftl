@@ -214,7 +214,7 @@
   <div class="block-involveParticipants" style="display:${((deliverable.deliverableParticipant.hasParticipants)!false)?string('block','none')}">
     <hr />
     [#-- Title Event/Activity --]
-    <div class="form-group">
+    <div class="form-group text-area-container">
       [@customForm.input name="${customName}.eventActivityName" i18nkey="involveParticipants.title" className="limitWords-20" required=editable editable=editable /]
     </div>
     
@@ -256,13 +256,19 @@
     [#-- Total number of Participants: --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.input name="${customName}.participants" i18nkey="involveParticipants.participants" help="involveParticipants.participants.help" placeholder="global.number" className="numericInput" required=editable editable=editable /]
+        <div class="text-area-container">
+         [@customForm.input name="${customName}.participants" i18nkey="involveParticipants.participants" help="involveParticipants.participants.help" placeholder="global.number" className="numericInput" required=editable editable=editable /]
+        </div>
+        <br>
         <div class="dottedBox">
           [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.estimateParticipants" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateParticipants)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
       <div class="col-md-6 femaleNumbers">
-        [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="global.number" className="numericInput" required=true editable=editable disabled=(deliverable.deliverableParticipant.dontKnowFemale)!false /]
+        <div class="text-area-container">
+          [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="global.number" className="numericInput" required=true editable=editable disabled=(deliverable.deliverableParticipant.dontKnowFemale)!false /]
+        </div>
+        <br>
         <div class="dottedBox">
           [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.estimateFemales" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateFemales)!false) cssClass="" cssClassLabel="font-italic" /]
           [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.dontKnowFemale" label="involveParticipants.dontKnow" help="involveParticipants.dontKnow.help" value="true" editable=editable checked=((deliverable.deliverableParticipant.dontKnowFemale)!false) cssClass="" cssClassLabel="font-italic" /]
@@ -293,13 +299,19 @@
     [#-- African - Youth: --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.input name="${customName}.african" i18nkey="involveParticipants.african" help="involveParticipants.african.help" placeholder="global.number" className="numericInput" required=editable editable=editable /]
+        <div class="text-area-container">
+          [@customForm.input name="${customName}.african" i18nkey="involveParticipants.african" help="involveParticipants.african.help" placeholder="global.number" className="numericInput" required=editable editable=editable /]
+        </div>
+        <br>
         <div class="dottedBox">
           [@customForm.checkBoxFlat id="estimateAfrican" name="${customName}.estimateAfrican" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateAfrican)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
       <div class="col-md-6 femaleNumbers">
-        [@customForm.input name="${customName}.youth" i18nkey="involveParticipants.youth" help="involveParticipants.youth.help" placeholder="global.number" className="numericInput" required=true editable=editable /]
+        <div class="text-area-container">
+          [@customForm.input name="${customName}.youth" i18nkey="involveParticipants.youth" help="involveParticipants.youth.help" placeholder="global.number" className="numericInput" required=true editable=editable /]
+        </div>
+        <br>
         <div class="dottedBox">
           [@customForm.checkBoxFlat id="estimateYouth" name="${customName}.estimateYouth" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateYouth)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
@@ -307,11 +319,11 @@
     </div>
     
     [#-- Focus --]
-    <div class="form-group">
+    <div class="form-group text-area-container">
       [@customForm.textArea name="${customName}.focus" i18nkey="involveParticipants.focus" className="" required=editable editable=editable /]
     </div>
     [#-- Likely Outcomes --]
-    <div class="form-group">
+    <div class="form-group text-area-container">
       [@customForm.textArea name="${customName}.likelyOutcomes" i18nkey="involveParticipants.likelyOutcomes" className="" required=editable editable=editable /]
     </div>
     
@@ -348,7 +360,7 @@
       </div>
       
       [#-- Confidential URL --]
-      <div class="form-group confidentialBlock-true" style="display:${(isConfidential == "true")?string('block', 'none')}">
+      <div class="form-group confidentialBlock-true text-area-container" style="display:${(isConfidential == "true")?string('block', 'none')}">
         [@customForm.input name="${name}.confidentialUrl" type="text" i18nkey="project.deliverable.dissemination.confidentialUrl" help="project.deliverable.dissemination.confidentialUrl.help" helpIcon=false placeholder="global.webSiteLink.placeholder" className="" required=true editable=editable /]
       </div>
       <div class="form-group confidentialBlock-false" style="display:${(isConfidential == "false")?string('block', 'none')}">
@@ -403,7 +415,7 @@
   [#local channelSelected = (deliverable.dissemination.disseminationChannel)!'-1' /]
   <div id="disseminationUrl" style="display:[#if channelsArray?seq_contains(channelSelected) || (channelSelected == "other") ]block[#else]none[/#if];">
     <div class="form-group" > 
-      <div class="url-field">
+      <div class="url-field text-area-container">
         [@customForm.input name="${customName}.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true readOnly=isSynced editable=editable /]
       </div>
       <div class="buttons-field">
@@ -428,10 +440,10 @@
     <div class="clearfix"></div>
 
     <div class="form-group row ifIsReadOnly" style="margin-top: 10px;">
-      <div class="col-md-6 conditionalRequire handle-bridge">
+      <div class="col-md-6 conditionalRequire handle-bridge text-area-container">
         [@customForm.input name="handle-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable/]
       </div>
-      <div class="col-md-6 conditionalRequire doi-bridge" style="position: relative;">
+      <div class="col-md-6 conditionalRequire doi-bridge text-area-container" style="position: relative;">
         [@customForm.input name="doi-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable/]
         <p class="invalidDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(207, 40, 40); font-weight: 600; font-size: 0.8em; display: none;">Invalid DOI identifier.<br>Please use the correct format <strong>(e.g. 10.1109/5.771073)</strong></p>
         <p class="validDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(50, 206, 45); font-weight: 600; font-size: 0.8em; display: none;">Valid DOI identifier</p>
@@ -980,7 +992,7 @@
   
   [#local customName = 'deliverable.metadataElements[${metadataIndex}]' /]
 
-  <div class="metadataElement metadataElement-${title}">
+  <div class="metadataElement metadataElement-${title} text-area-container">
     <input type="hidden" name="${customName}.id" value="${mElementID}" />
     <input type="hidden" class="hide" name="${customName}.hide" value="${mElementHide?string}" />
     <input type="hidden" name="${customName}.metadataElement.id" value="${metadataID}" />

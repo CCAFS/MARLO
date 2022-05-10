@@ -27,10 +27,11 @@
       <p>[#if (customValue?has_content)!false] [#if isCurrencyInput]<nobr>US$ ${((customValue)!'0')?number?string(",##0.00")}</nobr>[#else]${customValue}[/#if]  [#else]${requiredText}[@s.text name="form.values.fieldEmpty" /][/#if]</p>
     [/#if]
   </div>
+  <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
 [/#macro]
 
 [#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false]
-  <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
+  <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[#else]style="width: 100%;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
     [#-- Get Custom Value --]
@@ -57,6 +58,7 @@
       </p>
     [/#if] 
   </div>
+  <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
 [/#macro]
 
 [#macro button i18nkey class="" id="" editable=true]
@@ -813,4 +815,38 @@
    <div id="helpViewMoreBlock" class="collapse" aria-labelledby="helpViewMoreBlock" data-parent="#helpViewMoreLink">
       <i class="helpLabel">[@s.text name="${customName}" /]</i>
    </div>
+[/#macro]
+
+[#macro qaPopUp]
+  <div id="qaPopup">
+    <div class="closeComment"></div>
+    <br>
+    [@customForm.textArea name="Comment on" required=false className="limitWords-100" editable=editable /]
+    <div class="commentCheckContainer">
+      <div class="commentContainer">
+        <div class="commentTitle"></div>
+        <p class="commentReadonly"></p>
+      </div>
+      <div class="checkContainer">
+        <img src="${baseUrlCdn}/global/images/correct.png" class="agreeComment">
+        <img src="${baseUrlCdn}/global/images/remove.png" class="disagreeComment">
+      </div>
+    </div>
+    <div class="replyContainer">
+      <br>
+      [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
+      <div class="replyTextContainer">
+        <div class="replyTitle"></div>
+        <p class="replyReadonly"></p>
+      </div>
+      <div id="sendReplyContainer" class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+    </div>  
+    <br>
+    <div id="sendCommentContainer" class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+    <div class="optionsContainer">
+      <img id="agreeCommentBtn" src="${baseUrlCdn}/global/images/correct.png" class="qaOptions" title="Agree">
+      <img id="disagreeCommentBtn" src="${baseUrlCdn}/global/images/remove.png" class="qaOptions" title="Disagree">
+      <img id="replyCommentBtn" src="${baseUrlCdn}/global/images/auto-reply.png" class="qaOptions" title="Reply">
+    </div>
+  </div>
 [/#macro]

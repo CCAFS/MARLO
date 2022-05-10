@@ -19,8 +19,6 @@
 
 		<default-interceptor-ref name="jsonStack"></default-interceptor-ref>
 
-
-
 		<action name="deliverableStatus"
 			class="org.cgiar.ccafs.marlo.action.json.global.DeliverableStatusAction">
 			<result type="json">
@@ -580,12 +578,84 @@
 		</action>
 		
 		<action name="institutionById"
-      class="org.cgiar.ccafs.marlo.action.json.project.InstitutionById">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+	      class="org.cgiar.ccafs.marlo.action.json.project.InstitutionById">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
+    
+		<action name="fieldsBySectionAndParent"
+	      class="org.cgiar.ccafs.marlo.action.json.project.CommentableFieldsBySectionNameAndParents">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
+	    
+		<action name="feedbackComments"
+	      class="org.cgiar.ccafs.marlo.action.json.project.FeedbackQACommentsAction">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
+	    
+		<action name="feedbackNumberOfComments"
+	      class="org.cgiar.ccafs.marlo.action.json.project.FeedbackQANumberCommentsAction">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
+	    
+		<action name="feedbackParent"
+	      class="org.cgiar.ccafs.marlo.action.json.project.FeedbackParentIdAction">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
+	    
+		<action name="feedbackReplies"
+	      class="org.cgiar.ccafs.marlo.action.json.project.FeedbackQARepliesAction">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
+	    
+		<action name="saveFeedbackComments"
+	      class="org.cgiar.ccafs.marlo.action.json.project.SaveFeedbackCommentsAction">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
+	    
+		<action name="saveFeedbackReply"
+	      class="org.cgiar.ccafs.marlo.action.json.project.SaveFeedbackReplyAction">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
+	    
+		<action name="saveCommentStatus"
+	      class="org.cgiar.ccafs.marlo.action.json.project.SaveCommentStatusAction">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
+	    
+		<action name="removeSafeguardFile"
+	      class="org.cgiar.ccafs.marlo.action.json.project.RemoveSafeguardFileAction">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
 
 		<action name="targetUnitRequest"
 			class="org.cgiar.ccafs.marlo.action.json.crpadmin.RequestTargetUnitAction">
