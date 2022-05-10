@@ -502,6 +502,7 @@ public class SafeguardAction extends BaseAction {
     } else {
       safeguard.setActive(true);
     }
+    safeguardsManager.saveSafeguards(safeguard);
   }
 
 
