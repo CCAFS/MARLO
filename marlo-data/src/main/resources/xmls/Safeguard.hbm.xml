@@ -22,6 +22,9 @@
 			class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
 			<column name="file_id" />
 		</many-to-one>
+		<property name="link" type="string">
+            <column name="link" sql-type="TEXT" not-null="true" />
+        </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
