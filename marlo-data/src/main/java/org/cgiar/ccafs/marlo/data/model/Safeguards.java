@@ -20,6 +20,8 @@ public class Safeguards extends MarloBaseEntity implements java.io.Serializable,
   @Expose
   private Project project;
   @Expose
+  private String link;
+  @Expose
   private boolean active;
 
   private boolean hasFile;
@@ -27,17 +29,12 @@ public class Safeguards extends MarloBaseEntity implements java.io.Serializable,
   public Safeguards() {
   }
 
-  public Safeguards(FileDB file, Phase phase, Project project, boolean active) {
-    super();
-    this.file = file;
-    this.phase = phase;
-    this.project = project;
-    this.active = active;
-  }
-
-
   public FileDB getFile() {
     return file;
+  }
+
+  public String getLink() {
+    return link;
   }
 
   @Override
@@ -88,6 +85,10 @@ public class Safeguards extends MarloBaseEntity implements java.io.Serializable,
     this.hasFile = hasFile;
   }
 
+  public void setLink(String link) {
+    this.link = link;
+  }
+
   @Override
   public void setModifiedBy(User modifiedBy) {
     // TODO Auto-generated method stub
@@ -98,10 +99,8 @@ public class Safeguards extends MarloBaseEntity implements java.io.Serializable,
     this.phase = phase;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
-
 }
 

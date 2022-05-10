@@ -29,6 +29,8 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   @Expose
   private String title;
   @Expose
+  private String acronym;
+  @Expose
   private String summary;
   @Expose
   private Date startDate;
@@ -83,6 +85,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   private Long previousProjectId;
 
   public ProjectInfo() {
+  }
+
+  public String getAcronym() {
+    return acronym;
   }
 
   public Boolean getActivitiesCSV() {
@@ -362,6 +368,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
 
   public Boolean isProjectEditLeader() {
     return projectEditLeader;
+  }
+
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
   }
 
   public void setActivitiesCSV(Boolean activitiesCSV) {

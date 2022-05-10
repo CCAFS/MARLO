@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Safeguards;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -59,30 +60,36 @@ public class SafeguardValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, Project project, Safeguards safeguards, boolean saving) {
-    action.setInvalidFields(new HashMap<>());
-    if (!saving) {
-      Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
+    ProjectInfo projectInfo = new ProjectInfo();
+    projectInfo = project.getProjecInfoPhase(action.getActualPhase());
+    if ((!(projectInfo.getAdministrative() != null && projectInfo.getAdministrative().booleanValue() == true))
+      && (action.isUpKeepActive() || action.isReportingActive())) {
 
-      if (path.toFile().exists()) {
-        action.addMissingField("draft");
+      action.setInvalidFields(new HashMap<>());
+      if (!saving) {
+        Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
+
+        if (path.toFile().exists()) {
+          action.addMissingField("draft");
+        }
       }
+
+      this.validateFile(action, safeguards);
+
+      if (!action.getFieldErrors().isEmpty()) {
+        action.addActionError(action.getText("saving.fields.required"));
+      } else if (action.getValidationMessage().length() > 0) {
+        action.addActionMessage(
+          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+      }
+
+      this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.SAFEGUARDS.getStatus(), action);
     }
-
-    this.validateFile(action, safeguards);
-
-    if (!action.getFieldErrors().isEmpty()) {
-      action.addActionError(action.getText("saving.fields.required"));
-    } else if (action.getValidationMessage().length() > 0) {
-      action.addActionMessage(
-        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
-    }
-
-    this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.SAFEGUARDS.getStatus(), action);
   }
 
   public void validateFile(BaseAction action, Safeguards safeguard) {
-    if (safeguard.getPhase() != null && safeguard.getFile() == null) {
+    if (safeguard == null || (safeguard != null && safeguard.getPhase() != null && safeguard.getFile() == null)) {
       action.addMessage(action.getText("safeguard.file.id"));
       action.getInvalidFields().put("input-safeguard.file.id", InvalidFieldsMessages.EMPTYFIELD);
     }
