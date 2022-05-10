@@ -648,6 +648,18 @@ $uploadBlock.find('.removeIcon').on('click', function() {
   $ub.find('.fileUpload').show();
   $ub.find('input.fileID').val('');
   $ub.find('input.safeguardID').val('');
+
+  var finalAjaxURL = `/removeSafeguardFile.do?safeguardID=${safeguardID2}`;
+
+  $.ajax({
+    url: baseURL + finalAjaxURL,
+    async: false,
+    success: function (data) {
+      if (data && Object.keys(data).length != 0) {
+        
+      }
+    }
+  });
 });
 
 /**
