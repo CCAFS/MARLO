@@ -411,8 +411,8 @@ p.username-message {
 }
 
 p.checked, label.checked {
-  background: url(../../global/images/icon-check.png) no-repeat 0 40%;
-  padding: 3px 0 3px 23px;
+  background: url(../../global/images/icon-check.png) no-repeat 5px 35%;
+  padding: 3px 0 3px 25px;
   margin-bottom: 5px;
   text-align: justify;
 }
@@ -7131,4 +7131,133 @@ li.currentSection#bi::before{
   position: relative;
   transition: box-shadow 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
   background: #fff;
+}
+
+.uploadPDFTitleContainer {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+}
+
+img.fileIcon {
+  padding: 5px;
+  width: 45px;
+}
+
+.input-container {
+  display: flex;
+  align-items: flex-end;
+}
+
+.text-area-container {
+  display: flex;
+  align-items: center;
+}
+
+.text-area-container .input {
+  width: 100%;
+}
+
+img.qaComment {
+  display: none;
+  width: 25px;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+#qaPopup {
+  display: none;
+  position: absolute;
+  width: 20%;
+  padding: 10px;
+  background: #F5F5F5;
+  border-radius: 5px;
+  box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%), 0 0 8px rgb(0 0 0 / 30%);
+  z-index: 9999;
+}
+
+.commentCheckContainer {
+  display: flex;
+}
+
+.commentContainer, .replyTextContainer {
+  display: none;
+  background: white;
+  border: 1px solid #D1D1D1;
+  border-radius: 3px;
+}
+
+.replyTextContainer {
+  margin-left: 23px;
+}
+
+.commentTitle, .replyTitle {
+  width: 100%;
+  padding: 4px 10px;
+  background: #0b7ba6;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 3px 3px 0 0;
+}
+
+.commentReadonly, .replyReadonly {
+  font-size: 13px;
+  padding: 4px 10px;
+}
+
+.checkContainer {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.agreeComment, .disagreeComment {
+  display: none;
+  width: 20px;
+  margin-left: 3px;
+}
+
+.sendCommentContainer {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0b7ba6;
+  border-radius: 50%;
+  float: right;
+}
+
+img.sendComment {
+  width: 15px;
+  margin-left: 3px;
+  cursor: pointer;
+}
+
+.optionsContainer {
+  display: none;
+  float: right;
+}
+
+img.qaOptions {
+  width: 20px;
+  margin-left: 3px;
+  cursor: pointer;
+}
+
+.closeComment {
+  width: 15px;
+  height: 15px;
+  background: url(../images/close.png);
+  background-size: 15px;
+  float: right;
+  cursor: pointer;
+}
+
+.closeComment:hover {
+  background: url(../images/close_red.png);
+  background-size: 15px;
 }

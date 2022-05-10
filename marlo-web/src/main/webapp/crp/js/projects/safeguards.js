@@ -3,6 +3,7 @@ var currentSubIdo;
 var saveObj;
 var expandAllOutcomesbol = false;
 var expandAllMilesetonesbol = false;
+var safeguardID2;
 
 function init() {
 
@@ -248,6 +249,8 @@ function attachEvents() {
       $elementBlocks.slideUp();
     }
   });
+  
+  safeguardID2 = $('.safeguardID').val();
 }
 
 function validateDecimalsContributions() {
@@ -630,9 +633,10 @@ $fileUpload.fileupload({
 
 // Prepare data
 $fileUpload.bind('fileuploadsubmit', function(e,data) {
-  var safeguardID = $(e.target).parents('.safeguard').find('.safeguardId').val();
+  // var safeguardID = $(e.target).parents('#safeguard').find('.safeguardID').val();
+  
   data.formData = {
-    safeguardID: safeguardID
+    safeguardID: safeguardID2
   };
 });
 
@@ -644,6 +648,18 @@ $uploadBlock.find('.removeIcon').on('click', function() {
   $ub.find('.fileUpload').show();
   $ub.find('input.fileID').val('');
   $ub.find('input.safeguardID').val('');
+
+  var finalAjaxURL = `/removeSafeguardFile.do?safeguardID=${safeguardID2}`;
+
+  $.ajax({
+    url: baseURL + finalAjaxURL,
+    async: false,
+    success: function (data) {
+      if (data && Object.keys(data).length != 0) {
+        
+      }
+    }
+  });
 });
 
 /**

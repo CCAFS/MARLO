@@ -1,12 +1,12 @@
 [#ftl]
 <div class="simpleBox">
   [#-- Title input --]
-  <div class="form-group">
+  <div class="form-group text-area-container">
     [@customForm.input name="deliverable.deliverableInfo.title" value="${(deliverable.deliverableInfo.title)!}" type="text" i18nkey="project.deliverable.generalInformation.title"  placeholder="" className="limitWords-25" required=true editable=editable /]
   </div>
 
   [#-- Description input on Planning only --]
-  <div class="form-group">
+  <div class="form-group text-area-container">
     [@customForm.textArea name="deliverable.deliverableInfo.description" value="${(deliverable.deliverableInfo.description)!}" i18nkey="project.deliverable.generalInformation.description"  placeholder="" className="limitWords-100" required=true editable=editable /]
   </div>
   [#-- Type and subtype inputs --]
@@ -138,7 +138,7 @@
   [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]
     <div class="form-group">
       [#if action.isAiccra()]
-        [@customForm.elementsListComponent name="deliverable.projectOutcomes" elementType="projectOutcome" elementList=(deliverable.projectOutcomes)![] label="project.deliverable.generalInformation.keyOutput" listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName" required=true maxLimit=1/]
+        [@customForm.elementsListComponent name="deliverable.projectOutcomes" elementType="projectOutcome" elementList=(deliverable.projectOutcomes)![] label="project.deliverable.generalInformation.keyOutput" listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName" required=true maxLimit=3/]
         <div class="note left">
           <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
             <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.keyOutputNotice" /]
