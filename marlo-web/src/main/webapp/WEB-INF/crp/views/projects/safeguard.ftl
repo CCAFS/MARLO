@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/projects/safeguards.js?20220502a",
+  "${baseUrlMedia}/js/projects/safeguards.js?20220510a",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
@@ -65,7 +65,7 @@
               <div class="helpMessage infoText2">
                 <div>
                   <div class="templateContainer">
-                    <a href="${baseUrlCdn}/global/documents/E&S_Reporting_AICCRA_Template.docx" download>[@s.text name="project.safeguards.downloadText"][/@s.text]<img src="${baseUrlCdn}/global/images/word.png" style="float: none !important;"/></a>
+                    <a href="${baseUrlCdn}/global/documents/E&S_Reporting_AICCRA_Template_V2.docx" download>[@s.text name="project.safeguards.downloadText"][/@s.text]<img src="${baseUrlCdn}/global/images/word.png" style="float: none !important;"/></a>
                   </div>
                 </div>
               </div>
