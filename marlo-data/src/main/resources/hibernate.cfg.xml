@@ -528,7 +528,7 @@
     <mapping resource="xmls/OneCGIARWorkpackageScienceGroup.hbm.xml"/>
     <mapping resource="xmls/OneCGIARWorkpackageImpactArea.hbm.xml"/>
     <mapping resource="xmls/OneCGIARWorkpackageSdg.hbm.xml"/>
-    
+    <mapping resource="xmls/OneCGIARStudyTypes.hbm.xml"/>
     <!-- Annual Report 2021 -->
     <mapping resource="xmls/ProjectExpectedStudyReferences.hbm.xml" />
     <mapping resource="xmls/ProjectInnovationEvidenceLinks.hbm.xml" />

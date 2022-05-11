@@ -134,6 +134,7 @@
           <a href="#section3-item7"> <button type="button" class="subCollapsible">Initiatives <span class="getColor">GET</span></button></a>
           <a href="#section3-item8"> <button type="button" class="subCollapsible">Action Areas Outcomes <span class="getColor">GET</span></button></a>
           <a href="#section3-item9"> <button type="button" class="subCollapsible">Workpackages <span class="getColor">GET</span></button></a>
+          <a href="#section3-item10"> <button type="button" class="subCollapsible">MELIA study types <span class="getColor">GET</span></button></a>
         </div>
         <a href="#section4" class="collap"> <button type="button" class="collapsible">Innovation Catalog</button></a>
         <div class="content">
@@ -2149,6 +2150,110 @@
     <span class="blueCode">"stageId"</span><span class="WhiteCode"> : "long",</span>   
     <span class="blueCode">"results"</span><span class="WhiteCode"> : "String",</span>
     <span class="blueCode">"pathway_content"</span><span class="WhiteCode"> : "String"</span> 
+  <span class="yellowCode">}</span>
+<span class="yellowCode">]</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">400</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Bad Request</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">401</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Unauthorized</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">403</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Forbidden</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">404</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Not Found</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Method 3.10 -->
+        <div class="bshadow">
+          <div class="container">
+            <div class="row">
+              <div class="col-12">
+                <h2 class="title">methods</h2>
+                <div class="bshadow" id="section3-item10">
+                  <div class="getColorbackground contEndpoint">
+                    <button type="button" class="btn getColorbackground">GET</button> <span class="endpointTitle">/MELIA/study-types</span>
+                  </div>
+                  <div class="parameters">
+                    <h3>Functionality</h3>
+                    <p class="justifyParagraph">Gives a list with MELIA study types from OneCGIAR.</p>
+                    <h3>Parameters</h3>
+                    <div>No parameters</div>
+                    <table style="width: 70%">
+                      <thead>
+                        <tr>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td colspan="2">
+                            <div>
+                              <p><span><Strong>Request URL: </Strong></span></p>
+                              <div class="URLendpoint">
+                                <div class="fragCode">
+                                  <p><span class="endpoint"></span>/MELIA/study-types</p>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="container-c">
+                    <div class="row">
+                      <div class="col-12" style="margin-bottom: 20px;">
+                        <button onclick="study_types()" type="button" data-bs-toggle="modal" data-bs-target="#exampleRequestModal32" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
+                      </div>
+                      <div class="col-12">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="greenCode">200</span>: <span class="blueCode">OK</span> </p>
+                          </div>
+                          <pre><code>
+<span class="yellowCode">[</span>
+  <span class="yellowCode">{</span>
+    <span class="blueCode">"Id"</span><span class="WhiteCode"> : "long",</span>   
+    <span class="blueCode">"name"</span><span class="WhiteCode"> : "String"</span>    
   <span class="yellowCode">}</span>
 <span class="yellowCode">]</span>
                           </code></pre>
@@ -4557,6 +4662,37 @@
       </div>
     </div>
   </div>
+  <!-- Study Types -->
+  <div class="modal fade" id="exampleRequestModal32" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+        <div class="modal-body">
+          <table class="table dataTable" id="study_types">
+            <thead class="thead-dark">
+              <tr id="#list-print-columns-name">
+                <td>Code</td>
+                <td>Name</td>
+              </tr>
+            </thead>
+            <tbody id="list-print-study_types">
+            </tbody>
+          </table>
+          <div class="text-center">
+            <div class="spinner-general" id="spinner_study_types">
+              <div class="spinner-border   text-success" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+              <h4 style="margin-top: 15px;">Loading...</h4>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 <!-- 
@@ -4564,7 +4700,7 @@
 
 <button>Toggle slideUp() and slideDown()</button> -->
 <script src="conf/endpoint.conf.js"></script>
-<script src="js/request.js?20220428a"></script>
+<script src="js/request.js?20220511a"></script>
 <script>
   var coll = document.getElementsByClassName("collap");
   var i;
