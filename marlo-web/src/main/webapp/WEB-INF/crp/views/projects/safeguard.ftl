@@ -65,7 +65,7 @@
               <div class="helpMessage infoText2">
                 <div>
                   <div class="templateContainer">
-                    <a href="${baseUrlCdn}/global/documents/E&S_Reporting_AICCRA_Template_V2.docx" download>[@s.text name="project.safeguards.downloadText"][/@s.text]<img src="${baseUrlCdn}/global/images/word.png" style="float: none !important;"/></a>
+                    <a href="${baseUrlCdn}/global/documents/E&S_Reporting_AICCRA_Template_V2_20220329.docx" download>[@s.text name="project.safeguards.downloadText"][/@s.text]<img src="${baseUrlCdn}/global/images/word.png" style="float: none !important;"/></a>
                   </div>
                 </div>
               </div>
