@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
@@ -101,6 +102,25 @@ public class DeliverableParticipantMySQLDAO extends AbstractMarloDAO<Deliverable
     DeliverableParticipant deliverableParticipantResult = (DeliverableParticipant) findSingleResult;
 
     return deliverableParticipantResult;
+  }
+
+  @Override
+  public List<DeliverableParticipant> getCapDevTable(Long phaseId) {
+    String query = "select dp.* FROM deliverable_participants dp "
+      + "join deliverables_info di on dp.deliverable_id = di.deliverable_id and dp.phase_id = di.id_phase and di.is_active = 1 "
+      + "join deliverables d on dp.deliverable_id = d.id and di.deliverable_id = d.id and d.is_active = 1 "
+      + "join phases p on di.id_phase = p.id and dp.phase_id = p.id "
+      + "where (di.new_expected_year = p.year or di.year = p.year) and (di.status in (3,4)) "
+      + "and p.id = :phaseId and dp.has_participants = 1 and dp.is_active = 1";
+
+    Query createQuery =
+      this.getSessionFactory().getCurrentSession().createSQLQuery(query).addEntity(DeliverableParticipant.class);
+    createQuery.setParameter("phaseId", phaseId);
+    createQuery.setFlushMode(FlushMode.COMMIT);
+
+    List<DeliverableParticipant> list = createQuery.list();
+
+    return list;
   }
 
   @Override

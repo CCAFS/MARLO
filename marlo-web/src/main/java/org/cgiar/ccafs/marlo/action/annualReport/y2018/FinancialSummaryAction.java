@@ -51,7 +51,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -332,7 +334,9 @@ public class FinancialSummaryAction extends BaseAction {
                 new ReportSynthesisCrpFinancialReport();
               // create one to one relation
               reportSynthesis.setReportSynthesisCrpFinancialReport(reportSynthesisCrpFinancialReport);
-              reportSynthesis.getReportSynthesisCrpFinancialReports().add(reportSynthesisCrpFinancialReport);
+              Set<ReportSynthesisCrpFinancialReport> crpFinancialReports = new HashSet<>();
+              crpFinancialReports.add(reportSynthesisCrpFinancialReport);
+              reportSynthesis.setReportSynthesisCrpFinancialReports(crpFinancialReports);
               reportSynthesisCrpFinancialReport.setReportSynthesis(reportSynthesis);
               // save the changes
               reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
