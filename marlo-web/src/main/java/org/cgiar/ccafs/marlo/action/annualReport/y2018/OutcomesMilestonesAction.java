@@ -1364,7 +1364,7 @@ public class OutcomesMilestonesAction extends BaseAction {
           ReportSynthesisFlagshipProgressOutcomeMilestoneLink milestoneLinkSave =
             new ReportSynthesisFlagshipProgressOutcomeMilestoneLink();
           milestoneLinkSave.setReportSynthesisFlagshipProgressOutcomeMilestone(flagshipProgressMilestoneNew);
-          milestoneLinkSave.setLink(milestoneLinkIncoming.getLink());
+          milestoneLinkSave.setLink(StringUtils.trimToEmpty(milestoneLinkIncoming.getLink()));
 
           this.reportSynthesisFlagshipProgressOutcomeMilestoneLinkManager
             .saveReportSynthesisFlagshipProgressOutcomeMilestoneLink(milestoneLinkSave);

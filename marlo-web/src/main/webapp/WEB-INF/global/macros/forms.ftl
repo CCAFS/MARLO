@@ -835,7 +835,7 @@
   <div id="multiInput${class?has_content?string('-${class}', '')}-${(template?string('template', ''))}" class="multiInput form-group grayBox ${class}">
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <span class="pull-left" style="width:4%"><strong><span class="indexTag">${index + 1}</span>.</strong></span>
-    <span class="pull-left" style="width:90%">[@customForm.input name="${customName}.${field}" placeholder="${placeholder}" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:90%">[@customForm.input name="${customName}.${field}" placeholder="${placeholder}" showTitle=false i18nkey="" className="" editable=editable value="${element.link!}" /]</span>
     [#if editable]<div class="removeElement sm removeIcon removeLink ${class}" title="Remove"></div>[/#if]
     <div class="clearfix"></div>
   </div>

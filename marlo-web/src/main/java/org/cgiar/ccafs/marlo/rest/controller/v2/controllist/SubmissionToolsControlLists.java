@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontool
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ImpactAreasIndicatorsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ImpactAreasItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.InitiativesItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.MeliaStudyTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.ProjectedBenefitsItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.SdgItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools.WorkpackagesItem;
@@ -40,6 +41,7 @@ import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasIndicatorsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InitiativesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewImpactAreaDTO;
+import org.cgiar.ccafs.marlo.rest.dto.OneCGIARStudyTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsDepthScaleDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectedBenefitsProbabilitiesDTO;
@@ -96,6 +98,7 @@ public class SubmissionToolsControlLists {
   private WorkpackagesItem<SubmissionToolsControlLists> workpackagesItem;
   private ActionAreaOutcomeIndicatorsItem<SubmissionToolsControlLists> actionAreaOutcomeIndicatorsItem;
   private GlobalTargetsItem<SubmissionToolsControlLists> globalTargetsItem;
+  private MeliaStudyTypeItem<SubmissionToolsControlLists> meliaStudyTypeItem;
 
 
   @Autowired
@@ -110,7 +113,8 @@ public class SubmissionToolsControlLists {
     ActionAreaOutcomesItem<SubmissionToolsControlLists> actionAreaOutcomesItem,
     WorkpackagesItem<SubmissionToolsControlLists> workpackagesItem,
     ActionAreaOutcomeIndicatorsItem<SubmissionToolsControlLists> actionAreaOutcomeIndicatorsItem,
-    GlobalTargetsItem<SubmissionToolsControlLists> globalTargetsItem, UserManager userManager) {
+    GlobalTargetsItem<SubmissionToolsControlLists> globalTargetsItem,
+    MeliaStudyTypeItem<SubmissionToolsControlLists> meliaStudyTypeItem, UserManager userManager) {
     super();
     this.actionAreasItem = actionAreasItem;
     this.impactAreasItem = impactAreasItem;
@@ -123,6 +127,7 @@ public class SubmissionToolsControlLists {
     this.actionAreaOutcomeIndicatorsItem = actionAreaOutcomeIndicatorsItem;
     this.globalTargetsItem = globalTargetsItem;
     this.userManager = userManager;
+    this.meliaStudyTypeItem = meliaStudyTypeItem;
   }
 
   @ApiOperation(tags = {"Submission Tool Control Lists"},
@@ -333,6 +338,25 @@ public class SubmissionToolsControlLists {
     return this.initiativesItem.getInitiatives();
   }
 
+  @ApiOperation(tags = {"Submission Tool Control Lists"},
+    value = "${SubmissionToolsControlLists.impact-areas.all.value}", response = OneCGIARStudyTypeDTO.class,
+    responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/MELIA/study-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<OneCGIARStudyTypeDTO>> getAllMeliaStudyTypes() {
+    try {
+      ResponseEntity<List<OneCGIARStudyTypeDTO>> response =
+        ResponseEntity.ok(this.meliaStudyTypeItem.getAllStudyTypes());
+      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+        throw new NotFoundException("404", this.env.getProperty("SubmissionToolsControlLists.impact-areas.code.404"));
+      }
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
   @ApiOperation(tags = {"Submission Tool Control Lists"}, value = "${SubmissionToolsControlLists.SDG.all.value}",
     response = SDGsDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
@@ -463,4 +487,6 @@ public class SubmissionToolsControlLists {
 
     return response;
   }
+
+
 }
