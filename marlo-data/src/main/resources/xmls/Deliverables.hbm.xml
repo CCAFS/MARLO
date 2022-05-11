@@ -263,5 +263,13 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome" />
     </set>
+    <set name="deliverableCrpOutcomes" table="deliverable_crp_outcomes"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="deliverable_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome" />
+    </set>
 	</class>
 </hibernate-mapping>

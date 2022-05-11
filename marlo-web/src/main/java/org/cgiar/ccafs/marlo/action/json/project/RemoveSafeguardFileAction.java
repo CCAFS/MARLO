@@ -65,6 +65,9 @@ public class RemoveSafeguardFileAction extends BaseAction {
           if (safeguard.getFile() != null) {
             safeguard.setFile(null);
           }
+          if (safeguard.getLink() != null) {
+            safeguard.setLink(null);
+          }
         }
       } catch (Exception e) {
         logger.error("unable to get existing Feedback comment object from DB", e);
