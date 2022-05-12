@@ -118,25 +118,31 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         qaComment.setPhase(phase);
       }
 
-      Boolean statusBoolean = null;
+      String statusText = null;
       if (status == "0") {
-        statusBoolean = false;
+        statusText = "rejected";
       }
       if (status == "1") {
-        statusBoolean = true;
+        statusText = "approved";
+      }
+      if (status == "2") {
+        statusText = "clarification needed";
+      }
+      if (status == "3") {
+        statusText = "pending";
+      }
+      if (status == null) {
+        statusText = "pending";
       }
 
       if (status != null) {
-        qaComment.setStatus(statusBoolean);
+        qaComment.setStatus(statusText);
       }
       if (link != null) {
         qaComment.setLink(link);
       }
       if (fieldDescription != null) {
         qaComment.setFieldDescription(fieldDescription);
-      }
-      if (status != null) {
-        qaComment.setStatus(statusBoolean);
       }
 
       if (replyId != null) {

@@ -21,9 +21,6 @@
 		<property name="parentFieldIdentifier" type="string">
             <column name="parent_field_identifier" sql-type="TEXT" />
         </property>
-		<property name="tableName" type="string">
-            <column name="table_name" sql-type="TEXT" />
-        </property>
 		<property name="fieldName" type="string">
             <column name="field_name" sql-type="TEXT" />
         </property>
