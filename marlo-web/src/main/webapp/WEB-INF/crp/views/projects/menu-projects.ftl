@@ -62,7 +62,7 @@
     },
     { 'title': 'Safeguards', 'show':(UpKeepActive || reportingActive) && !project.projectInfo.administrative,
       'items': [
-      { 'slug': 'safeguards',  'name': 'projects.menu.safeguards',  'action': 'safeguards',  'active': false  ,'show': (UpKeepActive || reportingActive) && !project.projectInfo.administrative, "showCheck": true, "development": true }
+      { 'slug': 'safeguards',  'name': 'projects.menu.safeguards',  'action': 'safeguards',  'active': true  ,'show': (UpKeepActive || reportingActive) && !project.projectInfo.administrative, "showCheck": true, "development": false }
       ]
     }
     
