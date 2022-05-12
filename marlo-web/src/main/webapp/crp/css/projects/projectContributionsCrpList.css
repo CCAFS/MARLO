@@ -105,32 +105,3 @@ i.indicatorText {
     /* opacity: 0.5; */
     font-size: 0.85em !important;
 }
-
-.legendContent {
-    position: relative;
-    -webkit-box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.3);
-    -moz-box-shadow: 1px 2px 8px rgba(0, 0, 0, .3);
-    -moz-border-radius: 2px;
-    border-radius: 2px;
-    padding: 5px;
-    border: 1px solid #EEE;
-    background: #F8F8F8;
-    margin-bottom: 25px;
-    height: 100%;
-}
-
-.colors {
-    border: 1px dashed #d5d5d5;
-    padding: 5px;
-    min-height: 77px;
-}
-
-.color.col-md-4 {
-    display: flex;
-    justify-content: center;
-}
-
-.qaComment.feedbackStatus {
-    display: block !important;
-    margin-right: 5px;
-}
