@@ -108,7 +108,12 @@ public class FeedbackQACommentsAction extends BaseAction {
 
 
     if (feedbackComments != null && !feedbackComments.isEmpty()) {
+
+      Map<String, Object> countMap = new HashMap<>();
+      int count = 0;
       for (FeedbackQAComment comment : feedbackComments) {
+        countMap.put("count", count);
+        count++;
 
         fieldsMap = new HashMap<String, Object>();
         if (comment.getComment() != null) {

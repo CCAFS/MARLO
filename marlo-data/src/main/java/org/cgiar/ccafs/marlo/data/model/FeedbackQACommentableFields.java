@@ -25,8 +25,6 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
   @Expose
   private String parentFieldIdentifier;
   @Expose
-  private String tableName;
-  @Expose
   private String fieldName;
   @Expose
   private String fieldDescription;
@@ -88,10 +86,6 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
     return sectionName;
   }
 
-  public String getTableName() {
-    return tableName;
-  }
-
   @Override
   public boolean isActive() {
     return true;
@@ -128,10 +122,6 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
 
   public void setSectionName(String sectionName) {
     this.sectionName = sectionName;
-  }
-
-  public void setTableName(String tableName) {
-    this.tableName = tableName;
   }
 
 }
