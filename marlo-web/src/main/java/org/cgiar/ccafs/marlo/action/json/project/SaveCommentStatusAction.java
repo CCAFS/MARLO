@@ -75,14 +75,23 @@ public class SaveCommentStatusAction extends BaseAction {
       } catch (Exception e) {
         logger.error("unable to get existing Feedback comment object from DB", e);
       }
-      Boolean statusBoolean = null;
-      if (status.equals("0")) {
-        statusBoolean = false;
+      String statusText = null;
+      if (status == "0") {
+        statusText = "rejected";
       }
-      if (status.equals("1")) {
-        statusBoolean = true;
+      if (status == "1") {
+        statusText = "approved";
       }
-      commentSave.setStatus(statusBoolean);
+      if (status == "2") {
+        statusText = "clarification needed";
+      }
+      if (status == "3") {
+        statusText = "pending";
+      }
+      if (status == null) {
+        statusText = "pending";
+      }
+      commentSave.setStatus(statusText);
 
       if (userId != null) {
         try {
