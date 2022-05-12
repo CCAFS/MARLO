@@ -13,7 +13,7 @@
   ] 
 /] 
 [#assign customCSS = [ 
-  "${baseUrlMedia}/css/projects/projectContributionCrp.css",
+  "${baseUrlMedia}/css/projects/projectContributionCrp.css?20220512a",
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20211110"
   ] 
 /]
@@ -45,7 +45,7 @@
   <br>
   [@customForm.qaPopUpTest/]
 </div>
-<div style="display:none">
+<div style="display: none">
   [@customForm.qaPopUpTest template=true/]
 </div>  --]
 
@@ -62,6 +62,16 @@
         
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+          [#--  Feedback Status --]
+          <div class="form-group col-md-12 legendContent">
+            <div class="colors">
+              <div class="col-md-12 form-group "><b>Feedback status:</b></div>
+              <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment.png" class="qaComment feedbackStatus">New comment</div>
+              <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_yellow.png" class="qaComment feedbackStatus">Pending to tackle</div>
+              <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_green.png" class="qaComment feedbackStatus">Agreed</div>
+            </div>
+          </div>
+
           [#-- Back --]
           <small class="pull-right">
             <a href="[@s.url action='${crpSession}/contributionsCrpList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
