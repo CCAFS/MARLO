@@ -7214,10 +7214,14 @@ img.qaComment {
   justify-content: center;
 }
 
-.agreeComment, .disagreeComment {
+.agreeComment, .disagreeComment, .clarificationComment {
   display: none;
   width: 20px;
   margin-left: 3px;
+}
+
+#replyCommentBtn {
+  display: none;
 }
 
 .sendCommentContainer {
@@ -7226,9 +7230,24 @@ img.qaComment {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: 3px;
   background-color: #0b7ba6;
   border-radius: 50%;
   float: right;
+}
+
+.addCommentContainer {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  float: right;
+}
+
+img.addCommentBlock {
+  width: 25px;
+  cursor: pointer;
 }
 
 img.sendComment {
