@@ -51,7 +51,7 @@ function attachEvents() {
   $('.removeNextUser').on('click', removeNextUser);
 
   getQAComments();
-  loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+  // loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
 
   $('img.qaComment').on('click', function (event) {
     var name = this.name;
