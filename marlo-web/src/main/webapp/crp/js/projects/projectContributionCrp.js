@@ -101,6 +101,11 @@ function attachEvents() {
 
     hideShowOptionButtons(false);
     saveCommentStatus(0, name);
+    $('#replyCommentBtn').click();
+  });
+
+  $('#clarificationCommentBtn').on('click', function () {
+    hideShowOptionButtons('clarification');
   });
 
   $('#replyCommentBtn').on('click', function () {
@@ -116,6 +121,13 @@ function attachEvents() {
 
     saveFeedbackReply(cleanComment, name);
   });
+
+  $('img.addCommentBlock').on('click', function () {
+    var popup = $('#qaPopup');
+    var element = $('#qaCommentReply-template').clone(true).removeAttr('id');
+    // element.attr('id', `qaCommentReply-${index}`);
+    element.appendTo(popup).hide().show(350);
+  });
 }
 
 function hideShowOptionButtons(status) {
@@ -124,13 +136,28 @@ function hideShowOptionButtons(status) {
       $('#agreeCommentBtn').hide();
       $('img.disagreeComment').hide();
       $('img.agreeComment').show();
+      $('img.clarificationComment').hide();
       $('#disagreeCommentBtn').hide();
+      $('#clarificationCommentBtn').hide();
+      $('#replyCommentBtn').show();
       break;
-    case false:
-      $('#disagreeCommentBtn').hide();
-      $('img.agreeComment').hide();
-      $('img.disagreeComment').show();
-      $('#agreeCommentBtn').hide();
+      case false:
+        $('#disagreeCommentBtn').hide();
+        $('img.agreeComment').hide();
+        $('img.disagreeComment').show();
+        $('img.clarificationComment').hide();
+        $('#agreeCommentBtn').hide();
+        $('#clarificationCommentBtn').hide();
+        $('#replyCommentBtn').show();
+      break;
+      case 'clarification':
+        $('#clarificationCommentBtn').hide();
+        $('img.agreeComment').hide();
+        $('img.disagreeComment').hide();
+        $('img.clarificationComment').show();
+        $('#agreeCommentBtn').hide();
+        $('#disagreeCommentBtn').hide();
+        $('#replyCommentBtn').show();
       break;
     case '':
       $('#agreeCommentBtn').show();
@@ -175,7 +202,7 @@ function loadCommentsByUser(name) {
             $('.replyContainer').hide();
             $('.replyTextContainer').hide();
             $('#sendReplyContainer').css('display', 'flex');
-            $('#replyCommentBtn').show();
+            // $('#replyCommentBtn').show();
           }
           break;
         }
