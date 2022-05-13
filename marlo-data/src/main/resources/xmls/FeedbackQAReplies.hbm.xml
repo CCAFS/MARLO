@@ -20,5 +20,12 @@
         <property name="commentDate" type="date">
             <column name="comment_date" />
         </property>
+        <set name="feedbackQAComments" table="feedback_qa_comments" inverse="true" lazy="true"
+            fetch="select">
+            <key>
+                <column name="reply_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.FeedbackQAComment" />
+        </set>
 	</class>
 </hibernate-mapping>

@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCommunicationManager;
@@ -38,7 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome;
-import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -102,6 +103,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private PhaseManager phaseManager;
   private DeliverableParticipantManager deliverableParticipantManager;
   private FeedbackQACommentManager feedbackQACommentManager;
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
 
   // Front-end
   private long projectID;
@@ -120,7 +122,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private boolean editOutcomeExpectedValue;
   private boolean editMilestoneExpectedValue;
   private List<DeliverableParticipant> deliverableParticipants;
-  private List<FeedbackQAComment> feedbackComments;
+  private List<FeedbackQACommentableFields> feedbackComments;
   private Long userID;
 
   // capdev component
@@ -144,7 +146,8 @@ public class ProjectOutcomeAction extends BaseAction {
     CrpMilestoneManager crpMilestoneManager, ProjectNextuserManager projectNextuserManager,
     ProjectOutcomeValidator projectOutcomeValidator, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager,
     PhaseManager phaseManager, DeliverableParticipantManager deliverableParticipantManager,
-    FeedbackQACommentManager feedbackQACommentManager) {
+    FeedbackQACommentManager feedbackQACommentManager,
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -161,6 +164,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.phaseManager = phaseManager;
     this.deliverableParticipantManager = deliverableParticipantManager;
     this.feedbackQACommentManager = feedbackQACommentManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
   }
 
   public void addAllCrpMilestones() {
@@ -378,7 +382,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return deliverableParticipants;
   }
 
-  public List<FeedbackQAComment> getFeedbackComments() {
+  public List<FeedbackQACommentableFields> getFeedbackComments() {
     return feedbackComments;
   }
 
@@ -449,6 +453,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectOutcomeIndicator;
   }
 
+
   public ProjectMilestone getMilestone(long milestoneId, int year) {
     ProjectMilestone projectMilestone = new ProjectMilestone();
     if (projectOutcome.getMilestones() != null) {
@@ -468,7 +473,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
-
 
   public List<CrpMilestone> getMilestones() {
     return milestones;
@@ -522,6 +526,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return 0;
   }
 
+
   public ProjectOutcomeIndicator getPrevIndicator(Long indicatorID) {
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeLastPhase.getIndicators()) {
       if (projectOutcomeIndicator != null && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
@@ -540,7 +545,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public Project getProject() {
     return project;
   }
-
 
   public long getProjectID() {
     return projectID;
@@ -606,10 +610,10 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipantFormalTrainingPhdFemale;
   }
 
+
   public Double getTotalParticipantFormalTrainingPhdMale() {
     return totalParticipantFormalTrainingPhdMale;
   }
-
 
   public Double getTotalParticipantFormalTrainingShortFemale() {
     return totalParticipantFormalTrainingShortFemale;
@@ -627,10 +631,10 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalYouth;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   public Long getUserID() {
     return userID;
@@ -675,6 +679,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return editable;
   }
 
+
   public ProjectCommunication loadProjectCommunication(int year) {
 
     List<ProjectCommunication> projectCommunications =
@@ -690,7 +695,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-
   public List<ProjectMilestone> loadProjectMilestones(int year) {
 
     List<ProjectMilestone> projectMilestones =
@@ -700,6 +704,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -1028,10 +1033,18 @@ public class ProjectOutcomeAction extends BaseAction {
     /*
      * get feedback comments
      */
-    feedbackComments = feedbackQACommentManager.findAll().stream()
-      .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
-        && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == projectOutcome.getId())
+    feedbackComments = new ArrayList<>();
+    feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
+      .filter(f -> f.getSectionName() != null && f.getSectionName().equals("projectContributionCrp"))
       .collect(Collectors.toList());
+    if (feedbackComments != null) {
+      for (FeedbackQACommentableFields field : feedbackComments) {
+        field.getFeedbackQAComments().stream()
+          .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+            && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == projectOutcome.getId())
+          .collect(Collectors.toList());
+      }
+    }
 
     /*
      * Loading basic List
@@ -1084,7 +1097,6 @@ public class ProjectOutcomeAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
@@ -1153,6 +1165,7 @@ public class ProjectOutcomeAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
+
 
   public void saveCommunications(ProjectOutcome projectOutcomeDB) {
 
@@ -1366,7 +1379,6 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
-
   public void saveNextUsers(ProjectOutcome projectOutcomeDB) {
 
     for (ProjectNextuser projectNextuser : projectOutcomeDB.getProjectNextusers().stream().filter(c -> c.isActive())
@@ -1507,7 +1519,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.editOutcomeExpectedValue = editOutcomeExpectedValue;
   }
 
-  public void setFeedbackComments(List<FeedbackQAComment> feedbackComments) {
+  public void setFeedbackComments(List<FeedbackQACommentableFields> feedbackComments) {
     this.feedbackComments = feedbackComments;
   }
 
