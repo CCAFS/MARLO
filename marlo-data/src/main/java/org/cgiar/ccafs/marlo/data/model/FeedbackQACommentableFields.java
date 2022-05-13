@@ -3,7 +3,10 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.annotations.Expose;
@@ -30,6 +33,8 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
   private String fieldDescription;
   @Expose
   private boolean active;
+  private Set<FeedbackQAComment> feedbackQAComments = new HashSet<FeedbackQAComment>(0);
+  private List<FeedbackQAComment> qaComments;
 
   public FeedbackQACommentableFields() {
   }
@@ -41,6 +46,10 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
     Map<String, Object> map = oMapper.convertValue(this, Map.class);
 
     return map;
+  }
+
+  public Set<FeedbackQAComment> getFeedbackQAComments() {
+    return feedbackQAComments;
   }
 
   public String getFieldDescription() {
@@ -78,6 +87,10 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
     return parentFieldIdentifier;
   }
 
+  public List<FeedbackQAComment> getQaComments() {
+    return qaComments;
+  }
+
   public String getSectionDescription() {
     return sectionDescription;
   }
@@ -93,6 +106,10 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
 
   public void setActive(boolean active) {
     this.active = active;
+  }
+
+  public void setFeedbackQAComments(Set<FeedbackQAComment> feedbackQAComments) {
+    this.feedbackQAComments = feedbackQAComments;
   }
 
   public void setFieldDescription(String fieldDescription) {
@@ -114,6 +131,10 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
 
   public void setParentFieldIdentifier(String parentFieldIdentifier) {
     this.parentFieldIdentifier = parentFieldIdentifier;
+  }
+
+  public void setQaComments(List<FeedbackQAComment> qaComments) {
+    this.qaComments = qaComments;
   }
 
   public void setSectionDescription(String sectionDescription) {

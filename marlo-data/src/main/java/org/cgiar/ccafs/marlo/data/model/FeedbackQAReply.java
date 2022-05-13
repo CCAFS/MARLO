@@ -4,7 +4,10 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.annotations.Expose;
@@ -24,6 +27,8 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
 
   @Expose
   private Date commentDate;
+  private Set<FeedbackQAComment> feedbackQAComments = new HashSet<FeedbackQAComment>(0);
+  private List<FeedbackQAComment> qaComments;
 
   public FeedbackQAReply() {
   }
@@ -50,6 +55,10 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
     return commentDate;
   }
 
+  public Set<FeedbackQAComment> getFeedbackQAComments() {
+    return feedbackQAComments;
+  }
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -69,6 +78,10 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
     return u;
   }
 
+  public List<FeedbackQAComment> getQaComments() {
+    return qaComments;
+  }
+
   public User getUser() {
     return user;
   }
@@ -86,9 +99,17 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
     this.commentDate = commentDate;
   }
 
+  public void setFeedbackQAComments(Set<FeedbackQAComment> feedbackQAComments) {
+    this.feedbackQAComments = feedbackQAComments;
+  }
+
   @Override
   public void setModifiedBy(User modifiedBy) {
     // TODO Auto-generated method stub
+  }
+
+  public void setQaComments(List<FeedbackQAComment> qaComments) {
+    this.qaComments = qaComments;
   }
 
   public void setUser(User user) {
