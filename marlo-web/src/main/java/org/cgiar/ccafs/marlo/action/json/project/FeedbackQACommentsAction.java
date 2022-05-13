@@ -131,8 +131,25 @@ public class FeedbackQACommentsAction extends BaseAction {
         } else {
           fieldsMap.put("reply", "");
         }
+
+
         if (comment.getStatus() != null) {
-          fieldsMap.put("status", comment.getStatus());
+
+          String statusText = null;
+          if (comment.getStatus() == "rejected") {
+            statusText = "0";
+          }
+          if (comment.getStatus() == "approved") {
+            statusText = "1";
+          }
+          if (comment.getStatus() == "clarification needed") {
+            statusText = "2";
+          }
+          if (comment.getStatus() == "pending") {
+            statusText = "";
+          }
+
+          fieldsMap.put("status", statusText);
         } else {
           fieldsMap.put("status", "");
         }
