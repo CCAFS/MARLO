@@ -449,6 +449,13 @@ public class InstitutionItem<T> {
       message.append(partnerWebPage);
       message.append(" </br>");
     }
+    if (globalUnit != null ? globalUnit.getGlobalUnitType().getId().longValue() == APConstants.GLOBAL_UNIT_APPLICATION
+      : false) {
+      message.append(" </br></br>");
+      message.append("Additional Information  </br>");
+      message.append(partnerRequest.getExternalUserComments() + "</br>");
+    }
+
     message.append(" </br></br>");
     message.append("This request was sent through CLARISA API  </br>");
     message.append("</br>");
