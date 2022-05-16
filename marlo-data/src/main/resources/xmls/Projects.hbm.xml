@@ -341,5 +341,12 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared" />
     </set>
+    <set name="projectDeliverableShareds" order-by="id" table="project_deliverable_shared"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared" />
+    </set>
 	</class>
 </hibernate-mapping>
