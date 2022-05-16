@@ -1036,20 +1036,24 @@ public class ProjectOutcomeAction extends BaseAction {
     /*
      * get feedback comments
      */
-    feedbackComments = new ArrayList<>();
-    feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
-      .filter(f -> f.getSectionName() != null && f.getSectionName().equals("projectContributionCrp"))
-      .collect(Collectors.toList());
-    if (feedbackComments != null) {
-      for (FeedbackQACommentableFields field : feedbackComments) {
-        List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
-        comments = feedbackQACommentManager.findAll().stream()
-          .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
-            && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == projectOutcome.getId()
-            && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
-          .collect(Collectors.toList());
-        field.setQaComments(comments);
+    try {
+      feedbackComments = new ArrayList<>();
+      feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
+        .filter(f -> f.getSectionName() != null && f.getSectionName().equals("projectContributionCrp"))
+        .collect(Collectors.toList());
+      if (feedbackComments != null) {
+        for (FeedbackQACommentableFields field : feedbackComments) {
+          List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
+          comments = feedbackQACommentManager.findAll().stream()
+            .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+              && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == projectOutcome.getId()
+              && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
+            .collect(Collectors.toList());
+          field.setQaComments(comments);
+        }
       }
+    } catch (Exception e) {
+      LOG.error(e + " error getting commentable fields");
     }
 
     /*
