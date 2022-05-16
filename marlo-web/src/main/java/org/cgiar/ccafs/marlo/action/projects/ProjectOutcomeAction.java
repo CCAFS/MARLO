@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -137,6 +138,8 @@ public class ProjectOutcomeAction extends BaseAction {
   private Double totalFemales = new Double(0);
   private Double totalAfricans = new Double(0);
   private Double totalYouth = new Double(0);
+
+  private List<ProjectOutcome> list;
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -719,7 +722,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
       ProjectOutcome outcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       if (!outcome.getPhase().equals(this.getActualPhase())) {
-        List<ProjectOutcome> projectOutcomes = outcome.getProject().getProjectOutcomes().stream()
+        List<ProjectOutcome> list = projectOutcomes = outcome.getProject().getProjectOutcomes().stream()
           .filter(c -> c.isActive()
             && c.getCrpProgramOutcome().getComposeID().equals(outcome.getCrpProgramOutcome().getComposeID())
             && c.getPhase().equals(this.getActualPhase()))
@@ -1039,10 +1042,13 @@ public class ProjectOutcomeAction extends BaseAction {
       .collect(Collectors.toList());
     if (feedbackComments != null) {
       for (FeedbackQACommentableFields field : feedbackComments) {
-        field.getFeedbackQAComments().stream()
+        List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
+        comments = feedbackQACommentManager.findAll().stream()
           .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
-            && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == projectOutcome.getId())
+            && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == projectOutcome.getId()
+            && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
           .collect(Collectors.toList());
+        field.setQaComments(comments);
       }
     }
 
