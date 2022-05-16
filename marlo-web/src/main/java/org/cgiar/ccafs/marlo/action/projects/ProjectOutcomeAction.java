@@ -722,7 +722,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
       ProjectOutcome outcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       if (!outcome.getPhase().equals(this.getActualPhase())) {
-        List<ProjectOutcome> list = projectOutcomes = outcome.getProject().getProjectOutcomes().stream()
+        List<ProjectOutcome> projectOutcomes = outcome.getProject().getProjectOutcomes().stream()
           .filter(c -> c.isActive()
             && c.getCrpProgramOutcome().getComposeID().equals(outcome.getCrpProgramOutcome().getComposeID())
             && c.getPhase().equals(this.getActualPhase()))
