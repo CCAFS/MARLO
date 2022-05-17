@@ -853,9 +853,23 @@
   </div>
 [/#macro]
 
-[#macro qaPopUpTest template=false index=-1]
-  [#local customName = "${template?string('_TEMPLATE_', '')}"]
-  <div id="qaCommentReply-${(template?string('template', ''))}">
+[#macro qaPopUpMultiple fields="" name="" index=-1 template=false]
+  [#local customName = "${template?string('TEMPLATE', '')}${name}[${index}]"]
+  <div class="qaPopup" name="${customName}">
+    <div class="closeComment" name="${name}"></div>
+    <br>
+    [#if fields?has_content]
+      [#list fields as field]
+        [@qaCommentReplyBlock name=name index=field_index/]
+      [/#list]
+    [#else]
+      [@qaCommentReplyBlock name=name /]
+    [/#if]
+  </div>
+[/#macro]
+
+[#macro qaCommentReplyBlock name="" index=0]
+  <div id="qaCommentReply-${name}[${index}]" class="qaCommentReplyBlock">
     [@customForm.textArea name="Comment on" required=false className="limitWords-100" editable=editable /]
     <div class="commentCheckContainer">
       <div class="commentContainer">
@@ -868,7 +882,7 @@
         <img src="${baseUrlCdn}/global/images/question.png" class="clarificationComment" title="Clarification needed">
       </div>
     </div>
-    <div class="replyContainer">
+    [#--  <div class="replyContainer">
       <br>
       [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
       <div class="replyTextContainer">
@@ -876,15 +890,15 @@
         <p class="replyReadonly"></p>
       </div>
       <div id="sendReplyContainer" class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
-    </div>  
+    </div>  --]
     <br>
-    <div id="sendCommentContainer" class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
-    <div class="optionsContainer">
+    <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+    [#--  <div class="optionsContainer">
       <img id="agreeCommentBtn" src="${baseUrlCdn}/global/images/agree.png" class="qaOptions" title="Agree">
       <img id="disagreeCommentBtn" src="${baseUrlCdn}/global/images/disagree.png" class="qaOptions" title="Disagree">
       <img id="clarificationCommentBtn" src="${baseUrlCdn}/global/images/question.png" class="qaOptions" title="Clarification needed">
       <img id="replyCommentBtn" src="${baseUrlCdn}/global/images/auto-reply.png" class="qaOptions" title="Reply">
     </div>
-    <div class="addCommentContainer"><img src="${baseUrlCdn}/global/images/remove.png" class="addCommentBlock"></div>
+    <div class="addCommentContainer"><img src="${baseUrlCdn}/global/images/remove.png" class="addCommentBlock"></div>  --]
   </div>
 [/#macro]
