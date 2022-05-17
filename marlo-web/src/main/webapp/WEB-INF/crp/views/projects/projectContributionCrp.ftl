@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220512a", 
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220517a", 
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
@@ -40,14 +40,15 @@
 [#else]
 
 [#--  [@customForm.qaPopUp /]  --]
-[#--  <div id="qaPopup">
-  <div class="closeComment"></div>
-  <br>
-  [@customForm.qaPopUpTest/]
-</div>
-<div style="display: none">
-  [@customForm.qaPopUpTest template=true/]
-</div>  --]
+
+[#if action.hasSpecificities('feedback_active') ]
+  [#list feedbackComments as feedback]
+    [@customForm.qaPopUpMultiple fields=feedback.qaComments name=feedback.fieldDescription index=feedback_index/]
+  [/#list]
+  <div id="qaTemplate" style="display: none">
+    [@customForm.qaPopUpMultiple template=true/]
+  </div>
+[/#if]
 
 <section class="container">
     <div class="row">
@@ -63,14 +64,16 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           [#--  Feedback Status --]
-          <div class="form-group col-md-12 legendContent" style="display: none;">
-            <div class="colors">
-              <div class="col-md-12 form-group "><b>Feedback status:</b></div>
-              <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment.png" class="qaComment feedbackStatus">New comment</div>
-              <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_yellow.png" class="qaComment feedbackStatus">Pending to tackle</div>
-              <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_green.png" class="qaComment feedbackStatus">Agreed</div>
+          [#if action.hasSpecificities('feedback_active') ]
+            <div class="form-group col-md-12 legendContent">
+              <div class="colors">
+                <div class="col-md-12 form-group "><b>Feedback status:</b></div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment.png" class="qaComment feedbackStatus">New comment</div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_yellow.png" class="qaComment feedbackStatus">Pending to tackle</div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_green.png" class="qaComment feedbackStatus">Agreed</div>
+              </div>
             </div>
-          </div>
+          [/#if]
 
           [#-- Back --]
           <small class="pull-right">
@@ -85,7 +88,9 @@
           <span id="parentID" style="display: none;">${projectOutcomeID!}</span>
           <span id="phaseID" style="display: none;">${phaseID!}</span>
           <span id="userID" style="display: none;">${currentUser.id!}</span>
+          <span id="projectID" style="display: none;">${projectID!}</span>
           <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback()?c)!}</span>
+          <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
 
           [#-- Outcomen name --]
           [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
