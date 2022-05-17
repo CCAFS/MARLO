@@ -47,7 +47,7 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
    */
   private static final long serialVersionUID = -4335064142194555431L;
   private final Logger logger = LoggerFactory.getLogger(FeedbackQACommentsMultipleAction.class);
-  private List<Map<String, Object>> comments;
+  private Map<String, Object> comments;
   private Long parentId;
   private String sectionName;
   private String frontName;
@@ -70,9 +70,9 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    comments = new ArrayList<Map<String, Object>>();
     Map<String, Object> fieldsMap;
     Map<String, Object> replyMap;
+    comments = new HashMap<String, Object>();
     Long fieldId = null;
     List<FeedbackQAComment> feedbackComments = new ArrayList<>();
     List<FeedbackQACommentableFields> fields = new ArrayList<>();
@@ -187,7 +187,7 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
         }
         fieldsMap.put("reply", replyMap);
         commentsUp.put(count + "", fieldsMap);
-        this.comments.add(commentsUp);
+        this.comments.put(count + "", commentsUp);
         count++;
       }
     } else {
@@ -198,7 +198,8 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
     return SUCCESS;
   }
 
-  public List<Map<String, Object>> getComments() {
+
+  public Map<String, Object> getComments() {
     return comments;
   }
 
@@ -232,7 +233,7 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
     }
   }
 
-  public void setComments(List<Map<String, Object>> comments) {
+  public void setComments(Map<String, Object> comments) {
     this.comments = comments;
   }
 
