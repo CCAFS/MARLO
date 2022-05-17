@@ -74,47 +74,51 @@ public class ThreadSendMail extends Thread {
     }
     AuditLogContextProvider.push(new AuditLogContext());
     int i = 0;
-    while (!sent) {
-      try {
+    if (config.isProduction()) {
+      while (!sent) {
+        try {
 
-        Transport.send(sendeMail);
-        LOG.info("Message sent TRIED#: " + i + " \n" + subject);
-        sent = true;
-        emailLog.setTried(i++);
-        emailLog.setSucces(true);
-        emailLog.setFileContent(null);
-        sessionFactory.getCurrentSession().beginTransaction();
-        emailLogManager.saveEmailLog(emailLog);
-        sessionFactory.getCurrentSession().getTransaction().commit();
-
-      } catch (MessagingException e) {
-        LOG.info("Message  DID NOT sent: \n" + subject);
-
-        i++;
-        if (i == 10) {
-          e.printStackTrace();
-          reply = true;
-          LOG.error(e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
-          emailLog.setTried(i);
-          emailLog.setSucces(false);
-          emailLog.setError(e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
+          Transport.send(sendeMail);
+          LOG.info("Message sent TRIED#: " + i + " \n" + subject);
+          sent = true;
+          emailLog.setTried(i++);
+          emailLog.setSucces(true);
+          emailLog.setFileContent(null);
           sessionFactory.getCurrentSession().beginTransaction();
           emailLogManager.saveEmailLog(emailLog);
           sessionFactory.getCurrentSession().getTransaction().commit();
-          break;
 
-        }
-        try {
-          Thread.sleep(1 * // minutes to sleep
-            60 * // seconds to a minute
-            1000);
-        } catch (InterruptedException e1) {
+        } catch (MessagingException e) {
+          LOG.info("Message  DID NOT sent: \n" + subject);
 
-          e1.printStackTrace();
+          i++;
+          if (i == 10) {
+            e.printStackTrace();
+            reply = true;
+            LOG.error(e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
+            emailLog.setTried(i);
+            emailLog.setSucces(false);
+            emailLog.setError(e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
+            sessionFactory.getCurrentSession().beginTransaction();
+            emailLogManager.saveEmailLog(emailLog);
+            sessionFactory.getCurrentSession().getTransaction().commit();
+            break;
+
+          }
+          try {
+            Thread.sleep(1 * // minutes to sleep
+              60 * // seconds to a minute
+              1000);
+          } catch (InterruptedException e1) {
+
+            e1.printStackTrace();
+          }
+          e.printStackTrace();
         }
-        e.printStackTrace();
+
       }
-
+    } else {
+      reply = true;
     }
     if (reply) {
       System.out.println("Enviamos respaldo ");
