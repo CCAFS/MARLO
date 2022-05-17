@@ -167,9 +167,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
           }
         } catch (Exception e) {
           logger.error("unable to set Project object", e);
-
         }
-        qaComment.setProject(null);
       }
 
       if (userId != null) {
