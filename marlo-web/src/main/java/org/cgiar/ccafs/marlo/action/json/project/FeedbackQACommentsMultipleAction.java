@@ -72,6 +72,7 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
   public String execute() throws Exception {
     comments = new ArrayList<Map<String, Object>>();
     Map<String, Object> fieldsMap;
+    Map<String, Object> replyMap;
     Long fieldId = null;
     List<FeedbackQAComment> feedbackComments = new ArrayList<>();
     List<FeedbackQACommentableFields> fields = new ArrayList<>();
@@ -113,6 +114,7 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
       int count = 0;
       for (FeedbackQAComment comment : feedbackComments) {
         fieldsMap = new HashMap<String, Object>();
+        replyMap = new HashMap<String, Object>();
 
         if (comment.getField() != null && comment.getField().getFieldDescription() != null) {
           commentsUp.put("frontName", comment.getField().getFieldDescription());
@@ -160,20 +162,33 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
           if (reply != null) {
             if (reply.getUser() != null && reply.getUser().getFirstName() != null
               && reply.getUser().getLastName() != null) {
-              fieldsMap.put("userName_reply", comment.getUser().getFirstName() + " " + comment.getUser().getLastName());
+              replyMap.put("id", reply.getUser().getFirstName() + " " + reply.getUser().getLastName());
             } else {
-              fieldsMap.put("userName_reply", "");
+              replyMap.put("id", "");
             }
-            if (reply.getCommentDate() != null && comment.getCommentDate().toString() != null) {
-              String dateString = comment.getCommentDate().toString();
-              fieldsMap.put("date_reply", dateString);
+            if (reply.getComment() != null) {
+              replyMap.put("text", reply.getComment());
             } else {
-              fieldsMap.put("date_reply", "");
+              replyMap.put("text", "");
+            }
+            if (reply.getUser() != null && reply.getUser().getFirstName() != null
+              && reply.getUser().getLastName() != null) {
+              replyMap.put("userName", reply.getUser().getFirstName() + " " + reply.getUser().getLastName());
+            } else {
+              replyMap.put("userName", "");
+            }
+            if (reply.getCommentDate() != null && reply.getCommentDate().toString() != null) {
+              String dateString = reply.getCommentDate().toString();
+              replyMap.put("date", dateString);
+            } else {
+              replyMap.put("date", "");
             }
           }
         }
-        commentsUp.put("comments", fieldsMap);
+        fieldsMap.put("reply", replyMap);
+        commentsUp.put(count + "", fieldsMap);
         this.comments.add(commentsUp);
+        count++;
       }
     } else {
       fieldsMap = Collections.emptyMap();
