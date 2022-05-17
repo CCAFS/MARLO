@@ -62,16 +62,16 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
     Map<String, Object> fieldsMap;
 
     List<FeedbackQACommentableFields> fields = new ArrayList<>();
-
-    if (sectionName != null && feedbackQACommentableFieldsManager.findAll() != null) {
-      try {
-        fields = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(
+    if (this.hasSpecificities(APConstants.FEEDBACK_ACTIVE)) {
+      if (sectionName != null && feedbackQACommentableFieldsManager.findAll() != null) {
+        try {
+          fields = feedbackQACommentableFieldsManager.findAll().stream().filter(
             qa -> qa != null && qa.isActive() && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
-          .collect(Collectors.toList());
-      } catch (Exception e) {
-        logger.error("unable to get fields", e);
-        fields = new ArrayList<>();
+            .collect(Collectors.toList());
+        } catch (Exception e) {
+          logger.error("unable to get fields", e);
+          fields = new ArrayList<>();
+        }
       }
     }
 
