@@ -57,6 +57,8 @@ public interface ProjectDeliverableSharedDAO {
 
   public List<ProjectDeliverableShared> getByDeliverable(long deliverableId, long phaseId);
 
+  public List<ProjectDeliverableShared> getByPhase(long phaseId);
+
   public List<ProjectDeliverableShared> getByProjectAndPhase(long projectId, long phaseId);
 
   /**

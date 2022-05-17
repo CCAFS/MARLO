@@ -9,7 +9,8 @@
         <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
         <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>
         <th id="deliverableEDY">[@s.text name="project.deliverableList.deliveryYear" /]</th>
-        <th id="deliverableEDY">[@s.text name="Owner" /]</th>
+        <th id="deliverableEDY">[@s.text name="project.deliverableList.owner" /]</th>
+        <th id="deliverableEDY">[@s.text name="project.deliverableList.sharedWith" /]</th>
         [#if isReportingActive]
           <th id="deliverableFC">[@s.text name="project.deliverableList.fairCompliance" /]</th>
         [/#if]
@@ -88,6 +89,10 @@
           [#-- Deliverable owner --]
           <td class="owner text-center">
             [#if isOwner] <nobr>This Cluster</nobr>  [#else][#if deliverable.project?has_content]C${deliverable.project.id}[#else]Not defined[/#if][/#if]
+          </td>
+          [#-- Deliverable shared with --]
+          <td class="owner text-center">
+            [#if deliverable.sharedWithProjects?has_content]${deliverable.sharedWithProjects}[#else]Not shared[/#if]
           </td>
           [#if isReportingActive]
             [#-- Deliverable FAIR compliance --]
