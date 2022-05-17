@@ -88,6 +88,20 @@ public class ProjectDeliverableSharedMySQLDAO extends AbstractMarloDAO<ProjectDe
   }
 
   @Override
+  public List<ProjectDeliverableShared> getByPhase(long phaseId) {
+    String query = "select distinct esp from ProjectDeliverableShared esp " + "where phase.id = :phaseId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phaseId);
+    List<ProjectDeliverableShared> result = super.findAll(createQuery);
+
+    if (result != null && !result.isEmpty()) {
+      return result;
+    }
+
+    return null;
+  }
+
+  @Override
   public List<ProjectDeliverableShared> getByProjectAndPhase(long projectId, long phaseId) {
     String query = "select distinct esp from ProjectDeliverableShared esp "
       + "where project.id = :projectId and phase.id = :phaseId";
