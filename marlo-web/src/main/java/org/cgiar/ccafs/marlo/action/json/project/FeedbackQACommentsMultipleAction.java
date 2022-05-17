@@ -40,13 +40,13 @@ import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FeedbackQACommentsAction extends BaseAction {
+public class FeedbackQACommentsMultipleAction extends BaseAction {
 
   /**
    * 
    */
   private static final long serialVersionUID = -4335064142194555431L;
-  private final Logger logger = LoggerFactory.getLogger(FeedbackQACommentsAction.class);
+  private final Logger logger = LoggerFactory.getLogger(FeedbackQACommentsMultipleAction.class);
   private List<Map<String, Object>> comments;
   private Long parentId;
   private String sectionName;
@@ -59,7 +59,7 @@ public class FeedbackQACommentsAction extends BaseAction {
 
 
   @Inject
-  public FeedbackQACommentsAction(APConfig config,
+  public FeedbackQACommentsMultipleAction(APConfig config,
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentManager,
     FeedbackQAReplyManager feedbackQAReplyManager) {
     super(config);
@@ -109,13 +109,16 @@ public class FeedbackQACommentsAction extends BaseAction {
 
     if (feedbackComments != null && !feedbackComments.isEmpty()) {
 
-      Map<String, Object> countMap = new HashMap<>();
+      Map<String, Object> commentsUp = new HashMap<>();
       int count = 0;
       for (FeedbackQAComment comment : feedbackComments) {
-        countMap.put("count", count);
-        count++;
-
         fieldsMap = new HashMap<String, Object>();
+
+        if (comment.getField() != null && comment.getField().getFieldDescription() != null) {
+          commentsUp.put("frontName", comment.getField().getFieldDescription());
+        } else {
+          commentsUp.put("frontName", "");
+        }
         if (comment.getComment() != null) {
           fieldsMap.put("commentId", comment.getId());
         } else {
@@ -131,33 +134,12 @@ public class FeedbackQACommentsAction extends BaseAction {
         } else {
           fieldsMap.put("reply", "");
         }
-
-
         if (comment.getStatus() != null) {
-
-          String statusText = null;
-          if (comment.getStatus() == "rejected") {
-            statusText = "0";
-          }
-          if (comment.getStatus() == "approved") {
-            statusText = "1";
-          }
-          if (comment.getStatus() == "clarification needed") {
-            statusText = "2";
-          }
-          if (comment.getStatus() == "pending") {
-            statusText = "";
-          }
-
-          fieldsMap.put("status", statusText);
+          fieldsMap.put("status", comment.getStatus());
         } else {
           fieldsMap.put("status", "");
         }
-        if (comment.getField() != null && comment.getField().getFieldDescription() != null) {
-          fieldsMap.put("frontName", comment.getField().getFieldDescription());
-        } else {
-          fieldsMap.put("frontName", "");
-        }
+
         if (comment.getUser() != null && comment.getUser().getFirstName() != null
           && comment.getUser().getLastName() != null) {
           fieldsMap.put("userName", comment.getUser().getFirstName() + " " + comment.getUser().getLastName());
@@ -190,7 +172,8 @@ public class FeedbackQACommentsAction extends BaseAction {
             }
           }
         }
-        this.comments.add(fieldsMap);
+        commentsUp.put("comments", fieldsMap);
+        this.comments.add(commentsUp);
       }
     } else {
       fieldsMap = Collections.emptyMap();

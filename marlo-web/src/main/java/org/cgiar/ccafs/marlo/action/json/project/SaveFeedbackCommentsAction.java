@@ -62,6 +62,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private String reply;
   private String link;
   private String fieldDescription;
+  private String fieldValue;
   private Long userId;
   private Date date;
   private Long projectId;
@@ -144,6 +145,9 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       if (fieldDescription != null) {
         qaComment.setFieldDescription(fieldDescription);
       }
+      if (fieldValue != null) {
+        qaComment.setFieldValue(fieldValue);
+      }
 
       if (replyId != null) {
         FeedbackQAReply reply = commentManager.getFeedbackCommentById(replyId);
@@ -163,9 +167,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
           }
         } catch (Exception e) {
           logger.error("unable to set Project object", e);
-
         }
-        qaComment.setProject(null);
       }
 
       if (userId != null) {
@@ -306,7 +308,16 @@ public class SaveFeedbackCommentsAction extends BaseAction {
     }
     try {
       if (parameters.get(APConstants.FIELD_DESCRIPTION).isDefined()) {
-        fieldDescription = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.LINK).getMultipleValues()[0]));
+        fieldDescription =
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FIELD_DESCRIPTION).getMultipleValues()[0]));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get field Description", e);
+    }
+    try {
+      if (parameters.get(APConstants.FIELD_VALUE).isDefined()) {
+        fieldDescription =
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FIELD_VALUE).getMultipleValues()[0]));
       }
     } catch (Exception e) {
       logger.error("unable to get field Description", e);
