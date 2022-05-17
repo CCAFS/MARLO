@@ -7166,7 +7166,7 @@ img.qaComment {
   margin-left: 5px;
 }
 
-#qaPopup {
+#qaPopup, .qaPopup {
   display: none;
   position: absolute;
   width: 20%;
@@ -7174,7 +7174,7 @@ img.qaComment {
   background: #F5F5F5;
   border-radius: 5px;
   box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%), 0 0 8px rgb(0 0 0 / 30%);
-  z-index: 9999;
+  z-index: 1000;
 }
 
 .commentCheckContainer {
