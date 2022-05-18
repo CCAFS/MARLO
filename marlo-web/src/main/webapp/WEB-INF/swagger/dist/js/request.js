@@ -811,11 +811,11 @@ function work_packages() {
 
 			$.each(data, function (index, item) {				
 				$('#list-print-workpackages').append(
-					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
+					'<tr>' + '<td >' + item['wp_official_code'] + '</td>' + '<td>'
 					+ item['acronym'] + '</td>'+ '<td>'
 					+ item['name'] + '</td>'+ '<td>'
-					+ item['initiativeId'] + '</td>'+ '<td>'
-					+ item['stageId'] + '</td>'+  '</tr>')
+					+ item['initiative_id'] + '</td>'+ '<td>'
+					+ item['stage_id'] + '</td>'+  '</tr>')
 			});
 setTimeout(() => {
 	updateDataTable("workpackages");
