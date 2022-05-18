@@ -33,13 +33,13 @@ public class Workpackage implements Serializable {
    */
   private static final long serialVersionUID = 1L;
 
-  private Long id;
+  private Long wp_id;
 
   private String name;
 
-  private Long initiativeId;
+  private Long initiative_id;
 
-  private Long stageId;
+  private Long stage_id;
 
   private String results;
 
@@ -47,38 +47,37 @@ public class Workpackage implements Serializable {
 
   private String acronym;
 
+  private Long wp_official_code;
+
   // notmapped
+
 
   private List<OneCGIARWorkpackageScienceGroup> scienceGroupList;
 
+
   private List<OneCGIARWorkpackageSdg> sdgList;
 
-  private List<OneCGIARWorkpackageImpactArea> impactAreaList;
 
+  private List<OneCGIARWorkpackageImpactArea> impactAreaList;
 
   public String getAcronym() {
     return acronym;
   }
-
-
-  public Long getId() {
-    return id;
-  }
-
 
   public List<OneCGIARWorkpackageImpactArea> getImpactAreaList() {
     return impactAreaList;
   }
 
 
-  public Long getInitiativeId() {
-    return initiativeId;
+  public Long getInitiative_id() {
+    return initiative_id;
   }
 
 
   public String getName() {
     return name;
   }
+
 
   public String getPathway_content() {
     return pathway_content;
@@ -89,6 +88,7 @@ public class Workpackage implements Serializable {
     return results;
   }
 
+
   public List<OneCGIARWorkpackageScienceGroup> getScienceGroupList() {
     return scienceGroupList;
   }
@@ -98,27 +98,30 @@ public class Workpackage implements Serializable {
   }
 
 
-  public Long getStageId() {
-    return stageId;
+  public Long getStage_id() {
+    return stage_id;
   }
+
+  public Long getWp_id() {
+    return wp_id;
+  }
+
+  public Long getWp_official_code() {
+    return wp_official_code;
+  }
+
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
   }
 
   public void setImpactAreaList(List<OneCGIARWorkpackageImpactArea> impactAreaList) {
     this.impactAreaList = impactAreaList;
   }
 
-
-  public void setInitiativeId(Long initiativeId) {
-    this.initiativeId = initiativeId;
+  public void setInitiative_id(Long initiative_id) {
+    this.initiative_id = initiative_id;
   }
-
 
   public void setName(String name) {
     this.name = name;
@@ -145,7 +148,17 @@ public class Workpackage implements Serializable {
   }
 
 
-  public void setStageId(Long stageId) {
-    this.stageId = stageId;
+  public void setStage_id(Long stage_id) {
+    this.stage_id = stage_id;
+  }
+
+
+  public void setWp_id(Long wp_id) {
+    this.wp_id = wp_id;
+  }
+
+
+  public void setWp_official_code(Long wp_official_code) {
+    this.wp_official_code = wp_official_code;
   }
 }
