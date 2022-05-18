@@ -100,11 +100,11 @@ public class WorkpackagesItem<T> {
             for (org.cgiar.ccafs.marlo.rest.services.submissionTools.onecgiarworkpackages.Workpackage workpackage : workpackageList
               .getWorkPackagesProposal()) {
               workpackage.setScienceGroupList(oneCGIARWorkpackageScienceGroupManager
-                .getAllByWorkpackage(workpackage.getAcronym(), workpackage.getInitiativeId()));
+                .getAllByWorkpackage(workpackage.getAcronym(), workpackage.getInitiative_id()));
               workpackage.setSdgList(oneCGIARWorkpackageSdgManager.getAllByWorkpackage(workpackage.getAcronym(),
-                workpackage.getInitiativeId()));
+                workpackage.getInitiative_id()));
               workpackage.setImpactAreaList(oneCGIARWorkpackageImpactAreaManager
-                .getAllByWorkpackage(workpackage.getAcronym(), workpackage.getInitiativeId()));
+                .getAllByWorkpackage(workpackage.getAcronym(), workpackage.getInitiative_id()));
               oneCGIARworkpackageList.add(workpackage);
             }
             workpackageListDTO = oneCGIARworkpackageList.stream()

@@ -27,16 +27,16 @@ import io.swagger.annotations.ApiModelProperty;
 public class WorkPackagesDTO {
 
   @ApiModelProperty(notes = "Workpackage Identifier", position = 1)
-  private Long id;
+  private Long wp_id;
 
   @ApiModelProperty(notes = "Workpackage name", position = 2)
   private String name;
 
   @ApiModelProperty(notes = "Initiative Id", position = 3)
-  private Long initiativeId;
+  private Long initiative_id;
 
   @ApiModelProperty(notes = "Initiative stage", position = 4)
-  private Long stageId;
+  private Long stage_id;
 
   @ApiModelProperty(notes = "Workpackage result", position = 5)
   private String results;
@@ -59,13 +59,11 @@ public class WorkPackagesDTO {
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private List<ImpactAreasDTO> impactAreaList;
 
+  @ApiModelProperty(notes = "official Workpackage code", position = 12)
+  private String wp_official_code;
+
   public String getAcronym() {
     return acronym;
-  }
-
-
-  public Long getId() {
-    return id;
   }
 
 
@@ -74,8 +72,8 @@ public class WorkPackagesDTO {
   }
 
 
-  public Long getInitiativeId() {
-    return initiativeId;
+  public Long getInitiative_id() {
+    return initiative_id;
   }
 
 
@@ -93,32 +91,39 @@ public class WorkPackagesDTO {
     return results;
   }
 
+
   public List<ScienceGroupDTO> getScienceGroupList() {
     return scienceGroupList;
   }
+
 
   public List<SDGsDTO> getSdgList() {
     return sdgList;
   }
 
-  public Long getStageId() {
-    return stageId;
+
+  public Long getStage_id() {
+    return stage_id;
+  }
+
+  public Long getWp_id() {
+    return wp_id;
+  }
+
+  public String getWp_official_code() {
+    return wp_official_code;
   }
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-
   public void setImpactAreaList(List<ImpactAreasDTO> impactAreaList) {
     this.impactAreaList = impactAreaList;
   }
 
-  public void setInitiativeId(Long initiativeId) {
-    this.initiativeId = initiativeId;
+  public void setInitiative_id(Long initiative_id) {
+    this.initiative_id = initiative_id;
   }
 
   public void setName(String name) {
@@ -141,8 +146,16 @@ public class WorkPackagesDTO {
     this.sdgList = sdgList;
   }
 
-  public void setStageId(Long stageId) {
-    this.stageId = stageId;
+  public void setStage_id(Long stage_id) {
+    this.stage_id = stage_id;
+  }
+
+  public void setWp_id(Long wp_id) {
+    this.wp_id = wp_id;
+  }
+
+  public void setWp_official_code(String wp_official_code) {
+    this.wp_official_code = wp_official_code;
   }
 
 
