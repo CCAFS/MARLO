@@ -424,16 +424,29 @@ public class DeliverableListAction extends BaseAction {
               .collect(Collectors.toList());
           }
 
+          // Owner
+          if (deliverableTemp.getProject() != null && !deliverableTemp.getProject().getId().equals(projectID)) {
+            deliverableTemp
+              .setOwner(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+            deliverableTemp
+              .setSharedWithMe(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+          } else {
+            deliverableTemp.setOwner("This Cluster");
+            deliverableTemp.setSharedWithMe("Not Applicable");
+          }
+
+          // Shared with others
           for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
             // String projectsSharedText = null;
             if (deliverableShared.getDeliverable().getSharedWithProjects() == null) {
-              deliverableShared.getDeliverable().setSharedWithProjects("C" + deliverableShared.getProject().getId());
+              deliverableShared.getDeliverable().setSharedWithProjects(
+                "" + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
             } else {
               if (!deliverableShared.getDeliverable().getSharedWithProjects()
-                .contains(deliverableShared.getProject().getId() + "")) {
+                .contains(deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
                 deliverableShared.getDeliverable()
-                  .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; C"
-                    + deliverableShared.getProject().getId());
+                  .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; "
+                    + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
               }
             }
             // deliverableShared.getDeliverable().setSharedWithProjects(projectsSharedText);
