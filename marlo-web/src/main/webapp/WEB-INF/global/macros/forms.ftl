@@ -869,8 +869,14 @@
 [/#macro]
 
 [#macro qaCommentReplyBlock name="" index=0]
+  [#if index == 0]
+    [#local showTitle = true]
+  [#else]
+    [#local showTitle = false]
+  [/#if]
+  
   <div id="qaCommentReply-${name}[${index}]" class="qaCommentReplyBlock">
-    [@customForm.textArea name="Comment on" required=false className="limitWords-100" editable=editable /]
+    [@customForm.textArea name="Comment on" required=false className="limitWords-100" editable=editable showTitle=showTitle /]
     <div class="commentCheckContainer">
       <div class="commentContainer">
         <div class="commentTitle"></div>
