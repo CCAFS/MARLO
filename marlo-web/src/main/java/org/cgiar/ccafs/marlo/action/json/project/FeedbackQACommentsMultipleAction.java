@@ -87,6 +87,7 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
         if (fields != null && !fields.isEmpty()) {
           int countField = 0;
           for (FeedbackQACommentableFields field : fields) {
+
             Map<String, Object> commentsUp = new HashMap<>();
 
             Map<String, Object> fieldsMap;
@@ -199,10 +200,11 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                   commentsUp.put(count + "", fieldsMap);
 
                   // field
-                  this.comments.add(countField, commentsUp);
 
                   count++;
                 }
+                this.comments.add(countField, commentsUp);
+
                 // each field
                 countField++;
 
