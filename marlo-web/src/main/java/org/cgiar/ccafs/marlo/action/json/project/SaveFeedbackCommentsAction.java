@@ -150,13 +150,13 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         if (field.getSectionName() != null) {
           switch (field.getSectionName()) {
             case "projectContributionCrp":
-              link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getName() + "/contributionCrp.do?"
+              link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getAcronym() + "/contributionCrp.do?"
                 + "projectOutcomeID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
 
               break;
             case "deliverables":
               if (deliverableId != null) {
-                link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getName() + "/deliverable.do?"
+                link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
                   + "deliverableID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
               }
               break;
