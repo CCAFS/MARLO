@@ -888,15 +888,15 @@
         <img src="${baseUrlCdn}/global/images/question.png" class="clarificationComment" title="Clarification needed">
       </div>
     </div>
-    [#--  <div class="replyContainer">
+    <div class="replyContainer">
       <br>
       [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
       <div class="replyTextContainer">
         <div class="replyTitle"></div>
         <p class="replyReadonly"></p>
       </div>
-      <div class="sendReplyContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
-    </div>  --]
+      <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+    </div>
     <br>
     <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
     <div class="optionsContainer">
