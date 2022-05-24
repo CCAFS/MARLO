@@ -121,20 +121,22 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
 
       String statusText = null;
-      if (status.equals("0")) {
-        statusText = "rejected";
-      }
-      if (status.equals("1")) {
-        statusText = "approved";
-      }
-      if (status.equals("2")) {
-        statusText = "clarification needed";
-      }
-      if (status.equals("3")) {
-        statusText = "pending";
-      }
-      if (status == null) {
-        statusText = "pending";
+      if (status != null) {
+        if (status.equals("0")) {
+          statusText = "rejected";
+        }
+        if (status.equals("1")) {
+          statusText = "approved";
+        }
+        if (status.equals("2")) {
+          statusText = "clarification needed";
+        }
+        if (status.equals("3")) {
+          statusText = "pending";
+        }
+        if (status == null) {
+          statusText = "pending";
+        }
       }
 
       if (status != null) {
