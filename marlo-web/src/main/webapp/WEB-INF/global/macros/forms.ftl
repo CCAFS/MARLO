@@ -855,7 +855,7 @@
 
 [#macro qaPopUpMultiple fields="" name="" index=-1 template=false]
   [#local customName = "${template?string('TEMPLATE', '')}${name}[${index}]"]
-  <div class="qaPopup" name="${customName}">
+  <div id="qaPopup-${customName}" class="qaPopup">
     <div class="closeComment" name="${name}"></div>
     <br>
     [#if fields?has_content]
@@ -895,16 +895,16 @@
         <div class="replyTitle"></div>
         <p class="replyReadonly"></p>
       </div>
-      <div id="sendReplyContainer" class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+      <div class="sendReplyContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
     </div>  --]
     <br>
     <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
-    [#--  <div class="optionsContainer">
-      <img id="agreeCommentBtn" src="${baseUrlCdn}/global/images/agree.png" class="qaOptions" title="Agree">
-      <img id="disagreeCommentBtn" src="${baseUrlCdn}/global/images/disagree.png" class="qaOptions" title="Disagree">
-      <img id="clarificationCommentBtn" src="${baseUrlCdn}/global/images/question.png" class="qaOptions" title="Clarification needed">
-      <img id="replyCommentBtn" src="${baseUrlCdn}/global/images/auto-reply.png" class="qaOptions" title="Reply">
+    <div class="optionsContainer">
+      <img class="agreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/agree.png" title="Agree">
+      <img class="disagreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/disagree.png" title="Disagree">
+      <img class="clarificationCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/question.png" title="Clarification needed">
+      <img class="replyCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/auto-reply.png" title="Reply">
     </div>
-    <div class="addCommentContainer"><img src="${baseUrlCdn}/global/images/remove.png" class="addCommentBlock"></div>  --]
+    [#--  <div class="addCommentContainer"><img src="${baseUrlCdn}/global/images/remove.png" class="addCommentBlock"></div> --]
   </div>
 [/#macro]

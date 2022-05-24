@@ -6,7 +6,6 @@ var contributionCRPAjaxURL = `/fieldsBySectionAndParent.do?sectionName=${section
 var arrayName = 'fieldsMap';
 let fieldID = '';
 let qaComments = '';
-let commentID;
 
 function init() {
   milestonesCount = $('form .outcomeMilestoneYear').length;
@@ -62,12 +61,12 @@ function attachEvents() {
   $('img.qaComment').on('click', function (event) {
     let name = this.name;
     let popUpTitle = $(this).attr('description');
-    let qaPopup = $(`div[name^="${name}"]`);
+    let qaPopup = $(`div[id^="qaPopup-${name}"]`);
     let block = $(`div[id^="qaCommentReply-${name}"]`);
 
     fieldID = $(this).attr('fieldID');
     block.find('textarea[id="Comment on"]').prev('label').html(`Comment on "${popUpTitle}":`);
-    block.find('sendCommentContainer').attr('name', name);
+    block.find('.sendCommentContainer').attr('name', name);
     // $('#agreeCommentBtn').attr('name', name);
     // $('#disagreeCommentBtn').attr('name', name);
     // $('#replyCommentBtn').attr('name', name);
@@ -88,7 +87,8 @@ function attachEvents() {
 
   $('div.closeComment').on('click', function () {
     let name = $(this).attr('name');
-    $(`div[name^="${name}"]`).hide();
+    let qaPopup = $(`div[id^="qaPopup-${name}"]`);
+    qaPopup.hide();
   });
 
   $('div.sendCommentContainer').on('click', function () {
@@ -108,117 +108,85 @@ function attachEvents() {
     newBlock.appendTo(popup).hide().show();
   });
 
-  // Single comment-reply
-  // $('img.qaComment').on('click', function (event) {
-  //   var name = this.name;
-  //   var popUpTitle = $(this).attr('description');
-  //   fieldID = $(this).attr('fieldID');
-  //   textareaComment.prev('label').html(`Comment on "${popUpTitle}":`);
-  //   $('#sendCommentContainer').attr('name', name);
-  //   $('#agreeCommentBtn').attr('name', name);
-  //   $('#disagreeCommentBtn').attr('name', name);
-  //   $('#replyCommentBtn').attr('name', name);
-  //   $('#sendReplyContainer').attr('name', name);
-
-  //   loadCommentsByUser(name);
-
-  //   if (event.pageX < 1000) {
-  //     $('#qaPopup').css('left', event.pageX);
-  //   } else {
-  //     $('#qaPopup').css('left', 'min(100vw - 100px, 78vw)');
-  //   }
-
-  //   $('#qaPopup').css('top', event.pageY);
-  //   $('#qaPopup').show();
-  // });
-
-  // $('div.closeComment').on('click', () => {
-  //   $('#qaPopup').hide();
-  // });
-
-  // $('#sendCommentContainer').on('click', function () {
-  //   var name = $(this).attr('name');
-  //   var comment = textareaComment.next().html();
-  //   var cleanComment = comment.replaceAll('.<br>.', '');
-  //   cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
-
-  //   saveQAComment(cleanComment, fieldID, name);
-  // });
-
-  $('#agreeCommentBtn').on('click', function () {
-    var name = $(this).attr('name');
-
-    hideShowOptionButtons(true);
-    saveCommentStatus(1, name);
+  $('img.agreeCommentBtn').on('click', function () {
+    let name = $(this).attr('name');
+    let commentID = $(this).attr('commentId');
+    let block = $(this).parent().parent();
+    console.log(commentID)
+    hideShowOptionButtons(block, '1');
+    saveCommentStatus(1, commentID, name);
   });
 
-  $('#disagreeCommentBtn').on('click', function () {
-    var name = $(this).attr('name');
+  $('img.disagreeCommentBtn').on('click', function () {
+    let name = $(this).attr('name');
 
-    hideShowOptionButtons(false);
-    saveCommentStatus(0, name);
-    $('#replyCommentBtn').click();
+    hideShowOptionButtons('0');
+    saveCommentStatus('0', name);
+    $('img.replyCommentBtn').click();
   });
 
-  $('#clarificationCommentBtn').on('click', function () {
-    var name = $(this).attr('name');
+  $('img.clarificationCommentBtn').on('click', function () {
+    let name = $(this).attr('name');
 
-    hideShowOptionButtons('clarification');
-    saveCommentStatus(2, name);
-    $('#replyCommentBtn').click();
+    hideShowOptionButtons('2');
+    saveCommentStatus('2', name);
+    $('img.replyCommentBtn').click();
   });
 
-  $('#replyCommentBtn').on('click', function () {
+  $('img.replyCommentBtn').on('click', function () {
     $('.replyContainer').show();
     $('.optionsContainer').hide();
   });
 
-  $('#sendReplyContainer').on('click', function () {
-    var name = $(this).attr('name');
-    var comment = $('textarea[id="Reply"]').next().html();
-    var cleanComment = comment.replaceAll('.<br>.', '');
+  $('div.sendReplyContainer').on('click', function () {
+    let name = $(this).attr('name');
+    let comment = $('textarea[id="Reply"]').next().html();
+    let cleanComment = comment.replaceAll('.<br>.', '');
     cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
 
     saveFeedbackReply(cleanComment, name);
   });
 }
 
-function hideShowOptionButtons(status) {
+function hideShowOptionButtons(block, status) {
+  console.log('status', status);
   switch (status) {
-    case true:
-      $('#agreeCommentBtn').hide();
-      $('img.disagreeComment').hide();
-      $('img.agreeComment').show();
-      $('img.clarificationComment').hide();
-      $('#disagreeCommentBtn').hide();
-      $('#clarificationCommentBtn').hide();
-      $('#replyCommentBtn').show();
+    case '0':
+     block.find('img.disagreeCommentBtn').hide();
+     block.find('img.agreeComment').hide();
+     block.find('img.disagreeComment').show();
+     block.find('img.clarificationComment').hide();
+     block.find('img.agreeCommentBtn').hide();
+     block.find('img.clarificationCommentBtn').hide();
+     block.find('img.replyCommentBtn').hide();
       break;
-    case false:
-      $('#disagreeCommentBtn').hide();
-      $('img.agreeComment').hide();
-      $('img.disagreeComment').show();
-      $('img.clarificationComment').hide();
-      $('#agreeCommentBtn').hide();
-      $('#clarificationCommentBtn').hide();
-      $('#replyCommentBtn').show();
+    case '1':
+     block.find('img.agreeCommentBtn').hide();
+     block.find('img.disagreeComment').hide();
+     block.find('img.agreeComment').show();
+     block.find('img.clarificationComment').hide();
+     block.find('img.disagreeCommentBtn').hide();
+     block.find('img.clarificationCommentBtn').hide();
+     block.find('img.replyCommentBtn').hide();
       break;
-    case 'clarification':
-      $('#clarificationCommentBtn').hide();
-      $('img.agreeComment').hide();
-      $('img.disagreeComment').hide();
-      $('img.clarificationComment').show();
-      $('#agreeCommentBtn').hide();
-      $('#disagreeCommentBtn').hide();
-      $('#replyCommentBtn').show();
+    case '2':
+     block.find('img.clarificationCommentBtn').hide();
+     block.find('img.agreeComment').hide();
+     block.find('img.disagreeComment').hide();
+     block.find('img.clarificationComment').show();
+     block.find('img.agreeCommentBtn').hide();
+     block.find('img.disagreeCommentBtn').hide();
+     block.find('img.replyCommentBtn').hide();
       break;
-    case '':
-      $('#agreeCommentBtn').show();
-      $('#disagreeCommentBtn').show();
-      $('img.agreeComment').hide();
-      $('img.disagreeComment').hide();
+    case '' || ' ':
+     block.find('img.agreeCommentBtn').show();
+     block.find('img.disagreeCommentBtn').show();
+     block.find('img.clarificationCommentBtn').show();
+     block.find('img.replyCommentBtn').hide();
+     block.find('img.agreeComment').hide();
+     block.find('img.disagreeComment').hide();
+     block.find('img.clarificationComment').hide();
       break;
-
     default:
       break;
   }
@@ -233,18 +201,18 @@ function loadCommentsByUser(name) {
         
         for (let j = 0; j < commentsLength; j++) {
           if (qaComments[i][j] !== undefined) {
-            // commentID = qaComments[i].commentId;
             let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
             block.find('textarea[id="Comment on"]').hide();
             block.find('textarea[id="Comment on"]').next().next('p.charCount').hide();
             block.find('.commentContainer').show();
             block.find('.commentContainer .commentTitle').html(`Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
             block.find('.commentContainer p.commentReadonly').html(`${qaComments[i][j].comment}`);
-            console.log(block.find('.sendCommentContainer').hide());
+            block.find('.sendCommentContainer').hide();
+            block.find('.agreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
     
             if (userCanManageFeedback == 'true') {
-              // $('.optionsContainer').css('display', 'flex');
-              // hideShowOptionButtons(qaComments[i].status);
+              block.find('.optionsContainer').css('display', 'flex');
+              hideShowOptionButtons(block, qaComments[i][j].status);
             }
     
             if (qaComments[i].reply && qaComments[i].reply != '') {
@@ -361,17 +329,23 @@ function showQAComments(data) {
 
     for (let i = 0; i < qaComments.length; i++) {
       if (x[1] == qaComments[i].frontName) {
-        if (qaComments[i].comment != '') {
-          commentIcon.attr('src', qaCommentsStatus('pending'));
-          if (qaComments[i].reply != '') {
-            commentIcon.attr('src', qaCommentsStatus('pending'));
-          }
-          // false
-          if (qaComments[i].status == ' ') {
-            commentIcon.attr('src', qaCommentsStatus('done'));
-          } else if (qaComments[i].status != '') {
-            // true
-            commentIcon.attr('src', qaCommentsStatus('done'));
+        let commentsLength = Object.keys(qaComments[i]).length;
+        
+        for (let j = 0; j < commentsLength; j++) {
+          if (qaComments[i][j] !== undefined) {
+            if (qaComments[i][j].comment != '') {
+              commentIcon.attr('src', qaCommentsStatus('pending'));
+              if (qaComments[i][j].reply != '') {
+                commentIcon.attr('src', qaCommentsStatus('pending'));
+              }
+              // false
+              if (qaComments[i][j].status == ' ') {
+                commentIcon.attr('src', qaCommentsStatus('done'));
+              } else if (qaComments[i][j].status != '') {
+                // true
+                commentIcon.attr('src', qaCommentsStatus('done'));
+              }
+            }
           }
         }
       }
@@ -423,7 +397,7 @@ function saveQAComment(comment, fieldID, name) {
 //   });
 // }
 
-function saveFeedbackReply(reply, name) {
+function saveFeedbackReply(reply, commentID, name) {
   var finalAjaxURL = `/saveFeedbackReply.do?reply=${reply}&commentID=${commentID}&userID=${userID}`;
 
   $.ajax({
@@ -437,7 +411,7 @@ function saveFeedbackReply(reply, name) {
   });
 }
 
-function saveCommentStatus(status, name) {
+function saveCommentStatus(status, commentID, name) {
   var finalAjaxURL = `/saveCommentStatus.do?status=${status}&commentID=${commentID}&userID=${userID}`;
 
   $.ajax({
