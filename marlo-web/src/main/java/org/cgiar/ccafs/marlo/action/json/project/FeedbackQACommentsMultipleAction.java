@@ -184,7 +184,7 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                     if (reply != null) {
                       if (reply.getUser() != null && reply.getUser().getFirstName() != null
                         && reply.getUser().getLastName() != null) {
-                        replyMap.put("id", reply.getId() + " " + reply.reply.getId());
+                        replyMap.put("id", reply.getId() + " " + reply.getId());
                       } else {
                         replyMap.put("id", "");
                       }
