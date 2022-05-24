@@ -108,28 +108,32 @@ function attachEvents() {
     newBlock.appendTo(popup).hide().show();
   });
 
+  $('img.disagreeCommentBtn').on('click', function () {
+    let name = $(this).attr('name');
+    let commentID = $(this).attr('commentId');
+    let block = $(this).parent().parent();
+
+    hideShowOptionButtons(block, '0');
+    saveCommentStatus(0, commentID, name);
+    $('img.replyCommentBtn').click();
+  });
+
   $('img.agreeCommentBtn').on('click', function () {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(this).parent().parent();
-    console.log(commentID)
+    
     hideShowOptionButtons(block, '1');
     saveCommentStatus(1, commentID, name);
   });
 
-  $('img.disagreeCommentBtn').on('click', function () {
-    let name = $(this).attr('name');
-
-    hideShowOptionButtons('0');
-    saveCommentStatus('0', name);
-    $('img.replyCommentBtn').click();
-  });
-
   $('img.clarificationCommentBtn').on('click', function () {
     let name = $(this).attr('name');
+    let commentID = $(this).attr('commentId');
+    let block = $(this).parent().parent();
 
-    hideShowOptionButtons('2');
-    saveCommentStatus('2', name);
+    hideShowOptionButtons(block, '2');
+    saveCommentStatus(2, commentID, name);
     $('img.replyCommentBtn').click();
   });
 
@@ -149,7 +153,6 @@ function attachEvents() {
 }
 
 function hideShowOptionButtons(block, status) {
-  console.log('status', status);
   switch (status) {
     case '0':
      block.find('img.disagreeCommentBtn').hide();
@@ -158,7 +161,6 @@ function hideShowOptionButtons(block, status) {
      block.find('img.clarificationComment').hide();
      block.find('img.agreeCommentBtn').hide();
      block.find('img.clarificationCommentBtn').hide();
-     block.find('img.replyCommentBtn').hide();
       break;
     case '1':
      block.find('img.agreeCommentBtn').hide();
@@ -167,7 +169,6 @@ function hideShowOptionButtons(block, status) {
      block.find('img.clarificationComment').hide();
      block.find('img.disagreeCommentBtn').hide();
      block.find('img.clarificationCommentBtn').hide();
-     block.find('img.replyCommentBtn').hide();
       break;
     case '2':
      block.find('img.clarificationCommentBtn').hide();
@@ -176,13 +177,11 @@ function hideShowOptionButtons(block, status) {
      block.find('img.clarificationComment').show();
      block.find('img.agreeCommentBtn').hide();
      block.find('img.disagreeCommentBtn').hide();
-     block.find('img.replyCommentBtn').hide();
       break;
     case '' || ' ':
      block.find('img.agreeCommentBtn').show();
      block.find('img.disagreeCommentBtn').show();
      block.find('img.clarificationCommentBtn').show();
-     block.find('img.replyCommentBtn').hide();
      block.find('img.agreeComment').hide();
      block.find('img.disagreeComment').hide();
      block.find('img.clarificationComment').hide();
@@ -209,6 +208,9 @@ function loadCommentsByUser(name) {
             block.find('.commentContainer p.commentReadonly').html(`${qaComments[i][j].comment}`);
             block.find('.sendCommentContainer').hide();
             block.find('.agreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
+            block.find('.disagreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
+            block.find('.clarificationCommentBtn').attr('commentId', qaComments[i][j].commentId);
+            block.find('.replyCommentBtn').attr('commentId', qaComments[i][j].commentId);
     
             if (userCanManageFeedback == 'true') {
               block.find('.optionsContainer').css('display', 'flex');
