@@ -7224,7 +7224,7 @@ img.qaComment {
   display: none;
 }
 
-.sendCommentContainer {
+.sendCommentContainer, .sendReplyContainer {
   width: 25px;
   height: 25px;
   display: flex;
