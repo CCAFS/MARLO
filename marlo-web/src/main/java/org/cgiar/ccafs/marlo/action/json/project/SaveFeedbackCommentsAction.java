@@ -64,6 +64,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private String fieldDescription;
   private String fieldValue;
   private Long userId;
+  private Long deliverableId;
   private Date date;
   private Long projectId;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
@@ -139,9 +140,32 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       if (status != null) {
         qaComment.setStatus(statusText);
       }
+
+      if (fieldId != null && phaseId != null && parentId != null) {
+        FeedbackQACommentableFields field =
+          feedbackQACommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
+
+        if (field.getSectionName() != null) {
+          switch (field.getSectionName()) {
+            case "projectContributionCrp":
+              link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getName() + "/contributionCrp.do?"
+                + "projectOutcomeID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+
+              break;
+            case "deliverables":
+              if (deliverableId != null) {
+                link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getName() + "/deliverable.do?"
+                  + "deliverableID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+              }
+              break;
+          }
+        }
+      }
+
       if (link != null) {
         qaComment.setLink(link);
       }
+
       if (fieldDescription != null) {
         qaComment.setFieldDescription(fieldDescription);
       }
@@ -321,6 +345,14 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
     } catch (Exception e) {
       logger.error("unable to get field Description", e);
+    }
+    try {
+      if (parameters.get(APConstants.DELIVERABLE_ID).isDefined()) {
+        deliverableId = Long.parseLong(
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.DELIVERABLE_ID).getMultipleValues()[0])));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get deliverable ID value", e);
     }
   }
 
