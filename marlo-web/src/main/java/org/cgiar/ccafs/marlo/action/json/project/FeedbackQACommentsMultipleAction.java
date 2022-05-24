@@ -146,16 +146,16 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                   if (comment.getStatus() != null) {
 
                     String statusText = null;
-                    if (comment.getStatus() == "rejected") {
+                    if (comment.getStatus().equalsIgnoreCase("rejected")) {
                       statusText = "0";
                     }
-                    if (comment.getStatus() == "approved") {
+                    if (comment.getStatus().equalsIgnoreCase("approved")) {
                       statusText = "1";
                     }
-                    if (comment.getStatus() == "clarification needed") {
+                    if (comment.getStatus().equalsIgnoreCase("clarification needed")) {
                       statusText = "2";
                     }
-                    if (comment.getStatus() == "pending") {
+                    if (comment.getStatus().equalsIgnoreCase("pending")) {
                       statusText = "";
                     }
 
@@ -182,9 +182,8 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                       reply = feedbackQAReplyManager.getFeedbackCommentById(comment.getReply().getId());
                     }
                     if (reply != null) {
-                      if (reply.getUser() != null && reply.getUser().getFirstName() != null
-                        && reply.getUser().getLastName() != null) {
-                        replyMap.put("id", reply.getId() + " " + reply.getId());
+                      if (reply.getId() != null) {
+                        replyMap.put("id", reply.getId());
                       } else {
                         replyMap.put("id", "");
                       }
