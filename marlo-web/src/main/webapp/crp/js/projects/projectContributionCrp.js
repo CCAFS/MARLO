@@ -95,11 +95,17 @@ function attachEvents() {
   $('div.sendCommentContainer').on('click', function () {
     let name = $(this).attr('name');
     let block = $(`div[id^="qaCommentReply-${name}"]`);
-    let comment = block.find('textarea[id="Comment on"]').next().html();
+    let textarea = block.find('textarea[id="Comment on"]');
+    let comment = textarea.next().html();
     let cleanComment = comment.replaceAll('.<br>.', '');
     cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
 
-    saveQAComment(cleanComment, fieldID, name);
+    if (cleanComment != '' && cleanComment != ' ') {
+      textarea.css('border', '1px solid #ccc');
+      saveQAComment(cleanComment, fieldID, name);
+    } else {
+      textarea.css('border', '2px solid red');
+    }
   });
 
   $('img.addCommentBlock').on('click', function () {
@@ -123,7 +129,7 @@ function attachEvents() {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(this).parent().parent();
-    
+
     hideShowOptionButtons(block, '1');
     saveCommentStatus(1, commentID, name);
   });
@@ -158,46 +164,49 @@ function attachEvents() {
       textarea.css('border', '1px solid #ccc');
       saveFeedbackReply(cleanComment, commentID, name);
     } else {
-      console.log('alerta');
       textarea.css('border', '2px solid red');
     }
   });
 }
 
 function hideShowOptionButtons(block, status) {
+  let textarea = block.find('textarea[id="Reply"]');
+
   switch (status) {
     case '0':
-     block.find('img.disagreeCommentBtn').hide();
-     block.find('img.agreeComment').hide();
-     block.find('img.disagreeComment').show();
-     block.find('img.clarificationComment').hide();
-     block.find('img.agreeCommentBtn').hide();
-     block.find('img.clarificationCommentBtn').hide();
+      textarea.prev().find('span.red.requiredTag').show();
+      block.find('img.disagreeCommentBtn').hide();
+      block.find('img.agreeComment').hide();
+      block.find('img.disagreeComment').show();
+      block.find('img.clarificationComment').hide();
+      block.find('img.agreeCommentBtn').hide();
+      block.find('img.clarificationCommentBtn').hide();
       break;
     case '1':
-     block.find('img.agreeCommentBtn').hide();
-     block.find('img.disagreeComment').hide();
-     block.find('img.agreeComment').show();
-     block.find('img.clarificationComment').hide();
-     block.find('img.disagreeCommentBtn').hide();
-     block.find('img.clarificationCommentBtn').hide();
-    //  block.find('img.replyCommentBtn').show();
+      textarea.prev().find('span.red.requiredTag').hide();
+      block.find('img.agreeCommentBtn').hide();
+      block.find('img.disagreeComment').hide();
+      block.find('img.agreeComment').show();
+      block.find('img.clarificationComment').hide();
+      block.find('img.disagreeCommentBtn').hide();
+      block.find('img.clarificationCommentBtn').hide();
       break;
     case '2':
-     block.find('img.clarificationCommentBtn').hide();
-     block.find('img.agreeComment').hide();
-     block.find('img.disagreeComment').hide();
-     block.find('img.clarificationComment').show();
-     block.find('img.agreeCommentBtn').hide();
-     block.find('img.disagreeCommentBtn').hide();
+      textarea.prev().find('span.red.requiredTag').show();
+      block.find('img.clarificationCommentBtn').hide();
+      block.find('img.agreeComment').hide();
+      block.find('img.disagreeComment').hide();
+      block.find('img.clarificationComment').show();
+      block.find('img.agreeCommentBtn').hide();
+      block.find('img.disagreeCommentBtn').hide();
       break;
     case '' || ' ':
-     block.find('img.agreeCommentBtn').show();
-     block.find('img.disagreeCommentBtn').show();
-     block.find('img.clarificationCommentBtn').show();
-     block.find('img.agreeComment').hide();
-     block.find('img.disagreeComment').hide();
-     block.find('img.clarificationComment').hide();
+      block.find('img.agreeCommentBtn').show();
+      block.find('img.disagreeCommentBtn').show();
+      block.find('img.clarificationCommentBtn').show();
+      block.find('img.agreeComment').hide();
+      block.find('img.disagreeComment').hide();
+      block.find('img.clarificationComment').hide();
       break;
     default:
       break;
@@ -210,7 +219,7 @@ function loadCommentsByUser(name) {
     for (let i = 0; i < qaComments.length; i++) {
       if (qaComments[i].frontName == name) {
         let commentsLength = Object.keys(qaComments[i]).length;
-        
+
         for (let j = 0; j < commentsLength; j++) {
           if (qaComments[i][j] !== undefined) {
             let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
@@ -225,12 +234,12 @@ function loadCommentsByUser(name) {
             block.find('.disagreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
             block.find('.clarificationCommentBtn').attr('commentId', qaComments[i][j].commentId);
             block.find('.replyCommentBtn').attr('commentId', qaComments[i][j].commentId);
-    
+
             if (userCanManageFeedback == 'true') {
               block.find('.optionsContainer').css('display', 'flex');
               hideShowOptionButtons(block, qaComments[i][j].status);
             }
-            
+
             let replyLength = Object.keys(qaComments[i][j].reply).length;
             
             if (replyLength !== 0) {
@@ -239,30 +248,28 @@ function loadCommentsByUser(name) {
               block.find('.replyTextContainer').show();
               block.find('.replyTextContainer .replyTitle').html(`Reply by ${qaComments[i][j].reply['userName']} at ${qaComments[i][j].reply['date']}`);
               block.find('.replyTextContainer p.replyReadonly').html(`${qaComments[i][j].reply['text']}`);
+              block.find('.replyCommentBtn').hide();
               block.find('.sendReplyContainer').hide();
             } else {
-              block.find('textarea[id="Reply"]').parent().show();
-              block.find('.replyContainer').hide();
-              block.find('.replyTextContainer').hide();
-              block.find('.sendReplyContainer').show();
+              if (qaComments[i][j].status && qaComments[i][j].status == '1') {
+                block.find('textarea[id="Reply"]').parent().show();
+                block.find('.replyContainer').hide();
+                block.find('.replyTextContainer').hide();
+                block.find('.replyCommentBtn').show();
+                block.find('.sendReplyContainer').show();
+              } else {
+                block.find('textarea[id="Reply"]').parent().show();
+                block.find('.replyContainer').show();
+                block.find('.replyTextContainer').hide();
+                block.find('.replyCommentBtn').hide();
+                block.find('.sendReplyContainer').show();
+              }
             }
           }
         }
-      } else {
-        // textareaComment.show();
-        // textareaComment.next().next('p.charCount').show();
-        // $('.commentContainer').hide();
-        // textareaComment.val('');
-        // $('textarea[id="Reply"]').val('');
-        // $('#sendCommentContainer').css('display', 'flex');
-        // $('.optionsContainer').css('display', 'none');
-        // hideShowOptionButtons('');
-        // $('.replyContainer').hide();
       }
     }
-  } else {
-    // $('.replyContainer').hide();
-  }
+  } 
 }
 
 // Single comment-reply
@@ -346,26 +353,49 @@ function showQAComments(data) {
     for (let i = 0; i < qaComments.length; i++) {
       if (x[1] == qaComments[i].frontName) {
         let commentsLength = Object.keys(qaComments[i]).length;
-        
+
         for (let j = 0; j < commentsLength; j++) {
-          if (qaComments[i][j] !== undefined) {
+          if (qaComments[i][j] != undefined) {
             if (qaComments[i][j].comment != '') {
               commentIcon.attr('src', qaCommentsStatus('pending'));
-              if (qaComments[i][j].reply != '') {
+
+              if (qaComments[i][j].status != '') {
+                if (qaComments[i][j].status == '0' || qaComments[i][j].status == '1') {
+                  commentIcon.attr('src', qaCommentsStatus('done'));
+                } else {
+                  commentIcon.attr('src', qaCommentsStatus('pending'));
+                }
+              } else {
                 commentIcon.attr('src', qaCommentsStatus('pending'));
-              }
-              // false
-              if (qaComments[i][j].status == ' ') {
-                commentIcon.attr('src', qaCommentsStatus('done'));
-              } else if (qaComments[i][j].status != '') {
-                // true
-                commentIcon.attr('src', qaCommentsStatus('done'));
               }
             }
           }
         }
       }
     }
+    // for (let i = 0; i < qaComments.length; i++) {
+    //   if (x[1] == qaComments[i].frontName) {
+    //     let commentsLength = Object.keys(qaComments[i]).length;
+
+    //     for (let j = 0; j < commentsLength; j++) {
+    //       if (qaComments[i][j] !== undefined) {
+    //         if (qaComments[i][j].comment != '') {
+    //           commentIcon.attr('src', qaCommentsStatus('pending'));
+    //           if (qaComments[i][j].reply != '') {
+    //             commentIcon.attr('src', qaCommentsStatus('pending'));
+    //           }
+    //           // false
+    //           if (qaComments[i][j].status == ' ') {
+    //             commentIcon.attr('src', qaCommentsStatus('done'));
+    //           } else if (qaComments[i][j].status != '') {
+    //             // true
+    //             commentIcon.attr('src', qaCommentsStatus('done'));
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
     commentIcon.show();
   });
 }

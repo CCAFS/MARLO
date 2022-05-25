@@ -905,6 +905,6 @@
       <img class="clarificationCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/question.png" title="Clarification needed">
       <img class="replyCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/auto-reply.png" title="Reply">
     </div>
-    [#--  <div class="addCommentContainer"><img src="${baseUrlCdn}/global/images/remove.png" class="addCommentBlock"></div> --]
+    [#--  <div class="addCommentContainer"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>  --]
   </div>
 [/#macro]
