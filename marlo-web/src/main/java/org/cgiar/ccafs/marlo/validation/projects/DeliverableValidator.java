@@ -542,11 +542,18 @@ public class DeliverableValidator extends BaseValidator {
 
     if (project != null && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
       && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == false) {
-      if (deliverable.getProjectOutcomes() == null || deliverable.getProjectOutcomes().isEmpty()) {
-        action.addMessage(action.getText("deliverable.projectOutcomes"));
-        action.addMissingField("deliverable.projectOutcomes");
-        action.getInvalidFields().put("list-deliverable.projectOutcomes", InvalidFieldsMessages.EMPTYFIELD);
+      if (deliverable.getCrpOutcomes() == null || deliverable.getCrpOutcomes().isEmpty()) {
+        action.addMessage(action.getText("deliverable.crpOutcomes"));
+        action.addMissingField("deliverable.crpOutcomes");
+        action.getInvalidFields().put("list-deliverable.crpOutcomes", InvalidFieldsMessages.EMPTYFIELD);
       }
+      /*
+       * if (deliverable.getCrpOutcomes() == null || deliverable.getProjectOutcomes().isEmpty()) {
+       * action.addMessage(action.getText("deliverable.projectOutcomes"));
+       * action.addMissingField("deliverable.projectOutcomes");
+       * action.getInvalidFields().put("list-deliverable.projectOutcomes", InvalidFieldsMessages.EMPTYFIELD);
+       * }
+       */
     }
 
     if (!action.isCenterGlobalUnit()) {

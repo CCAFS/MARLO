@@ -137,7 +137,7 @@
   [#-- Key Outputs select --]
   [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]
     <div class="form-group">
-    [#--  
+  
       [#if action.canAccessSuperAdmin() ]
         [@customForm.elementsListComponent name="deliverable.crpOutcomes" elementType="crpProgramOutcome" elementList=(deliverable.crpOutcomes)![] label="project.deliverable.generalInformation.keyOutput" listName="programOutcomes" keyFieldName="id" displayFieldName="composedName" required=true maxLimit=3/]
           <div class="note left">
@@ -146,7 +146,7 @@
             </a>
           </div>
       [/#if]
-    --]
+    
     
       [#if action.isAiccra()]
         [@customForm.elementsListComponent name="deliverable.projectOutcomes" elementType="projectOutcome" elementList=(deliverable.projectOutcomes)![] label="project.deliverable.generalInformation.keyOutput" listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName" required=true maxLimit=3/]
