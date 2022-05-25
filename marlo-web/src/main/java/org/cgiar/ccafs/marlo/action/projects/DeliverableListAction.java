@@ -412,11 +412,58 @@ public class DeliverableListAction extends BaseAction {
       logger.error("unable to get shared deliverables", e);
     }
 
+    // shared with
+    if (currentDeliverableList != null && !currentDeliverableList.isEmpty()) {
+      List<ProjectDeliverableShared> deliverablesShared = new ArrayList<>();
+      for (Deliverable deliverableTemp : currentDeliverableList) {
+        if (deliverableTemp != null && deliverableTemp.getId() != null) {
+          deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
+          if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+            deliverablesShared = deliverablesShared.stream()
+              .filter(ds -> ds.getDeliverable() != null && ds.getDeliverable().getProject().getId().equals(projectID))
+              .collect(Collectors.toList());
+          }
+
+          // Owner
+          if (deliverableTemp.getProject() != null && !deliverableTemp.getProject().getId().equals(projectID)) {
+            deliverableTemp
+              .setOwner(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+            deliverableTemp
+              .setSharedWithMe(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+          } else {
+            deliverableTemp.setOwner("This Cluster");
+            deliverableTemp.setSharedWithMe("Not Applicable");
+          }
+
+          // Shared with others
+          for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+            // String projectsSharedText = null;
+            if (deliverableShared.getDeliverable().getSharedWithProjects() == null) {
+              deliverableShared.getDeliverable().setSharedWithProjects(
+                "" + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+            } else {
+              if (!deliverableShared.getDeliverable().getSharedWithProjects()
+                .contains(deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
+                deliverableShared.getDeliverable()
+                  .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; "
+                    + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+              }
+            }
+            // deliverableShared.getDeliverable().setSharedWithProjects(projectsSharedText);
+          }
+          // deliverableTemp.setSharedWithProjects(projectsSharedText);
+          // deliverableTemp.setSharedDeliverables(deliverablesShared);
+        }
+      }
+    }
+
+
     if (currentDeliverableList != null && !currentDeliverableList.isEmpty()) {
       currentDeliverableList.stream().sorted((d1, d2) -> d1.getId().compareTo((d2.getId())))
         .collect(Collectors.toList());
       // deliverables.addAll(currentDeliverableList);
     }
+
 
   }
 
