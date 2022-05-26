@@ -1295,6 +1295,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+  public boolean canLeaveComments() {
+    boolean response = false;
+
+    // TODO: Update the permissions for manage feedback comments
+    if (this.canAccessSuperAdmin()) {
+      response = true;
+    }
+
+    if (this.getRolesList() != null && !this.getRolesList().isEmpty()) {
+      for (Role role : this.getRolesList()) {
+        if (role != null && role.getAcronym() != null) {
+          // FPL & FPM roles can comment
+
+          if (role.getAcronym().equals("FPL") || role.getAcronym().equals("FPM")) {
+            response = true;
+          }
+        }
+      }
+    }
+    return response;
+  }
+
   public boolean canManageFeedback() {
     boolean response = false;
 
