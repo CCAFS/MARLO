@@ -159,7 +159,7 @@
                         ${(d.deliverableInfo.title)!'Untitled'}</td>
                         <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'-'}</td>
                         <td>${(d.owner)!'-'}</td>
-                        <td class="col-md-2"> - </td>
+                        <td class="col-md-2"> ${(d.sharedWithProjects)!'-'} </td>
                         <td>${(d.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}</td>
                         <td>${(d.deliverableInfo.year)!'none'}</td>
                         <td> <a href="${deliverableUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
