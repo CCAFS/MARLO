@@ -654,6 +654,13 @@
         
         <div class="form-group text-area-container">
           [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isYearRequired(milestoneYear) className="limitWords-100" editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false/]
+              [#if isYearRequired(milestoneYear)]
+                <div class="text-left">
+                  [@popUps.relationsMacro element=projectOutcome labelText=true /]
+                  [@popUps.relationsMacro element=projectOutcome tag="expectedOutcomes" labelText=true /]
+                  [@popUps.relationsMacro element=projectOutcome tag="innovationOutcomes" labelText=true /]
+                </div>
+              [/#if]
         </div>
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
