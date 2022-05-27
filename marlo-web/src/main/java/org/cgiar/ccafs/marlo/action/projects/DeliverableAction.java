@@ -1141,6 +1141,12 @@ public class DeliverableAction extends BaseAction {
             .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
         }
 
+        // Deliverable Crp Outcome list
+        if (deliverable.getDeliverableCrpOutcomes() != null) {
+          deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+        }
+
         // Expected Study Geographic Regions List
         if (deliverable.getDeliverableGeographicRegions() != null
           && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
@@ -1871,8 +1877,8 @@ public class DeliverableAction extends BaseAction {
       // Save Geographic Scope Data
       this.saveGeographicScope(deliverableManagedState, this.getActualPhase());
 
-      this.saveProjectOutcomes(deliverableDB, this.getActualPhase());
-      // this.saveCrpOutcomes(deliverableDB, this.getActualPhase());
+      // this.saveProjectOutcomes(deliverableDB, this.getActualPhase());
+      this.saveCrpOutcomes(deliverableDB, this.getActualPhase());
 
       boolean haveRegions = false;
       boolean haveCountries = false;
