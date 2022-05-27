@@ -4936,7 +4936,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean hasPermission(String fieldName) {
-
     if (this.basePermission == null) {
       return this.securityContext.hasPermission(fieldName);
     } else {
@@ -4969,12 +4968,38 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public boolean hasPermissionCrpIndicators(long liaisonID) {
     String params[] = {this.getCrpSession(), liaisonID + "",};
     boolean permission =
       this.hasPermissionNoBase(this.generatePermission(Permission.CRP_INDICATORS_PERMISSION, params));
     return permission;
   }
+
+  public boolean hasPermissionDeliverable(String fieldName, long projectIDl, String currentSection) {
+    String projectID = String.valueOf(projectIDl);
+    Phase phase = this.getActualPhase();
+    fieldName = "crp:" + this.getCrpSession() + ":" + phase.getDescription() + ":" + phase.getYear() + ":project:"
+      + projectID + ":" + currentSection + ":" + fieldName;
+
+    // fieldName = "crp:AICCRA:Planning:2022:project:102084:deliverableList:addDeliverable";
+    if (this.basePermission == null) {
+      return this.securityContext.hasPermission(fieldName);
+    } else {
+      if (this.getCrpSession() != null) {
+        phase = this.getActualPhase();
+        String basePhase = this.getBasePermission().replaceAll(this.getCrpSession(),
+          this.getCrpSession() + ":" + phase.getDescription() + ":" + phase.getYear());
+        return this.securityContext.hasPermission(basePhase + ":" + fieldName)
+          || this.securityContext.hasPermission(basePhase)
+          || this.securityContext.hasPermission(this.getBasePermission() + ":" + fieldName);
+      } else {
+        return this.securityContext.hasPermission(this.getBasePermission() + ":" + fieldName);
+      }
+
+    }
+  }
+
 
   public boolean hasPermissionNoBase(String fieldName) {
 
