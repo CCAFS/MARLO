@@ -2900,6 +2900,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               && d.getDeliverableInfo(this.getActualPhase()).getStatus() == 3).collect(Collectors.toList());
           }
 
+          // Shared with others
+          List<ProjectDeliverableShared> deliverablesSharedOther = new ArrayList<>();
+
+          deliverablesSharedOther = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
+          if (deliverablesSharedOther != null && !deliverablesSharedOther.isEmpty()) {
+            deliverablesSharedOther = deliverablesSharedOther.stream()
+              .filter(ds -> ds.getDeliverable() != null && ds.getDeliverable().getProject().getId().equals(projectID))
+              .collect(Collectors.toList());
+          }
+
           for (Deliverable deliverable : deliverablesTemp) {
             if (deliverable.getDeliverableCrpOutcomes() != null) {
               deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
@@ -2921,16 +2931,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                     deliverable.setOwner("This Cluster");
                     deliverable.setSharedWithMe("Not Applicable");
                   }
-                  // Shared with others
-                  if (deliverable.getProject().getId().equals(projectID)) {
-                    if (deliverable.getSharedWithProjects() == null) {
-                      deliverable.setSharedWithProjects(
-                        "" + deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-                    } else {
-                      if (!deliverable.getSharedWithProjects()
-                        .contains(deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
-                        deliverable.setSharedWithProjects(deliverable.getSharedWithProjects() + "; "
-                          + deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+
+                  // check if shared with others
+                  for (ProjectDeliverableShared deliverableSharedT : deliverablesSharedOther) {
+                    if (deliverableSharedT.getDeliverable().getId().equals(deliverable.getId()) && deliverableSharedT
+                      .getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null) {
+
+                      if (deliverable.getSharedWithProjects() == null || (deliverable.getSharedWithProjects() != null
+                        && deliverable.getSharedWithProjects().isEmpty())) {
+                        deliverable.setSharedWithProjects(
+                          "" + deliverableSharedT.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                      } else {
+                        if (deliverable.getSharedWithProjects() != null
+                          && (!deliverable.getSharedWithProjects().contains(
+                            deliverableSharedT.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym()))) {
+                          deliverable.setSharedWithProjects(deliverable.getSharedWithProjects() + "; "
+                            + deliverableSharedT.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                        }
                       }
                     }
                   }
@@ -2984,7 +3001,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               }
             }
           } catch (Exception e) {
-            // logger.error("unable to get shared deliverables", e);
+            LOG.error("unable to get shared deliverables", e);
           }
         } else {
           deliverables = new ArrayList<>();
