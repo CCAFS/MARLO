@@ -867,7 +867,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
     milestonesProject = new ArrayList<>();
     milestonesProject.addAll(crpMilestones);
-    milestonesProject.sort(Comparator.comparing(CrpMilestone::getYear));
+    milestonesProject.sort(Comparator.comparing(CrpMilestone::getYear, Comparator.reverseOrder()));
     // Collections.sort(milestonesProject, (m1, m2) -> m1.getIndex().compareTo(m2.getIndex()));
 
     if (this.isReportingActive()) {
@@ -1037,6 +1037,7 @@ public class ProjectOutcomeAction extends BaseAction {
      * get feedback comments
      */
     try {
+
       feedbackComments = new ArrayList<>();
       feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
         .filter(f -> f.getSectionName() != null && f.getSectionName().equals("projectContributionCrp"))
@@ -1052,6 +1053,7 @@ public class ProjectOutcomeAction extends BaseAction {
           field.setQaComments(comments);
         }
       }
+
     } catch (Exception e) {
       LOG.error(e + " error getting commentable fields");
     }

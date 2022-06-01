@@ -64,6 +64,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private String fieldDescription;
   private String fieldValue;
   private Long userId;
+  private Long deliverableId;
   private Date date;
   private Long projectId;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
@@ -120,28 +121,53 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
 
       String statusText = null;
-      if (status == "0") {
-        statusText = "rejected";
-      }
-      if (status == "1") {
-        statusText = "approved";
-      }
-      if (status == "2") {
-        statusText = "clarification needed";
-      }
-      if (status == "3") {
-        statusText = "pending";
-      }
-      if (status == null) {
-        statusText = "pending";
+      if (status != null) {
+        if (status.equals("0")) {
+          statusText = "rejected";
+        }
+        if (status.equals("1")) {
+          statusText = "approved";
+        }
+        if (status.equals("2")) {
+          statusText = "clarification needed";
+        }
+        if (status.equals("3")) {
+          statusText = "pending";
+        }
+        if (status == null) {
+          statusText = "pending";
+        }
       }
 
       if (status != null) {
         qaComment.setStatus(statusText);
       }
+
+      if (fieldId != null && phaseId != null && parentId != null) {
+        FeedbackQACommentableFields field =
+          feedbackQACommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
+
+        if (field.getSectionName() != null) {
+          switch (field.getSectionName()) {
+            case "projectContributionCrp":
+              link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getAcronym() + "/contributionCrp.do?"
+                + "projectOutcomeID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+
+              break;
+            case "deliverables":
+              if (deliverableId != null) {
+                link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
+                  + "deliverableID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+              }
+              break;
+          }
+        }
+      }
+
       if (link != null) {
         qaComment.setLink(link);
       }
+
       if (fieldDescription != null) {
         qaComment.setFieldDescription(fieldDescription);
       }
@@ -321,6 +347,14 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
     } catch (Exception e) {
       logger.error("unable to get field Description", e);
+    }
+    try {
+      if (parameters.get(APConstants.DELIVERABLE_ID).isDefined()) {
+        deliverableId = Long.parseLong(
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.DELIVERABLE_ID).getMultipleValues()[0])));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get deliverable ID value", e);
     }
   }
 

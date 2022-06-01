@@ -7169,7 +7169,7 @@ img.qaComment {
 #qaPopup, .qaPopup {
   display: none;
   position: absolute;
-  width: 20%;
+  width: 25%;
   padding: 10px;
   background: #F5F5F5;
   border-radius: 5px;
@@ -7220,11 +7220,11 @@ img.qaComment {
   margin-left: 3px;
 }
 
-#replyCommentBtn {
+.replyContainer {
   display: none;
 }
 
-.sendCommentContainer {
+.sendCommentContainer, .sendReplyContainer {
   width: 25px;
   height: 25px;
   display: flex;

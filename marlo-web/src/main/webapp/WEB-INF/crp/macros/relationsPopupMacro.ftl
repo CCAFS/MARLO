@@ -117,8 +117,14 @@
                  [#if className=="ProjectBudget"]
                 Deliverables funded by this funding source in this [@s.text name="global.Project" /]
                 [#else]
+                 [#if className=="ProjectOutcome"]
+                    Deliverables that are contributing to ${(element.project.projectInfo.acronym)!} Outcome Contribution
+                 [#else]
                   Deliverables that are contributing to this [@s.text name="global.${className}" /]
+                  [/#if]
                 [/#if]
+                
+               
 
                 <br />
                 <small>${elementTitle}</small>
@@ -132,6 +138,8 @@
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
                     <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
                     <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>
+                    <th id="deliverableType">[@s.text name="project.deliverableList.owner" /]</th>
+                    <th id="deliverableType">[@s.text name="project.deliverableList.sharedW" /]</th>
                     <th id="deliverableType">[@s.text name="project.deliverableList.status" /]</th>
                     <th id="deliverableYear">[@s.text name="project.deliverableList.year" /]</th>
                     <th></th>
@@ -146,10 +154,12 @@
                     [/#if]
                       <tr>
                         <th scope="row">D${d.id}</th>
-                        <td class="col-md-6">
+                        <td>
                         [#if (d.tagTitle?has_content)]${(d.tagTitle)!}[/#if]
                         ${(d.deliverableInfo.title)!'Untitled'}</td>
                         <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'-'}</td>
+                        <td>${(d.owner)!'-'}</td>
+                        <td class="col-md-2"> ${(d.sharedWithProjects)!'-'} </td>
                         <td>${(d.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}</td>
                         <td>${(d.deliverableInfo.year)!'none'}</td>
                         <td> <a href="${deliverableUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
