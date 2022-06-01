@@ -6,7 +6,6 @@ var contributionCRPAjaxURL = `/fieldsBySectionAndParent.do?sectionName=${section
 var arrayName = 'fieldsMap';
 let fieldID = '';
 let qaComments = '';
-let commentID;
 
 function init() {
   milestonesCount = $('form .outcomeMilestoneYear').length;
@@ -52,7 +51,7 @@ function attachEvents() {
 
   // Remove a next user
   $('.removeNextUser').on('click', removeNextUser);
-  console.log(isFeedbackActive)
+
   if (isFeedbackActive == 'true') {
     getQAComments();
     loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
@@ -62,22 +61,24 @@ function attachEvents() {
   $('img.qaComment').on('click', function (event) {
     let name = this.name;
     let popUpTitle = $(this).attr('description');
-    let qaPopup = $(`div[name^="${name}"]`);
+    let qaPopup = $(`div[id^="qaPopup-${name}"]`);
+    let block = $(`div[id^="qaCommentReply-${name}"]`);
 
     fieldID = $(this).attr('fieldID');
-    $(`div[id^="qaCommentReply-${name}"]`).find('textarea[id="Comment on"]').prev('label').html(`Comment on "${popUpTitle}":`);
-    // $('#sendCommentContainer').attr('name', name);
-    // $('#agreeCommentBtn').attr('name', name);
-    // $('#disagreeCommentBtn').attr('name', name);
-    // $('#replyCommentBtn').attr('name', name);
-    // $('#sendReplyContainer').attr('name', name);
+    block.find('textarea[id="Comment on"]').prev('label').html(`Comment on "${popUpTitle}":`);
+    block.find('.sendCommentContainer').attr('name', name);
+    block.find('.agreeCommentBtn').attr('name', name);
+    block.find('.disagreeCommentBtn').attr('name', name);
+    block.find('.clarificationCommentBtn').attr('name', name);
+    block.find('.replyCommentBtn').attr('name', name);
+    block.find('.sendReplyContainer').attr('name', name);
 
-    // loadCommentsByUser(name);
+    loadCommentsByUser(name);
 
     if (event.pageX < 1000) {
       qaPopup.css('left', event.pageX);
     } else {
-      qaPopup.css('left', 'min(100vw - 100px, 78vw)');
+      qaPopup.css('left', 'min(100vw - 100px, 71vw)');
     }
 
     qaPopup.css('top', event.pageY);
@@ -87,16 +88,24 @@ function attachEvents() {
 
   $('div.closeComment').on('click', function () {
     let name = $(this).attr('name');
-    $(`div[name^="${name}"]`).hide();
+    let qaPopup = $(`div[id^="qaPopup-${name}"]`);
+    qaPopup.hide();
   });
 
   $('div.sendCommentContainer').on('click', function () {
-    var name = $(this).attr('name');
-    var comment = textareaComment.next().html();
-    var cleanComment = comment.replaceAll('.<br>.', '');
+    let name = $(this).attr('name');
+    let block = $(`div[id^="qaCommentReply-${name}"]`);
+    let textarea = block.find('textarea[id="Comment on"]');
+    let comment = textarea.next().html();
+    let cleanComment = comment.replaceAll('.<br>.', '');
     cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
 
-    saveQAComment(cleanComment, fieldID, name);
+    if (cleanComment != '' && cleanComment != ' ') {
+      textarea.css('border', '1px solid #ccc');
+      saveQAComment(cleanComment, fieldID, name);
+    } else {
+      textarea.css('border', '2px solid red');
+    }
   });
 
   $('img.addCommentBlock').on('click', function () {
@@ -106,173 +115,215 @@ function attachEvents() {
     newBlock.appendTo(popup).hide().show();
   });
 
-  // Single comment-reply
-    // $('img.qaComment').on('click', function (event) {
-    //   var name = this.name;
-    //   var popUpTitle = $(this).attr('description');
-    //   fieldID = $(this).attr('fieldID');
-    //   textareaComment.prev('label').html(`Comment on "${popUpTitle}":`);
-    //   $('#sendCommentContainer').attr('name', name);
-    //   $('#agreeCommentBtn').attr('name', name);
-    //   $('#disagreeCommentBtn').attr('name', name);
-    //   $('#replyCommentBtn').attr('name', name);
-    //   $('#sendReplyContainer').attr('name', name);
+  $('img.disagreeCommentBtn').on('click', function () {
+    let name = $(this).attr('name');
+    let commentID = $(this).attr('commentId');
+    let block = $(this).parent().parent();
 
-    //   loadCommentsByUser(name);
-
-    //   if (event.pageX < 1000) {
-    //     $('#qaPopup').css('left', event.pageX);
-    //   } else {
-    //     $('#qaPopup').css('left', 'min(100vw - 100px, 78vw)');
-    //   }
-
-    //   $('#qaPopup').css('top', event.pageY);
-    //   $('#qaPopup').show();
-    // });
-
-  // $('div.closeComment').on('click', () => {
-  //   $('#qaPopup').hide();
-  // });
-
-  // $('#sendCommentContainer').on('click', function () {
-  //   var name = $(this).attr('name');
-  //   var comment = textareaComment.next().html();
-  //   var cleanComment = comment.replaceAll('.<br>.', '');
-  //   cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
-
-  //   saveQAComment(cleanComment, fieldID, name);
-  // });
-
-  $('#agreeCommentBtn').on('click', function () {
-    var name = $(this).attr('name');
-
-    hideShowOptionButtons(true);
-    saveCommentStatus(1, name);
+    hideShowOptionButtons(block, '0');
+    saveCommentStatus(0, commentID, name);
+    $('img.replyCommentBtn').click();
   });
 
-  $('#disagreeCommentBtn').on('click', function () {
-    var name = $(this).attr('name');
+  $('img.agreeCommentBtn').on('click', function () {
+    let name = $(this).attr('name');
+    let commentID = $(this).attr('commentId');
+    let block = $(this).parent().parent();
 
-    hideShowOptionButtons(false);
-    saveCommentStatus(0, name);
-    $('#replyCommentBtn').click();
+    hideShowOptionButtons(block, '1');
+    saveCommentStatus(1, commentID, name);
   });
 
-  $('#clarificationCommentBtn').on('click', function () {
-    var name = $(this).attr('name');
+  $('img.clarificationCommentBtn').on('click', function () {
+    let name = $(this).attr('name');
+    let commentID = $(this).attr('commentId');
+    let block = $(this).parent().parent();
 
-    hideShowOptionButtons('clarification');
-    saveCommentStatus(2, name);
-    $('#replyCommentBtn').click();
+    hideShowOptionButtons(block, '2');
+    saveCommentStatus(2, commentID, name);
+    $('img.replyCommentBtn').click();
   });
 
-  $('#replyCommentBtn').on('click', function () {
-    $('.replyContainer').show();
-    $('.optionsContainer').hide();
+  $('img.replyCommentBtn').on('click', function () {
+    let block = $(this).parent().parent();
+
+    block.find('.replyContainer').show();
+    block.find('.optionsContainer').hide();
   });
 
-  $('#sendReplyContainer').on('click', function () {
-    var name = $(this).attr('name');
-    var comment = $('textarea[id="Reply"]').next().html();
-    var cleanComment = comment.replaceAll('.<br>.', '');
+  $('div.sendReplyContainer').on('click', function () {
+    let name = $(this).attr('name');
+    let commentID = $(this).attr('commentId');
+    let block = $(`div[id^="qaCommentReply-${name}"]`);
+    let textarea = block.find('textarea[id="Reply"]');
+    let comment = textarea.next().html();
+    let cleanComment = comment.replaceAll('.<br>.', '');
     cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
 
-    saveFeedbackReply(cleanComment, name);
+    if (cleanComment != '' && cleanComment != ' ') {
+      textarea.css('border', '1px solid #ccc');
+      saveFeedbackReply(cleanComment, commentID, name);
+    } else {
+      textarea.css('border', '2px solid red');
+    }
   });
 }
 
-function hideShowOptionButtons(status) {
-  switch (status) {
-    case true:
-      $('#agreeCommentBtn').hide();
-      $('img.disagreeComment').hide();
-      $('img.agreeComment').show();
-      $('img.clarificationComment').hide();
-      $('#disagreeCommentBtn').hide();
-      $('#clarificationCommentBtn').hide();
-      $('#replyCommentBtn').show();
-      break;
-      case false:
-        $('#disagreeCommentBtn').hide();
-        $('img.agreeComment').hide();
-        $('img.disagreeComment').show();
-        $('img.clarificationComment').hide();
-        $('#agreeCommentBtn').hide();
-        $('#clarificationCommentBtn').hide();
-        $('#replyCommentBtn').show();
-      break;
-      case 'clarification':
-        $('#clarificationCommentBtn').hide();
-        $('img.agreeComment').hide();
-        $('img.disagreeComment').hide();
-        $('img.clarificationComment').show();
-        $('#agreeCommentBtn').hide();
-        $('#disagreeCommentBtn').hide();
-        $('#replyCommentBtn').show();
-      break;
-    case '':
-      $('#agreeCommentBtn').show();
-      $('#disagreeCommentBtn').show();
-      $('img.agreeComment').hide();
-      $('img.disagreeComment').hide();
-      break;
+function hideShowOptionButtons(block, status) {
+  let textarea = block.find('textarea[id="Reply"]');
 
+  switch (status) {
+    case '0':
+      textarea.prev().find('span.red.requiredTag').show();
+      block.find('img.disagreeCommentBtn').hide();
+      block.find('img.agreeComment').hide();
+      block.find('img.disagreeComment').show();
+      block.find('img.clarificationComment').hide();
+      block.find('img.agreeCommentBtn').hide();
+      block.find('img.clarificationCommentBtn').hide();
+      break;
+    case '1':
+      textarea.prev().find('span.red.requiredTag').hide();
+      block.find('img.agreeCommentBtn').hide();
+      block.find('img.disagreeComment').hide();
+      block.find('img.agreeComment').show();
+      block.find('img.clarificationComment').hide();
+      block.find('img.disagreeCommentBtn').hide();
+      block.find('img.clarificationCommentBtn').hide();
+      break;
+    case '2':
+      textarea.prev().find('span.red.requiredTag').show();
+      block.find('img.clarificationCommentBtn').hide();
+      block.find('img.agreeComment').hide();
+      block.find('img.disagreeComment').hide();
+      block.find('img.clarificationComment').show();
+      block.find('img.agreeCommentBtn').hide();
+      block.find('img.disagreeCommentBtn').hide();
+      break;
+    case '' || ' ':
+      block.find('img.agreeCommentBtn').show();
+      block.find('img.disagreeCommentBtn').show();
+      block.find('img.clarificationCommentBtn').show();
+      block.find('img.agreeComment').hide();
+      block.find('img.disagreeComment').hide();
+      block.find('img.clarificationComment').hide();
+      break;
     default:
       break;
   }
 }
 
+// Multiple comments-replies
 function loadCommentsByUser(name) {
   if (qaComments.length > 0) {
     for (let i = 0; i < qaComments.length; i++) {
       if (qaComments[i].frontName == name) {
-        if (qaComments[i].comment && qaComments[i].comment != '') {
-          commentID = qaComments[i].commentId;
-          textareaComment.hide();
-          textareaComment.next().next('p.charCount').hide();
-          $('.commentContainer').show();
-          $('.commentContainer .commentTitle').html(`Comment by ${qaComments[i].userName} at ${qaComments[i].date}`);
-          $('.commentContainer p.commentReadonly').html(`${qaComments[i].comment}`);
-          $('#sendCommentContainer').css('display', 'none');
+        let commentsLength = Object.keys(qaComments[i]).length;
 
-          if (userCanManageFeedback == 'true') {
-            $('.optionsContainer').css('display', 'flex');
-            hideShowOptionButtons(qaComments[i].status);
-          }
+        for (let j = 0; j < commentsLength; j++) {
+          if (qaComments[i][j] !== undefined) {
+            let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
+            block.find('textarea[id="Comment on"]').hide();
+            block.find('textarea[id="Comment on"]').next().next('p.charCount').hide();
+            block.find('.commentContainer').show();
+            block.find('.commentContainer .commentTitle').html(`Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
+            block.find('.commentContainer p.commentReadonly').html(`${qaComments[i][j].comment}`);
+            block.find('.sendCommentContainer').hide();
+            block.find('.sendReplyContainer').attr('commentId', qaComments[i][j].commentId);
+            block.find('.agreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
+            block.find('.disagreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
+            block.find('.clarificationCommentBtn').attr('commentId', qaComments[i][j].commentId);
+            block.find('.replyCommentBtn').attr('commentId', qaComments[i][j].commentId);
 
-          if (qaComments[i].reply && qaComments[i].reply != '') {
-            textareaReply.hide();
-            $('.replyContainer').show();
-            $('.replyTextContainer').show();
-            $('.replyTextContainer .replyTitle').html(`Comment by ${qaComments[i].userName_reply} at ${qaComments[i].date_reply}`);
-            $('.replyTextContainer p.replyReadonly').html(`${qaComments[i].reply}`);
-            $('#sendReplyContainer').css('display', 'none');
-            $('#replyCommentBtn').hide();
-          } else {
-            textareaReply.show();
-            $('.replyContainer').hide();
-            $('.replyTextContainer').hide();
-            $('#sendReplyContainer').css('display', 'flex');
-            // $('#replyCommentBtn').show();
+            if (userCanManageFeedback == 'true') {
+              block.find('.optionsContainer').css('display', 'flex');
+              hideShowOptionButtons(block, qaComments[i][j].status);
+            }
+
+            let replyLength = Object.keys(qaComments[i][j].reply).length;
+            
+            if (replyLength !== 0) {
+              block.find('textarea[id="Reply"]').parent().hide();
+              block.find('.replyContainer').show();
+              block.find('.replyTextContainer').show();
+              block.find('.replyTextContainer .replyTitle').html(`Reply by ${qaComments[i][j].reply['userName']} at ${qaComments[i][j].reply['date']}`);
+              block.find('.replyTextContainer p.replyReadonly').html(`${qaComments[i][j].reply['text']}`);
+              block.find('.replyCommentBtn').hide();
+              block.find('.sendReplyContainer').hide();
+            } else {
+              if (qaComments[i][j].status && qaComments[i][j].status == '1') {
+                block.find('textarea[id="Reply"]').parent().show();
+                block.find('.replyContainer').hide();
+                block.find('.replyTextContainer').hide();
+                block.find('.replyCommentBtn').show();
+                block.find('.sendReplyContainer').show();
+              } else {
+                block.find('textarea[id="Reply"]').parent().show();
+                block.find('.replyContainer').show();
+                block.find('.replyTextContainer').hide();
+                block.find('.replyCommentBtn').hide();
+                block.find('.sendReplyContainer').show();
+              }
+            }
           }
-          break;
         }
-      } else {
-        textareaComment.show();
-        textareaComment.next().next('p.charCount').show();
-        $('.commentContainer').hide();
-        textareaComment.val('');
-        $('textarea[id="Reply"]').val('');
-        $('#sendCommentContainer').css('display', 'flex');
-        $('.optionsContainer').css('display', 'none');
-        hideShowOptionButtons('');
-        $('.replyContainer').hide();
       }
     }
-  } else {
-    $('.replyContainer').hide();
-  }
+  } 
 }
+
+// Single comment-reply
+// function loadCommentsByUser(name) {
+//   if (qaComments.length > 0) {
+//     for (let i = 0; i < qaComments.length; i++) {
+//       if (qaComments[i].frontName == name) {
+//         if (qaComments[i].comment && qaComments[i].comment != '') {
+//           commentID = qaComments[i].commentId;
+//           textareaComment.hide();
+//           textareaComment.next().next('p.charCount').hide();
+//           $('.commentContainer').show();
+//           $('.commentContainer .commentTitle').html(`Comment by ${qaComments[i].userName} at ${qaComments[i].date}`);
+//           $('.commentContainer p.commentReadonly').html(`${qaComments[i].comment}`);
+//           $('#sendCommentContainer').css('display', 'none');
+
+//           if (userCanManageFeedback == 'true') {
+//             $('.optionsContainer').css('display', 'flex');
+//             hideShowOptionButtons(qaComments[i].status);
+//           }
+
+//           if (qaComments[i].reply && qaComments[i].reply != '') {
+//             textareaReply.hide();
+//             $('.replyContainer').show();
+//             $('.replyTextContainer').show();
+//             $('.replyTextContainer .replyTitle').html(`Comment by ${qaComments[i].userName_reply} at ${qaComments[i].date_reply}`);
+//             $('.replyTextContainer p.replyReadonly').html(`${qaComments[i].reply}`);
+//             $('#sendReplyContainer').css('display', 'none');
+//             $('#replyCommentBtn').hide();
+//           } else {
+//             textareaReply.show();
+//             $('.replyContainer').hide();
+//             $('.replyTextContainer').hide();
+//             $('#sendReplyContainer').css('display', 'flex');
+//             // $('#replyCommentBtn').show();
+//           }
+//           break;
+//         }
+//       } else {
+//         textareaComment.show();
+//         textareaComment.next().next('p.charCount').show();
+//         $('.commentContainer').hide();
+//         textareaComment.val('');
+//         $('textarea[id="Reply"]').val('');
+//         $('#sendCommentContainer').css('display', 'flex');
+//         $('.optionsContainer').css('display', 'none');
+//         hideShowOptionButtons('');
+//         $('.replyContainer').hide();
+//       }
+//     }
+//   } else {
+//     $('.replyContainer').hide();
+//   }
+// }
 
 function loadQACommentsIcons(ajaxURL, arrayName) {
   $.ajax({
@@ -301,21 +352,50 @@ function showQAComments(data) {
 
     for (let i = 0; i < qaComments.length; i++) {
       if (x[1] == qaComments[i].frontName) {
-        if (qaComments[i].comment != '') {
-          commentIcon.attr('src', qaCommentsStatus('pending'));
-          if (qaComments[i].reply != '') {
-            commentIcon.attr('src', qaCommentsStatus('pending'));
-          }
-          // false
-          if (qaComments[i].status == ' ') {
-            commentIcon.attr('src', qaCommentsStatus('done'));
-          } else if (qaComments[i].status != '') {
-            // true
-            commentIcon.attr('src', qaCommentsStatus('done'));
+        let commentsLength = Object.keys(qaComments[i]).length;
+
+        for (let j = 0; j < commentsLength; j++) {
+          if (qaComments[i][j] != undefined) {
+            if (qaComments[i][j].comment != '') {
+              commentIcon.attr('src', qaCommentsStatus('pending'));
+
+              if (qaComments[i][j].status != '') {
+                if (qaComments[i][j].status == '0' || qaComments[i][j].status == '1') {
+                  commentIcon.attr('src', qaCommentsStatus('done'));
+                } else {
+                  commentIcon.attr('src', qaCommentsStatus('pending'));
+                }
+              } else {
+                commentIcon.attr('src', qaCommentsStatus('pending'));
+              }
+            }
           }
         }
       }
     }
+    // for (let i = 0; i < qaComments.length; i++) {
+    //   if (x[1] == qaComments[i].frontName) {
+    //     let commentsLength = Object.keys(qaComments[i]).length;
+
+    //     for (let j = 0; j < commentsLength; j++) {
+    //       if (qaComments[i][j] !== undefined) {
+    //         if (qaComments[i][j].comment != '') {
+    //           commentIcon.attr('src', qaCommentsStatus('pending'));
+    //           if (qaComments[i][j].reply != '') {
+    //             commentIcon.attr('src', qaCommentsStatus('pending'));
+    //           }
+    //           // false
+    //           if (qaComments[i][j].status == ' ') {
+    //             commentIcon.attr('src', qaCommentsStatus('done'));
+    //           } else if (qaComments[i][j].status != '') {
+    //             // true
+    //             commentIcon.attr('src', qaCommentsStatus('done'));
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
     commentIcon.show();
   });
 }
@@ -337,8 +417,6 @@ function qaCommentsStatus(status) {
 function saveQAComment(comment, fieldID, name) {
   var finalAjaxURL = `/saveFeedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&comment=${comment}&phaseID=${phaseID}&fieldID=${fieldID}&userID=${userID}&projectID=${projectID}`;
 
-  console.log(finalAjaxURL)
-
   $.ajax({
     url: baseURL + finalAjaxURL,
     async: false,
@@ -350,22 +428,7 @@ function saveQAComment(comment, fieldID, name) {
   });
 }
 
-// Single comment-reply
-// function saveQAComment(comment, fieldID, name) {
-//   var finalAjaxURL = `/saveFeedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&comment=${comment}&phaseID=${phaseID}&fieldID=${fieldID}&userID=${userID}`;
-
-//   $.ajax({
-//     url: baseURL + finalAjaxURL,
-//     async: false,
-//     success: function (data) {
-//       getQAComments();
-//       loadCommentsByUser(name);
-//       showQAComments(newData);
-//     }
-//   });
-// }
-
-function saveFeedbackReply(reply, name) {
+function saveFeedbackReply(reply, commentID, name) {
   var finalAjaxURL = `/saveFeedbackReply.do?reply=${reply}&commentID=${commentID}&userID=${userID}`;
 
   $.ajax({
@@ -379,7 +442,7 @@ function saveFeedbackReply(reply, name) {
   });
 }
 
-function saveCommentStatus(status, name) {
+function saveCommentStatus(status, commentID, name) {
   var finalAjaxURL = `/saveCommentStatus.do?status=${status}&commentID=${commentID}&userID=${userID}`;
 
   $.ajax({
@@ -394,7 +457,7 @@ function saveCommentStatus(status, name) {
 }
 
 function getQAComments() {
-  var finalAjaxURL = `/feedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&phaseID=${phaseID}`;
+  var finalAjaxURL = `/feedbackComments2.do?sectionName=${sectionName}&parentID=${parentID}&phaseID=${phaseID}`;
 
   $.ajax({
     url: baseURL + finalAjaxURL,

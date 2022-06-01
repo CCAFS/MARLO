@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220517a", 
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220525a", 
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
@@ -68,9 +68,9 @@
             <div class="form-group col-md-12 legendContent">
               <div class="colors">
                 <div class="col-md-12 form-group "><b>Feedback status:</b></div>
-                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment.png" class="qaComment feedbackStatus">New comment</div>
-                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_yellow.png" class="qaComment feedbackStatus">Pending to tackle</div>
-                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_green.png" class="qaComment feedbackStatus">Agreed</div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment.png" class="qaComment feedbackStatus">[@s.text name="feedbackStatus.blue" /]</div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_yellow.png" class="qaComment feedbackStatus">[@s.text name="feedbackStatus.yellow" /]</div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_green.png" class="qaComment feedbackStatus">[@s.text name="feedbackStatus.green" /]</div>
               </div>
             </div>
           [/#if]
@@ -659,6 +659,13 @@
         
         <div class="form-group text-area-container">
           [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isYearRequired(milestoneYear) className="limitWords-100" editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false/]
+              [#if isYearRequired(milestoneYear)]
+                <div class="text-left">
+                  [@popUps.relationsMacro element=projectOutcome labelText=true /]
+                  [@popUps.relationsMacro element=projectOutcome tag="expectedOutcomes" labelText=true /]
+                  [@popUps.relationsMacro element=projectOutcome tag="innovationOutcomes" labelText=true /]
+                </div>
+              [/#if]
         </div>
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
