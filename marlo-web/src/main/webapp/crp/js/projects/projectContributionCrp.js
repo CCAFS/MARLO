@@ -1,6 +1,6 @@
 $(document).ready(init);
 
-var milestonesCount, outcomeID, textareaComment, parentID, projectID, phaseID, userID, link, userCanManageFeedback, isFeedbackActive, textareaReply, newData;
+var milestonesCount, outcomeID, textareaComment, parentID, projectID, phaseID, userID, link, userCanManageFeedback, userCanLeaveComments, isFeedbackActive, textareaReply, newData;
 var sectionName = 'projectContributionCrp';
 var contributionCRPAjaxURL = `/fieldsBySectionAndParent.do?sectionName=${sectionName}`;
 var arrayName = 'fieldsMap';
@@ -25,14 +25,14 @@ function init() {
   // Load Milestones ones
   $('form .milestonesYearSelect').each(loadMilestonesByYear);
 
-  textareaComment = $('textarea[id="Comment on"]');
-  textareaReply = $('textarea[id="Reply"]').parent();
   parentID = $('#parentID').html();
   projectID = $('#projectID').html();
   phaseID = $('#phaseID').html();
   userID = $('#userID').html();
   link = window.location.href;
   userCanManageFeedback = $('#userCanManageFeedback').html();
+  userCanLeaveComments = $('#userCanLeaveComments').html();
+  console.log('can comment', userCanLeaveComments, 'can reply', userCanManageFeedback);
   isFeedbackActive = $('#isFeedbackActive').html();
 
   // Attaching events functions
@@ -63,15 +63,22 @@ function attachEvents() {
     let popUpTitle = $(this).attr('description');
     let qaPopup = $(`div[id^="qaPopup-${name}"]`);
     let block = $(`div[id^="qaCommentReply-${name}"]`);
+    let lastIndex = block.last().attr('index');
 
     fieldID = $(this).attr('fieldID');
-    block.find('textarea[id="Comment on"]').prev('label').html(`Comment on "${popUpTitle}":`);
-    block.find('.sendCommentContainer').attr('name', name);
+    block.each((index, item) => {
+      if ($(item).attr('index') == 0) {
+        $(item).find('textarea[id="Comment"]').prev('label').html(`Comment on "${popUpTitle}":`);
+      }
+    });
+
+    block.find('.sendCommentContainer').attr('name', `${name}[${lastIndex}]`);
     block.find('.agreeCommentBtn').attr('name', name);
     block.find('.disagreeCommentBtn').attr('name', name);
     block.find('.clarificationCommentBtn').attr('name', name);
     block.find('.replyCommentBtn').attr('name', name);
-    block.find('.sendReplyContainer').attr('name', name);
+    block.find('.sendReplyContainer').attr('name', `${name}[${lastIndex}]`);
+    block.find('div.addCommentContainer').attr('name', name);
 
     loadCommentsByUser(name);
 
@@ -95,9 +102,17 @@ function attachEvents() {
   $('div.sendCommentContainer').on('click', function () {
     let name = $(this).attr('name');
     let block = $(`div[id^="qaCommentReply-${name}"]`);
-    let textarea = block.find('textarea[id="Comment on"]');
+    let textarea = block.find('textarea[id="Comment"]');
+    let value = textarea.val();
     let comment = textarea.next().html();
-    let cleanComment = comment.replaceAll('.<br>.', '');
+    let cleanComment;
+
+    if (value && value != '') {
+      cleanComment = value.replaceAll('.<br>.', '');
+    } else {
+      cleanComment = comment.replaceAll('.<br>.', '');
+    }
+
     cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
 
     if (cleanComment != '' && cleanComment != ' ') {
@@ -106,13 +121,6 @@ function attachEvents() {
     } else {
       textarea.css('border', '2px solid red');
     }
-  });
-
-  $('img.addCommentBlock').on('click', function () {
-    let popup = $(this).parent().parent().parent();
-    let commentReplyBlock = popup.siblings('#qaTemplate').find('.qaPopup').children()[2];
-    let newBlock = $(commentReplyBlock).clone(true).removeAttr('id');
-    newBlock.appendTo(popup).hide().show();
   });
 
   $('img.disagreeCommentBtn').on('click', function () {
@@ -156,8 +164,16 @@ function attachEvents() {
     let commentID = $(this).attr('commentId');
     let block = $(`div[id^="qaCommentReply-${name}"]`);
     let textarea = block.find('textarea[id="Reply"]');
+    let value = textarea.val();
     let comment = textarea.next().html();
-    let cleanComment = comment.replaceAll('.<br>.', '');
+    let cleanComment;
+
+    if (value && value != '') {
+      cleanComment = value.replaceAll('.<br>.', '');
+    } else {
+      cleanComment = comment.replaceAll('.<br>.', '');
+    }
+
     cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
 
     if (cleanComment != '' && cleanComment != ' ') {
@@ -166,6 +182,23 @@ function attachEvents() {
     } else {
       textarea.css('border', '2px solid red');
     }
+  });
+
+  $('div.addCommentContainer').on('click', function () {
+    $(this).hide();
+    let name = $(this).attr('name');
+    let qaPopup = $(`div[id^="qaPopup-${name}"]`);
+    let lastIndex = $(`div[id^="qaCommentReply-${name}"]`).last().attr('index');
+    lastIndex = parseInt(lastIndex) + 1;
+    let commentReplyBlock = qaPopup.siblings('#qaTemplate').find('.qaPopup').children()[2];
+    let newBlock = $(commentReplyBlock).clone(true).attr('id', `qaCommentReply-${name}[${lastIndex}]`);
+
+    newBlock.attr('index', `${lastIndex}`);
+    newBlock.find('.sendCommentContainer').attr('name', `${name}[${lastIndex}]`);
+    newBlock.find('.sendReplyContainer').attr('name', `${name}[${lastIndex}]`);
+    newBlock.find('.addCommentContainer').attr('name', `${name}`);
+    newBlock.find('.addCommentContainer').attr('index', `${lastIndex}`);
+    newBlock.appendTo(qaPopup).hide().show();
   });
 }
 
@@ -215,16 +248,24 @@ function hideShowOptionButtons(block, status) {
 
 // Multiple comments-replies
 function loadCommentsByUser(name) {
+  // Removes the last index in brackets, i.e: [0]
+  name = name.replace(/\[[^\]]*\]$/, '');
+
   if (qaComments.length > 0) {
     for (let i = 0; i < qaComments.length; i++) {
       if (qaComments[i].frontName == name) {
         let commentsLength = Object.keys(qaComments[i]).length;
-
+        
         for (let j = 0; j < commentsLength; j++) {
           if (qaComments[i][j] !== undefined) {
             let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
-            block.find('textarea[id="Comment on"]').hide();
-            block.find('textarea[id="Comment on"]').next().next('p.charCount').hide();
+            
+            if (j != 0) {
+              block.find('textarea[id="Comment"]').prev().hide();
+            }
+
+            block.find('textarea[id="Comment"]').hide();
+            block.find('textarea[id="Comment"]').next().next('p.charCount').hide();
             block.find('.commentContainer').show();
             block.find('.commentContainer .commentTitle').html(`Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
             block.find('.commentContainer p.commentReadonly').html(`${qaComments[i][j].comment}`);
@@ -234,6 +275,22 @@ function loadCommentsByUser(name) {
             block.find('.disagreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
             block.find('.clarificationCommentBtn').attr('commentId', qaComments[i][j].commentId);
             block.find('.replyCommentBtn').attr('commentId', qaComments[i][j].commentId);
+
+            if (userCanLeaveComments == 'true') {
+              let addBtn = block.find('.addCommentContainer');
+              const index = commentsLength - 2;
+              
+              if (addBtn.attr('index') == index) {
+                addBtn.show();
+                let blockDup = $(`div[id="qaCommentReply-${name}[${j + 1}]"]`);
+
+                if (blockDup.length != 0) {
+                  addBtn.hide();
+                }
+              } else {
+                addBtn.hide();
+              }
+            }
 
             if (userCanManageFeedback == 'true') {
               block.find('.optionsContainer').css('display', 'flex');
@@ -250,80 +307,39 @@ function loadCommentsByUser(name) {
               block.find('.replyTextContainer p.replyReadonly').html(`${qaComments[i][j].reply['text']}`);
               block.find('.replyCommentBtn').hide();
               block.find('.sendReplyContainer').hide();
+              block.find('.addCommentContainer').show();
             } else {
-              if (qaComments[i][j].status && qaComments[i][j].status == '1') {
-                block.find('textarea[id="Reply"]').parent().show();
-                block.find('.replyContainer').hide();
-                block.find('.replyTextContainer').hide();
-                block.find('.replyCommentBtn').show();
-                block.find('.sendReplyContainer').show();
+              if (qaComments[i][j].status && qaComments[i][j].status != '') {
+                if (qaComments[i][j].status == '1') {
+                  block.find('textarea[id="Reply"]').parent().show();
+                  block.find('.replyContainer').hide();
+                  block.find('.replyTextContainer').hide();
+                  block.find('.replyCommentBtn').show();
+                  block.find('.sendReplyContainer').show();
+                  block.find('.addCommentContainer').hide();
+                } else {
+                  block.find('textarea[id="Reply"]').parent().show();
+                  block.find('.replyContainer').show();
+                  block.find('.replyTextContainer').hide();
+                  block.find('.replyCommentBtn').hide();
+                  block.find('.sendReplyContainer').show();
+                  block.find('.addCommentContainer').hide();
+                }
               } else {
-                block.find('textarea[id="Reply"]').parent().show();
-                block.find('.replyContainer').show();
-                block.find('.replyTextContainer').hide();
+                // block.find('textarea[id="Reply"]').parent().show();
+                // block.find('.replyContainer').show();
+                // block.find('.replyTextContainer').hide();
                 block.find('.replyCommentBtn').hide();
-                block.find('.sendReplyContainer').show();
+                // block.find('.sendReplyContainer').show();
+                // block.find('.addCommentContainer').show();
               }
             }
           }
         }
       }
     }
-  } 
+  }
 }
-
-// Single comment-reply
-// function loadCommentsByUser(name) {
-//   if (qaComments.length > 0) {
-//     for (let i = 0; i < qaComments.length; i++) {
-//       if (qaComments[i].frontName == name) {
-//         if (qaComments[i].comment && qaComments[i].comment != '') {
-//           commentID = qaComments[i].commentId;
-//           textareaComment.hide();
-//           textareaComment.next().next('p.charCount').hide();
-//           $('.commentContainer').show();
-//           $('.commentContainer .commentTitle').html(`Comment by ${qaComments[i].userName} at ${qaComments[i].date}`);
-//           $('.commentContainer p.commentReadonly').html(`${qaComments[i].comment}`);
-//           $('#sendCommentContainer').css('display', 'none');
-
-//           if (userCanManageFeedback == 'true') {
-//             $('.optionsContainer').css('display', 'flex');
-//             hideShowOptionButtons(qaComments[i].status);
-//           }
-
-//           if (qaComments[i].reply && qaComments[i].reply != '') {
-//             textareaReply.hide();
-//             $('.replyContainer').show();
-//             $('.replyTextContainer').show();
-//             $('.replyTextContainer .replyTitle').html(`Comment by ${qaComments[i].userName_reply} at ${qaComments[i].date_reply}`);
-//             $('.replyTextContainer p.replyReadonly').html(`${qaComments[i].reply}`);
-//             $('#sendReplyContainer').css('display', 'none');
-//             $('#replyCommentBtn').hide();
-//           } else {
-//             textareaReply.show();
-//             $('.replyContainer').hide();
-//             $('.replyTextContainer').hide();
-//             $('#sendReplyContainer').css('display', 'flex');
-//             // $('#replyCommentBtn').show();
-//           }
-//           break;
-//         }
-//       } else {
-//         textareaComment.show();
-//         textareaComment.next().next('p.charCount').show();
-//         $('.commentContainer').hide();
-//         textareaComment.val('');
-//         $('textarea[id="Reply"]').val('');
-//         $('#sendCommentContainer').css('display', 'flex');
-//         $('.optionsContainer').css('display', 'none');
-//         hideShowOptionButtons('');
-//         $('.replyContainer').hide();
-//       }
-//     }
-//   } else {
-//     $('.replyContainer').hide();
-//   }
-// }
 
 function loadQACommentsIcons(ajaxURL, arrayName) {
   $.ajax({
@@ -373,29 +389,6 @@ function showQAComments(data) {
         }
       }
     }
-    // for (let i = 0; i < qaComments.length; i++) {
-    //   if (x[1] == qaComments[i].frontName) {
-    //     let commentsLength = Object.keys(qaComments[i]).length;
-
-    //     for (let j = 0; j < commentsLength; j++) {
-    //       if (qaComments[i][j] !== undefined) {
-    //         if (qaComments[i][j].comment != '') {
-    //           commentIcon.attr('src', qaCommentsStatus('pending'));
-    //           if (qaComments[i][j].reply != '') {
-    //             commentIcon.attr('src', qaCommentsStatus('pending'));
-    //           }
-    //           // false
-    //           if (qaComments[i][j].status == ' ') {
-    //             commentIcon.attr('src', qaCommentsStatus('done'));
-    //           } else if (qaComments[i][j].status != '') {
-    //             // true
-    //             commentIcon.attr('src', qaCommentsStatus('done'));
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
     commentIcon.show();
   });
 }
