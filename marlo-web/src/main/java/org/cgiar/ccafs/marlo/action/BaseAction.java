@@ -70,6 +70,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
@@ -530,6 +531,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private ReportSynthesisManager reportSynthesisManager;
   @Inject
   private MarloMessageManager marloMessageManager;
+  @Inject
+  private ProjectPartnerPersonManager projectPartnerPersonManager;
+  @Inject
+  private ProjectPartnerManager projectPartnerManager;
 
   private StringBuilder validationMessage = new StringBuilder();
 
@@ -1322,7 +1327,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return response;
   }
 
-  public boolean canManageFeedback() {
+  public boolean canManageFeedback(Long projectID) {
     boolean response = false;
 
     // TODO: Update the permissions for manage feedback comments
@@ -1339,6 +1344,40 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             response = true;
           }
         }
+      }
+    }
+
+    if (projectID != null && response) {
+      try {
+        List<ProjectPartner> projectPartners =
+          projectPartnerManager.getProjectPartnersForProjectWithActiveProjectPartnerPersons(projectID);
+        List<ProjectPartnerPerson> projectParnerPersons = new ArrayList<>();
+        if (projectPartners != null) {
+          for (ProjectPartner projectPartner : projectPartners) {
+            if (projectPartner != null && projectPartner.getId() != null) {
+              projectParnerPersons = projectPartnerPersonManager.findAllActiveForProjectPartner(projectPartner.getId());
+
+              if (projectParnerPersons != null) {
+                projectParnerPersons = projectParnerPersons.stream()
+                  .filter(pp -> pp != null && pp.getUser() != null && pp.getUser().getId() != null
+                    && this.getCurrentUser() != null && pp.getUser().getId().equals(this.getCurrentUser().getId()))
+                  .collect(Collectors.toList());
+
+                if (projectParnerPersons != null) {
+                  for (ProjectPartnerPerson projectParnerPerson : projectParnerPersons) {
+                    if (projectParnerPerson != null && projectParnerPerson.getContactType() != null
+                      && (projectParnerPerson.getContactType().equals("PL")
+                        && projectParnerPerson.getContactType().equals("PC"))) {
+
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (Exception e) {
+        LOG.error("Error getting project partners ", e);
       }
     }
     return response;
