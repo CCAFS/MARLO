@@ -867,7 +867,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
     milestonesProject = new ArrayList<>();
     milestonesProject.addAll(crpMilestones);
-    milestonesProject.sort(Comparator.comparing(CrpMilestone::getYear));
+    milestonesProject.sort(Comparator.comparing(CrpMilestone::getYear, Comparator.reverseOrder()));
     // Collections.sort(milestonesProject, (m1, m2) -> m1.getIndex().compareTo(m2.getIndex()));
 
     if (this.isReportingActive()) {

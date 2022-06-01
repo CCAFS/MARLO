@@ -32,7 +32,7 @@ public interface DeliverableCrpOutcomeManager {
    * @param deliverableCrpOutcomeId is the deliverableCrpOutcome identifier.
    * @return true if the deliverableCrpOutcome was successfully deleted, false otherwise.
    */
-  public void deleteDeliverableCrpOutcome(long deliverableCrpOutcomeId);
+  public void deleteDeliverableCrpOutcome(long deliverableCrpOutcomeId, long phaseId);
 
 
   /**
@@ -64,7 +64,8 @@ public interface DeliverableCrpOutcomeManager {
    * This method saves the information of the given deliverableCrpOutcome
    * 
    * @param deliverableCrpOutcome - is the deliverableCrpOutcome object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableCrpOutcome was
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableCrpOutcome
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */
