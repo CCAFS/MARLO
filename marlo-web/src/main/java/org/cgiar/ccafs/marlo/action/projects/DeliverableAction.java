@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDataSharingFileManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
@@ -82,6 +83,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
@@ -232,6 +234,7 @@ public class DeliverableAction extends BaseAction {
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
   private ProjectOutcomeManager projectOutcomeManager;
   private DeliverableProjectOutcomeManager deliverableProjectOutcomeManager;
+  private DeliverableCrpOutcomeManager deliverableCrpOutcomeManager;
 
   // Variables
   private List<DeliverableQualityAnswer> answers;
@@ -318,7 +321,8 @@ public class DeliverableAction extends BaseAction {
     DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, DeliverableActivityManager deliverableActivityManager,
     ProjectDeliverableSharedManager projectDeliverableSharedManager, PhaseManager phaseManager,
-    ProjectOutcomeManager projectOutcomeManager, DeliverableProjectOutcomeManager deliverableProjectOutcomeManager) {
+    ProjectOutcomeManager projectOutcomeManager, DeliverableProjectOutcomeManager deliverableProjectOutcomeManager,
+    DeliverableCrpOutcomeManager deliverableCrpOutcomeManager) {
     super(config);
     this.activityManager = activityManager;
     this.deliverableManager = deliverableManager;
@@ -375,6 +379,7 @@ public class DeliverableAction extends BaseAction {
     this.phaseManager = phaseManager;
     this.projectOutcomeManager = projectOutcomeManager;
     this.deliverableProjectOutcomeManager = deliverableProjectOutcomeManager;
+    this.deliverableCrpOutcomeManager = deliverableCrpOutcomeManager;
   }
 
   @Override
@@ -1136,6 +1141,12 @@ public class DeliverableAction extends BaseAction {
             .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
         }
 
+        // Deliverable Crp Outcome list
+        if (deliverable.getDeliverableCrpOutcomes() != null) {
+          deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+        }
+
         // Expected Study Geographic Regions List
         if (deliverable.getDeliverableGeographicRegions() != null
           && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
@@ -1820,6 +1831,10 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getProjectOutcomes() != null) {
           deliverable.getProjectOutcomes().clear();
         }
+
+        if (deliverable.getCrpOutcomes() != null) {
+          deliverable.getCrpOutcomes().clear();
+        }
       }
 
       try {
@@ -1862,8 +1877,8 @@ public class DeliverableAction extends BaseAction {
       // Save Geographic Scope Data
       this.saveGeographicScope(deliverableManagedState, this.getActualPhase());
 
-      this.saveProjectOutcomes(deliverableDB, this.getActualPhase());
-
+      // this.saveProjectOutcomes(deliverableDB, this.getActualPhase());
+      this.saveCrpOutcomes(deliverableDB, this.getActualPhase());
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -2084,6 +2099,53 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  /**
+   * Save Deliverable Crp Program Outcome Information
+   * 
+   * @param delivearble
+   * @param phase
+   */
+  public void saveCrpOutcomes(Deliverable deliverable, Phase phase) {
+
+    // Search and deleted form Information
+    if (deliverable.getDeliverableCrpOutcomes() != null && deliverable.getDeliverableCrpOutcomes().size() > 0) {
+
+      List<DeliverableCrpOutcome> outcomePrev = new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+        .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (DeliverableCrpOutcome deliverableOutcome : outcomePrev) {
+        if (this.deliverable.getCrpOutcomes() == null
+          || !this.deliverable.getCrpOutcomes().contains(deliverableOutcome)) {
+          this.deliverableCrpOutcomeManager.deleteDeliverableCrpOutcome(deliverableOutcome.getId(),
+            this.getActualPhase().getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.deliverable.getCrpOutcomes() != null) {
+      for (DeliverableCrpOutcome deliverableOutcome : this.deliverable.getCrpOutcomes()) {
+        if (deliverableOutcome.getId() == null) {
+          DeliverableCrpOutcome deliverableOutcomeSave = new DeliverableCrpOutcome();
+          deliverableOutcomeSave.setDeliverable(deliverable);
+          deliverableOutcomeSave.setPhase(phase);
+
+          if (deliverableOutcome.getCrpProgramOutcome() != null
+            && deliverableOutcome.getCrpProgramOutcome().getId() != null) {
+            CrpProgramOutcome outcome =
+              crpProgramOutcomeManager.getCrpProgramOutcomeById(deliverableOutcome.getCrpProgramOutcome().getId());
+            deliverableOutcomeSave.setCrpProgramOutcome(outcome);
+
+            this.deliverableCrpOutcomeManager.saveDeliverableCrpOutcome(deliverableOutcomeSave);
+            // This is to add studyCrpSave to generate correct auditlog.
+            this.deliverable.getDeliverableCrpOutcomes().add(deliverableOutcomeSave);
+          }
+        }
+      }
+    }
+  }
+
+
   public void saveCrps() {
     if (deliverable.getCrps() == null) {
       deliverable.setCrps(new ArrayList<>());
@@ -2119,7 +2181,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   public void saveDataSharing() {
     if (deliverable.getFiles() == null) {

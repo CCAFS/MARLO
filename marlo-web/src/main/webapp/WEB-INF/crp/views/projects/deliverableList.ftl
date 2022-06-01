@@ -130,7 +130,8 @@
           </div>
 
           [#-- Add Deliverable Button --]
-          [#if canEdit && action.hasPermission("addDeliverable")]
+          [#-- if canEdit && action.hasPermission("addDeliverable")--]
+          [#if canEdit && (action.hasPermissionDeliverable("addDeliverable", projectID, "deliverableList")|| action.hasPermission("addDeliverable"))]
           <div class="buttons">
             <div class="buttons-content">
               <div class="addDeliverable button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/addNewDeliverable'][@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
