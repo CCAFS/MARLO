@@ -7183,6 +7183,7 @@ img.qaComment {
 
 .commentContainer, .replyTextContainer {
   display: none;
+  width: 100%;
   background: white;
   border: 1px solid #D1D1D1;
   border-radius: 3px;
@@ -7239,7 +7240,7 @@ img.qaComment {
 .addCommentContainer {
   width: 25px;
   height: 25px;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   float: right;

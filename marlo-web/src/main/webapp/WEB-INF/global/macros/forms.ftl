@@ -875,8 +875,8 @@
     [#local showTitle = false]
   [/#if]
   
-  <div id="qaCommentReply-${name}[${index}]" class="qaCommentReplyBlock">
-    [@customForm.textArea name="Comment on" required=false className="limitWords-100" editable=editable showTitle=showTitle /]
+  <div id="qaCommentReply-${name}[${index}]" class="qaCommentReplyBlock" index="${index}">
+    [@customForm.textArea name="Comment" required=false className="limitWords-100" editable=editable showTitle=showTitle /]
     <div class="commentCheckContainer">
       <div class="commentContainer">
         <div class="commentTitle"></div>
@@ -905,6 +905,6 @@
       <img class="clarificationCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/question.png" title="Clarification needed">
       <img class="replyCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/auto-reply.png" title="Reply">
     </div>
-    [#--  <div class="addCommentContainer"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>  --]
+    <div class="addCommentContainer" index="${index}"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>
   </div>
 [/#macro]
