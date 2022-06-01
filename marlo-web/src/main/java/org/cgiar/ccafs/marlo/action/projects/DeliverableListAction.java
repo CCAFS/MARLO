@@ -401,8 +401,34 @@ public class DeliverableListAction extends BaseAction {
             .collect(Collectors.toList())
           : Collections.emptyList();
 
+
       if (deliverableShared != null && !deliverableShared.isEmpty()) {
         for (ProjectDeliverableShared deliverableS : deliverableShared) {
+          List<ProjectDeliverableShared> deliverablesTemp = projectDeliverableSharedManager
+            .getByDeliverable(deliverableS.getDeliverable().getId(), this.getActualPhase().getId());
+
+          if (deliverablesTemp != null && !deliverablesTemp.isEmpty()) {
+            for (ProjectDeliverableShared deliverableTemp : deliverablesTemp) {
+
+              if (deliverableTemp.getDeliverable().getSharedWithProjects() == null
+                || (deliverableTemp.getDeliverable().getSharedWithProjects() != null
+                  && deliverableTemp.getDeliverable().getSharedWithProjects().isEmpty())) {
+
+                deliverableTemp.getDeliverable().setSharedWithProjects(
+                  "" + deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+
+              } else {
+                if (deliverableTemp.getDeliverable().getSharedWithProjects() != null
+                  && (!deliverableTemp.getDeliverable().getSharedWithProjects()
+                    .contains(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym()))) {
+                  deliverableTemp.getDeliverable()
+                    .setSharedWithProjects(deliverableTemp.getDeliverable().getSharedWithProjects() + "; "
+                      + deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                }
+              }
+            }
+          }
+
           if (!currentDeliverableList.contains(deliverableS.getDeliverable())) {
             currentDeliverableList.add(deliverableS.getDeliverable());
           }
