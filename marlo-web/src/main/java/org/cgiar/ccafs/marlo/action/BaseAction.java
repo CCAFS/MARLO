@@ -2958,6 +2958,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
 
           try {
+
+            // Shared with others
+            List<ProjectDeliverableShared> deliverablesSharedFromOther = new ArrayList<>();
+
+            deliverablesSharedFromOther = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
+            if (deliverablesSharedOther != null && !deliverablesSharedOther.isEmpty()) {
+              deliverablesSharedOther = deliverablesSharedOther.stream()
+                .filter(ds -> ds.getDeliverable() != null && ds.getProject().getId().equals(projectID))
+                .collect(Collectors.toList());
+            }
             // Load Shared deliverables
             List<ProjectDeliverableShared> deliverableShared = this.projectDeliverableSharedManager
               .getByProjectAndPhase(projectID, this.getActualPhase().getId()) != null
@@ -2991,6 +3001,29 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                             .getProjecInfoPhase(this.getActualPhase()).getAcronym());
                           deliverableS.getDeliverable().setSharedWithMe(deliverableS.getDeliverable().getProject()
                             .getProjecInfoPhase(this.getActualPhase()).getAcronym());
+
+
+                          // Shared clusters from others deliverables
+                          for (ProjectDeliverableShared sharedOthers : deliverablesSharedFromOther) {
+                            if (sharedOthers.getDeliverable().getId().equals(deliverableS.getDeliverable().getId())) {
+
+                              if (deliverableS.getDeliverable().getSharedWithProjects() == null
+                                || (deliverableS.getDeliverable().getSharedWithProjects() != null
+                                  && deliverableS.getDeliverable().getSharedWithProjects().isEmpty())) {
+                                deliverableS.getDeliverable().setSharedWithProjects(""
+                                  + sharedOthers.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                              } else {
+                                if (deliverableS.getDeliverable().getSharedWithProjects() != null
+                                  && (!deliverableS.getDeliverable().getSharedWithProjects().contains(sharedOthers
+                                    .getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym()))) {
+                                  deliverableS.getDeliverable().setSharedWithProjects(
+                                    deliverableS.getDeliverable().getSharedWithProjects() + "; " + sharedOthers
+                                      .getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                                }
+                              }
+
+                            }
+                          }
 
                         }
                         deliverables.add(deliverableS.getDeliverable());
