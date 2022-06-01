@@ -282,6 +282,11 @@ function loadCommentsByUser(name) {
               
               if (addBtn.attr('index') == index) {
                 addBtn.show();
+                let blockDup = $(`div[id="qaCommentReply-${name}[${j + 1}]"]`);
+
+                if (blockDup.length != 0) {
+                  addBtn.hide();
+                }
               } else {
                 addBtn.hide();
               }
