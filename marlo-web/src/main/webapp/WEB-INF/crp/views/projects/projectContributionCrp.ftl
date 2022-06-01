@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220525a", 
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220601b", 
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
@@ -90,6 +90,7 @@
           <span id="userID" style="display: none;">${currentUser.id!}</span>
           <span id="projectID" style="display: none;">${projectID!}</span>
           <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback()?c)!}</span>
+          <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
           <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
 
           [#-- Outcomen name --]
