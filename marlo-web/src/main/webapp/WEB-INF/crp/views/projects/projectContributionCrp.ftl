@@ -68,9 +68,9 @@
             <div class="form-group col-md-12 legendContent">
               <div class="colors">
                 <div class="col-md-12 form-group "><b>Feedback status:</b></div>
-                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment.png" class="qaComment feedbackStatus">[@s.text name="feedbackStatus.blue" /]</div>
-                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_yellow.png" class="qaComment feedbackStatus">[@s.text name="feedbackStatus.yellow" /]</div>
-                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_green.png" class="qaComment feedbackStatus">[@s.text name="feedbackStatus.green" /]</div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.blue" /]</div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_yellow.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.yellow" /]</div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_green.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.green" /]</div>
               </div>
             </div>
           [/#if]
