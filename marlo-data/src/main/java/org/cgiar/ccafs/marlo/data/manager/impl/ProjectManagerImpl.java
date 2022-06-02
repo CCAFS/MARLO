@@ -15,15 +15,22 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.data.dao.GlobalUnitDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
+import org.cgiar.ccafs.marlo.data.dao.RoleDAO;
+import org.cgiar.ccafs.marlo.data.dao.UserRoleDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.Role;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -36,14 +43,19 @@ public class ProjectManagerImpl implements ProjectManager {
 
 
   private ProjectDAO projectDAO;
+  private UserRoleDAO userRoleDAO;
+  private RoleDAO roleDAO;
+  private GlobalUnitDAO globalUnitDAO;
   // Managers
 
 
   @Inject
-  public ProjectManagerImpl(ProjectDAO projectDAO) {
+  public ProjectManagerImpl(ProjectDAO projectDAO, UserRoleDAO userRoleDAO, RoleDAO roleDAO,
+    GlobalUnitDAO globalUnitDAO) {
     this.projectDAO = projectDAO;
-
-
+    this.userRoleDAO = userRoleDAO;
+    this.roleDAO = roleDAO;
+    this.globalUnitDAO = globalUnitDAO;
   }
 
   @Override
@@ -107,6 +119,48 @@ public class ProjectManagerImpl implements ProjectManager {
       for (Map<String, Object> map : view) {
         projects.add(this.getProjectById((Long.parseLong(map.get("project_id").toString()))));
       }
+    }
+
+    try {
+      List<UserRole> userRoles = userRoleDAO.getUserRolesByUserId(userId);
+      List<Role> roles = new ArrayList<>();
+      List<Project> projectsTemp = new ArrayList<>();
+      if (userRoles != null) {
+        for (UserRole userRole : userRoles) {
+          if (userRole != null && userRole.getRole() != null) {
+            if (roles == null || (roles != null && !roles.contains(userRole.getRole()))) {
+              roles.add(userRole.getRole());
+            }
+          }
+        }
+        if (roles != null) {
+          GlobalUnit globalUnit = globalUnitDAO.findGlobalUnitByAcronym(crp);
+          Role roleFPM = roleDAO.findAll().stream()
+            .filter(r -> r != null && r.getCrp() != null && globalUnit != null
+              && r.getCrp().getId().equals(globalUnit.getId()) && r.getAcronym().equals("FPM"))
+            .collect(Collectors.toList()).get(0);
+          Role roleFPL = roleDAO.findAll().stream()
+            .filter(r -> r != null && r.getCrp() != null && globalUnit != null
+              && r.getCrp().getId().equals(globalUnit.getId()) && r.getAcronym().equals("FPL"))
+            .collect(Collectors.toList()).get(0);
+
+          if (roles.contains(roleFPM) || roles.contains(roleFPL)) {
+            projectsTemp =
+              projectDAO.findAll().stream().filter(p -> p != null && p.isActive()).collect(Collectors.toList());
+
+            if (projectsTemp != null) {
+              for (Project project : projectsTemp) {
+                if (projects == null || (projects != null && !projects.contains(project))) {
+                  projects.add(project);
+                }
+              }
+            }
+          }
+
+        }
+      }
+    } catch (Exception e) {
+
     }
 
     return projects;
