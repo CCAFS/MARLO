@@ -7166,6 +7166,11 @@ img.qaComment {
   margin-left: 5px;
 }
 
+img.qaCommentStatus {
+  width: 25px;
+  margin-right: 5px;
+}
+
 #qaPopup, .qaPopup {
   display: none;
   position: absolute;
