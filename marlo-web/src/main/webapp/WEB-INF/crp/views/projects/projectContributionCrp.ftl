@@ -89,7 +89,7 @@
           <span id="phaseID" style="display: none;">${phaseID!}</span>
           <span id="userID" style="display: none;">${currentUser.id!}</span>
           <span id="projectID" style="display: none;">${projectID!}</span>
-          <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback()?c)!}</span>
+          <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
           <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
           <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
 
