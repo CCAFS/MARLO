@@ -61,6 +61,9 @@
           [#if !(action.hasPermission("statusDescription")) ]
             <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
           [/#if]
+          [#if action.hasSpecificities('feedback_active') && action.canLeaveComments()]
+            <p class="helpMessage infoText">[@s.text name="saving.read.privileges.section.feedeback" /]</p>
+          [/#if]
         [#else]
           [#if !editStatus]
             <p class="readPrivileges">[@s.text name="project.preset.messagge" /]</p>
