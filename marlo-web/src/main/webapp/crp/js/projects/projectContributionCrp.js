@@ -211,7 +211,7 @@ function hideShowOptionButtons(block, status) {
   switch (status) {
     case '0':
       textarea.prev().find('span.red.requiredTag').show();
-      block.find('.buttonsContainer').hide();
+      // block.find('.buttonsContainer').hide();
       block.find('img.disagreeCommentBtn').hide();
       block.find('.commentContainer').css('background', '#e8a9a4');
       block.find('.replyTextContainer').css('background', '#e8a9a4');
@@ -228,7 +228,7 @@ function hideShowOptionButtons(block, status) {
       break;
     case '2':
       textarea.prev().find('span.red.requiredTag').show();
-      block.find('.buttonsContainer').hide();
+      // block.find('.buttonsContainer').hide();
       block.find('img.clarificationCommentBtn').hide();
       block.find('.commentContainer').css('background', '#a4cde8');
       block.find('.replyTextContainer').css('background', '#a4cde8');
@@ -283,12 +283,15 @@ function loadCommentsByUser(name) {
               if (addBtn.attr('index') == index) {
                 btnsContainer.show();
                 addBtn.show();
+                
                 let blockDup = $(`div[id="qaCommentReply-${name}[${j + 1}]"]`);
 
                 if (blockDup.length != 0) {
+                  btnsContainer.hide();
                   addBtn.hide();
                 }
               } else {
+                btnsContainer.hide();
                 addBtn.hide();
               }
             }
@@ -308,10 +311,9 @@ function loadCommentsByUser(name) {
               block.find('.replyTextContainer').show();
               block.find('.replyTextContainer .replyTitle').html(`Reply by ${qaComments[i][j].reply['userName']} at ${qaComments[i][j].reply['date']}`);
               block.find('.replyTextContainer p.replyReadonly').html(`${qaComments[i][j].reply['text']}`);
-              block.find('.buttonsContainer').hide();
+              // block.find('.buttonsContainer').hide();
               block.find('.replyCommentBtn').hide();
               block.find('.sendReplyContainer').hide();
-              // block.find('.addCommentContainer').show();
             } else {
               if (qaComments[i][j].status && qaComments[i][j].status != '') {
                 if (qaComments[i][j].status == '1') {
@@ -320,22 +322,15 @@ function loadCommentsByUser(name) {
                   block.find('.replyTextContainer').hide();
                   block.find('.replyCommentBtn').show();
                   block.find('.sendReplyContainer').show();
-                  // block.find('.addCommentContainer').hide();
                 } else {
                   block.find('textarea[id="Reply"]').parent().show();
                   block.find('.replyContainer').css('display', 'flex');
                   block.find('.replyTextContainer').hide();
                   block.find('.replyCommentBtn').hide();
                   block.find('.sendReplyContainer').show();
-                  // block.find('.addCommentContainer').hide();
                 }
               } else {
-                // block.find('textarea[id="Reply"]').parent().show();
-                // block.find('.replyContainer')..css('display', 'flex');
-                // block.find('.replyTextContainer').hide();
                 block.find('.replyCommentBtn').hide();
-                // block.find('.sendReplyContainer').show();
-                // block.find('.addCommentContainer').show();
               }
             }
           }
@@ -396,9 +391,11 @@ function showQAComments(data) {
         commentIcon.show();
       } else if (userCanLeaveComments == 'false' && userCanManageFeedback == 'true') {
         commentIcon.hide();
-      } else if(userCanLeaveComments == 'true') {
-        commentIcon.show();
       }
+    }
+
+    if(userCanLeaveComments == 'true') {
+      commentIcon.show();
     }
   });
 }
