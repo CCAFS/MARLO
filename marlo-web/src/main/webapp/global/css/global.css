@@ -7194,8 +7194,8 @@ img.qaCommentStatus {
   border-radius: 3px;
 }
 
-.replyTextContainer {
-  margin-left: 23px;
+.replyContainer {
+  padding-left: 10px;
 }
 
 .commentTitle, .replyTitle {
@@ -7209,6 +7209,7 @@ img.qaCommentStatus {
 }
 
 .commentReadonly, .replyReadonly {
+  color: black;
   font-size: 13px;
   padding: 4px 10px;
 }
@@ -7228,9 +7229,10 @@ img.qaCommentStatus {
 
 .replyContainer {
   display: none;
+  flex-flow: column;
 }
 
-.sendCommentContainer, .sendReplyContainer {
+.sendCommentContainer {
   width: 25px;
   height: 25px;
   display: flex;
@@ -7240,6 +7242,18 @@ img.qaCommentStatus {
   background-color: #0b7ba6;
   border-radius: 50%;
   float: right;
+}
+
+.sendReplyContainer {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 3px;
+  background-color: #0b7ba6;
+  border-radius: 50%;
+  align-self: flex-end;
 }
 
 .addCommentContainer {
@@ -7260,6 +7274,13 @@ img.sendComment {
   width: 15px;
   margin-left: 3px;
   cursor: pointer;
+}
+
+.buttonsContainer {
+  display: none;
+  width: 100%;
+  height: 20px;
+  margin-top: 5px;
 }
 
 .optionsContainer {

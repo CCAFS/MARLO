@@ -882,14 +882,13 @@
         <div class="commentTitle"></div>
         <p class="commentReadonly"></p>
       </div>
-      <div class="checkContainer">
+      [#--  <div class="checkContainer">
         <img src="${baseUrlCdn}/global/images/agree.png" class="agreeComment" title="Agree">
         <img src="${baseUrlCdn}/global/images/disagree.png" class="disagreeComment" title="Disagree">
         <img src="${baseUrlCdn}/global/images/question.png" class="clarificationComment" title="Clarification needed">
-      </div>
+      </div>  --]
     </div>
     <div class="replyContainer">
-      <br>
       [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
       <div class="replyTextContainer">
         <div class="replyTitle"></div>
@@ -897,14 +896,16 @@
       </div>
       <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
     </div>
-    <br>
     <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
-    <div class="optionsContainer">
-      <img class="agreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/agree.png" title="Agree">
-      <img class="disagreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/disagree.png" title="Disagree">
-      <img class="clarificationCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/question.png" title="Clarification needed">
-      <img class="replyCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/auto-reply.png" title="Reply">
+    <div class="buttonsContainer">
+      <div class="optionsContainer">
+        <img class="agreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/agree.png" title="Agree">
+        <img class="disagreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/disagree.png" title="Disagree">
+        <img class="clarificationCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/question.png" title="Clarification needed">
+        <img class="replyCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/auto-reply.png" title="Reply">
+      </div>
+      <div class="addCommentContainer" index="${index}"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>
     </div>
-    <div class="addCommentContainer" index="${index}"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>
+    <br>
   </div>
 [/#macro]
