@@ -7194,8 +7194,8 @@ img.qaCommentStatus {
   border-radius: 3px;
 }
 
-.replyTextContainer {
-  margin-left: 23px;
+.replyContainer {
+  padding-left: 10px;
 }
 
 .commentTitle, .replyTitle {
@@ -7209,6 +7209,7 @@ img.qaCommentStatus {
 }
 
 .commentReadonly, .replyReadonly {
+  color: black;
   font-size: 13px;
   padding: 4px 10px;
 }
