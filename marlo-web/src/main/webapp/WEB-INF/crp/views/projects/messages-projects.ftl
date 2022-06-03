@@ -62,7 +62,7 @@
             <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
           [/#if]
           [#if action.hasSpecificities('feedback_active') && action.canLeaveComments()]
-            <p class="helpMessage infoText">[@s.text name="saving.read.privileges.section.feedeback" /]</p>
+            <p class="helpMessage infoText" align="center">[@s.text name="saving.read.privileges.section.feedeback" /]</p>
           [/#if]
         [#else]
           [#if !editStatus]
