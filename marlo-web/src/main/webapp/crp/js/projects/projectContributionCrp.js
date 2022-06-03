@@ -306,7 +306,7 @@ function loadCommentsByUser(name) {
               block.find('.replyTextContainer').show();
               block.find('.replyTextContainer .replyTitle').html(`Reply by ${qaComments[i][j].reply['userName']} at ${qaComments[i][j].reply['date']}`);
               block.find('.replyTextContainer p.replyReadonly').html(`${qaComments[i][j].reply['text']}`);
-              // block.find('.buttonsContainer').hide();
+              block.find('.buttonsContainer').hide();
               block.find('.replyCommentBtn').hide();
               block.find('.sendReplyContainer').hide();
               // block.find('.addCommentContainer').show();
