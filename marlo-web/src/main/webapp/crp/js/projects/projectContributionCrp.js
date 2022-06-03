@@ -68,7 +68,7 @@ function attachEvents() {
 
     block.each((index, item) => {
       if ($(item).attr('index') == 0) {
-        $(item).find('textarea[id="Comment"]').prev('label').html(`Comment on "${popUpTitle}":`);
+        $(item).find('textarea[id="New comment"]').prev('label').html(`Comment on "${popUpTitle}":`);
       }
       
       $(item).find('.sendCommentContainer').attr('name', `${name}[${index}]`);
@@ -102,7 +102,7 @@ function attachEvents() {
   $('div.sendCommentContainer').on('click', function () {
     let name = $(this).attr('name');
     let block = $(`div[id^="qaCommentReply-${name}"]`);
-    let textarea = block.find('textarea[id="Comment"]');
+    let textarea = block.find('textarea[id="New comment"]');
     let value = textarea.val();
     let comment = textarea.next().html();
     let cleanComment;
@@ -126,17 +126,17 @@ function attachEvents() {
   $('img.disagreeCommentBtn').on('click', function () {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
-    let block = $(this).parent().parent();
-
+    let block = $(this).parent().parent().parent();
+    
     hideShowOptionButtons(block, '0');
     saveCommentStatus(0, commentID, name);
-    $('img.replyCommentBtn').click();
+    block.find('img.replyCommentBtn').click();
   });
 
   $('img.agreeCommentBtn').on('click', function () {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
-    let block = $(this).parent().parent();
+    let block = $(this).parent().parent().parent();
 
     hideShowOptionButtons(block, '1');
     saveCommentStatus(1, commentID, name);
@@ -145,11 +145,11 @@ function attachEvents() {
   $('img.clarificationCommentBtn').on('click', function () {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
-    let block = $(this).parent().parent();
+    let block = $(this).parent().parent().parent();
 
     hideShowOptionButtons(block, '2');
     saveCommentStatus(2, commentID, name);
-    $('img.replyCommentBtn').click();
+    block.find('img.replyCommentBtn').click();
   });
 
   $('img.replyCommentBtn').on('click', function () {
@@ -211,6 +211,7 @@ function hideShowOptionButtons(block, status) {
   switch (status) {
     case '0':
       textarea.prev().find('span.red.requiredTag').show();
+      block.find('.buttonsContainer').hide();
       block.find('img.disagreeCommentBtn').hide();
       block.find('.commentContainer').css('background', '#e8a9a4');
       block.find('.replyTextContainer').css('background', '#e8a9a4');
@@ -227,6 +228,7 @@ function hideShowOptionButtons(block, status) {
       break;
     case '2':
       textarea.prev().find('span.red.requiredTag').show();
+      block.find('.buttonsContainer').hide();
       block.find('img.clarificationCommentBtn').hide();
       block.find('.commentContainer').css('background', '#a4cde8');
       block.find('.replyTextContainer').css('background', '#a4cde8');
@@ -258,11 +260,11 @@ function loadCommentsByUser(name) {
             let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
 
             if (j != 0) {
-              block.find('textarea[id="Comment"]').prev().hide();
+              block.find('textarea[id="New comment"]').prev().hide();
             }
 
-            block.find('textarea[id="Comment"]').hide();
-            block.find('textarea[id="Comment"]').next().next('p.charCount').hide();
+            block.find('textarea[id="New comment"]').hide();
+            block.find('textarea[id="New comment"]').next().next('p.charCount').hide();
             block.find('.commentContainer').show();
             block.find('.commentContainer .commentTitle').html(`Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
             block.find('.commentContainer p.commentReadonly').html(`${qaComments[i][j].comment}`);
@@ -348,15 +350,17 @@ function loadQACommentsIcons(ajaxURL, arrayName) {
     url: baseURL + ajaxURL,
     async: false,
     success: function (data) {
-      if (data && Object.keys(data).length != 0) {
-        newData = data[arrayName].map(function (x) {
-          var arr = [];
-          arr.push(x.fieldID);
-          arr.push(x.fieldName);
-          arr.push(x.description);
-          return arr;
-        });
-        showQAComments(newData);
+      if ((userCanLeaveComments == 'true') || (userCanManageFeedback == 'true' && qaComments.length > 0)) {
+        if (data && Object.keys(data).length != 0) {
+          newData = data[arrayName].map(function (x) {
+            var arr = [];
+            arr.push(x.fieldID);
+            arr.push(x.fieldName);
+            arr.push(x.description);
+            return arr;
+          });
+          showQAComments(newData);
+        }
       }
     }
   });
@@ -367,7 +371,7 @@ function showQAComments(data) {
     var commentIcon = $(`img.qaComment[name="${x[1]}"]`);
     commentIcon.attr('fieldID', `${x[0]}`);
     commentIcon.attr('description', `${x[2]}`);
-
+    
     for (let i = 0; i < qaComments.length; i++) {
       if (x[1] == qaComments[i].frontName) {
         let commentsLength = Object.keys(qaComments[i]).length;
@@ -389,9 +393,13 @@ function showQAComments(data) {
             }
           }
         }
+        commentIcon.show();
+      } else if (userCanLeaveComments == 'false' && userCanManageFeedback == 'true') {
+        commentIcon.hide();
+      } else if(userCanLeaveComments == 'true') {
+        commentIcon.show();
       }
     }
-    commentIcon.show();
   });
 }
 
