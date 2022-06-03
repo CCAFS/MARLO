@@ -882,11 +882,6 @@
         <div class="commentTitle"></div>
         <p class="commentReadonly"></p>
       </div>
-      [#--  <div class="checkContainer">
-        <img src="${baseUrlCdn}/global/images/agree.png" class="agreeComment" title="Agree">
-        <img src="${baseUrlCdn}/global/images/disagree.png" class="disagreeComment" title="Disagree">
-        <img src="${baseUrlCdn}/global/images/question.png" class="clarificationComment" title="Clarification needed">
-      </div>  --]
     </div>
     <div class="replyContainer">
       [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
