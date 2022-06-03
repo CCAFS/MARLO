@@ -80,8 +80,6 @@ function attachEvents() {
       $(item).find('div.addCommentContainer').attr('name', name);
     });
 
-
-
     loadCommentsByUser(name);
 
     if (event.pageX < 1000) {
@@ -155,9 +153,10 @@ function attachEvents() {
   });
 
   $('img.replyCommentBtn').on('click', function () {
-    let block = $(this).parent().parent();
+    let block = $(this).parent().parent().parent();
 
-    block.find('.replyContainer').show();
+    block.find('.replyContainer').css('display', 'flex');
+    block.find('.buttonsContainer').hide();
     block.find('.optionsContainer').hide();
   });
 
@@ -189,8 +188,10 @@ function attachEvents() {
   $('div.addCommentContainer').on('click', function () {
     $(this).hide();
     let name = $(this).attr('name');
+    let block = $(`div[id^="qaCommentReply-${name}"]`);
+    block.find('.buttonsContainer').hide();
     let qaPopup = $(`div[id^="qaPopup-${name}"]`);
-    let lastIndex = $(`div[id^="qaCommentReply-${name}"]`).last().attr('index');
+    let lastIndex = block.last().attr('index');
     lastIndex = parseInt(lastIndex) + 1;
     let commentReplyBlock = qaPopup.siblings('#qaTemplate').find('.qaPopup').children()[2];
     let newBlock = $(commentReplyBlock).clone(true).attr('id', `qaCommentReply-${name}[${lastIndex}]`);
@@ -273,10 +274,12 @@ function loadCommentsByUser(name) {
             block.find('.replyCommentBtn').attr('commentId', qaComments[i][j].commentId);
 
             if (userCanLeaveComments == 'true') {
+              let btnsContainer = block.find('.buttonsContainer');
               let addBtn = block.find('.addCommentContainer');
               const index = commentsLength - 2;
 
               if (addBtn.attr('index') == index) {
+                btnsContainer.show();
                 addBtn.show();
                 let blockDup = $(`div[id="qaCommentReply-${name}[${j + 1}]"]`);
 
@@ -289,18 +292,21 @@ function loadCommentsByUser(name) {
             }
 
             if (userCanManageFeedback == 'true') {
+              block.find('.buttonsContainer').show();
               block.find('.optionsContainer').css('display', 'flex');
-              hideShowOptionButtons(block, qaComments[i][j].status);
             }
+            
+            hideShowOptionButtons(block, qaComments[i][j].status);
 
             let replyLength = Object.keys(qaComments[i][j].reply).length;
 
             if (replyLength !== 0) {
               block.find('textarea[id="Reply"]').parent().hide();
-              block.find('.replyContainer').show();
+              block.find('.replyContainer').css('display', 'flex');
               block.find('.replyTextContainer').show();
               block.find('.replyTextContainer .replyTitle').html(`Reply by ${qaComments[i][j].reply['userName']} at ${qaComments[i][j].reply['date']}`);
               block.find('.replyTextContainer p.replyReadonly').html(`${qaComments[i][j].reply['text']}`);
+              // block.find('.buttonsContainer').hide();
               block.find('.replyCommentBtn').hide();
               block.find('.sendReplyContainer').hide();
               // block.find('.addCommentContainer').show();
@@ -315,7 +321,7 @@ function loadCommentsByUser(name) {
                   // block.find('.addCommentContainer').hide();
                 } else {
                   block.find('textarea[id="Reply"]').parent().show();
-                  block.find('.replyContainer').show();
+                  block.find('.replyContainer').css('display', 'flex');
                   block.find('.replyTextContainer').hide();
                   block.find('.replyCommentBtn').hide();
                   block.find('.sendReplyContainer').show();
@@ -323,7 +329,7 @@ function loadCommentsByUser(name) {
                 }
               } else {
                 // block.find('textarea[id="Reply"]').parent().show();
-                // block.find('.replyContainer').show();
+                // block.find('.replyContainer')..css('display', 'flex');
                 // block.find('.replyTextContainer').hide();
                 block.find('.replyCommentBtn').hide();
                 // block.find('.sendReplyContainer').show();
