@@ -876,7 +876,7 @@
   [/#if]
   
   <div id="qaCommentReply-${name}[${index}]" class="qaCommentReplyBlock" index="${index}">
-    [@customForm.textArea name="Comment" required=false className="limitWords-100" editable=editable showTitle=showTitle /]
+    [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle /]
     <div class="commentCheckContainer">
       <div class="commentContainer">
         <div class="commentTitle"></div>
