@@ -63,22 +63,22 @@ function attachEvents() {
     let popUpTitle = $(this).attr('description');
     let qaPopup = $(`div[id^="qaPopup-${name}"]`);
     let block = $(`div[id^="qaCommentReply-${name}"]`);
-    let lastIndex = block.last().attr('index');
 
     fieldID = $(this).attr('fieldID');
+
     block.each((index, item) => {
       if ($(item).attr('index') == 0) {
         $(item).find('textarea[id="Comment"]').prev('label').html(`Comment on "${popUpTitle}":`);
       }
+      
+      $(item).find('.sendCommentContainer').attr('name', `${name}[${index}]`);
+      $(item).find('.agreeCommentBtn').attr('name', `${name}[${index}]`);
+      $(item).find('.disagreeCommentBtn').attr('name', `${name}[${index}]`);
+      $(item).find('.clarificationCommentBtn').attr('name', `${name}[${index}]`);
+      $(item).find('.replyCommentBtn').attr('name', `${name}[${index}]`);
+      $(item).find('.sendReplyContainer').attr('name', `${name}[${index}]`);
+      $(item).find('div.addCommentContainer').attr('name', name);
     });
-
-    block.find('.sendCommentContainer').attr('name', `${name}[${lastIndex}]`);
-    block.find('.agreeCommentBtn').attr('name', name);
-    block.find('.disagreeCommentBtn').attr('name', name);
-    block.find('.clarificationCommentBtn').attr('name', name);
-    block.find('.replyCommentBtn').attr('name', name);
-    block.find('.sendReplyContainer').attr('name', `${name}[${lastIndex}]`);
-    block.find('div.addCommentContainer').attr('name', name);
 
     loadCommentsByUser(name);
 
@@ -153,9 +153,10 @@ function attachEvents() {
   });
 
   $('img.replyCommentBtn').on('click', function () {
-    let block = $(this).parent().parent();
+    let block = $(this).parent().parent().parent();
 
-    block.find('.replyContainer').show();
+    block.find('.replyContainer').css('display', 'flex');
+    block.find('.buttonsContainer').hide();
     block.find('.optionsContainer').hide();
   });
 
@@ -167,7 +168,7 @@ function attachEvents() {
     let value = textarea.val();
     let comment = textarea.next().html();
     let cleanComment;
-
+    
     if (value && value != '') {
       cleanComment = value.replaceAll('.<br>.', '');
     } else {
@@ -175,7 +176,7 @@ function attachEvents() {
     }
 
     cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
-
+    
     if (cleanComment != '' && cleanComment != ' ') {
       textarea.css('border', '1px solid #ccc');
       saveFeedbackReply(cleanComment, commentID, name);
@@ -187,8 +188,10 @@ function attachEvents() {
   $('div.addCommentContainer').on('click', function () {
     $(this).hide();
     let name = $(this).attr('name');
+    let block = $(`div[id^="qaCommentReply-${name}"]`);
+    block.find('.buttonsContainer').hide();
     let qaPopup = $(`div[id^="qaPopup-${name}"]`);
-    let lastIndex = $(`div[id^="qaCommentReply-${name}"]`).last().attr('index');
+    let lastIndex = block.last().attr('index');
     lastIndex = parseInt(lastIndex) + 1;
     let commentReplyBlock = qaPopup.siblings('#qaTemplate').find('.qaPopup').children()[2];
     let newBlock = $(commentReplyBlock).clone(true).attr('id', `qaCommentReply-${name}[${lastIndex}]`);
@@ -209,27 +212,24 @@ function hideShowOptionButtons(block, status) {
     case '0':
       textarea.prev().find('span.red.requiredTag').show();
       block.find('img.disagreeCommentBtn').hide();
-      block.find('img.agreeComment').hide();
-      block.find('img.disagreeComment').show();
-      block.find('img.clarificationComment').hide();
+      block.find('.commentContainer').css('background', '#e8a9a4');
+      block.find('.replyTextContainer').css('background', '#e8a9a4');
       block.find('img.agreeCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
       break;
     case '1':
       textarea.prev().find('span.red.requiredTag').hide();
       block.find('img.agreeCommentBtn').hide();
-      block.find('img.disagreeComment').hide();
-      block.find('img.agreeComment').show();
-      block.find('img.clarificationComment').hide();
+      block.find('.commentContainer').css('background', '#a8eaab');
+      block.find('.replyTextContainer').css('background', '#a8eaab');
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
       break;
     case '2':
       textarea.prev().find('span.red.requiredTag').show();
       block.find('img.clarificationCommentBtn').hide();
-      block.find('img.agreeComment').hide();
-      block.find('img.disagreeComment').hide();
-      block.find('img.clarificationComment').show();
+      block.find('.commentContainer').css('background', '#a4cde8');
+      block.find('.replyTextContainer').css('background', '#a4cde8');
       block.find('img.agreeCommentBtn').hide();
       block.find('img.disagreeCommentBtn').hide();
       break;
@@ -237,9 +237,6 @@ function hideShowOptionButtons(block, status) {
       block.find('img.agreeCommentBtn').show();
       block.find('img.disagreeCommentBtn').show();
       block.find('img.clarificationCommentBtn').show();
-      block.find('img.agreeComment').hide();
-      block.find('img.disagreeComment').hide();
-      block.find('img.clarificationComment').hide();
       break;
     default:
       break;
@@ -255,11 +252,11 @@ function loadCommentsByUser(name) {
     for (let i = 0; i < qaComments.length; i++) {
       if (qaComments[i].frontName == name) {
         let commentsLength = Object.keys(qaComments[i]).length;
-        
+
         for (let j = 0; j < commentsLength; j++) {
           if (qaComments[i][j] !== undefined) {
             let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
-            
+
             if (j != 0) {
               block.find('textarea[id="Comment"]').prev().hide();
             }
@@ -277,10 +274,12 @@ function loadCommentsByUser(name) {
             block.find('.replyCommentBtn').attr('commentId', qaComments[i][j].commentId);
 
             if (userCanLeaveComments == 'true') {
+              let btnsContainer = block.find('.buttonsContainer');
               let addBtn = block.find('.addCommentContainer');
               const index = commentsLength - 2;
-              
+
               if (addBtn.attr('index') == index) {
+                btnsContainer.show();
                 addBtn.show();
                 let blockDup = $(`div[id="qaCommentReply-${name}[${j + 1}]"]`);
 
@@ -293,21 +292,24 @@ function loadCommentsByUser(name) {
             }
 
             if (userCanManageFeedback == 'true') {
+              block.find('.buttonsContainer').show();
               block.find('.optionsContainer').css('display', 'flex');
-              hideShowOptionButtons(block, qaComments[i][j].status);
             }
+            
+            hideShowOptionButtons(block, qaComments[i][j].status);
 
             let replyLength = Object.keys(qaComments[i][j].reply).length;
-            
+
             if (replyLength !== 0) {
               block.find('textarea[id="Reply"]').parent().hide();
-              block.find('.replyContainer').show();
+              block.find('.replyContainer').css('display', 'flex');
               block.find('.replyTextContainer').show();
               block.find('.replyTextContainer .replyTitle').html(`Reply by ${qaComments[i][j].reply['userName']} at ${qaComments[i][j].reply['date']}`);
               block.find('.replyTextContainer p.replyReadonly').html(`${qaComments[i][j].reply['text']}`);
+              // block.find('.buttonsContainer').hide();
               block.find('.replyCommentBtn').hide();
               block.find('.sendReplyContainer').hide();
-              block.find('.addCommentContainer').show();
+              // block.find('.addCommentContainer').show();
             } else {
               if (qaComments[i][j].status && qaComments[i][j].status != '') {
                 if (qaComments[i][j].status == '1') {
@@ -316,18 +318,18 @@ function loadCommentsByUser(name) {
                   block.find('.replyTextContainer').hide();
                   block.find('.replyCommentBtn').show();
                   block.find('.sendReplyContainer').show();
-                  block.find('.addCommentContainer').hide();
+                  // block.find('.addCommentContainer').hide();
                 } else {
                   block.find('textarea[id="Reply"]').parent().show();
-                  block.find('.replyContainer').show();
+                  block.find('.replyContainer').css('display', 'flex');
                   block.find('.replyTextContainer').hide();
                   block.find('.replyCommentBtn').hide();
                   block.find('.sendReplyContainer').show();
-                  block.find('.addCommentContainer').hide();
+                  // block.find('.addCommentContainer').hide();
                 }
               } else {
                 // block.find('textarea[id="Reply"]').parent().show();
-                // block.find('.replyContainer').show();
+                // block.find('.replyContainer')..css('display', 'flex');
                 // block.find('.replyTextContainer').hide();
                 block.find('.replyCommentBtn').hide();
                 // block.find('.sendReplyContainer').show();
