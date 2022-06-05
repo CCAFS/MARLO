@@ -2983,7 +2983,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
                 if (deliverableS.getDeliverable() != null) {
                   List<DeliverableCrpOutcome> deliverableOutcomes = deliverableCrpOutcomeManager.findAll().stream()
-                    .filter(d -> d.getDeliverable() != null
+                    .filter(d -> d != null && d.getDeliverable() != null
                       && d.getDeliverable().getId().equals(deliverableS.getDeliverable().getId()))
                     .collect(Collectors.toList());
                   if (deliverableOutcomes != null && !deliverableOutcomes.isEmpty()) {
