@@ -50,6 +50,12 @@
 				<comment>This field is a link to the table users</comment>
 			</column>
 		</many-to-one>
+		<many-to-one name="userApproval"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+			<column name="user_approval_id">
+				<comment>This field is a link to the table users</comment>
+			</column>
+		</many-to-one>
 		<property name="commentDate" type="date">
 			<column name="comment_date" />
 		</property>
