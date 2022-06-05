@@ -56,10 +56,10 @@
 				<comment>This field is a link to the table users</comment>
 			</column>
 		</many-to-one>
-		<property name="commentDate" type="date">
+		<property name="commentDate" type="timestamp">
 			<column name="comment_date" />
 		</property>
-		<property name="approvalDate" type="date">
+		<property name="approvalDate" type="timestamp">
 			<column name="approval_date" />
 		</property>
 		<many-to-one name="project"
