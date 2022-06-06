@@ -43,10 +43,10 @@
 
 [#if action.hasSpecificities('feedback_active') ]
   [#list feedbackComments as feedback]
-    [@customForm.qaPopUpMultiple fields=feedback.qaComments name=feedback.fieldDescription index=feedback_index/]
+    [@customForm.qaPopUpMultiple fields=feedback.qaComments name=feedback.fieldDescription index=feedback_index canLeaveComments=(action.canLeaveComments()!false)/]
   [/#list]
   <div id="qaTemplate" style="display: none">
-    [@customForm.qaPopUpMultiple template=true/]
+    [@customForm.qaPopUpMultiple canLeaveComments=(action.canLeaveComments()!false) template=true/]
   </div>
 [/#if]
 

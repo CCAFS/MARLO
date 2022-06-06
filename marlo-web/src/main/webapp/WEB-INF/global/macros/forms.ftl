@@ -853,28 +853,32 @@
   </div>
 [/#macro]
 
-[#macro qaPopUpMultiple fields="" name="" index=-1 template=false]
+[#macro qaPopUpMultiple fields="" name="" index=-1 canLeaveComments=false template=false]
   [#local customName = "${template?string('TEMPLATE', '')}${name}[${index}]"]
   <div id="qaPopup-${customName}" class="qaPopup">
     <div class="closeComment" name="${name}"></div>
     <br>
     [#if fields?has_content]
       [#list fields as field]
-        [@qaCommentReplyBlock name=name index=field_index/]
+        [@qaCommentReplyBlock name=name index=field_index canLeaveComments=canLeaveComments/]
       [/#list]
     [#else]
-      [@qaCommentReplyBlock name=name /]
+      [@qaCommentReplyBlock name=name canLeaveComments=canLeaveComments/]
     [/#if]
   </div>
 [/#macro]
 
-[#macro qaCommentReplyBlock name="" index=0]
+[#macro qaCommentReplyBlock name="" index=0 canLeaveComments=false]
   [#if index == 0]
     [#local showTitle = true]
   [#else]
     [#local showTitle = false]
   [/#if]
-  
+
+  [#if editable == false]
+    [#assign editable = canLeaveComments]
+  [/#if]
+
   <div id="qaCommentReply-${name}[${index}]" class="qaCommentReplyBlock" index="${index}">
     [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle /]
     <div class="commentCheckContainer">
@@ -894,6 +898,7 @@
     <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
     <div class="buttonsContainer">
       <div class="optionsContainer">
+        [#--  <p class="statusReadOnly"></p>  --]
         <img class="agreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/agree.png" title="Agree">
         <img class="disagreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/disagree.png" title="Disagree">
         <img class="clarificationCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/question.png" title="Clarification needed">
