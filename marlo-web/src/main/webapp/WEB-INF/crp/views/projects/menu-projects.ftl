@@ -64,6 +64,11 @@
       'items': [
       { 'slug': 'safeguards',  'name': 'projects.menu.safeguards',  'action': 'safeguards',  'active': true  ,'show': (UpKeepActive || reportingActive) && !project.projectInfo.administrative, "showCheck": true, "development": false }
       ]
+    },
+    { 'title': 'Feedback', 'show': action.hasSpecificities(action.feedbackModule()),
+      'items': [
+      { 'slug': 'feedback',  'name': 'projects.menu.feedback',  'action': 'feedback',  'active': false  ,'show': action.hasSpecificities(action.feedbackModule()), "showCheck": false, "development": true }
+      ]
     }
     
   ]/]
