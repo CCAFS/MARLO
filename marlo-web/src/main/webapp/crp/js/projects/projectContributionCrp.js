@@ -70,7 +70,7 @@ function attachEvents() {
       if ($(item).attr('index') == 0) {
         $(item).find('textarea[id="New comment"]').prev('label').html(`Comment on "${popUpTitle}":`);
       }
-      
+
       $(item).find('.sendCommentContainer').attr('name', `${name}[${index}]`);
       $(item).find('.agreeCommentBtn').attr('name', `${name}[${index}]`);
       $(item).find('.disagreeCommentBtn').attr('name', `${name}[${index}]`);
@@ -127,7 +127,7 @@ function attachEvents() {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(this).parent().parent().parent();
-    
+
     hideShowOptionButtons(block, '0');
     saveCommentStatus(0, commentID, name);
     block.find('img.replyCommentBtn').click();
@@ -168,7 +168,7 @@ function attachEvents() {
     let value = textarea.val();
     let comment = textarea.next().html();
     let cleanComment;
-    
+
     if (value && value != '') {
       cleanComment = value.replaceAll('.<br>.', '');
     } else {
@@ -176,7 +176,7 @@ function attachEvents() {
     }
 
     cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
-    
+
     if (cleanComment != '' && cleanComment != ' ') {
       textarea.css('border', '1px solid #ccc');
       saveFeedbackReply(cleanComment, commentID, name);
@@ -283,7 +283,7 @@ function loadCommentsByUser(name) {
               if (addBtn.attr('index') == index) {
                 btnsContainer.show();
                 addBtn.show();
-                
+
                 let blockDup = $(`div[id="qaCommentReply-${name}[${j + 1}]"]`);
 
                 if (blockDup.length != 0) {
@@ -300,7 +300,7 @@ function loadCommentsByUser(name) {
               block.find('.buttonsContainer').show();
               block.find('.optionsContainer').css('display', 'flex');
             }
-            
+
             hideShowOptionButtons(block, qaComments[i][j].status);
 
             let replyLength = Object.keys(qaComments[i][j].reply).length;
@@ -366,8 +366,9 @@ function showQAComments(data) {
     var commentIcon = $(`img.qaComment[name="${x[1]}"]`);
     commentIcon.attr('fieldID', `${x[0]}`);
     commentIcon.attr('description', `${x[2]}`);
-    
+
     for (let i = 0; i < qaComments.length; i++) {
+
       if (x[1] == qaComments[i].frontName) {
         let commentsLength = Object.keys(qaComments[i]).length;
 
@@ -377,10 +378,14 @@ function showQAComments(data) {
               commentIcon.attr('src', qaCommentsStatus('pending'));
 
               if (qaComments[i][j].status != '') {
-                if (qaComments[i][j].status == '0' || qaComments[i][j].status == '1') {
+                if (qaComments[i][j].status == '1') {
                   commentIcon.attr('src', qaCommentsStatus('done'));
                 } else {
-                  commentIcon.attr('src', qaCommentsStatus('pending'));
+                  if (Object.keys(qaComments[i][j].reply).length != 0) {
+                    commentIcon.attr('src', qaCommentsStatus('done'));
+                  } else {
+                    commentIcon.attr('src', qaCommentsStatus('pending'));
+                  }
                 }
               } else {
                 commentIcon.attr('src', qaCommentsStatus('pending'));
@@ -389,12 +394,10 @@ function showQAComments(data) {
           }
         }
         commentIcon.show();
-      } else if (userCanLeaveComments == 'false' && userCanManageFeedback == 'true') {
-        commentIcon.hide();
       }
     }
 
-    if(userCanLeaveComments == 'true') {
+    if (userCanLeaveComments == 'true') {
       commentIcon.show();
     }
   });
