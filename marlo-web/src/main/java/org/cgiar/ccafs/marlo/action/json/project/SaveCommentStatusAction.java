@@ -97,7 +97,7 @@ public class SaveCommentStatusAction extends BaseAction {
         try {
           User user = userManager.getUser(userId);
           if (user != null) {
-            commentSave.setUser(this.getCurrentUser());
+            commentSave.setUserApproval(this.getCurrentUser());
           }
         } catch (Exception e) {
           logger.error("unable to set User object", e);

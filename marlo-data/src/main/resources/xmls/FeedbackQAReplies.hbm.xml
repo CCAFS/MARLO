@@ -17,7 +17,7 @@
                 <comment>This field is a link to the table users</comment>
             </column>
         </many-to-one>
-        <property name="commentDate" type="date">
+        <property name="commentDate" type="timestamp">
             <column name="comment_date" />
         </property>
         <set name="feedbackQAComments" table="feedback_qa_comments" inverse="true" lazy="true"
