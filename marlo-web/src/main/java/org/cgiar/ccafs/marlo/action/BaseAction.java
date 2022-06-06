@@ -1725,6 +1725,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return INPUT;
   }
 
+  public String feedbackModule() {
+    return APConstants.FEEDBACK_ACTIVE;
+  }
+
   /**
    * ***********************CENTER METHOD******************** This method
    * calculates all the years between the start date and the end date.
