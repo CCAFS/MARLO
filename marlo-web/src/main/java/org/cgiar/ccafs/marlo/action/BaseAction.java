@@ -1318,7 +1318,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (role != null && role.getAcronym() != null) {
           // FPL & FPM roles can comment
 
-          if (role.getAcronym().equals("FPL") || role.getAcronym().equals("FPM") || role.getAcronym().equals("RPM")) {
+          if (role.getAcronym().equals("FPL") || role.getAcronym().equals("FPM") || role.getAcronym().equals("RPL")
+            || role.getAcronym().equals("RPM")) {
             response = true;
           }
         }
