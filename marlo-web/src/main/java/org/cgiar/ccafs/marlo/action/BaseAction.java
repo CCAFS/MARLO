@@ -3900,7 +3900,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
         }
       } catch (Exception e) {
-
+        LOG.error("Project outcome relation impact ", e);
       }
     }
     return projectOutcome;
@@ -4023,7 +4023,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       }
     } catch (Exception e) {
-
+      LOG.error("Project outcome status ", e);
     }
 
     List<Project> avaliableProjects = new ArrayList<>();
@@ -6330,7 +6330,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
     } catch (Exception e) {
-
+      LOG.error("Deliverable AllYears ", e);
     }
 
     return isVisible;
