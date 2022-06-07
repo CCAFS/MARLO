@@ -366,10 +366,11 @@ function showQAComments(data) {
     var commentIcon = $(`img.qaComment[name="${x[1]}"]`);
     commentIcon.attr('fieldID', `${x[0]}`);
     commentIcon.attr('description', `${x[2]}`);
-
+    
     for (let i = 0; i < qaComments.length; i++) {
-
+      
       if (x[1] == qaComments[i].frontName) {
+        getNumberOfComments(x[1]);
         let commentsLength = Object.keys(qaComments[i]).length;
 
         for (let j = 0; j < commentsLength; j++) {
@@ -394,11 +395,13 @@ function showQAComments(data) {
           }
         }
         commentIcon.show();
+        commentIcon.parent().css('display', 'flex');
       }
     }
 
     if (userCanLeaveComments == 'true') {
       commentIcon.show();
+      commentIcon.parent().css('display', 'flex');
     }
   });
 }
@@ -426,7 +429,7 @@ function saveQAComment(comment, fieldID, name) {
     success: function (data) {
       getQAComments();
       loadCommentsByUser(name);
-      showQAComments(newData);
+      loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
     }
   });
 }
@@ -440,7 +443,7 @@ function saveFeedbackReply(reply, commentID, name) {
     success: function (data) {
       getQAComments();
       loadCommentsByUser(name);
-      showQAComments(newData);
+      loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
     }
   });
 }
@@ -454,7 +457,7 @@ function saveCommentStatus(status, commentID, name) {
     success: function (data) {
       getQAComments();
       loadCommentsByUser(name);
-      showQAComments(newData);
+      loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
     }
   });
 }
@@ -471,6 +474,45 @@ function getQAComments() {
         console.log(qaComments)
       }
     }
+  });
+}
+
+function deleteQAComment(commentID) {
+  var finalAjaxURL = `/fdeleteComment.do?commentID=${commentID}`;
+
+  $.ajax({
+    url: baseURL + finalAjaxURL,
+    async: false,
+    success: function (data) {
+
+    }
+  });
+}
+
+function getNumberOfComments(name) {
+  var finalAjaxURL = `/getCommentStatus.do?sectionName=${sectionName}&parentID=${parentID}&phaseID=${phaseID}&fieldDescription=${name}`;
+
+  $.ajax({
+    url: baseURL + finalAjaxURL,
+    async: false,
+    success: function (data) {
+      if (data && Object.keys(data).length != 0) {
+        newData = data['comments'].map(function (x) {
+          var arr = [];
+          arr.push(x.answeredComments);
+          arr.push(x.totalComments);
+          return arr;
+        });
+        loadNumberOfComments(name, newData);
+      }
+    }
+  });
+}
+
+function loadNumberOfComments(name, data) {
+  data.map(function (x) {
+    let p = $(`img.qaComment[name="${name}"]`).prev().find('p');
+    p.html(`${x[0]}/${x[1]}`);
   });
 }
 
