@@ -77,7 +77,8 @@ public class FeedbackQACommentsAction extends BaseAction {
     List<FeedbackQACommentableFields> fields = new ArrayList<>();
 
     // @param = sectionName/parentID/phaseID
-    if (sectionName != null && parentId != null && phaseId != null) {
+    if (sectionName != null && parentId != null && phaseId != null
+      && feedbackQACommentableFieldsManager.findAll() != null) {
       try {
         fields = feedbackQACommentableFieldsManager.findAll().stream()
           .filter(
