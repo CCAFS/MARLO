@@ -7096,7 +7096,7 @@ div.selectPrimary{
   color: #57a7b5;
 }
 
-.menuContent #bi::before{
+/* .menuContent #bi::before{
   content: "BETA";
   color: #0277a2;
   font-size: 9px;
@@ -7105,7 +7105,7 @@ div.selectPrimary{
   background-color: rgb(154, 226, 128);
   padding: 0.3em 1.1em 0.3em 1.1em;
   border-radius: 0em 0em 0.3em 0.3em;
-}
+} */
 
 li.currentSection#bi::before{
   color: #127fa8;
