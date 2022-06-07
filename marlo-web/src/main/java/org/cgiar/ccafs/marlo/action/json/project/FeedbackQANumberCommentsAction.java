@@ -51,7 +51,7 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    int totalComments = 0, pendingComments = 0;
+    int totalComments = 0, pendingComments = 0, answeredComments = 0;
     comments = new ArrayList<Map<String, Object>>();
     Map<String, Object> fieldsMap;
     Long fieldId = null;
@@ -86,13 +86,14 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
             // Get comment without reply and approbation
             if (feedbackComments != null) {
               totalComments = feedbackComments.size();
+
               try {
                 feedbackComments = feedbackComments.stream()
-                  .filter(f -> f != null && ((f.getStatus() == null)
-                    || (f.getStatus() != null && !f.getStatus().equals("approved") && f.getReply() == null)))
+                  .filter(f -> f != null && ((f.getStatus() != null && f.getStatus().equals("approved"))
+                    || (f.getStatus() != null && f.getReply() != null)))
                   .collect(Collectors.toList());
                 if (feedbackComments != null) {
-                  pendingComments = feedbackComments.size();
+                  answeredComments = feedbackComments.size();
                 }
               } catch (Exception e) {
                 logger.error("unable to get list of filters comments", e);
@@ -109,7 +110,7 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
 
     fieldsMap = new HashMap<String, Object>();
     fieldsMap.put("totalComments", totalComments);
-    fieldsMap.put("pendingComments", pendingComments);
+    fieldsMap.put("answeredComments", answeredComments);
     this.comments.add(fieldsMap);
 
 
