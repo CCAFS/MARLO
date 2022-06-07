@@ -3,7 +3,8 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["powerbi-client"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/feedbackStatus.js?20220606a"
+  "${baseUrlMedia}/js/projects/feedbackStatus.js?20220606a",
+  "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js"
   ]
 /]
 [#assign customCSS = [
@@ -54,7 +55,7 @@
 
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
 
-          <h3 class="headTitle">[@s.text name="projectDescription.title" /]</h3>
+          <h3 class="headTitle">[@s.text name="feedbackStatus.title" /]</h3>
           <div id="projectDescription" class="borderBox">
               
              <section class="container containerBI">  
@@ -63,9 +64,10 @@
                 <div class='selectedReportBIContainer col-md-2'>
                     <span class="selectedReportBI col-md button-bg" style="max-width:200px">
                         [#--  <p class="menu-item-title">[@s.text name="biDashboard.menu.title"/] </p>  --]
-                        <p class="menu-item-title">Dashboards:</p>
+                        [#--  <p class="menu-item-title">Dashboards:</p>  --]
                       [#--  <span class="glyphicon reportsButtonsIcon glyphicon-chevron-up" style="color: #1da5ce"></span>  --]
                     </span>
+
                     [#--  Reports Tabs --] 
                     <div id="repportsMenu" class="reportsButtons">
                       <div class="menuList col-md-12" style="padding:0">
@@ -94,7 +96,7 @@
               </div>
         
                 [#--  Reports Content --]
-                <div class="summariesContent col-md-12" style="min-height:550px;">
+                <div class="summariesContent col-md-12" style="width: 800px;min-height:550px;">
                   <div class="">
                     [#list (biReports)?sort_by("reportOrder")![] as report]
                         <div id="BIreport-${report.id}-contentOptions" class="" style="display:[#if report?index !=0]none[/#if];">
