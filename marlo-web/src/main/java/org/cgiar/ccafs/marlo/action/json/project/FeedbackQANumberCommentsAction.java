@@ -4,7 +4,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
-import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -24,9 +23,6 @@ import org.slf4j.LoggerFactory;
 
 public class FeedbackQANumberCommentsAction extends BaseAction {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = -4335064142194555431L;
   private final Logger logger = LoggerFactory.getLogger(FeedbackQACommentsAction.class);
   private List<Map<String, Object>> comments;
@@ -36,22 +32,19 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
   private String fieldDescription;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
   private FeedbackQACommentManager commentManager;
-  private FeedbackQAReplyManager feedbackQAReplyManager;
 
 
   @Inject
   public FeedbackQANumberCommentsAction(APConfig config,
-    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentManager,
-    FeedbackQAReplyManager feedbackQAReplyManager) {
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentManager) {
     super(config);
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.commentManager = commentManager;
-    this.feedbackQAReplyManager = feedbackQAReplyManager;
   }
 
   @Override
   public String execute() throws Exception {
-    int totalComments = 0, pendingComments = 0, answeredComments = 0;
+    int totalComments = 0, answeredComments = 0;
     comments = new ArrayList<Map<String, Object>>();
     Map<String, Object> fieldsMap;
     Long fieldId = null;
