@@ -609,7 +609,7 @@
 	      </result>
 	    </action>
 	    
-		<action name="feedbackNumberOfComments"
+		<action name="getCommentStatus"
 	      class="org.cgiar.ccafs.marlo.action.json.project.FeedbackQANumberCommentsAction">
 	      <result type="json">
 	        <param name="noCache">true</param>
