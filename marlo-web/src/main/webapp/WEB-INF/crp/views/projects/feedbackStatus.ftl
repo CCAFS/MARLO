@@ -1,24 +1,17 @@
 [#ftl]
 [#assign title = "Feedback Status" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
+[#assign pageLibs = ["powerbi-client"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/safeguards.js?20220510a",
-  [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
-  "${baseUrlCdn}/global/js/impactGraphic.js",
-  "${baseUrlCdn}/global/js/fieldsValidation.js"
+  "${baseUrlMedia}/js/projects/feedbackStatus.js?20220606a"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/safeguard.css?20220512a",
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?20202209",
-  "${baseUrlCdn}/global/css/impactGraphic.css"
+  "${baseUrlMedia}/css/projects/feedbackStatus.css?20220606a"
   ]
 /]
 
 [#assign currentStage = "feedback" /]
-[#assign hideJustification = true /]
-[#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
 [#--  [#assign hasFile = safeguard.file?? && safeguard.file.id?? /]--]
 
   [#assign currentSection = "clusters" /]
@@ -33,95 +26,68 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 
-[#if (!availabePhase)!false]
-  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
-[#else]
-<section class="container">
-    <div class="row">
-      [#-- Project Menu --]
-      <div class="col-md-3">
-        [#include "/WEB-INF/crp/views/projects/menu-projects.ftl" /]
-      </div>
-      [#-- Project Section Content --]
-      <div class="col-md-9">
-        [#-- Section Messages --]
-        [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
-        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+[#attempt]
+  [#assign canAccessCCAFS = false ]
+  [#assign canAccessWLE = (action.crpID == 4)!false ]
+[#recover]
+  [#assign canAccessCCAFS = false ]
+  [#assign canAccessWLE = false ]
+[/#attempt]
 
-          <h3 class="headTitle">[@s.text name="project.safeguards.sectionName" /]</h3>
-          <div id="projectDescription" class="borderBox">
+[#assign crp = "CCAFS" /]
 
-            [#-- Project Title --]
-            <div class="form-group">
-            <br>
-              [@s.text name="project.safeguards.title"  /]
-              </br>
-              </br>
-              [@s.text name="project.safeguards.description"  /]
-              <br>
-              <br>
-              <div class="helpMessage infoText2">
-                <div>
-                  <div class="templateContainer">
-                    <a href="${baseUrlCdn}/global/documents/E&S_Reporting_AICCRA_Template_V2_20220329.docx" download>[@s.text name="project.safeguards.downloadText"][/@s.text]<img src="${baseUrlCdn}/global/images/word.png" style="float: none !important;"/></a>
+    <section class="container containerBI">  
+      [#if biReports?has_content]
+      <div class="headContainer">
+        <div class='selectedReportBIContainer col-md-2'>
+            <span class="selectedReportBI col-md button-bg" style="max-width:200px">
+                [#--  <p class="menu-item-title">[@s.text name="biDashboard.menu.title"/] </p>  --]
+                <p class="menu-item-title">Dashboards:</p>
+              [#--  <span class="glyphicon reportsButtonsIcon glyphicon-chevron-up" style="color: #1da5ce"></span>  --]
+            </span>
+            [#--  Reports Tabs --] 
+            <div id="repportsMenu" class="reportsButtons">
+              <div class="menuList col-md-12" style="padding:0">
+              [#list (biReports)?sort_by("reportOrder")![] as report]
+                  <div id="BIreport-${report.id}" report-title="${report.reportTitle}"  has-filters="${report.hasFilters?c}" class="button-bg reportSection [#if report?index == 0]current[/#if]">
+                  <a index="${report?index+1}" class="BIreport-${report.id}" href="">[@s.text name=report.reportName /]</a>
                   </div>
-                </div>
+              [/#list]
               </div>
-
-              <br>
-              <div class="dropFileParentContainer">
-                <div class="dropFileContainer">
-                  <div style="width: 90%;">
-                    [@uploadfileMacro safeguard=safeguard isTemplate=false /]               
-                  </div>
-                </div>
-              </div>
-              <br>
-                   
-          [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
-         
-          [/@s.form]
+            </div>
+            [#--  Reports Tabs --] 
+        
+          </div>
+        
+          [#--  Reports header  --]
+         <div class="headTitle-row-container">
+  
+          <h3 class="headTitle text-left col-md-8">
+          </h3>
+          <span class="setFullScreen col-md-1 btn button-bg">
+              <p class="menu-item-title">Fullscreen</p>
+              <span class="glyphicon reportsButtonsIconFS glyphicon-fullscreen" style="color: #1da5ce"></span>
+          </span>
+         </div>
+          [#--  Reports header  --]
       </div>
-    </div>
-</section>
-[/#if]
 
+        [#--  Reports Content --]
+        <div class="summariesContent col-md-12" style="min-height:550px;">
+          <div class="">
+            [#list (biReports)?sort_by("reportOrder")![] as report]
+                <div id="BIreport-${report.id}-contentOptions" class="" style="display:[#if report?index !=0]none[/#if];">
+                  <div id="dashboardContainer-${report.id}" class="dashboardContainer-${report.id}"></div>
+                  <input type="hidden" id="reportName-${report.id}" name="reportName" value=${report.reportName} />
+                  <input type="hidden" id="embeUrl-${report.id}" name="embedUrl" value=${report.embedUrl} /> 
+                  <input type="hidden" id="reportID-${report.id}" name="reportId" value=${report.reportId} />
+                </div>
+            [/#list] 
+          </div>
+        </div>
+      [/#if]
+    </section>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
-
-[#-- Upload a PDF with baseline instructions --]
-[#macro uploadfileMacro safeguard isTemplate=false]
-  [#-- Outcome ID Parameter --]
-  <div id="safeguard" class="fileUploadContainer">
-    [#local hasFile = safeguard.file?? && safeguard.file.id?? /]
-    <div class="uploadPDFTitleContainer">
-      <img src="${baseUrlCdn}/global/images/pdf.png" class="fileIcon"/>
-      <label>[@customForm.text name="project.safeguards.uploadText" readText=!editable /]</label>
-      <br>
-      <label>━━━ OR ━━━</label>
-      <br>
-    </div>
-    
-    <input class="fileID" type="hidden" name="${safeguard}.id" value="${(safeguard.file.id)!}"/>
-    <input type="hidden" class="safeguardID" name="${safeguard}.id" value="${(safeguard.id)!}"/>
-
-    [#-- Input File --]
-    [#if editable]
-      <div class="fileUpload" style="display:${hasFile?string('none','block')}">
-        <input type="file" id="file" name="file" class="upload" data-url="${baseUrl}/safeguardUploadFile.do" accept="application/pdf" style="display: none;"/>
-        <label class="browseFile" for="file">Browse file</label>
-      </div>
-    [/#if]
-    [#-- Uploaded File --]
-    <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
-      <span class="contentResult">[#if safeguard.hasFile??]
-        <a target="_blank" href="${action.getBaseLineFileURL((safeguard.id?string)!-1)}&filename=${(safeguard.file.fileName)!}" target="_blank" class="downloadBaseline"> ${(safeguard.file.fileName)!('No file name')} </a>
-        [/#if]</span>
-      [#if editable]<span class="removeIcon"> </span> [/#if]
-    </p>         
-  </div>
-[/#macro]
-
-
