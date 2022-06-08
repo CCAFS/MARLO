@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -118,7 +119,8 @@ public class FeedbackStatusAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-    biReports = biReportsManager.findAll();
+    biReports = biReportsManager.findAll().stream().filter(bi -> bi != null && bi.getReportName().equals("Feedback"))
+      .collect(Collectors.toList());
     biParameters = biParametersManager.findAll();
 
     // Get current CRP
