@@ -104,10 +104,10 @@ public class CommentableFieldsBySectionNameAndParents extends BaseAction {
         } else {
           fieldsMap.put("identifierField", "");
         }
-        if (field.getParentFieldIdentifier() != null) {
-          fieldsMap.put("descriptionField", field.getParentFieldDescription());
+        if (field.getParentFieldDescription() != null) {
+          fieldsMap.put("parentFieldDescription", field.getParentFieldDescription());
         } else {
-          fieldsMap.put("descriptionField", "");
+          fieldsMap.put("parentFieldDescription", "");
         }
         this.fieldsMap.add(fieldsMap);
       }

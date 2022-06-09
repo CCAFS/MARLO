@@ -763,7 +763,8 @@
   <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox" style="display:${isTemplate?string('none','block')}">
     [#local indexIndicator = action.getIndexIndicator(element.id) /]
     [#local projectOutcomeIndicator  = action.getIndicator(element.id) /]
-    [#local customName = "${name}[${indexIndicator}]" /]
+    [#-- [#local customName = "${name}[${indexIndicator}]" /] --]
+    [#local customName = "${name}[${index}]" /]
     <div class="leftHead gray sm">
       <span class="index">${index+1}</span>
     </div>
