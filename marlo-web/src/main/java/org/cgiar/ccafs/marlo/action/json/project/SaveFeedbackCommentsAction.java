@@ -166,6 +166,11 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
 
       if (link != null) {
+        try {
+          link.replace("orgclusters", "org/clusters");
+        } catch (Exception e) {
+          logger.error("unable to format the url", e);
+        }
         qaComment.setLink(link);
       }
 
