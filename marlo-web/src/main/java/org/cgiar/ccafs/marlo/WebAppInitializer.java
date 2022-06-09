@@ -95,20 +95,6 @@ public class WebAppInitializer implements WebApplicationInitializer {
       struts2Filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, STRUTS2_REQUESTS);
     }
 
-    FilterRegistration.Dynamic clarisaPublicAccesFilter =
-      servletContext.addFilter("ClarisaPublicAccesFilter", new DelegatingFilterProxy("ClarisaPublicAccesFilter"));
-    clarisaPublicAccesFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, REST_SWAGGER_REQUESTS);
-
-    AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
-    dispatcherContext.register(MarloRestApiConfig.class, MarloSwaggerConfiguration.class);
-    dispatcherContext.setParent(appContext);
-
-    ServletRegistration.Dynamic dispatcher =
-      servletContext.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
-    dispatcher.setLoadOnStartup(1);
-    dispatcher.addMapping(REST_API_REQUESTS);
-    dispatcher.addMapping(REST_SWAGGER_REQUESTS);
-
 
     if (!activeEnv.equals(ApplicationContextConfig.SPRING_PROFILE_PRODUCTION)) {
 
@@ -122,25 +108,23 @@ public class WebAppInitializer implements WebApplicationInitializer {
         .addFilter("AddSessionToRestRequestFilter", new DelegatingFilterProxy("AddSessionToRestRequestFilter"));
       addSessionToRestRequestFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true,
         REST_API_REQUESTS);
-      /*
-       * FilterRegistration.Dynamic clarisaPublicAccesFilter =
-       * servletContext.addFilter("ClarisaPublicAccesFilter", new DelegatingFilterProxy("ClarisaPublicAccesFilter"));
-       * clarisaPublicAccesFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true,
-       * REST_SWAGGER_REQUESTS);
-       * /** Now add the Spring MVC dispatacher servlet config for our REST api
-       **/
-      /*
-       * AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
-       * dispatcherContext.register(MarloRestApiConfig.class, MarloSwaggerConfiguration.class);
-       * dispatcherContext.setParent(appContext);
-       */
-      /*
-       * ServletRegistration.Dynamic dispatcher =
-       * servletContext.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
-       * dispatcher.setLoadOnStartup(1);
-       * dispatcher.addMapping(REST_API_REQUESTS);
-       * dispatcher.addMapping(REST_SWAGGER_REQUESTS);
-       */
+
+      FilterRegistration.Dynamic clarisaPublicAccesFilter =
+        servletContext.addFilter("ClarisaPublicAccesFilter", new DelegatingFilterProxy("ClarisaPublicAccesFilter"));
+      clarisaPublicAccesFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true,
+        REST_SWAGGER_REQUESTS);
+
+      /** Now add the Spring MVC dispatacher servlet config for our REST api **/
+      AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
+      dispatcherContext.register(MarloRestApiConfig.class, MarloSwaggerConfiguration.class);
+      dispatcherContext.setParent(appContext);
+
+      ServletRegistration.Dynamic dispatcher =
+        servletContext.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
+      dispatcher.setLoadOnStartup(1);
+      dispatcher.addMapping(REST_API_REQUESTS);
+      dispatcher.addMapping(REST_SWAGGER_REQUESTS);
+
     }
     // End Check Spring Profile filters
     FilterRegistration.Dynamic CORSFilter =
