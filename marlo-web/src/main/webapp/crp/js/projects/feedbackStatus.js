@@ -70,6 +70,7 @@ function executePetition(idReport) {
     'data': data,
     'dataType': "json",
     success: function (metadata) {
+      console.log(metadata)
       var embedUrl = $inputsContainer.find('input[name=embedUrl]').val();
       var reportId = $inputsContainer.find('input[name=reportId]').val();
       // console.log(metadata.token, embedUrl, reportId, idReport);
@@ -113,8 +114,8 @@ function embedPBI(embedToken, embededURL, dashboardId, contentId) {
     id: dashboardId,
     permissions: permissions,
     settings: {
-      filterPaneEnabled: hasFilters,
-      navContentPaneEnabled: true
+      filterPaneEnabled: false,
+      navContentPaneEnabled: false,
     }
   };
 
@@ -123,6 +124,7 @@ function embedPBI(embedToken, embededURL, dashboardId, contentId) {
   var $dashboardContainer = $("#" + contentId + '-contentOptions').children().first();
   var dashboard = powerbi.embed($dashboardContainer.get(0), config);
   var $dashboard = $("#" + contentId + '-contentOptions');
+  
 
   // Dashboard.off removes a given event handler if it exists.
   dashboard.off("loaded");
@@ -130,8 +132,7 @@ function embedPBI(embedToken, embededURL, dashboardId, contentId) {
   // Dashboard.on will add an event handler which prints to Log window.
   dashboard.on("loaded", function () {
     $dashboard.addClass('loaded');
-    removeNavPanel(contentId);
-    //removeFilterPanel(contentId);
+    filterAcronym();
   });
 
   dashboard.on("error", function (event) {
@@ -140,21 +141,24 @@ function embedPBI(embedToken, embededURL, dashboardId, contentId) {
   });
 
   dashboard.off("tileClicked");
+  // filterAcronym([''])
 }
 
 //Function to set a value for the acronym filter, value is an array
-function filterAcronym(value) {
+function filterAcronym() {
   // Build the filter you want to use. For more information, See Constructing
   // Filters in https://github.com/Microsoft/PowerBI-JavaScript/wiki/Filters.
+  // console.log($('#clusterID-quote a p span').css("background-color", "yellow"))
+  // console.log($('#clusterID-quote a p span').text())
+  culterId =  Number($('#clusterID-quote a p span').text());
   const filter = {
     $schema: "http://powerbi.com/product/schema#basic",
     target: {
-      table: "project_submission",
-      hierarchy: "acronym Hierarchy",
-      hierarchyLevel: "acronym"
-    },
-    operator: "In",
-    values: value
+      table: "feedback",
+      column: "cluster_id"
+  },
+  operator: "In",
+  values: [culterId]
   };
 
   // Get a reference to the embedded report HTML element
@@ -202,51 +206,7 @@ function removeFilterPanel(contentId) {
 }
 
 
-//Function to remove the navPanel
-function removeNavPanel(contentId) {
 
-  // Power bi models.
-  var models = window['powerbi-client'].models;
-
-  //The new settings that you want to apply to the report.
-  const newSettings = {
-    panes: {
-      pageNavigation: {
-        visible: true
-      }
-    },
-    layoutType: models.LayoutType.Custom,
-    customLayout: {
-      displayOption: models.DisplayOption.FitToPage,
-      // displayOption: models.DisplayOption.FitToWidth,
-      pagesLayout: {}
-    }
-  };
-
-
-  // Get a reference to the embedded report HTML element
-  var embedContainer = $("#" + contentId + '-contentOptions').children().first()[0];
-
-
-  // Get a reference to the embedded report.
-  report = powerbi.get(embedContainer);
-
-  // Update the settings by passing in the new settings you have configured.
-  report.updateSettings(newSettings)
-    .then(function () {
-      console.log("Dashboard was updated.");
-    })
-    .catch(function (error) {
-      console.log(errors);
-    });
-
-  // Update height of iframe container depending on dashboard page height
-  updateReportHeight(contentId, report, models);
-
-  report.on("buttonClicked", function () {
-    updateReportHeight(contentId, report,models);
-  });
-}
 
 function updateReportHeight(contentId, report, models) {
   var reportId = contentId.split('BIreport-')[1];
