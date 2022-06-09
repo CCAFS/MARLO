@@ -177,6 +177,16 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                   } else {
                     fieldsMap.put("approvalUserName", "");
                   }
+                  if (comment.getApprovalDate() != null) {
+                    fieldsMap.put("approvalDate", comment.getApprovalDate());
+                  } else {
+                    fieldsMap.put("approvalDate", "");
+                  }
+                  if (comment.getField().getParentFieldDescription() != null) {
+                    fieldsMap.put("fieldDescription", comment.getField().getParentFieldDescription());
+                  } else {
+                    fieldsMap.put("fieldDescription", "");
+                  }
                   if (comment.getCommentDate() != null && comment.getCommentDate().toString() != null) {
                     String dateString = comment.getCommentDate().toString();
                     fieldsMap.put("date", dateString);

@@ -60,6 +60,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private Long objectId;
   private Long parentId;
   private String reply;
+  private String parentFieldDescription;
   private String link;
   private String fieldDescription;
   private String fieldValue;
@@ -171,6 +172,9 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       if (fieldDescription != null) {
         qaComment.setFieldDescription(fieldDescription);
       }
+      if (parentFieldDescription != null) {
+        qaComment.setParentFieldDescription(parentFieldDescription);
+      }
       if (fieldValue != null) {
         qaComment.setFieldValue(fieldValue);
       }
@@ -276,7 +280,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
           StringUtils.trim(StringUtils.trim(parameters.get(APConstants.COMMENT_REQUEST_ID).getMultipleValues()[0])));
       }
     } catch (Exception e) {
-      logger.error("unable to get replyID", e);
+      logger.error("unable to get commentID", e);
     }
     try {
       if (parameters.get(APConstants.OBJECT_REQUEST_ID).isDefined()) {
@@ -292,7 +296,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
           StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PARENT_REQUEST_ID).getMultipleValues()[0])));
       }
     } catch (Exception e) {
-      logger.error("unable to get replyID", e);
+      logger.error("unable to get parentID", e);
     }
     try {
       if (parameters.get(APConstants.COMMENT_REPLY).isDefined()) {
@@ -342,8 +346,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
     }
     try {
       if (parameters.get(APConstants.FIELD_VALUE).isDefined()) {
-        fieldDescription =
-          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FIELD_VALUE).getMultipleValues()[0]));
+        fieldValue = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FIELD_VALUE).getMultipleValues()[0]));
       }
     } catch (Exception e) {
       logger.error("unable to get field Description", e);
@@ -352,6 +355,14 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       if (parameters.get(APConstants.DELIVERABLE_ID).isDefined()) {
         deliverableId = Long.parseLong(
           StringUtils.trim(StringUtils.trim(parameters.get(APConstants.DELIVERABLE_ID).getMultipleValues()[0])));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get deliverable ID value", e);
+    }
+    try {
+      if (parameters.get(APConstants.PARENT_FIELD_DESCRIPTION).isDefined()) {
+        parentFieldDescription = StringUtils
+          .trim(StringUtils.trim(parameters.get(APConstants.PARENT_FIELD_DESCRIPTION).getMultipleValues()[0]));
       }
     } catch (Exception e) {
       logger.error("unable to get deliverable ID value", e);
