@@ -132,7 +132,7 @@ function embedPBI(embedToken, embededURL, dashboardId, contentId) {
   // Dashboard.on will add an event handler which prints to Log window.
   dashboard.on("loaded", function () {
     $dashboard.addClass('loaded');
-    filterAcronym();
+    filterBi();
   });
 
   dashboard.on("error", function (event) {
@@ -145,21 +145,34 @@ function embedPBI(embedToken, embededURL, dashboardId, contentId) {
 }
 
 //Function to set a value for the acronym filter, value is an array
-function filterAcronym() {
+function filterBi() {
   // Build the filter you want to use. For more information, See Constructing
   // Filters in https://github.com/Microsoft/PowerBI-JavaScript/wiki/Filters.
   // console.log($('#clusterID-quote a p span').css("background-color", "yellow"))
   // console.log($('#clusterID-quote a p span').text())
+  
+  phaseID = Number($('#actualPhase').text());
   culterId =  Number($('#clusterID-quote a p span').text());
-  const filter = {
-    $schema: "http://powerbi.com/product/schema#basic",
-    target: {
-      table: "feedback",
-      column: "cluster_id"
-  },
-  operator: "In",
-  values: [culterId]
-  };
+  const filters = [
+    {
+      $schema: "http://powerbi.com/product/schema#basic",
+      target: {
+        table: "feedback",
+        column: "cluster_id"
+      },
+      operator: "In",
+      values: [culterId]
+    },
+    {
+      $schema: "http://powerbi.com/product/schema#basic",
+      target: {
+        table: "feedback",
+        column: "phaseID"
+      },
+      operator: "In",
+      values: [phaseID]
+    }
+  ]
 
   // Get a reference to the embedded report HTML element
   var currentID = $("div[class$='current']").attr("id");
@@ -170,7 +183,7 @@ function filterAcronym() {
 
   // Set the filter for the report.
   // Pay attention that setFilters receives an array.
-  report.setFilters([filter])
+  report.setFilters(filters)
     .then(function () {
       console.log("Report filter was set.");
     })

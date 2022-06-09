@@ -3,12 +3,12 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["powerbi-client"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/feedbackStatus.js?20220606a",
+  "${baseUrlMedia}/js/projects/feedbackStatus.js?20220609a",
   "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/feedbackStatus.css?20220606a"
+  "${baseUrlMedia}/css/projects/feedbackStatus.css?20220609a"
   ]
 /]
 
@@ -43,6 +43,7 @@
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
 <section class="container">
+<div id="actualPhase">${actualPhase.id}</div>
     <div class="row">
       [#-- Project Menu --]
       <div class="col-md-3">
