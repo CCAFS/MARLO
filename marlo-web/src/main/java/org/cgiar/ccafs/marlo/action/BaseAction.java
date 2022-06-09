@@ -3047,7 +3047,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             if (deliverableShared != null && !deliverableShared.isEmpty()) {
               for (ProjectDeliverableShared deliverableS : deliverableShared) {
 
-                if (deliverableS.getDeliverable() != null) {
+                if (deliverableS.getDeliverable() != null && deliverableCrpOutcomeManager.findAll() != null) {
                   List<DeliverableCrpOutcome> deliverableOutcomes = deliverableCrpOutcomeManager.findAll().stream()
                     .filter(d -> d != null && d.getDeliverable() != null
                       && d.getDeliverable().getId().equals(deliverableS.getDeliverable().getId()))
