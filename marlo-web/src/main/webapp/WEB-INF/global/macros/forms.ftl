@@ -65,7 +65,7 @@
   </div>
   <div class="commentNumberContainer">
     <div class="numberOfCommentsBubble">
-      <p>2/4</p>
+      <p></p>
     </div>
     <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
   </div>
