@@ -27,7 +27,12 @@
       <p>[#if (customValue?has_content)!false] [#if isCurrencyInput]<nobr>US$ ${((customValue)!'0')?number?string(",##0.00")}</nobr>[#else]${customValue}[/#if]  [#else]${requiredText}[@s.text name="form.values.fieldEmpty" /][/#if]</p>
     [/#if]
   </div>
-  <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+  <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+  </div>
 [/#macro]
 
 [#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false]
@@ -58,7 +63,12 @@
       </p>
     [/#if] 
   </div>
-  <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+  <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p>2/4</p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+  </div>
 [/#macro]
 
 [#macro button i18nkey class="" id="" editable=true]
@@ -853,38 +863,58 @@
   </div>
 [/#macro]
 
-[#macro qaPopUpTest template=false index=-1]
-  [#local customName = "${template?string('_TEMPLATE_', '')}"]
-  <div id="qaCommentReply-${(template?string('template', ''))}">
-    [@customForm.textArea name="Comment on" required=false className="limitWords-100" editable=editable /]
+[#macro qaPopUpMultiple fields="" name="" index=-1 canLeaveComments=false template=false]
+  [#local customName = "${template?string('TEMPLATE', '')}${name}[${index}]"]
+  <div id="qaPopup-${customName}" class="qaPopup">
+    <div class="closeComment" name="${name}"></div>
+    <br>
+    [#if fields?has_content]
+      [#list fields as field]
+        [@qaCommentReplyBlock name=name index=field_index canLeaveComments=canLeaveComments/]
+      [/#list]
+    [#else]
+      [@qaCommentReplyBlock name=name canLeaveComments=canLeaveComments/]
+    [/#if]
+  </div>
+[/#macro]
+
+[#macro qaCommentReplyBlock name="" index=0 canLeaveComments=false]
+  [#if index == 0]
+    [#local showTitle = true]
+  [#else]
+    [#local showTitle = false]
+  [/#if]
+
+  [#if editable == false]
+    [#assign editable = canLeaveComments]
+  [/#if]
+
+  <div id="qaCommentReply-${name}[${index}]" class="qaCommentReplyBlock" index="${index}">
+    [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle /]
     <div class="commentCheckContainer">
       <div class="commentContainer">
         <div class="commentTitle"></div>
         <p class="commentReadonly"></p>
       </div>
-      <div class="checkContainer">
-        <img src="${baseUrlCdn}/global/images/agree.png" class="agreeComment" title="Agree">
-        <img src="${baseUrlCdn}/global/images/disagree.png" class="disagreeComment" title="Disagree">
-        <img src="${baseUrlCdn}/global/images/question.png" class="clarificationComment" title="Clarification needed">
-      </div>
     </div>
     <div class="replyContainer">
-      <br>
       [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
       <div class="replyTextContainer">
         <div class="replyTitle"></div>
         <p class="replyReadonly"></p>
       </div>
-      <div id="sendReplyContainer" class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
-    </div>  
-    <br>
-    <div id="sendCommentContainer" class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
-    <div class="optionsContainer">
-      <img id="agreeCommentBtn" src="${baseUrlCdn}/global/images/agree.png" class="qaOptions" title="Agree">
-      <img id="disagreeCommentBtn" src="${baseUrlCdn}/global/images/disagree.png" class="qaOptions" title="Disagree">
-      <img id="clarificationCommentBtn" src="${baseUrlCdn}/global/images/question.png" class="qaOptions" title="Clarification needed">
-      <img id="replyCommentBtn" src="${baseUrlCdn}/global/images/auto-reply.png" class="qaOptions" title="Reply">
+      <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
     </div>
-    <div class="addCommentContainer"><img src="${baseUrlCdn}/global/images/remove.png" class="addCommentBlock"></div>
+    <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+    <div class="buttonsContainer">
+      <div class="optionsContainer">
+        <img class="agreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/agree.png" title="Agree">
+        <img class="disagreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/disagree.png" title="Disagree">
+        <img class="clarificationCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/question.png" title="Clarification needed">
+        <img class="replyCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/auto-reply.png" title="Reply">
+      </div>
+      <div class="addCommentContainer" index="${index}"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>
+    </div>
+    <br>
   </div>
 [/#macro]

@@ -60,9 +60,12 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private Long objectId;
   private Long parentId;
   private String reply;
+  private String parentFieldDescription;
   private String link;
   private String fieldDescription;
+  private String fieldValue;
   private Long userId;
+  private Long deliverableId;
   private Date date;
   private Long projectId;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
@@ -118,25 +121,67 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         qaComment.setPhase(phase);
       }
 
-      Boolean statusBoolean = null;
-      if (status == "0") {
-        statusBoolean = false;
-      }
-      if (status == "1") {
-        statusBoolean = true;
+      String statusText = null;
+      if (status != null) {
+        if (status.equals("0")) {
+          statusText = "rejected";
+        }
+        if (status.equals("1")) {
+          statusText = "approved";
+        }
+        if (status.equals("2")) {
+          statusText = "clarification needed";
+        }
+        if (status.equals("3")) {
+          statusText = "pending";
+        }
+        if (status == null) {
+          statusText = "pending";
+        }
       }
 
       if (status != null) {
-        qaComment.setStatus(statusBoolean);
+        qaComment.setStatus(statusText);
       }
+
+      if (fieldId != null && phaseId != null && parentId != null) {
+        FeedbackQACommentableFields field =
+          feedbackQACommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
+
+        if (field.getSectionName() != null) {
+          switch (field.getSectionName()) {
+            case "projectContributionCrp":
+              link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getAcronym() + "/contributionCrp.do?"
+                + "projectOutcomeID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+
+              break;
+            case "deliverables":
+              if (deliverableId != null) {
+                link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
+                  + "deliverableID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+              }
+              break;
+          }
+        }
+      }
+
       if (link != null) {
+        try {
+          link.replace("orgclusters", "org/clusters");
+        } catch (Exception e) {
+          logger.error("unable to format the url", e);
+        }
         qaComment.setLink(link);
       }
+
       if (fieldDescription != null) {
         qaComment.setFieldDescription(fieldDescription);
       }
-      if (status != null) {
-        qaComment.setStatus(statusBoolean);
+      if (parentFieldDescription != null) {
+        qaComment.setParentFieldDescription(parentFieldDescription);
+      }
+      if (fieldValue != null) {
+        qaComment.setFieldValue(fieldValue);
       }
 
       if (replyId != null) {
@@ -157,9 +202,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
           }
         } catch (Exception e) {
           logger.error("unable to set Project object", e);
-
         }
-        qaComment.setProject(null);
       }
 
       if (userId != null) {
@@ -242,7 +285,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
           StringUtils.trim(StringUtils.trim(parameters.get(APConstants.COMMENT_REQUEST_ID).getMultipleValues()[0])));
       }
     } catch (Exception e) {
-      logger.error("unable to get replyID", e);
+      logger.error("unable to get commentID", e);
     }
     try {
       if (parameters.get(APConstants.OBJECT_REQUEST_ID).isDefined()) {
@@ -258,7 +301,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
           StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PARENT_REQUEST_ID).getMultipleValues()[0])));
       }
     } catch (Exception e) {
-      logger.error("unable to get replyID", e);
+      logger.error("unable to get parentID", e);
     }
     try {
       if (parameters.get(APConstants.COMMENT_REPLY).isDefined()) {
@@ -300,10 +343,34 @@ public class SaveFeedbackCommentsAction extends BaseAction {
     }
     try {
       if (parameters.get(APConstants.FIELD_DESCRIPTION).isDefined()) {
-        fieldDescription = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.LINK).getMultipleValues()[0]));
+        fieldDescription =
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FIELD_DESCRIPTION).getMultipleValues()[0]));
       }
     } catch (Exception e) {
       logger.error("unable to get field Description", e);
+    }
+    try {
+      if (parameters.get(APConstants.FIELD_VALUE).isDefined()) {
+        fieldValue = StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FIELD_VALUE).getMultipleValues()[0]));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get field Description", e);
+    }
+    try {
+      if (parameters.get(APConstants.DELIVERABLE_ID).isDefined()) {
+        deliverableId = Long.parseLong(
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.DELIVERABLE_ID).getMultipleValues()[0])));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get deliverable ID value", e);
+    }
+    try {
+      if (parameters.get(APConstants.PARENT_FIELD_DESCRIPTION).isDefined()) {
+        parentFieldDescription = StringUtils
+          .trim(StringUtils.trim(parameters.get(APConstants.PARENT_FIELD_DESCRIPTION).getMultipleValues()[0]));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get deliverable ID value", e);
     }
   }
 

@@ -28,11 +28,13 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   @Expose
   private String fieldValue;
   @Expose
-  private Boolean status;
+  private String status;
   @Expose
   private FeedbackQAReply reply;
   @Expose
   private User user;
+  @Expose
+  private User userApproval;
   @Expose
   private Date commentDate;
   @Expose
@@ -43,6 +45,8 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   private String link;
   @Expose
   private String fieldDescription;
+  @Expose
+  private String parentFieldDescription;
 
   public FeedbackQAComment() {
   }
@@ -101,6 +105,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     return u;
   }
 
+  public String getParentFieldDescription() {
+    return parentFieldDescription;
+  }
+
   public long getParentId() {
     return parentId;
   }
@@ -117,12 +125,16 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     return reply;
   }
 
-  public Boolean getStatus() {
+  public String getStatus() {
     return status;
   }
 
   public User getUser() {
     return user;
+  }
+
+  public User getUserApproval() {
+    return userApproval;
   }
 
   @Override
@@ -163,6 +175,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     // TODO Auto-generated method stub
   }
 
+  public void setParentFieldDescription(String parentFieldDescription) {
+    this.parentFieldDescription = parentFieldDescription;
+  }
+
   public void setParentId(long parentId) {
     this.parentId = parentId;
   }
@@ -179,7 +195,7 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     this.reply = reply;
   }
 
-  public void setStatus(Boolean status) {
+  public void setStatus(String status) {
     this.status = status;
   }
 
@@ -187,5 +203,8 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     this.user = user;
   }
 
+  public void setUserApproval(User userApproval) {
+    this.userApproval = userApproval;
+  }
 }
 

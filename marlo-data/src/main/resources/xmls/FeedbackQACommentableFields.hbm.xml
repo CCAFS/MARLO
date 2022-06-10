@@ -21,9 +21,6 @@
 		<property name="parentFieldIdentifier" type="string">
             <column name="parent_field_identifier" sql-type="TEXT" />
         </property>
-		<property name="tableName" type="string">
-            <column name="table_name" sql-type="TEXT" />
-        </property>
 		<property name="fieldName" type="string">
             <column name="field_name" sql-type="TEXT" />
         </property>
@@ -33,5 +30,12 @@
            <property name="active" type="boolean">
           <column name="is_active" not-null="true" />
         </property>
+        <set name="feedbackQAComments" table="feedback_qa_comments" inverse="true" lazy="true"
+            fetch="select">
+            <key>
+                <column name="field_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.FeedbackQAComment" />
+        </set>
 	</class>
 </hibernate-mapping>
