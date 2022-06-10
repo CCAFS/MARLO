@@ -67,7 +67,7 @@
     },
     { 'title': 'Feedback', 'show': action.hasSpecificities(action.feedbackModule()),
       'items': [
-      { 'slug': 'feedback',  'name': 'projects.menu.feedback',  'action': 'feedback',  'active': false  ,'show': action.hasSpecificities(action.feedbackModule()), "showCheck": false, "development": true }
+      { 'slug': 'feedback',  'name': 'projects.menu.feedback',  'action': 'feedback',  'active': true  ,'show': action.hasSpecificities(action.feedbackModule()), "showCheck": false }
       ]
     }
     
