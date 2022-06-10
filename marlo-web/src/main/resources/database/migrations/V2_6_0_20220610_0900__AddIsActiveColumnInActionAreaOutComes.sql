@@ -1,0 +1,1 @@
+alter table st_action_area_outcomes add column is_active tinyint(1) NOT NULL DEFAULT '1';
