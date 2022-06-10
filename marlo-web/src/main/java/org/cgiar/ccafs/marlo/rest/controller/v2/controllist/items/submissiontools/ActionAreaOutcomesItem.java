@@ -54,6 +54,9 @@ public class ActionAreaOutcomesItem<T> {
   public ResponseEntity<ActionAreaOutcomeDTO> findActionAreaOutcomeById(Long id) {
     ActionAreaOutcome actionAreaOutcome = this.actionAreaOutcomeManager.getActionAreaOutcomeById(id);
 
+    if (!actionAreaOutcome.isActive()) {
+      actionAreaOutcome = null;
+    }
     return Optional.ofNullable(actionAreaOutcome)
       .map(this.actionAreaOutcomesMapper::ActionAreaOutcomesToActionAreaOutcomeDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -64,8 +67,10 @@ public class ActionAreaOutcomesItem<T> {
     if (this.actionAreaOutcomeManager.getAll() != null) {
       List<ActionAreaOutcome> actionAreaOutcomes = new ArrayList<>(this.actionAreaOutcomeManager.getAll());
       List<ActionAreaOutcomeDTO> actionAreaOutcomeDTOs =
-        actionAreaOutcomes.stream().map(actionAreaOutcomeEntity -> this.actionAreaOutcomesMapper
-          .ActionAreaOutcomesToActionAreaOutcomeDTO(actionAreaOutcomeEntity)).collect(Collectors.toList());
+        actionAreaOutcomes.stream().filter(actionAreaOutcomeEntity -> actionAreaOutcomeEntity.isActive())
+          .map(actionAreaOutcomeEntity -> this.actionAreaOutcomesMapper
+            .ActionAreaOutcomesToActionAreaOutcomeDTO(actionAreaOutcomeEntity))
+          .collect(Collectors.toList());
       return actionAreaOutcomeDTOs;
     } else {
       return null;
