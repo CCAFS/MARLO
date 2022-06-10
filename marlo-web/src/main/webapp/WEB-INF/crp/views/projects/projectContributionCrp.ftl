@@ -158,7 +158,7 @@
                 [/#if]
               </div>
               <div class="form-group text-area-container">
-                [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-100" editable=editable && (!reportingActive || (!(projectOutcome.narrativeTarget?has_content)!false))/]
+                [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-100" editable=false && (!reportingActive || (!(projectOutcome.narrativeTarget?has_content)!false))/]
               </div>
               
             </div> 
