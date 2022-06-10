@@ -22,6 +22,8 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCommunicationManager;
@@ -37,6 +39,8 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -99,6 +103,8 @@ public class ProjectOutcomeAction extends BaseAction {
   private CrpMilestoneManager crpMilestoneManager;
   private PhaseManager phaseManager;
   private DeliverableParticipantManager deliverableParticipantManager;
+  private FeedbackQACommentManager feedbackQACommentManager;
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
 
   // Front-end
   private long projectID;
@@ -117,6 +123,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private boolean editOutcomeExpectedValue;
   private boolean editMilestoneExpectedValue;
   private List<DeliverableParticipant> deliverableParticipants;
+  private List<FeedbackQACommentableFields> feedbackComments;
   private Long userID;
 
   // capdev component
@@ -132,6 +139,8 @@ public class ProjectOutcomeAction extends BaseAction {
   private Double totalAfricans = new Double(0);
   private Double totalYouth = new Double(0);
 
+  private List<ProjectOutcome> list;
+
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, ProjectOutcomeManager projectOutcomeManager,
@@ -139,7 +148,9 @@ public class ProjectOutcomeAction extends BaseAction {
     ProjectCommunicationManager projectCommunicationManager, AuditLogManager auditLogManager,
     CrpMilestoneManager crpMilestoneManager, ProjectNextuserManager projectNextuserManager,
     ProjectOutcomeValidator projectOutcomeValidator, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager,
-    PhaseManager phaseManager, DeliverableParticipantManager deliverableParticipantManager) {
+    PhaseManager phaseManager, DeliverableParticipantManager deliverableParticipantManager,
+    FeedbackQACommentManager feedbackQACommentManager,
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -155,6 +166,8 @@ public class ProjectOutcomeAction extends BaseAction {
     this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
     this.phaseManager = phaseManager;
     this.deliverableParticipantManager = deliverableParticipantManager;
+    this.feedbackQACommentManager = feedbackQACommentManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
   }
 
   public void addAllCrpMilestones() {
@@ -372,6 +385,10 @@ public class ProjectOutcomeAction extends BaseAction {
     return deliverableParticipants;
   }
 
+  public List<FeedbackQACommentableFields> getFeedbackComments() {
+    return feedbackComments;
+  }
+
   public int getIndexCommunication(int year) {
 
     int i = 0;
@@ -439,6 +456,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectOutcomeIndicator;
   }
 
+
   public ProjectMilestone getMilestone(long milestoneId, int year) {
     ProjectMilestone projectMilestone = new ProjectMilestone();
     if (projectOutcome.getMilestones() != null) {
@@ -462,7 +480,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public List<CrpMilestone> getMilestones() {
     return milestones;
   }
-
 
   public List<CrpMilestone> getMilestonesbyYear(int year) {
     List<CrpMilestone> milestoneList =
@@ -512,6 +529,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return 0;
   }
 
+
   public ProjectOutcomeIndicator getPrevIndicator(Long indicatorID) {
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeLastPhase.getIndicators()) {
       if (projectOutcomeIndicator != null && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
@@ -526,15 +544,14 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+
   public Project getProject() {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
-
 
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
@@ -596,6 +613,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipantFormalTrainingPhdFemale;
   }
 
+
   public Double getTotalParticipantFormalTrainingPhdMale() {
     return totalParticipantFormalTrainingPhdMale;
   }
@@ -603,7 +621,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public Double getTotalParticipantFormalTrainingShortFemale() {
     return totalParticipantFormalTrainingShortFemale;
   }
-
 
   public Double getTotalParticipantFormalTrainingShortMale() {
     return totalParticipantFormalTrainingShortMale;
@@ -617,6 +634,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalYouth;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
@@ -624,7 +642,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public Long getUserID() {
     return userID;
   }
-
 
   public boolean isEditMilestoneExpectedValue() {
     return editMilestoneExpectedValue;
@@ -664,6 +681,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
     return editable;
   }
+
 
   public ProjectCommunication loadProjectCommunication(int year) {
 
@@ -1015,6 +1033,30 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
 
+    /*
+     * get feedback comments
+     */
+    try {
+
+      feedbackComments = new ArrayList<>();
+      feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
+        .filter(f -> f.getSectionName() != null && f.getSectionName().equals("projectContributionCrp"))
+        .collect(Collectors.toList());
+      if (feedbackComments != null) {
+        for (FeedbackQACommentableFields field : feedbackComments) {
+          List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
+          comments = feedbackQACommentManager.findAll().stream()
+            .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+              && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == projectOutcome.getId()
+              && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
+            .collect(Collectors.toList());
+          field.setQaComments(comments);
+        }
+      }
+
+    } catch (Exception e) {
+      LOG.error(e + " error getting commentable fields");
+    }
 
     /*
      * Loading basic List
@@ -1206,6 +1248,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
+
   public void saveIndicators(ProjectOutcome projectOutcomeDB) {
 
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeDB.getProjectOutcomeIndicators().stream()
@@ -1348,7 +1391,6 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
-
   public void saveNextUsers(ProjectOutcome projectOutcomeDB) {
 
     for (ProjectNextuser projectNextuser : projectOutcomeDB.getProjectNextusers().stream().filter(c -> c.isActive())
@@ -1398,7 +1440,6 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
   }
-
 
   private ProjectOutcome saveProjectOutcome() {
 
@@ -1488,6 +1529,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public void setEditOutcomeExpectedValue(boolean editOutcomeExpectedValue) {
     this.editOutcomeExpectedValue = editOutcomeExpectedValue;
+  }
+
+  public void setFeedbackComments(List<FeedbackQACommentableFields> feedbackComments) {
+    this.feedbackComments = feedbackComments;
   }
 
   public void setMilestones(List<CrpMilestone> milestones) {

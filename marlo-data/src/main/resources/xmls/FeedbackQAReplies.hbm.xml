@@ -17,8 +17,15 @@
                 <comment>This field is a link to the table users</comment>
             </column>
         </many-to-one>
-        <property name="commentDate" type="date">
+        <property name="commentDate" type="timestamp">
             <column name="comment_date" />
         </property>
+        <set name="feedbackQAComments" table="feedback_qa_comments" inverse="true" lazy="true"
+            fetch="select">
+            <key>
+                <column name="reply_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.FeedbackQAComment" />
+        </set>
 	</class>
 </hibernate-mapping>

@@ -1,12 +1,11 @@
 $(document).ready(init);
 
-var milestonesCount, outcomeID, textareaComment, parentID, phaseID, userID, textareaReply, newData;
+var milestonesCount, outcomeID, textareaComment, parentID, projectID, phaseID, userID, link, userCanManageFeedback, userCanLeaveComments, isFeedbackActive, textareaReply, newData;
 var sectionName = 'projectContributionCrp';
 var contributionCRPAjaxURL = `/fieldsBySectionAndParent.do?sectionName=${sectionName}`;
 var arrayName = 'fieldsMap';
 let fieldID = '';
 let qaComments = '';
-let commentID;
 
 function init() {
   milestonesCount = $('form .outcomeMilestoneYear').length;
@@ -26,12 +25,15 @@ function init() {
   // Load Milestones ones
   $('form .milestonesYearSelect').each(loadMilestonesByYear);
 
-  textareaComment = $('textarea[id="Comment on"]');
-  textareaReply = $('textarea[id="Reply"]').parent();
   parentID = $('#parentID').html();
+  projectID = $('#projectID').html();
   phaseID = $('#phaseID').html();
   userID = $('#userID').html();
+  link = window.location.href;
   userCanManageFeedback = $('#userCanManageFeedback').html();
+  userCanLeaveComments = $('#userCanLeaveComments').html();
+  console.log('can comment', userCanLeaveComments, 'can reply', userCanManageFeedback);
+  isFeedbackActive = $('#isFeedbackActive').html();
 
   // Attaching events functions
   attachEvents();
@@ -50,176 +52,291 @@ function attachEvents() {
   // Remove a next user
   $('.removeNextUser').on('click', removeNextUser);
 
-  getQAComments();
-  // loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+  if (isFeedbackActive == 'true') {
+    getQAComments();
+    loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+  }
 
+  // Multiple comments-replies
   $('img.qaComment').on('click', function (event) {
-    var name = this.name;
-    var popUpTitle = $(this).attr('description');
+    let name = this.name;
+    let popUpTitle = $(this).attr('description');
+    let qaPopup = $(`div[id^="qaPopup-${name}"]`);
+    let block = $(`div[id^="qaCommentReply-${name}"]`);
+
     fieldID = $(this).attr('fieldID');
-    textareaComment.prev('label').html(`Comment on "${popUpTitle}":`);
-    $('#sendCommentContainer').attr('name', name);
-    $('#agreeCommentBtn').attr('name', name);
-    $('#disagreeCommentBtn').attr('name', name);
-    $('#replyCommentBtn').attr('name', name);
-    $('#sendReplyContainer').attr('name', name);
+
+    block.each((index, item) => {
+      if ($(item).attr('index') == 0) {
+        $(item).find('textarea[id="New comment"]').prev('label').html(`Comment on "${popUpTitle}":`);
+      }
+
+      $(item).find('.sendCommentContainer').attr('name', `${name}[${index}]`);
+      $(item).find('.agreeCommentBtn').attr('name', `${name}[${index}]`);
+      $(item).find('.disagreeCommentBtn').attr('name', `${name}[${index}]`);
+      $(item).find('.clarificationCommentBtn').attr('name', `${name}[${index}]`);
+      $(item).find('.replyCommentBtn').attr('name', `${name}[${index}]`);
+      $(item).find('.sendReplyContainer').attr('name', `${name}[${index}]`);
+      $(item).find('div.addCommentContainer').attr('name', name);
+    });
 
     loadCommentsByUser(name);
 
     if (event.pageX < 1000) {
-      $('#qaPopup').css('left', event.pageX);
+      qaPopup.css('left', event.pageX);
     } else {
-      $('#qaPopup').css('left', 'min(100vw - 100px, 78vw)');
+      qaPopup.css('left', 'min(100vw - 100px, 71vw)');
     }
 
-    $('#qaPopup').css('top', event.pageY);
-    $('#qaPopup').show();
+    qaPopup.css('top', event.pageY);
+    $('.qaPopup').hide().not(qaPopup);
+    qaPopup.show();
   });
 
-  $('div.closeComment').on('click', () => {
-    $('#qaPopup').hide();
+  $('div.closeComment').on('click', function () {
+    let name = $(this).attr('name');
+    let qaPopup = $(`div[id^="qaPopup-${name}"]`);
+    qaPopup.hide();
   });
 
-  $('#sendCommentContainer').on('click', function () {
-    var name = $(this).attr('name');
-    var comment = textareaComment.next().html();
-    var cleanComment = comment.replaceAll('.<br>.', '');
+  $('div.sendCommentContainer').on('click', function () {
+    let name = $(this).attr('name');
+    let block = $(`div[id^="qaCommentReply-${name}"]`);
+    let textarea = block.find('textarea[id="New comment"]');
+    let value = textarea.val();
+    let comment = textarea.next().html();
+    let cleanComment;
+
+    if (value && value != '') {
+      cleanComment = value.replaceAll('.<br>.', '');
+    } else {
+      cleanComment = comment.replaceAll('.<br>.', '');
+    }
+
     cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
 
-    saveQAComment(cleanComment, fieldID, name);
+    if (cleanComment != '' && cleanComment != ' ') {
+      textarea.css('border', '1px solid #ccc');
+      saveQAComment(cleanComment, fieldID, name);
+    } else {
+      textarea.css('border', '2px solid red');
+    }
   });
 
-  $('#agreeCommentBtn').on('click', function () {
-    var name = $(this).attr('name');
+  $('img.disagreeCommentBtn').on('click', function () {
+    let name = $(this).attr('name');
+    let commentID = $(this).attr('commentId');
+    let block = $(this).parent().parent().parent();
 
-    hideShowOptionButtons(true);
-    saveCommentStatus(1, name);
+    hideShowOptionButtons(block, '0');
+    saveCommentStatus(0, commentID, name);
+    block.find('img.replyCommentBtn').click();
   });
 
-  $('#disagreeCommentBtn').on('click', function () {
-    var name = $(this).attr('name');
+  $('img.agreeCommentBtn').on('click', function () {
+    let name = $(this).attr('name');
+    let commentID = $(this).attr('commentId');
+    let block = $(this).parent().parent().parent();
 
-    hideShowOptionButtons(false);
-    saveCommentStatus(0, name);
-    $('#replyCommentBtn').click();
+    hideShowOptionButtons(block, '1');
+    saveCommentStatus(1, commentID, name);
   });
 
-  $('#clarificationCommentBtn').on('click', function () {
-    hideShowOptionButtons('clarification');
+  $('img.clarificationCommentBtn').on('click', function () {
+    let name = $(this).attr('name');
+    let commentID = $(this).attr('commentId');
+    let block = $(this).parent().parent().parent();
+
+    hideShowOptionButtons(block, '2');
+    saveCommentStatus(2, commentID, name);
+    block.find('img.replyCommentBtn').click();
   });
 
-  $('#replyCommentBtn').on('click', function () {
-    $('.replyContainer').show();
-    $('.optionsContainer').hide();
+  $('img.replyCommentBtn').on('click', function () {
+    let block = $(this).parent().parent().parent();
+
+    block.find('.replyContainer').css('display', 'flex');
+    block.find('.buttonsContainer').hide();
+    block.find('.optionsContainer').hide();
   });
 
-  $('#sendReplyContainer').on('click', function () {
-    var name = $(this).attr('name');
-    var comment = $('textarea[id="Reply"]').next().html();
-    var cleanComment = comment.replaceAll('.<br>.', '');
+  $('div.sendReplyContainer').on('click', function () {
+    let name = $(this).attr('name');
+    let commentID = $(this).attr('commentId');
+    let block = $(`div[id^="qaCommentReply-${name}"]`);
+    let textarea = block.find('textarea[id="Reply"]');
+    let value = textarea.val();
+    let comment = textarea.next().html();
+    let cleanComment;
+
+    if (value && value != '') {
+      cleanComment = value.replaceAll('.<br>.', '');
+    } else {
+      cleanComment = comment.replaceAll('.<br>.', '');
+    }
+
     cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
 
-    saveFeedbackReply(cleanComment, name);
+    if (cleanComment != '' && cleanComment != ' ') {
+      textarea.css('border', '1px solid #ccc');
+      saveFeedbackReply(cleanComment, commentID, name);
+    } else {
+      textarea.css('border', '2px solid red');
+    }
   });
 
-  $('img.addCommentBlock').on('click', function () {
-    var popup = $('#qaPopup');
-    var element = $('#qaCommentReply-template').clone(true).removeAttr('id');
-    // element.attr('id', `qaCommentReply-${index}`);
-    element.appendTo(popup).hide().show(350);
+  $('div.addCommentContainer').on('click', function () {
+    $(this).hide();
+    let name = $(this).attr('name');
+    let block = $(`div[id^="qaCommentReply-${name}"]`);
+    block.find('.buttonsContainer').hide();
+    let qaPopup = $(`div[id^="qaPopup-${name}"]`);
+    let lastIndex = block.last().attr('index');
+    lastIndex = parseInt(lastIndex) + 1;
+    let commentReplyBlock = qaPopup.siblings('#qaTemplate').find('.qaPopup').children()[2];
+    let newBlock = $(commentReplyBlock).clone(true).attr('id', `qaCommentReply-${name}[${lastIndex}]`);
+
+    newBlock.attr('index', `${lastIndex}`);
+    newBlock.find('.sendCommentContainer').attr('name', `${name}[${lastIndex}]`);
+    newBlock.find('.sendReplyContainer').attr('name', `${name}[${lastIndex}]`);
+    newBlock.find('.addCommentContainer').attr('name', `${name}`);
+    newBlock.find('.addCommentContainer').attr('index', `${lastIndex}`);
+    newBlock.appendTo(qaPopup).hide().show();
   });
 }
 
-function hideShowOptionButtons(status) {
-  switch (status) {
-    case true:
-      $('#agreeCommentBtn').hide();
-      $('img.disagreeComment').hide();
-      $('img.agreeComment').show();
-      $('img.clarificationComment').hide();
-      $('#disagreeCommentBtn').hide();
-      $('#clarificationCommentBtn').hide();
-      $('#replyCommentBtn').show();
-      break;
-      case false:
-        $('#disagreeCommentBtn').hide();
-        $('img.agreeComment').hide();
-        $('img.disagreeComment').show();
-        $('img.clarificationComment').hide();
-        $('#agreeCommentBtn').hide();
-        $('#clarificationCommentBtn').hide();
-        $('#replyCommentBtn').show();
-      break;
-      case 'clarification':
-        $('#clarificationCommentBtn').hide();
-        $('img.agreeComment').hide();
-        $('img.disagreeComment').hide();
-        $('img.clarificationComment').show();
-        $('#agreeCommentBtn').hide();
-        $('#disagreeCommentBtn').hide();
-        $('#replyCommentBtn').show();
-      break;
-    case '':
-      $('#agreeCommentBtn').show();
-      $('#disagreeCommentBtn').show();
-      $('img.agreeComment').hide();
-      $('img.disagreeComment').hide();
-      break;
+function hideShowOptionButtons(block, status) {
+  let textarea = block.find('textarea[id="Reply"]');
 
+  switch (status) {
+    case '0':
+      textarea.prev().find('span.red.requiredTag').show();
+      // block.find('.buttonsContainer').hide();
+      block.find('img.disagreeCommentBtn').hide();
+      block.find('.commentContainer').css('background', '#e8a9a4');
+      block.find('.replyTextContainer').css('background', '#e8a9a4');
+      block.find('img.agreeCommentBtn').hide();
+      block.find('img.clarificationCommentBtn').hide();
+      break;
+    case '1':
+      textarea.prev().find('span.red.requiredTag').hide();
+      block.find('img.agreeCommentBtn').hide();
+      block.find('.commentContainer').css('background', '#a8eaab');
+      block.find('.replyTextContainer').css('background', '#a8eaab');
+      block.find('img.disagreeCommentBtn').hide();
+      block.find('img.clarificationCommentBtn').hide();
+      break;
+    case '2':
+      textarea.prev().find('span.red.requiredTag').show();
+      // block.find('.buttonsContainer').hide();
+      block.find('img.clarificationCommentBtn').hide();
+      block.find('.commentContainer').css('background', '#a4cde8');
+      block.find('.replyTextContainer').css('background', '#a4cde8');
+      block.find('img.agreeCommentBtn').hide();
+      block.find('img.disagreeCommentBtn').hide();
+      break;
+    case '' || ' ':
+      block.find('img.agreeCommentBtn').show();
+      block.find('img.disagreeCommentBtn').show();
+      block.find('img.clarificationCommentBtn').show();
+      break;
     default:
       break;
   }
 }
 
+// Multiple comments-replies
 function loadCommentsByUser(name) {
+  // Removes the last index in brackets, i.e: [0]
+  name = name.replace(/\[[^\]]*\]$/, '');
+
   if (qaComments.length > 0) {
     for (let i = 0; i < qaComments.length; i++) {
       if (qaComments[i].frontName == name) {
-        if (qaComments[i].comment && qaComments[i].comment != '') {
-          commentID = qaComments[i].commentId;
-          textareaComment.hide();
-          textareaComment.next().next('p.charCount').hide();
-          $('.commentContainer').show();
-          $('.commentContainer .commentTitle').html(`Comment by ${qaComments[i].userName} at ${qaComments[i].date}`);
-          $('.commentContainer p.commentReadonly').html(`${qaComments[i].comment}`);
-          $('#sendCommentContainer').css('display', 'none');
+        let commentsLength = Object.keys(qaComments[i]).length;
 
-          if (userCanManageFeedback == 'true') {
-            $('.optionsContainer').css('display', 'flex');
-            hideShowOptionButtons(qaComments[i].status);
-          }
+        for (let j = 0; j < commentsLength; j++) {
+          if (qaComments[i][j] !== undefined) {
+            let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
 
-          if (qaComments[i].reply && qaComments[i].reply != '') {
-            textareaReply.hide();
-            $('.replyContainer').show();
-            $('.replyTextContainer').show();
-            $('.replyTextContainer .replyTitle').html(`Comment by ${qaComments[i].userName_reply} at ${qaComments[i].date_reply}`);
-            $('.replyTextContainer p.replyReadonly').html(`${qaComments[i].reply}`);
-            $('#sendReplyContainer').css('display', 'none');
-            $('#replyCommentBtn').hide();
-          } else {
-            textareaReply.show();
-            $('.replyContainer').hide();
-            $('.replyTextContainer').hide();
-            $('#sendReplyContainer').css('display', 'flex');
-            // $('#replyCommentBtn').show();
+            if (j != 0) {
+              block.find('textarea[id="New comment"]').prev().hide();
+            }
+
+            block.find('textarea[id="New comment"]').hide();
+            block.find('textarea[id="New comment"]').next().next('p.charCount').hide();
+            block.find('.commentContainer').show();
+            block.find('.commentContainer .commentTitle').html(`Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
+            block.find('.commentContainer p.commentReadonly').html(`${qaComments[i][j].comment}`);
+            block.find('.sendCommentContainer').hide();
+            block.find('.sendReplyContainer').attr('commentId', qaComments[i][j].commentId);
+            block.find('.agreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
+            block.find('.disagreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
+            block.find('.clarificationCommentBtn').attr('commentId', qaComments[i][j].commentId);
+            block.find('.replyCommentBtn').attr('commentId', qaComments[i][j].commentId);
+
+            if (userCanLeaveComments == 'true') {
+              let btnsContainer = block.find('.buttonsContainer');
+              let addBtn = block.find('.addCommentContainer');
+              const index = commentsLength - 2;
+
+              if (addBtn.attr('index') == index) {
+                btnsContainer.show();
+                addBtn.show();
+
+                let blockDup = $(`div[id="qaCommentReply-${name}[${j + 1}]"]`);
+
+                if (blockDup.length != 0) {
+                  btnsContainer.hide();
+                  addBtn.hide();
+                }
+              } else {
+                btnsContainer.hide();
+                addBtn.hide();
+              }
+            }
+
+            if (userCanManageFeedback == 'true') {
+              block.find('.buttonsContainer').show();
+              block.find('.optionsContainer').css('display', 'flex');
+            }
+
+            hideShowOptionButtons(block, qaComments[i][j].status);
+
+            let replyLength = Object.keys(qaComments[i][j].reply).length;
+
+            if (replyLength !== 0) {
+              block.find('textarea[id="Reply"]').parent().hide();
+              block.find('.replyContainer').css('display', 'flex');
+              block.find('.replyTextContainer').show();
+              block.find('.replyTextContainer .replyTitle').html(`Reply by ${qaComments[i][j].reply['userName']} at ${qaComments[i][j].reply['date']}`);
+              block.find('.replyTextContainer p.replyReadonly').html(`${qaComments[i][j].reply['text']}`);
+              // block.find('.buttonsContainer').hide();
+              block.find('.replyCommentBtn').hide();
+              block.find('.sendReplyContainer').hide();
+            } else {
+              if (qaComments[i][j].status && qaComments[i][j].status != '') {
+                if (qaComments[i][j].status == '1') {
+                  block.find('textarea[id="Reply"]').parent().show();
+                  block.find('.replyContainer').hide();
+                  block.find('.replyTextContainer').hide();
+                  block.find('.replyCommentBtn').show();
+                  block.find('.sendReplyContainer').show();
+                } else {
+                  block.find('textarea[id="Reply"]').parent().show();
+                  block.find('.replyContainer').css('display', 'flex');
+                  block.find('.replyTextContainer').hide();
+                  block.find('.replyCommentBtn').hide();
+                  block.find('.sendReplyContainer').show();
+                }
+              } else {
+                block.find('.replyCommentBtn').hide();
+              }
+            }
           }
-          break;
         }
-      } else {
-        textareaComment.show();
-        textareaComment.next().next('p.charCount').show();
-        $('.commentContainer').hide();
-        textareaComment.val('');
-        $('textarea[id="Reply"]').val('');
-        $('#sendCommentContainer').css('display', 'flex');
-        $('.optionsContainer').css('display', 'none');
-        hideShowOptionButtons('');
-        $('.replyContainer').hide();
       }
     }
-  } else {
-    $('.replyContainer').hide();
   }
 }
 
@@ -228,15 +345,17 @@ function loadQACommentsIcons(ajaxURL, arrayName) {
     url: baseURL + ajaxURL,
     async: false,
     success: function (data) {
-      if (data && Object.keys(data).length != 0) {
-        newData = data[arrayName].map(function (x) {
-          var arr = [];
-          arr.push(x.fieldID);
-          arr.push(x.fieldName);
-          arr.push(x.description);
-          return arr;
-        });
-        showQAComments(newData);
+      if ((userCanLeaveComments == 'true') || (userCanManageFeedback == 'true' && qaComments.length > 0)) {
+        if (data && Object.keys(data).length != 0) {
+          newData = data[arrayName].map(function (x) {
+            var arr = [];
+            arr.push(x.fieldID);
+            arr.push(x.fieldName);
+            arr.push(x.description);
+            return arr;
+          });
+          showQAComments(newData);
+        }
       }
     }
   });
@@ -247,25 +366,43 @@ function showQAComments(data) {
     var commentIcon = $(`img.qaComment[name="${x[1]}"]`);
     commentIcon.attr('fieldID', `${x[0]}`);
     commentIcon.attr('description', `${x[2]}`);
-
+    
     for (let i = 0; i < qaComments.length; i++) {
+      
       if (x[1] == qaComments[i].frontName) {
-        if (qaComments[i].comment != '') {
-          commentIcon.attr('src', qaCommentsStatus('pending'));
-          if (qaComments[i].reply != '') {
-            commentIcon.attr('src', qaCommentsStatus('pending'));
-          }
-          // false
-          if (qaComments[i].status == ' ') {
-            commentIcon.attr('src', qaCommentsStatus('done'));
-          } else if (qaComments[i].status != '') {
-            // true
-            commentIcon.attr('src', qaCommentsStatus('done'));
+        getNumberOfComments(x[1]);
+        let commentsLength = Object.keys(qaComments[i]).length;
+
+        for (let j = 0; j < commentsLength; j++) {
+          if (qaComments[i][j] != undefined) {
+            if (qaComments[i][j].comment != '') {
+              commentIcon.attr('src', qaCommentsStatus('pending'));
+
+              if (qaComments[i][j].status != '') {
+                if (qaComments[i][j].status == '1') {
+                  commentIcon.attr('src', qaCommentsStatus('done'));
+                } else {
+                  if (Object.keys(qaComments[i][j].reply).length != 0) {
+                    commentIcon.attr('src', qaCommentsStatus('done'));
+                  } else {
+                    commentIcon.attr('src', qaCommentsStatus('pending'));
+                  }
+                }
+              } else {
+                commentIcon.attr('src', qaCommentsStatus('pending'));
+              }
+            }
           }
         }
+        commentIcon.show();
+        commentIcon.parent().css('display', 'flex');
       }
     }
-    commentIcon.show();
+
+    if (userCanLeaveComments == 'true') {
+      commentIcon.show();
+      commentIcon.parent().css('display', 'flex');
+    }
   });
 }
 
@@ -282,8 +419,9 @@ function qaCommentsStatus(status) {
   }
 }
 
+// Multiple comments-replies
 function saveQAComment(comment, fieldID, name) {
-  var finalAjaxURL = `/saveFeedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&comment=${comment}&phaseID=${phaseID}&fieldID=${fieldID}&userID=${userID}`;
+  var finalAjaxURL = `/saveFeedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&comment=${comment}&phaseID=${phaseID}&fieldID=${fieldID}&userID=${userID}&projectID=${projectID}`;
 
   $.ajax({
     url: baseURL + finalAjaxURL,
@@ -291,12 +429,12 @@ function saveQAComment(comment, fieldID, name) {
     success: function (data) {
       getQAComments();
       loadCommentsByUser(name);
-      showQAComments(newData);
+      loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
     }
   });
 }
 
-function saveFeedbackReply(reply, name) {
+function saveFeedbackReply(reply, commentID, name) {
   var finalAjaxURL = `/saveFeedbackReply.do?reply=${reply}&commentID=${commentID}&userID=${userID}`;
 
   $.ajax({
@@ -305,12 +443,12 @@ function saveFeedbackReply(reply, name) {
     success: function (data) {
       getQAComments();
       loadCommentsByUser(name);
-      showQAComments(newData);
+      loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
     }
   });
 }
 
-function saveCommentStatus(status, name) {
+function saveCommentStatus(status, commentID, name) {
   var finalAjaxURL = `/saveCommentStatus.do?status=${status}&commentID=${commentID}&userID=${userID}`;
 
   $.ajax({
@@ -319,13 +457,13 @@ function saveCommentStatus(status, name) {
     success: function (data) {
       getQAComments();
       loadCommentsByUser(name);
-      showQAComments(newData);
+      loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
     }
   });
 }
 
 function getQAComments() {
-  var finalAjaxURL = `/feedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&phaseID=${phaseID}`;
+  var finalAjaxURL = `/feedbackComments2.do?sectionName=${sectionName}&parentID=${parentID}&phaseID=${phaseID}`;
 
   $.ajax({
     url: baseURL + finalAjaxURL,
@@ -336,6 +474,45 @@ function getQAComments() {
         console.log(qaComments)
       }
     }
+  });
+}
+
+function deleteQAComment(commentID) {
+  var finalAjaxURL = `/fdeleteComment.do?commentID=${commentID}`;
+
+  $.ajax({
+    url: baseURL + finalAjaxURL,
+    async: false,
+    success: function (data) {
+
+    }
+  });
+}
+
+function getNumberOfComments(name) {
+  var finalAjaxURL = `/getCommentStatus.do?sectionName=${sectionName}&parentID=${parentID}&phaseID=${phaseID}&fieldDescription=${name}`;
+
+  $.ajax({
+    url: baseURL + finalAjaxURL,
+    async: false,
+    success: function (data) {
+      if (data && Object.keys(data).length != 0) {
+        newData = data['comments'].map(function (x) {
+          var arr = [];
+          arr.push(x.answeredComments);
+          arr.push(x.totalComments);
+          return arr;
+        });
+        loadNumberOfComments(name, newData);
+      }
+    }
+  });
+}
+
+function loadNumberOfComments(name, data) {
+  data.map(function (x) {
+    let p = $(`img.qaComment[name="${name}"]`).prev().find('p');
+    p.html(`${x[0]}/${x[1]}`);
   });
 }
 
