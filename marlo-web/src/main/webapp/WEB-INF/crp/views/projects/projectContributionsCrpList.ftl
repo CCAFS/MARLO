@@ -82,9 +82,9 @@
                   <th>[@s.text name="global.flagship" /]</th>
                   <th>Performance Indicator 2023</th>
                   <th></th>
-                  [#if  false]
-                  [#-- action.hasSpecificities('feedback_active') --]
-                    <th>Comments</th>
+                  [#-- if  false--]
+                  [#if action.hasSpecificities('feedback_active') ]
+                    <th><div style align=center>Feedback Comments</div></th>
                   [/#if]
                   <th>Status</th>
                   <th>Remove</th>
@@ -175,8 +175,8 @@
         [#if !isTemplate][@popUps.relationsMacro element=projectOutcome tag="innovationOutcomes" labelText=true /]</div>[/#if]
       </td>
       [#-- Feedback status --]
-      [#if false]
-      [#-- action.hasSpecificities('feedback_active') --]
+      [#-- false --]
+      [#if action.hasSpecificities('feedback_active') ]
         <td class="text-center">
           ${(projectOutcome.commentStatus)!}
         </td>

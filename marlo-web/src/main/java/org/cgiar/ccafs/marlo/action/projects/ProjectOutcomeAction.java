@@ -1094,8 +1094,19 @@ public class ProjectOutcomeAction extends BaseAction {
       if (projectOutcome.getIndicators() != null) {
         projectOutcome.getIndicators().clear();
       }
-      if (projectOutcomeLastPhase != null && projectOutcomeLastPhase.getIndicators() != null) {
-        projectOutcomeLastPhase.getIndicators().clear();
+      if (projectOutcomeLastPhase != null) {
+        if (projectOutcomeLastPhase.getIndicators() != null) {
+          projectOutcomeLastPhase.getIndicators().clear();
+        }
+        if (projectOutcomeLastPhase.getMilestones() != null) {
+          projectOutcomeLastPhase.getMilestones().clear();
+        }
+        if (projectOutcomeLastPhase.getCommunications() != null) {
+          projectOutcomeLastPhase.getCommunications().clear();
+        }
+        if (projectOutcomeLastPhase.getNextUsers() != null) {
+          projectOutcomeLastPhase.getNextUsers().clear();
+        }
       }
 
       if (this.getCurrentUser() != null && this.getCurrentUser().getId() != null) {
@@ -1126,11 +1137,10 @@ public class ProjectOutcomeAction extends BaseAction {
       if (this.isLessonsActive()) {
         this.saveLessonsOutcome(loggedCrp, projectOutcomeDB, projectOutcome);
       }
-
-      this.saveProjectOutcome();
       projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setModificationJustification(this.getJustification());
       projectOutcome.setOrder(this.defineProjectOutcomeOrder(projectOutcome));
+      this.saveProjectOutcome();
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
@@ -1139,14 +1149,16 @@ public class ProjectOutcomeAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
       }
       relationsName.add(APConstants.PROJECT_NEXT_USERS_RELATION);
-      relationsName.add(APConstants.PROJECT_OUTCOME_LESSONS_RELATION);
+      // relationsName.add(APConstants.PROJECT_OUTCOME_LESSONS_RELATION);
       /**
        * The following is required because we need to update something on the @ProjectOutcome if we want a row
        * created in the auditlog table.
        */
-      this.setModificationJustification(projectOutcome);
-      projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName,
-        this.getActualPhase());
+      // this.setModificationJustification(projectOutcome);
+      /*
+       * projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName,
+       * this.getActualPhase());
+       */
 
       Path path = this.getAutoSaveFilePath();
 

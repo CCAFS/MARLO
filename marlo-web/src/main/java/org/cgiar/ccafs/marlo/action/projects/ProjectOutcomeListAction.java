@@ -270,48 +270,59 @@ public class ProjectOutcomeListAction extends BaseAction {
   }
 
   public void getCommentStatuses() {
-    List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
-    String sectionName;
 
-    // get the commentable fields by sectionName
-    if (feedbackQACommentableFieldsManager.findAll() != null) {
-      commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
-        .filter(f -> f != null && f.getSectionName().equals("projectContributionCrp")).collect(Collectors.toList());
-    }
-    if (project.getOutcomes() != null && !project.getOutcomes().isEmpty() && commentableFields != null
-      && !commentableFields.isEmpty()) {
+    try {
 
 
-      // Set the comment status in each project outcome
-      for (ProjectOutcome projectOutcome : project.getOutcomes()) {
-        for (FeedbackQACommentableFields commentableField : commentableFields) {
-          if (commentableField != null && commentableField.getId() != null) {
-            sectionName = commentableField.getSectionName();
-            int answeredComments = 0, totalComments = 0;
+      List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
 
-            if (projectOutcome != null && projectOutcome.getId() != null && commentableField != null
-              && commentableField.getId() != null) {
-              List<FeedbackQAComment> comments = commentManager.findAll().stream()
-                .filter(f -> f != null && f.getParentId() == projectOutcome.getId() && f.getId() != null
-                  && f.getId().equals(commentableField.getId()) && f.getPhase() != null
-                  && f.getPhase().getId().equals(this.getActualPhase().getId()))
-                .collect(Collectors.toList());
-              if (comments != null && !comments.isEmpty()) {
-                totalComments += comments.size();
-                comments = comments.stream()
-                  .filter(f -> f != null && ((f.getStatus() != null && f.getStatus().equals("approved"))
-                    || (f.getStatus() != null && f.getReply() != null)))
-                  .collect(Collectors.toList());
-                if (comments != null) {
-                  answeredComments += comments.size();
+      // get the commentable fields by sectionName
+      if (feedbackQACommentableFieldsManager.findAll() != null) {
+        commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
+          .filter(f -> f != null && f.getSectionName().equals("projectContributionCrp")).collect(Collectors.toList());
+      }
+      if (project.getOutcomes() != null && !project.getOutcomes().isEmpty() && commentableFields != null
+        && !commentableFields.isEmpty()) {
+
+
+        // Set the comment status in each project outcome
+
+        for (ProjectOutcome projectOutcome : project.getOutcomes()) {
+          int answeredComments = 0, totalComments = 0;
+          try {
+
+
+            for (FeedbackQACommentableFields commentableField : commentableFields) {
+              if (commentableField != null && commentableField.getId() != null) {
+
+                if (projectOutcome != null && projectOutcome.getId() != null && commentableField != null
+                  && commentableField.getId() != null) {
+                  List<FeedbackQAComment> comments = commentManager
+                    .findAll().stream().filter(f -> f != null && f.getParentId() == projectOutcome.getId()
+                      && f.getField() != null && f.getField().getId().equals(commentableField.getId()))
+                    .collect(Collectors.toList());
+                  if (comments != null && !comments.isEmpty()) {
+                    totalComments += comments.size();
+                    comments = comments.stream()
+                      .filter(f -> f != null && ((f.getStatus() != null && f.getStatus().equals("approved"))
+                        || (f.getStatus() != null && f.getReply() != null)))
+                      .collect(Collectors.toList());
+                    if (comments != null) {
+                      answeredComments += comments.size();
+                    }
+                  }
                 }
-                projectOutcome.setCommentStatus(answeredComments + "/" + totalComments);
               }
             }
+            projectOutcome.setCommentStatus(answeredComments + "/" + totalComments);
+          } catch (Exception e) {
+            projectOutcome.setCommentStatus(0 + "/" + 0);
+
           }
         }
 
       }
+    } catch (Exception e) {
 
     }
   }
