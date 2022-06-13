@@ -110,14 +110,14 @@ function attachEvents() {
     if (value && value != '') {
       cleanComment = value.replaceAll('.<br>.', '');
     } else {
-      cleanComment = comment.replaceAll('.<br>.', '');
+      cleanComment = comment?.replaceAll('.<br>.', '');
     }
 
     cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
 
     if (cleanComment != '' && cleanComment != ' ') {
       textarea.css('border', '1px solid #ccc');
-      saveQAComment(cleanComment, fieldID, name);
+      saveQAComment(cleanComment, fieldID, name, this);
     } else {
       textarea.css('border', '2px solid red');
     }
@@ -339,12 +339,14 @@ function loadCommentsByUser(name) {
     }
   }
 }
-
+fieldsSections = [];
 function loadQACommentsIcons(ajaxURL, arrayName) {
   $.ajax({
     url: baseURL + ajaxURL,
     async: false,
     success: function (data) {
+      console.log(data)
+      fieldsSections = data?.fieldsMap;
       if ((userCanLeaveComments == 'true') || (userCanManageFeedback == 'true' && qaComments.length > 0)) {
         if (data && Object.keys(data).length != 0) {
           newData = data[arrayName].map(function (x) {
@@ -420,8 +422,11 @@ function qaCommentsStatus(status) {
 }
 
 // Multiple comments-replies
-function saveQAComment(comment, fieldID, name) {
-  var finalAjaxURL = `/saveFeedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&comment=${comment}&phaseID=${phaseID}&fieldID=${fieldID}&userID=${userID}&projectID=${projectID}`;
+function saveQAComment(comment, fieldID, name, reference) {
+  let indexToCute = $(reference).attr("name").substring(0,$(reference).attr("name").length-3);
+  let objectField = fieldsSections.find(field => field.fieldName == indexToCute)
+  let inputValue = $(`input[name="${objectField.parentFieldDescription}"]`).val()
+  var finalAjaxURL = `/saveFeedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&comment=${comment}&phaseID=${phaseID}&fieldID=${fieldID}&userID=${userID}&projectID=${projectID}&parentFieldDescription=${inputValue}`;
 
   $.ajax({
     url: baseURL + finalAjaxURL,

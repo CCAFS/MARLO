@@ -3,12 +3,12 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["powerbi-client"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/feedbackStatus.js?20220609a",
+  "${baseUrlMedia}/js/projects/feedbackStatus.js?20220613",
   "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/feedbackStatus.css?20220609a"
+  "${baseUrlMedia}/css/projects/feedbackStatus.css?20220613"
   ]
 /]
 
