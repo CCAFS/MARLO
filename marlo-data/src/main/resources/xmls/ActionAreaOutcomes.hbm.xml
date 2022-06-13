@@ -14,5 +14,8 @@
     <property name="outcomeStatement" type="string" >
       <column name="outcome_statement" sql-type="TEXT" />
     </property>
+    <property name="active" type="boolean">
+		<column name="is_active" not-null="true" />
+	</property>
   </class>
 </hibernate-mapping>
