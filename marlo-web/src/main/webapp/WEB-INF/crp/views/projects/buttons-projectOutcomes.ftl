@@ -7,6 +7,7 @@
 <input type="hidden"  name="projectOutcome.crpProgramOutcome.crpProgram.acronym" value="${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!}" />
 <input type="hidden"  name="projectOutcome.crpProgramOutcome.id" id="outcomeId" value="${(projectOutcome.crpProgramOutcome.id)!}" />
 <input type="hidden"  name="projectOutcome.crpProgramOutcome.description" value="${(projectOutcome.crpProgramOutcome.description)!}" />
+<input type="hidden"  name="projectOutcome.crpProgramOutcome.acronym" value="${(projectOutcome.crpProgramOutcome.acronym)!}" />
 <input type="hidden"  name="projectOutcome.project.id" value="${(projectOutcome.project.id)!}" />
 <input type="hidden"  name="className" value="${(projectOutcome.class.name)!}"/>
 <input type="hidden"  name="id" value="${(projectOutcome.id)!}"/>
