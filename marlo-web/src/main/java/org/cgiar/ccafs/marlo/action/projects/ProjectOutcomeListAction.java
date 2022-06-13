@@ -19,6 +19,8 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
@@ -29,6 +31,8 @@ import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -72,6 +76,8 @@ public class ProjectOutcomeListAction extends BaseAction {
   private GlobalUnitProjectManager globalUnitProjectManager;
   private ProjectLp6ContributionManager projectLp6ContributionManager;
   private ProjectMilestoneManager projectMilestoneManager;
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+  private FeedbackQACommentManager commentManager;
 
   // Front-end
   private long projectID;
@@ -92,7 +98,8 @@ public class ProjectOutcomeListAction extends BaseAction {
   public ProjectOutcomeListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, SectionStatusManager sectionStatusManager,
     ProjectOutcomeManager projectOutcomeManager, GlobalUnitProjectManager globalUnitProjectManager,
-    ProjectLp6ContributionManager projectLp6ContributionManager, ProjectMilestoneManager projectMilestoneManager) {
+    ProjectLp6ContributionManager projectLp6ContributionManager, ProjectMilestoneManager projectMilestoneManager,
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentManager) {
     super(config);
     this.projectManager = projectManager;
     this.sectionStatusManager = sectionStatusManager;
@@ -102,6 +109,8 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.projectLp6ContributionManager = projectLp6ContributionManager;
     this.projectMilestoneManager = projectMilestoneManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
+    this.commentManager = commentManager;
   }
 
   public void addAllCrpMilestones(ProjectOutcome projectOutcome) {
@@ -260,6 +269,64 @@ public class ProjectOutcomeListAction extends BaseAction {
     }
   }
 
+  public void getCommentStatuses() {
+
+    try {
+
+
+      List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
+
+      // get the commentable fields by sectionName
+      if (feedbackQACommentableFieldsManager.findAll() != null) {
+        commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
+          .filter(f -> f != null && f.getSectionName().equals("projectContributionCrp")).collect(Collectors.toList());
+      }
+      if (project.getOutcomes() != null && !project.getOutcomes().isEmpty() && commentableFields != null
+        && !commentableFields.isEmpty()) {
+
+
+        // Set the comment status in each project outcome
+
+        for (ProjectOutcome projectOutcome : project.getOutcomes()) {
+          int answeredComments = 0, totalComments = 0;
+          try {
+
+
+            for (FeedbackQACommentableFields commentableField : commentableFields) {
+              if (commentableField != null && commentableField.getId() != null) {
+
+                if (projectOutcome != null && projectOutcome.getId() != null && commentableField != null
+                  && commentableField.getId() != null) {
+                  List<FeedbackQAComment> comments = commentManager
+                    .findAll().stream().filter(f -> f != null && f.getParentId() == projectOutcome.getId()
+                      && f.getField() != null && f.getField().getId().equals(commentableField.getId()))
+                    .collect(Collectors.toList());
+                  if (comments != null && !comments.isEmpty()) {
+                    totalComments += comments.size();
+                    comments = comments.stream()
+                      .filter(f -> f != null && ((f.getStatus() != null && f.getStatus().equals("approved"))
+                        || (f.getStatus() != null && f.getReply() != null)))
+                      .collect(Collectors.toList());
+                    if (comments != null) {
+                      answeredComments += comments.size();
+                    }
+                  }
+                }
+              }
+            }
+            projectOutcome.setCommentStatus(answeredComments + "/" + totalComments);
+          } catch (Exception e) {
+            projectOutcome.setCommentStatus(0 + "/" + 0);
+
+          }
+        }
+
+      }
+    } catch (Exception e) {
+
+    }
+  }
+
   public Long getOutcomeId() {
     return outcomeId;
   }
@@ -346,6 +413,10 @@ public class ProjectOutcomeListAction extends BaseAction {
     }
     project.setFlagships(programs);
 
+    if (this.hasSpecificities(this.feedbackModule())) {
+      this.getCommentStatuses();
+    }
+
     String params[] = {gp.getGlobalUnit().getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
 
@@ -371,14 +442,15 @@ public class ProjectOutcomeListAction extends BaseAction {
     }
   }
 
+
   public void setContributionValue(boolean contributionValue) {
     this.contributionValue = contributionValue;
   }
 
-
   public void setOutcomeId(long outcomeId) {
     this.outcomeId = outcomeId;
   }
+
 
   public void setOutcomeId(Long outcomeId) {
     this.outcomeId = outcomeId;
@@ -395,7 +467,6 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.phaseID = phaseID;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
@@ -408,10 +479,10 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.projectLp6Contribution = projectLp6Contribution;
   }
 
+
   public void setProjectOutcomeID(long projectOutcomeID) {
     this.projectOutcomeID = projectOutcomeID;
   }
-
 
   public void setStatus(Map<String, Object> status) {
     this.status = status;

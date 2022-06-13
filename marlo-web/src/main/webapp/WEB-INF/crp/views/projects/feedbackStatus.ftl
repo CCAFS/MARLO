@@ -3,12 +3,12 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["powerbi-client"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/feedbackStatus.js?20220606a",
+  "${baseUrlMedia}/js/projects/feedbackStatus.js?20220609a",
   "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/feedbackStatus.css?20220606a"
+  "${baseUrlMedia}/css/projects/feedbackStatus.css?20220609a"
   ]
 /]
 
@@ -43,6 +43,7 @@
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
 <section class="container">
+<div id="actualPhase">${actualPhase.id}</div>
     <div class="row">
       [#-- Project Menu --]
       <div class="col-md-3">
@@ -55,12 +56,11 @@
 
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
 
-          <h3 class="headTitle">[@s.text name="feedbackStatus.title" /]</h3>
           <div id="projectDescription" class="borderBox">
               
-             <section class="container containerBI">  
+             <section class="local-container">  
               [#if biReports?has_content]
-              <div class="headContainer">
+              <div class="headContainer" style="display: none;">
                 <div class='selectedReportBIContainer col-md-2'>
                     <span class="selectedReportBI col-md button-bg" style="max-width:200px">
                         [#--  <p class="menu-item-title">[@s.text name="biDashboard.menu.title"/] </p>  --]
@@ -96,7 +96,7 @@
               </div>
         
                 [#--  Reports Content --]
-                <div class="summariesContent col-md-12" style="width: 800px;min-height:550px;">
+                <div class="summariesContent col-md-12">
                   <div class="">
                     [#list (biReports)?sort_by("reportOrder")![] as report]
                         <div id="BIreport-${report.id}-contentOptions" class="" style="display:[#if report?index !=0]none[/#if];">
