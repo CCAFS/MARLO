@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInitiative;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLever;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLeverOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyNexus;
@@ -191,20 +192,20 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
     String[] columnNames = new String[] {"id", "year", "title", "commissioningStudy", "status", "type",
       "outcomeImpactStatement", "isContributionText", "stageStudy", "srfTargets", "subIdos", "topLevelComments",
-      "geographicScopes", "regions", "countries", "scopeComments", "crps", "flagships", "regionalPrograms",
-      "institutions", "elaborationOutcomeImpactStatement", "referenceText", "quantification", "genderRelevance",
-      "youthRelevance", "capacityRelevance", "otherCrossCuttingDimensions", "comunicationsMaterial", "contacts",
-      "studyProjects", "tagged", "cgiarInnovation", "cgiarInnovations", "climateRelevance", "link", "links",
-      "studyPolicies", "isSrfTargetText", "otherCrossCuttingDimensionsSelection", "isContribution", "isRegional",
-      "isNational", "isOutcomeCaseStudy", "isSrfTarget", "url", "studiesReference", "meliaLinks"};
+      "geographicScopes", "regions", "countries", "scopeComments", "crps", "regionalPrograms", "institutions",
+      "elaborationOutcomeImpactStatement", "referenceText", "quantification", "genderRelevance", "youthRelevance",
+      "capacityRelevance", "otherCrossCuttingDimensions", "comunicationsMaterial", "contacts", "studyProjects",
+      "tagged", "cgiarInnovation", "cgiarInnovations", "climateRelevance", "link", "links", "studyPolicies",
+      "isSrfTargetText", "otherCrossCuttingDimensionsSelection", "isContribution", "isRegional", "isNational",
+      "isOutcomeCaseStudy", "isSrfTarget", "url", "studiesReference", "meliaLinks"};
 
-    Class[] columnClasses = new Class[] {Long.class, Integer.class, String.class, String.class, String.class,
-      String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-      String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-      String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-      String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-      String.class, String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class,
-      String.class, String.class, String.class};
+    Class[] columnClasses =
+      new Class[] {Long.class, Integer.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, Boolean.class,
+        Boolean.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class, String.class};
 
     TypedTableModel model = new TypedTableModel(columnNames, columnClasses, /* inititalRowNumber */0);
 
@@ -238,6 +239,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
       model.addColumn("internalStatus", String.class);
     }
+
+    model.addColumn("flagships", String.class);
 
     URLShortener urlShortener = new URLShortener();
     if (projectExpectedStudyInfos != null && !projectExpectedStudyInfos.isEmpty()) {
@@ -702,10 +705,10 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           studyProjects = String.join("", studyProjectSet);
         }
 
-        List<Object> rowObjects = new ArrayList<>(Arrays.asList(
-          new Object[] {id, year, title, commissioningStudy, status, type, outcomeImpactStatement, isContributionText,
-            stageStudy, srfTargets, subIdos, topLevelComments, geographicScopes, regions, countries, scopeComments,
-            crps, flagships, regionalPrograms, institutions, elaborationOutcomeImpactStatement, referenceText,
+        List<Object> rowObjects = new ArrayList<>(
+          Arrays.asList(new Object[] {id, year, title, commissioningStudy, status, type, outcomeImpactStatement,
+            isContributionText, stageStudy, srfTargets, subIdos, topLevelComments, geographicScopes, regions, countries,
+            scopeComments, crps, regionalPrograms, institutions, elaborationOutcomeImpactStatement, referenceText,
             quantification, genderRelevance, youthRelevance, capacityRelevance, otherCrossCuttingDimensions,
             comunicationsMaterial, contacts, studyProjects, tagged, cgiarInnovation, cgiarInnovations, climateRelevance,
             link, links, studyPolicies, isSrfTargetText, otherCrossCuttingDimensionsSelection, isContribution,
@@ -718,6 +721,27 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             hasLegacyCrpsText = "", sdgTargets = "", hasActionAreaOutcomeIndicatorsText = "",
             actionAreaOutcomeIndicators = "", hasImpactAreaIndicatorsText = "", impactAreaIndicators = "",
             hasInitiativesText = "", initiatives = "", internalStatus = "";
+
+          // Levers (FPs for Alliance)
+          List<ProjectExpectedStudyLever> studyLevers =
+            projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyLevers().stream()
+              .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList());
+
+          flaghipsSet = new HashSet<>();
+          if (this.isNotEmpty(studyLevers)) {
+            for (ProjectExpectedStudyLever projectExpectedStudyLever : studyLevers) {
+              if (projectExpectedStudyLever.getAllianceLever() != null
+                && projectExpectedStudyLever.getAllianceLever().getId() != null) {
+                flaghipsSet.add(
+                  "<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + projectExpectedStudyLever.getAllianceLever().getComposedName());
+              }
+            }
+
+            flagships = String.join("", flaghipsSet);
+          } else {
+            flagships = this.notDefinedHtml;
+          }
 
           // Lever Outcomes
           hasLeverOutcomes = BooleanUtils.isTrue(projectExpectedStudyInfo.getHasLeverOutcomeContribution());
@@ -941,6 +965,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
           rowObjects.add(internalStatus);
         }
+
+        rowObjects.add(flagships);
 
         Object[] rowObjectsArray = rowObjects.toArray(new Object[0]);
         model.addRow(rowObjectsArray);
