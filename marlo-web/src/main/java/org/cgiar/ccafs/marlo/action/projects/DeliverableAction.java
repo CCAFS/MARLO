@@ -1763,7 +1763,7 @@ public class DeliverableAction extends BaseAction {
 
         feedbackComments = new ArrayList<>();
         feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(f -> f.getSectionName() != null && f.getSectionName().equals("projectContributionCrp"))
+          .filter(f -> f.getSectionName() != null && f.getSectionName().equals("deliverable"))
           .collect(Collectors.toList());
         if (feedbackComments != null) {
           for (FeedbackQACommentableFields field : feedbackComments) {
