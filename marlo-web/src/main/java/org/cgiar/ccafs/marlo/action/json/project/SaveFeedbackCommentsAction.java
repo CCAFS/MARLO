@@ -155,7 +155,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
                 + "projectOutcomeID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
 
               break;
-            case "deliverables":
+            case "deliverable":
               if (deliverableId != null) {
                 link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
                   + "deliverableID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
