@@ -20,6 +20,8 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -58,6 +60,8 @@ import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -167,6 +171,8 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
   private ProjectOutcomeManager projectOutcomeManager;
   private ProjectInnovationProjectOutcomeManager projectInnovationProjectOutcomeManager;
+  private FeedbackQACommentManager feedbackQACommentManager;
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
 
   // Variables
   private long projectID;
@@ -209,6 +215,8 @@ public class ProjectInnovationAction extends BaseAction {
   private List<SrfIdo> srfIdos;
   private HashMap<Long, String> idoList;
   private List<ProjectOutcome> projectOutcomes;
+  private List<FeedbackQACommentableFields> feedbackComments;
+
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -236,7 +244,9 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationSubIdoManager projectInnovationSubIdoManager, SrfIdoManager srfIdoManager,
     ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
     ProjectDeliverableSharedManager projectDeliverableSharedManager, ProjectOutcomeManager projectOutcomeManager,
-    ProjectInnovationProjectOutcomeManager projectInnovationProjectOutcomeManager) {
+    ProjectInnovationProjectOutcomeManager projectInnovationProjectOutcomeManager,
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
+    FeedbackQACommentManager feedbackQACommentManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -277,6 +287,8 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
     this.projectOutcomeManager = projectOutcomeManager;
     this.projectInnovationProjectOutcomeManager = projectInnovationProjectOutcomeManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
+    this.feedbackQACommentManager = feedbackQACommentManager;
   }
 
   /**
@@ -1175,6 +1187,30 @@ public class ProjectInnovationAction extends BaseAction {
         crpList.remove(this.getCurrentGlobalUnit());
       }
 
+    }
+
+    /*
+     * get feedback comments
+     */
+    try {
+
+      feedbackComments = new ArrayList<>();
+      feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
+        .filter(f -> f.getSectionName() != null && f.getSectionName().equals("innovation"))
+        .collect(Collectors.toList());
+      if (feedbackComments != null) {
+        for (FeedbackQACommentableFields field : feedbackComments) {
+          List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
+          comments = feedbackQACommentManager.findAll().stream()
+            .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+              && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == innovation.getId()
+              && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
+            .collect(Collectors.toList());
+          field.setQaComments(comments);
+        }
+      }
+
+    } catch (Exception e) {
     }
 
     innovationDB = projectInnovationManager.getProjectInnovationById(innovationID);
