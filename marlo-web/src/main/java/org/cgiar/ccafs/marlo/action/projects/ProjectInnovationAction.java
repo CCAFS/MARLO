@@ -398,6 +398,10 @@ public class ProjectInnovationAction extends BaseAction {
     return expectedStudyList;
   }
 
+  public List<FeedbackQACommentableFields> getFeedbackComments() {
+    return feedbackComments;
+  }
+
   public List<RepIndGenderYouthFocusLevel> getFocusLevelList() {
     return focusLevelList;
   }
@@ -1505,6 +1509,7 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
+
   public void saveCenters(ProjectInnovation projectInnovation, Phase phase) {
 
     // Search and deleted form Information
@@ -1541,7 +1546,6 @@ public class ProjectInnovationAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * Save Project Innovation contributing organizations
@@ -2153,6 +2157,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setExpectedStudyList(List<ProjectExpectedStudy> expectedStudyList) {
     this.expectedStudyList = expectedStudyList;
+  }
+
+  public void setFeedbackComments(List<FeedbackQACommentableFields> feedbackComments) {
+    this.feedbackComments = feedbackComments;
   }
 
   public void setFocusLevelList(List<RepIndGenderYouthFocusLevel> focusLevelList) {
