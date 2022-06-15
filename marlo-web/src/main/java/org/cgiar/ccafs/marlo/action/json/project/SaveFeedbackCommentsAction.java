@@ -161,6 +161,18 @@ public class SaveFeedbackCommentsAction extends BaseAction {
                   + "deliverableID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
               }
               break;
+            case "study":
+              if (deliverableId != null) {
+                link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getAcronym() + "/study.do?"
+                  + "expectedID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+              }
+              break;
+            case "innovation":
+              if (deliverableId != null) {
+                link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?"
+                  + "innovationID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+              }
+              break;
           }
         }
       }
