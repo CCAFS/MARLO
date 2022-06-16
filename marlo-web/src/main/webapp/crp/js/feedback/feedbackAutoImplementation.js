@@ -7,7 +7,7 @@ let qaComments = '';
 fieldsSections = [];
 
 function feedbackAutoImplementation (){
-  console.log("feedbackAutoImplementation")
+  console.log('%c feedback auto implementation init', 'background: white; color: black');
   parentID = $('#parentID').html();
   projectID = $('#projectID').html();
   phaseID = $('#phaseID').html();
