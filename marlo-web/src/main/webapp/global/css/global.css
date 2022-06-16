@@ -7150,6 +7150,14 @@ img.fileIcon {
   align-items: flex-end;
 }
 
+.feedback-flex-items{
+  display: flex;
+  align-items: flex-end;
+}
+.feedback-flex-items .select{
+  width: 100% !important;
+}
+
 .text-area-container {
   display: flex;
   align-items: center;

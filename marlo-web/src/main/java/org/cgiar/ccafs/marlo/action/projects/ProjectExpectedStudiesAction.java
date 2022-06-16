@@ -22,6 +22,8 @@ import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.EvidenceTagManager;
 import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
@@ -62,6 +64,8 @@ import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.EvidenceTag;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -189,6 +193,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager;
   private ProjectExpectedStudyProjectOutcomeManager projectExpectedStudyProjectOutcomeManager;
 
+  private FeedbackQACommentManager feedbackQACommentManager;
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+
   // Variables
   private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
   private GlobalUnit loggedCrp;
@@ -219,6 +226,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<CrpProgram> regionList;
   private List<Institution> institutions;
   private List<Project> myProjects;
+  private List<FeedbackQACommentableFields> feedbackComments;
   private String transaction;
 
   // AR 2018 Sel-List
@@ -259,7 +267,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager, CrpMilestoneManager milestoneManager,
     ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager,
     ProjectOutcomeManager projectOutcomeManager,
-    ProjectExpectedStudyProjectOutcomeManager projectExpectedStudyProjectOutcomeManager) {
+    ProjectExpectedStudyProjectOutcomeManager projectExpectedStudyProjectOutcomeManager,
+    FeedbackQACommentManager feedbackQACommentManager,
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -308,6 +318,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectExpectedStudyMilestoneManager = projectExpectedStudyMilestoneManager;
     this.projectOutcomeManager = projectOutcomeManager;
     this.projectExpectedStudyProjectOutcomeManager = projectExpectedStudyProjectOutcomeManager;
+    this.feedbackQACommentManager = feedbackQACommentManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
   }
 
   /**
@@ -379,6 +391,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public ProjectExpectedStudy getExpectedStudy() {
     return this.expectedStudy;
+  }
+
+  public List<FeedbackQACommentableFields> getFeedbackComments() {
+    return feedbackComments;
   }
 
   public List<CrpProgram> getFlagshipList() {
@@ -1245,6 +1261,30 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         newExpectedYear = this.expectedStudy.getProjectExpectedStudyInfo().getYear();
       }
 
+      /*
+       * get feedback comments
+       */
+      try {
+
+        feedbackComments = new ArrayList<>();
+        feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
+          .filter(f -> f.getSectionName() != null && f.getSectionName().equals("study")).collect(Collectors.toList());
+        if (feedbackComments != null) {
+          for (FeedbackQACommentableFields field : feedbackComments) {
+            List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
+            comments = feedbackQACommentManager.findAll().stream()
+              .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+                && f.getPhase().getId().equals(this.getActualPhase().getId())
+                && f.getParentId() == expectedStudy.getId() && f.getField() != null && f.getField().getId() != null
+                && f.getField().getId().equals(field.getId()))
+              .collect(Collectors.toList());
+            field.setQaComments(comments);
+          }
+        }
+
+      } catch (Exception e) {
+      }
+
       if (this.project != null) {
         String params[] = {this.loggedCrp.getAcronym(), this.project.getId() + ""};
         this.setBasePermission(this.getText(Permission.PROJECT_EXPECTED_STUDIES_BASE_PERMISSION, params));
@@ -1615,6 +1655,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Expected Studies Centers/PPA partners Information
    * 
@@ -1657,7 +1698,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
-
 
   /**
    * Save Expected Studies Crps Information
@@ -2134,7 +2174,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save Expected Studies Projects Information
    * 
@@ -2178,6 +2217,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
+
 
   /**
    * Save Expected Studies Quantification Information
@@ -2493,6 +2533,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setExpectedStudy(ProjectExpectedStudy expectedStudy) {
     this.expectedStudy = expectedStudy;
+  }
+
+  public void setFeedbackComments(List<FeedbackQACommentableFields> feedbackComments) {
+    this.feedbackComments = feedbackComments;
   }
 
   public void setFlagshipList(List<CrpProgram> flagshipList) {
