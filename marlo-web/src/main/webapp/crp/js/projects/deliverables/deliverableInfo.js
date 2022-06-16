@@ -56,7 +56,6 @@ function checkDOI() {
 }
 
 function init() { 
-
   $statuses = $('select.status');
   isDeliverableNew = $statuses.classParam('isNew') == "true";
   $statusDescription = $('#statusDescription');
@@ -252,6 +251,7 @@ function init() {
     // valiate checkbox "No DOI provided" value
  
   deliverablePartnersModule.init();
+  feedbackAutoImplementation();
 }
 
 function activeByNoDOIProvidedCheckbox(){

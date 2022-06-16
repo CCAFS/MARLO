@@ -51,6 +51,8 @@
   </div>
 [/#if]
 
+<input type="hidden" id="sectionNameToFeedback" value="projectContributionCrp" />
+
 <section class="container">
     <div class="row">
       [#-- Project Menu --]

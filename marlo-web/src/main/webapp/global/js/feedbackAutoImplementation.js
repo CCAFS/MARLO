@@ -1,5 +1,5 @@
-var textareaComment, parentID, projectID, phaseID, userID, link, userCanManageFeedback, userCanLeaveComments, isFeedbackActive, textareaReply, newData;
-var sectionName = 'projectContributionCrp';
+var textareaComment, parentID, projectID, phaseID, userID, userCanManageFeedback, userCanLeaveComments, isFeedbackActive, textareaReply, newData;
+var sectionName = $('#sectionNameToFeedback').val();
 var contributionCRPAjaxURL = `/fieldsBySectionAndParent.do?sectionName=${sectionName}`;
 var arrayName = 'fieldsMap';
 let fieldID = '';
@@ -7,21 +7,21 @@ let qaComments = '';
 fieldsSections = [];
 
 function feedbackAutoImplementation (){
-    parentID = $('#parentID').html();
-    projectID = $('#projectID').html();
-    phaseID = $('#phaseID').html();
-    userID = $('#userID').html();
-    link = window.location.href;
-    userCanManageFeedback = $('#userCanManageFeedback').html();
-    userCanLeaveComments = $('#userCanLeaveComments').html();
-    console.log('can comment', userCanLeaveComments, 'can reply', userCanManageFeedback);
-    isFeedbackActive = $('#isFeedbackActive').html();
-    attachEventsFeedback();
+  console.log("feedbackAutoImplementation")
+  parentID = $('#parentID').html();
+  projectID = $('#projectID').html();
+  phaseID = $('#phaseID').html();
+  userID = $('#userID').html();
+  userCanManageFeedback = $('#userCanManageFeedback').html();
+  userCanLeaveComments = $('#userCanLeaveComments').html();
+  console.log('can comment', userCanLeaveComments, 'can reply', userCanManageFeedback);
+  isFeedbackActive = $('#isFeedbackActive').html();
+  attachEventsFeedback();
 }
 
 function attachEventsFeedback() {
 
-    
+    console.log(sectionName)
     
   if (isFeedbackActive == 'true') {
     getQAComments();
@@ -30,7 +30,9 @@ function attachEventsFeedback() {
 
   // Multiple comments-replies
   $('img.qaComment').on('click', function (event) {
+    console.log("event");
     let name = this.name;
+    console.log(name)
     let popUpTitle = $(this).attr('description');
     let qaPopup = $(`div[id^="qaPopup-${name}"]`);
     let block = $(`div[id^="qaCommentReply-${name}"]`);
@@ -310,14 +312,22 @@ function hideShowOptionButtons(block, status) {
       }
     }
   }
+
+  function addfeedbackFlexItemsClass(fieldsMap){
+    fieldsMap.map(field=>{
+      $(`[name="${field.fieldName}"]`).closest('.fieldReference').parent().addClass( "feedback-flex-items" );
+    })
+  }
   
   function loadQACommentsIcons(ajaxURL, arrayName) {
     $.ajax({
       url: baseURL + ajaxURL,
       async: false,
       success: function (data) {
-        console.log(data)
+        
         fieldsSections = data?.fieldsMap;
+        addfeedbackFlexItemsClass(fieldsSections);
+        console.log(fieldsSections)
         if ((userCanLeaveComments == 'true') || (userCanManageFeedback == 'true' && qaComments.length > 0)) {
           if (data && Object.keys(data).length != 0) {
             newData = data[arrayName].map(function (x) {
@@ -335,6 +345,7 @@ function hideShowOptionButtons(block, status) {
   }
   
   function showQAComments(data) {
+    console.log(data)
     data.map(function (x) {
       var commentIcon = $(`img.qaComment[name="${x[1]}"]`);
       commentIcon.attr('fieldID', `${x[0]}`);
