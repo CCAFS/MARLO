@@ -6,6 +6,7 @@
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20211027",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20210310",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20200205",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220613",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
@@ -54,6 +55,26 @@
 [#else]
 
 [@customForm.qaPopUp /]
+
+<span id="parentID" style="display: none;">${deliverableID!}</span>
+<span id="phaseID" style="display: none;">${phaseID!}</span>
+<span id="userID" style="display: none;">${currentUser.id!}</span>
+<span id="projectID" style="display: none;">${projectID!}</span>
+<span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
+<span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
+<span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
+<input type="hidden" id="sectionNameToFeedback" value="deliverable" />
+
+[#if action.hasSpecificities('feedback_active') ]
+  [#list feedbackComments as feedback]
+    [@customForm.qaPopUpMultiple fields=feedback.qaComments name=feedback.fieldDescription index=feedback_index canLeaveComments=(action.canLeaveComments()!false)/]
+  [/#list]
+  <div id="qaTemplate" style="display: none">
+    [@customForm.qaPopUpMultiple canLeaveComments=(action.canLeaveComments()!false) template=true/]
+  </div>
+[/#if]
+
+
 
 <section class="container">
     <div class="row">

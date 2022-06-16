@@ -323,7 +323,7 @@ public class ProjectOutcomeListAction extends BaseAction {
 
       }
     } catch (Exception e) {
-
+      e.printStackTrace();
     }
   }
 
