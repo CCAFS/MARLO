@@ -315,7 +315,9 @@ function hideShowOptionButtons(block, status) {
 
   function addfeedbackFlexItemsClass(fieldsMap){
     fieldsMap.map(field=>{
-      $(`[name="${field.fieldName}"]`).closest('.fieldReference').parent().addClass( "feedback-flex-items" );
+      // $(`[name="${field.fieldName}"]`).closest('.fieldReference')
+      $(`[name="${field.fieldName}"]`).closest('.fieldReference').appendTo($(`[name="${field.fieldName}"]`).closest('.fieldReference').prev());
+      $(`[name="${field.fieldName}"]`).closest('.fieldReference').closest('.feedback-flex-items').next().appendTo($(`[name="${field.fieldName}"]`).closest('.fieldReference').closest('.feedback-flex-items'))
     })
   }
   
@@ -499,6 +501,7 @@ function hideShowOptionButtons(block, status) {
   function loadNumberOfComments(name, data) {
     data.map(function (x) {
       let p = $(`img.qaComment[name="${name}"]`).prev().find('p');
+      p.css('display', 'block');
       p.html(`${x[0]}/${x[1]}`);
     });
   }

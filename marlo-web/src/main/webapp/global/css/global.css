@@ -7152,9 +7152,9 @@ img.fileIcon {
 
 .feedback-flex-items{
   display: flex;
-  align-items: flex-end;
+  align-items: center;
 }
-.feedback-flex-items .select{
+.feedback-flex-items .select, .feedback-flex-items .input{
   width: 100% !important;
 }
 
@@ -7171,16 +7171,23 @@ img.fileIcon {
   display: none;
   flex-flow: column;
   align-items: center;
+  position: relative;
 }
 
 .numberOfCommentsBubble {
-  background: #FFF2CC;
+  /* background: #FFF2CC; */
   border-radius: 50%;
   border: 1px solid darkgrey;
   margin: 5px;
+  box-shadow: 0px 0px 7px gray;
+  font-weight: 400;
 }
 
 .numberOfCommentsBubble p {
+  /* position: absolute;
+  top: 0;
+  left: 0; */
+  display: none;
   font-size: 10px;
   text-align: center;
   margin: 0;
