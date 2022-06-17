@@ -7154,6 +7154,9 @@ img.fileIcon {
   display: flex;
   align-items: center;
 }
+.feedback-flex-items .fieldReference .button-wrap {
+  display: flex;
+}
 .feedback-flex-items .select, .feedback-flex-items .input{
   width: 100% !important;
 }
