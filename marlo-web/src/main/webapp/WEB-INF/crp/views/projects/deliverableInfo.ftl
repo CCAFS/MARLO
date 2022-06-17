@@ -1,12 +1,12 @@
 [#ftl]
 <div class="simpleBox">
   [#-- Title input --]
-  <div class="form-group text-area-container">
+  <div class="form-group">
     [@customForm.input name="deliverable.deliverableInfo.title" value="${(deliverable.deliverableInfo.title)!}" type="text" i18nkey="project.deliverable.generalInformation.title"  placeholder="" className="limitWords-25" required=true editable=editable /]
   </div>
 
   [#-- Description input on Planning only --]
-  <div class="form-group text-area-container">
+  <div class="form-group">
     [@customForm.textArea name="deliverable.deliverableInfo.description" value="${(deliverable.deliverableInfo.description)!}" i18nkey="project.deliverable.generalInformation.description"  placeholder="" className="limitWords-100" required=true editable=editable /]
   </div>
   [#-- Type and subtype inputs --]
@@ -204,8 +204,9 @@
         [/#if]
         </ul>
         [#if editable ]
-          [@customForm.select name="deliverable.deliverableActivity.id" label="" showTitle=false  i18nkey="" listName="activities" keyFieldName="id"  displayFieldName="title"  header=true required=false  className="activity" editable=true/]
-
+      
+           [@customForm.select name="deliverable.deliverableActivity.id" label="" showTitle=false  i18nkey="" listName="activities" keyFieldName="id"  displayFieldName="title"  header=true required=false  className="activity" editable=true/]
+        
           [#if !activities?has_content]
             <div class="note"> [@s.text name="project.deliverable.activities.empty" /]  </div>
           [/#if]

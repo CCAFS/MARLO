@@ -3,10 +3,10 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20211027",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20210310",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20200205",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220613",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20220617A",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20220617A",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220617A",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220617A",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
@@ -97,6 +97,18 @@
                 <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project deliverables
               </a>
             </small>
+
+                        [#--  Feedback Status --]
+          [#if action.hasSpecificities('feedback_active') ]
+            <div class="form-group col-md-12 legendContent-global">
+              <div class="colors-global">
+                <div class="col-md-12 form-group "><b>Feedback status:</b></div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.blue" /]</div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_yellow.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.yellow" /]</div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_green.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.green" /]</div>
+              </div>
+            </div>
+          [/#if]
 
             [#-- FAIR Compliant Mini --]
             <div class="fairComplian-block" style="display:${deliverable.deliverableInfo.requeriedFair()?string('block','none')}">

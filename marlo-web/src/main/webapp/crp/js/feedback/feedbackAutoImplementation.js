@@ -7,7 +7,7 @@ let qaComments = '';
 fieldsSections = [];
 
 function feedbackAutoImplementation (){
-  console.log("feedbackAutoImplementation")
+  console.log('%c feedback auto implementation init', 'background: white; color: black');
   parentID = $('#parentID').html();
   projectID = $('#projectID').html();
   phaseID = $('#phaseID').html();
@@ -313,10 +313,15 @@ function hideShowOptionButtons(block, status) {
     }
   }
 
+  runaddfeedbackFlexItemsClass = true;
   function addfeedbackFlexItemsClass(fieldsMap){
+    if (!runaddfeedbackFlexItemsClass) return;
     fieldsMap.map(field=>{
-      $(`[name="${field.fieldName}"]`).closest('.fieldReference').parent().addClass( "feedback-flex-items" );
+      // $(`[name="${field.fieldName}"]`).closest('.fieldReference')
+      $(`[name="${field.fieldName}"]`).closest('.fieldReference').appendTo($(`[name="${field.fieldName}"]`).closest('.fieldReference').prev());
+      $(`[name="${field.fieldName}"]`).closest('.fieldReference').closest('.feedback-flex-items').next().appendTo($(`[name="${field.fieldName}"]`).closest('.fieldReference').closest('.feedback-flex-items'))
     })
+    runaddfeedbackFlexItemsClass = false;
   }
   
   function loadQACommentsIcons(ajaxURL, arrayName) {
@@ -499,6 +504,7 @@ function hideShowOptionButtons(block, status) {
   function loadNumberOfComments(name, data) {
     data.map(function (x) {
       let p = $(`img.qaComment[name="${name}"]`).prev().find('p');
+      p.css('display', 'block');
       p.html(`${x[0]}/${x[1]}`);
     });
   }

@@ -7152,9 +7152,9 @@ img.fileIcon {
 
 .feedback-flex-items{
   display: flex;
-  align-items: flex-end;
+  align-items: center;
 }
-.feedback-flex-items .select{
+.feedback-flex-items .select, .feedback-flex-items .input{
   width: 100% !important;
 }
 
@@ -7171,21 +7171,28 @@ img.fileIcon {
   display: none;
   flex-flow: column;
   align-items: center;
+  position: relative;
 }
 
 .numberOfCommentsBubble {
-  background: #FFF2CC;
+  background: #ffffff;
   border-radius: 50%;
-  border: 1px solid darkgrey;
   margin: 5px;
+  box-shadow: 0px 0px 7px #b3b3b3;
+  font-weight: 400;
 }
 
 .numberOfCommentsBubble p {
+  /* position: absolute;
+  top: 0;
+  left: 0; */
+  display: none;
   font-size: 10px;
   text-align: center;
   margin: 0;
   padding: 5px;
-  color: black;
+  color: #797979;
+  font-weight: 700;
 }
 
 img.qaComment {
@@ -7355,4 +7362,23 @@ img.qaOptions {
 .closeComment:hover {
   background: url(../images/close_red.png);
   background-size: 15px;
+}
+
+.legendContent-global {
+  position: relative;
+  -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 30%);
+  -moz-box-shadow: 1px 2px 8px rgba(0, 0, 0, .3);
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  padding: 5px;
+  border: 1px solid #EEE;
+  background: #F8F8F8;
+  margin-bottom: 25px;
+  height: 100%;
+}
+
+.legendContent-global .colors-global {
+  border: 1px dashed #d5d5d5;
+  padding: 5px;
+  min-height: 77px;
 }
