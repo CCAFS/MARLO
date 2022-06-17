@@ -14,6 +14,7 @@
         [#if isReportingActive]
           <th id="deliverableFC">[@s.text name="project.deliverableList.fairCompliance" /]</th>
         [/#if]
+        <th id="feedbackStatus" width="0%">[@s.text name="Feedback Status" /]</th>
         <th id="deliverableStatus">[@s.text name="project.deliverableList.status" /]</th>
         [#if currentTable]
         <th id="deliverableRF"></th>
@@ -105,6 +106,12 @@
             [#else]
               <p class="message">Not applicable</p>
             [/#if]
+            </td>
+          [/#if]
+          [#-- Feedback status --]
+          [#if action.hasSpecificities('feedback_active') ]
+            <td class="text-center">
+              ${(deliverable.commentStatus)!}
             </td>
           [/#if]
           [#-- Deliverable Status --]
@@ -222,6 +229,7 @@
         [#if isReportingActive || FAIRColumn]
           <th id="deliverableFC" width="0%">[@s.text name="project.deliverableList.fairCompliance" /]</th>
         [/#if]
+        <th id="feedbackStatus" width="0%">[@s.text name="Feedback Status" /]</th>
         <th id="deliverableStatus" width="0%">[@s.text name="project.deliverableList.status" /]</th>
         <th id="deliverableRF" width="0%"></th>
         <th id="deliverableRP" width="0%">Responsible partner</th>

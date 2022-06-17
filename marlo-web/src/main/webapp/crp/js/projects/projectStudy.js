@@ -39,6 +39,9 @@ function init() {
       $commentBox.slideDown();
     }
   });
+
+  feedbackAutoImplementation();
+  
 }
 
 function attachEvents() {

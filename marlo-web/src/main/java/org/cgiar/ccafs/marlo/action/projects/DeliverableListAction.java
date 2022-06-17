@@ -259,6 +259,11 @@ public class DeliverableListAction extends BaseAction {
               }
             }
             deliverable.setCommentStatus(answeredComments + "/" + totalComments);
+
+            if (deliverable.getCommentStatus() == null
+              || (deliverable.getCommentStatus() != null && deliverable.getCommentStatus().isEmpty())) {
+              deliverable.setCommentStatus(0 + "/" + 0);
+            }
           } catch (Exception e) {
             deliverable.setCommentStatus(0 + "/" + 0);
 
