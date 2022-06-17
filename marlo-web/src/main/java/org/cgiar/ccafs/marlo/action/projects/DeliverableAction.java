@@ -836,6 +836,7 @@ public class DeliverableAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
@@ -1759,27 +1760,29 @@ public class DeliverableAction extends BaseAction {
       /*
        * get feedback comments
        */
-      try {
 
-        feedbackComments = new ArrayList<>();
-        feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(f -> f.getSectionName() != null && f.getSectionName().equals("deliverable"))
-          .collect(Collectors.toList());
-        if (feedbackComments != null) {
-          for (FeedbackQACommentableFields field : feedbackComments) {
-            List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
-            comments = feedbackQACommentManager.findAll().stream()
-              .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
-                && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == deliverable.getId()
-                && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
-              .collect(Collectors.toList());
-            field.setQaComments(comments);
+      try {
+        if (this.hasSpecificities(this.feedbackModule())) {
+
+          feedbackComments = new ArrayList<>();
+          feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
+            .filter(f -> f.getSectionName() != null && f.getSectionName().equals("deliverable"))
+            .collect(Collectors.toList());
+          if (feedbackComments != null) {
+            for (FeedbackQACommentableFields field : feedbackComments) {
+              List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
+              comments = feedbackQACommentManager.findAll().stream()
+                .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+                  && f.getPhase().getId().equals(this.getActualPhase().getId())
+                  && f.getParentId() == deliverable.getId() && f.getField() != null && f.getField().getId() != null
+                  && f.getField().getId().equals(field.getId()))
+                .collect(Collectors.toList());
+              field.setQaComments(comments);
+            }
           }
         }
-
       } catch (Exception e) {
       }
-
 
       if (this.isHttpPost()) {
 
