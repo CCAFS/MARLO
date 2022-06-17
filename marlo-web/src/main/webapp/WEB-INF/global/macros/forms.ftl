@@ -2,6 +2,7 @@
 [#macro text name readText=false param=""][#assign customName][#if readText]${name}.readText[#else]${name}[/#if][/#assign][@s.text name="${customName}"][@s.param]${param}[/@s.param][/@s.text][/#macro]
 
 [#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" helpIcon=true display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder="" inputGroupText="" maxlength=""]
+  <div class="feedback-flex-items"></div>
   <div class="input fieldReference ${changedField(name)}" style="display:${display?string('block','none')};">
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#if showTitle]
@@ -36,7 +37,8 @@
 [/#macro]
 
 [#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false]
-  <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[#else]style="width: 100%;"[/#if]> 
+  <div class="feedback-flex-items"></div>
+  <div class="textArea fieldReference ${changedField(name)}" [#if !display]style="display: none;"[#else]style="width: 100%;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
     [#-- Get Custom Value --]
@@ -140,6 +142,7 @@
 [/#macro]
 
 [#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" editable=true]
+  <div class="feedback-flex-items"></div>
   <div class="select fieldReference ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
@@ -454,7 +457,8 @@
   [#else]
     [#assign customValue=value /]
   [/#if]
-  <div class="onoffswitch ${changedField(name)} ${cssClass}">
+  <div class="feedback-flex-items"></div>
+  <div class="onoffswitch fieldReference ${changedField(name)} ${cssClass}">
     [#if label?has_content]
       <label for="${name}">[@s.text name=label/]</label>
     [/#if]
@@ -470,6 +474,12 @@
         <p style="text-align:center; display: inline-block"> [#if customValue=="true"]Yes[#elseif customValue == "false"]No[#else]Not selected[/#if]</p>
       [/#if]
     </div>
+  </div>
+  <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
   </div>
 [/#macro]
 
@@ -606,7 +616,9 @@
   [#if id?has_content]
     [#local composedID = "${elementType}-${id}" /]
   [/#if]
-  <div class="panel tertiary elementsListComponent" listname="${name}" style="position:relative">
+    <div class="feedback-flex-items"></div>
+
+  <div class="fieldReference panel tertiary elementsListComponent" listname="${name}" style="position:relative">
     <div class="panel-head">
       <label for="">[@s.text name=label /]:[@req required=required && (editable || forceEditable) /]
         [#--  Help Text --]
@@ -636,6 +648,13 @@
     <ul style="display:none">
       [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true hasPrimary=hasPrimary onlyElementIDs=onlyElementIDs isEditable=(editable || forceEditable) /]
     </ul>
+    <input type="hidden" name="${name}"/>
+  </div>
+    <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
   </div>
 [/#macro]
 
