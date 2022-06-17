@@ -360,7 +360,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Links to MELIA publications
         if (projectExpectedStudyInfo.getMELIAPublications() != null) {
           Set<String> studyMeliaLinksSet = new HashSet<>();
-          for (String linkMelia : StringUtils.split(projectExpectedStudyInfo.getMELIAPublications(), "\\R")) {
+          for (String linkMelia : StringUtils.split(projectExpectedStudyInfo.getMELIAPublications())) {
             if (StringUtils.isNotBlank(linkMelia)) {
               studyMeliaLinksSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + urlShortener.detectAndShortenLinks(linkMelia));
             }
