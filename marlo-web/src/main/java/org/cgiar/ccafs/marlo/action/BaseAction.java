@@ -1350,8 +1350,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     if (projectID != null && response) {
       try {
-        List<ProjectPartner> projectPartners =
-          projectPartnerManager.getProjectPartnersForProjectWithActiveProjectPartnerPersons(projectID);
+        List<ProjectPartner> projectPartners = projectPartnerManager
+          .getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(projectID, this.getActualPhase().getId());
         List<ProjectPartnerPerson> projectParnerPersons = new ArrayList<>();
         if (projectPartners != null) {
           for (ProjectPartner projectPartner : projectPartners) {
