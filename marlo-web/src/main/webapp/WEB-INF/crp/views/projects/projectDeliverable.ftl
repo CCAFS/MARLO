@@ -3,9 +3,10 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20211027",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20210310",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20200205",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20220617A",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20220617A",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220617A",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220617A",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
@@ -55,6 +56,26 @@
 
 [@customForm.qaPopUp /]
 
+<span id="parentID" style="display: none;">${deliverableID!}</span>
+<span id="phaseID" style="display: none;">${phaseID!}</span>
+<span id="userID" style="display: none;">${currentUser.id!}</span>
+<span id="projectID" style="display: none;">${projectID!}</span>
+<span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
+<span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
+<span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
+<input type="hidden" id="sectionNameToFeedback" value="deliverable" />
+
+[#if action.hasSpecificities('feedback_active') ]
+  [#list feedbackComments as feedback]
+    [@customForm.qaPopUpMultiple fields=feedback.qaComments name=feedback.fieldDescription index=feedback_index canLeaveComments=(action.canLeaveComments()!false)/]
+  [/#list]
+  <div id="qaTemplate" style="display: none">
+    [@customForm.qaPopUpMultiple canLeaveComments=(action.canLeaveComments()!false) template=true/]
+  </div>
+[/#if]
+
+
+
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -76,6 +97,18 @@
                 <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project deliverables
               </a>
             </small>
+
+                        [#--  Feedback Status --]
+          [#if action.hasSpecificities('feedback_active') ]
+            <div class="form-group col-md-12 legendContent-global">
+              <div class="colors-global">
+                <div class="col-md-12 form-group "><b>Feedback status:</b></div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.blue" /]</div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_yellow.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.yellow" /]</div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_green.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.green" /]</div>
+              </div>
+            </div>
+          [/#if]
 
             [#-- FAIR Compliant Mini --]
             <div class="fairComplian-block" style="display:${deliverable.deliverableInfo.requeriedFair()?string('block','none')}">

@@ -49,6 +49,8 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipPersonManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
@@ -103,6 +105,8 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GenderType;
@@ -235,6 +239,9 @@ public class DeliverableAction extends BaseAction {
   private ProjectOutcomeManager projectOutcomeManager;
   private DeliverableProjectOutcomeManager deliverableProjectOutcomeManager;
   private DeliverableCrpOutcomeManager deliverableCrpOutcomeManager;
+  private FeedbackQACommentManager feedbackQACommentManager;
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+
 
   // Variables
   private List<DeliverableQualityAnswer> answers;
@@ -277,6 +284,7 @@ public class DeliverableAction extends BaseAction {
   private DeliverableGeographicRegionManager deliverableGeographicRegionManager;
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
   private List<Project> myProjects;
+  private List<FeedbackQACommentableFields> feedbackComments;
 
 
   private List<RepIndGenderYouthFocusLevel> focusLevels;
@@ -322,7 +330,9 @@ public class DeliverableAction extends BaseAction {
     CrpProgramOutcomeManager crpProgramOutcomeManager, DeliverableActivityManager deliverableActivityManager,
     ProjectDeliverableSharedManager projectDeliverableSharedManager, PhaseManager phaseManager,
     ProjectOutcomeManager projectOutcomeManager, DeliverableProjectOutcomeManager deliverableProjectOutcomeManager,
-    DeliverableCrpOutcomeManager deliverableCrpOutcomeManager) {
+    DeliverableCrpOutcomeManager deliverableCrpOutcomeManager,
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
+    FeedbackQACommentManager feedbackQACommentManager) {
     super(config);
     this.activityManager = activityManager;
     this.deliverableManager = deliverableManager;
@@ -380,6 +390,8 @@ public class DeliverableAction extends BaseAction {
     this.projectOutcomeManager = projectOutcomeManager;
     this.deliverableProjectOutcomeManager = deliverableProjectOutcomeManager;
     this.deliverableCrpOutcomeManager = deliverableCrpOutcomeManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
+    this.feedbackQACommentManager = feedbackQACommentManager;
   }
 
   @Override
@@ -628,6 +640,10 @@ public class DeliverableAction extends BaseAction {
     return divisions;
   }
 
+  public List<FeedbackQACommentableFields> getFeedbackComments() {
+    return feedbackComments;
+  }
+
   public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
     return focusLevels;
   }
@@ -668,6 +684,7 @@ public class DeliverableAction extends BaseAction {
     return partners;
   }
 
+
   /**
    * @return an array of integers.
    */
@@ -694,7 +711,6 @@ public class DeliverableAction extends BaseAction {
   public List<CrpProgramOutcome> getProgramOutcomes() {
     return programOutcomes;
   }
-
 
   public ArrayList<CrpProgram> getPrograms() {
     return programs;
@@ -820,6 +836,7 @@ public class DeliverableAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
@@ -1740,6 +1757,33 @@ public class DeliverableAction extends BaseAction {
           .sorted((t1, t2) -> t1.getId().compareTo(t2.getId())).collect(Collectors.toList()));
       }
 
+      /*
+       * get feedback comments
+       */
+
+      try {
+        if (this.hasSpecificities(this.feedbackModule())) {
+
+          feedbackComments = new ArrayList<>();
+          feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
+            .filter(f -> f.getSectionName() != null && f.getSectionName().equals("deliverable"))
+            .collect(Collectors.toList());
+          if (feedbackComments != null) {
+            for (FeedbackQACommentableFields field : feedbackComments) {
+              List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
+              comments = feedbackQACommentManager.findAll().stream()
+                .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+                  && f.getPhase().getId().equals(this.getActualPhase().getId())
+                  && f.getParentId() == deliverable.getId() && f.getField() != null && f.getField().getId() != null
+                  && f.getField().getId().equals(field.getId()))
+                .collect(Collectors.toList());
+              field.setQaComments(comments);
+            }
+          }
+        }
+      } catch (Exception e) {
+      }
+
       if (this.isHttpPost()) {
 
         if (deliverable.getOtherPartnerships() != null) {
@@ -2099,6 +2143,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Deliverable Crp Program Outcome Information
    * 
@@ -2144,7 +2189,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   public void saveCrps() {
     if (deliverable.getCrps() == null) {
@@ -3204,6 +3248,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setDivisions(List<PartnerDivision> divisions) {
     this.divisions = divisions;
+  }
+
+  public void setFeedbackComments(List<FeedbackQACommentableFields> feedbackComments) {
+    this.feedbackComments = feedbackComments;
   }
 
   public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {

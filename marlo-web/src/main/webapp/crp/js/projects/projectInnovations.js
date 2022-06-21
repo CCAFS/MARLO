@@ -15,6 +15,7 @@ $(document).ready(function() {
   // Attach Events
   attachEvents();
   AddRequired();
+  feedbackAutoImplementation();
 });
 
 function attachEvents() {
