@@ -117,7 +117,7 @@
     [#-- Uploaded File --]
     <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
       <span class="contentResult">[#if safeguard.hasFile??]
-        <a target="_blank" href="${action.getBaseLineFileURL((safeguard.id?string)!-1)}&filename=${(safeguard.file.fileName)!}" target="_blank" class="downloadBaseline"> ${(safeguard.file.fileName)!('No file name')} </a>
+        <a target="_blank" onclick="return false;" href="${action.getBaseLineFileURL((safeguard.id?string)!-1)}&filename=${(safeguard.file.fileName)!}" target="_blank" class="downloadBaseline"> ${(safeguard.file.fileName)!('No file name')} </a>
         [/#if]</span>
       [#if editable]<span class="removeIcon"> </span> [/#if]
     </p>         

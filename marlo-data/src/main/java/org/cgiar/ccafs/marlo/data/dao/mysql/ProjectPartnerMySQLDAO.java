@@ -131,6 +131,21 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
   }
 
   @Override
+  public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(long projectId,
+    long phaseId) {
+
+    String query = "select distinct pp from ProjectPartner as pp inner join pp.project as project "
+      + "left join fetch pp.projectPartnerPersons as ppp where project.id = :projectId "
+      + "and ppp.active = true and pp.active=true and pp.phase.id = :phaseId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("projectId", projectId);
+    createQuery.setParameter("phaseId", phaseId);
+    List<ProjectPartner> projectPartners = createQuery.list();
+    return projectPartners;
+  }
+
+  @Override
   public ProjectPartner save(ProjectPartner projectPartner) {
     if (projectPartner.getId() == null) {
       super.saveEntity(projectPartner);
