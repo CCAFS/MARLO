@@ -33,6 +33,7 @@ public class InitiativesDTO {
   public String action_area_id;
   public String action_area_description;
   public int active;
+  public String short_name;
 
 
   public Long stageId;
@@ -47,15 +48,14 @@ public class InitiativesDTO {
     return action_area_description;
   }
 
+
   public String getAction_area_id() {
     return action_area_id;
   }
 
-
   public int getActive() {
     return active;
   }
-
 
   public String getDescription() {
     return description;
@@ -74,6 +74,11 @@ public class InitiativesDTO {
 
   public String getOfficial_code() {
     return official_code;
+  }
+
+
+  public String getShort_name() {
+    return short_name;
   }
 
 
@@ -124,6 +129,11 @@ public class InitiativesDTO {
 
   public void setOfficial_code(String official_code) {
     this.official_code = official_code;
+  }
+
+
+  public void setShort_name(String short_name) {
+    this.short_name = short_name;
   }
 
 
