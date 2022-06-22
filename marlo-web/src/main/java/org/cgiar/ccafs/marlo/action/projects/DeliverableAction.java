@@ -2794,11 +2794,16 @@ public class DeliverableAction extends BaseAction {
             DeliverableGeographicScope deliverableScopeSave = new DeliverableGeographicScope();
             deliverableScopeSave.setDeliverable(deliverable);
             deliverableScopeSave.setPhase(phase);
+            RepIndGeographicScope repIndGeographicScope = null;
+            if (deliverableScope.getRepIndGeographicScope() != null
+              && deliverableScope.getRepIndGeographicScope().getId() != null) {
+              repIndGeographicScope = repIndGeographicScopeManager
+                .getRepIndGeographicScopeById(deliverableScope.getRepIndGeographicScope().getId());
+            }
 
-            RepIndGeographicScope repIndGeographicScope = repIndGeographicScopeManager
-              .getRepIndGeographicScopeById(deliverableScope.getRepIndGeographicScope().getId());
-
-            deliverableScopeSave.setRepIndGeographicScope(repIndGeographicScope);
+            if (repIndGeographicScope != null) {
+              deliverableScopeSave.setRepIndGeographicScope(repIndGeographicScope);
+            }
 
             deliverableGeographicScopeManager.saveDeliverableGeographicScope(deliverableScopeSave);
             // This is to add innovationCrpSave to generate correct auditlog.
