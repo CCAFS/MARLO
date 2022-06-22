@@ -161,8 +161,9 @@ public class WorkpackagesItem<T> {
         if (response.getResponse() != null) {
           WorkpackageList workpackageList = response.getResponse();
           if (workpackageList.getWorkpackages() != null) {
-            workpackageListDTO = workpackageList.getWorkpackages().stream()
-              .map(init -> this.workpackagesMapper.workpackageToWorkPackagesDTO(init)).collect(Collectors.toList());
+            workpackageListDTO =
+              workpackageList.getWorkpackages().stream().filter(workpackage -> workpackage.getInitiative_status() != 0)
+                .map(init -> this.workpackagesMapper.workpackageToWorkPackagesDTO(init)).collect(Collectors.toList());
           }
 
         }

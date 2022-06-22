@@ -62,6 +62,9 @@ public class WorkPackagesDTO {
   @ApiModelProperty(notes = "official Workpackage code", position = 12)
   private String wp_official_code;
 
+  @ApiModelProperty(notes = "Active iniciative", position = 13)
+  private Long initiative_status;
+
   public String getAcronym() {
     return acronym;
   }
@@ -74,6 +77,11 @@ public class WorkPackagesDTO {
 
   public Long getInitiative_id() {
     return initiative_id;
+  }
+
+
+  public Long getInitiative_status() {
+    return initiative_status;
   }
 
 
@@ -101,7 +109,6 @@ public class WorkPackagesDTO {
     return sdgList;
   }
 
-
   public Long getStage_id() {
     return stage_id;
   }
@@ -124,6 +131,10 @@ public class WorkPackagesDTO {
 
   public void setInitiative_id(Long initiative_id) {
     this.initiative_id = initiative_id;
+  }
+
+  public void setInitiative_status(Long initiative_status) {
+    this.initiative_status = initiative_status;
   }
 
   public void setName(String name) {

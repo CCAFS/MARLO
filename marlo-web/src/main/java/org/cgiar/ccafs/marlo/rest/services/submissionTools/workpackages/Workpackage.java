@@ -48,6 +48,8 @@ public class Workpackage implements Serializable {
   private String acronym;
 
   private Long wp_official_code;
+  
+  private Long initiative_status;
 
   // notmapped
 
@@ -109,6 +111,10 @@ public class Workpackage implements Serializable {
   public Long getWp_official_code() {
     return wp_official_code;
   }
+  
+  public Long getInitiative_status() {
+    return initiative_status;
+  }
 
 
   public void setAcronym(String acronym) {
@@ -160,5 +166,9 @@ public class Workpackage implements Serializable {
 
   public void setWp_official_code(Long wp_official_code) {
     this.wp_official_code = wp_official_code;
+  }
+  
+  public void setInitiative_status(Long initiative_status) {
+    this.initiative_status = initiative_status;
   }
 }
