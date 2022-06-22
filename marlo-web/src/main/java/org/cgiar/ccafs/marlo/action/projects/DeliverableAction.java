@@ -1930,11 +1930,13 @@ public class DeliverableAction extends BaseAction {
       if (deliverable.getGeographicScopes() != null) {
         for (DeliverableGeographicScope deliverableGeographicScope : deliverable.getGeographicScopes()) {
 
-          if (deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
+          if (deliverableGeographicScope != null && deliverableGeographicScope.getRepIndGeographicScope() != null
+            && deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
             haveRegions = true;
           }
 
-          if (deliverableGeographicScope.getRepIndGeographicScope().getId() != 1
+          if (deliverableGeographicScope != null && deliverableGeographicScope.getRepIndGeographicScope() != null
+            && deliverableGeographicScope.getRepIndGeographicScope().getId() != 1
             && deliverableGeographicScope.getRepIndGeographicScope().getId() != 2) {
             haveCountries = true;
           }
@@ -2170,7 +2172,7 @@ public class DeliverableAction extends BaseAction {
     // Save form Information
     if (this.deliverable.getCrpOutcomes() != null) {
       for (DeliverableCrpOutcome deliverableOutcome : this.deliverable.getCrpOutcomes()) {
-        if (deliverableOutcome.getId() == null) {
+        if (deliverableOutcome != null && deliverableOutcome.getId() == null) {
           DeliverableCrpOutcome deliverableOutcomeSave = new DeliverableCrpOutcome();
           deliverableOutcomeSave.setDeliverable(deliverable);
           deliverableOutcomeSave.setPhase(phase);
@@ -2792,11 +2794,16 @@ public class DeliverableAction extends BaseAction {
             DeliverableGeographicScope deliverableScopeSave = new DeliverableGeographicScope();
             deliverableScopeSave.setDeliverable(deliverable);
             deliverableScopeSave.setPhase(phase);
+            RepIndGeographicScope repIndGeographicScope = null;
+            if (deliverableScope.getRepIndGeographicScope() != null
+              && deliverableScope.getRepIndGeographicScope().getId() != null) {
+              repIndGeographicScope = repIndGeographicScopeManager
+                .getRepIndGeographicScopeById(deliverableScope.getRepIndGeographicScope().getId());
+            }
 
-            RepIndGeographicScope repIndGeographicScope = repIndGeographicScopeManager
-              .getRepIndGeographicScopeById(deliverableScope.getRepIndGeographicScope().getId());
-
-            deliverableScopeSave.setRepIndGeographicScope(repIndGeographicScope);
+            if (repIndGeographicScope != null) {
+              deliverableScopeSave.setRepIndGeographicScope(repIndGeographicScope);
+            }
 
             deliverableGeographicScopeManager.saveDeliverableGeographicScope(deliverableScopeSave);
             // This is to add innovationCrpSave to generate correct auditlog.
@@ -3018,7 +3025,7 @@ public class DeliverableAction extends BaseAction {
     // Save form Information
     if (this.deliverable.getSharedDeliverables() != null) {
       for (ProjectDeliverableShared deliverableProject : this.deliverable.getSharedDeliverables()) {
-        if (deliverableProject.getId() == null) {
+        if (deliverableProject != null && deliverableProject.getId() == null) {
           ProjectDeliverableShared deliverableProjectSave = new ProjectDeliverableShared();
           deliverableProjectSave.setDeliverable(deliverableDB);
           deliverableProjectSave.setPhase(this.getActualPhase());
