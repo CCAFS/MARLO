@@ -3018,7 +3018,7 @@ public class DeliverableAction extends BaseAction {
     // Save form Information
     if (this.deliverable.getSharedDeliverables() != null) {
       for (ProjectDeliverableShared deliverableProject : this.deliverable.getSharedDeliverables()) {
-        if (deliverableProject.getId() == null) {
+        if (deliverableProject != null && deliverableProject.getId() == null) {
           ProjectDeliverableShared deliverableProjectSave = new ProjectDeliverableShared();
           deliverableProjectSave.setDeliverable(deliverableDB);
           deliverableProjectSave.setPhase(this.getActualPhase());
