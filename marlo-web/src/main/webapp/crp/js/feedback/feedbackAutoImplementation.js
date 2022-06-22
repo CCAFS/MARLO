@@ -85,8 +85,8 @@ function attachEventsFeedback() {
     } else {
       cleanComment = comment?.replaceAll('.<br>.', '');
     }
-
-    cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
+   
+    cleanComment = cleanComment ? cleanComment.replaceAll('&nbsp;', ' ') : '';
 
     if (cleanComment != '' && cleanComment != ' ') {
       textarea.css('border', '1px solid #ccc');
