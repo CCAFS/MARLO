@@ -489,7 +489,8 @@
   [#else]
     [#assign customValue=value /]
   [/#if]
-  <div class="onoffswitch ${changedField(name)} ${cssClass}">
+  <div class="feedback-flex-items"></div>
+  <div class="onoffswitch fieldReference ${changedField(name)} ${cssClass}">
     [#if label?has_content]
       <label for="${name}">[@s.text name=label/]</label>
     [/#if]
@@ -505,6 +506,12 @@
         <p style="text-align:center; display: inline-block"> [#if customValue=="true"]Yes[#elseif customValue == "false"]No[#else]Not selected[/#if]</p>
       [/#if]
     </div>
+  </div>
+    <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
   </div>
 [/#macro]
 
