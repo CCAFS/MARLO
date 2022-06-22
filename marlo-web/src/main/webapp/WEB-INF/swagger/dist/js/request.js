@@ -650,12 +650,13 @@ function all_initiatives() {
 			// print data
 			manageSpinner(false,"all_initiatives");
 			console.log(data);
-			let nameColumns = ['Short name','Official Code', 'Name','Status','Action area id', 'Action area description','','Stage id', 'Stage Desciption' ]			
+			let nameColumns = ['Code','Official Code', 'Short name','Name','Status','Action area id', 'Action area description','','Stage id', 'Stage Desciption' ]			
 
 			$.each(data, function (index, item) {				
 				$('#list-print-all_initiatives').append(
-					'<tr>' + '<td >' + item['short_name'] + '</td>' 
+					'<tr>' + '<td >' + item['id'] + '</td>' 
 					+ '<td >' + item['official_code'] + '</td>' 
+					+ '<td >' + item['short_name'] + '</td>' 
 					+ '<td >' + item['name'] + '</td>' 
 					+ '<td >' + item['status'] + '</td>' 
 					+ '<td >' + item['action_area_id'] + '</td>' 
