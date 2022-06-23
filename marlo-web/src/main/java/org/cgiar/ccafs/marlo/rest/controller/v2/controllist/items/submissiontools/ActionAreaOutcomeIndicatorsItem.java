@@ -54,6 +54,10 @@ public class ActionAreaOutcomeIndicatorsItem<T> {
     ActionAreaOutcomeIndicator actionAreaOutcomeIndicator =
       this.actionAreaOutcomeIndicatorManager.getActionAreaOutcomeIndicatorById(id);
 
+    if (!actionAreaOutcomeIndicator.isActive()) {
+      actionAreaOutcomeIndicator = null;
+    }
+
     return Optional.ofNullable(actionAreaOutcomeIndicator)
       .map(this.actionAreaOutcomesMapper::actionAreaOutcomeIndicatorToActionAreaOutcomeIndicatorDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -64,10 +68,11 @@ public class ActionAreaOutcomeIndicatorsItem<T> {
     if (this.actionAreaOutcomeIndicatorManager.getAll() != null) {
       List<ActionAreaOutcomeIndicator> actionAreaOutcomeIndicators =
         new ArrayList<>(this.actionAreaOutcomeIndicatorManager.getAll());
-      List<ActionAreaOutcomeIndicatorDTO> actionAreaOutcomeIndicatorsDTOs = actionAreaOutcomeIndicators.stream()
-        .map(actionAreaOutcomeIndicatorEntity -> this.actionAreaOutcomesMapper
-          .actionAreaOutcomeIndicatorToActionAreaOutcomeIndicatorDTO(actionAreaOutcomeIndicatorEntity))
-        .collect(Collectors.toList());
+      List<ActionAreaOutcomeIndicatorDTO> actionAreaOutcomeIndicatorsDTOs =
+        actionAreaOutcomeIndicators.stream().filter(aaoi -> aaoi != null && aaoi.getId() != null && aaoi.isActive())
+          .map(actionAreaOutcomeIndicatorEntity -> this.actionAreaOutcomesMapper
+            .actionAreaOutcomeIndicatorToActionAreaOutcomeIndicatorDTO(actionAreaOutcomeIndicatorEntity))
+          .collect(Collectors.toList());
       return actionAreaOutcomeIndicatorsDTOs;
     } else {
       return null;
