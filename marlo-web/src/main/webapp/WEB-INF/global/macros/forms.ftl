@@ -623,8 +623,7 @@
   [#if id?has_content]
     [#local composedID = "${elementType}-${id}" /]
   [/#if]
-    <div class="feedback-flex-items"></div>
-
+  <div class="feedback-flex-items"></div>
   <div class="fieldReference panel tertiary elementsListComponent" listname="${name}" style="position:relative">
     <div class="panel-head">
       <label for="">[@s.text name=label /]:[@req required=required && (editable || forceEditable) /]
@@ -655,7 +654,7 @@
     <ul style="display:none">
       [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true hasPrimary=hasPrimary onlyElementIDs=onlyElementIDs isEditable=(editable || forceEditable) /]
     </ul>
-    <input type="hidden" name="${name}"/>
+    <input type="hidden" name="${name}[]"/>
   </div>
     <div class="commentNumberContainer">
     <div class="numberOfCommentsBubble">

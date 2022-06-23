@@ -148,30 +148,23 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         FeedbackQACommentableFields field =
           feedbackQACommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
 
-        if (field.getSectionName() != null) {
+        if (field.getSectionName() != null && parentId != null) {
           switch (field.getSectionName()) {
             case "projectContributionCrp":
-              link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getAcronym() + "/contributionCrp.do?"
+              link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/contributionCrp.do?"
                 + "projectOutcomeID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
-
               break;
             case "deliverable":
-              if (deliverableId != null) {
-                link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
-                  + "deliverableID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
-              }
+              link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
+                + "deliverableID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
               break;
             case "study":
-              if (deliverableId != null) {
-                link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getAcronym() + "/study.do?"
-                  + "expectedID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
-              }
+              link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/study.do?" + "expectedID="
+                + parentId + "&phaseID=" + phaseId + "&edit=true";
               break;
             case "innovation":
-              if (deliverableId != null) {
-                link = this.getBaseUrl() + "clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?"
-                  + "innovationID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
-              }
+              link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?"
+                + "innovationID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
               break;
           }
         }
