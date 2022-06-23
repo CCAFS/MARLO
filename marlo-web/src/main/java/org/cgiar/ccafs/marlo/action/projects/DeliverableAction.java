@@ -3023,23 +3023,27 @@ public class DeliverableAction extends BaseAction {
     }
 
     // Save form Information
-    if (this.deliverable.getSharedDeliverables() != null) {
-      for (ProjectDeliverableShared deliverableProject : this.deliverable.getSharedDeliverables()) {
-        if (deliverableProject != null && deliverableProject.getId() == null) {
-          ProjectDeliverableShared deliverableProjectSave = new ProjectDeliverableShared();
-          deliverableProjectSave.setDeliverable(deliverableDB);
-          deliverableProjectSave.setPhase(this.getActualPhase());
+    try {
+      if (this.deliverable.getSharedDeliverables() != null) {
+        for (ProjectDeliverableShared deliverableProject : this.deliverable.getSharedDeliverables()) {
+          if (deliverableProject != null && deliverableProject.getId() == null) {
+            ProjectDeliverableShared deliverableProjectSave = new ProjectDeliverableShared();
+            deliverableProjectSave.setDeliverable(deliverableDB);
+            deliverableProjectSave.setPhase(this.getActualPhase());
 
-          Project project = this.projectManager.getProjectById(deliverableProject.getProject().getId());
+            Project project = this.projectManager.getProjectById(deliverableProject.getProject().getId());
 
-          deliverableProjectSave.setProject(project);
+            deliverableProjectSave.setProject(project);
 
-          this.projectDeliverableSharedManager.saveProjectDeliverableShared(deliverableProjectSave);
-          // This is to add studyProjectSave to generate correct
-          // auditlog.
-          this.deliverable.getProjectDeliverableShareds().add(deliverableProjectSave);
+            this.projectDeliverableSharedManager.saveProjectDeliverableShared(deliverableProjectSave);
+            // This is to add studyProjectSave to generate correct
+            // auditlog.
+            this.deliverable.getProjectDeliverableShareds().add(deliverableProjectSave);
+          }
         }
       }
+    } catch (Exception e) {
+      logger.error("unable to get cluster shared", e);
     }
 
   }
