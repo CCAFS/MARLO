@@ -534,5 +534,7 @@
     <mapping resource="xmls/ProjectInnovationEvidenceLinks.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisFlagshipProgressOutcomeMilestoneLinks.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisCrpFinancialReports.hbm.xml" />
+    <!-- NAT Redirection Links -->
+    <mapping resource="xmls/NATRedirectionLinks.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
