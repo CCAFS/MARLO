@@ -170,6 +170,11 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                   } else {
                     fieldsMap.put("userName", "");
                   }
+                  if (comment.getUser() != null && comment.getUser().getId() != null) {
+                    fieldsMap.put("userID", comment.getUser().getId());
+                  } else {
+                    fieldsMap.put("userID", "");
+                  }
                   if (comment.getUserApproval() != null && comment.getUserApproval().getFirstName() != null
                     && comment.getUserApproval().getLastName() != null) {
                     fieldsMap.put("approvalUserName",
