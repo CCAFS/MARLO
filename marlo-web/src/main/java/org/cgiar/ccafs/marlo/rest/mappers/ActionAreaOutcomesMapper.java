@@ -43,6 +43,6 @@ public interface ActionAreaOutcomesMapper {
     actionAreaOutcomeIndicatorToActionAreaOutcomeIndicatorDTO(ActionAreaOutcomeIndicator actionAreaOutcomeIndicator);
 
 
-  @Mappings({@Mapping(source = "id", target = "outcomeId")})
+  @Mappings({@Mapping(source = "id", target = "outcomeId"), @Mapping(source = "smoCode", target = "outcomeSMOcode")})
   public abstract ActionAreaOutcomeDTO ActionAreaOutcomesToActionAreaOutcomeDTO(ActionAreaOutcome actionAreaOutcome);
 }
