@@ -85,8 +85,8 @@ function attachEventsFeedback() {
     } else {
       cleanComment = comment?.replaceAll('.<br>.', '');
     }
-
-    cleanComment = cleanComment.replaceAll('&nbsp;', ' ');
+   
+    cleanComment = cleanComment ? cleanComment.replaceAll('&nbsp;', ' ') : '';
 
     if (cleanComment != '' && cleanComment != ' ') {
       textarea.css('border', '1px solid #ccc');
@@ -317,9 +317,10 @@ function hideShowOptionButtons(block, status) {
   function addfeedbackFlexItemsClass(fieldsMap){
     if (!runaddfeedbackFlexItemsClass) return;
     fieldsMap.map(field=>{
-      // $(`[name="${field.fieldName}"]`).closest('.fieldReference')
-      $(`[name="${field.fieldName}"]`).closest('.fieldReference').appendTo($(`[name="${field.fieldName}"]`).closest('.fieldReference').prev());
-      $(`[name="${field.fieldName}"]`).closest('.fieldReference').closest('.feedback-flex-items').next().appendTo($(`[name="${field.fieldName}"]`).closest('.fieldReference').closest('.feedback-flex-items'))
+      let fieldReference = $(`[name="${field.fieldName}"]`).closest('.fieldReference').exists() == true ?  $(`[name="${field.fieldName}"]`).closest('.fieldReference')  : $(`[name="${field.fieldName}[]"]`).closest('.fieldReference');
+      // if (fieldReference) return;
+      fieldReference.appendTo(fieldReference.prev());
+      fieldReference.closest('.feedback-flex-items').next().appendTo(fieldReference.closest('.feedback-flex-items'))
     })
     runaddfeedbackFlexItemsClass = false;
   }
@@ -505,6 +506,7 @@ function hideShowOptionButtons(block, status) {
     data.map(function (x) {
       let p = $(`img.qaComment[name="${name}"]`).prev().find('p');
       p.css('display', 'block');
+      if(x[0] == x[1]) p.css('border', '2px solid #8dc02c');
       p.html(`${x[0]}/${x[1]}`);
     });
   }

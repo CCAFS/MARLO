@@ -10,23 +10,16 @@
   [#local isStatusExtended = (element.projectExpectedStudyInfo.status.id == 4)!false]
   [#local isOtherStatus = (element.projectExpectedStudyInfo.status.id != 4)!false]
 
-<span id="parentID" style="display: none;">${studyID!}</span>
+<span id="parentID" style="display: none;">${expectedID!}</span>
 <span id="phaseID" style="display: none;">${phaseID!}</span>
 <span id="userID" style="display: none;">${currentUser.id!}</span>
 <span id="projectID" style="display: none;">${projectID!}</span>
 <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
 <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
 <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
-<input type="hidden" id="sectionNameToFeedback" value="innovation" />
+<input type="hidden" id="sectionNameToFeedback" value="study" />
 
-[#if action.hasSpecificities('feedback_active') ]
-  [#list feedbackComments as feedback]
-    [@customForm.qaPopUpMultiple fields=feedback.qaComments name=feedback.fieldDescription index=feedback_index canLeaveComments=(action.canLeaveComments()!false)/]
-  [/#list]
-  <div id="qaTemplate" style="display: none">
-    [@customForm.qaPopUpMultiple canLeaveComments=(action.canLeaveComments()!false) template=true/]
-  </div>
-[/#if]
+
   
   <div id="${customId}" class="caseStudy evidenceBlock isNew-${isNew?string}" style="display:${template?string('none','block')}">
     <div class="borderBox">

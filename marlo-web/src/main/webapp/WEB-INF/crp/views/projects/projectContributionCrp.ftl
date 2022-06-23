@@ -3,9 +3,9 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220617A", 
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220623A", 
   "${baseUrlCdn}/global/js/fieldsValidation.js?20220613",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220617A",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220623A",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
