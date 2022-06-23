@@ -317,9 +317,10 @@ function hideShowOptionButtons(block, status) {
   function addfeedbackFlexItemsClass(fieldsMap){
     if (!runaddfeedbackFlexItemsClass) return;
     fieldsMap.map(field=>{
-      // $(`[name="${field.fieldName}"]`).closest('.fieldReference')
-      $(`[name="${field.fieldName}"]`).closest('.fieldReference').appendTo($(`[name="${field.fieldName}"]`).closest('.fieldReference').prev());
-      $(`[name="${field.fieldName}"]`).closest('.fieldReference').closest('.feedback-flex-items').next().appendTo($(`[name="${field.fieldName}"]`).closest('.fieldReference').closest('.feedback-flex-items'))
+      let fieldReference = $(`[name="${field.fieldName}"]`).closest('.fieldReference').exists() == true ?  $(`[name="${field.fieldName}"]`).closest('.fieldReference')  : $(`[name="${field.fieldName}[]"]`).closest('.fieldReference');
+      // if (fieldReference) return;
+      fieldReference.appendTo(fieldReference.prev());
+      fieldReference.closest('.feedback-flex-items').next().appendTo(fieldReference.closest('.feedback-flex-items'))
     })
     runaddfeedbackFlexItemsClass = false;
   }
@@ -505,6 +506,8 @@ function hideShowOptionButtons(block, status) {
     data.map(function (x) {
       let p = $(`img.qaComment[name="${name}"]`).prev().find('p');
       p.css('display', 'block');
+      if(x[0] == x[1]) p.css('border', '2px solid #8dc02c');
+      if(x[0] != x[1]) p.css('border', '2px solid #ffffff00');
       p.html(`${x[0]}/${x[1]}`);
     });
   }
