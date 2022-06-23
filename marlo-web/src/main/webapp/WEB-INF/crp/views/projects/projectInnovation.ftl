@@ -4,10 +4,10 @@
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20220617A",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20220623A",
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220617A"
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220623A"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css"] /]
 [#assign currentSection = "projects" /]
@@ -64,6 +64,17 @@
           <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectInnovations.back" /]
         </a>
       </small>
+
+      [#if action.hasSpecificities('feedback_active') ]
+        <div class="form-group col-md-12 legendContent-global">
+          <div class="colors-global">
+            <div class="col-md-12 form-group "><b>Feedback status:</b></div>
+            <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.blue" /]</div>
+            <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_yellow.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.yellow" /]</div>
+            <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_green.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.green" /]</div>
+          </div>
+        </div>
+      [/#if]
         
       [@s.form action=actionName cssClass="pure-form" enctype="multipart/form-data" ]
         
