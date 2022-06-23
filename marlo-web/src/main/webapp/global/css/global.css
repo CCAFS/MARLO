@@ -7201,6 +7201,7 @@ img.fileIcon {
   padding: 5px;
   color: #797979;
   font-weight: 700;
+  border: 2px solid #ffffff00;
 }
 
 img.qaComment {
