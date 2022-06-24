@@ -507,6 +507,7 @@ function hideShowOptionButtons(block, status) {
       let p = $(`img.qaComment[name="${name}"]`).prev().find('p');
       p.css('display', 'block');
       if(x[0] == x[1]) p.css('border', '2px solid #8dc02c');
+      if(x[0] != x[1]) p.css('border', '2px solid #ffffff00');
       p.html(`${x[0]}/${x[1]}`);
     });
   }
