@@ -99,6 +99,9 @@
         <th class="type">Type</th>
         <th class="owner">Owner</th>
         <th class="year">Year</th>
+        [#if action.hasSpecificities('feedback_active') ]
+          <th id="feedbackStatus">Feedback Status</th>
+        [/#if]
         <th class="status">Status</th>
         [#if reportingActive]
         <th id="projectDownload" class="no-sort"></th>
@@ -146,6 +149,11 @@
             <td class="year">
               [@utils.tableText value=(item.projectExpectedStudyInfo.year)!"" /]
             </td>
+            [#if action.hasSpecificities('feedback_active') ]
+              <td class="feedbackStatus">
+                [@utils.tableText value=(item.commentStatus)!"" /]
+              </td>
+            [/#if]
             <td class="status">
               [@utils.tableText value=(item.projectExpectedStudyInfo.statusName)!"" /]
             </td>

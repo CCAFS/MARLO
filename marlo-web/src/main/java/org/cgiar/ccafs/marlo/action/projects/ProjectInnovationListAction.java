@@ -17,6 +17,8 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
@@ -36,6 +38,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCuttingDimensionInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
@@ -92,6 +96,8 @@ public class ProjectInnovationListAction extends BaseAction {
   private ProjectPolicyInnovationManager projectPolicyInnovationManager;
   private ReportSynthesisCrossCuttingDimensionInnovationManager reportSynthesisCrossCuttingDimensionInnovationManager;
   private ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager;
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+  private FeedbackQACommentManager commentManager;
 
   private SectionStatusManager sectionStatusManager;
 
@@ -126,7 +132,8 @@ public class ProjectInnovationListAction extends BaseAction {
     ProjectInnovationSubIdoManager projectInnovationSubIdoManager, ProjectInnovationManager projectInnovationManager,
     ProjectPolicyInnovationManager projectPolicyInnovationManager,
     ReportSynthesisCrossCuttingDimensionInnovationManager reportSynthesisCrossCuttingDimensionInnovationManager,
-    ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager) {
+    ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager,
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentManager) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
@@ -147,6 +154,8 @@ public class ProjectInnovationListAction extends BaseAction {
     this.projectPolicyInnovationManager = projectPolicyInnovationManager;
     this.reportSynthesisCrossCuttingDimensionInnovationManager = reportSynthesisCrossCuttingDimensionInnovationManager;
     this.reportSynthesisFlagshipProgressInnovationManager = reportSynthesisFlagshipProgressInnovationManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
+    this.commentManager = commentManager;
   }
 
   @Override
@@ -331,6 +340,69 @@ public class ProjectInnovationListAction extends BaseAction {
     return allYears;
   }
 
+  public void getCommentStatuses() {
+
+    try {
+
+
+      List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
+
+      // get the commentable fields by sectionName
+      if (feedbackQACommentableFieldsManager.findAll() != null) {
+        commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
+          .filter(f -> f != null && f.getSectionName().equals("innovation")).collect(Collectors.toList());
+      }
+      if (projectInnovations != null && !projectInnovations.isEmpty() && commentableFields != null
+        && !commentableFields.isEmpty()) {
+
+
+        // Set the comment status in each project outcome
+
+        for (ProjectInnovation study : projectInnovations) {
+          int answeredComments = 0, totalComments = 0;
+          try {
+
+
+            for (FeedbackQACommentableFields commentableField : commentableFields) {
+              if (commentableField != null && commentableField.getId() != null) {
+
+                if (study != null && study.getId() != null && commentableField != null
+                  && commentableField.getId() != null) {
+                  List<FeedbackQAComment> comments = commentManager
+                    .findAll().stream().filter(f -> f != null && f.getParentId() == study.getId()
+                      && f.getField() != null && f.getField().getId().equals(commentableField.getId()))
+                    .collect(Collectors.toList());
+                  if (comments != null && !comments.isEmpty()) {
+                    totalComments += comments.size();
+                    comments = comments.stream()
+                      .filter(f -> f != null && ((f.getStatus() != null && f.getStatus().equals("approved"))
+                        || (f.getStatus() != null && f.getReply() != null)))
+                      .collect(Collectors.toList());
+                    if (comments != null) {
+                      answeredComments += comments.size();
+                    }
+                  }
+                }
+              }
+            }
+            study.setCommentStatus(answeredComments + "/" + totalComments);
+
+            if (study.getCommentStatus() == null
+              || (study.getCommentStatus() != null && study.getCommentStatus().isEmpty())) {
+              study.setCommentStatus(0 + "/" + 0);
+            }
+          } catch (Exception e) {
+            study.setCommentStatus(0 + "/" + 0);
+
+          }
+        }
+
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
   public long getInnovationID() {
     return innovationID;
   }
@@ -344,10 +416,10 @@ public class ProjectInnovationListAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
-
 
   public List<ProjectInnovation> getProjectInnovations() {
     return projectInnovations;
@@ -423,6 +495,9 @@ public class ProjectInnovationListAction extends BaseAction {
       }
     }
 
+    if (this.hasSpecificities(this.feedbackModule())) {
+      this.getCommentStatuses();
+    }
 
   }
 

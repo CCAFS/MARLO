@@ -80,6 +80,9 @@
         <th id="tb-type" width="22%">[@s.text name="projectInnovations.table.type" /]</th>
         <th id="tb-stage" width="15%">[@s.text name="projectInnovations.table.stage" /]</th>
         <th id="tb-year" width="8%">[@s.text name="projectInnovations.table.year" /]</th>
+        [#if action.hasSpecificities('feedback_active') ]
+          <th id="feedbackStatus">Feedback Status</th>
+        [/#if]
         <th class="owner">Owner</th>
         [#if currentTable]
         <th></th>
@@ -125,6 +128,12 @@
           <td class="owner text-center">
             [#if isOwner] <small><nobr>This Project</nobr></small>  [#else][#if innovation.project?has_content]P${innovation.project.id}[#else]Not defined[/#if][/#if]
           </td>
+          [#-- Feedback Status --]
+          [#if action.hasSpecificities('feedback_active') ]
+              <td class="feedbackStatus">
+                [@utils.tableText value=(innovation.commentStatus)!"" /]
+              </td>
+            [/#if]
           [#-- Missing fields --]
           [#if currentTable]
           <td>
