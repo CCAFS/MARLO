@@ -25,6 +25,7 @@ public class ActionArea extends MarloAuditableEntity implements java.io.Serializ
   private static final long serialVersionUID = 2071137314799462986L;
 
   private String name;
+  private String smoCode;
   private String description;
 
   public String getDescription() {
@@ -35,12 +36,20 @@ public class ActionArea extends MarloAuditableEntity implements java.io.Serializ
     return name;
   }
 
+  public String getSmoCode() {
+    return smoCode;
+  }
+
   public void setDescription(String description) {
     this.description = description;
   }
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setSmoCode(String smoCode) {
+    this.smoCode = smoCode;
   }
 
 }
