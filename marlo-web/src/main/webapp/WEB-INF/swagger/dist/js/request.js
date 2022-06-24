@@ -752,7 +752,7 @@ setTimeout(() => {
 	});
 }
 
-function action_areas_outcomes() {
+function action_areas_outcome_indicators() {
 	$.ajax({
 		url: config.endpoint + '/actionAreaOutcomeIndicators',
 		type: "GET",
@@ -782,6 +782,44 @@ function action_areas_outcomes() {
 			});
 setTimeout(() => {
 	updateDataTable("actionAreaOutcomeIndicators");
+}, 1000);
+			
+			// end print Data
+			// ********************************************** */
+		},
+		error: function (e) {
+			console.log(e);
+		}
+	});
+}
+
+function action_areas_outcomes() {
+	$.ajax({
+		url: config.endpoint + '/actionAreaOutcomes',
+		type: "GET",
+		beforeSend: function () {
+			// hideFilter();
+			cleanModal();
+			manageSpinner(true,"actionAreaOutcomes");
+			destroyTable("actionAreaOutcomes");
+		},
+		success: function (data) {
+			// ********************************************* */
+			// print data
+			manageSpinner(false,"actionAreaOutcomes");
+			console.log(data);
+			let nameColumns = ['Action Area ID', 'Action Area Name','Outcome ID','Outcome SMO code','Outcome Statement']
+
+			$.each(data, function (index, item) {				
+				$('#list-print-actionAreaOutcomes').append(
+					'<tr>' + '<td >' + item['actionAreaId'] + '</td>' + '<td>'
+					+ item['actionAreaName'] + '</td>'+ '<td>'
+					+ item['outcomeId'] + '</td>'+ '<td>'
+					+ item['outcomeSMOcode'] + '</td>'+ '<td>'
+					+ item['outcomeStatement'] + '</td>' + '</tr>')
+			});
+setTimeout(() => {
+	updateDataTable("actionAreaOutcomes");
 }, 1000);
 			
 			// end print Data
