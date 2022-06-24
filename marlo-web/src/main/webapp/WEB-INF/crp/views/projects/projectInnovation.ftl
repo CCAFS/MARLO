@@ -4,10 +4,10 @@
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20220623B",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20220624",
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220623B"
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220624"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css"] /]
 [#assign currentSection = "projects" /]
