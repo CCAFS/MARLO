@@ -7250,6 +7250,24 @@ img.qaCommentStatus {
 
 .commentCheckContainer {
   display: flex;
+  padding-right: 30px;
+}
+
+.deleteCommentBtn{
+
+  padding: 6px;
+  background-color: #dd5555;
+  color: white;
+  border-radius: 100px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: max-content;
+  /* position: absolute;
+  right: 0;
+  bottom: 0; */
+
 }
 
 .commentContainer, .replyTextContainer {
@@ -7349,6 +7367,7 @@ img.sendComment {
 }
 
 .optionsContainer {
+  position: relative;
   display: none;
   float: right;
 }
