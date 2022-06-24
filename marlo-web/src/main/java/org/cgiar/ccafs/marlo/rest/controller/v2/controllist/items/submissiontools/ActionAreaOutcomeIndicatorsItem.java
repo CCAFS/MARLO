@@ -58,10 +58,8 @@ public class ActionAreaOutcomeIndicatorsItem<T> {
       List<ActionAreaOutcomeIndicator> actionAreaOutcomeIndicators =
         new ArrayList<>(this.actionAreaOutcomeIndicatorManager.getAll());
       List<ActionAreaOutcomeIndicatorDTO> actionAreaOutcomeIndicatorsDTOs = actionAreaOutcomeIndicators.stream()
-        .filter(aaoi -> aaoi != null && aaoi.getId() != null && aaoi.isActive() && aaoi.getActionArea() != null
-          && aaoi.getActionArea().getId() != null && aaoi.getActionArea().isActive()
-          && aaoi.getActionAreaOutcome() != null && aaoi.getActionAreaOutcome().getId() != null
-          && aaoi.getOutcomeIndicator() != null && aaoi.getOutcomeIndicator().getId() != null
+        .filter(aaoi -> aaoi != null && aaoi.getId() != null && aaoi.isActive() && aaoi.getActionAreaOutcome() != null
+          && aaoi.getActionAreaOutcome().getId() != null
           && StringUtils.equalsIgnoreCase(StringUtils.deleteWhitespace(aaoi.getActionAreaOutcome().getSmoCode()),
             StringUtils.deleteWhitespace(actionAreaOutcomeCode)))
         .map(actionAreaOutcomeIndicatorEntity -> this.actionAreaOutcomesMapper
@@ -79,11 +77,8 @@ public class ActionAreaOutcomeIndicatorsItem<T> {
       List<ActionAreaOutcomeIndicator> actionAreaOutcomeIndicators =
         new ArrayList<>(this.actionAreaOutcomeIndicatorManager.getAll());
       List<ActionAreaOutcomeIndicatorDTO> actionAreaOutcomeIndicatorsDTOs = actionAreaOutcomeIndicators.stream()
-        .filter(aaoi -> aaoi != null && aaoi.getId() != null && aaoi.isActive() && aaoi.getActionArea() != null
-          && aaoi.getActionArea().getId() != null && aaoi.getActionArea().isActive()
-          && aaoi.getActionAreaOutcome() != null && aaoi.getActionAreaOutcome().getId() != null
-          && aaoi.getOutcomeIndicator() != null && aaoi.getOutcomeIndicator().getId() != null
-          && aaoi.getActionAreaOutcome().getId().equals(actionAreaOutcomeId))
+        .filter(aaoi -> aaoi != null && aaoi.getId() != null && aaoi.isActive() && aaoi.getActionAreaOutcome() != null
+          && aaoi.getActionAreaOutcome().getId() != null)
         .map(actionAreaOutcomeIndicatorEntity -> this.actionAreaOutcomesMapper
           .actionAreaOutcomeIndicatorToActionAreaOutcomeIndicatorDTO(actionAreaOutcomeIndicatorEntity))
         .collect(Collectors.toList());
@@ -110,14 +105,11 @@ public class ActionAreaOutcomeIndicatorsItem<T> {
     if (this.actionAreaOutcomeIndicatorManager.getAll() != null) {
       List<ActionAreaOutcomeIndicator> actionAreaOutcomeIndicators =
         new ArrayList<>(this.actionAreaOutcomeIndicatorManager.getAll());
-      List<ActionAreaOutcomeIndicatorDTO> actionAreaOutcomeIndicatorsDTOs = actionAreaOutcomeIndicators.stream()
-        .filter(aaoi -> aaoi != null && aaoi.getId() != null && aaoi.isActive() && aaoi.getActionArea() != null
-          && aaoi.getActionArea().getId() != null && aaoi.getActionArea().isActive()
-          && aaoi.getActionAreaOutcome() != null && aaoi.getActionAreaOutcome().getId() != null
-          && aaoi.getOutcomeIndicator() != null && aaoi.getOutcomeIndicator().getId() != null)
-        .map(actionAreaOutcomeIndicatorEntity -> this.actionAreaOutcomesMapper
-          .actionAreaOutcomeIndicatorToActionAreaOutcomeIndicatorDTO(actionAreaOutcomeIndicatorEntity))
-        .collect(Collectors.toList());
+      List<ActionAreaOutcomeIndicatorDTO> actionAreaOutcomeIndicatorsDTOs =
+        actionAreaOutcomeIndicators.stream().filter(aaoi -> aaoi != null && aaoi.getId() != null && aaoi.isActive())
+          .map(actionAreaOutcomeIndicatorEntity -> this.actionAreaOutcomesMapper
+            .actionAreaOutcomeIndicatorToActionAreaOutcomeIndicatorDTO(actionAreaOutcomeIndicatorEntity))
+          .collect(Collectors.toList());
       return actionAreaOutcomeIndicatorsDTOs;
     } else {
       return null;
