@@ -35,6 +35,14 @@ public interface ActionAreaOutcomesMapper {
     @Mapping(source = "actionArea.name", target = "actionAreaName"),
     @Mapping(source = "actionAreaOutcome.outcomeStatement", target = "outcomeStatement"),
     @Mapping(source = "actionAreaOutcome.id", target = "outcomeId"),
+    @Mapping(source = "actionAreaOutcome.smoCode", target = "outcomeSMOcode")})
+  public abstract ActionAreaOutcomeDTO
+    actionAreaOutcomeIndicatorToActionAreaOutcomeDTO(ActionAreaOutcomeIndicator actionAreaOutcomeIndicator);
+
+  @Mappings({@Mapping(source = "actionArea.id", target = "actionAreaId"),
+    @Mapping(source = "actionArea.name", target = "actionAreaName"),
+    @Mapping(source = "actionAreaOutcome.outcomeStatement", target = "outcomeStatement"),
+    @Mapping(source = "actionAreaOutcome.id", target = "outcomeId"),
     @Mapping(source = "actionAreaOutcome.smoCode", target = "outcomeSMOcode"),
     @Mapping(source = "outcomeIndicator.id", target = "outcomeIndicatorId"),
     @Mapping(source = "outcomeIndicator.smoCode", target = "outcomeIndicatorSMOcode"),
