@@ -132,10 +132,10 @@
           <a href="#section3-item5"> <button type="button" class="subCollapsible">SDG Targets <span class="getColor">GET</span></button></a>
           <a href="#section3-item6"> <button type="button" class="subCollapsible">SDG Indicators <span class="getColor">GET</span></button></a>
           <a href="#section3-item7"> <button type="button" class="subCollapsible">Initiatives <span class="getColor">GET</span></button></a>
-          <a href="#section3-item8"> <button type="button" class="subCollapsible">Action Areas Outcome Indicators <span class="getColor">GET</span></button></a>
-          <a href="#section3-item9"> <button type="button" class="subCollapsible">Workpackages <span class="getColor">GET</span></button></a>
-          <a href="#section3-item10"> <button type="button" class="subCollapsible">MELIA study types <span class="getColor">GET</span></button></a>
-          <a href="#section3-item11"> <button type="button" class="subCollapsible">Action Areas Outcomes <span class="getColor">GET</span></button></a>
+          <a href="#section3-item8"> <button type="button" class="subCollapsible">Action Areas Outcomes <span class="getColor">GET</span></button></a>
+          <a href="#section3-item9"> <button type="button" class="subCollapsible">Action Areas Outcome Indicators <span class="getColor">GET</span></button></a>
+          <a href="#section3-item10"> <button type="button" class="subCollapsible">Workpackages <span class="getColor">GET</span></button></a>
+          <a href="#section3-item11"> <button type="button" class="subCollapsible">MELIA study types <span class="getColor">GET</span></button></a>
         </div>
         <a href="#section4" class="collap"> <button type="button" class="collapsible">Innovation Catalog</button></a>
         <div class="content">
@@ -1993,6 +1993,113 @@
                 <h2 class="title">methods</h2>
                 <div class="bshadow" id="section3-item8">
                   <div class="getColorbackground contEndpoint">
+                    <button type="button" class="btn getColorbackground">GET</button> <span class="endpointTitle">/actionAreaOutcomes</span>
+                  </div>
+                  <div class="parameters">
+                    <h3>Functionality</h3>
+                    <p class="justifyParagraph">Test funtionality.</p>
+                    <h3>Parameters</h3>
+                    <div>No parameters</div>
+                    <table style="width: 70%">
+                      <thead>
+                        <tr>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td colspan="2">
+                            <div>
+                              <p><span><Strong>Request URL: </Strong></span></p>
+                              <div class="URLendpoint">
+                                <div class="fragCode">
+                                  <p><span class="endpoint"></span>/actionAreaOutcomes</p>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="container-c">
+                    <div class="row">
+                      <div class="col-12" style="margin-bottom: 20px;">
+                        <button onclick="action_areas_outcomes()" type="button" data-bs-toggle="modal" data-bs-target="#exampleRequestModal33" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
+                      </div>
+                      <div class="col-12">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="greenCode">200</span>: <span class="blueCode">OK</span> </p>
+                          </div>
+                          <pre><code>
+<span class="yellowCode">[</span>
+  <span class="yellowCode">{</span>
+    <span class="blueCode">"actionAreaId"</span><span class="WhiteCode"> : "long",</span>
+    <span class="blueCode">"actionAreaName"</span><span class="WhiteCode"> : "String",</span>
+    <span class="blueCode">"outcomeId"</span><span class="WhiteCode"> : "long",</span>
+    <span class="blueCode">"outcomeSMOcode"</span><span class="WhiteCode"> : "String",</span>
+    <span class="blueCode">"outcomeStatement"</span><span class="WhiteCode"> : "String",</span>
+  <span class="yellowCode">}</span>
+<span class="yellowCode">]</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">400</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Bad Request</span>
+                            </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">401</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Unauthorized</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">403</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Forbidden</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="fragCode">
+                          <div class="infoCode">
+                            <p>State code: <span class="redCode2">404</span></p>
+                          </div>
+                          <pre><code>
+<span class="redCode">Not Found</span>
+                          </code></pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Method 3.9 -->
+        <div class="bshadow">
+          <div class="container">
+            <div class="row">
+              <div class="col-12">
+                <h2 class="title">methods</h2>
+                <div class="bshadow" id="section3-item9">
+                  <div class="getColorbackground contEndpoint">
                     <button type="button" class="btn getColorbackground">GET</button> <span class="endpointTitle">/actionAreaOutcomeIndicators</span>
                   </div>
                   <div class="parameters">
@@ -2095,13 +2202,13 @@
             </div>
           </div>
         </div>
-        <!-- Method 3.9 -->
+        <!-- Method 3.10 -->
         <div class="bshadow">
           <div class="container">
             <div class="row">
               <div class="col-12">
                 <h2 class="title">methods</h2>
-                <div class="bshadow" id="section3-item9">
+                <div class="bshadow" id="section3-item10">
                   <div class="getColorbackground contEndpoint">
                     <button type="button" class="btn getColorbackground">GET</button> <span class="endpointTitle">/workpackages</span>
                   </div>
@@ -2205,13 +2312,13 @@
             </div>
           </div>
         </div>
-        <!-- Method 3.10 -->
+        <!-- Method 3.11 -->
         <div class="bshadow">
           <div class="container">
             <div class="row">
               <div class="col-12">
                 <h2 class="title">methods</h2>
-                <div class="bshadow" id="section3-item10">
+                <div class="bshadow" id="section3-item11">
                   <div class="getColorbackground contEndpoint">
                     <button type="button" class="btn getColorbackground">GET</button> <span class="endpointTitle">/MELIA/study-types</span>
                   </div>
@@ -2257,113 +2364,6 @@
   <span class="yellowCode">{</span>
     <span class="blueCode">"Id"</span><span class="WhiteCode"> : "long",</span>   
     <span class="blueCode">"name"</span><span class="WhiteCode"> : "String"</span>    
-  <span class="yellowCode">}</span>
-<span class="yellowCode">]</span>
-                          </code></pre>
-                        </div>
-                      </div>
-                      <div class="col-6">
-                        <div class="fragCode">
-                          <div class="infoCode">
-                            <p>State code: <span class="redCode2">400</span></p>
-                          </div>
-                          <pre><code>
-<span class="redCode">Bad Request</span>
-                            </code></pre>
-                        </div>
-                      </div>
-                      <div class="col-6">
-                        <div class="fragCode">
-                          <div class="infoCode">
-                            <p>State code: <span class="redCode2">401</span></p>
-                          </div>
-                          <pre><code>
-<span class="redCode">Unauthorized</span>
-                          </code></pre>
-                        </div>
-                      </div>
-                      <div class="col-6">
-                        <div class="fragCode">
-                          <div class="infoCode">
-                            <p>State code: <span class="redCode2">403</span></p>
-                          </div>
-                          <pre><code>
-<span class="redCode">Forbidden</span>
-                          </code></pre>
-                        </div>
-                      </div>
-                      <div class="col-6">
-                        <div class="fragCode">
-                          <div class="infoCode">
-                            <p>State code: <span class="redCode2">404</span></p>
-                          </div>
-                          <pre><code>
-<span class="redCode">Not Found</span>
-                          </code></pre>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Method 3.11 -->
-        <div class="bshadow">
-          <div class="container">
-            <div class="row">
-              <div class="col-12">
-                <h2 class="title">methods</h2>
-                <div class="bshadow" id="section3-item11">
-                  <div class="getColorbackground contEndpoint">
-                    <button type="button" class="btn getColorbackground">GET</button> <span class="endpointTitle">/actionAreaOutcomes</span>
-                  </div>
-                  <div class="parameters">
-                    <h3>Functionality</h3>
-                    <p class="justifyParagraph">Test funtionality.</p>
-                    <h3>Parameters</h3>
-                    <div>No parameters</div>
-                    <table style="width: 70%">
-                      <thead>
-                        <tr>
-                          <th></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td colspan="2">
-                            <div>
-                              <p><span><Strong>Request URL: </Strong></span></p>
-                              <div class="URLendpoint">
-                                <div class="fragCode">
-                                  <p><span class="endpoint"></span>/actionAreaOutcomes</p>
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div class="container-c">
-                    <div class="row">
-                      <div class="col-12" style="margin-bottom: 20px;">
-                        <button onclick="action_areas_outcomes()" type="button" data-bs-toggle="modal" data-bs-target="#exampleRequestModal33" class="btn getColorbackgroundExample btn-lg btn-block w-100">Display control list</button>
-                      </div>
-                      <div class="col-12">
-                        <div class="fragCode">
-                          <div class="infoCode">
-                            <p>State code: <span class="greenCode">200</span>: <span class="blueCode">OK</span> </p>
-                          </div>
-                          <pre><code>
-<span class="yellowCode">[</span>
-  <span class="yellowCode">{</span>
-    <span class="blueCode">"actionAreaId"</span><span class="WhiteCode"> : "long",</span>
-    <span class="blueCode">"actionAreaName"</span><span class="WhiteCode"> : "String",</span>
-    <span class="blueCode">"outcomeId"</span><span class="WhiteCode"> : "long",</span>
-    <span class="blueCode">"outcomeSMOcode"</span><span class="WhiteCode"> : "String",</span>
-    <span class="blueCode">"outcomeStatement"</span><span class="WhiteCode"> : "String",</span>
   <span class="yellowCode">}</span>
 <span class="yellowCode">]</span>
                           </code></pre>
