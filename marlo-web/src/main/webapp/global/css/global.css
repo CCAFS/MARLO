@@ -7150,6 +7150,10 @@ img.fileIcon {
   align-items: flex-end;
 }
 
+.feedback-flex-items.radioFlat-flex{
+  display: inline-flex !important;
+}
+
 .feedback-flex-items{
   display: flex;
   align-items: center;
