@@ -602,7 +602,7 @@
 	    </action>
 	    
 		<action name="deleteComment"
-	      class="org.cgiar.ccafs.marlo.action.json.project.DeleteFeedbackRepliesAction">
+	      class="org.cgiar.ccafs.marlo.action.json.project.DeleteFeedbackCommentsAction">
 	      <result type="json">
 	        <param name="noCache">true</param>
 	        <param name="excludeNullProperties">true</param>
@@ -610,7 +610,7 @@
 	    </action>
 	    
 		<action name="deleteReply"
-	      class="org.cgiar.ccafs.marlo.action.json.project.DeleteFeedbackCommentsAction">
+	      class="org.cgiar.ccafs.marlo.action.json.project.DeleteFeedbackRepliesAction">
 	      <result type="json">
 	        <param name="noCache">true</param>
 	        <param name="excludeNullProperties">true</param>
