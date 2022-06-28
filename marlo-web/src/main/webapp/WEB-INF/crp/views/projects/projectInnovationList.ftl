@@ -125,15 +125,15 @@
           <td class="text-center">
             [@utils.tableText value=(innovation.projectInnovationInfo.year)!"" /]
           </td>
-          <td class="owner text-center">
-            [#if isOwner] <small><nobr>This Project</nobr></small>  [#else][#if innovation.project?has_content]P${innovation.project.id}[#else]Not defined[/#if][/#if]
-          </td>
           [#-- Feedback Status --]
           [#if action.hasSpecificities('feedback_active') ]
               <td class="feedbackStatus">
                 [@utils.tableText value=(innovation.commentStatus)!"" /]
               </td>
-            [/#if]
+          [/#if]
+          <td class="owner text-center">
+            [#if isOwner] <small><nobr>This Project</nobr></small>  [#else][#if innovation.project?has_content]P${innovation.project.id}[#else]Not defined[/#if][/#if]
+          </td>
           [#-- Missing fields --]
           [#if currentTable]
           <td>
