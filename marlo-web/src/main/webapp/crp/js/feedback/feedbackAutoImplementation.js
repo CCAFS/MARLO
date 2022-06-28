@@ -343,8 +343,10 @@ function hideShowOptionButtons(block, status) {
   function addfeedbackFlexItemsClass(fieldsMap){
     if (!runaddfeedbackFlexItemsClass) return;
     fieldsMap.map(field=>{
-      let fieldReference = $(`[name="${field.fieldName}"]`).closest('.fieldReference').exists() == true ?  $(`[name="${field.fieldName}"]`).closest('.fieldReference')  : $(`[name="${field.fieldName}[]"]`).closest('.fieldReference');
-      // if (fieldReference) return;
+      if ($(`[name="${field.fieldName}"]`).closest('.fieldReference').length ==2) {
+        $(`[name="${field.fieldName}"]`).closest('.fieldReference').first().next().remove();
+      }
+      let fieldReference = $(`[name="${field.fieldName}"]`).closest('.fieldReference').exists() == true ?  $(`[name="${field.fieldName}"]`).closest('.fieldReference').last()  : $(`[name="${field.fieldName}[]"]`).closest('.fieldReference').last() ;
       fieldReference.appendTo(fieldReference.prev());
       fieldReference.closest('.feedback-flex-items').next().appendTo(fieldReference.closest('.feedback-flex-items'))
     })
