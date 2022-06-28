@@ -343,8 +343,10 @@ function hideShowOptionButtons(block, status) {
   function addfeedbackFlexItemsClass(fieldsMap){
     if (!runaddfeedbackFlexItemsClass) return;
     fieldsMap.map(field=>{
-      let fieldReference = $(`[name="${field.fieldName}"]`).closest('.fieldReference').exists() == true ?  $(`[name="${field.fieldName}"]`).closest('.fieldReference')  : $(`[name="${field.fieldName}[]"]`).closest('.fieldReference');
-      // if (fieldReference) return;
+      if ($(`[name="${field.fieldName}"]`).closest('.fieldReference').length ==2) {
+        $(`[name="${field.fieldName}"]`).closest('.fieldReference').first().next().remove();
+      }
+      let fieldReference = $(`[name="${field.fieldName}"]`).closest('.fieldReference').exists() == true ?  $(`[name="${field.fieldName}"]`).closest('.fieldReference').last()  : $(`[name="${field.fieldName}[]"]`).closest('.fieldReference').last() ;
       fieldReference.appendTo(fieldReference.prev());
       fieldReference.closest('.feedback-flex-items').next().appendTo(fieldReference.closest('.feedback-flex-items'))
     })
@@ -440,10 +442,6 @@ function hideShowOptionButtons(block, status) {
     let inputValue = $(`input[name="${objectField.parentFieldDescription}"]`).val()
     var finalAjaxURL = `/saveFeedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&comment=${comment}&phaseID=${phaseID}&fieldID=${fieldID}&userID=${userID}&projectID=${projectID}&parentFieldDescription=${inputValue}`;
   
-
-     
-
-
     $.ajax({
       url: baseURL + finalAjaxURL,
       async: false,
@@ -471,7 +469,6 @@ function hideShowOptionButtons(block, status) {
   
   function saveCommentStatus(status, commentID, name) {
     var finalAjaxURL = `/saveCommentStatus.do?status=${status}&commentID=${commentID}&userID=${userID}`;
-  
     $.ajax({
       url: baseURL + finalAjaxURL,
       async: false,
@@ -499,14 +496,12 @@ function hideShowOptionButtons(block, status) {
   
   function deleteQAComment(commentID, name, htmlParent) {
     var finalAjaxURL = `/deleteComment.do?commentID=${commentID}`;
-    console.log(name)
     $.ajax({
       url: baseURL + finalAjaxURL,
       async: false,
       success: function (data) {
 
-    
-
+        if (!data?.delete?.delete) return;
 
         let qaPopup = $(htmlParent).closest('.qaPopup');
 
@@ -519,12 +514,15 @@ function hideShowOptionButtons(block, status) {
           qaPopup.find('.qaCommentReplyBlock').last().find('.buttonsContainer').hide();
           qaPopup.find('.qaCommentReplyBlock').last().find('.addCommentContainer').hide();
           qaPopup.find('.qaCommentReplyBlock').last().find('.charCount').show();
+          qaPopup.find('.qaCommentReplyBlock').last().find('textarea').val('');      
+          getQAComments();
+          loadCommentsByUser(name);
+          loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
            return;
         }
         qaPopup.find('.qaCommentReplyBlock').last().remove();
         qaPopup.find('.qaCommentReplyBlock').last().find('.addCommentContainer').show();
 
-        console.log("funciones")
         getQAComments();
         loadCommentsByUser(name);
         loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
