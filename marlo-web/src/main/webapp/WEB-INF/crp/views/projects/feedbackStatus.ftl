@@ -99,7 +99,7 @@
                 </div>
               [/#if]
              </section>
-              <p>The dashboard is updated each 30 minutes</p>
+              <p>The dashboard is updated every 30 minutes</p>
           </div>
         
           [/@s.form]
