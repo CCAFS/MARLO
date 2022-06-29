@@ -28,17 +28,6 @@
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
-[#attempt]
-  [#assign canAccessCCAFS = false ]
-  [#assign canAccessWLE = (action.crpID == 4)!false ]
-[#recover]
-  [#assign canAccessCCAFS = false ]
-  [#assign canAccessWLE = false ]
-[/#attempt]
-
-[#assign crp = "CCAFS" /]
-
-
 [#if (!availabePhase)!false]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
@@ -110,7 +99,7 @@
                 </div>
               [/#if]
              </section>
-
+              <p>The dashboard is updated each 30 minutes</p>
           </div>
         
           [/@s.form]

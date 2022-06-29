@@ -18,12 +18,15 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -42,11 +45,14 @@ public class DeleteFeedbackRepliesAction extends BaseAction {
   private Map<String, Object> delete;
   private Long commentId;
   private FeedbackQAReplyManager replyQAManager;
+  private FeedbackQACommentManager commentManager;
 
   @Inject
-  public DeleteFeedbackRepliesAction(APConfig config, FeedbackQAReplyManager replyQAManager) {
+  public DeleteFeedbackRepliesAction(APConfig config, FeedbackQAReplyManager replyQAManager,
+    FeedbackQACommentManager commentManager) {
     super(config);
     this.replyQAManager = replyQAManager;
+    this.commentManager = commentManager;
   }
 
   @Override
@@ -58,6 +64,24 @@ public class DeleteFeedbackRepliesAction extends BaseAction {
       FeedbackQAReply qaReply = new FeedbackQAReply();
       try {
         qaReply = replyQAManager.getFeedbackCommentById(commentId);
+
+        try {
+          if (qaReply != null && qaReply.getId() != null) {
+            long localID = qaReply.getId();
+
+            FeedbackQAComment comment = new FeedbackQAComment();
+            comment = commentManager.findAll().stream().filter(c -> c != null && c.getReply() != null
+              && c.getReply().getId() != null && c.getReply().getId().equals(localID)).collect(Collectors.toList())
+              .get(0);
+            if (comment != null && comment.getId() != null) {
+              comment.setStatus(null);
+              comment.setApprovalDate(null);
+              commentManager.saveFeedbackQAComment(comment);
+            }
+          }
+        } catch (Exception e) {
+          logger.error("unable to remove reaction", e);
+        }
       } catch (Exception e) {
         delete.put("delete", false);
         logger.error("unable to get qaComment", e);
