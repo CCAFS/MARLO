@@ -2982,7 +2982,7 @@ public class DeliverableAction extends BaseAction {
     }
 
     // Save form Information
-    if (this.deliverable.getProjectOutcomes() != null) {
+    if (this.deliverable.getProjectOutcomes() != null && !this.deliverable.getProjectOutcomes().isEmpty()) {
       for (DeliverableProjectOutcome deliverableOutcome : this.deliverable.getProjectOutcomes()) {
         if (deliverableOutcome.getId() == null) {
           DeliverableProjectOutcome deliverableOutcomeSave = new DeliverableProjectOutcome();
@@ -3005,26 +3005,29 @@ public class DeliverableAction extends BaseAction {
   }
 
   public void saveProjects(Deliverable deliverableDB) {
+    try {
+      // Search and deleted form Information
+      if (deliverableDB.getProjectDeliverableShareds() != null
+        && !deliverableDB.getProjectDeliverableShareds().isEmpty()) {
 
-    // Search and deleted form Information
-    if (deliverableDB.getProjectDeliverableShareds() != null
-      && !deliverableDB.getProjectDeliverableShareds().isEmpty()) {
+        List<ProjectDeliverableShared> projectPrev = new ArrayList<>(deliverableDB.getProjectDeliverableShareds()
+          .stream().filter(nu -> nu.isActive() && nu.getPhase().getId().equals(this.getActualPhase().getId()))
+          .collect(Collectors.toList()));
 
-      List<ProjectDeliverableShared> projectPrev = new ArrayList<>(deliverableDB.getProjectDeliverableShareds().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(this.getActualPhase().getId()))
-        .collect(Collectors.toList()));
-
-      for (ProjectDeliverableShared deliverableProject : projectPrev) {
-        if (this.deliverable.getSharedDeliverables() == null
-          || !this.deliverable.getSharedDeliverables().contains(deliverableProject)) {
-          projectDeliverableSharedManager.deleteProjectDeliverableShared(deliverableProject.getId());
+        for (ProjectDeliverableShared deliverableProject : projectPrev) {
+          if (this.deliverable.getSharedDeliverables() == null
+            || !this.deliverable.getSharedDeliverables().contains(deliverableProject)) {
+            projectDeliverableSharedManager.deleteProjectDeliverableShared(deliverableProject.getId());
+          }
         }
       }
+    } catch (Exception e) {
+      logger.error("unable to get cluster shared", e);
     }
 
     // Save form Information
     try {
-      if (this.deliverable.getSharedDeliverables() != null) {
+      if (this.deliverable.getSharedDeliverables() != null & !this.deliverable.getSharedDeliverables().isEmpty()) {
         for (ProjectDeliverableShared deliverableProject : this.deliverable.getSharedDeliverables()) {
           if (deliverableProject != null && deliverableProject.getId() == null) {
             ProjectDeliverableShared deliverableProjectSave = new ProjectDeliverableShared();
