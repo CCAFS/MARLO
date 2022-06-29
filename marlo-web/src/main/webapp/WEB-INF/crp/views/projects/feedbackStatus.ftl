@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["powerbi-client"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/feedbackStatus.js?20220628",
+  "${baseUrlMedia}/js/projects/feedbackStatus.js?20220629",
   "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js"
   ]
 /]
@@ -99,7 +99,6 @@
                 </div>
               [/#if]
              </section>
-              <p>The dashboard is updated each 30 minutes</p>
           </div>
         
           [/@s.form]
