@@ -35,9 +35,14 @@ public class Initiative implements Serializable {
   public int active;
   public Long stageId;
   public String description;
+  public String acronym;
 
 
   public List<Stages> stages;
+
+  public String getAcronym() {
+    return acronym;
+  }
 
   public String getAction_area_description() {
     return action_area_description;
@@ -46,7 +51,6 @@ public class Initiative implements Serializable {
   public String getAction_area_id() {
     return action_area_id;
   }
-
 
   public int getActive() {
     return active;
@@ -85,6 +89,11 @@ public class Initiative implements Serializable {
 
   public String getStatus() {
     return status;
+  }
+
+
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
   }
 
 

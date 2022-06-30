@@ -284,12 +284,36 @@ public class SubmissionToolsControlLists {
   }
 
   @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdgTarget.all.value}",
+    response = ActionAreaOutcomeIndicatorDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/actionAreaOutcomeIndicators/byActionAreaOutcome/{actionAreaOutcomeCode}",
+    method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<ActionAreaOutcomeIndicatorDTO> getActionAreaOutcomeIndicatorsByActionArea(
+    @ApiParam(value = "${SubmissionToolsControlLists.impact-areas-indicator.code.param.code}",
+      required = true) @PathVariable String actionAreaOutcomeCode) {
+    return this.actionAreaOutcomeIndicatorsItem
+      .actionAreaOutcomeIndicatorsByActionAreaOutcomeCode(actionAreaOutcomeCode);
+  }
+
+  @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdgTarget.all.value}",
     response = ActionAreaOutcomeDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/actionAreaOutcomes", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<ActionAreaOutcomeDTO> getActionAreaOutcomes() {
     return this.actionAreaOutcomesItem.getAllActionAreaOutcomes();
+  }
+
+
+  @ApiOperation(tags = {"Submission Tools Control Lists"}, value = "${SubmissionToolsControlLists.sdgTarget.all.value}",
+    response = ActionAreaOutcomeDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/actionAreaOutcomes/byActionArea/{actionAreaCode}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<ActionAreaOutcomeDTO> getActionAreaOutcomesByActionArea(
+    @ApiParam(value = "${SubmissionToolsControlLists.impact-areas-indicator.code.param.code}",
+      required = true) @PathVariable String actionAreaCode) {
+    return this.actionAreaOutcomesItem.actionAreaOutcomesByActionAreaCode(actionAreaCode);
   }
 
   @ApiOperation(tags = {"Submission Tool Control Lists"},

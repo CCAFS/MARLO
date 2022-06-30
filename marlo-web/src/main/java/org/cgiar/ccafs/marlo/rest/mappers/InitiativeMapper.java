@@ -23,10 +23,13 @@ import org.cgiar.ccafs.marlo.rest.dto.InitiativesDTO;
 import org.cgiar.ccafs.marlo.rest.services.submissionTools.Initiative;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330", uses = {StagesMapper.class})
 public interface InitiativeMapper {
 
+  @Mappings({@Mapping(source = "acronym", target = "short_name")})
   public abstract InitiativesDTO initiativeToInitiativesDTO(Initiative initiative);
 
 }

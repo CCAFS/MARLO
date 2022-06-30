@@ -155,6 +155,7 @@
 				<param name="contentType">${contentType}</param>				       
 				<param name="contentDisposition">filename="${fileName}"</param>
 			</result>
+			<result name="redirect" type="redirect">${redirectUrl}</result>
 		</action>
 
 		<action name="{crp}/projectHighlightsSummary"

@@ -18,10 +18,12 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.NATRedirectionLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.NATRedirectionLink;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -67,14 +69,14 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
 
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(StudySummaryAction.class);
+  private final static String INDICATOR_NAME_MELIA = "MELIA";
+  private final static String INDICATOR_NAME_OICR = "OICR";
 
   // Managers
   private final ProjectExpectedStudyManager projectExpectedStudyManager;
   private final ResourceManager resourceManager;
-  private final HTMLParser htmlParser;;
-  private List<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new ArrayList<>();
   private GlobalUnitManager crpManager;
-  private String crp;
+  private NATRedirectionLinkManager natRedirectionLinkManager;
 
   // PDF bytes
   private byte[] bytesPDF;
@@ -82,23 +84,29 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   // Streams
   InputStream inputStream;
 
-
   // Parameters
   private long startTime;
   private Long projectExpectedStudyID;
   private ProjectExpectedStudyInfo projectExpectedStudyInfo;
   private String studyProjects = null;
 
+  private final HTMLParser htmlParser;;
+  private List<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new ArrayList<>();
+  private String crp;
+  private String redirectUrl;
+
   @Inject
   public StudySummaryAction(APConfig config, CaseStudyManager caseStudyManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, ResourceManager resourceManager, ProjectExpectedStudyManager projectExpectedStudyManager,
     HTMLParser htmlParser, ProjectManager projectManager,
-    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager) {
+    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
+    NATRedirectionLinkManager natRedirectionLinkManager) {
     super(config, crpManager, phaseManager, projectManager, htmlParser, projectExpectedStudyCountryManager);
     this.resourceManager = resourceManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.htmlParser = htmlParser;
     this.crpManager = crpManager;
+    this.natRedirectionLinkManager = natRedirectionLinkManager;
   }
 
   @Override
@@ -112,7 +120,25 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       return NOT_FOUND;
     }
 
+    if (projectExpectedStudyID != null && projectExpectedStudyID > 0) {
+      NATRedirectionLink redirectionLink =
+        this.natRedirectionLinkManager.findByIndicatorAndId(INDICATOR_NAME_MELIA, projectExpectedStudyID);
+
+      if (redirectionLink == null) {
+        redirectionLink =
+          this.natRedirectionLinkManager.findByIndicatorAndId(INDICATOR_NAME_OICR, projectExpectedStudyID);
+      }
+
+      if (redirectionLink != null) {
+        this.redirectUrl = redirectionLink.getRedirectionUrl();
+        return REDIRECT;
+      }
+    }
+
     List<String> allianceArgList = new ArrayList<>();
+
+    LOG.info("Start report download: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
+      + this.getLoggedCrp().getAcronym());
 
     if (projectExpectedStudyID == null
       || projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyID) == null
@@ -211,7 +237,6 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     subReport.setDataFactory(cdf);
   }
 
-
   public byte[] getBytesPDF() {
     return bytesPDF;
   }
@@ -231,6 +256,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     return bytesPDF.length;
   }
 
+
   @Override
   public String getContentType() {
     return "application/pdf";
@@ -243,7 +269,6 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
-
 
   @Override
   public String getFileName() {
@@ -276,6 +301,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     return inputStream;
   }
 
+
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
@@ -296,6 +322,10 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     return config.getDownloadURL() + "/" + this.getStudiesSourceFolder().replace('\\', '/');
   }
 
+  public String getRedirectUrl() {
+    return redirectUrl;
+  }
+
   private String getStudiesSourceFolder() {
     return APConstants.STUDIES_FOLDER.concat(File.separator).concat(crp).concat(File.separator).concat(File.separator)
       .concat(crp + "_").concat(ProjectSectionStatusEnum.EXPECTEDSTUDY.getStatus()).concat(File.separator);
@@ -305,7 +335,6 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   public boolean isPublicRoute() {
     return true;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -322,21 +351,23 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       }
     }
 
-
+    redirectUrl = null;
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info("Start report download: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
-      + this.getLoggedCrp().getAcronym());
-
   }
+
 
   public void setBytesPDF(byte[] bytesPDF) {
     this.bytesPDF = bytesPDF;
   }
 
-
   public void setInputStream(InputStream inputStream) {
     this.inputStream = inputStream;
+  }
+
+
+  public void setRedirectUrl(String redirectUrl) {
+    this.redirectUrl = redirectUrl;
   }
 
 }

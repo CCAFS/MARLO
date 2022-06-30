@@ -1,0 +1,1 @@
+alter table st_action_areas add column smocode varchar(20) DEFAULT NULL after id;

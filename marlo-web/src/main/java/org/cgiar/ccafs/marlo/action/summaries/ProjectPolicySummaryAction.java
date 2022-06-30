@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.NATRedirectionLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PolicyMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
@@ -27,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
+import org.cgiar.ccafs.marlo.data.model.NATRedirectionLink;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PolicyMilestone;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -87,6 +89,8 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
 
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(ProjectPolicySummaryAction.class);
+  private final static String INDICATOR_NAME = "Policy";
+
   // Managers
   private final ProjectPolicyManager projectPolicyManager;
   private final ProjectPolicyInnovationManager projectPolicyInnovationManager;
@@ -97,6 +101,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
   private final PolicyMilestoneManager policyMilestoneManager;
   private final ProjectPolicySubIdoManager projectPolicySubIdoManager;
   private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
+  private NATRedirectionLinkManager natRedirectionLinkManager;
 
   private final URLShortener shortener;
 
@@ -105,6 +110,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
   private Long projectPolicyID;
   private ProjectPolicyInfo projectPolicyInfo;
   private String crp;
+  private String redirectUrl;
 
   // XLSX bytes
   private byte[] bytesPDF;
@@ -120,7 +126,8 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     ProjectPolicyRegionManager projectInnovationRegionManager,
     ProjectPolicyCountryManager projectInnovationCountryManager,
     PolicyMilestoneManager projectInnovationMilestoneManager, ProjectPolicySubIdoManager projectInnovationSubIdoManager,
-    ProjectExpectedStudyPolicyManager projectExpectedStudyInnovationManager) {
+    ProjectExpectedStudyPolicyManager projectExpectedStudyInnovationManager,
+    NATRedirectionLinkManager natRedirectionLinkManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.projectPolicyManager = projectInnovationManager;
     this.resourceManager = resourceManager;
@@ -131,6 +138,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     this.policyMilestoneManager = projectInnovationMilestoneManager;
     this.projectPolicySubIdoManager = projectInnovationSubIdoManager;
     this.projectExpectedStudyPolicyManager = projectExpectedStudyInnovationManager;
+    this.natRedirectionLinkManager = natRedirectionLinkManager;
     this.shortener = new URLShortener();
   }
 
@@ -205,6 +213,19 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
       return NOT_FOUND;
     }
 
+    if (projectPolicyID != null && projectPolicyID > 0) {
+      NATRedirectionLink redirectionLink =
+        this.natRedirectionLinkManager.findByIndicatorAndId(INDICATOR_NAME, projectPolicyID);
+
+      if (redirectionLink != null) {
+        this.redirectUrl = redirectionLink.getRedirectionUrl();
+        return REDIRECT;
+      }
+    }
+
+    LOG.info("Start report download: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
+      + this.getLoggedCrp().getAcronym());
+
     if (projectPolicyID == null || projectPolicyManager.getProjectPolicyById(projectPolicyID) == null
       || projectPolicyManager.getProjectPolicyById(projectPolicyID)
         .getProjectPolicyInfo(this.getSelectedPhase()) == null) {
@@ -275,7 +296,6 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     return SUCCESS;
   }
 
-
   private void fillSubreport(SubReport subReport, String query, boolean isAlliance) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
@@ -293,11 +313,11 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     return bytesPDF;
   }
 
+
   @Override
   public int getContentLength() {
     return bytesPDF.length;
   }
-
 
   @Override
   public String getContentType() {
@@ -309,6 +329,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     return this.getBaseUrl() + "/projects/" + center + "/study.do?expectedID=" + expectedStudyId + "&phaseID="
       + phaseId;
   }
+
 
   private String getExpectedStudyPDFLink(String center, Long expectedStudyId, Phase phase) {
     String longUrl = this.getBaseUrl() + "/projects/" + center + "/studySummary.do?studyID=" + expectedStudyId
@@ -351,7 +372,6 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
       + phaseId + "&projectID=" + projectId;
   }
 
-
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
@@ -368,6 +388,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     model.addRow(new Object[] {center, date, year, projectPolicyID, this.getSelectedCycle()});
     return model;
   }
+
 
   private TypedTableModel getProjectPolicyTableModel(boolean isAlliance) {
     TypedTableModel model = new TypedTableModel(
@@ -731,6 +752,16 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     return model;
   }
 
+  public String getRedirectUrl() {
+    return redirectUrl;
+  }
+
+  @Override
+  public String input() throws Exception {
+    // TODO Auto-generated method stub
+    return super.input();
+  }
+
   @Override
   public boolean isPublicRoute() {
     return true;
@@ -744,8 +775,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
       Long.parseLong(StringUtils.trim(parameters.get(APConstants.POLICY_REQUEST_ID).getMultipleValues()[0]));
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info("Start report download: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
-      + this.getLoggedCrp().getAcronym());
+    redirectUrl = null;
   }
 
   public void setBytesPDF(byte[] bytesPDF) {
@@ -756,5 +786,8 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
     this.inputStream = inputStream;
   }
 
+  public void setRedirectUrl(String redirectUrl) {
+    this.redirectUrl = redirectUrl;
+  }
 
 }
