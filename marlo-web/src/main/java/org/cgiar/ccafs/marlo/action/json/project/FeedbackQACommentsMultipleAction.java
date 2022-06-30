@@ -221,9 +221,9 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                         replyMap.put("userName", "");
                       }
                       if (reply.getUser() != null && reply.getUser().getId() != null) {
-                        fieldsMap.put("userID", reply.getUser().getId());
+                        replyMap.put("userID", reply.getUser().getId());
                       } else {
-                        fieldsMap.put("userID", "");
+                        replyMap.put("userID", "");
                       }
                       if (reply.getCommentDate() != null && reply.getCommentDate().toString() != null) {
                         String dateString = reply.getCommentDate().toString();
