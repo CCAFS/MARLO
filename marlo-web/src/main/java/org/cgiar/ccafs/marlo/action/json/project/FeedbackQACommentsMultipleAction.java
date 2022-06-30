@@ -220,6 +220,11 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                       } else {
                         replyMap.put("userName", "");
                       }
+                      if (reply.getUser() != null && reply.getUser().getId() != null) {
+                        replyMap.put("userID", reply.getUser().getId());
+                      } else {
+                        replyMap.put("userID", "");
+                      }
                       if (reply.getCommentDate() != null && reply.getCommentDate().toString() != null) {
                         String dateString = reply.getCommentDate().toString();
                         replyMap.put("date", dateString);
