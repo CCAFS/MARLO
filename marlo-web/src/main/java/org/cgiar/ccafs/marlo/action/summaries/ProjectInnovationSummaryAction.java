@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.NATRedirectionLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
@@ -29,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.NATRedirectionLink;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
@@ -89,6 +91,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(ProjectInnovationSummaryAction.class);
+  private final static String INDICATOR_NAME = "Innovation";
+
   // Managers
   private final ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager;
   private final ProjectInnovationManager projectInnovationManager;
@@ -100,6 +104,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   private final ProjectInnovationMilestoneManager projectInnovationMilestoneManager;
   private final ProjectInnovationSubIdoManager projectInnovationSubIdoManager;
   private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
+  private NATRedirectionLinkManager natRedirectionLinkManager;
 
   // Parameters
   private long startTime;
@@ -112,6 +117,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   // Streams
   InputStream inputStream;
 
+  private String redirectUrl;
+
   @Inject
   public ProjectInnovationSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectInnovationManager projectInnovationManager, PhaseManager phaseManager, ResourceManager resourceManager,
@@ -123,7 +130,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     ProjectInnovationCountryManager projectInnovationCountryManager,
     ProjectInnovationMilestoneManager projectInnovationMilestoneManager,
     ProjectInnovationSubIdoManager projectInnovationSubIdoManager,
-    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager) {
+    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
+    NATRedirectionLinkManager natRedirectionLinkManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.projectInnovationManager = projectInnovationManager;
     this.resourceManager = resourceManager;
@@ -135,6 +143,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     this.projectInnovationMilestoneManager = projectInnovationMilestoneManager;
     this.projectInnovationSubIdoManager = projectInnovationSubIdoManager;
     this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
+    this.natRedirectionLinkManager = natRedirectionLinkManager;
   }
 
   /**
@@ -214,6 +223,19 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       return NOT_FOUND;
     }
 
+    if (projectInnovationID != null && projectInnovationID > 0) {
+      NATRedirectionLink redirectionLink =
+        this.natRedirectionLinkManager.findByIndicatorAndId(INDICATOR_NAME, projectInnovationID);
+
+      if (redirectionLink != null) {
+        this.redirectUrl = redirectionLink.getRedirectionUrl();
+        return REDIRECT;
+      }
+    }
+
+    LOG.info("Start report download: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
+      + this.getLoggedCrp().getAcronym());
+
     if (projectInnovationID == null || projectInnovationManager.getProjectInnovationById(projectInnovationID) == null
       || projectInnovationManager.getProjectInnovationById(projectInnovationID)
         .getProjectInnovationInfo(this.getSelectedPhase()) == null) {
@@ -281,7 +303,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     return SUCCESS;
   }
 
-
   private void fillSubreport(SubReport subReport, String query, boolean isAlliance) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
@@ -299,11 +320,11 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     return bytesPDF;
   }
 
+
   @Override
   public int getContentLength() {
     return bytesPDF.length;
   }
-
 
   @Override
   public String getContentType() {
@@ -317,6 +338,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
+
 
   @Override
   public String getFileName() {
@@ -345,7 +367,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     }
     return inputStream;
   }
-
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
@@ -822,11 +843,15 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     return model;
   }
 
+
+  public String getRedirectUrl() {
+    return redirectUrl;
+  }
+
   @Override
   public boolean isPublicRoute() {
     return true;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -834,11 +859,12 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     this.setPublicAccessParameters();
     projectInnovationID =
       Long.parseLong(StringUtils.trim(parameters.get(APConstants.INNOVATION_REQUEST_ID).getMultipleValues()[0]));
+
+    redirectUrl = null;
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info("Start report download: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
-      + this.getLoggedCrp().getAcronym());
   }
+
 
   public void setBytesPDF(byte[] bytesPDF) {
     this.bytesPDF = bytesPDF;
@@ -846,6 +872,10 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
   public void setInputStream(InputStream inputStream) {
     this.inputStream = inputStream;
+  }
+
+  public void setRedirectUrl(String redirectUrl) {
+    this.redirectUrl = redirectUrl;
   }
 
 
