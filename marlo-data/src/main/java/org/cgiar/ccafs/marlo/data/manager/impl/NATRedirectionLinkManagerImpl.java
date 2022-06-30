@@ -62,6 +62,11 @@ public class NATRedirectionLinkManagerImpl implements NATRedirectionLinkManager 
   }
 
   @Override
+  public NATRedirectionLink findByIndicatorAndId(String indicatorName, Long indicatorId) {
+    return this.NATRedirectionLinkDAO.findByIndicatorAndId(indicatorName, indicatorId.longValue());
+  }
+
+  @Override
   public NATRedirectionLink getNATRedirectionLinkById(long NATRedirectionLinkID) {
 
     return NATRedirectionLinkDAO.find(NATRedirectionLinkID);

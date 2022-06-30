@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -67,6 +68,21 @@ public class NATRedirectionLinkMySQLDAO extends AbstractMarloDAO<NATRedirectionL
     }
     return null;
 
+  }
+
+  @Override
+  public NATRedirectionLink findByIndicatorAndId(String indicatorName, long indicatorId) {
+    String query = "select nrl from NATRedirectionLink nrl "
+      + "where nrl.indicatorName = :indicatorName and nrl.indicatorId = :indicatorId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+
+    createQuery.setParameter("indicatorName", indicatorName);
+    createQuery.setParameter("indicatorId", indicatorId);
+
+    List<NATRedirectionLink> matches = super.findAll(createQuery);
+
+    return matches == null || matches.isEmpty() ? null : matches.get(0);
   }
 
   @Override
