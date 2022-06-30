@@ -7257,8 +7257,19 @@ img.qaCommentStatus {
   padding-right: 30px;
 }
 
-.deleteCommentBtn{
+.deleteReplyBtn{
+  padding: 6px;
+  background-color: #dd5555;
+  color: white;
+  border-radius: 100px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: max-content;
+}
 
+.deleteCommentBtn{
   padding: 6px;
   background-color: #dd5555;
   color: white;
@@ -7271,7 +7282,6 @@ img.qaCommentStatus {
   /* position: absolute;
   right: 0;
   bottom: 0; */
-
 }
 
 .commentContainer, .replyTextContainer {
@@ -7284,6 +7294,7 @@ img.qaCommentStatus {
 
 .replyContainer {
   padding-left: 10px;
+  padding-right: 40px;
 }
 
 .commentTitle, .replyTitle {

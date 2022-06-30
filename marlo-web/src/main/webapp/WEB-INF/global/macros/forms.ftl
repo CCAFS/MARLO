@@ -887,6 +887,7 @@
       <div class="replyTextContainer">
         <div class="replyTitle"></div>
         <p class="replyReadonly"></p>
+        <div style="position: absolute; bottom: 50px !important; right: 0;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;" ></div></div>
       </div>
       <div id="sendReplyContainer" class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
     </div>  
@@ -940,6 +941,7 @@
       <div class="replyTextContainer">
         <div class="replyTitle"></div>
         <p class="replyReadonly"></p>
+        <div style="position: absolute; bottom: 50px !important; right: 0;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
       </div>
       <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
     </div>
