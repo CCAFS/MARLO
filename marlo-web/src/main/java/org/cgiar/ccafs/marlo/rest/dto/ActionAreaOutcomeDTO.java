@@ -23,14 +23,25 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class ActionAreaOutcomeDTO {
 
+  @ApiModelProperty(notes = "Action Area ID", position = 1)
+  private Long actionAreaId;
+  @ApiModelProperty(notes = "Action Area Name", position = 2)
+  private String actionAreaName;
   @ApiModelProperty(notes = "Outcome ID", position = 3)
   private Long outcomeId;
   @ApiModelProperty(notes = "Outcome SMO code", position = 4)
   private String outcomeSMOcode;
-
   @ApiModelProperty(notes = "Outcome Statement", position = 5)
   private String outcomeStatement;
 
+
+  public Long getActionAreaId() {
+    return actionAreaId;
+  }
+
+  public String getActionAreaName() {
+    return actionAreaName;
+  }
 
   public Long getOutcomeId() {
     return outcomeId;
@@ -44,6 +55,14 @@ public class ActionAreaOutcomeDTO {
     return outcomeStatement;
   }
 
+
+  public void setActionAreaId(Long actionAreaId) {
+    this.actionAreaId = actionAreaId;
+  }
+
+  public void setActionAreaName(String actionAreaName) {
+    this.actionAreaName = actionAreaName;
+  }
 
   public void setOutcomeId(Long outcomeId) {
     this.outcomeId = outcomeId;

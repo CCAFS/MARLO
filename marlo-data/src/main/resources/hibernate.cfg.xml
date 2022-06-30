@@ -464,11 +464,10 @@
     <mapping resource="xmls/ProgressTargetCaseGeographicCountries.hbm.xml" />
     <mapping resource="xmls/ActionAreas.hbm.xml" />
     <mapping resource="xmls/ImpactAreas.hbm.xml" />
-    <mapping resource="xmls/ImpactAreasIndicators.hbm.xml" />    	     
+    <mapping resource="xmls/ImpactAreasIndicators.hbm.xml" />
     <mapping resource="xmls/Sdg.hbm.xml" />   
     <mapping resource="xmls/SdgTargets.hbm.xml" />
     <mapping resource="xmls/SdgIndicators.hbm.xml" />
-    <mapping resource="xmls/RestApiAuditlog.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisSrfProgressTargetContributions.hbm.xml" />
     
     <!-- Deliverable WOS/Scopus and Altmetrics -->
@@ -535,5 +534,7 @@
     <mapping resource="xmls/ProjectInnovationEvidenceLinks.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisFlagshipProgressOutcomeMilestoneLinks.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisCrpFinancialReports.hbm.xml" />
+    <!-- NAT Redirection Links -->
+    <mapping resource="xmls/NATRedirectionLinks.hbm.xml" />
   </session-factory>
 </hibernate-configuration>

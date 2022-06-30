@@ -575,7 +575,7 @@ function validateDeliverableStatus() {
         }
       }
     } else {
-      if ($('#actualYear').html() != '2021') {
+      if ($('#actualYear').html() < '2021') {
         $statuses.find('option').prop("disabled", true); // Disable All
       } else {
         var statusReadOnly = $('input[name="deliverable.deliverableInfo.status"]').siblings('p');

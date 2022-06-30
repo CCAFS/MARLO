@@ -19,59 +19,104 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools;
 
+import org.cgiar.ccafs.marlo.data.manager.ActionAreaOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ActionAreaOutcomeManager;
-import org.cgiar.ccafs.marlo.data.model.ActionAreaOutcome;
+import org.cgiar.ccafs.marlo.data.model.ActionAreaOutcomeIndicator;
 import org.cgiar.ccafs.marlo.rest.dto.ActionAreaOutcomeDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.ActionAreaOutcomesMapper;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.apache.commons.lang3.StringUtils;
 
 @Named
 public class ActionAreaOutcomesItem<T> {
 
   private ActionAreaOutcomeManager actionAreaOutcomeManager;
+  private ActionAreaOutcomeIndicatorManager actionAreaOutcomeIndicatorManager;
 
   private ActionAreaOutcomesMapper actionAreaOutcomesMapper;
 
+  Comparator<ActionAreaOutcomeDTO> comparator =
+    Comparator.comparing(ActionAreaOutcomeDTO::getActionAreaId).thenComparing(ActionAreaOutcomeDTO::getOutcomeId);
+
   @Inject
   public ActionAreaOutcomesItem(ActionAreaOutcomeManager actionAreaOutcomeManager,
+    ActionAreaOutcomeIndicatorManager actionAreaOutcomeIndicatorManager,
     ActionAreaOutcomesMapper actionAreaOutcomesMapper) {
     super();
+    this.actionAreaOutcomeIndicatorManager = actionAreaOutcomeIndicatorManager;
     this.actionAreaOutcomeManager = actionAreaOutcomeManager;
     this.actionAreaOutcomesMapper = actionAreaOutcomesMapper;
   }
 
 
-  public ResponseEntity<ActionAreaOutcomeDTO> findActionAreaOutcomeById(Long id) {
-    ActionAreaOutcome actionAreaOutcome = this.actionAreaOutcomeManager.getActionAreaOutcomeById(id);
+  /*
+   * public ResponseEntity<ActionAreaOutcomeDTO> findActionAreaOutcomeById(Long id) {
+   * ActionAreaOutcome actionAreaOutcome = this.actionAreaOutcomeManager.getActionAreaOutcomeById(id);
+   * if (!actionAreaOutcome.isActive()) {
+   * actionAreaOutcome = null;
+   * }
+   * return Optional.ofNullable(actionAreaOutcome)
+   * .map(this.actionAreaOutcomesMapper::ActionAreaOutcomesToActionAreaOutcomeDTO)
+   * .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+   * }
+   */
 
-    if (!actionAreaOutcome.isActive()) {
-      actionAreaOutcome = null;
+
+  public List<ActionAreaOutcomeDTO> actionAreaOutcomesByActionAreaCode(String actionAreaCode) {
+    if (this.actionAreaOutcomeIndicatorManager.getAll() != null) {
+      List<ActionAreaOutcomeIndicator> actionAreaOutcomeIndicators =
+        new ArrayList<>(this.actionAreaOutcomeIndicatorManager.getAll());
+      TreeSet<ActionAreaOutcomeDTO> actionAreaOutcomeDTOs = actionAreaOutcomeIndicators.stream()
+        .filter(actionAreaOutcomeEntity -> actionAreaOutcomeEntity != null && actionAreaOutcomeEntity.getId() != null
+          && actionAreaOutcomeEntity.isActive() && actionAreaOutcomeEntity.getActionArea() != null
+          && actionAreaOutcomeEntity.getActionArea().getId() != null
+          && StringUtils.containsIgnoreCase(actionAreaOutcomeEntity.getActionArea().getSmoCode(), actionAreaCode))
+        .map(actionAreaOutcomeEntity -> this.actionAreaOutcomesMapper
+          .actionAreaOutcomeIndicatorToActionAreaOutcomeDTO(actionAreaOutcomeEntity))
+        .collect(Collectors.toCollection(() -> new TreeSet<>(comparator)));
+      return new ArrayList<>(actionAreaOutcomeDTOs);
+    } else {
+      return null;
     }
-    return Optional.ofNullable(actionAreaOutcome)
-      .map(this.actionAreaOutcomesMapper::ActionAreaOutcomesToActionAreaOutcomeDTO)
-      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
+  public List<ActionAreaOutcomeDTO> actionAreaOutcomesByActionAreaId(Long actionAreaId) {
+    if (this.actionAreaOutcomeIndicatorManager.getAll() != null) {
+      List<ActionAreaOutcomeIndicator> actionAreaOutcomeIndicators =
+        new ArrayList<>(this.actionAreaOutcomeIndicatorManager.getAll());
+      TreeSet<ActionAreaOutcomeDTO> actionAreaOutcomeDTOs = actionAreaOutcomeIndicators.stream()
+        .filter(actionAreaOutcomeEntity -> actionAreaOutcomeEntity != null && actionAreaOutcomeEntity.getId() != null
+          && actionAreaOutcomeEntity.isActive() && actionAreaOutcomeEntity.getActionArea() != null
+          && actionAreaOutcomeEntity.getActionArea().getId() != null
+          && actionAreaOutcomeEntity.getActionArea().getId().equals(actionAreaId))
+        .map(actionAreaOutcomeEntity -> this.actionAreaOutcomesMapper
+          .actionAreaOutcomeIndicatorToActionAreaOutcomeDTO(actionAreaOutcomeEntity))
+        .collect(Collectors.toCollection(() -> new TreeSet<>(comparator)));
+      return new ArrayList<>(actionAreaOutcomeDTOs);
+    } else {
+      return null;
+    }
+  }
 
   public List<ActionAreaOutcomeDTO> getAllActionAreaOutcomes() {
-    if (this.actionAreaOutcomeManager.getAll() != null) {
-      List<ActionAreaOutcome> actionAreaOutcomes = new ArrayList<>(this.actionAreaOutcomeManager.getAll());
-      List<ActionAreaOutcomeDTO> actionAreaOutcomeDTOs =
-        actionAreaOutcomes.stream().filter(actionAreaOutcomeEntity -> actionAreaOutcomeEntity.isActive())
+    if (this.actionAreaOutcomeIndicatorManager.getAll() != null) {
+      List<ActionAreaOutcomeIndicator> actionAreaOutcomeIndicators =
+        new ArrayList<>(this.actionAreaOutcomeIndicatorManager.getAll());
+      TreeSet<ActionAreaOutcomeDTO> actionAreaOutcomeDTOs =
+        actionAreaOutcomeIndicators.stream().filter(actionAreaOutcomeEntity -> actionAreaOutcomeEntity.isActive())
           .map(actionAreaOutcomeEntity -> this.actionAreaOutcomesMapper
-            .ActionAreaOutcomesToActionAreaOutcomeDTO(actionAreaOutcomeEntity))
-          .collect(Collectors.toList());
-      return actionAreaOutcomeDTOs;
+            .actionAreaOutcomeIndicatorToActionAreaOutcomeDTO(actionAreaOutcomeEntity))
+          .collect(Collectors.toCollection(() -> new TreeSet<>(comparator)));
+      return new ArrayList<>(actionAreaOutcomeDTOs);
     } else {
       return null;
     }
