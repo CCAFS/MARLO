@@ -51,6 +51,14 @@ public interface NATRedirectionLinkManager {
    */
   public List<NATRedirectionLink> findAll();
 
+  /**
+   * This method gets a NATRedirectionLink object by a given indicator name and id.
+   * 
+   * @param indicatorName is the indicator name.
+   * @param indicatorId is the indicator identifier.
+   * @return a NATRedirectionLink object.
+   */
+  public NATRedirectionLink findByIndicatorAndId(String indicatorName, Long indicatorId);
 
   /**
    * This method gets a NATRedirectionLink object by a given NATRedirectionLink identifier.
