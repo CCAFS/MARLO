@@ -42,6 +42,7 @@ function attachEventsFeedback() {
       }
 
       $(item).find('.deleteCommentBtn').attr('name', `${name}[${index}]`);
+      $(item).find('.deleteReplyBtn').attr('name', `${name}[${index}]`);
       $(item).find('.sendCommentContainer').attr('name', `${name}[${index}]`);
       $(item).find('.agreeCommentBtn').attr('name', `${name}[${index}]`);
       $(item).find('.disagreeCommentBtn').attr('name', `${name}[${index}]`);
@@ -120,6 +121,15 @@ function attachEventsFeedback() {
     let block = $(this).parent().parent().parent();
 
     deleteQAComment(commentID, name, this);
+  });
+
+  $('div.deleteReplyBtn').on('click', function () {
+
+    let name = $(this).attr('name');
+    let commentID = $(this).attr('replyId');
+    let block = $(this).parent().parent().parent();
+
+    deleteQAReply(commentID, name, this);
   });
 
   $('img.clarificationCommentBtn').on('click', function () {
@@ -263,8 +273,10 @@ function hideShowOptionButtons(block, status) {
               block.find('.commentContainer .commentTitle').html(`Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
               block.find('.commentContainer p.commentReadonly').html(`${qaComments[i][j].comment}`);
               block.find('.sendCommentContainer').hide();
-              if (qaComments[i][j].userID != userID) block.find('.deleteCommentBtn').remove()
+              if (qaComments[i][j].userID != userID) block.find('.deleteCommentBtn').remove();
+              if (qaComments[i][j].reply.userID == userID) block.find('.deleteReplyBtn').show();
               block.find('.deleteCommentBtn').attr('commentId', qaComments[i][j].commentId);
+              block.find('.deleteReplyBtn').attr('replyId', qaComments[i][j].reply.id);
               block.find('.sendReplyContainer').attr('commentId', qaComments[i][j].commentId);
               block.find('.agreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
               block.find('.disagreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
@@ -490,6 +502,31 @@ function hideShowOptionButtons(block, status) {
         if (data && Object.keys(data).length != 0) {
           qaComments = data['comments'];
         }
+      }
+    });
+  }
+
+  function deleteQAReply(commentID, name, htmlParent) {
+    var finalAjaxURL = `/deleteReply.do?commentID=${commentID}`;
+    $.ajax({
+      url: baseURL + finalAjaxURL,
+      async: false,
+      success: function (data) {
+
+        // if (!data?.delete?.delete) return;
+
+        let qaCommentReplyBlock = $(htmlParent).closest('.qaCommentReplyBlock');
+        qaCommentReplyBlock.find('.commentContainer').css('background','white');
+        qaCommentReplyBlock.find('.replyContainer').find('.replyTextContainer').hide();
+
+        qaCommentReplyBlock.find('.agreeCommentBtn').show();
+        qaCommentReplyBlock.find('.disagreeCommentBtn').show();
+        qaCommentReplyBlock.find('.clarificationCommentBtn').show();
+
+        getQAComments();
+        loadCommentsByUser(name);
+        loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+
       }
     });
   }
