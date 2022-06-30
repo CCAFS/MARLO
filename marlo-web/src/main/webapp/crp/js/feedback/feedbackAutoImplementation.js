@@ -522,6 +522,7 @@ function hideShowOptionButtons(block, status) {
         qaCommentReplyBlock.find('.agreeCommentBtn').show();
         qaCommentReplyBlock.find('.disagreeCommentBtn').show();
         qaCommentReplyBlock.find('.clarificationCommentBtn').show();
+        qaCommentReplyBlock.find('.deleteCommentBtn').show();
 
         getQAComments();
         loadCommentsByUser(name);
