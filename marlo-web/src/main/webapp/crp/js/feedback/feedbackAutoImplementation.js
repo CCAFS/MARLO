@@ -390,48 +390,73 @@ function hideShowOptionButtons(block, status) {
   }
   
   function showQAComments(data) {
-    data.map(function (x) {
-      var commentIcon = $(`img.qaComment[name="${x[1]}"]`);
-      commentIcon.attr('fieldID', `${x[0]}`);
-      commentIcon.attr('description', `${x[2]}`);
-      
-      for (let i = 0; i < qaComments.length; i++) {
-        
-        if (x[1] == qaComments[i].frontName) {
-          getNumberOfComments(x[1]);
-          let commentsLength = Object.keys(qaComments[i]).length;
-  
-          for (let j = 0; j < commentsLength; j++) {
-            if (qaComments[i][j] != undefined) {
-              if (qaComments[i][j].comment != '') {
-                commentIcon.attr('src', qaCommentsStatus('pending'));
-  
-                if (qaComments[i][j].status != '') {
-                  if (qaComments[i][j].status == '1') {
-                    commentIcon.attr('src', qaCommentsStatus('done'));
-                  } else {
-                    if (Object.keys(qaComments[i][j].reply).length != 0) {
-                      commentIcon.attr('src', qaCommentsStatus('done'));
-                    } else {
-                      commentIcon.attr('src', qaCommentsStatus('pending'));
-                    }
-                  }
-                } else {
-                  commentIcon.attr('src', qaCommentsStatus('pending'));
-                }
-              }
-            }
-          }
-          commentIcon.show();
-          commentIcon.parent().css('display', 'flex');
-        }
+    data.map(function (field) {
+      var commentIcon = $(`img.qaComment[name="${field[1]}"]`);
+      commentIcon.attr('fieldID', `${field[0]}`);
+      commentIcon.attr('description', `${field[2]}`);
+
+      let qaCommentFinded = qaComments.find(qaComment => qaComment.frontName == field[1]);
+      if (qaCommentFinded) {
+        let allFieldsdone = true;
+        getNumberOfComments(qaCommentFinded.frontName);
+        Object.keys(qaCommentFinded).map(keycomment=>{
+          if (qaCommentFinded[keycomment] == qaCommentFinded.frontName) return ;
+          if (qaCommentFinded[keycomment].status === "") allFieldsdone = false;
+        })
+        commentIcon.attr('src', qaCommentsStatus(allFieldsdone ? 'done' : 'pending'))
       }
-  
+
       if (userCanLeaveComments == 'true') {
         commentIcon.show();
         commentIcon.parent().css('display', 'flex');
       }
+            
+
+      // for (let i = 0; i < qaComments.length; i++) {
+        
+      //   if (x[1] == qaComments[i].frontName) {
+      //     getNumberOfComments(x[1]);
+      //     let commentsLength = Object.keys(qaComments[i]).length;
+      //     commentIcon.attr('src', qaCommentsStatus('done'));
+      //     // for (let j = 0; j < commentsLength; j++) {
+      //     //   if (qaComments[i][j] != undefined) {
+      //     //     if (qaComments[i][j].comment != '') {
+      //     //       commentIcon.attr('src', qaCommentsStatus('pending'));
+  
+      //     //       if (qaComments[i][j].status != '') {
+      //     //         console.log(qaComments)
+      //     //         if (qaComments[i][j].status == '1') {
+      //     //           commentIcon.attr('src', qaCommentsStatus('done'));
+      //     //         } else {
+      //     //           if (Object.keys(qaComments[i][j].reply).length != 0) {
+      //     //             commentIcon.attr('src', qaCommentsStatus('done'));
+      //     //           } else {
+      //     //             commentIcon.attr('src', qaCommentsStatus('pending'));
+      //     //           }
+      //     //         }
+      //     //       } else {
+      //     //         commentIcon.attr('src', qaCommentsStatus('pending'));
+      //     //       }
+      //     //     }
+      //     //   }
+      //     // }
+      //     commentIcon.show();
+      //     commentIcon.parent().css('display', 'flex');
+      //   }
+      // }
+      // if (userCanLeaveComments == 'true') {
+      //   commentIcon.show();
+      //   commentIcon.parent().css('display', 'flex');
+      // }
+
     });
+
+
+      
+
+
+
+
   }
   
   function qaCommentsStatus(status) {
