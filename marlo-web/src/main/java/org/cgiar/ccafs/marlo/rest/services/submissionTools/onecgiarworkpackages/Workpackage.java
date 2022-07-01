@@ -39,6 +39,8 @@ public class Workpackage implements Serializable {
 
   private Long initiative_id;
 
+  private String init_official_code;
+
   private Long stage_id;
 
   private String results;
@@ -64,10 +66,15 @@ public class Workpackage implements Serializable {
     return acronym;
   }
 
+
   public List<OneCGIARWorkpackageImpactArea> getImpactAreaList() {
     return impactAreaList;
   }
 
+
+  public String getInit_official_code() {
+    return init_official_code;
+  }
 
   public Long getInitiative_id() {
     return initiative_id;
@@ -93,14 +100,15 @@ public class Workpackage implements Serializable {
     return scienceGroupList;
   }
 
+
   public List<OneCGIARWorkpackageSdg> getSdgList() {
     return sdgList;
   }
 
-
   public Long getStage_id() {
     return stage_id;
   }
+
 
   public Long getWp_id() {
     return wp_id;
@@ -110,13 +118,17 @@ public class Workpackage implements Serializable {
     return wp_official_code;
   }
 
-
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
 
+
   public void setImpactAreaList(List<OneCGIARWorkpackageImpactArea> impactAreaList) {
     this.impactAreaList = impactAreaList;
+  }
+
+  public void setInit_official_code(String init_official_code) {
+    this.init_official_code = init_official_code;
   }
 
   public void setInitiative_id(Long initiative_id) {

@@ -35,27 +35,30 @@ public class WorkPackagesDTO {
   @ApiModelProperty(notes = "Initiative Id", position = 3)
   private Long initiative_id;
 
-  @ApiModelProperty(notes = "Initiative stage", position = 4)
+  @ApiModelProperty(notes = "Initiative official code", position = 4)
+  private String initiative_offical_code;
+
+  @ApiModelProperty(notes = "Initiative stage", position = 5)
   private Long stage_id;
 
-  @ApiModelProperty(notes = "Workpackage result", position = 5)
+  @ApiModelProperty(notes = "Workpackage result", position = 6)
   private String results;
 
-  @ApiModelProperty(notes = "Workpackage pathway content", position = 6)
+  @ApiModelProperty(notes = "Workpackage pathway content", position = 7)
   private String pathway_content;
 
-  @ApiModelProperty(notes = "Workpackage acronym", position = 7)
+  @ApiModelProperty(notes = "Workpackage acronym", position = 8)
   private String acronym;
 
-  @ApiModelProperty(notes = "Science Group List", position = 8)
+  @ApiModelProperty(notes = "Science Group List", position = 9)
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private List<ScienceGroupDTO> scienceGroupList;
 
-  @ApiModelProperty(notes = "SDG's List", position = 9)
+  @ApiModelProperty(notes = "SDG's List", position = 10)
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private List<SDGsDTO> sdgList;
 
-  @ApiModelProperty(notes = "Impact Area List", position = 10)
+  @ApiModelProperty(notes = "Impact Area List", position = 11)
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private List<ImpactAreasDTO> impactAreaList;
 
@@ -65,45 +68,42 @@ public class WorkPackagesDTO {
   @ApiModelProperty(notes = "Active iniciative", position = 13)
   private Long initiative_status;
 
+
   public String getAcronym() {
     return acronym;
   }
-
 
   public List<ImpactAreasDTO> getImpactAreaList() {
     return impactAreaList;
   }
 
-
   public Long getInitiative_id() {
     return initiative_id;
   }
 
+  public String getInitiative_offical_code() {
+    return initiative_offical_code;
+  }
 
   public Long getInitiative_status() {
     return initiative_status;
   }
 
-
   public String getName() {
     return name;
   }
-
 
   public String getPathway_content() {
     return pathway_content;
   }
 
-
   public String getResults() {
     return results;
   }
 
-
   public List<ScienceGroupDTO> getScienceGroupList() {
     return scienceGroupList;
   }
-
 
   public List<SDGsDTO> getSdgList() {
     return sdgList;
@@ -121,6 +121,7 @@ public class WorkPackagesDTO {
     return wp_official_code;
   }
 
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
@@ -131,6 +132,10 @@ public class WorkPackagesDTO {
 
   public void setInitiative_id(Long initiative_id) {
     this.initiative_id = initiative_id;
+  }
+
+  public void setInitiative_offical_code(String initiative_offical_code) {
+    this.initiative_offical_code = initiative_offical_code;
   }
 
   public void setInitiative_status(Long initiative_status) {
@@ -168,6 +173,4 @@ public class WorkPackagesDTO {
   public void setWp_official_code(String wp_official_code) {
     this.wp_official_code = wp_official_code;
   }
-
-
 }
