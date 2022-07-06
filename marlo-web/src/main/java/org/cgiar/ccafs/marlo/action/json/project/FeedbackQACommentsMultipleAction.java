@@ -170,6 +170,11 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                   } else {
                     fieldsMap.put("userName", "");
                   }
+                  if (comment.getUser() != null && comment.getUser().getId() != null) {
+                    fieldsMap.put("userID", comment.getUser().getId());
+                  } else {
+                    fieldsMap.put("userID", "");
+                  }
                   if (comment.getUserApproval() != null && comment.getUserApproval().getFirstName() != null
                     && comment.getUserApproval().getLastName() != null) {
                     fieldsMap.put("approvalUserName",
@@ -214,6 +219,11 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                         replyMap.put("userName", reply.getUser().getFirstName() + " " + reply.getUser().getLastName());
                       } else {
                         replyMap.put("userName", "");
+                      }
+                      if (reply.getUser() != null && reply.getUser().getId() != null) {
+                        replyMap.put("userID", reply.getUser().getId());
+                      } else {
+                        replyMap.put("userID", "");
                       }
                       if (reply.getCommentDate() != null && reply.getCommentDate().toString() != null) {
                         String dateString = reply.getCommentDate().toString();

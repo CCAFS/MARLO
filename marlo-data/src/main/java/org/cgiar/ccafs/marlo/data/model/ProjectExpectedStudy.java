@@ -52,6 +52,9 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   private CaseStudy casesStudy;
 
+  private String commentStatus;
+
+
   // Work to Table in POWB 2019
   private List<LiaisonInstitution> selectedFlahsgips;
 
@@ -178,6 +181,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   public String getComments() {
     return comments;
+  }
+
+  public String getCommentStatus() {
+    return commentStatus;
   }
 
   public String getComposedId() {
@@ -313,6 +320,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public Set<ProjectExpectedStudyGeographicScope> getProjectExpectedStudyGeographicScopes() {
     return projectExpectedStudyGeographicScopes;
   }
+
 
   public ProjectExpectedStudyInfo getProjectExpectedStudyInfo() {
     return projectExpectedStudyInfo;
@@ -482,6 +490,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   public void setComments(String comments) {
     this.comments = comments;
+  }
+
+  public void setCommentStatus(String commentStatus) {
+    this.commentStatus = commentStatus;
   }
 
   public void setComposedId(String composedId) {
