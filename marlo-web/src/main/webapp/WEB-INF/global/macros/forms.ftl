@@ -507,7 +507,7 @@
       [/#if]
     </div>
   </div>
-    <div class="commentNumberContainer">
+  <div class="commentNumberContainer">
     <div class="numberOfCommentsBubble">
       <p></p>
     </div>
@@ -518,9 +518,16 @@
 
 [#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" inline=true columns=0]
   [#if editable]
-  <div class="radioFlat [#if columns > 1]col-md-${columns}[/#if] ${inline?string('radio-inline', '')}">
+  <div class="feedback-flex-items radioFlat-flex"></div>
+  <div class="fieldReference radioFlat [#if columns > 1]col-md-${columns}[/#if] ${inline?string('radio-inline', '')}">
     <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
     <label for="${id}" class="radio-label ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>
+  </div>
+  <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
   </div>
   [#elseif checked]
     <p>[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</p>
@@ -880,6 +887,7 @@
       <div class="replyTextContainer">
         <div class="replyTitle"></div>
         <p class="replyReadonly"></p>
+        <div style="position: absolute; bottom: 50px !important; right: 0;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;" ></div></div>
       </div>
       <div id="sendReplyContainer" class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
     </div>  
@@ -920,7 +928,7 @@
     [#assign editable = canLeaveComments]
   [/#if]
 
-  <div id="qaCommentReply-${name}[${index}]" class="qaCommentReplyBlock" index="${index}">
+  <div id="qaCommentReply-${name}[${index}]" class="qaCommentReplyBlock" index="${index}"  style="position:relative">
     [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle /]
     <div class="commentCheckContainer">
       <div class="commentContainer">
@@ -933,18 +941,20 @@
       <div class="replyTextContainer">
         <div class="replyTitle"></div>
         <p class="replyReadonly"></p>
+        <div style="position: absolute; bottom: 50px !important; right: 0;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
       </div>
       <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
     </div>
     <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
     <div class="buttonsContainer">
       <div class="optionsContainer">
+        <div style="position: absolute; bottom: 50px !important; right: 0;"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
         <img class="agreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/agree.png" title="Agree">
         <img class="disagreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/disagree.png" title="Disagree">
         <img class="clarificationCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/question.png" title="Clarification needed">
         <img class="replyCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/auto-reply.png" title="Reply">
       </div>
-      <div class="addCommentContainer" index="${index}"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>
+      <div class="addCommentContainer" index="${index}" title="Clarification needed"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>
     </div>
     <br>
   </div>

@@ -2,11 +2,14 @@
 #projectDescription{
   padding: 0px !important;
 }
-#dashboardContainer-8{
+.feedbackSize{
   height: 530px !important;
 }
 .summariesContent{
   padding: 0px !important;
+}
+#AICCRA_feedback{
+  margin-top: 30px;
 }
 iframe{
   border:  none !important;

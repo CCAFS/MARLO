@@ -609,6 +609,14 @@
 	      </result>
 	    </action>
 	    
+		<action name="deleteReply"
+	      class="org.cgiar.ccafs.marlo.action.json.project.DeleteFeedbackRepliesAction">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
+	    
 		<action name="feedbackComments2"
 	      class="org.cgiar.ccafs.marlo.action.json.project.FeedbackQACommentsMultipleAction">
 	      <result type="json">

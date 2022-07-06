@@ -18,12 +18,16 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -59,6 +63,8 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
   private StudyTypeManager studyTypeManager;
   private ExpectedStudyProjectManager expectedStudyProjectManager;
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+  private FeedbackQACommentManager commentManager;
 
   // Parameters or Variables
   private List<ProjectExpectedStudy> nonProjectStudies;
@@ -77,7 +83,8 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   public ProjectExpectedStudiesListAction(APConfig config, SectionStatusManager sectionStatusManager,
     ProjectManager projectManager, ProjectExpectedStudyManager projectExpectedStudyManager,
     ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, StudyTypeManager studyTypeManager,
-    ExpectedStudyProjectManager expectedStudyProjectManager) {
+    ExpectedStudyProjectManager expectedStudyProjectManager,
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentManager) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
@@ -85,6 +92,8 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
     this.studyTypeManager = studyTypeManager;
     this.expectedStudyProjectManager = expectedStudyProjectManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
+    this.commentManager = commentManager;
   }
 
   @Override
@@ -193,6 +202,70 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     return allYears;
   }
 
+  public void getCommentStatuses() {
+
+    try {
+
+
+      List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
+
+      // get the commentable fields by sectionName
+      if (feedbackQACommentableFieldsManager.findAll() != null) {
+        commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
+          .filter(f -> f != null && f.getSectionName().equals("study")).collect(Collectors.toList());
+      }
+      if (projectStudies != null && !projectStudies.isEmpty() && commentableFields != null
+        && !commentableFields.isEmpty()) {
+
+
+        // Set the comment status in each project outcome
+
+        for (ProjectExpectedStudy study : projectStudies) {
+          int answeredComments = 0, totalComments = 0;
+          try {
+
+
+            for (FeedbackQACommentableFields commentableField : commentableFields) {
+              if (commentableField != null && commentableField.getId() != null) {
+
+                if (study != null && study.getId() != null && commentableField != null
+                  && commentableField.getId() != null) {
+                  List<FeedbackQAComment> comments = commentManager
+                    .findAll().stream().filter(f -> f != null && f.getParentId() == study.getId()
+                      && f.getField() != null && f.getField().getId().equals(commentableField.getId()))
+                    .collect(Collectors.toList());
+                  if (comments != null && !comments.isEmpty()) {
+                    totalComments += comments.size();
+                    comments = comments.stream()
+                      .filter(f -> f != null && ((f.getStatus() != null && f.getStatus().equals("approved"))
+                        || (f.getStatus() != null && f.getReply() != null)))
+                      .collect(Collectors.toList());
+                    if (comments != null) {
+                      answeredComments += comments.size();
+                    }
+                  }
+                }
+              }
+            }
+            study.setCommentStatus(answeredComments + "/" + totalComments);
+
+            if (study.getCommentStatus() == null
+              || (study.getCommentStatus() != null && study.getCommentStatus().isEmpty())) {
+              study.setCommentStatus(0 + "/" + 0);
+            }
+          } catch (Exception e) {
+            study.setCommentStatus(0 + "/" + 0);
+
+          }
+        }
+
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+
   public long getExpectedID() {
     return expectedID;
   }
@@ -203,24 +276,23 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     return justification;
   }
 
-
   public List<ProjectExpectedStudy> getMyNonProjectStudies() {
     return myNonProjectStudies;
   }
+
 
   public List<ProjectExpectedStudy> getNonProjectStudies() {
     return nonProjectStudies;
   }
 
-
   public Project getProject() {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
-
 
   public List<ProjectExpectedStudy> getProjectOldStudies() {
     return projectOldStudies;
@@ -229,6 +301,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   public List<ProjectExpectedStudy> getProjectStudies() {
     return projectStudies;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -342,13 +415,16 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
         }
       }
     }
+
+    if (this.hasSpecificities(this.feedbackModule())) {
+      this.getCommentStatuses();
+    }
   }
 
 
   public void setAllYears(List<Integer> allYears) {
     this.allYears = allYears;
   }
-
 
   public void setExpectedID(long expectedID) {
     this.expectedID = expectedID;

@@ -7150,6 +7150,10 @@ img.fileIcon {
   align-items: flex-end;
 }
 
+.feedback-flex-items.radioFlat-flex{
+  display: inline-flex !important;
+}
+
 .feedback-flex-items{
   display: flex;
   align-items: center;
@@ -7250,6 +7254,34 @@ img.qaCommentStatus {
 
 .commentCheckContainer {
   display: flex;
+  padding-right: 30px;
+}
+
+.deleteReplyBtn{
+  padding: 6px;
+  background-color: #dd5555;
+  color: white;
+  border-radius: 100px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: max-content;
+}
+
+.deleteCommentBtn{
+  padding: 6px;
+  background-color: #dd5555;
+  color: white;
+  border-radius: 100px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: max-content;
+  /* position: absolute;
+  right: 0;
+  bottom: 0; */
 }
 
 .commentContainer, .replyTextContainer {
@@ -7262,6 +7294,7 @@ img.qaCommentStatus {
 
 .replyContainer {
   padding-left: 10px;
+  padding-right: 40px;
 }
 
 .commentTitle, .replyTitle {
@@ -7349,6 +7382,7 @@ img.sendComment {
 }
 
 .optionsContainer {
+  position: relative;
   display: none;
   float: right;
 }

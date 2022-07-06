@@ -3,12 +3,12 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["powerbi-client"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/feedbackStatus.js?20220613",
+  "${baseUrlMedia}/js/projects/feedbackStatus.js?20220629",
   "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/feedbackStatus.css?20220613"
+  "${baseUrlMedia}/css/projects/feedbackStatus.css?20220629"
   ]
 /]
 
@@ -89,7 +89,7 @@
                   <div class="">
                     [#list (biReports)?sort_by("reportOrder")![] as report]
                         <div id="BIreport-${report.id}-contentOptions" class="" style="display:[#if report?index !=0]none[/#if];">
-                          <div id="dashboardContainer-${report.id}" class="dashboardContainer-${report.id}"></div>
+                          <div id="dashboardContainer-${report.id}" class="dashboardContainer-${report.id} feedbackSize"></div>
                           <input type="hidden" id="reportName-${report.id}" name="reportName" value=${report.reportName} />
                           <input type="hidden" id="embeUrl-${report.id}" name="embedUrl" value=${report.embedUrl} /> 
                           <input type="hidden" id="reportID-${report.id}" name="reportId" value=${report.reportId} />
@@ -99,7 +99,6 @@
                 </div>
               [/#if]
              </section>
-              <p>The dashboard is updated each 30 minutes</p>
           </div>
         
           [/@s.form]
