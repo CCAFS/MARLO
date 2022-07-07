@@ -406,8 +406,11 @@ function hideShowOptionButtons(block, status) {
         commentIcon.attr('src', qaCommentsStatus(allFieldsdone ? 'done' : 'pending'))
       }
 
-      commentIcon.show();
-      commentIcon.parent().css('display', 'flex');
+      const currentqaComments = qaComments.filter(qaCommentsFilter => qaCommentsFilter.frontName == field[1])
+      if (userCanLeaveComments == 'true' || currentqaComments.length>=1) {
+        commentIcon.show();
+        commentIcon.parent().css('display', 'flex');
+      }
    
             
 
