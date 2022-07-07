@@ -925,7 +925,7 @@
   [/#if]
 
   [#if editable == false]
-    [#assign editable = canLeaveComments]
+    [#assign editable = canLeaveComments??]
   [/#if]
 
   <div id="qaCommentReply-${name}[${index}]" class="qaCommentReplyBlock" index="${index}"  style="position:relative">
