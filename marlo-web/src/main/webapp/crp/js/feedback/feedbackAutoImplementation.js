@@ -151,6 +151,9 @@ function attachEventsFeedback() {
   });
 
   $('div.sendReplyContainer').on('click', function () {
+    console.log("sendReplyContainer")
+    console.log(name)
+    console.log(commentID)
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(`div[id^="qaCommentReply-${name}"]`);
