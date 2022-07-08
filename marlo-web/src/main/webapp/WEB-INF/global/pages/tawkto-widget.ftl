@@ -1,7 +1,7 @@
 [#ftl]
-<div id="draggable-button" class="hidden-print" style="display:none">
+[#--div id="draggable-button" class="hidden-print" style="display:none">
   <p><span class="glyphicon glyphicon-comment"></span> Chat </p> <span class="status"></span>
-</div>
+</div>--]
 
 <script type="text/javascript">
   [#-- MARLO Develop ID as default --]
