@@ -611,9 +611,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       Phase phase = this.phaseManager.getPhaseById(this.getActualPhase().getId());
 
-      Path path = this.getAutoSaveFilePath();
+      Path path = null;//
+      this.getAutoSaveFilePath();
 
-      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+
+      if (path != null && path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
 
         BufferedReader reader = null;
 
