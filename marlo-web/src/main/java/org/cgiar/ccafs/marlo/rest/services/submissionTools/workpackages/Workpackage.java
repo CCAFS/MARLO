@@ -39,6 +39,8 @@ public class Workpackage implements Serializable {
 
   private Long initiative_id;
 
+  private String init_official_code;
+
   private Long stage_id;
 
   private String results;
@@ -48,7 +50,7 @@ public class Workpackage implements Serializable {
   private String acronym;
 
   private Long wp_official_code;
-  
+
   private Long initiative_status;
 
   // notmapped
@@ -70,9 +72,17 @@ public class Workpackage implements Serializable {
     return impactAreaList;
   }
 
+  public String getInit_official_code() {
+    return init_official_code;
+  }
 
   public Long getInitiative_id() {
     return initiative_id;
+  }
+
+
+  public Long getInitiative_status() {
+    return initiative_status;
   }
 
 
@@ -111,23 +121,28 @@ public class Workpackage implements Serializable {
   public Long getWp_official_code() {
     return wp_official_code;
   }
-  
-  public Long getInitiative_status() {
-    return initiative_status;
-  }
-
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
 
+
   public void setImpactAreaList(List<OneCGIARWorkpackageImpactArea> impactAreaList) {
     this.impactAreaList = impactAreaList;
+  }
+
+  public void setInit_official_code(String init_official_code) {
+    this.init_official_code = init_official_code;
   }
 
   public void setInitiative_id(Long initiative_id) {
     this.initiative_id = initiative_id;
   }
+
+  public void setInitiative_status(Long initiative_status) {
+    this.initiative_status = initiative_status;
+  }
+
 
   public void setName(String name) {
     this.name = name;
@@ -163,12 +178,7 @@ public class Workpackage implements Serializable {
     this.wp_id = wp_id;
   }
 
-
   public void setWp_official_code(Long wp_official_code) {
     this.wp_official_code = wp_official_code;
-  }
-  
-  public void setInitiative_status(Long initiative_status) {
-    this.initiative_status = initiative_status;
   }
 }

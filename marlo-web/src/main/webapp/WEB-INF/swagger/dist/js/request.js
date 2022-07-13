@@ -853,7 +853,7 @@ function work_packages() {
 					'<tr>' + '<td >' + item['wp_official_code'] + '</td>' + '<td>'
 					+ item['acronym'] + '</td>'+ '<td>'
 					+ item['name'] + '</td>'+ '<td>'
-					+ item['initiative_id'] + '</td>'+ '<td>'
+					+ item['initiative_offical_code'] + '</td>'+ '<td>'
 					+ item['stage_id'] + '</td>'+  '</tr>')
 			});
 setTimeout(() => {
