@@ -57,12 +57,14 @@ public interface WorkpackagesMapper {
   public SDGsDTO oneCGIARWorkpackageSdgToSDGsDTO(OneCGIARWorkpackageSdg oneCGIARWorkpackageSdg);
 
   @Mappings({@Mapping(source = "scienceGroupList", target = "scienceGroupList"),
-    @Mapping(source = "sdgList", target = "sdgList"), @Mapping(source = "impactAreaList", target = "impactAreaList")})
+    @Mapping(source = "sdgList", target = "sdgList"), @Mapping(source = "impactAreaList", target = "impactAreaList"),
+    @Mapping(source = "init_official_code", target = "initiative_offical_code")})
   public abstract WorkPackagesDTO oneCGIARWorkpackageToWorkPackagesDTO(
     org.cgiar.ccafs.marlo.rest.services.submissionTools.onecgiarworkpackages.Workpackage workpackage);
 
   @Mappings({@Mapping(source = "scienceGroupList", target = "scienceGroupList"),
-    @Mapping(source = "sdgList", target = "sdgList"), @Mapping(source = "impactAreaList", target = "impactAreaList")})
+    @Mapping(source = "sdgList", target = "sdgList"), @Mapping(source = "impactAreaList", target = "impactAreaList"),
+    @Mapping(source = "init_official_code", target = "initiative_offical_code")})
   public abstract WorkPackagesDTO workpackageToWorkPackagesDTO(Workpackage workpackage);
 
 
