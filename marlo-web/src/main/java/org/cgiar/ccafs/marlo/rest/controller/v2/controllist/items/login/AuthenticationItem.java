@@ -19,6 +19,7 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.login;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -36,6 +37,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -71,6 +73,13 @@ public class AuthenticationItem<T> {
       userAutenticationDTO.setFirst_name(userlogged.getFirstName());
       userAutenticationDTO.setLast_name(userlogged.getLastName());
       userAutenticationDTO.setId(userlogged.getId());
+
+      boolean canAccessPartnerRequests = userlogged.getUserRoles().stream()
+        .filter(ur -> ur != null && ur.getId() != null && ur.getRole() != null && ur.getRole().getId() != null
+          && StringUtils.equalsIgnoreCase(ur.getRole().getAcronym(), APConstants.PARTNER_REQUEST_ROLE_ACRONYM))
+        .count() > 0;
+      userAutenticationDTO.setCanAccessPartnerRequests(canAccessPartnerRequests);
+
       if (!userlogged.isCgiarUser() && userlogged.getPassword().equals(md5Pass)) {
         userAutenticationDTO.setAuthenticated(true);
       } else {
