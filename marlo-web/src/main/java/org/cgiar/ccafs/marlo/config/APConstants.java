@@ -837,6 +837,8 @@ public final class APConstants {
 
   public static final String INCLUDE_PUBLICATIONS = "includePublications";
 
+  public static final String PARTNER_REQUEST_ROLE_ACRONYM = "PRR";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }

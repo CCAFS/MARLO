@@ -41,6 +41,13 @@ public class UserAutenticationDTO {
   @ApiModelProperty(notes = "Is authenticated", position = 5)
   public boolean authenticated;
 
+  @ApiModelProperty(notes = "Can the user accept/reject partner requests?", position = 6)
+  public boolean canAccessPartnerRequests;
+
+  public boolean getCanAccessPartnerRequests() {
+    return canAccessPartnerRequests;
+  }
+
   public String getEmail() {
     return email;
   }
@@ -63,6 +70,10 @@ public class UserAutenticationDTO {
 
   public void setAuthenticated(boolean authenticated) {
     this.authenticated = authenticated;
+  }
+
+  public void setCanAccessPartnerRequests(boolean canAccessPartnerRequests) {
+    this.canAccessPartnerRequests = canAccessPartnerRequests;
   }
 
   public void setEmail(String email) {
