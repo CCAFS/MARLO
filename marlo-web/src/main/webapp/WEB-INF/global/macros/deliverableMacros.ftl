@@ -500,9 +500,18 @@
 
 
   <div id="metadata-output"></div>
-  <div class="metadata-output-persistent" id="output-dissemination" style="display: none;"></div>
-  <div class="metadata-output-persistent" id="output-wos" style="display: none;"></div>
-
+  <div id="metadata-container">
+    <div class="metadata-text-container">
+      <div class="metadata-output-persistent" id="output-dissemination" style="display: none;"></div>
+      <div class="metadata-output-persistent" id="output-wos" style="display: none;"></div>
+    </div>
+    [#-- Almetric Image --]
+    <div data-toggle="tooltip" class="" title="[@s.text name="project.deliverable.dissemination.altmetricTooltip" /]">
+      <a class="altmetricURL" target="_blank" href="">
+        <img class="altmetricImg" src="" alt="" srcset="" style="display: none;">
+      </a>
+    </div>
+   </div>
 
       <!-- Modal WOS -->
       <div class="modal fade" id="WOSModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
