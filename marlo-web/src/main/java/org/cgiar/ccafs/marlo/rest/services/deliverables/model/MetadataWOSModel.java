@@ -49,7 +49,9 @@ public class MetadataWOSModel implements Serializable {
 
   private String journalName;
   private String volume;
+  private String issue;
   private String pages;
+  private String source;
   private List<WOSAuthor> authors;
 
   @SerializedName("organizations")
@@ -93,6 +95,10 @@ public class MetadataWOSModel implements Serializable {
     return isOpenAccess;
   }
 
+  public String getIssue() {
+    return issue;
+  }
+
   public String getJournalName() {
     return journalName;
   }
@@ -111,6 +117,10 @@ public class MetadataWOSModel implements Serializable {
 
   public Integer getPublicationYear() {
     return publicationYear;
+  }
+
+  public String getSource() {
+    return source;
   }
 
   public String getTitle() {
@@ -153,6 +163,10 @@ public class MetadataWOSModel implements Serializable {
     this.isOpenAccess = isOA;
   }
 
+  public void setIssue(String issue) {
+    this.issue = issue;
+  }
+
   public void setJournalName(String journalName) {
     this.journalName = journalName;
   }
@@ -171,6 +185,10 @@ public class MetadataWOSModel implements Serializable {
 
   public void setPublicationYear(Integer publicationYear) {
     this.publicationYear = publicationYear;
+  }
+
+  public void setSource(String source) {
+    this.source = source;
   }
 
   public void setTitle(String title) {

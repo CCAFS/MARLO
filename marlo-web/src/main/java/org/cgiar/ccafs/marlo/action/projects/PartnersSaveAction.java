@@ -1,4 +1,5 @@
-/*****************************************************************
+/**
+ * ***************************************************************
  * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
@@ -11,11 +12,8 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************/
-
-
+ */
 package org.cgiar.ccafs.marlo.action.projects;
-
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
@@ -43,21 +41,27 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.ExternalPostUtils;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * PartnersSaveAction:
- * 
+ *
  * @author avalencia - CCAFS
  * @date Oct 30, 2017
  * @time 11:43:29 AM: Add CRP
@@ -65,16 +69,13 @@ import org.slf4j.LoggerFactory;
  */
 public class PartnersSaveAction extends BaseAction {
 
-
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -5137162991426442026L;
 
-
   // Logger
   private static final Logger LOG = LoggerFactory.getLogger(PartnersSaveAction.class);
-
 
   private ActivityPartner activityPartner;
 
@@ -152,7 +153,6 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequestModifications.setRequestSource(sourceMessage);
   }
 
-
   public void addPowbSynthesisMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
@@ -197,7 +197,6 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequestModifications.setRequestSource(sourceMessage);
   }
 
-
   public int getActivityID() {
     return activityID;
   }
@@ -213,7 +212,6 @@ public class PartnersSaveAction extends BaseAction {
   public String getContext() {
     return context;
   }
-
 
   public List<LocElement> getCountriesList() {
     return countriesList;
@@ -247,7 +245,6 @@ public class PartnersSaveAction extends BaseAction {
     return projectID;
   }
 
-
   public int getSynthesisID() {
     return synthesisID;
   }
@@ -255,7 +252,6 @@ public class PartnersSaveAction extends BaseAction {
   public boolean isMessageSent() {
     return messageSent;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -356,7 +352,6 @@ public class PartnersSaveAction extends BaseAction {
       }
     }
 
-
     // Add Partner Request information.
     PartnerRequest partnerRequest = new PartnerRequest();
     // Add a clone request to check if there are changes later
@@ -440,25 +435,60 @@ public class PartnersSaveAction extends BaseAction {
 
     }
 
-    partnerRequest = partnerRequestManager.savePartnerRequest(partnerRequest);
-    partnerRequestModifications.setPartnerRequest(partnerRequest);
-    partnerRequestModifications.setModified(false);
-    partnerRequestModifications = partnerRequestManager.savePartnerRequest(partnerRequestModifications);
+    boolean postFailed = false;
+    if (this.isAiccra()) {
+
+      Map<String, Object> request = new HashMap<>();
+      request.put("name", partnerRequest.getPartnerName());
+      request.put("acronym", partnerRequest.getAcronym());
+      request.put("websiteLink", partnerRequest.getWebPage());
+      request.put("institutionTypeCode", partnerRequest.getInstitutionType().getId());
+      request.put("hqCountryIso", partnerRequest.getLocElement().getIsoAlpha2());
+      request.put("externalUserMail", this.getCurrentUser().getEmail());
+      request.put("externalUserName", this.getCurrentUser().getUsername());
+      request.put("externalUserComments", "Request made from AICCRA");
+
+      ObjectMapper mapper = new ObjectMapper();
+
+      try {
+        String requestStr = mapper.writeValueAsString(request);
+
+        ExternalPostUtils epu = new ExternalPostUtils();
+        epu.setUsername(config.getClarisaAPIUsername());
+        epu.setPassword(config.getClarisaAPIPassword());
+        String responseStr =
+          epu.postJson(config.getClarisaAPIHost() + "/api/CCAFS/institutions/institution-requests", requestStr);
+
+        if (responseStr.isEmpty()) {
+          postFailed = true;
+        }
+      } catch (JsonProcessingException ex) {
+        java.util.logging.Logger.getLogger(PartnersSaveAction.class.getName()).log(Level.SEVERE, null, ex);
+      }
+
+    } else {
+      partnerRequest = partnerRequestManager.savePartnerRequest(partnerRequest);
+      partnerRequestModifications.setPartnerRequest(partnerRequest);
+      partnerRequestModifications.setModified(false);
+      partnerRequestModifications = partnerRequestManager.savePartnerRequest(partnerRequestModifications);
+    }
 
     message.append(".</br>");
     message.append("</br>");
 
-
     try {
+      /*
       if (this.validateEmailNotification()) {
         sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
           null, null, null, true);
       }
+      */
     } catch (Exception e) {
       LOG.error("unable to send mail", e);
       /**
-       * Original code swallows the exception and didn't even log it. Now we at least log it,
-       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       * Original code swallows the exception and didn't even log it. Now
+       * we at least log it, but we need to revisit to see if we should
+       * continue processing or re-throw the exception.
        */
     }
     messageSent = true;
@@ -472,16 +502,19 @@ public class PartnersSaveAction extends BaseAction {
         this.getCurrentUser().getEmail(), fundingSourceID);
     }
 
-    Collection<String> messages = this.getActionMessages();
-    this.addActionMessage("message:" + this.getText("saving.saved"));
-    messages = this.getActionMessages();
-    return SUCCESS;
+    if (this.isAiccra() && postFailed) {
+      return INPUT;
+    } else {
+      Collection<String> messages = this.getActionMessages();
+      this.addActionMessage("message:" + this.getText("saving.saved"));
+      messages = this.getActionMessages();
+      return SUCCESS;
+    }
   }
 
   public void setActivityID(int activityID) {
     this.activityID = activityID;
   }
-
 
   public void setActivityPartner(ActivityPartner activityPartner) {
     this.activityPartner = activityPartner;
@@ -507,7 +540,6 @@ public class PartnersSaveAction extends BaseAction {
     this.institutions = institutions;
   }
 
-
   public void setLocationId(long locationId) {
     this.locationId = locationId;
   }
@@ -527,7 +559,6 @@ public class PartnersSaveAction extends BaseAction {
   public void setSynthesisID(int synthesisID) {
     this.synthesisID = synthesisID;
   }
-
 
   @Override
   public void validate() {
@@ -553,7 +584,6 @@ public class PartnersSaveAction extends BaseAction {
         anyError = true;
       }
 
-
       if (anyError) {
         this.addActionError(this.getText("saving.fields.required"));
       }
@@ -568,6 +598,5 @@ public class PartnersSaveAction extends BaseAction {
       .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
     return crpNotification;
   }
-
 
 }
