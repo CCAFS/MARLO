@@ -225,8 +225,10 @@ public class DeliverableMetadataByWOS extends BaseAction {
             && StringUtils.equalsIgnoreCase(i.getFullName(), dbDeliverableAffiliation.getInstitutionNameWebOfScience())
             && i.getClarisaMatchConfidence() < APConstants.ACCEPTATION_PERCENTAGE).count() == 0)) {
           this.deliverableAffiliationManager.deleteDeliverableAffiliation(dbDeliverableAffiliation.getId());
-          this.deliverableAffiliationManager.replicate(dbDeliverableAffiliation,
-            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+          if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+            this.deliverableAffiliationManager.replicate(dbDeliverableAffiliation,
+              phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+          }
         }
       }
 
@@ -261,8 +263,11 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
           newDeliverableAffiliation =
             this.deliverableAffiliationManager.saveDeliverableAffiliation(newDeliverableAffiliation);
-          this.deliverableAffiliationManager.replicate(newDeliverableAffiliation,
-            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+
+          if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+            this.deliverableAffiliationManager.replicate(newDeliverableAffiliation,
+              phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+          }
         }
       }
     }
@@ -293,8 +298,10 @@ public class DeliverableMetadataByWOS extends BaseAction {
             .count() == 0)) {
           this.deliverableAffiliationsNotMappedManager
             .deleteDeliverableAffiliationsNotMapped(dbDeliverableAffiliationNotMapped.getId());
-          this.deliverableAffiliationsNotMappedManager.replicate(dbDeliverableAffiliationNotMapped,
-            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+          if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+            this.deliverableAffiliationsNotMappedManager.replicate(dbDeliverableAffiliationNotMapped,
+              phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+          }
         }
       }
 
@@ -333,8 +340,11 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
           newDeliverableAffiliationNotMapped = this.deliverableAffiliationsNotMappedManager
             .saveDeliverableAffiliationsNotMapped(newDeliverableAffiliationNotMapped);
-          this.deliverableAffiliationsNotMappedManager.replicate(newDeliverableAffiliationNotMapped,
-            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+
+          if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+            this.deliverableAffiliationsNotMappedManager.replicate(newDeliverableAffiliationNotMapped,
+              phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+          }
         }
       }
     }
@@ -401,8 +411,10 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
       altmetricInfo = this.deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetricInfo);
 
-      this.deliverableAltmetricInfoManager.replicate(altmetricInfo,
-        phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+      if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+        this.deliverableAltmetricInfoManager.replicate(altmetricInfo,
+          phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+      }
     }
   }
 
@@ -424,8 +436,11 @@ public class DeliverableMetadataByWOS extends BaseAction {
         externalSourceAuthor.setFullName(incomingAuthor.getFullName());
 
         externalSourceAuthor = this.externalSourceAuthorManager.saveExternalSourceAuthor(externalSourceAuthor);
-        this.externalSourceAuthorManager.replicate(externalSourceAuthor,
-          phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+
+        if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+          this.externalSourceAuthorManager.replicate(externalSourceAuthor,
+            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+        }
       }
     }
   }
@@ -455,7 +470,9 @@ public class DeliverableMetadataByWOS extends BaseAction {
     externalSource.setIsiStatus(this.getBooleanStringOrNotAvailable(this.response.getIsISI()));
     externalSource.setJournalName(this.response.getJournalName());
     externalSource.setVolume(this.response.getVolume());
+    externalSource.setIssue(this.response.getIssue());
     externalSource.setPages(this.response.getPages());
+    externalSource.setSource(this.response.getSource());
 
     if (gardianInfo != null) {
       externalSource.setGardianFindability(gardianInfo.getFindability());
@@ -468,8 +485,10 @@ public class DeliverableMetadataByWOS extends BaseAction {
     externalSource =
       this.deliverableMetadataExternalSourcesManager.saveDeliverableMetadataExternalSources(externalSource);
 
-    this.deliverableMetadataExternalSourcesManager.replicate(externalSource,
-      phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+    if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+      this.deliverableMetadataExternalSourcesManager.replicate(externalSource,
+        phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+    }
   }
 
   private void saveInfo() {
