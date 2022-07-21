@@ -151,6 +151,9 @@ function attachEventsFeedback() {
   });
 
   $('div.sendReplyContainer').on('click', function () {
+    console.log("sendReplyContainer")
+    console.log(name)
+    console.log(commentID)
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(`div[id^="qaCommentReply-${name}"]`);
@@ -406,8 +409,11 @@ function hideShowOptionButtons(block, status) {
         commentIcon.attr('src', qaCommentsStatus(allFieldsdone ? 'done' : 'pending'))
       }
 
-      commentIcon.show();
-      commentIcon.parent().css('display', 'flex');
+      const currentqaComments = qaComments.filter(qaCommentsFilter => qaCommentsFilter.frontName == field[1])
+      if (userCanLeaveComments == 'true' || currentqaComments.length>=1) {
+        commentIcon.show();
+        commentIcon.parent().css('display', 'flex');
+      }
    
             
 
