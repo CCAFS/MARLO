@@ -490,6 +490,9 @@ public class DeliverableListAction extends BaseAction {
 
               } else {
                 if (deliverableTemp.getDeliverable().getSharedWithProjects() != null
+                  && deliverableTemp.getProject() != null
+                  && deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()) != null
+                  && deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
                   && (!deliverableTemp.getDeliverable().getSharedWithProjects()
                     .contains(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym()))) {
                   deliverableTemp.getDeliverable()
