@@ -7581,7 +7581,8 @@ img.qaOptions {
 .DownloadButton.cinco span {
 	transition: .9s ease-in-out all;
 	position: absolute;
-	left: 20%;
+	left: 32%;
+  width: 10px;
 }
 
 .DownloadButton .IconDownloadButton {
@@ -7601,7 +7602,7 @@ img.qaOptions {
 }
 
 .DownloadButton:hover {
-	background: #27ae60;
+	background: #32a562d1;
 }
 
 .DownloadButton:hover .IconDownloadButton {
@@ -7610,6 +7611,7 @@ img.qaOptions {
 }
 
 .DownloadButton:hover span {
+  width: 70px;
 	left: 10px;
 }
 
@@ -7619,18 +7621,19 @@ img.qaOptions {
 	justify-content: center;
 	width: 100%;
 	height: 40px;
-	background: var(--alertColorSuccess);
+	background: #4ca973a6;
 	color: white;
 	font-family: 'Roboto', sans-serif;
-	font-size: 15px;
-	font-weight: 500;
+	font-size: 13px;
+	font-weight: 650;
 	border: none;
 	cursor: pointer;
-	text-transform: uppercase;
 	transition: .3s ease all;
 	border-radius: 5px;
 	position: relative;
 	overflow: hidden;
+  text-align: center;
+  margin: 10px 0;
 }
 
 .DownloadButton span {
