@@ -90,13 +90,12 @@
     <div class="containerTextTest col-md-9">
       <p class="alertText">[@s.text name="deliverable.message"][/@s.text]</p>
     </div>
-    <div class="ContainerDownloadTest col-md-2">      
-      <label class="flex-item1" for="">[@s.text name="Download Template" /]:</label>
+    <div class="ContainerDownloadTest col-md-2">          
       <button class="DownloadButton cinco">
 				<div class="IconDownloadButton">
-					<img src="${baseUrlCdn}/global/images/download-excel.png" height="35"/>
+					<img src="https://cdn-icons-png.flaticon.com/512/337/337958.png" height="30"/>
 				</div>
-				<span>Download</span>
+				<span for="">[@s.text name="Download Template" /]</span>
 			</button>
       </div>   
     </div>
