@@ -58,6 +58,52 @@
 <div class="viewMore closed"></div>
 </div>
 
+
+
+
+<!-- alert proposal 1-->
+<!--
+<div class="container helpText viewMore-block">
+  <div class="alertTest  legendContent-global alertColorSucces">
+    <div class="divIconTest col-md-1">
+      <span class="material-icons">done</span> 
+    </div>
+    <div class="textTest">
+      <p class="col-md-12 pTextTest">
+        The Information was correctly saved.
+      </p>   
+    </div>
+  </div>
+</div>
+-->
+
+<!-- alert proposal 2-->
+<!-- 
+<div class="container helpText viewMore-block">
+  <div class="containerAlertTest  legendContent-global alertColorBackgroundInfo">
+    <div class="containerLineTest alertColorInfo"></div>
+    <div class="containerIcon">
+      <div class="containerIconTest alertColorInfo">
+        <i class="material-icons">question_mark</i>      
+      </div>
+    </div>
+    <div class="containerTextTest col-md-9">
+      <p class="alertText">[@s.text name="deliverable.message"][/@s.text]</p>
+    </div>
+    <div class="ContainerDownloadTest col-md-2">      
+      <label class="flex-item1" for="">[@s.text name="Download Template" /]:</label>
+      <button class="DownloadButton cinco">
+				<div class="IconDownloadButton">
+					<img src="${baseUrlCdn}/global/images/download-excel.png" height="35"/>
+				</div>
+				<span>Download</span>
+			</button>
+      </div>   
+    </div>
+  </div>
+</div>
+-->
+
 <section class="container">
     <div class="row">
       [#-- Project Menu --]

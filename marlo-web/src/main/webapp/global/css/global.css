@@ -1,5 +1,14 @@
 /************* 1. GENERAL ***************/
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800); @import url("custom.pickadate.css"); @import url("custom.bootstrap.css"); @import url("customLogin.css?20201120"); @import url("customInputsFlat.css"); @import url("customTrumbowyg.css"); /* END IMPORTS*/
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800);@import url("custom.pickadate.css"); @import url("custom.bootstrap.css");@import url("customLogin.css?20201120"); @import url("customInputsFlat.css");@import url("customTrumbowyg.css");@import url(https://fonts.googleapis.com/icon?family=Material+Icons);/* END IMPORTS*/
+
+:root{
+  --alertColorSuccess: #37c06f;
+  --alertColorWarning: #f5b10c;
+  --alertColorInfo: #40aad4;
+  --alertColorBackgroundInfo: #b2dcf1;
+  --alertColorBackgroundSuccess: #c7f9da;
+  --alertColorBackgroundWarning: #fff3e5;
+}
 .mce-widget.mce-tooltip {
   display: none !important;
 }
@@ -7424,4 +7433,208 @@ img.qaOptions {
   border: 1px dashed #d5d5d5;
   padding: 5px;
   min-height: 77px;
+}
+
+
+
+
+/*********** Alert message **********/
+/* July 2022 */
+
+
+/*********** alert proposal 1**********/
+.alertTest{
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  border-radius: 7px;
+  margin-bottom: 10px;
+}
+
+
+.iconTest{
+  font-size: 20px;
+  color: white;
+}
+
+.divIconTest{ 
+  text-align: center;
+  height: auto;
+}
+
+.textTest{
+  margin: 0px 0px;
+  background-color: white;
+  width: 100%;
+
+}
+.material-icons{
+  font-size: 30px;
+  color: white;
+}
+.pTextTest{
+  margin: 20px 0px;
+  width: 100%;
+}
+
+.downloadTest{
+  padding-top: 15px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+/*********** alert proposal 2**********/
+.containerAlertTest{
+  display: flex;
+  position: relative;
+   border-radius: 7px 0px 0px 7px;  
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.containerLineTest{
+  width: 7px;
+  position: absolute;
+  left: 0;
+  top:0px;
+  height: 100%;
+  border-radius: 7px 0px 0px 7px;
+}
+
+.containerIcon{
+  height: 100%;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.containerIconTest{
+  min-width: 40px;
+  border-radius: 100%; 
+  margin-left: 10px;  
+  height: 40px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.containerIconTest i{
+  font-size: 25px;
+}
+
+.containerTextTest{
+  display: table;
+}
+
+
+
+.ContainerDownloadTest{
+  padding-top: 0px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.alertColorSucces{
+  background: var(--alertColorSuccess);  
+}
+
+.alertColorWarning{
+  background: var(--alertColorWarning);  
+}
+
+.alertColorInfo{
+  background: var(--alertColorInfo);  
+}
+
+.alertColorBackgroundInfo{
+  background: var(--alertColorBackgroundInfo);  
+}
+
+.alertColorBackgroundSucces{
+  background: var(--alertColorBackgroundSuccess);  
+}
+
+.alertColorBackgroundWarning{
+  background: var(--alertColorBackgroundWarning);  
+}
+
+.alertText{
+  display: table-cell;
+  vertical-align: middle;
+  
+}
+
+
+/*********** button download alert  2**********/
+
+.DownloadButton.cinco span {
+	transition: .9s ease-in-out all;
+	position: absolute;
+	left: 20%;
+}
+
+.DownloadButton .IconDownloadButton {
+	display: flex;
+	align-items: center;
+	position: absolute;
+	z-index: 2;
+	left: -40px;
+	transition: .9s ease-in-out all;
+	opacity: 0;
+}
+
+.DownloadButton svg {
+	color: #fff;
+	width: 35px;
+	height: 35px;
+}
+
+.DownloadButton:hover {
+	background: #27ae60;
+}
+
+.DownloadButton:hover .IconDownloadButton {
+	left: calc(100% - 50px);
+	opacity: 1;
+}
+
+.DownloadButton:hover span {
+	left: 10px;
+}
+
+.DownloadButton {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 40px;
+	background: var(--alertColorSuccess);
+	color: white;
+	font-family: 'Roboto', sans-serif;
+	font-size: 15px;
+	font-weight: 500;
+	border: none;
+	cursor: pointer;
+	text-transform: uppercase;
+	transition: .3s ease all;
+	border-radius: 5px;
+	position: relative;
+	overflow: hidden;
+}
+
+.DownloadButton span {
+	position: relative;
+	z-index: 2;
+	transition: .9s ease all;
 }
