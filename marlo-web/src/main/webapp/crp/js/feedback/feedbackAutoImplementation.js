@@ -282,7 +282,23 @@ function hideShowOptionButtons(block, status) {
               block.find('.disagreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
               block.find('.clarificationCommentBtn').attr('commentId', qaComments[i][j].commentId);
               block.find('.replyCommentBtn').attr('commentId', qaComments[i][j].commentId);
-  
+
+              switch (qaComments[i][j].status) {
+                case "0":
+                  block.find('.ContainerReactionComment').show();
+                  block.find('.ContainerReactionComment p.reactionComment').html(`Disagreed by ${qaComments[i][j].approvalUserName} at ${qaComments[i][j].approvalDate}`);
+                  break;
+                case "1":
+                  block.find('.ContainerReactionComment').show();
+                  block.find('.ContainerReactionComment p.reactionComment').html(`Accepted by ${qaComments[i][j].approvalUserName} at ${qaComments[i][j].approvalDate}`);
+                  break;
+                case "2":
+                  block.find('.ContainerReactionComment').show();
+                  block.find('.ContainerReactionComment p.reactionComment').html(`Required clarification by ${qaComments[i][j].approvalUserName} at ${qaComments[i][j].approvalDate}`);
+                  break;
+              }
+
+              
               if (userCanLeaveComments == 'true') {
                 let btnsContainer = block.find('.buttonsContainer');
                 let addBtn = block.find('.addCommentContainer');
