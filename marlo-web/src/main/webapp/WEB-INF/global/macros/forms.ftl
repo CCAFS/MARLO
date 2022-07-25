@@ -933,8 +933,11 @@
     <div class="commentCheckContainer">
       <div class="commentContainer">
         <div class="commentTitle"></div>
-        <p class="commentReadonly"></p>
-      </div>
+        <p class="commentReadonly"></p> 
+        <div class="ContainerReactionComment" style="display:none">
+          <p class="reactionComment"></p>
+        </div>
+      </div>      
     </div>
     <div class="replyContainer">
       [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
