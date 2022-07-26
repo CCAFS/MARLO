@@ -85,7 +85,7 @@
         </ul>
       </li>
       <li class="dropdown">
-        <a class="nav-link" href="#">         
+        <a class="nav-link" href="#dashboard">         
           <span>Dashboards</span> <i class="bi bi-chevron-down"></i>
         </a>
         <ul class="p-2">
@@ -93,10 +93,16 @@
         </ul>
       </li>
       <li>
-        <a class="nav-link scrollto" href="faq.html">FAQ</a>
+        <a class="nav-link scrollto" href="#indicators">Indicators</a>
+      </li>
+      <li>
+        <a class="nav-link scrollto" href="#publications">Publications</a>
       </li>
       <li>
         <a class="nav-link scrollto" href="#partners">Lead Partners</a>
+      </li>
+      <li>
+        <a class="nav-link scrollto" href="#faq">FAQ</a>
       </li>
       <li>
         <a class="nav-link scrollto" href="#contact">Contact Us</a>
@@ -214,12 +220,106 @@
             </div>
          </div>
        </section>
+       <!--Section dasboard-->
+       <section class="services dashboard" id="dashboard">
+        <div class="section-title">
+         <h2>Dashboards</h2>         
+          <p class="publication">CLARISA helps to transform the raw data of CGIAR research and 
+            activities into standardized and aggregated information. This is possible as the system 
+            represents the reference of interoperability principles and coding systems for other Management
+             Information Systems (MISes) by providing control lists with codes (e.i., unique identifiers), 
+             data on common indicators can be seamlessly gathered from the systems adopting these codes and 
+             results compiled at a system-wide level. <br><br>
+            Refer below to some of the products of adopting CLARISA:</p>
        
-       <section class="counts section-bg">
+      </div>
+      <style>
+        .img-landscape-container{
+          width: 100%;
+      }
+      .img-landscape-container img{
+        width: 100%;
+        height: 70%;
+      }
+      .new-content-dashboard{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .new-content-public{
+        margin-top: -10px;
+      }
+      .public-dash{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .public-dash img{
+        width: 100%;
+        height: 85%;
+      }
+      .new-content-publics{
+        margin-top: 0px;
+      }
+      
+      
+      </style>
+       <div class="publications-list" >
+        
+      <div class="publication-card-landscape new-content-dashboard">
+        <div  class="img-landscape-container" >
+            <a href="InstitutionsRequestBI.html"> <img class="img-landscape" src="./images/cgiarRe.png"   alt=""></a>
+        </div>
+        <div class="new-content-public">
+            <a href="InstitutionsRequestBI.html">CGIAR Results Dashboard <br>(Portfolio 2017-2021)</a>
+        </div>
+   </div>
+      <div class="publication-card-landscape new-content-dashboard">
+        <div  class="img-landscape-container" >
+            <a href="InstitutionsRequestBI.html"> <img class="img-landscape" src="./images/institutionsDashboard.png"   alt=""></a>
+        </div>
+        <div class="new-content-public">
+            <a href="InstitutionsRequestBI.html">Institutions Request</a>
+        </div>
+   </div>
+    <div class="publication-card-landscape new-content-dashboard">
+      <div  class="img-landscape-container" >
+        <a href="https://alliancebioversityciat.org/impact/results-dashboard"> <img class="img-landscape" src="./images/allinceLocations.png"   alt=""></a>
+      </div>
+      <div class="new-content-public">
+        <a href="https://alliancebioversityciat.org/impact/results-dashboard">Alliance results dashboard</a>
+      </div>
+    </div>
+    
+    </div>
+    <div  class="publications-list">
+      <div class="publication-card-landscape new-content-dashboard">
+        <div  class="img-landscape-container" >
+          <a href="https://ccafs.cgiar.org/news/how-culture-open-data-helping-more-people-take-climate-smart-agriculture"> <img class="img-landscape" src="./images/ccafsculture.png"   alt=""></a>
+        </div>
+        <div class="new-content-public">
+          <a href="https://ccafs.cgiar.org/news/how-culture-open-data-helping-more-people-take-climate-smart-agriculture">CCAFS knowledge by the numbers</a>
+        </div>
+      </div>
+      <div class="publication-card-landscape new-content-dashboard">
+        <div  class="img-landscape-container" >
+          <a href="https://sites.google.com/cgxchange.org/performance/home?authuser=0"> <img class="img-landscape" src="./images/CGIARPerformance&Results.png"   alt=""></a>
+        </div>
+        <div class="new-content-public">
+          <a href="https://sites.google.com/cgxchange.org/performance/home?authuser=0">One CGIAR Initiatives results dashboard</a>
+        </div>
+    </div>
+     </div>
+  </section>
+       <!-- Section indicators-->
+       <section class="counts section-bg indicators" id="indicators">
           <div class="container">
           <div class="section-title">
                <h2>Indicators</h2>
             </div>
+            <p align="center">The following numbers correspond to what the CGIAR Research Programs and Platforms have reported during 2018-2020</p>
            <div class="row">
              <div class="col-lg-3 col-md-6 text-center" data-aos="fade-up">
                <div class="count-box">
@@ -285,12 +385,12 @@
                </div>
              </div> 
            </div>
-           <p align="center">The following numbers correspond to what the CGIAR Research Programs and Platforms have reported during 2018-2020</p>
+           
           </div>
        </section>
        
         <!-- ======= Related publications Section ======= -->
-       <section class="services">
+       <section class="services publications" id="publications">
              <div class="section-title">
               <h2>Related Publications</h2>         
                <p class="publication">CLARISA unifies the language across different platforms, overcoming the common challenge of non-standardized information by supporting 
