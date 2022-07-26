@@ -1,3 +1,3 @@
 config={
-    endpoint: 'https://localhost:8443/marlo-web/api'
+    endpoint: 'https://clarisatest.ciat.cgiar.org/api'
 }
