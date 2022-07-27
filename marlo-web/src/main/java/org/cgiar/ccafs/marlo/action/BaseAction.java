@@ -3079,7 +3079,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                                 deliverableS.getDeliverable().setSharedWithProjects(""
                                   + sharedOthers.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
                               } else {
-                                if (deliverableS.getDeliverable().getSharedWithProjects() != null
+                                if (sharedOthers != null && sharedOthers.getProject() != null
+                                  && sharedOthers.getProject().getProjecInfoPhase(this.getActualPhase()) != null
+                                  && sharedOthers.getProject().getProjecInfoPhase(this.getActualPhase())
+                                    .getAcronym() != null
+                                  && deliverableS.getDeliverable().getSharedWithProjects() != null
                                   && (!deliverableS.getDeliverable().getSharedWithProjects().contains(sharedOthers
                                     .getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym()))) {
                                   deliverableS.getDeliverable().setSharedWithProjects(
