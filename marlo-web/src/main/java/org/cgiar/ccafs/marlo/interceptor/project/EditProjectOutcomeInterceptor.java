@@ -208,7 +208,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
     BaseAction action = (BaseAction) invocation.getAction();
     if (action.isAiccra() && outcome != null) {
-      this.addAllCrpMilestones(outcome);
+      // this.addAllCrpMilestones(outcome);
     }
 
     // Get The Crp/Center/Platform where the project was created
