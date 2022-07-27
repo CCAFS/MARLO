@@ -934,7 +934,7 @@
       <div class="commentContainer">
         <div class="commentTitle"></div>
         <p class="commentReadonly"></p> 
-        <div class="ContainerReactionComment" style="display:none">
+        <div class="containerReactionComment" style="display:none">
           <p class="reactionComment"></p>
         </div>
       </div>      
