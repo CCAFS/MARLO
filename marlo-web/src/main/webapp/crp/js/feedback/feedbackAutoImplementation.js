@@ -29,9 +29,7 @@ function attachEventsFeedback() {
 
   // Multiple comments-replies
   $('img.qaComment').on('click', function (event) {
-    console.log(this);
     let name = this.name;
-    console.log(this.name);
     let popUpTitle = $(this).attr('description');
     let qaPopup = $(`div[id^="qaPopup-${name}"]`);
     let block = $(`div[id^="qaCommentReply-${name}"]`);
@@ -260,7 +258,7 @@ function hideShowOptionButtons(block, status) {
                  block = $(`div[id^="qaPopup-${name}["]`).find('.qaCommentReplyBlock')
               }
               // div[id^="qaCommentReply-deliverable.deliverableInfo.title[0]"]
-              console.log("load ids")
+              //console.log("load ids")
 
               block.find('textarea[id="New comment"]').hide();
               block.find('textarea[id="New comment"]').next().next('p.charCount').hide();
@@ -278,7 +276,6 @@ function hideShowOptionButtons(block, status) {
               block.find('.clarificationCommentBtn').attr('commentId', qaComments[i][j].commentId);
               block.find('.replyCommentBtn').attr('commentId', qaComments[i][j].commentId);
 
-              
               if(qaComments[i][j].status) {               
                   block.find('.containerReactionComment').show();
                   block.find('.containerReactionComment p.reactionComment').html(reactionName(qaComments[i][j].status)+`${qaComments[i][j].approvalUserName} at ${qaComments[i][j].approvalDate}`);                 
@@ -412,7 +409,7 @@ function hideShowOptionButtons(block, status) {
   
       $(item).find('.agreeCommentBtn').attr('name', `${field[1]}[${index}]`);
       $(item).find('.deleteCommentBtn').attr('name', `${field[1]}[${index}]`);
-      $(item).find('.deleteReplyBtn').attr('name', `${name}[${index}]`);
+      $(item).find('.deleteReplyBtn').attr('name', `${field[1]}[${index}]`);
       $(item).find('.sendCommentContainer').attr('name', `${field[1]}[${index}]`);
       $(item).find('.agreeCommentBtn').attr('name', `${field[1]}[${index}]`);
       $(item).find('.disagreeCommentBtn').attr('name', `${field[1]}[${index}]`);
