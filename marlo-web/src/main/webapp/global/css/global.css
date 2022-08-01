@@ -7313,11 +7313,11 @@ img.qaCommentStatus {
   padding: 4px 10px;
 }
 
-.ContainerReactionComment{
+.containerReactionComment{
   width: 100%;
   background-color: #ffffffa1;
 }
-.ContainerReactionComment .reactionComment{
+.containerReactionComment .reactionComment{
   margin: 0px;
   font-size: 12px;
   padding: 0px 5px;
