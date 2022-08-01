@@ -5,7 +5,7 @@
   --alertColorSuccess: #37c06f;
   --alertColorWarning: #f5b10c;
   --alertColorInfo: #40aad4;
-  --alertColorBackgroundInfo: #b2dcf1;
+  --alertColorBackgroundInfo: #d9edf7;
   --alertColorBackgroundSuccess: #c7f9da;
   --alertColorBackgroundWarning: #fff3e5;
 }
@@ -7438,69 +7438,16 @@ img.qaOptions {
 
 
 
-/*********** Alert message **********/
-/* July 2022 */
-
-
-/*********** alert proposal 1**********/
-.alertTest{
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  border-radius: 7px;
-  margin-bottom: 10px;
-}
-
-
-.iconTest{
-  font-size: 20px;
-  color: white;
-}
-
-.divIconTest{ 
-  text-align: center;
-  height: auto;
-}
-
-.textTest{
-  margin: 0px 0px;
-  background-color: white;
-  width: 100%;
-
-}
-.material-icons{
-  font-size: 30px;
-  color: white;
-}
-.pTextTest{
-  margin: 20px 0px;
-  width: 100%;
-}
-
-.downloadTest{
-  padding-top: 15px;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-
-
-/*********** alert proposal 2**********/
-.containerAlertTest{
+.containerAlert{
   display: flex;
   position: relative;
-   border-radius: 7px 0px 0px 7px;  
+   border-radius: 9px 0px 0px 9px;  
    display: flex;
    align-items: center;
    justify-content: center;
 }
 
-.containerLineTest{
+.containerLine{
   width: 7px;
   position: absolute;
   left: 0;
@@ -7514,9 +7461,10 @@ img.qaOptions {
   display: flex;
   align-items: center;
   height: 100%;
+  margin: 7px 0px;
 }
 
-.containerIconTest{
+.containerIcon{
   min-width: 40px;
   border-radius: 100%; 
   margin-left: 10px;  
@@ -7526,17 +7474,21 @@ img.qaOptions {
   justify-content: center;
 }
 
-.containerIconTest i{
+.containerIcon i{
   font-size: 25px;
 }
 
-.containerTextTest{
+.containerText{
   display: table;
 }
 
+.containerIcon .material-icons{
+  font-size: 25px;
+  color: white;
+}
 
 
-.ContainerDownloadTest{
+.ContainerDownload{
   padding-top: 0px;
   margin: auto;
   display: flex;
@@ -7576,23 +7528,17 @@ img.qaOptions {
 }
 
 
-/*********** button download alert  2**********/
 
-.DownloadButton.cinco span {
+.DownloadButton span {
 	transition: .9s ease-in-out all;
 	position: absolute;
-	left: 32%;
+	left: 20%;
   width: 10px;
 }
 
 .DownloadButton .IconDownloadButton {
-	display: flex;
-	align-items: center;
-	position: absolute;
-	z-index: 2;
-	left: -40px;
-	transition: .9s ease-in-out all;
-	opacity: 0;
+  position: absolute;
+	left: 70%;
 }
 
 .DownloadButton svg {
@@ -7611,15 +7557,13 @@ img.qaOptions {
 }
 
 .DownloadButton:hover span {
-  width: 70px;
-	left: 10px;
 }
 
 .DownloadButton {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 100%;
+	width: 150px;
 	height: 40px;
 	background: #4ca973a6;
 	color: white;
@@ -7636,8 +7580,14 @@ img.qaOptions {
   margin: 10px 0;
 }
 
-.DownloadButton span {
-	position: relative;
-	z-index: 2;
-	transition: .9s ease all;
+
+.alert-leftovers {
+  position: relative;
+  -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 18%);
+  -moz-box-shadow: 1px 2px 8px rgba(0, 0, 0, .3);
+  -moz-border-radius: 2px;
+  padding: 5px;
+  border: 1px solid #EEE;
+  margin-bottom: 10px;
+  height: 100%;
 }
