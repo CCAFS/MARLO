@@ -36,6 +36,8 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/deliverableListTemplate.ftl" as deliverableList /]
 
+<!--- 
+
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
@@ -57,51 +59,47 @@
   </div>
 <div class="viewMore closed"></div>
 </div>
-
-
-
-
-<!-- alert proposal 1-->
-<!--
-<div class="container helpText viewMore-block">
-  <div class="alertTest  legendContent-global alertColorSucces">
-    <div class="divIconTest col-md-1">
-      <span class="material-icons">done</span> 
-    </div>
-    <div class="textTest">
-      <p class="col-md-12 pTextTest">
-        The Information was correctly saved.
-      </p>   
-    </div>
-  </div>
-</div>
 -->
 
-<!-- alert proposal 2-->
-<!-- 
-<div class="container helpText viewMore-block">
-  <div class="containerAlertTest  legendContent-global alertColorBackgroundInfo">
-    <div class="containerLineTest alertColorInfo"></div>
+
+<div class="container  viewMore-block">
+  <div class=" containerAlert alert-leftovers alertColorBackgroundInfo ">
+    <div class="containerLine alertColorInfo"></div>
     <div class="containerIcon">
-      <div class="containerIconTest alertColorInfo">
+      <div class="containerIcon alertColorInfo">
         <i class="material-icons">question_mark</i>      
       </div>
     </div>
-    <div class="containerTextTest col-md-9">
-      <p class="alertText">[@s.text name="deliverable.message"][/@s.text]</p>
-    </div>
-    <div class="ContainerDownloadTest col-md-2">          
-      <button class="DownloadButton cinco">
-				<div class="IconDownloadButton">
-					<img src="https://cdn-icons-png.flaticon.com/512/337/337958.png" height="30"/>
-				</div>
-				<span for="">[@s.text name="Download Template" /]</span>
-			</button>
-      </div>   
+    <div class="containerText col-md-12">
+      <p class="alertText">[#if reportingActive] [@s.text name="project.deliverableList.help2" /] [#else] [@s.text name="project.deliverableList.help1" /] [/#if]</p>
     </div>
   </div>
 </div>
--->
+
+<div class="container  viewMore-block">
+  <div class="containerAlert  alert-leftovers alertColorBackgroundInfo">
+    <div class="containerLine alertColorInfo"></div>
+    <div class="containerIcon">
+      <div class="containerIcon alertColorInfo">
+        <i class="material-icons">priority_high</i>      
+      </div>
+    </div>
+    <div class="containerText col-md-9">
+      <p class="alertText">[@s.text name="deliverable.message"][/@s.text]</p>
+    </div>
+    <div class="ContainerDownload col-md-2">     
+    <a href="${baseUrlCdn}/global/documents/AICCRA_dissemination_templates_2021.xlsx">     
+      <button class="DownloadButton " >
+        <div class="IconDownloadButton">
+          <img src="https://cdn-icons-png.flaticon.com/512/337/337958.png" height="30"/>
+        </div>
+        <span for="">[@s.text name="Download Template" /]</span>
+			</button>
+      </a>
+    </div>   
+  </div>
+</div>
+
 
 <section class="container">
     <div class="row">
