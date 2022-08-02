@@ -1372,7 +1372,11 @@ public class DeliverableAction extends BaseAction {
             .collect(Collectors.toList());
 
           if (deList != null && !deList.isEmpty()) {
-            Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            try {
+              Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            } catch (Exception e) {
+              logger.error("unable to sort dlist", e);
+            }
             deliverable.setResponsiblePartnership(new ArrayList<>());
             for (DeliverableUserPartnership deliverableUserPartnership : deList) {
 
@@ -1401,7 +1405,11 @@ public class DeliverableAction extends BaseAction {
             .collect(Collectors.toList());
 
           if (deList != null && !deList.isEmpty()) {
-            Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            try {
+              Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            } catch (Exception e) {
+              logger.error("unable to sort dlist", e);
+            }
             deliverable.setOtherPartnerships(new ArrayList<>());
             for (DeliverableUserPartnership deliverableUserPartnership : deList) {
 
@@ -2153,9 +2161,48 @@ public class DeliverableAction extends BaseAction {
    * @param phase
    */
   public void saveCrpOutcomes(Deliverable deliverable, Phase phase) {
+    // Get the IPI 2.3 object
+    CrpProgramOutcome crpProgramOutcomeIPI = new CrpProgramOutcome();
+    boolean uniqueIPI = true;
+    boolean addIPI = false;
+    try {
+
+      // Check deliverable type
+      if ((deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getDeliverableType() != null
+        && deliverable.getDeliverableInfo().getDeliverableType().getId() == 145)
+        || (deliverable.getDeliverableParticipant() != null
+          && deliverable.getDeliverableParticipant().getHasParticipants() != null
+          && deliverable.getDeliverableParticipant().getHasParticipants())) {
+        addIPI = true;
+      }
+
+      if (addIPI) {
+
+        if (programOutcomes != null && !programOutcomes.isEmpty()) {
+          crpProgramOutcomeIPI =
+            programOutcomes.stream().filter(o -> o.getAcronym() != null && o.getAcronym().equals("IPI 2.3"))
+              .collect(Collectors.toList()).get(0);
+        }
+
+        // Check if deliverable is already mapped to IPI 2.3 object
+        if (deliverable.getCrpOutcomes() != null && !deliverable.getCrpOutcomes().isEmpty()) {
+          for (DeliverableCrpOutcome deliverableOutcome : deliverable.getCrpOutcomes()) {
+            if (crpProgramOutcomeIPI != null && crpProgramOutcomeIPI.getId() != null
+              && deliverableOutcome.getCrpProgramOutcome() != null
+              && deliverableOutcome.getCrpProgramOutcome().getId() != null
+              && deliverableOutcome.getCrpProgramOutcome().getId().equals(crpProgramOutcomeIPI.getId())) {
+              uniqueIPI = false;
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.error("unable to map IPI 2.3", e);
+    }
+
 
     // Search and deleted form Information
-    if (deliverable.getDeliverableCrpOutcomes() != null && deliverable.getDeliverableCrpOutcomes().size() > 0) {
+    if (deliverable.getDeliverableCrpOutcomes() != null && !deliverable.getDeliverableCrpOutcomes().isEmpty()) {
 
       List<DeliverableCrpOutcome> outcomePrev = new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
         .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
@@ -2171,6 +2218,14 @@ public class DeliverableAction extends BaseAction {
 
     // Save form Information
     if (this.deliverable.getCrpOutcomes() != null) {
+
+      if (uniqueIPI && addIPI) {
+        DeliverableCrpOutcome deliverableCrpOutcome = new DeliverableCrpOutcome();
+        deliverableCrpOutcome.setDeliverable(deliverable);
+        deliverableCrpOutcome.setCrpProgramOutcome(crpProgramOutcomeIPI);
+        this.deliverable.getCrpOutcomes().add(deliverableCrpOutcome);
+      }
+
       for (DeliverableCrpOutcome deliverableOutcome : this.deliverable.getCrpOutcomes()) {
         if (deliverableOutcome != null && deliverableOutcome.getId() == null) {
           DeliverableCrpOutcome deliverableOutcomeSave = new DeliverableCrpOutcome();
