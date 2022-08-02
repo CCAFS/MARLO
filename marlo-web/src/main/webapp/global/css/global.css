@@ -7551,10 +7551,7 @@ img.qaOptions {
 	background: #32a562d1;
 }
 
-.DownloadButton:hover .IconDownloadButton {
-	left: calc(100% - 50px);
-	opacity: 1;
-}
+
 
 .DownloadButton {
 	display: inline-flex;
@@ -7564,9 +7561,9 @@ img.qaOptions {
 	height: 40px;
 	background: #4ca973a6;
 	color: white;
-	font-family: 'Roboto', sans-serif;
-	font-size: 13px;
-	font-weight: 650;
+	font-size: 12px;
+  line-height:110%;
+	font-weight: 500;
 	border: none;
 	cursor: pointer;
 	transition: .3s ease all;
