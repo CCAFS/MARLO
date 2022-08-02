@@ -7556,9 +7556,6 @@ img.qaOptions {
 	opacity: 1;
 }
 
-.DownloadButton:hover span {
-}
-
 .DownloadButton {
 	display: inline-flex;
 	align-items: center;
@@ -7577,7 +7574,8 @@ img.qaOptions {
 	position: relative;
 	overflow: hidden;
   text-align: center;
-  margin: 10px 0;
+  display: flex;
+  align-items: center;
 }
 
 
