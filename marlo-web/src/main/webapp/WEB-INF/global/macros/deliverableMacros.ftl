@@ -215,7 +215,11 @@
     [/#if]
   </div>
 
-  <div class="block-involveParticipants" style="display:${((deliverable.deliverableParticipant.hasParticipants)!false)?string('block','none')}">
+  <div class="block-involveParticipants" 
+    [#if !capacityEventType]
+      style="display:${((deliverable.deliverableParticipant.hasParticipants)!false)?string('block','none')}"    
+    [/#if]
+  >
     <hr />
     [#-- Title Event/Activity --]
     <div class="form-group text-area-container">
