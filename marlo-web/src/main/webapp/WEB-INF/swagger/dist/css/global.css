@@ -12,6 +12,9 @@
   border-bottom: 1px solid #f5f3f3;
 }
 
+#services{
+  background: #f5f9fc;
+}
 
 .swagger-ui .wrapper {
   width: 80% !important;
