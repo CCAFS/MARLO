@@ -933,8 +933,11 @@
     <div class="commentCheckContainer">
       <div class="commentContainer">
         <div class="commentTitle"></div>
-        <p class="commentReadonly"></p>
-      </div>
+        <p class="commentReadonly"></p> 
+        <div class="containerReactionComment" style="display:none">
+          <p class="reactionComment"></p>
+        </div>
+      </div>      
     </div>
     <div class="replyContainer">
       [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
@@ -951,7 +954,9 @@
         <div style="position: absolute; bottom: 50px !important; right: 0;"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
         <img class="agreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/agree.png" title="Agree">
         <img class="disagreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/disagree.png" title="Disagree">
+        [#if action.hasSpecificities('feedback_clarification_needed_active') ]
         <img class="clarificationCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/question.png" title="Clarification needed">
+        [/#if]
         <img class="replyCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/auto-reply.png" title="Reply">
       </div>
       <div class="addCommentContainer" index="${index}" title="Clarification needed"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>
