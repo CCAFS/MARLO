@@ -50,6 +50,10 @@ public class GlossaryItem<T> {
   public ResponseEntity<GlossaryDTO> findGlossaryById(Long id) {
     Glossary glossary = this.glossaryManager.getGlossaryById(id);
 
+    if (glossary != null && (glossary.getId() == null || (!glossary.isActive()))) {
+      glossary = null;
+    }
+
     return Optional.ofNullable(glossary).map(this.glossaryMapper::glossaryToGlossaryDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
@@ -63,6 +67,7 @@ public class GlossaryItem<T> {
     if (this.glossaryManager.getAll() != null) {
       List<Glossary> glossaryList = new ArrayList<>(this.glossaryManager.getAll());
       List<GlossaryDTO> glossaryListDTO = glossaryList.stream()
+        .filter(g -> g != null && g.getId() != null && g.isActive())
         .map(glossaryEntity -> this.glossaryMapper.glossaryToGlossaryDTO(glossaryEntity)).collect(Collectors.toList());
       return glossaryListDTO;
     } else {
