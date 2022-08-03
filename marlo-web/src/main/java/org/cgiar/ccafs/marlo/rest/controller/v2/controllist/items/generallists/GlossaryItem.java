@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.rest.dto.GlossaryDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.GlossaryMapper;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -68,6 +69,7 @@ public class GlossaryItem<T> {
       List<Glossary> glossaryList = new ArrayList<>(this.glossaryManager.getAll());
       List<GlossaryDTO> glossaryListDTO = glossaryList.stream()
         .filter(g -> g != null && g.getId() != null && g.isActive())
+        .sorted(Comparator.comparing(Glossary::getTitle, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)))
         .map(glossaryEntity -> this.glossaryMapper.glossaryToGlossaryDTO(glossaryEntity)).collect(Collectors.toList());
       return glossaryListDTO;
     } else {
