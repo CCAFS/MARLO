@@ -1,0 +1,9 @@
+.iframe_container{
+    margin-top: 100px;
+}
+
+.iframe_container iframe{
+        width: 100%;
+        height: 90vh;
+}
+
