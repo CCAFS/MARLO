@@ -1,5 +1,14 @@
 /************* 1. GENERAL ***************/
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800); @import url("custom.pickadate.css"); @import url("custom.bootstrap.css"); @import url("customLogin.css?20201120"); @import url("customInputsFlat.css"); @import url("customTrumbowyg.css"); /* END IMPORTS*/
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800);@import url("custom.pickadate.css"); @import url("custom.bootstrap.css");@import url("customLogin.css?20201120"); @import url("customInputsFlat.css");@import url("customTrumbowyg.css");@import url(https://fonts.googleapis.com/icon?family=Material+Icons);/* END IMPORTS*/
+
+:root{
+  --alertColorSuccess: #37c06f;
+  --alertColorWarning: #f5b10c;
+  --alertColorInfo: #40aad4;
+  --alertColorBackgroundInfo: #d9edf7;
+  --alertColorBackgroundSuccess: #c7f9da;
+  --alertColorBackgroundWarning: #fff3e5;
+}
 .mce-widget.mce-tooltip {
   display: none !important;
 }
@@ -7434,4 +7443,156 @@ img.qaOptions {
   border: 1px dashed #d5d5d5;
   padding: 5px;
   min-height: 77px;
+}
+
+
+
+
+.containerAlert{
+  display: flex;
+  position: relative;
+   border-radius: 9px 0px 0px 9px;  
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.containerLine{
+  width: 7px;
+  position: absolute;
+  left: 0;
+  top:0px;
+  height: 100%;
+  border-radius: 7px 0px 0px 7px;
+}
+
+.containerIcon{
+  height: 100%;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin: 7px 0px;
+}
+
+.containerIcon{
+  min-width: 40px;
+  border-radius: 100%; 
+  margin-left: 10px;  
+  height: 40px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.containerIcon i{
+  font-size: 25px;
+}
+
+.containerText{
+  display: table;
+}
+
+.containerIcon .material-icons{
+  font-size: 25px;
+  color: white;
+}
+
+
+.ContainerDownload{
+  padding-top: 0px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.alertColorSucces{
+  background: var(--alertColorSuccess);  
+}
+
+.alertColorWarning{
+  background: var(--alertColorWarning);  
+}
+
+.alertColorInfo{
+  background: var(--alertColorInfo);  
+}
+
+.alertColorBackgroundInfo{
+  background: var(--alertColorBackgroundInfo);  
+}
+
+.alertColorBackgroundSucces{
+  background: var(--alertColorBackgroundSuccess);  
+}
+
+.alertColorBackgroundWarning{
+  background: var(--alertColorBackgroundWarning);  
+}
+
+.alertText{
+  display: table-cell;
+  vertical-align: middle;
+  
+}
+
+
+
+.DownloadButton span {
+	transition: .9s ease-in-out all;
+	position: absolute;
+	left: 20%;
+  width: 10px;
+}
+
+.DownloadButton .IconDownloadButton {
+  position: absolute;
+	left: 70%;
+}
+
+.DownloadButton svg {
+	color: #fff;
+	width: 35px;
+	height: 35px;
+}
+
+.DownloadButton:hover {
+	background: #32a562d1;
+}
+
+
+
+.DownloadButton {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 150px;
+	height: 40px;
+	background: #4ca973a6;
+	color: white;
+	font-size: 12px;
+  line-height:110%;
+	font-weight: 500;
+	border: none;
+	cursor: pointer;
+	transition: .3s ease all;
+	border-radius: 5px;
+	position: relative;
+	overflow: hidden;
+  text-align: center;
+  display: flex;
+  align-items: center;
+}
+
+
+.alert-leftovers {
+  position: relative;
+  -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 18%);
+  -moz-box-shadow: 1px 2px 8px rgba(0, 0, 0, .3);
+  -moz-border-radius: 2px;
+  padding: 5px;
+  border: 1px solid #EEE;
+  margin-bottom: 10px;
+  height: 100%;
 }
