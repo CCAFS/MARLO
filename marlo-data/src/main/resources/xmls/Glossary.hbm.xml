@@ -16,5 +16,11 @@
     <property name="definition" type="string" >
       <column name="definition" sql-type="TEXT" />
     </property>
+    <property name="activeSince" type="timestamp" update="false">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
   </class>
 </hibernate-mapping>
