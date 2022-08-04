@@ -484,6 +484,7 @@
 [/#macro]
 
 [#macro yesNoInputDeliverableParticipants name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass="" neutral=false]
+  [#local capacityEventType = ((deliverable.deliverableInfo?has_content) && (deliverable.deliverableInfo.deliverableType?has_content) && (deliverable.deliverableInfo.deliverableType.id?has_content) && deliverable.deliverableInfo.deliverableType.id == 145)!false]
   [#if value == ""]
     [#assign customValue][@s.property value="${name}"/][/#assign]
   [#else]
@@ -500,8 +501,13 @@
         <input id="${name}-yes" class="radio-input yesInput" type="radio" name="${name}" value="true" [#if (customValue == "true")!false]checked[/#if] />
         <label for="${name}-yes" class="${neutral?string('neutral', '')} yes-button-label button-label value-true [#if (customValue == "true")!false]radio-checked[/#if]"> ${yesLabel} </label>
         [#-- No Button --]
-        <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false" [#if (customValue != "true")!false]checked[/#if] />
-        <label for="${name}-no" class="${neutral?string('neutral', '')} no-button-label button-label value-false [#if (customValue != "true")!false]radio-checked[/#if]"> ${noLabel} </label>
+        [#if capacityEventType]
+          <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false" [#if (customValue != "true")!false]checked[/#if] />
+          <label class="button-label no-button-label-disabled "> ${noLabel} </label>
+        [#else]
+          <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false" [#if (customValue != "true")!false]checked[/#if] />
+          <label for="${name}-no" class="${neutral?string('neutral', '')} no-button-label button-label value-false [#if (customValue != "true")!false]radio-checked[/#if]"> ${noLabel} </label>      
+        [/#if]
       [#else]
         <p style="text-align:center; display: inline-block"> [#if customValue=="true"]Yes[#elseif customValue == "false"]No[#else]Not selected[/#if]</p>
       [/#if]
