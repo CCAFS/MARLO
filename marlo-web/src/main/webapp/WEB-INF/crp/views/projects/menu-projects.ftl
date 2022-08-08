@@ -59,6 +59,16 @@
       { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': true, 'show': action.getCountProjectFlagships(project.id) && !reportingActive && isCrpProject, "showCheck": isGlobalUnitProject},
       { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingActive && action.hasSpecificities("crp_leverages_module") && isCrpProject, "showCheck": isGlobalUnitProject}
       ]
+    },
+    { 'title': 'Safeguards', 'show':(UpKeepActive || reportingActive) && !project.projectInfo.administrative,
+      'items': [
+      { 'slug': 'safeguards',  'name': 'projects.menu.safeguards',  'action': 'safeguards',  'active': true  ,'show': (UpKeepActive || reportingActive) && !project.projectInfo.administrative, "showCheck": true, "development": false }
+      ]
+    },
+    { 'title': 'Feedback', 'show': action.hasSpecificities(action.feedbackModule()),
+      'items': [
+      { 'slug': 'feedback',  'name': 'projects.menu.feedback',  'action': 'feedback',  'active': true  ,'show': action.hasSpecificities(action.feedbackModule()), "showCheck": false }
+      ]
     }
     
   ]/]

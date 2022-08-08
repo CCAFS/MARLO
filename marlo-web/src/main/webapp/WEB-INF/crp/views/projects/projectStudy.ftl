@@ -3,9 +3,10 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${expectedID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload", "flag-icon-css", "components-font-awesome"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectStudy.js?20210127",
+  "${baseUrlMedia}/js/projects/projectStudy.js?20220721",
   "${baseUrlCdn}/global/js/autoSave.js",
-  "${baseUrlCdn}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/fieldsValidation.js",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220729B"
   ] 
 /]
 [#assign customCSS = [
@@ -30,7 +31,14 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/studiesTemplates.ftl" as studies /]
-
+[#if action.hasSpecificities('feedback_active') ]
+  [#list feedbackComments as feedback]
+    [@customForm.qaPopUpMultiple fields=feedback.qaComments name=feedback.fieldDescription index=feedback_index canLeaveComments=(action.canLeaveComments()!false)/]
+  [/#list]
+  <div id="qaTemplate" style="display: none">
+    [@customForm.qaPopUpMultiple canLeaveComments=(action.canLeaveComments()!false) template=true/]
+  </div>
+[/#if]
 
 [#assign isOutcomeCaseStudy = ((expectedStudy.projectExpectedStudyInfo.studyType.id == 1)!false) && reportingActive/]
 [#if isOutcomeCaseStudy]
@@ -62,6 +70,17 @@
               <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectStudies.backProjectStudies" /]
             </a>
           </small>
+
+          [#if action.hasSpecificities('feedback_active') ]
+            <div class="form-group col-md-12 legendContent-global">
+              <div class="colors-global">
+                <div class="col-md-12 form-group "><b>Feedback status:</b></div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.blue" /]</div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_yellow.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.yellow" /]</div>
+                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_green.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.green" /]</div>
+              </div>
+            </div>
+          [/#if]
           
           [#-- Outcome case studies list --]
           <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformation" /]</h3>

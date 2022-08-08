@@ -11,7 +11,7 @@
   </div>
   [#-- Type and subtype inputs --]
   <div class="form-group row">
-    <div class="col-md-6 ">
+    <div class="col-md-6">
       [@customForm.select name="deliverable.deliverableInfo.deliverableType.deliverableCategory.id" label=""  i18nkey="project.deliverable.generalInformation.type" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" editable=editable/]
     </div>
     <div class="col-md-6 subType-select">
@@ -137,13 +137,26 @@
   [#-- Key Outputs select --]
   [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]
     <div class="form-group">
+  
+
+        [@customForm.elementsListComponent name="deliverable.crpOutcomes" elementType="crpProgramOutcome" elementList=(deliverable.crpOutcomes)![] label="project.deliverable.generalInformation.keyOutput" listName="programOutcomes" keyFieldName="id" displayFieldName="composedName" required=true maxLimit=3/]
+          <div class="note left">
+            <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.keyOutputNotice" /]
+            </a>
+          </div>
+
+    
+    
       [#if action.isAiccra()]
-        [@customForm.elementsListComponent name="deliverable.projectOutcomes" elementType="projectOutcome" elementList=(deliverable.projectOutcomes)![] label="project.deliverable.generalInformation.keyOutput" listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName" required=true maxLimit=1/]
+      [#--  
+        [@customForm.elementsListComponent name="deliverable.projectOutcomes" elementType="projectOutcome" elementList=(deliverable.projectOutcomes)![] label="project.deliverable.generalInformation.keyOutput" listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName" required=true maxLimit=3/]
         <div class="note left">
           <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
             <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.keyOutputNotice" /]
           </a>
         </div>
+        --]
       [#else]
         [#if !(keyOutcomes?has_content) && editable]
           <p class="note">The Performance Indicators list come from the Project Indicators you choose in ‘[@s.text name="projects.menu.contributionsCrpList" /]’, once the project is contributing, this deliverable can be mapped to a specific Performance indicator.</p>
@@ -191,8 +204,9 @@
         [/#if]
         </ul>
         [#if editable ]
-          [@customForm.select name="deliverable.deliverableActivity.id" label="" showTitle=false  i18nkey="" listName="activities" keyFieldName="id"  displayFieldName="title"  header=true required=false  className="activity" editable=true/]
-
+      
+           [@customForm.select name="deliverable.deliverableActivity.id" label="" showTitle=false  i18nkey="" listName="activities" keyFieldName="id"  displayFieldName="title"  header=true required=false  className="activity" editable=true/]
+        
           [#if !activities?has_content]
             <div class="note"> [@s.text name="project.deliverable.activities.empty" /]  </div>
           [/#if]

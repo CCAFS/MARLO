@@ -2,7 +2,8 @@
 [#macro text name readText=false param=""][#assign customName][#if readText]${name}.readText[#else]${name}[/#if][/#assign][@s.text name="${customName}"][@s.param]${param}[/@s.param][/@s.text][/#macro]
 
 [#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" helpIcon=true display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder="" inputGroupText="" maxlength=""]
-  <div class="input ${changedField(name)}" style="display:${display?string('block','none')};">
+  <div class="feedback-flex-items"></div>
+  <div class="input fieldReference ${changedField(name)}" style="display:${display?string('block','none')};">
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#if showTitle]
       <label for="${name}" class="${editable?string('editable', 'readOnly')}">${labelTitle}:[@req required=required && editable /]</label>
@@ -27,10 +28,17 @@
       <p>[#if (customValue?has_content)!false] [#if isCurrencyInput]<nobr>US$ ${((customValue)!'0')?number?string(",##0.00")}</nobr>[#else]${customValue}[/#if]  [#else]${requiredText}[@s.text name="form.values.fieldEmpty" /][/#if]</p>
     [/#if]
   </div>
+  <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+  </div>
 [/#macro]
 
 [#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false]
-  <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
+  <div class="feedback-flex-items"></div>
+  <div class="textArea fieldReference ${changedField(name)}" [#if !display]style="display: none;"[#else]style="width: 100%;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
     [#-- Get Custom Value --]
@@ -56,6 +64,12 @@
         [#if (customValue?has_content)!false]${customValue?replace('\n', '<br>')}[#else]${requiredText}[@s.text name=fieldEmptyText /][/#if]
       </p>
     [/#if] 
+  </div>
+  <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
   </div>
 [/#macro]
 
@@ -128,7 +142,8 @@
 [/#macro]
 
 [#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" editable=true]
-  <div class="select ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
+  <div class="feedback-flex-items"></div>
+  <div class="select fieldReference ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
     [#if showTitle]
@@ -219,6 +234,12 @@
           [/#if]
       [/#if]  
     </div> 
+  </div>
+    <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
   </div>
 [/#macro]
 
@@ -436,7 +457,8 @@
   [#else]
     [#assign customValue=value /]
   [/#if]
-  <div class="onoffswitch ${changedField(name)} ${cssClass}">
+  <div class="feedback-flex-items"></div>
+  <div class="onoffswitch fieldReference ${changedField(name)} ${cssClass}">
     [#if label?has_content]
       <label for="${name}">[@s.text name=label/]</label>
     [/#if]
@@ -453,6 +475,12 @@
       [/#if]
     </div>
   </div>
+  <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+  </div>
 [/#macro]
 
 [#macro yesNoInputDeliverableParticipants name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass="" neutral=false]
@@ -461,7 +489,8 @@
   [#else]
     [#assign customValue=value /]
   [/#if]
-  <div class="onoffswitch ${changedField(name)} ${cssClass}">
+  <div class="feedback-flex-items"></div>
+  <div class="onoffswitch fieldReference ${changedField(name)} ${cssClass}">
     [#if label?has_content]
       <label for="${name}">[@s.text name=label/]</label>
     [/#if]
@@ -478,14 +507,27 @@
       [/#if]
     </div>
   </div>
+  <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+  </div>
 [/#macro]
 
 
 [#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" inline=true columns=0]
   [#if editable]
-  <div class="radioFlat [#if columns > 1]col-md-${columns}[/#if] ${inline?string('radio-inline', '')}">
+  <div class="feedback-flex-items radioFlat-flex"></div>
+  <div class="fieldReference radioFlat [#if columns > 1]col-md-${columns}[/#if] ${inline?string('radio-inline', '')}">
     <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
     <label for="${id}" class="radio-label ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>
+  </div>
+  <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
   </div>
   [#elseif checked]
     <p>[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</p>
@@ -588,7 +630,8 @@
   [#if id?has_content]
     [#local composedID = "${elementType}-${id}" /]
   [/#if]
-  <div class="panel tertiary elementsListComponent" listname="${name}" style="position:relative">
+  <div class="feedback-flex-items"></div>
+  <div class="fieldReference panel tertiary elementsListComponent" listname="${name}" style="position:relative">
     <div class="panel-head">
       <label for="">[@s.text name=label /]:[@req required=required && (editable || forceEditable) /]
         [#--  Help Text --]
@@ -618,6 +661,13 @@
     <ul style="display:none">
       [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true hasPrimary=hasPrimary onlyElementIDs=onlyElementIDs isEditable=(editable || forceEditable) /]
     </ul>
+    <input type="hidden" name="${name}[]"/>
+  </div>
+    <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
   </div>
 [/#macro]
 
@@ -813,4 +863,104 @@
    <div id="helpViewMoreBlock" class="collapse" aria-labelledby="helpViewMoreBlock" data-parent="#helpViewMoreLink">
       <i class="helpLabel">[@s.text name="${customName}" /]</i>
    </div>
+[/#macro]
+
+[#macro qaPopUp]
+  <div id="qaPopup">
+    <div class="closeComment"></div>
+    <br>
+    [@customForm.textArea name="Comment on" required=false className="limitWords-100" editable=editable /]
+    <div class="commentCheckContainer">
+      <div class="commentContainer">
+        <div class="commentTitle"></div>
+        <p class="commentReadonly"></p>
+      </div>
+      <div class="checkContainer">
+        <img src="${baseUrlCdn}/global/images/agree.png" class="agreeComment" title="Agree">
+        <img src="${baseUrlCdn}/global/images/disagree.png" class="disagreeComment" title="Disagree">
+        <img src="${baseUrlCdn}/global/images/question.png" class="clarificationComment" title="Clarification needed">
+      </div>
+    </div>
+    <div class="replyContainer">
+      <br>
+      [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
+      <div class="replyTextContainer">
+        <div class="replyTitle"></div>
+        <p class="replyReadonly"></p>
+        <div style="position: absolute; bottom: 50px !important; right: 0;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;" ></div></div>
+      </div>
+      <div id="sendReplyContainer" class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+    </div>  
+    <br>
+    <div id="sendCommentContainer" class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+    <div class="optionsContainer">
+      <img id="agreeCommentBtn" src="${baseUrlCdn}/global/images/agree.png" class="qaOptions" title="Agree">
+      <img id="disagreeCommentBtn" src="${baseUrlCdn}/global/images/disagree.png" class="qaOptions" title="Disagree">
+      <img id="clarificationCommentBtn" src="${baseUrlCdn}/global/images/question.png" class="qaOptions" title="Clarification needed">
+      <img id="replyCommentBtn" src="${baseUrlCdn}/global/images/auto-reply.png" class="qaOptions" title="Reply">
+    </div>
+  </div>
+[/#macro]
+
+[#macro qaPopUpMultiple fields="" name="" index=-1 canLeaveComments=false template=false]
+  [#local customName = "${template?string('TEMPLATE', '')}${name}[${index}]"]
+  <div id="qaPopup-${customName}" class="qaPopup">
+    <div class="closeComment" name="${name}"></div>
+    <br>
+    [#if fields?has_content]
+      [#list fields as field]
+        [@qaCommentReplyBlock name=name index=field_index canLeaveComments=canLeaveComments/]
+      [/#list]
+    [#else]
+      [@qaCommentReplyBlock name=name canLeaveComments=canLeaveComments/]
+    [/#if]
+  </div>
+[/#macro]
+
+[#macro qaCommentReplyBlock name="" index=0 canLeaveComments=false]
+  [#if index == 0]
+    [#local showTitle = true]
+  [#else]
+    [#local showTitle = false]
+  [/#if]
+
+  [#if editable == false]
+    [#assign editable = canLeaveComments??]
+  [/#if]
+
+  <div id="qaCommentReply-${name}[${index}]" class="qaCommentReplyBlock" index="${index}"  style="position:relative">
+    [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle /]
+    <div class="commentCheckContainer">
+      <div class="commentContainer">
+        <div class="commentTitle"></div>
+        <p class="commentReadonly"></p> 
+        <div class="containerReactionComment" style="display:none">
+          <p class="reactionComment"></p>
+        </div>
+      </div>      
+    </div>
+    <div class="replyContainer">
+      [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
+      <div class="replyTextContainer">
+        <div class="replyTitle"></div>
+        <p class="replyReadonly"></p>
+        <div style="position: absolute; bottom: 50px !important; right: 0;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
+      </div>
+      <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+    </div>
+    <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+    <div class="buttonsContainer">
+      <div class="optionsContainer">
+        <div style="position: absolute; bottom: 50px !important; right: 0;"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
+        <img class="agreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/agree.png" title="Agree">
+        <img class="disagreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/disagree.png" title="Disagree">
+        [#if action.hasSpecificities('feedback_clarification_needed_active') ]
+        <img class="clarificationCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/question.png" title="Clarification needed">
+        [/#if]
+        <img class="replyCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/auto-reply.png" title="Reply">
+      </div>
+      <div class="addCommentContainer" index="${index}" title="Clarification needed"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>
+    </div>
+    <br>
+  </div>
 [/#macro]

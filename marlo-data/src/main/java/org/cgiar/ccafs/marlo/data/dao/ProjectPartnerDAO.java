@@ -70,6 +70,9 @@ public interface ProjectPartnerDAO {
 
   public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPartnerPersons(long projectId);
 
+  public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(long projectId,
+    long phaseId);
+
 
   /**
    * This method saves the information of the given projectPartner

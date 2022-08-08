@@ -354,6 +354,12 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
   }
 
   @Override
+  public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(long projectId,
+    long phaseId) {
+    return projectPartnerDAO.getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(projectId, phaseId);
+  }
+
+  @Override
   public ProjectPartner saveProjectPartner(ProjectPartner projectPartner) {
 
     ProjectPartner resultPartner = projectPartnerDAO.save(projectPartner);
@@ -368,12 +374,12 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
     // }
     // }
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (projectPartner.getPhase().getNext() != null) {
-        this.addProjectPartnerDAO(projectPartner.getPhase().getNext(), projectPartner.getProject().getId(),
-          projectPartner);
-      }
+    // if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+    if (projectPartner.getPhase().getNext() != null) {
+      this.addProjectPartnerDAO(projectPartner.getPhase().getNext(), projectPartner.getProject().getId(),
+        projectPartner);
     }
+    // }
 
 
     return resultPartner;

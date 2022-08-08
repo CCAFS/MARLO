@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDataSharingFileManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
@@ -48,6 +49,8 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipPersonManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
@@ -82,6 +85,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
@@ -101,6 +105,8 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GenderType;
@@ -232,6 +238,10 @@ public class DeliverableAction extends BaseAction {
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
   private ProjectOutcomeManager projectOutcomeManager;
   private DeliverableProjectOutcomeManager deliverableProjectOutcomeManager;
+  private DeliverableCrpOutcomeManager deliverableCrpOutcomeManager;
+  private FeedbackQACommentManager feedbackQACommentManager;
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+
 
   // Variables
   private List<DeliverableQualityAnswer> answers;
@@ -274,6 +284,7 @@ public class DeliverableAction extends BaseAction {
   private DeliverableGeographicRegionManager deliverableGeographicRegionManager;
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
   private List<Project> myProjects;
+  private List<FeedbackQACommentableFields> feedbackComments;
 
 
   private List<RepIndGenderYouthFocusLevel> focusLevels;
@@ -318,7 +329,10 @@ public class DeliverableAction extends BaseAction {
     DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, DeliverableActivityManager deliverableActivityManager,
     ProjectDeliverableSharedManager projectDeliverableSharedManager, PhaseManager phaseManager,
-    ProjectOutcomeManager projectOutcomeManager, DeliverableProjectOutcomeManager deliverableProjectOutcomeManager) {
+    ProjectOutcomeManager projectOutcomeManager, DeliverableProjectOutcomeManager deliverableProjectOutcomeManager,
+    DeliverableCrpOutcomeManager deliverableCrpOutcomeManager,
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
+    FeedbackQACommentManager feedbackQACommentManager) {
     super(config);
     this.activityManager = activityManager;
     this.deliverableManager = deliverableManager;
@@ -375,6 +389,9 @@ public class DeliverableAction extends BaseAction {
     this.phaseManager = phaseManager;
     this.projectOutcomeManager = projectOutcomeManager;
     this.deliverableProjectOutcomeManager = deliverableProjectOutcomeManager;
+    this.deliverableCrpOutcomeManager = deliverableCrpOutcomeManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
+    this.feedbackQACommentManager = feedbackQACommentManager;
   }
 
   @Override
@@ -623,6 +640,10 @@ public class DeliverableAction extends BaseAction {
     return divisions;
   }
 
+  public List<FeedbackQACommentableFields> getFeedbackComments() {
+    return feedbackComments;
+  }
+
   public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
     return focusLevels;
   }
@@ -663,6 +684,7 @@ public class DeliverableAction extends BaseAction {
     return partners;
   }
 
+
   /**
    * @return an array of integers.
    */
@@ -689,7 +711,6 @@ public class DeliverableAction extends BaseAction {
   public List<CrpProgramOutcome> getProgramOutcomes() {
     return programOutcomes;
   }
-
 
   public ArrayList<CrpProgram> getPrograms() {
     return programs;
@@ -815,6 +836,7 @@ public class DeliverableAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
@@ -1136,6 +1158,12 @@ public class DeliverableAction extends BaseAction {
             .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
         }
 
+        // Deliverable Crp Outcome list
+        if (deliverable.getDeliverableCrpOutcomes() != null) {
+          deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+        }
+
         // Expected Study Geographic Regions List
         if (deliverable.getDeliverableGeographicRegions() != null
           && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
@@ -1344,7 +1372,11 @@ public class DeliverableAction extends BaseAction {
             .collect(Collectors.toList());
 
           if (deList != null && !deList.isEmpty()) {
-            Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            try {
+              Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            } catch (Exception e) {
+              logger.error("unable to sort dlist", e);
+            }
             deliverable.setResponsiblePartnership(new ArrayList<>());
             for (DeliverableUserPartnership deliverableUserPartnership : deList) {
 
@@ -1373,7 +1405,11 @@ public class DeliverableAction extends BaseAction {
             .collect(Collectors.toList());
 
           if (deList != null && !deList.isEmpty()) {
-            Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            try {
+              Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            } catch (Exception e) {
+              logger.error("unable to sort dlist", e);
+            }
             deliverable.setOtherPartnerships(new ArrayList<>());
             for (DeliverableUserPartnership deliverableUserPartnership : deList) {
 
@@ -1729,6 +1765,33 @@ public class DeliverableAction extends BaseAction {
           .sorted((t1, t2) -> t1.getId().compareTo(t2.getId())).collect(Collectors.toList()));
       }
 
+      /*
+       * get feedback comments
+       */
+
+      try {
+        if (this.hasSpecificities(this.feedbackModule())) {
+
+          feedbackComments = new ArrayList<>();
+          feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
+            .filter(f -> f.getSectionName() != null && f.getSectionName().equals("deliverable"))
+            .collect(Collectors.toList());
+          if (feedbackComments != null) {
+            for (FeedbackQACommentableFields field : feedbackComments) {
+              List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
+              comments = feedbackQACommentManager.findAll().stream()
+                .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+                  && f.getPhase().getId().equals(this.getActualPhase().getId())
+                  && f.getParentId() == deliverable.getId() && f.getField() != null && f.getField().getId() != null
+                  && f.getField().getId().equals(field.getId()))
+                .collect(Collectors.toList());
+              field.setQaComments(comments);
+            }
+          }
+        }
+      } catch (Exception e) {
+      }
+
       if (this.isHttpPost()) {
 
         if (deliverable.getOtherPartnerships() != null) {
@@ -1820,6 +1883,10 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getProjectOutcomes() != null) {
           deliverable.getProjectOutcomes().clear();
         }
+
+        if (deliverable.getCrpOutcomes() != null) {
+          deliverable.getCrpOutcomes().clear();
+        }
       }
 
       try {
@@ -1862,8 +1929,8 @@ public class DeliverableAction extends BaseAction {
       // Save Geographic Scope Data
       this.saveGeographicScope(deliverableManagedState, this.getActualPhase());
 
-      this.saveProjectOutcomes(deliverableDB, this.getActualPhase());
-
+      // this.saveProjectOutcomes(deliverableDB, this.getActualPhase());
+      this.saveCrpOutcomes(deliverableDB, this.getActualPhase());
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -1871,11 +1938,13 @@ public class DeliverableAction extends BaseAction {
       if (deliverable.getGeographicScopes() != null) {
         for (DeliverableGeographicScope deliverableGeographicScope : deliverable.getGeographicScopes()) {
 
-          if (deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
+          if (deliverableGeographicScope != null && deliverableGeographicScope.getRepIndGeographicScope() != null
+            && deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
             haveRegions = true;
           }
 
-          if (deliverableGeographicScope.getRepIndGeographicScope().getId() != 1
+          if (deliverableGeographicScope != null && deliverableGeographicScope.getRepIndGeographicScope() != null
+            && deliverableGeographicScope.getRepIndGeographicScope().getId() != 1
             && deliverableGeographicScope.getRepIndGeographicScope().getId() != 2) {
             haveCountries = true;
           }
@@ -2084,6 +2153,100 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
+  /**
+   * Save Deliverable Crp Program Outcome Information
+   * 
+   * @param delivearble
+   * @param phase
+   */
+  public void saveCrpOutcomes(Deliverable deliverable, Phase phase) {
+    // Get the IPI 2.3 object
+    CrpProgramOutcome crpProgramOutcomeIPI = new CrpProgramOutcome();
+    boolean uniqueIPI = true;
+    boolean addIPI = false;
+    try {
+
+      // Check deliverable type
+      if ((deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getDeliverableType() != null
+        && deliverable.getDeliverableInfo().getDeliverableType().getId() == 145)
+        || (deliverable.getDeliverableParticipant() != null
+          && deliverable.getDeliverableParticipant().getHasParticipants() != null
+          && deliverable.getDeliverableParticipant().getHasParticipants())) {
+        addIPI = true;
+      }
+
+      if (addIPI) {
+
+        if (programOutcomes != null && !programOutcomes.isEmpty()) {
+          crpProgramOutcomeIPI =
+            programOutcomes.stream().filter(o -> o.getAcronym() != null && o.getAcronym().equals("IPI 2.3"))
+              .collect(Collectors.toList()).get(0);
+        }
+
+        // Check if deliverable is already mapped to IPI 2.3 object
+        if (deliverable.getCrpOutcomes() != null && !deliverable.getCrpOutcomes().isEmpty()) {
+          for (DeliverableCrpOutcome deliverableOutcome : deliverable.getCrpOutcomes()) {
+            if (crpProgramOutcomeIPI != null && crpProgramOutcomeIPI.getId() != null
+              && deliverableOutcome.getCrpProgramOutcome() != null
+              && deliverableOutcome.getCrpProgramOutcome().getId() != null
+              && deliverableOutcome.getCrpProgramOutcome().getId().equals(crpProgramOutcomeIPI.getId())) {
+              uniqueIPI = false;
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.error("unable to map IPI 2.3", e);
+    }
+
+
+    // Search and deleted form Information
+    if (deliverable.getDeliverableCrpOutcomes() != null && !deliverable.getDeliverableCrpOutcomes().isEmpty()) {
+
+      List<DeliverableCrpOutcome> outcomePrev = new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+        .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (DeliverableCrpOutcome deliverableOutcome : outcomePrev) {
+        if (this.deliverable.getCrpOutcomes() == null
+          || !this.deliverable.getCrpOutcomes().contains(deliverableOutcome)) {
+          this.deliverableCrpOutcomeManager.deleteDeliverableCrpOutcome(deliverableOutcome.getId(),
+            this.getActualPhase().getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.deliverable.getCrpOutcomes() != null) {
+
+      if (uniqueIPI && addIPI) {
+        DeliverableCrpOutcome deliverableCrpOutcome = new DeliverableCrpOutcome();
+        deliverableCrpOutcome.setDeliverable(deliverable);
+        deliverableCrpOutcome.setCrpProgramOutcome(crpProgramOutcomeIPI);
+        this.deliverable.getCrpOutcomes().add(deliverableCrpOutcome);
+      }
+
+      for (DeliverableCrpOutcome deliverableOutcome : this.deliverable.getCrpOutcomes()) {
+        if (deliverableOutcome != null && deliverableOutcome.getId() == null) {
+          DeliverableCrpOutcome deliverableOutcomeSave = new DeliverableCrpOutcome();
+          deliverableOutcomeSave.setDeliverable(deliverable);
+          deliverableOutcomeSave.setPhase(phase);
+
+          if (deliverableOutcome.getCrpProgramOutcome() != null
+            && deliverableOutcome.getCrpProgramOutcome().getId() != null) {
+            CrpProgramOutcome outcome =
+              crpProgramOutcomeManager.getCrpProgramOutcomeById(deliverableOutcome.getCrpProgramOutcome().getId());
+            deliverableOutcomeSave.setCrpProgramOutcome(outcome);
+
+            this.deliverableCrpOutcomeManager.saveDeliverableCrpOutcome(deliverableOutcomeSave);
+            // This is to add studyCrpSave to generate correct auditlog.
+            this.deliverable.getDeliverableCrpOutcomes().add(deliverableOutcomeSave);
+          }
+        }
+      }
+    }
+  }
+
   public void saveCrps() {
     if (deliverable.getCrps() == null) {
       deliverable.setCrps(new ArrayList<>());
@@ -2119,7 +2282,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   public void saveDataSharing() {
     if (deliverable.getFiles() == null) {
@@ -2687,11 +2849,16 @@ public class DeliverableAction extends BaseAction {
             DeliverableGeographicScope deliverableScopeSave = new DeliverableGeographicScope();
             deliverableScopeSave.setDeliverable(deliverable);
             deliverableScopeSave.setPhase(phase);
+            RepIndGeographicScope repIndGeographicScope = null;
+            if (deliverableScope.getRepIndGeographicScope() != null
+              && deliverableScope.getRepIndGeographicScope().getId() != null) {
+              repIndGeographicScope = repIndGeographicScopeManager
+                .getRepIndGeographicScopeById(deliverableScope.getRepIndGeographicScope().getId());
+            }
 
-            RepIndGeographicScope repIndGeographicScope = repIndGeographicScopeManager
-              .getRepIndGeographicScopeById(deliverableScope.getRepIndGeographicScope().getId());
-
-            deliverableScopeSave.setRepIndGeographicScope(repIndGeographicScope);
+            if (repIndGeographicScope != null) {
+              deliverableScopeSave.setRepIndGeographicScope(repIndGeographicScope);
+            }
 
             deliverableGeographicScopeManager.saveDeliverableGeographicScope(deliverableScopeSave);
             // This is to add innovationCrpSave to generate correct auditlog.
@@ -2870,7 +3037,7 @@ public class DeliverableAction extends BaseAction {
     }
 
     // Save form Information
-    if (this.deliverable.getProjectOutcomes() != null) {
+    if (this.deliverable.getProjectOutcomes() != null && !this.deliverable.getProjectOutcomes().isEmpty()) {
       for (DeliverableProjectOutcome deliverableOutcome : this.deliverable.getProjectOutcomes()) {
         if (deliverableOutcome.getId() == null) {
           DeliverableProjectOutcome deliverableOutcomeSave = new DeliverableProjectOutcome();
@@ -2893,41 +3060,48 @@ public class DeliverableAction extends BaseAction {
   }
 
   public void saveProjects(Deliverable deliverableDB) {
+    try {
+      // Search and deleted form Information
+      if (deliverableDB.getProjectDeliverableShareds() != null
+        && !deliverableDB.getProjectDeliverableShareds().isEmpty()) {
 
-    // Search and deleted form Information
-    if (deliverableDB.getProjectDeliverableShareds() != null
-      && !deliverableDB.getProjectDeliverableShareds().isEmpty()) {
+        List<ProjectDeliverableShared> projectPrev = new ArrayList<>(deliverableDB.getProjectDeliverableShareds()
+          .stream().filter(nu -> nu.isActive() && nu.getPhase().getId().equals(this.getActualPhase().getId()))
+          .collect(Collectors.toList()));
 
-      List<ProjectDeliverableShared> projectPrev = new ArrayList<>(deliverableDB.getProjectDeliverableShareds().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(this.getActualPhase().getId()))
-        .collect(Collectors.toList()));
-
-      for (ProjectDeliverableShared deliverableProject : projectPrev) {
-        if (this.deliverable.getSharedDeliverables() == null
-          || !this.deliverable.getSharedDeliverables().contains(deliverableProject)) {
-          projectDeliverableSharedManager.deleteProjectDeliverableShared(deliverableProject.getId());
+        for (ProjectDeliverableShared deliverableProject : projectPrev) {
+          if (this.deliverable.getSharedDeliverables() == null
+            || !this.deliverable.getSharedDeliverables().contains(deliverableProject)) {
+            projectDeliverableSharedManager.deleteProjectDeliverableShared(deliverableProject.getId());
+          }
         }
       }
+    } catch (Exception e) {
+      logger.error("unable to get cluster shared", e);
     }
 
     // Save form Information
-    if (this.deliverable.getSharedDeliverables() != null) {
-      for (ProjectDeliverableShared deliverableProject : this.deliverable.getSharedDeliverables()) {
-        if (deliverableProject.getId() == null) {
-          ProjectDeliverableShared deliverableProjectSave = new ProjectDeliverableShared();
-          deliverableProjectSave.setDeliverable(deliverableDB);
-          deliverableProjectSave.setPhase(this.getActualPhase());
+    try {
+      if (this.deliverable.getSharedDeliverables() != null & !this.deliverable.getSharedDeliverables().isEmpty()) {
+        for (ProjectDeliverableShared deliverableProject : this.deliverable.getSharedDeliverables()) {
+          if (deliverableProject != null && deliverableProject.getId() == null) {
+            ProjectDeliverableShared deliverableProjectSave = new ProjectDeliverableShared();
+            deliverableProjectSave.setDeliverable(deliverableDB);
+            deliverableProjectSave.setPhase(this.getActualPhase());
 
-          Project project = this.projectManager.getProjectById(deliverableProject.getProject().getId());
+            Project project = this.projectManager.getProjectById(deliverableProject.getProject().getId());
 
-          deliverableProjectSave.setProject(project);
+            deliverableProjectSave.setProject(project);
 
-          this.projectDeliverableSharedManager.saveProjectDeliverableShared(deliverableProjectSave);
-          // This is to add studyProjectSave to generate correct
-          // auditlog.
-          this.deliverable.getProjectDeliverableShareds().add(deliverableProjectSave);
+            this.projectDeliverableSharedManager.saveProjectDeliverableShared(deliverableProjectSave);
+            // This is to add studyProjectSave to generate correct
+            // auditlog.
+            this.deliverable.getProjectDeliverableShareds().add(deliverableProjectSave);
+          }
         }
       }
+    } catch (Exception e) {
+      logger.error("unable to get cluster shared", e);
     }
 
   }
@@ -3143,6 +3317,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setDivisions(List<PartnerDivision> divisions) {
     this.divisions = divisions;
+  }
+
+  public void setFeedbackComments(List<FeedbackQACommentableFields> feedbackComments) {
+    this.feedbackComments = feedbackComments;
   }
 
   public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {

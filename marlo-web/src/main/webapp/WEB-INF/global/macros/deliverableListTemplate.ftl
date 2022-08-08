@@ -9,10 +9,12 @@
         <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
         <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>
         <th id="deliverableEDY">[@s.text name="project.deliverableList.deliveryYear" /]</th>
-        <th id="deliverableEDY">[@s.text name="Owner" /]</th>
+        <th id="deliverableEDY">[@s.text name="project.deliverableList.owner" /]</th>
+        <th id="deliverableEDY">[@s.text name="project.deliverableList.sharedWith" /]</th>
         [#if isReportingActive]
           <th id="deliverableFC">[@s.text name="project.deliverableList.fairCompliance" /]</th>
         [/#if]
+        <th id="feedbackStatus" width="0%">[@s.text name="Feedback Status" /]</th>
         <th id="deliverableStatus">[@s.text name="project.deliverableList.status" /]</th>
         [#if currentTable]
         <th id="deliverableRF"></th>
@@ -87,7 +89,11 @@
           </td>
           [#-- Deliverable owner --]
           <td class="owner text-center">
-            [#if isOwner] <nobr>This Cluster</nobr>  [#else][#if deliverable.project?has_content]C${deliverable.project.id}[#else]Not defined[/#if][/#if]
+            [#if isOwner] <nobr>This Cluster</nobr>  [#else][#if deliverable.owner?has_content]${deliverable.owner}[#else]Not defined[/#if][/#if]
+          </td>
+          [#-- Deliverable shared with --]
+          <td class="owner text-center">
+            [#if deliverable.sharedWithProjects?has_content]${deliverable.sharedWithProjects}[#else]Not shared[/#if]
           </td>
           [#if isReportingActive]
             [#-- Deliverable FAIR compliance --]
@@ -100,6 +106,12 @@
             [#else]
               <p class="message">Not applicable</p>
             [/#if]
+            </td>
+          [/#if]
+          [#-- Feedback status --]
+          [#if action.hasSpecificities('feedback_active') ]
+            <td class="text-center">
+              ${(deliverable.commentStatus)!}
             </td>
           [/#if]
           [#-- Deliverable Status --]
@@ -217,6 +229,7 @@
         [#if isReportingActive || FAIRColumn]
           <th id="deliverableFC" width="0%">[@s.text name="project.deliverableList.fairCompliance" /]</th>
         [/#if]
+        <th id="feedbackStatus" width="0%">[@s.text name="Feedback Status" /]</th>
         <th id="deliverableStatus" width="0%">[@s.text name="project.deliverableList.status" /]</th>
         <th id="deliverableRF" width="0%"></th>
         <th id="deliverableRP" width="0%">Responsible partner</th>
