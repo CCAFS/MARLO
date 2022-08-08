@@ -29,6 +29,9 @@
         <property name="title" type="string">
             <column name="title" sql-type="TEXT" />
         </property>
+        <property name="acronym" type="string">
+            <column name="acronym" sql-type="TEXT" />
+        </property>
         <property name="summary" type="string">
             <column name="summary" sql-type="TEXT" />
         </property>

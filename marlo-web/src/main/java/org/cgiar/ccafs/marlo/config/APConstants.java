@@ -132,6 +132,8 @@ public final class APConstants {
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
     "crp_show_section_impact_covid19_ranges_years";
   public static final String PREVIOUS_PROJECT_ID_ACTIVE = "previous_project_id_field_active";
+  public static final String FEEDBACK_ACTIVE = "feedback_active";
+  public static final String FEEDBACK_CLARIFICATION_NEEDED_ACTIVE = "feedback_clarification_needed_active";
   public static final String CRP_BI_MODULE_ACTIVE = "crp_bi_module_active";
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
@@ -221,6 +223,23 @@ public final class APConstants {
   public static final long INSTITUTION_CGIAR_CENTER_TYPE = 3;
   public static final long INSTITUTION_DONOR_TYPE = 5;
   public static final String INSTITUTION_REQUEST_ID = "institutionID";
+  public static final String PARENT_REQUEST_ID = "parentID";
+  public static final String OBJECT_REQUEST_ID = "objectID";
+  public static final String PARENT_REQUEST_NAME = "parentName";
+  public static final String SECTION_REQUEST_NAME = "sectionName";
+  public static final String FIELD_REQUEST_ID = "fieldID";
+  public static final String PARENT_FIELD_DESCRIPTION = "parentFieldDescription";
+  public static final String FRONT_REQUEST_NAME = "frontName";
+  public static final String COMMENT_REQUEST = "comment";
+  public static final String COMMENT_REPLY = "reply";
+  public static final String COMMENT_REQUEST_ID = "commentID";
+  public static final String COMMENT_USER_ID = "userID";
+  public static final String STATUS_REQUEST = "status";
+  public static final String REPLY_ID_REQUEST = "replyID";
+  public static final String COMMENT_STATUS_REQUEST = "status";
+  public static final String LINK = "link";
+  public static final String FIELD_DESCRIPTION = "fieldDescription";
+  public static final String FIELD_VALUE = "fieldValue";
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
   public static final String PARTNER_REQUEST_ID = "requestID";
   public static final String PARTNER_REQUEST_SEND_NOTIFICATION = "sendNotification";
@@ -503,6 +522,7 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectLp6Contributions)";
 
   // End
+  public static final String SAFEGUARD_REQUEST_ID = "safeguardID";
   public static final String PROJECT_REQUEST_ID = "projectID";
   public static final String PROJECT_SCAPE_GLOBAL = "3";
 

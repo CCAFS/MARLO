@@ -1,0 +1,57 @@
+.helpMessage {
+    height: 50px;
+    width: 400px;
+}
+
+.templateContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dropFileParentContainer {
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dropFileContainer {
+    width: 60%;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F5F5F5;
+    border: 2px dashed #8d8d8d;
+    border-radius: 20px;
+}
+
+#safeguard {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+}
+
+label.browseFile {
+    font-weight: 600;
+    color: white;
+    background: #2BA6CB;
+    padding: 6px 10px;
+    border-radius: 3px;
+}
+
+p.checked {
+    width: 100%;
+    padding: 3px 25px 3px 25px !important;
+    background-color: #fff7cf;
+}
+
+.contentResult {  
+    word-wrap: break-word;
+}
+
+.removeIcon {
+    padding: 13px !important;
+}

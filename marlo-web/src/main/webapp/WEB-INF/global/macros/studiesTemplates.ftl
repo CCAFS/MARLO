@@ -10,6 +10,16 @@
   [#local isStatusExtended = (element.projectExpectedStudyInfo.status.id == 4)!false]
   [#local isOtherStatus = (element.projectExpectedStudyInfo.status.id != 4)!false]
 
+<span id="parentID" style="display: none;">${expectedID!}</span>
+<span id="phaseID" style="display: none;">${phaseID!}</span>
+<span id="userID" style="display: none;">${currentUser.id!}</span>
+<span id="projectID" style="display: none;">${projectID!}</span>
+<span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
+<span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
+<span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
+<input type="hidden" id="sectionNameToFeedback" value="study" />
+
+
   
   <div id="${customId}" class="caseStudy evidenceBlock isNew-${isNew?string}" style="display:${template?string('none','block')}">
     <div class="borderBox">

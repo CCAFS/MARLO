@@ -74,6 +74,13 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
 		</set>
+		<set name="feedbackQAComments" table="feedback_qa_comments" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.FeedbackQAComment" />
+		</set>
 		<set name="projectScopes" table="project_scopes" inverse="true"
 			lazy="true" fetch="select">
 			<key>
@@ -268,6 +275,13 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.GlobalUnitProject" />
 		</set>
+		<set name="safeguards" table="safeguards"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Safeguards" />
+		</set>
 		<one-to-one name="centerProject"
 			class="org.cgiar.ccafs.marlo.data.model.CenterProject" cascade="save-update"></one-to-one>
 		<set name="projectExpectedStudies" table="project_expected_studies"
@@ -326,6 +340,13 @@
         <column name="project_id" not-null="true" />
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared" />
+    </set>
+    <set name="projectDeliverableShareds" order-by="id" table="project_deliverable_shared"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared" />
     </set>
 	</class>
 </hibernate-mapping>

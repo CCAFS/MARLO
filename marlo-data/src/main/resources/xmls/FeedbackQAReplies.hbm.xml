@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 30, 2018 10:52:36 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.FeedbackQAReply"
+		table="feedback_qa_replies" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<property name="comment" type="string">
+            <column name="comment" sql-type="TEXT" />
+        </property>
+        <many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="user_id" not-null="true">
+                <comment>This field is a link to the table users</comment>
+            </column>
+        </many-to-one>
+        <property name="commentDate" type="timestamp">
+            <column name="comment_date" />
+        </property>
+        <set name="feedbackQAComments" table="feedback_qa_comments" inverse="true" lazy="true"
+            fetch="select">
+            <key>
+                <column name="reply_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.FeedbackQAComment" />
+        </set>
+	</class>
+</hibernate-mapping>

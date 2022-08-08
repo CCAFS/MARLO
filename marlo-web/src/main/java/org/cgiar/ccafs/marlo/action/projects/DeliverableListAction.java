@@ -20,6 +20,8 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
@@ -30,6 +32,8 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -73,7 +77,8 @@ public class DeliverableListAction extends BaseAction {
   private ProjectManager projectManager;
   private SectionStatusManager sectionStatusManager;
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
-
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+  private FeedbackQACommentManager commentManager;
 
   // Front-end
   private List<Integer> allYears;
@@ -90,7 +95,8 @@ public class DeliverableListAction extends BaseAction {
   public DeliverableListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     DeliverableTypeManager deliverableTypeManager, DeliverableManager deliverableManager, PhaseManager phaseManager,
     DeliverableInfoManager deliverableInfoManager, SectionStatusManager sectionStatusManager,
-    ProjectDeliverableSharedManager projectDeliverableSharedManager) {
+    ProjectDeliverableSharedManager projectDeliverableSharedManager,
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentManager) {
     super(config);
     this.projectManager = projectManager;
     this.sectionStatusManager = sectionStatusManager;
@@ -100,6 +106,8 @@ public class DeliverableListAction extends BaseAction {
     this.deliverableManager = deliverableManager;
     this.phaseManager = phaseManager;
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
+    this.commentManager = commentManager;
   }
 
   @Override
@@ -203,6 +211,69 @@ public class DeliverableListAction extends BaseAction {
   @Override
   public List<Integer> getAllYears() {
     return allYears;
+  }
+
+  public void getCommentStatuses() {
+
+    try {
+
+
+      List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
+
+      // get the commentable fields by sectionName
+      if (feedbackQACommentableFieldsManager.findAll() != null) {
+        commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
+          .filter(f -> f != null && f.getSectionName().equals("deliverable")).collect(Collectors.toList());
+      }
+      if (project.getDeliverables() != null && !project.getDeliverables().isEmpty() && commentableFields != null
+        && !commentableFields.isEmpty()) {
+
+
+        // Set the comment status in each project outcome
+
+        for (Deliverable deliverable : project.getDeliverables()) {
+          int answeredComments = 0, totalComments = 0;
+          try {
+
+
+            for (FeedbackQACommentableFields commentableField : commentableFields) {
+              if (commentableField != null && commentableField.getId() != null) {
+
+                if (deliverable != null && deliverable.getId() != null && commentableField != null
+                  && commentableField.getId() != null) {
+                  List<FeedbackQAComment> comments = commentManager
+                    .findAll().stream().filter(f -> f != null && f.getParentId() == deliverable.getId()
+                      && f.getField() != null && f.getField().getId().equals(commentableField.getId()))
+                    .collect(Collectors.toList());
+                  if (comments != null && !comments.isEmpty()) {
+                    totalComments += comments.size();
+                    comments = comments.stream()
+                      .filter(f -> f != null && ((f.getStatus() != null && f.getStatus().equals("approved"))
+                        || (f.getStatus() != null && f.getReply() != null)))
+                      .collect(Collectors.toList());
+                    if (comments != null) {
+                      answeredComments += comments.size();
+                    }
+                  }
+                }
+              }
+            }
+            deliverable.setCommentStatus(answeredComments + "/" + totalComments);
+
+            if (deliverable.getCommentStatus() == null
+              || (deliverable.getCommentStatus() != null && deliverable.getCommentStatus().isEmpty())) {
+              deliverable.setCommentStatus(0 + "/" + 0);
+            }
+          } catch (Exception e) {
+            deliverable.setCommentStatus(0 + "/" + 0);
+
+          }
+        }
+
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   public List<Deliverable> getCurrentDeliverableList() {
@@ -401,8 +472,37 @@ public class DeliverableListAction extends BaseAction {
             .collect(Collectors.toList())
           : Collections.emptyList();
 
+
       if (deliverableShared != null && !deliverableShared.isEmpty()) {
         for (ProjectDeliverableShared deliverableS : deliverableShared) {
+          List<ProjectDeliverableShared> deliverablesTemp = projectDeliverableSharedManager
+            .getByDeliverable(deliverableS.getDeliverable().getId(), this.getActualPhase().getId());
+
+          if (deliverablesTemp != null && !deliverablesTemp.isEmpty()) {
+            for (ProjectDeliverableShared deliverableTemp : deliverablesTemp) {
+
+              if (deliverableTemp.getDeliverable().getSharedWithProjects() == null
+                || (deliverableTemp.getDeliverable().getSharedWithProjects() != null
+                  && deliverableTemp.getDeliverable().getSharedWithProjects().isEmpty())) {
+
+                deliverableTemp.getDeliverable().setSharedWithProjects(
+                  "" + deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+
+              } else {
+                if (deliverableTemp.getDeliverable().getSharedWithProjects() != null
+                  && deliverableTemp.getProject() != null
+                  && deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()) != null
+                  && deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
+                  && (!deliverableTemp.getDeliverable().getSharedWithProjects()
+                    .contains(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym()))) {
+                  deliverableTemp.getDeliverable()
+                    .setSharedWithProjects(deliverableTemp.getDeliverable().getSharedWithProjects() + "; "
+                      + deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                }
+              }
+            }
+          }
+
           if (!currentDeliverableList.contains(deliverableS.getDeliverable())) {
             currentDeliverableList.add(deliverableS.getDeliverable());
           }
@@ -412,11 +512,58 @@ public class DeliverableListAction extends BaseAction {
       logger.error("unable to get shared deliverables", e);
     }
 
+    // shared with
+    if (currentDeliverableList != null && !currentDeliverableList.isEmpty()) {
+      List<ProjectDeliverableShared> deliverablesShared = new ArrayList<>();
+      for (Deliverable deliverableTemp : currentDeliverableList) {
+        if (deliverableTemp != null && deliverableTemp.getId() != null) {
+          deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
+          if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+            deliverablesShared = deliverablesShared.stream()
+              .filter(ds -> ds.getDeliverable() != null && ds.getDeliverable().getProject().getId().equals(projectID))
+              .collect(Collectors.toList());
+          }
+
+          // Owner
+          if (deliverableTemp.getProject() != null && !deliverableTemp.getProject().getId().equals(projectID)) {
+            deliverableTemp
+              .setOwner(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+            deliverableTemp
+              .setSharedWithMe(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+          } else {
+            deliverableTemp.setOwner("This Cluster");
+            deliverableTemp.setSharedWithMe("Not Applicable");
+          }
+
+          // Shared with others
+          for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+            // String projectsSharedText = null;
+            if (deliverableShared.getDeliverable().getSharedWithProjects() == null) {
+              deliverableShared.getDeliverable().setSharedWithProjects(
+                "" + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+            } else {
+              if (!deliverableShared.getDeliverable().getSharedWithProjects()
+                .contains(deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
+                deliverableShared.getDeliverable()
+                  .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; "
+                    + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+              }
+            }
+            // deliverableShared.getDeliverable().setSharedWithProjects(projectsSharedText);
+          }
+          // deliverableTemp.setSharedWithProjects(projectsSharedText);
+          // deliverableTemp.setSharedDeliverables(deliverablesShared);
+        }
+      }
+    }
+
+
     if (currentDeliverableList != null && !currentDeliverableList.isEmpty()) {
       currentDeliverableList.stream().sorted((d1, d2) -> d1.getId().compareTo((d2.getId())))
         .collect(Collectors.toList());
       // deliverables.addAll(currentDeliverableList);
     }
+
 
   }
 
@@ -470,6 +617,9 @@ public class DeliverableListAction extends BaseAction {
         this.loadCurrentDeliverables();
       }
 
+      if (this.hasSpecificities(this.feedbackModule())) {
+        this.getCommentStatuses();
+      }
 
       if (this.isReportingActive() || this.isUpKeepActive()) {
         deliverables.sort((p1, p2) -> this.isDeliverableComplete(p1.getId(), this.getActualPhase().getId())

@@ -482,5 +482,10 @@
     <mapping resource="xmls/ProjectExpectedStudyProjectOutcomes.hbm.xml" />
     <mapping resource="xmls/ProjectInnovationProjectOutcomes.hbm.xml" />
     <mapping resource="xmls/DeliverableProjectOutcomes.hbm.xml" />
+    <mapping resource="xmls/Safeguard.hbm.xml" />
+    <mapping resource="xmls/FeedbackQACommentableFields.hbm.xml" />
+    <mapping resource="xmls/FeedbackQAReplies.hbm.xml" />
+    <mapping resource="xmls/FeedbackQAComments.hbm.xml" />
+    <mapping resource="xmls/DeliverableCrpOutcomes.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
