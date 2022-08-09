@@ -37,13 +37,29 @@
 [#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
-
+<!--
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10">[#if reportingActive] [@s.text name="project.activities.help2" /] [#else] [@s.text name="project.activities.help1" /] [/#if] </p>
   </div>
   <div style="display:none" class="viewMore closed"></div>
+</div>
+-->
+<div class="container  viewMore-block">
+  <div class=" containerAlert alert-leftovers alertColorBackgroundInfo ">
+    <div class="containerLine alertColorInfo"></div>
+    <div class="containerIcon">
+      <div class="containerIcon alertColorInfo">
+        <i class="material-icons">question_mark</i>      
+      </div>
+    </div>
+    <div class="containerText col-md-12">
+      <p class="alertText">
+        [#if reportingActive] [@s.text name="project.activities.help2" /] [#else] [@s.text name="project.activities.help1" /] [/#if] 
+      </p>
+    </div>
+  </div>
 </div>
 
 
