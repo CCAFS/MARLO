@@ -101,8 +101,10 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
           // projectMilestoneAdd.setExpectedUnit(projectMilestone.getExpectedUnit());
           projectMilestoneAdd.setExpectedValue(projectMilestone.getExpectedValue());
           projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
+          projectMilestoneAdd.setProgressValue(projectMilestone.getProgressValue());
           projectMilestoneAdd.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
           projectMilestoneAdd.setNarrativeTarget(projectMilestone.getNarrativeTarget());
+          projectMilestoneAdd.setNarrativeProgress(projectMilestone.getNarrativeProgress());
           projectMilestoneAdd.setProjectOutcome(projectOutcomeAdd);
           projectMilestoneAdd.setYear(projectMilestone.getYear());
           projectMilestoneAdd.setSettedValue(projectMilestone.getSettedValue());
@@ -559,8 +561,10 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
 
             projectMilestoneAdd.setExpectedValue(projectMilestone.getExpectedValue());
             projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
+            projectMilestoneAdd.setProgressValue(projectMilestone.getProgressValue());
             projectMilestoneAdd.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
             projectMilestoneAdd.setNarrativeTarget(projectMilestone.getNarrativeTarget());
+            projectMilestoneAdd.setNarrativeProgress(projectMilestone.getNarrativeProgress());
             projectMilestoneAdd.setSettedValue(projectMilestone.getSettedValue());
             projectMilestoneAdd.setProjectOutcome(projectOutcomePrev);
             projectMilestoneAdd.setYear(projectMilestone.getYear());
@@ -584,8 +588,10 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
 
             milestone.setExpectedValue(projectMilestone.getExpectedValue());
             milestone.setAchievedValue(projectMilestone.getAchievedValue());
+            milestone.setProgressValue(projectMilestone.getProgressValue());
             milestone.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
             milestone.setNarrativeTarget(projectMilestone.getNarrativeTarget());
+            milestone.setNarrativeProgress(projectMilestone.getNarrativeProgress());
             milestone.setYear(projectMilestone.getYear());
             milestone.setSettedValue(projectMilestone.getSettedValue());
 
