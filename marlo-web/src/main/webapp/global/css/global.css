@@ -5653,6 +5653,13 @@ table.evaluationRank thead th {
   color: #ffffff;
 }
 
+.no-button-label-disabled {
+  pointer-events:none;
+  background: #e5e5e5;
+  color: #b3b3b3;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1), inset 0 -2px 0 rgba(0, 0, 0, 0.32);
+  }
+
 .no-button-label.neutral:hover, .no-button-label.neutral.radio-checked, .yes-button-label.neutral:hover, .yes-button-label.neutral.radio-checked {
   background: #68b3f3 !important;
   color: #ffffff;
@@ -7320,6 +7327,16 @@ img.qaCommentStatus {
   color: black;
   font-size: 13px;
   padding: 4px 10px;
+}
+
+.containerReactionComment{
+  width: 100%;
+  background-color: #ffffffa1;
+}
+.containerReactionComment .reactionComment{
+  margin: 0px;
+  font-size: 12px;
+  padding: 0px 5px;
 }
 
 .checkContainer {

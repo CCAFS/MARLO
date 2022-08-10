@@ -182,8 +182,9 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                   } else {
                     fieldsMap.put("approvalUserName", "");
                   }
-                  if (comment.getApprovalDate() != null) {
-                    fieldsMap.put("approvalDate", comment.getApprovalDate());
+                  if (comment.getApprovalDate() != null && comment.getApprovalDate().toString() != null) {
+                    String dateString = comment.getApprovalDate().toString();
+                    fieldsMap.put("approvalDate", dateString);
                   } else {
                     fieldsMap.put("approvalDate", "");
                   }
