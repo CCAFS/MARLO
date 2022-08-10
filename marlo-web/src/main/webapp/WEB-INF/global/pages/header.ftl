@@ -109,15 +109,9 @@
             [#-- MARLO Title --]
             <div id="marlo-logo" class="animated fadeIn">
               <a href="${baseUrl}">
-              [#if !baseUrl?contains('aiccra')]
-                <div id="title" >MARLO</div>    
-                <div id="subTitle" class="visible-md-block visible-lg-block">Managing Agricultural Research for Learning & Outcomes</div>
-                <div class="clearfix"></div>
-              [#else]
                <div id="title" >AICCRA</div>    
                 <div id="subTitle" class="visible-md-block visible-lg-block">Accelerating Impacts of CGIAR Climate Research for Africa project</div>
-                <div class="clearfix"></div>
-              [/#if]
+                <div class="clearfix"></div>            
               </a>
             </div>
             [#-- GlobalUnit Image/Logo--]
