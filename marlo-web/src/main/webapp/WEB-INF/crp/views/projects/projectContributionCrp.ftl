@@ -630,12 +630,11 @@
             [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) /]
           </div>
           
-          [#-- POWB (APWB) active --]
-          [#if reportingActive || POWB]
+          [#-- All phases --]
             <div class="col-md-4 input-container">
               [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) && POWB editable=(editable || isTemplate) && !reportingActive && POWB && (milestoneYear gte currentCycleYear)!true /]
             </div>
-          [/#if]
+         
           
           [#-- Upkeep (progress) active --]
           [#if reportingActive || upKeepActive]
