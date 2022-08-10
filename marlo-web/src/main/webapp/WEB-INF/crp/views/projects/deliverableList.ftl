@@ -62,7 +62,7 @@
 -->
 
 
-<div class="container  viewMore-block">
+<div class="container  viewMore-block containerAlertMargin">
   <div class=" containerAlert alert-leftovers alertColorBackgroundInfo ">
     <div class="containerLine alertColorInfo"></div>
     <div class="containerIcon">
@@ -76,7 +76,7 @@
   </div>
 </div>
 
-<div class="container  viewMore-block">
+<div class="container  viewMore-block containerAlertMargin">
   <div class="containerAlert  alert-leftovers alertColorBackgroundInfo">
     <div class="containerLine alertColorInfo"></div>
     <div class="containerIcon">

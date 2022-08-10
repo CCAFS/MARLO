@@ -29,6 +29,7 @@
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
 [#if !reportingActive]
+<!-- 
 <div class="container helpText viewMore-block">
   <div style="display:none" class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
@@ -37,6 +38,22 @@
     </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
+</div>
+-->
+<div class="container  viewMore-block containerAlertMargin">
+  <div class=" containerAlert alert-leftovers alertColorBackgroundInfo ">
+    <div class="containerLine alertColorInfo"></div>
+    <div class="containerIcon">
+      <div class="containerIcon alertColorInfo">
+        <i class="material-icons">question_mark</i>      
+      </div>
+    </div>
+    <div class="containerText col-md-12">
+      <p class="alertText">
+        [#if project.projectInfo.projectEditLeader] [@s.text name="projectBudgets.help2" /] [#else] [@s.text name="projectBudgets.help1" /] [/#if]
+      </p>
+    </div>
+  </div>
 </div>
 [/#if]
 <section class="container">

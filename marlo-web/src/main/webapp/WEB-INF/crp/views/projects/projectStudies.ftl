@@ -25,13 +25,31 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-
+<!--
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectStudies.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
+</div>
+-->
+
+<div class="container  viewMore-block containerAlertMargin ">
+  <div class="containerAlert alert-leftovers alertColorBackgroundInfo"> 
+    <div class="containerLine alertColorInfo"></div>
+    <div class="containerIcon">
+      <div class="containerIcon alertColorInfo">
+        <i class="material-icons">question_mark</i>      
+      </div>
+    </div>
+    <div class="containerText col-md-12 alertCollapse">
+      <p class="alertText">
+        [@s.text name="projectStudies.help" /]
+      </p>
+    </div>
+    <div  class="viewMoreCollapse closed"></div>
+  </div>  
 </div>
 
 <section class="container">

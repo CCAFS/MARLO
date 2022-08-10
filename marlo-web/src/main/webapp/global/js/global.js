@@ -41,7 +41,9 @@ $(document).ready(function() {
     return false;
   });
   setViewMore();
+  setViewMoreCollapse();
   $('.viewMore').on("click", expandViewMoreBlock);
+  $('.viewMoreCollapse').on("click", expandViewMoreBlockCollapse);
 
   // View More link button
   $('#helpViewMoreLink').on("click", expandViewMoreLink);
@@ -456,6 +458,44 @@ function setViewMore() {
     $(element).find('.viewMore').html('View More');
     $(element).find('.viewMore').show();
   }
+}
+
+function setViewMoreCollapse() {
+  var element = $('.containerAlert');
+  if($(element).height() < 100) {
+    $(element).find('.viewMoreCollapse').hide();
+  } else {
+    $(element).css({
+      "height": 65,
+      "align-items":"initial",
+    })
+    $(element).find('.viewMoreCollapse').html('View More');
+    $(element).find('.viewMoreCollapse').show();
+  }
+}
+
+function expandViewMoreBlockCollapse() {
+  var element = $('.containerAlert');
+  if($(this).hasClass("closed")) {
+    $(element).css({
+      "height": '100%',
+      "align-items":"center",
+      "padding-bottom":20
+    })
+    
+    $(this).html('View less');
+    $(this).addClass("opened");
+    $(this).removeClass("closed");
+  } else if($(this).hasClass("opened")) {
+    $(element).css({
+      "height": '65',
+      "align-items":"initial",
+    })
+    $(this).html('View More');
+    $(this).addClass("closed");
+    $(this).removeClass("opened");
+  }
+
 }
 
 function expandViewMoreBlock() {
