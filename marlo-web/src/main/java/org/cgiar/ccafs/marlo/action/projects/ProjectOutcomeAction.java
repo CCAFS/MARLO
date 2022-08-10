@@ -1367,7 +1367,11 @@ public class ProjectOutcomeAction extends BaseAction {
 
             if (this.isPlanningActive()) {
               projectMilestoneDB.setNarrativeTarget(projectMilestone.getNarrativeTarget());
+              projectMilestoneDB.setNarrativeProgress(projectMilestone.getNarrativeProgress());
               projectMilestoneDB.setYear(projectMilestone.getYear());
+              if (projectMilestone.getProgressValue() != null) {
+                projectMilestoneDB.setProgressValue(projectMilestone.getProgressValue());
+              }
               if (projectMilestone.getExpectedUnit() != null) {
                 if (projectMilestone.getExpectedUnit().getId() == null
                   || projectMilestone.getExpectedUnit().getId().longValue() == -1) {
@@ -1391,7 +1395,7 @@ public class ProjectOutcomeAction extends BaseAction {
             projectMilestoneDB.setCrpMilestone(projectMilestone.getCrpMilestone());
             projectMilestoneDB.setExpectedValue(projectMilestone.getExpectedValue());
             projectMilestoneDB.setAchievedValue(projectMilestone.getAchievedValue());
-
+            projectMilestoneDB.setProgressValue(projectMilestone.getProgressValue());
             if (this.canAccessSuperAdmin()) {
               projectMilestoneDB.setSettedValue(projectMilestone.getSettedValue());
             }

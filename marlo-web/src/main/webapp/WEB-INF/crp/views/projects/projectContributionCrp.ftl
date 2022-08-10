@@ -630,9 +630,19 @@
             [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) /]
           </div>
           
-          <div class="col-md-4 input-container">
-            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
-          </div>
+          [#-- POWB (APWB) active --]
+          [#if reportingActive || POWB]
+            <div class="col-md-4 input-container">
+              [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) && POWB editable=(editable || isTemplate) && !reportingActive && POWB && (milestoneYear gte currentCycleYear)!true /]
+            </div>
+          [/#if]
+          
+          [#-- Upkeep (progress) active --]
+          [#if reportingActive || upKeepActive]
+            <div class="col-md-4 input-container">
+              [@customForm.input name="${customName}.progressValue" i18nkey="projectOutcomeMilestone.progressValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) && upKeepActive editable=(editable || isTemplate) && upKeepActive && (milestoneYear gte currentCycleYear)!true /]
+            </div>
+          [/#if]
       
           [#--  
           <div class="col-md-4">
@@ -662,7 +672,7 @@
         </div>
         
         <div class="form-group text-area-container">
-          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isYearRequired(milestoneYear) className="limitWords-100" editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false/]
+          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isYearRequired(milestoneYear) && !upKeepActive className="limitWords-100" editable=(editable || isTemplate) && !reportingActive && !upKeepActive && (milestoneYear gte currentCycleYear)!true help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false/]
               [#if isYearRequired(milestoneYear)]
                 <div class="text-left">
                   [@popUps.relationsMacro element=projectOutcome labelText=true /]
@@ -671,12 +681,22 @@
                 </div>
               [/#if]
         </div>
+        <div class="form-group text-area-container">
+          [@customForm.textArea name="${customName}.narrativeProgress" i18nkey="projectOutcomeMilestone.progressNarrative" required=isYearRequired(milestoneYear) && upKeepActive className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable=(editable || isTemplate) && upKeepActive &&( milestoneYear gte currentCycleYear)!true /]
+        </div>
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
         <div class="form-group ">
-          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable=(editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
+          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) && reportingActive className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable=(editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true && reportingActive /]
         </div>
         [/#if]
+        [#-- PROGRESS BLOCK 
+        [#if upKeepActive]
+          <div class="form-group ">
+            [@customForm.textArea name="${customName}.progressNarrative" i18nkey="projectOutcomeMilestone.narrativeProgress" required=isYearRequired(milestoneYear) className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable=(editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
+          </div>
+        [/#if]
+        --]
       </div>
     </div>
        

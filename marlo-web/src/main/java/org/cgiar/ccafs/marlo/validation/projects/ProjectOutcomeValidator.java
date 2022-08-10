@@ -351,19 +351,19 @@ public class ProjectOutcomeValidator extends BaseValidator {
           // action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedUnit", params));
           projectMilestone.setExpectedUnit(null);
         } else {
-          if (projectMilestone.getExpectedValue() == null
-            || !this.isValidNumber(String.valueOf(projectMilestone.getExpectedValue()))) {
-            action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedValue", params));
-            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
-              InvalidFieldsMessages.EMPTYFIELD);
+          if (action.isPOWB()) {
+            if (projectMilestone.getExpectedValue() == null
+              || !this.isValidNumber(String.valueOf(projectMilestone.getExpectedValue()))) {
+              action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedValue", params));
+              action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+            if (projectMilestone.getExpectedValue() != null && projectMilestone.getExpectedValue() < 0) {
+              action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
           }
-          if (projectMilestone.getExpectedValue() != null && projectMilestone.getExpectedValue() < 0) {
-            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-          if (action.getActualPhase() != null && action.getActualPhase().getName() != null
-            && (!action.getActualPhase().getName().equals("POWB")
-              && !action.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
+          if (action.isReportingActive()) {
             if (projectMilestone.getAchievedValue() == null
               || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue()))) {
               action.addMessage(action.getText("projectOutcomeMilestone.requeried.achievedValue", params));
@@ -377,7 +377,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
           }
         }
 
-        if (!action.isReportingActive()) {
+        // Validation for POWB phase
+        if (action.isPOWB()) {
           if (!(this.isValidString(projectMilestone.getNarrativeTarget())
             && this.wordCount(projectMilestone.getNarrativeTarget()) <= 100)) {
             action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedNarrative", params));
@@ -386,20 +387,45 @@ public class ProjectOutcomeValidator extends BaseValidator {
           }
         }
 
-        if (action.isReportingActive() && projectMilestone.getYear() == action.getActualPhase().getYear()) {
-          if (!(this.isValidString(projectMilestone.getNarrativeAchieved())
-            && this.wordCount(projectMilestone.getNarrativeAchieved()) <= 150)) {
-            action.addMessage(action.getText("projectOutcomeMilestone.achievedNarrative", params));
-            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeAchieved",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
+        // Validation for Reporting phase
+        if (action.isReportingActive()) {
+          if (projectMilestone.getYear() == action.getActualPhase().getYear()) {
+            if (!(this.isValidString(projectMilestone.getNarrativeAchieved())
+              && this.wordCount(projectMilestone.getNarrativeAchieved()) <= 150)) {
+              action.addMessage(action.getText("projectOutcomeMilestone.achievedNarrative", params));
+              action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeAchieved",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
 
-          // Validate achived value in reporting phase
-          if (action.getActualPhase().getYear() == projectMilestone.getYear()) {
-            if (projectMilestone.getAchievedValue() == null
-              || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue()))) {
-              action.addMessage(action.getText("projectOutcomeMilestone.requeried.achievedValue", params));
-              action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
+            // Validate achived value in reporting phase
+            if (action.getActualPhase().getYear() == projectMilestone.getYear()) {
+              if (projectMilestone.getAchievedValue() == null
+                || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue()))) {
+                action.addMessage(action.getText("projectOutcomeMilestone.requeried.achievedValue", params));
+                action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+            }
+          }
+        }
+
+        // Validation for Progress Phase
+        if (action.isUpKeepActive()) {
+
+          // Validate progress value
+          if (projectMilestone.getYear() == action.getActualPhase().getYear()) {
+            if (projectMilestone.getProgressValue() == null
+              || !this.isValidNumber(String.valueOf(projectMilestone.getProgressValue()))) {
+              action.addMessage(action.getText("projectOutcomeMilestone.requeried.progressValue", params));
+              action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].progressValue",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+
+            // Validate progress narrative
+            if (!(this.isValidString(projectMilestone.getNarrativeProgress())
+              && this.wordCount(projectMilestone.getNarrativeProgress()) <= 150)) {
+              action.addMessage(action.getText("projectOutcomeMilestone.progressNarrative", params));
+              action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeProgress",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
