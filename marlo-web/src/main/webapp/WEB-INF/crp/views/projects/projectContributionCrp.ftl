@@ -626,19 +626,19 @@
         <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" class="crpMilestoneId" />
         
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
-          <div class="col-md-4 input-container">
+          <div class="col-md-3 input-container">
             [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) /]
           </div>
           
           [#-- All phases --]
-            <div class="col-md-4 input-container">
+            <div class="col-md-3 input-container">
               [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) && POWB editable=(editable || isTemplate) && !reportingActive && POWB && (milestoneYear gte currentCycleYear)!true /]
             </div>
          
           
           [#-- Upkeep (progress) active --]
           [#if reportingActive || upKeepActive]
-            <div class="col-md-4 input-container">
+            <div class="col-md-3 input-container">
               [@customForm.input name="${customName}.progressValue" i18nkey="projectOutcomeMilestone.progressValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) && upKeepActive editable=(editable || isTemplate) && upKeepActive && (milestoneYear gte currentCycleYear)!true /]
             </div>
           [/#if]
@@ -657,12 +657,12 @@
           [#-- REPORTING BLOCK --]
           [#if reportingActive]
             [#if !isYearRequired(milestoneYear) && action.isAiccra()]
-              <div class="col-md-4 input-container">
+              <div class="col-md-3 input-container">
                 [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) /]
               </div>
             [#else]
              [#if isYearRequired(milestoneYear)]
-              <div class="col-md-4 input-container">
+              <div class="col-md-3 input-container">
                 [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) && reportingActive/]
               </div>
              [/#if]
