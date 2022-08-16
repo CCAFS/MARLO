@@ -214,38 +214,67 @@ $(document).ready(function() {
   }
 
   function notifyErrorMessage(messageType,message) {
-    $('#generalMessages').noty({
-        theme: 'relax',
-        layout: 'top',
-        theme: 'relax', // or 'relax'
-        type: messageType,
-        text: message, // can be html or string
-        dismissQueue: true, // If you want to use
-        // queue feature set
-        // this true
-        animation: {
-            open: 'animated flipInX', // Animate.css
-            // class names
-            close: 'animated flipInX' // Animate.css
-        // class names
-        },
-        timeout: 10000, // delay for closing event.
-        // Set false for sticky
-        // notifications
-        force: false, // adds notification to the
-        // beginning of queue when set
-        // to true
-        modal: false,
-        maxVisible: 5, // you can set max visible
-        // notification for dismissQueue
-        // true option,
-        killer: false, // for close all notifications
-        // before show
-        closeWith: [
-          'click'
-        ]
+    var containerAlert = document.getElementsByClassName("globalContainerAlert")
+    var containerLine = document.getElementsByClassName("globalContainerLine")
+    var containerIcon = document.getElementsByClassName("globalContainerIcon")
+    var messages = document.getElementsByClassName("messages")
+    var element = $('.messages');
 
-    });
+    switch (messageType) {
+      case "success":
+        $(element).find('.alertText').html(message);
+        $(element).find('.material-icons').html('done');  
+        $(containerAlert).addClass("alertColorBackgroundSucces");
+        $(containerLine).addClass("alertColorSucces");
+        $(containerIcon).addClass("alertColorSucces");
+        $(messages).removeClass("displayNone");
+        break;
+      case "warning":
+        $(element).find('.alertText').html(message);
+        $(element).find('.material-icons').html('warning');     
+        $(containerAlert).addClass("alertColorBackgroundWarning");
+        $(containerLine).addClass("alertColorWarning");
+        $(containerIcon).addClass("alertColorWarning");
+        $(messages).removeClass("displayNone");
+        break;
+      case "error":
+        //Declaraciones ejecutadas cuando el resultado de expresión coincide con valorN
+        break;
+    }
+    
+
+    // $('#generalMessages').noty({
+    //     theme: 'relax',
+    //     layout: 'top',
+    //     theme: 'relax', // or 'relax'
+    //     type: messageType,
+    //     text: message, // can be html or string
+    //     dismissQueue: true, // If you want to use
+    //     // queue feature set
+    //     // this true
+    //     animation: {
+    //         open: 'animated flipInX', // Animate.css
+    //         // class names
+    //         close: 'animated flipInX' // Animate.css
+    //     // class names
+    //     },
+    //     timeout: 10000, // delay for closing event.
+    //     // Set false for sticky
+    //     // notifications
+    //     force: false, // adds notification to the
+    //     // beginning of queue when set
+    //     // to true
+    //     modal: false,
+    //     maxVisible: 5, // you can set max visible
+    //     // notification for dismissQueue
+    //     // true option,
+    //     killer: false, // for close all notifications
+    //     // before show
+    //     closeWith: [
+    //       'click'
+    //     ]
+
+    // });
   }
 
   /* Tooltips with JQuery UI */

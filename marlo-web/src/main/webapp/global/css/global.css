@@ -1099,7 +1099,8 @@ span.logType.saved {
 }
 
 #generalMessages ul {
-  width: 80%;
+  width: 100%;
+  padding: 0;
 }
 
 .charCount {
@@ -7603,7 +7604,7 @@ img.qaOptions {
   height: 100%;
 }
 
-.viewMoreCollapse{
+.viewMoreCollapse {
   color: #287fa1;
   /* border-bottom: 1px solid #f2f2f2; */
   position: absolute;
@@ -7623,6 +7624,10 @@ img.qaOptions {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 );
 }
 
-.containerAlertMargin{
+.containerAlertMargin {
   margin-bottom: 10px;
+}
+
+.displayNone {
+  display: none;
 }
