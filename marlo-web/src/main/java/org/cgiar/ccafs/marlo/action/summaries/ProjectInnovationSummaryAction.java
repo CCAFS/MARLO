@@ -403,6 +403,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       hasLegacyCrpsText = "", sdgTargets = "";
     Boolean isRegional = false, isNational = false, isStage4 = false, hasLegacyCrps = false;
     StringBuffer evidenceLink = new StringBuffer();
+    URLShortener urlShortener = new URLShortener();
     // Id
     id = projectInnovationID;
     // Title
@@ -452,6 +453,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
         if (projectInnovationInfo.getProjectExpectedStudy() != null && projectInnovationInfo.getProjectExpectedStudy()
           .getProjectExpectedStudyInfo(this.getSelectedPhase()) != null) {
+          String studyUrl = null;
 
           if (studyInnovations != null) {
             projectExpectedStudy = projectInnovationInfo.getProjectExpectedStudy().getId() + " - "
@@ -461,8 +463,15 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
           for (ProjectExpectedStudyInnovation studyInnovation : studyInnovations) {
 
-            projectExpectedStudies = studyInnovation.getProjectExpectedStudy().getId() + " - "
-              + studyInnovation.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getTitle();
+            studyUrl = this.getBaseUrl() + "/projects/" + this.getLoggedCrp().getAcronym() + "/studySummary.do?studyID="
+              + studyInnovation.getProjectExpectedStudy().getId() + "&cycle=" + this.getSelectedCycle() + "&year="
+              + this.getSelectedPhase().getYear() + "";
+            studyUrl = urlShortener.getShortUrlService(studyUrl);
+
+            projectExpectedStudies = "<br>&nbsp;&nbsp;&nbsp;&nbsp; ●"
+              + studyInnovation.getProjectExpectedStudy().getId() + " - "
+              + studyInnovation.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getTitle()
+              + " (" + studyUrl + ")";
 
             /*
              * oicr += this.getBaseUrl() + "/projects/" + this.getLoggedCrp().getAcronym() + "/studySummary.do?studyID="
@@ -703,7 +712,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     }
 
     // Evidence Link
-    URLShortener urlShortener = new URLShortener();
     if (("AR".equals(this.getSelectedPhase().getName()) && 2021 == this.getSelectedPhase().getYear())
       || this.getSelectedPhase().getYear() > 2021) {
       if (this.isNotEmpty(this.projectInnovationInfo.getProjectInnovation().getProjectInnovationEvidenceLinks())) {
@@ -745,12 +753,16 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         if (projectInnovationDeliverable.getDeliverable() != null
           && projectInnovationDeliverable.getDeliverable().getId() != null
           && projectInnovationDeliverable.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null) {
-          String url = this.getBaseUrl() + "/projects/" + this.crp + "/deliverable.do?deliverableID="
-            + projectInnovationDeliverable.getDeliverable().getId() + "&phaseID=" + phaseID;
+          /*
+           * String url = this.getBaseUrl() + "/projects/" + this.crp + "/deliverable.do?deliverableID="
+           * + projectInnovationDeliverable.getDeliverable().getId() + "&phaseID=" + phaseID;
+           */
+          String url = projectInnovationDeliverable.getDeliverable().getDisseminationUrl(this.getSelectedPhase());
           url = urlShortener.getShortUrlService(url);
           deliverablesSet
             .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + "D" + projectInnovationDeliverable.getDeliverable().getId() + " - "
-              + projectInnovationDeliverable.getDeliverable().getDeliverableInfo().getTitle() + "<br>(" + url + ")");
+              + projectInnovationDeliverable.getDeliverable().getDeliverableInfo().getTitle()
+              + " <font color=\"blue\">(" + url + ")</font>");
         }
       }
       deliverables = String.join("", deliverablesSet);
@@ -842,7 +854,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       hasLegacyCrps, hasLegacyCrpsText, sdgTargets});
     return model;
   }
-
 
   public String getRedirectUrl() {
     return redirectUrl;
