@@ -1,9 +1,28 @@
 [#ftl]
-<section id="generalMessages" class="container">
-  [#-- Messages are going to show using notify plugin (see global.js) --]
+[#-- Messages are going to show using notify plugin (see global.js) --]
+<section id="generalMessages" class="container">  
   <ul class="messages" style="display: none;">
-     [@s.iterator value="actionMessages"]<li id="message" class="success">[@s.property escape="false" /]</li>[/@s.iterator]
-     [@s.iterator value="actionErrors"]<li id="message" class="error">[@s.property escape="false" /]</li>[/@s.iterator]
+    <#--  [@s.iterator value="actionMessages"]<li id="message" class="success">[@s.property escape="false" /]</li>[/@s.iterator]  -->
+    <#--  [@s.iterator value="actionErrors"]<li id="message" class="error">[@s.property escape="false" /]</li>[/@s.iterator]  -->
+  </ul>
+</section>  
+
+<section id="generalMessages">  
+  <ul class="messages displayNone">
+    <div class="container  viewMore-bloc containerAlertMargin">
+      <div class=" containerAlert alert-leftovers  globalContainerAlert ">
+        <div class="containerLine  globalContainerLine"></div>
+        <div class="containerIcon">
+          <div class="containerIcon globalContainerIcon">
+            <i class="material-icons"></i>      
+          </div>
+        </div>
+        <div class="containerText col-md-12">
+          <p class="alertText">
+          </p>
+        </div>
+      </div>
+    </div>
   </ul>
 </section>
 
