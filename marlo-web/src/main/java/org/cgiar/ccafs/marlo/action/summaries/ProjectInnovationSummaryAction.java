@@ -30,7 +30,9 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.NATRedirectionLink;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
@@ -68,6 +70,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import com.opensymphony.xwork2.ActionContext;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
@@ -331,6 +334,45 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     return "application/pdf";
   }
 
+  private String getDeliverableDirectLink(Deliverable deliverable, Phase phase) {
+    String url = "<b>Not disseminated</b>";
+    DeliverableDissemination disseminationPhase = deliverable.getDissemination(phase);
+    if (disseminationPhase != null) {
+      if (disseminationPhase.getAlreadyDisseminated() != null && disseminationPhase.getAlreadyDisseminated()) {
+        url = StringUtils.trimToNull(disseminationPhase.getDisseminationUrl());
+
+        if (url == null) {
+          if (!ListUtils.emptyIfNull(deliverable.getMetadataElements(phase)).isEmpty()) {
+            deliverable.setMetadataElements(deliverable.getMetadataElements(phase));
+            url = StringUtils.trimToNull(deliverable.getMetadataValueByEncondedName(APConstants.METADATAELEMENTDOI));
+            if (url == null) {
+              url =
+                StringUtils.trimToNull(deliverable.getMetadataValueByEncondedName(APConstants.METADATAELEMENTHANDLE));
+            }
+          }
+        }
+
+        if (url == null && disseminationPhase != null) {
+          url = StringUtils.trimToNull(disseminationPhase.getArticleUrl());
+        }
+
+        if (url == null) {
+          url = "<b>Not provided</b>";
+        }
+      } else {
+        if (disseminationPhase.getConfidential() != null && disseminationPhase.getConfidential()) {
+          // url = StringUtils.trimToNull(disseminationPhase.getConfidentialUrl());
+          url = "<b>Marked as Confidential</b>";
+        } else {
+          url = "<b>Not disseminated</b>";
+        }
+      }
+    }
+
+    return url;
+  }
+
+
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -338,7 +380,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
-
 
   @Override
   public String getFileName() {
@@ -757,7 +798,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
            * String url = this.getBaseUrl() + "/projects/" + this.crp + "/deliverable.do?deliverableID="
            * + projectInnovationDeliverable.getDeliverable().getId() + "&phaseID=" + phaseID;
            */
-          String url = projectInnovationDeliverable.getDeliverable().getDisseminationUrl(this.getSelectedPhase());
+          String url =
+            this.getDeliverableDirectLink(projectInnovationDeliverable.getDeliverable(), this.getSelectedPhase());
           url = urlShortener.getShortUrlService(url);
           deliverablesSet
             .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + "D" + projectInnovationDeliverable.getDeliverable().getId() + " - "
