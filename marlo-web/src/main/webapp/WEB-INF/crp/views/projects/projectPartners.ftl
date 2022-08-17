@@ -43,12 +43,12 @@
   <div style="display:none" class="viewMore closed"></div>
 </div>
 -->
-<div class="container  viewMore-block containerAlertMargin">
+<div class="animated flipInX container  viewMore-block containerAlertMargin">
   <div class=" containerAlert alert-leftovers alertColorBackgroundInfo ">
     <div class="containerLine alertColorInfo"></div>
     <div class="containerIcon">
       <div class="containerIcon alertColorInfo">
-        <i class="material-icons">question_mark</i>      
+        <img src="${baseUrlCdn}/global/images/icon-question.png" />      
       </div>
     </div>
     <div class="containerText col-md-12">

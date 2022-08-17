@@ -7491,8 +7491,8 @@ img.qaOptions {
   justify-content: center;
 }
 
-.containerIcon i{
-  font-size: 25px;
+.containerIcon img{
+  width: 25px;
 }
 
 .containerText{
