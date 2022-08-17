@@ -51,7 +51,6 @@
 
           <h3 class="headTitle">[@s.text name="project.safeguards.sectionName" /]</h3>
           <div id="projectDescription" class="borderBox">
-
             [#-- Project Title --]
             <div class="form-group">
             <br>
@@ -61,14 +60,25 @@
               [@s.text name="project.safeguards.description"  /]
               <br>
               <br>
-              <div class="helpMessage infoText2">
+              <!--  <div class="helpMessage infoText2">
                 <div>
                   <div class="templateContainer">
                     <a href="${baseUrlCdn}/global/documents/E&S_Reporting_AICCRA_Template_V2_20220329.docx" download>[@s.text name="project.safeguards.downloadText"][/@s.text]<img src="${baseUrlCdn}/global/images/word.png" style="float: none !important;"/></a>
                   </div>
                 </div>
+              </div>  -->
+              <div class="containerButtonTemplate">
+                <a href="${baseUrlCdn}/global/documents/E&S_Reporting_AICCRA_Template_V2_20220329.docx"> 
+                  <div class="buttonTemplate">
+                    <div class="textButton">
+                      Download Template
+                    </div>
+                    <div class="iconButton">
+                      <img src="https://1000marcas.net/wp-content/uploads/2019/12/Logo-Microsoft-Word.png" height="30"/>
+                    </div>             
+                  </div>
+                </a>
               </div>
-
               <br>
               <div class="dropFileParentContainer">
                 <div class="dropFileContainer">
@@ -77,11 +87,9 @@
                   </div>
                 </div>
               </div>
-              <br>
-                   
+              <br>                   
           [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
-         
+          [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]         
           [/@s.form]
       </div>
     </div>
@@ -97,10 +105,14 @@
   <div id="safeguard" class="fileUploadContainer">
     [#local hasFile = safeguard.file?? && safeguard.file.id?? /]
     <div class="uploadPDFTitleContainer">
-      <img src="${baseUrlCdn}/global/images/pdf.png" class="fileIcon"/>
+      <img src="${baseUrlCdn}/global/images/upload-file.png" class="fileIcon"/>
       <label>[@customForm.text name="project.safeguards.uploadText" readText=!editable /]</label>
+      <div class="fileSupported">
+        <p class="textFileSupported">Files supported: </p>
+        <img src="${baseUrlCdn}/global/images/pdf.png" class="fileIconPdf"/>
+      </div>
       <br>
-      <label>━━━ OR ━━━</label>
+      <label class="fileUpload" style="display:${hasFile?string('none','block')}">━━━ OR ━━━</label>
       <br>
     </div>
     
