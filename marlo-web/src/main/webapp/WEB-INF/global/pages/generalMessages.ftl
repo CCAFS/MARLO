@@ -9,12 +9,12 @@
 
 <section id="generalMessages">  
   <ul class="messages displayNone">
-    <div class="container  viewMore-bloc containerAlertMargin">
+    <div class="animated flipInX container  viewMore-bloc containerAlertMargin">
       <div class=" containerAlert alert-leftovers  globalContainerAlert ">
         <div class="containerLine  globalContainerLine"></div>
         <div class="containerIcon">
           <div class="containerIcon globalContainerIcon">
-            <i class="material-icons"></i>      
+            <img id="iconAlert" />     
           </div>
         </div>
         <div class="containerText col-md-12">

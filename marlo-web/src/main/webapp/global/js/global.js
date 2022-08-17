@@ -217,13 +217,14 @@ $(document).ready(function() {
     var containerAlert = document.getElementsByClassName("globalContainerAlert")
     var containerLine = document.getElementsByClassName("globalContainerLine")
     var containerIcon = document.getElementsByClassName("globalContainerIcon")
+    var iconAlert = document.getElementById("iconAlert")
     var messages = document.getElementsByClassName("messages")
     var element = $('.messages');
 
     switch (messageType) {
       case "success":
         $(element).find('.alertText').html(message);
-        $(element).find('.material-icons').html('done');  
+        $(iconAlert).attr("src",baseURL+'/global/images/icon-done.png');      
         $(containerAlert).addClass("alertColorBackgroundSucces");
         $(containerLine).addClass("alertColorSucces");
         $(containerIcon).addClass("alertColorSucces");
@@ -231,7 +232,7 @@ $(document).ready(function() {
         break;
       case "warning":
         $(element).find('.alertText').html(message);
-        $(element).find('.material-icons').html('warning');     
+        $(iconAlert).attr("src",baseURL+'/global/images/icon-alert.png');    
         $(containerAlert).addClass("alertColorBackgroundWarning");
         $(containerLine).addClass("alertColorWarning");
         $(containerIcon).addClass("alertColorWarning");
