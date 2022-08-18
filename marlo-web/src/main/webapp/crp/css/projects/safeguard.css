@@ -10,7 +10,7 @@
 }
 
 .dropFileParentContainer {
-    height: 250px;
+    height: 290px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -18,13 +18,13 @@
 
 .dropFileContainer {
     width: 60%;
-    height: 250px;
+    height: 290px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #F5F5F5;
-    border: 2px dashed #8d8d8d;
-    border-radius: 20px;
+    background: #fcfcfc;
+    border: 1px dashed #cecece;
+    border-radius: 10px;
 }
 
 #safeguard {
@@ -37,15 +37,22 @@
 label.browseFile {
     font-weight: 600;
     color: white;
-    background: #2BA6CB;
+    background: #2c5dc7;
     padding: 6px 10px;
     border-radius: 3px;
+    width: 140px;
+    text-align: center;    
+  transition: box-shadow 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+label.browseFile:hover {
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.55);
 }
 
 p.checked {
     width: 100%;
     padding: 3px 25px 3px 25px !important;
-    background-color: #fff7cf;
+    background-color: #ffffff;
 }
 
 .contentResult {  
@@ -54,4 +61,22 @@ p.checked {
 
 .removeIcon {
     padding: 13px !important;
+}
+
+.uploadPDFTitleContainer .fileIcon{
+    /* padding-bottom: 20px; */
+    /* height: 100px; */
+    width: 70px;
+    padding-bottom: 10px;
+}
+
+.fileSupported {
+    display: flex;
+    color: #a7a7a7;
+    margin-bottom: 7px;
+}
+
+.fileSupported .fileIconPdf{
+    padding-left: 10px;
+    height: 20px;
 }
