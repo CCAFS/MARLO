@@ -74,7 +74,7 @@
                       Download Template
                     </div>
                     <div class="iconButton">
-                      <img src="https://1000marcas.net/wp-content/uploads/2019/12/Logo-Microsoft-Word.png" height="30"/>
+                      <img src="${baseUrlCdn}/global/images/icon-microsoft-word.png"/>
                     </div>             
                   </div>
                 </a>
