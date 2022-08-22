@@ -680,9 +680,11 @@
                 </div>
               [/#if]
         </div>
-        <div class="form-group text-area-container">
-          [@customForm.textArea name="${customName}.narrativeProgress" i18nkey="projectOutcomeMilestone.progressNarrative" required=isYearRequired(milestoneYear) && upKeepActive className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable=(editable || isTemplate) && upKeepActive &&( milestoneYear gte currentCycleYear)!true /]
-        </div>
+        [#if !POWB]
+          <div class="form-group text-area-container">
+            [@customForm.textArea name="${customName}.narrativeProgress" i18nkey="projectOutcomeMilestone.progressNarrative" required=isYearRequired(milestoneYear) && upKeepActive className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable=(editable || isTemplate) && upKeepActive &&( milestoneYear gte currentCycleYear)!true /]
+          </div>
+        [/#if]
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
         <div class="form-group ">
