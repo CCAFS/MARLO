@@ -119,17 +119,14 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
           boolean exist = false;
           for (ProjectMilestone prevProjectMilestone : projectOutcome.getMilestones()) {
-            if (prevProjectMilestone.getCrpMilestone() != null && prevProjectMilestone.getCrpMilestone() != null
-              && crpMilestone != null && crpMilestone.getId() != null
-              && prevProjectMilestone.getCrpMilestone().getId().equals(crpMilestone.getId())
-              && prevProjectMilestone.getProjectOutcome() != null
-              && prevProjectMilestone.getProjectOutcome().getId() != null
-              && prevProjectMilestone.getProjectOutcome().getId().equals(projectOutcome.getId())) {
+            if (prevProjectMilestone.getCrpMilestone() != null && crpMilestone != null && crpMilestone.getId() != null
+              && prevProjectMilestone.getCrpMilestone().getId().equals(crpMilestone.getId())) {
               exist = true;
+              break;
             }
           }
 
-          if (exist == false) {
+          if (!exist) {
             // If not exist previously this project Milestone then it is added to the list
             projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
             projectMilestones.add(projectMilestone);
@@ -208,7 +205,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
     BaseAction action = (BaseAction) invocation.getAction();
     if (action.isAiccra() && outcome != null) {
-      // this.addAllCrpMilestones(outcome);
+      this.addAllCrpMilestones(outcome);
     }
 
     // Get The Crp/Center/Platform where the project was created
