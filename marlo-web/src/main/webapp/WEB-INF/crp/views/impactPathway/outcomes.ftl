@@ -31,12 +31,31 @@
 [#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
+<!--
 <div class="container helpText viewMore-block">
   <div style="display:none;" class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="outcomes.help" /] </p>
   </div>
   <div style="display:none" class="viewMore closed"></div>
+</div>
+-->
+
+<div class="animated flipInX container  viewMore-block containerAlertMargin">
+  <div class=" containerAlert alert-leftovers alertColorBackgroundInfo "> 
+    <div class="containerLine alertColorInfo"></div>
+    <div class="containerIcon">
+      <div class="containerIcon alertColorInfo">
+        <img src="${baseUrlCdn}/global/images/icon-question.png" />         
+      </div>
+    </div>
+    <div class="containerText col-md-12 alertCollapse">
+      <p class="alertText">
+       [@s.text name="outcomes.help" /]
+      </p>
+    </div>
+    <div  class="viewMoreCollapse closed"></div>
+  </div>  
 </div>
 
 <section class="marlo-content">
