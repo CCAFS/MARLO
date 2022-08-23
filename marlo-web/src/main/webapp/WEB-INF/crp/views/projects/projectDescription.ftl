@@ -39,6 +39,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+<!--  
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     [#-- <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div> --]
@@ -55,7 +56,31 @@
       [/#if]
     </p>
   </div>
-  <div style="display:none" class="viewMore closed"></div>
+  <div style="display:none" class="viewMore closed"></div> 
+</div>
+-->
+<div class="animated flipInX container  viewMore-block containerAlertMargin">
+  <div class="containerAlert alert-leftovers alertColorBackgroundInfo ">
+    <div class="containerLine alertColorInfo"></div>
+    <div class="containerIcon">
+      <div class="containerIcon alertColorInfo">
+        <img src="${baseUrlCdn}/global/images/icon-question.png" />      
+      </div>
+    </div>
+    <div class="containerText col-md-12">
+      <p class="alertText">
+        [#if (project.projectInfo.isProjectEditLeader())!false]
+          [#if (reportingActive)!false]
+            [@s.text name="projectDescription.help3" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text]
+          [#else]
+            [@s.text name="projectDescription.help2" ] [@s.param][@s.text name="global.managementLiaison${isCenterProject?string('Center', '')}" /][/@s.param] [/@s.text]
+          [/#if]
+        [#else]
+          [@s.text name="projectDescription.help1" /]
+        [/#if]
+      </p>
+    </div>
+  </div>
 </div>
 
 [#if (!availabePhase)!false]
