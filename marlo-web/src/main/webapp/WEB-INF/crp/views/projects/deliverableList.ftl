@@ -62,12 +62,12 @@
 -->
 
 
-<div class="container  viewMore-block">
+<div class="animated flipInX container  viewMore-block containerAlertMargin ">
   <div class=" containerAlert alert-leftovers alertColorBackgroundInfo ">
     <div class="containerLine alertColorInfo"></div>
     <div class="containerIcon">
-      <div class="containerIcon alertColorInfo">
-        <i class="material-icons">question_mark</i>      
+      <div class="containerIcon alertColorInfo"> 
+        <img src="${baseUrlCdn}/global/images/icon-question.png" />      
       </div>
     </div>
     <div class="containerText col-md-12">
@@ -76,12 +76,12 @@
   </div>
 </div>
 
-<div class="container  viewMore-block">
-  <div class="containerAlert  alert-leftovers alertColorBackgroundInfo">
+<div class="animated flipInX container  viewMore-block containerAlertMargin">
+  <div class=" containerAlert  alert-leftovers alertColorBackgroundInfo">
     <div class="containerLine alertColorInfo"></div>
     <div class="containerIcon">
       <div class="containerIcon alertColorInfo">
-        <i class="material-icons">priority_high</i>      
+        <img src="${baseUrlCdn}/global/images/icon-exclamation.png" />
       </div>
     </div>
     <div class="containerText col-md-9">
@@ -91,7 +91,7 @@
     <a href="${baseUrlCdn}/global/documents/AICCRA_dissemination_templates_2021.xlsx">     
       <button class="DownloadButton " >
         <div class="IconDownloadButton">
-          <img src="https://cdn-icons-png.flaticon.com/512/337/337958.png" height="30"/>
+          <img src="${baseUrlCdn}/global/images/icon-xls.png" height="33"/>
         </div>
         <span for="">[@s.text name="Download Template" /]</span>
 			</button>
@@ -189,7 +189,7 @@
           <div class="">
             <h3 class="subTitle headTitle">Previous deliverables</h3>
             <hr />
-            [@deliverableList.deliverablesList deliverables=(project.getPreviousDeliverables(actualPhase))![] canValidate=true canEdit=candit isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false projectID=projectID/]
+            [@deliverableList.deliverablesList deliverables=(project.getPreviousDeliverables(actualPhase) + previousSharedDeliverableList)![] canValidate=true canEdit=candit isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false projectID=projectID/]
           </div>
 
           <input type="hidden" name="projectID" value="${projectID}" />
