@@ -1099,7 +1099,8 @@ span.logType.saved {
 }
 
 #generalMessages ul {
-  width: 80%;
+  width: 100%;
+  padding: 0;
 }
 
 .charCount {
@@ -5653,6 +5654,13 @@ table.evaluationRank thead th {
   color: #ffffff;
 }
 
+.no-button-label-disabled {
+  pointer-events:none;
+  background: #e5e5e5;
+  color: #b3b3b3;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1), inset 0 -2px 0 rgba(0, 0, 0, 0.32);
+  }
+
 .no-button-label.neutral:hover, .no-button-label.neutral.radio-checked, .yes-button-label.neutral:hover, .yes-button-label.neutral.radio-checked {
   background: #68b3f3 !important;
   color: #ffffff;
@@ -7451,10 +7459,9 @@ img.qaOptions {
 .containerAlert{
   display: flex;
   position: relative;
-   border-radius: 9px 0px 0px 9px;  
-   display: flex;
-   align-items: center;
-   justify-content: center;
+  border-radius: 9px 0px 0px 9px;  
+  align-items: center;
+  justify-content: center;
 }
 
 .containerLine{
@@ -7484,8 +7491,8 @@ img.qaOptions {
   justify-content: center;
 }
 
-.containerIcon i{
-  font-size: 25px;
+.containerIcon img{
+  width: 25px;
 }
 
 .containerText{
@@ -7593,6 +7600,34 @@ img.qaOptions {
   -moz-border-radius: 2px;
   padding: 5px;
   border: 1px solid #EEE;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   height: 100%;
+}
+
+.viewMoreCollapse {
+  color: #287fa1;
+  /* border-bottom: 1px solid #f2f2f2; */
+  position: absolute;
+  bottom: 0;
+  width: 96%;
+  margin: 0 0.5%;
+  cursor: pointer;
+  padding: 5px 0 0px 0;
+  font-weight: 900;
+  text-align: center;
+  background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 0%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255,255,255,0)), color-stop(50%, #fff));
+  background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: -o-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: -ms-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,#d9edf7 70%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 );
+}
+
+.containerAlertMargin {
+  margin-bottom: 10px;
+}
+
+.displayNone {
+  display: none;
 }
