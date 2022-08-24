@@ -189,7 +189,7 @@
           <div class="">
             <h3 class="subTitle headTitle">Previous deliverables</h3>
             <hr />
-            [@deliverableList.deliverablesList deliverables=(project.getPreviousDeliverables(actualPhase))![] canValidate=true canEdit=candit isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false projectID=projectID/]
+            [@deliverableList.deliverablesList deliverables=(project.getPreviousDeliverables(actualPhase) + previousSharedDeliverableList)![] canValidate=true canEdit=candit isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false projectID=projectID/]
           </div>
 
           <input type="hidden" name="projectID" value="${projectID}" />
