@@ -7593,7 +7593,6 @@ img.qaOptions {
   align-items: center;
 }
 
-
 .alert-leftovers {
   position: relative;
   -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 18%);
@@ -7605,7 +7604,6 @@ img.qaOptions {
   height: 100%;
 }
 
-<<<<<<< HEAD
 .viewMoreCollapse {
   color: #287fa1;
   /* border-bottom: 1px solid #f2f2f2; */
@@ -7634,9 +7632,6 @@ img.qaOptions {
   display: none;
 }
 
-=======
-<<<<<<< HEAD
->>>>>>> aiccra-upload-reporting-files
 .containerButtonTemplate { 
   justify-content: center;
   display: flex;
@@ -7679,9 +7674,7 @@ img.qaOptions {
 
 .containerButtonTemplate .buttonTemplate .iconButton img{
   height: 28px;
-<<<<<<< HEAD
-=======
-=======
+}
 .viewMoreCollapse {
   color: #287fa1;
   /* border-bottom: 1px solid #f2f2f2; */
@@ -7708,6 +7701,4 @@ img.qaOptions {
 
 .displayNone {
   display: none;
->>>>>>> aiccra-staging
->>>>>>> aiccra-upload-reporting-files
-}
+  }
