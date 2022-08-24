@@ -601,8 +601,15 @@ function removeBaselineIndicator() {
  * File upload (blueimp-tmpl)
  */
 
+
+
+
+
 var $uploadBlock = $('.fileUploadContainer');
 var $fileUpload = $uploadBlock.find('.upload');
+
+console.log($fileUpload)
+
 $fileUpload.fileupload({
     dataType: 'json',
     start: function(e) {
@@ -616,14 +623,16 @@ $fileUpload.fileupload({
     done: function(e,data) {
       var r = data.result;
       console.log(r);
-      if(r.saved) {
-        var $ub = $(e.target).parents('.fileUploadContainer');
-        $ub.find('.textMessage .contentResult').html(r.fileFileName);
-        $ub.find('.textMessage').show();
-        $ub.find('.fileUpload').hide();
-        // Set file ID
-        $ub.find('input.fileID').val(r.fileID);
-        $ub.find('input.safeguardID').val(r.safeguardID);
+      if(r.fileContentType == "application/pdf"){
+        if(r.saved) {
+          var $ub = $(e.target).parents('.fileUploadContainer');
+          $ub.find('.textMessage .contentResult').html(r.fileFileName);
+          $ub.find('.textMessage').show();
+          $ub.find('.fileUpload').hide();
+          // Set file ID
+          $ub.find('input.fileID').val(r.fileID);
+          $ub.find('input.safeguardID').val(r.safeguardID);
+        }
       }
     },
     progressall: function(e,data) {
@@ -634,10 +643,13 @@ $fileUpload.fileupload({
 // Prepare data
 $fileUpload.bind('fileuploadsubmit', function(e,data) {
   // var safeguardID = $(e.target).parents('#safeguard').find('.safeguardID').val();
-  
-  data.formData = {
-    safeguardID: safeguardID2
-  };
+  if(data.files[0].type == "application/pdf"){
+    data.formData = {
+      safeguardID: safeguardID2
+    };
+  }else{
+    console.log("other type document")
+  }
 });
 
 // Remove file event
@@ -715,3 +727,4 @@ function updateAllIndexes() {
   $(document).trigger('updateComponent');
 
 }
+

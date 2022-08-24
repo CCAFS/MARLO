@@ -7605,6 +7605,7 @@ img.qaOptions {
   height: 100%;
 }
 
+<<<<<<< HEAD
 .viewMoreCollapse {
   color: #287fa1;
   /* border-bottom: 1px solid #f2f2f2; */
@@ -7633,6 +7634,9 @@ img.qaOptions {
   display: none;
 }
 
+=======
+<<<<<<< HEAD
+>>>>>>> aiccra-upload-reporting-files
 .containerButtonTemplate { 
   justify-content: center;
   display: flex;
@@ -7675,4 +7679,35 @@ img.qaOptions {
 
 .containerButtonTemplate .buttonTemplate .iconButton img{
   height: 28px;
+<<<<<<< HEAD
+=======
+=======
+.viewMoreCollapse {
+  color: #287fa1;
+  /* border-bottom: 1px solid #f2f2f2; */
+  position: absolute;
+  bottom: 0;
+  width: 96%;
+  margin: 0 0.5%;
+  cursor: pointer;
+  padding: 5px 0 0px 0;
+  font-weight: 900;
+  text-align: center;
+  background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 0%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255,255,255,0)), color-stop(50%, #fff));
+  background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: -o-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: -ms-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,#d9edf7 70%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 );
+}
+
+.containerAlertMargin {
+  margin-bottom: 10px;
+}
+
+.displayNone {
+  display: none;
+>>>>>>> aiccra-staging
+>>>>>>> aiccra-upload-reporting-files
 }
