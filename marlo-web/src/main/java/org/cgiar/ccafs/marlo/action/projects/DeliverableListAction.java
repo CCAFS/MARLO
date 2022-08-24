@@ -85,6 +85,7 @@ public class DeliverableListAction extends BaseAction {
   private long deliverableID;
   private List<Deliverable> deliverables;
   private List<Deliverable> currentDeliverableList;
+  private List<Deliverable> previousSharedDeliverableList;
   private List<DeliverableType> deliverablesType;
   private GlobalUnit loggedCrp;
   private Project project;
@@ -444,6 +445,10 @@ public class DeliverableListAction extends BaseAction {
     return loggedCrp;
   }
 
+  public List<Deliverable> getPreviousSharedDeliverableList() {
+    return previousSharedDeliverableList;
+  }
+
   public Project getProject() {
     return project;
   }
@@ -451,6 +456,7 @@ public class DeliverableListAction extends BaseAction {
   public long getProjectID() {
     return projectID;
   }
+
 
   /*
    * Copy method from project.getCurrentDeliverables to allow add the shared deliverables to list
@@ -462,6 +468,7 @@ public class DeliverableListAction extends BaseAction {
       .collect(Collectors.toList());
 
     // Load Shared deliverables
+    previousSharedDeliverableList = new ArrayList<>();
     try {
       List<ProjectDeliverableShared> deliverableShared = this.projectDeliverableSharedManager
         .getByProjectAndPhase(project.getId(), this.getActualPhase().getId()) != null
@@ -503,8 +510,38 @@ public class DeliverableListAction extends BaseAction {
             }
           }
 
-          if (!currentDeliverableList.contains(deliverableS.getDeliverable())) {
+          if (!currentDeliverableList.contains(deliverableS.getDeliverable())
+            && !deliverableS.getDeliverable().getDeliverableInfo(this.getActualPhase()).isPrevious()) {
             currentDeliverableList.add(deliverableS.getDeliverable());
+          }
+        }
+
+        // Previous shared deliverables
+        List<ProjectDeliverableShared> prevProjectDeliverables = deliverableShared.stream()
+          .filter(d -> d.isActive() && d.getDeliverable() != null
+            && d.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverable().getDeliverableInfo().isPrevious())
+          .collect(Collectors.toList());
+
+        if (prevProjectDeliverables != null && !prevProjectDeliverables.isEmpty()) {
+          for (ProjectDeliverableShared prevShared : prevProjectDeliverables) {
+            if (prevShared != null && prevShared.getDeliverable() != null
+              && prevShared.getDeliverable().getId() != null) {
+
+              // Owner
+              if (prevShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null) {
+                prevShared.getDeliverable()
+                  .setOwner(prevShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                prevShared.getDeliverable()
+                  .setSharedWithMe(prevShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+              } else {
+                prevShared.getDeliverable().setOwner(prevShared.getProject().getId() + "");
+                prevShared.getDeliverable().setSharedWithMe(prevShared.getProject().getId() + "");
+              }
+
+
+              previousSharedDeliverableList.add(prevShared.getDeliverable());
+            }
           }
         }
       }
@@ -566,7 +603,6 @@ public class DeliverableListAction extends BaseAction {
 
 
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -675,6 +711,10 @@ public class DeliverableListAction extends BaseAction {
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setPreviousSharedDeliverableList(List<Deliverable> previousSharedDeliverableList) {
+    this.previousSharedDeliverableList = previousSharedDeliverableList;
   }
 
   public void setProject(Project project) {
