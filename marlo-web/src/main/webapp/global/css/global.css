@@ -7622,7 +7622,6 @@ img.qaOptions {
   height: 100%;
 }
 
-<<<<<<< HEAD
 .containerButtonTemplate { 
   justify-content: center;
   display: flex;
@@ -7665,7 +7664,8 @@ img.qaOptions {
 
 .containerButtonTemplate .buttonTemplate .iconButton img{
   height: 28px;
-=======
+}
+
 .viewMoreCollapse {
   color: #287fa1;
   /* border-bottom: 1px solid #f2f2f2; */
@@ -7692,5 +7692,5 @@ img.qaOptions {
 
 .displayNone {
   display: none;
->>>>>>> aiccra-staging
+
 }
