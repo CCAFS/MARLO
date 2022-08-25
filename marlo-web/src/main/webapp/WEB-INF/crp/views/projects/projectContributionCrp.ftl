@@ -626,7 +626,7 @@
         <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" class="crpMilestoneId" />
         
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
-          <div class="col-md-3 input-container">
+          <div class="col-md-4 input-container" style="padding-top:3px">
             [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) /]
           </div>
           
