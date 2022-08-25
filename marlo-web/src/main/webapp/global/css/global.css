@@ -5084,10 +5084,11 @@ ul#deliverablesFilesMessages > li {
   position: relative;
   transition: box-shadow 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
   background: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
 }
 
 .borderBox:hover {
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+  /* box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15); */
   border: 1px solid #C7C7C7;
 }
 
@@ -7621,6 +7622,50 @@ img.qaOptions {
   height: 100%;
 }
 
+.containerButtonTemplate { 
+  justify-content: center;
+  display: flex;
+}
+
+.containerButtonTemplate .buttonTemplate {
+  cursor: pointer;
+  display: flex;
+  width: 150px ;
+  height: 45px;
+  border: #6d9eeb solid 1px;
+  border-radius: 8px;
+  -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 30%);
+  -moz-box-shadow: 1px 2px 8px rgba(0, 0, 0, .3);
+  -moz-border-radius: 2px;
+  text-decoration: none;
+  /* transition: box-shadow 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); */
+}
+
+.containerButtonTemplate .buttonTemplate:hover {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
+}
+
+.containerButtonTemplate .buttonTemplate .textButton {
+  width: 100px;
+  text-align: center;
+  line-height:110%;
+  align-items: center;
+  display: flex;
+  color: #000;
+  font-weight: 610;
+}
+
+.containerButtonTemplate .buttonTemplate .iconButton {
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.containerButtonTemplate .buttonTemplate .iconButton img{
+  height: 28px;
+}
+
 .viewMoreCollapse {
   color: #287fa1;
   /* border-bottom: 1px solid #f2f2f2; */
@@ -7647,4 +7692,5 @@ img.qaOptions {
 
 .displayNone {
   display: none;
+
 }
