@@ -7213,6 +7213,10 @@ img.fileIcon {
 .numberOfCommentsBubble {
   margin: 5px;
   font-weight: 400;
+  position: absolute;
+  top: -38px;
+  transform: translateX(calc(-50% - 3px));
+  left: 50%;
 }
 
 .numberOfCommentsBubble p {
