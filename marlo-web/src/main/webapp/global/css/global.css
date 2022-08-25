@@ -7186,6 +7186,13 @@ img.fileIcon {
   width: 100% !important;
 }
 
+.fieldReference .select2 {
+  width: 100% !important;
+}
+.fieldReference{
+  width: 100% !important;
+}
+
 
 .text-area-container {
   display: flex;
