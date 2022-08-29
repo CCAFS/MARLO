@@ -88,7 +88,7 @@
       <p class="alertText">[@s.text name="deliverable.message"][/@s.text]</p>
     </div>
     <div class="ContainerDownload col-md-2">     
-    <a href="${baseUrlCdn}/global/documents/AICCRA_dissemination_templates_2021.xlsx">     
+    <a href="${baseUrlCdn}/global/documents/AICCRA_dissemination_templates_2022.xlsx">     
       <button class="DownloadButton " >
         <div class="IconDownloadButton">
           <img src="${baseUrlCdn}/global/images/icon-xls.png" height="33"/>
