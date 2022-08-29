@@ -426,7 +426,12 @@ function hideShowOptionButtons(block, status) {
         getNumberOfComments(qaCommentFinded.frontName);
         Object.keys(qaCommentFinded).map(keycomment=>{
           if (qaCommentFinded[keycomment] == qaCommentFinded.frontName) return ;
-          if (qaCommentFinded[keycomment].status === "") allFieldsdone = false;
+          if(!allFieldsdone) return;
+          const {status, reply} = qaCommentFinded[keycomment]
+          if (status === "") allFieldsdone = false;
+          if (status === "0" || status === "2") allFieldsdone = !!Object.keys(reply).length; 
+          
+          console.log(qaCommentFinded)
         })
         commentIcon.attr('src', qaCommentsStatus(allFieldsdone ? 'done' : 'pending'))
       }
@@ -439,7 +444,7 @@ function hideShowOptionButtons(block, status) {
    
             
 
-      // for (let i = 0; i < qaComments.length; i++) {
+       for (let i = 0; i < qaComments.length; i++) {
         
       //   if (x[1] == qaComments[i].frontName) {
       //     getNumberOfComments(x[1]);
@@ -474,7 +479,7 @@ function hideShowOptionButtons(block, status) {
       // if (userCanLeaveComments == 'true') {
       //   commentIcon.show();
       //   commentIcon.parent().css('display', 'flex');
-      // }
+       }
 
     });
 
