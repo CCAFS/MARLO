@@ -47,12 +47,12 @@ public class TimelineInformationServiceAction extends BaseAction {
             timelineMap.put("description", "");
           }
           if (timelineItem.getStartDate() != null) {
-            timelineMap.put("startDate", timelineItem.getStartDate());
+            timelineMap.put("startDate", this.parseDate(timelineItem.getStartDate().toString()));
           } else {
             timelineMap.put("startDate", "");
           }
           if (timelineItem.getEndDate() != null) {
-            timelineMap.put("endDate", timelineItem.getEndDate());
+            timelineMap.put("endDate", this.parseDate(timelineItem.getEndDate().toString()));
           } else {
             timelineMap.put("endDate", "");
           }
@@ -75,6 +75,24 @@ public class TimelineInformationServiceAction extends BaseAction {
 
   public List<Map<String, Object>> getInformation() {
     return information;
+  }
+
+  /**
+   * Parse date to String and removes the hour information
+   * 
+   * @param dateString Date to String parameter
+   * @return String
+   * @exception StringIndexOutOfBoundsException if is not possible parse the date or cut
+   */
+  public String parseDate(String dateString) {
+    try {
+      if (!dateString.isEmpty()) {
+        dateString = dateString.substring(0, 10);
+      }
+    } catch (StringIndexOutOfBoundsException e) {
+      logger.error("unable to parse date", e);
+    }
+    return dateString;
   }
 
   @Override
