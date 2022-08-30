@@ -20,7 +20,8 @@ public class TimelineInformationServiceAction extends BaseAction {
   private static final long serialVersionUID = -4335064142194555431L;
   private final Logger logger = LoggerFactory.getLogger(TimelineInformationServiceAction.class);
   private TimelineManager timelineManager;
-  Map<String, Object> timelineMap;
+  private List<Map<String, Object>> information;
+
 
   @Inject
   public TimelineInformationServiceAction(APConfig config, TimelineManager timelineManager) {
@@ -31,12 +32,15 @@ public class TimelineInformationServiceAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     List<Timeline> timelineList = new ArrayList<>();
-    timelineMap = new HashMap<String, Object>();
+    Map<String, Object> timelineMap;
+    information = new ArrayList<Map<String, Object>>();
 
     try {
       timelineList = timelineManager.findAll();
       if (timelineList != null) {
+        int count = 0;
         for (Timeline timelineItem : timelineList) {
+          timelineMap = new HashMap<String, Object>();
           if (timelineItem.getDescription() != null) {
             timelineMap.put("description", timelineItem.getDescription());
           } else {
@@ -57,7 +61,8 @@ public class TimelineInformationServiceAction extends BaseAction {
           } else {
             timelineMap.put("orderIndex", "");
           }
-
+          information.add(count, timelineMap);
+          count++;
         }
       }
     } catch (Exception e) {
@@ -68,20 +73,16 @@ public class TimelineInformationServiceAction extends BaseAction {
     return SUCCESS;
   }
 
-
-  public Map<String, Object> getTimelineMap() {
-    return timelineMap;
+  public List<Map<String, Object>> getInformation() {
+    return information;
   }
-
 
   @Override
   public void prepare() throws Exception {
   }
 
-
-  public void setTimelineMap(Map<String, Object> timelineMap) {
-    this.timelineMap = timelineMap;
+  public void setInformation(List<Map<String, Object>> information) {
+    this.information = information;
   }
-
 
 }
