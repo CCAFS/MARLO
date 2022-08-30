@@ -60,7 +60,7 @@ public class TimelineMySQLDAO extends AbstractMarloDAO<Timeline, Long> implement
 
   @Override
   public List<Timeline> findAll() {
-    String query = "from " + Timeline.class.getName() + " where is_active=1";
+    String query = "from " + Timeline.class.getName();
     List<Timeline> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
