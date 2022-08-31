@@ -780,6 +780,29 @@ public class DeliverableAction extends BaseAction {
     return statuses;
   }
 
+  /**
+   * Get Trainees indicator - IPI 2.3
+   * 
+   * @return CrpProgramOutcome IPI 2.3 object
+   */
+  public CrpProgramOutcome getTraineesIndicator() {
+    CrpProgramOutcome crpProgramOutcomeIPI = new CrpProgramOutcome();
+
+    try {
+
+      if (programOutcomes != null && !programOutcomes.isEmpty()) {
+        crpProgramOutcomeIPI = programOutcomes.stream()
+          .filter(o -> o.getAcronym() != null && o.getAcronym().equals("IPI 2.3")).collect(Collectors.toList()).get(0);
+      }
+
+    } catch (Exception e) {
+      logger.error("unable to get IPI 2.3", e);
+      return null;
+    }
+    return crpProgramOutcomeIPI;
+
+  }
+
   public String getTransaction() {
     return transaction;
   }
@@ -811,6 +834,49 @@ public class DeliverableAction extends BaseAction {
     }
 
     return users;
+  }
+
+  /**
+   * Verify is deliverable has CapDev category
+   * 
+   * @return true when deliverable has capdev category
+   */
+  public boolean hasDeliverableCapdevCategory() {
+    return (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getDeliverableType() != null
+      && deliverable.getDeliverableInfo().getDeliverableType().getId() == 145);
+  }
+
+  /**
+   * Verify if the deliverable mapped to trainees indicator - IPI 2.3
+   * 
+   * @return Yes when deliverable is mapped to IPI 2.3
+   */
+  public boolean isDeliverableMappedToTrainessIndicator() {
+    boolean isMappedToIndicator = false;
+    try {
+      CrpProgramOutcome crpProgramOutcomeIPI = new CrpProgramOutcome();
+
+      if (programOutcomes != null && !programOutcomes.isEmpty()) {
+        crpProgramOutcomeIPI = this.getTraineesIndicator();
+      }
+
+      // Check if deliverable is already mapped to IPI 2.3 object
+
+      if (deliverable.getCrpOutcomes() != null && !deliverable.getCrpOutcomes().isEmpty()) {
+        for (DeliverableCrpOutcome deliverableOutcome : deliverable.getCrpOutcomes()) {
+          if (crpProgramOutcomeIPI != null && crpProgramOutcomeIPI.getId() != null
+            && deliverableOutcome.getCrpProgramOutcome() != null
+            && deliverableOutcome.getCrpProgramOutcome().getId() != null
+            && deliverableOutcome.getCrpProgramOutcome().getId().equals(crpProgramOutcomeIPI.getId())) {
+            isMappedToIndicator = true;
+          }
+        }
+      }
+      return isMappedToIndicator;
+    } catch (Exception e) {
+      logger.error("unable to verify if its mapped to IPI 2.3", e);
+      return false;
+    }
   }
 
   @Override
@@ -2157,49 +2223,25 @@ public class DeliverableAction extends BaseAction {
   /**
    * Save Deliverable Crp Program Outcome Information
    * 
-   * @param delivearble
+   * @param deliverable
    * @param phase
    */
   public void saveCrpOutcomes(Deliverable deliverable, Phase phase) {
     // Get the IPI 2.3 object
-    CrpProgramOutcome crpProgramOutcomeIPI = new CrpProgramOutcome();
-    boolean uniqueIPI = true;
+    CrpProgramOutcome crpProgramOutcomeIPI = this.getTraineesIndicator();
     boolean addIPI = false;
     try {
 
       // Check deliverable type
-      if ((deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getDeliverableType() != null
-        && deliverable.getDeliverableInfo().getDeliverableType().getId() == 145)
-        || (deliverable.getDeliverableParticipant() != null
-          && deliverable.getDeliverableParticipant().getHasParticipants() != null
-          && deliverable.getDeliverableParticipant().getHasParticipants())) {
+      if ((this.hasDeliverableCapdevCategory()) || (deliverable.getDeliverableParticipant() != null
+        && deliverable.getDeliverableParticipant().getHasParticipants() != null
+        && deliverable.getDeliverableParticipant().getHasParticipants())) {
         addIPI = true;
       }
 
-      if (addIPI) {
-
-        if (programOutcomes != null && !programOutcomes.isEmpty()) {
-          crpProgramOutcomeIPI =
-            programOutcomes.stream().filter(o -> o.getAcronym() != null && o.getAcronym().equals("IPI 2.3"))
-              .collect(Collectors.toList()).get(0);
-        }
-
-        // Check if deliverable is already mapped to IPI 2.3 object
-        if (deliverable.getCrpOutcomes() != null && !deliverable.getCrpOutcomes().isEmpty()) {
-          for (DeliverableCrpOutcome deliverableOutcome : deliverable.getCrpOutcomes()) {
-            if (crpProgramOutcomeIPI != null && crpProgramOutcomeIPI.getId() != null
-              && deliverableOutcome.getCrpProgramOutcome() != null
-              && deliverableOutcome.getCrpProgramOutcome().getId() != null
-              && deliverableOutcome.getCrpProgramOutcome().getId().equals(crpProgramOutcomeIPI.getId())) {
-              uniqueIPI = false;
-            }
-          }
-        }
-      }
     } catch (Exception e) {
       logger.error("unable to map IPI 2.3", e);
     }
-
 
     // Search and deleted form Information
     if (deliverable.getDeliverableCrpOutcomes() != null && !deliverable.getDeliverableCrpOutcomes().isEmpty()) {
@@ -2219,7 +2261,7 @@ public class DeliverableAction extends BaseAction {
     // Save form Information
     if (this.deliverable.getCrpOutcomes() != null) {
 
-      if (uniqueIPI && addIPI) {
+      if (!this.isDeliverableMappedToTrainessIndicator() && addIPI) {
         DeliverableCrpOutcome deliverableCrpOutcome = new DeliverableCrpOutcome();
         deliverableCrpOutcome.setDeliverable(deliverable);
         deliverableCrpOutcome.setCrpProgramOutcome(crpProgramOutcomeIPI);
