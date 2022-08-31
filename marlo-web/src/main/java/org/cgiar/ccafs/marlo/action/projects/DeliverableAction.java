@@ -1368,7 +1368,6 @@ public class DeliverableAction extends BaseAction {
               deliverable.setDeliverableParticipant(new DeliverableParticipant());
             }
           }
-
         }
 
         // Cgiar Cross Cutting Markers List
@@ -2933,6 +2932,12 @@ public class DeliverableAction extends BaseAction {
   }
 
   private void saveParticipant() {
+
+    // If deliverable is mapped to IPI 2.3 the hasTrainees question is selected as YES
+    if (this.isDeliverableMappedToTrainessIndicator()) {
+      this.setYesHasTraineesQuestion();
+    }
+
     if (deliverable.getDeliverableParticipant() != null
       && deliverable.getDeliverableParticipant().getHasParticipants() != null) {
       DeliverableParticipant participant = new DeliverableParticipant();
@@ -3479,6 +3484,15 @@ public class DeliverableAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  /**
+   * Select by default 'yes' answer in has trainees question
+   */
+  public void setYesHasTraineesQuestion() {
+    if (deliverable.getDeliverableParticipant() != null) {
+      deliverable.getDeliverableParticipant().setHasParticipants(true);
+    }
   }
 
   /**
