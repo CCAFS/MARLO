@@ -1965,6 +1965,28 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+  /**
+   * Remove mapping with trainees indicator (IPI 2.3 indicator)
+   */
+  public void removeTraineesIndicatorMapping() {
+    if (this.isDeliverableMappedToTrainessIndicator()) {
+      try {
+        if (deliverable.getCrpOutcomes() != null && !deliverable.getCrpOutcomes().isEmpty()) {
+          DeliverableCrpOutcome deliverableCrpOutcome = deliverable.getCrpOutcomes().stream()
+            .filter(d -> d != null && d.getCrpProgramOutcome() != null
+              && d.getCrpProgramOutcome().getId().equals(this.getTraineesIndicator().getId()))
+            .collect(Collectors.toList()).get(0);
+
+          if (deliverableCrpOutcome != null) {
+            deliverable.getCrpOutcomes().remove(deliverableCrpOutcome);
+          }
+        }
+      } catch (Exception e) {
+        logger.error("unable to remove mapping to IPI 2.3", e);
+      }
+    }
+  }
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -2075,6 +2097,16 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
+      /*
+       * Delete mapping to IPI 2.3
+       */
+      if (!this.hasDeliverableCapdevCategory() && (deliverable.getDeliverableParticipant() != null
+        && deliverable.getDeliverableParticipant().getHasParticipants() != null
+        && !deliverable.getDeliverableParticipant().getHasParticipants())) {
+
+        this.removeTraineesIndicatorMapping();
+      }
+
       if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingActive()
         && this.getProjectLp6ContributionValue(project.getId(), this.getActualPhase().getId())) {
         this.updateProjectLp6ContributionDeliverable();
@@ -2141,7 +2173,7 @@ public class DeliverableAction extends BaseAction {
   /**
    * Save Deliverable CrossCutting Information
    *
-   * @param delvierable
+   * @param deliverable
    */
   public void saveCrossCutting() {
 
@@ -2217,7 +2249,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * Save Deliverable Crp Program Outcome Information
