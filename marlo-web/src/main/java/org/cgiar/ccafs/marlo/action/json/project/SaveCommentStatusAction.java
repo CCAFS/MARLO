@@ -88,6 +88,9 @@ public class SaveCommentStatusAction extends BaseAction {
       if (status.equals("3")) {
         statusText = "pending";
       }
+      if (status.equals("4")) {
+        statusText = "accepted";
+      }
       if (status == null) {
         statusText = "pending";
       }

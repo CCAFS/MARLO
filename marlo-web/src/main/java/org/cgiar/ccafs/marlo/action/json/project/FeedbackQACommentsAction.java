@@ -137,16 +137,22 @@ public class FeedbackQACommentsAction extends BaseAction {
         if (comment.getStatus() != null) {
 
           String statusText = null;
-          if (comment.getStatus() == "rejected") {
+          if (comment.getStatus().equalsIgnoreCase("rejected")) {
             statusText = "0";
           }
-          if (comment.getStatus() == "approved") {
+          if (comment.getStatus().equalsIgnoreCase("approved")) {
             statusText = "1";
           }
-          if (comment.getStatus() == "clarification needed") {
+          if (comment.getStatus().equalsIgnoreCase("clarification needed")) {
             statusText = "2";
           }
-          if (comment.getStatus() == "pending") {
+          if (comment.getStatus().equalsIgnoreCase("pending")) {
+            statusText = "3";
+          }
+          if (comment.getStatus().equalsIgnoreCase("accepted")) {
+            statusText = "4";
+          }
+          if (comment.getStatus().equalsIgnoreCase("pending")) {
             statusText = "";
           }
 

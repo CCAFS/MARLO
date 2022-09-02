@@ -488,5 +488,6 @@
     <mapping resource="xmls/FeedbackQAComments.hbm.xml" />
     <mapping resource="xmls/DeliverableCrpOutcomes.hbm.xml" />
     <mapping resource="xmls/Timeline.hbm.xml" />
+    <mapping resource="xmls/FeedbackStatuses.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
