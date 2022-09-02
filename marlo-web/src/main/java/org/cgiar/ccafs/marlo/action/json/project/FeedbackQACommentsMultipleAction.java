@@ -156,6 +156,12 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                       statusText = "2";
                     }
                     if (comment.getStatus().equalsIgnoreCase("pending")) {
+                      statusText = "3";
+                    }
+                    if (comment.getStatus().equalsIgnoreCase("accepted")) {
+                      statusText = "4";
+                    }
+                    if (comment.getStatus().equalsIgnoreCase("pending")) {
                       statusText = "";
                     }
 

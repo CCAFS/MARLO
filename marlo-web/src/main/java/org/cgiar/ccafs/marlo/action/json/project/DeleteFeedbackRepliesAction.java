@@ -74,7 +74,7 @@ public class DeleteFeedbackRepliesAction extends BaseAction {
               && c.getReply().getId() != null && c.getReply().getId().equals(localID)).collect(Collectors.toList())
               .get(0);
             if (comment != null && comment.getId() != null) {
-              comment.setStatus(null);
+              comment.setStatus("accepted");
               comment.setApprovalDate(null);
               comment.setReply(null);
               comment.setUserApproval(null);
