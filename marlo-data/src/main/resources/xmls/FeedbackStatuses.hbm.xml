@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated Jan 28, 2019 1:24:57 PM by Hibernate Tools 5.3.6.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="org.cgiar.ccafs.marlo.data.model.FeedbackStatus" 
+  table="feedback_statuses" optimistic-lock="none">
+    <id name="id" type="java.lang.Long">
+      <column name="id" />
+    </id>
+    <property name="statusName" type="string">
+        <column name="status_name" sql-type="TEXT" />
+    </property> 
+    <property name="statusDescription" type="string">
+        <column name="status_description" sql-type="TEXT" />
+    </property> 
+  </class>
+</hibernate-mapping>
