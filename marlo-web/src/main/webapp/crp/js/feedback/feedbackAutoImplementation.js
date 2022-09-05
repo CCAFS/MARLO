@@ -119,9 +119,15 @@ function attachEventsFeedback() {
     let commentID = $(this).attr('commentId');
     let block = $(this).parent().parent().parent();
     let editComment = $(`textarea[commentID="${commentID}"].editCommentReadonly`).val();
-    
-    showEditComment(block, commentID, 2);
-    updateComment(editComment, fieldID, name, this, commentID);
+    let editCommentReadonly = $(`textarea[commentID="${commentID}"].editCommentReadonly`);
+
+    if (editComment != '' && editComment != ' ') {
+      showEditComment(block, commentID, 2);
+      updateComment(editComment, fieldID, name, this, commentID);
+      editCommentReadonly.css('border', '1px solid #ccc');
+    } else {
+      editCommentReadonly.css('border', '2px solid red');
+    } 
   });
 
   $('div.deleteReplyBtn').on('click', function () {
@@ -203,6 +209,8 @@ function attachEventsFeedback() {
     lastIndex = parseInt(lastIndex) + 1;
     let commentReplyBlock = qaPopup.siblings('#qaTemplate').find('.qaPopup').children()[2];
     let newBlock = $(commentReplyBlock).clone(true).attr('id', `qaCommentReply-${name}[${lastIndex}]`);
+    let editCommentReadonly = $(`.editCommentReadonly`);
+    let commentReadonly = $(`p.commentReadonly`); 
 
     newBlock.attr('index', `${lastIndex}`);
     newBlock.find('.sendCommentContainer').attr('name', `${name}[${lastIndex}]`);
@@ -213,6 +221,11 @@ function attachEventsFeedback() {
     newBlock.find('.containerSentCommentBtn').attr('name', `${name}[${lastIndex}]`);
     
     newBlock.appendTo(qaPopup).hide().show();
+    editCommentReadonly.hide();
+    commentReadonly.show();
+    block.find('.correctCommentBtn').show();
+    block.find('.editCommentBtn').show();
+    // block.find('.editCommentBtn').show();
   });
 }
 
