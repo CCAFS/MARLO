@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 import org.cgiar.ccafs.marlo.data.model.FeedbackStatus;
+import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -130,26 +131,26 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         if (status.equals("0")) {
           statusText = "rejected";
         }
-        if (status.equals("1")) {
-          statusText = "approved";
+        if (status.equals(FeedbackStatusEnum.Approved.getStatusId())) {
+          statusText = FeedbackStatusEnum.Approved.getStatus();
         }
-        if (status.equals("2")) {
-          statusText = "clarification needed";
+        if (status.equals(FeedbackStatusEnum.ClarificatioNeeded.getStatusId())) {
+          statusText = FeedbackStatusEnum.ClarificatioNeeded.getStatus();
         }
-        if (status.equals("3")) {
-          statusText = "pending";
+        if (status.equals(FeedbackStatusEnum.Pending.getStatusId())) {
+          statusText = FeedbackStatusEnum.Pending.getStatus();
         }
-        if (status.equals("4")) {
-          statusText = "accepted";
+        if (status.equals(FeedbackStatusEnum.Accepted.getStatusId())) {
+          statusText = FeedbackStatusEnum.Accepted.getStatus();
         }
-        if (status.equals("5")) {
-          statusText = "rejected";
+        if (status.equals(FeedbackStatusEnum.Rejected.getStatusId())) {
+          statusText = FeedbackStatusEnum.Rejected.getStatus();
         }
-        if (status.equals("6")) {
-          statusText = "no accepted";
+        if (status.equals(FeedbackStatusEnum.NoAccepted.getStatusId())) {
+          statusText = FeedbackStatusEnum.NoAccepted.getStatus();
         }
         if (status == null) {
-          statusText = "pending";
+          statusText = FeedbackStatusEnum.Pending.getStatus();
         }
       }
 
