@@ -21,12 +21,14 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
+import org.cgiar.ccafs.marlo.data.model.FeedbackStatus;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -69,18 +71,20 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private Date date;
   private Long projectId;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+  private FeedbackStatusManager feedbackStatusManager;
   private ProjectManager projectManager;
   private FeedbackQACommentManager commentQAManager;
   private FeedbackQAReplyManager commentManager;
   private PhaseManager phaseManager;
   private UserManager userManager;
+  private FeedbackQAComment qaComment;
 
 
   @Inject
   public SaveFeedbackCommentsAction(APConfig config,
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentQAManager,
     FeedbackQAReplyManager commentManager, PhaseManager phaseManager, UserManager userManager,
-    ProjectManager projectManager) {
+    FeedbackStatusManager feedbackStatusManager, ProjectManager projectManager) {
     super(config);
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.commentQAManager = commentQAManager;
@@ -88,6 +92,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
     this.phaseManager = phaseManager;
     this.userManager = userManager;
     this.projectManager = projectManager;
+    this.feedbackStatusManager = feedbackStatusManager;
   }
 
   @Override
@@ -99,7 +104,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
     if (fieldId != null) {
 
       // Create feedback Comment save object
-      FeedbackQAComment qaComment = new FeedbackQAComment();
+      qaComment = new FeedbackQAComment();
 
       // get existing object from database
       try {
@@ -114,7 +119,6 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
 
       qaComment.setComment(comment);
-
 
       if (phaseId != null) {
         Phase phase = phaseManager.getPhaseById(phaseId);
@@ -138,6 +142,12 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         if (status.equals("4")) {
           statusText = "accepted";
         }
+        if (status.equals("5")) {
+          statusText = "rejected";
+        }
+        if (status.equals("6")) {
+          statusText = "no accepted";
+        }
         if (status == null) {
           statusText = "pending";
         }
@@ -145,6 +155,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
 
       if (status != null) {
         qaComment.setStatus(statusText);
+        this.saveFeedbackStatus();
       }
 
       if (fieldId != null && phaseId != null && parentId != null) {
@@ -379,6 +390,28 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
     } catch (Exception e) {
       logger.error("unable to get deliverable ID value", e);
+    }
+  }
+
+  /**
+   * Save feedback status id relation with feedback status table
+   */
+  public void saveFeedbackStatus() {
+    if (status != null) {
+      long idStatus;
+      try {
+        if (status.equals("0")) {
+          idStatus = 5;
+        } else {
+          idStatus = Long.valueOf(status);
+        }
+        FeedbackStatus feedbackStatus = feedbackStatusManager.getFeedbackStatusById(idStatus);
+        qaComment.setFeedbackStatus(feedbackStatus);
+        qaComment = commentQAManager.saveFeedbackQAComment(qaComment);
+      } catch (Exception e) {
+        logger.error("unable to get feedback status id", e);
+      }
+
     }
   }
 

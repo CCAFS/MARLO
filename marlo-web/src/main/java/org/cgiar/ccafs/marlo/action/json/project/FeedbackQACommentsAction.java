@@ -152,6 +152,14 @@ public class FeedbackQACommentsAction extends BaseAction {
           if (comment.getStatus().equalsIgnoreCase("accepted")) {
             statusText = "4";
           }
+          /*
+           * if (comment.getStatus().equalsIgnoreCase("rejected")) {
+           * statusText = "5";
+           * }
+           */
+          if (comment.getStatus().equalsIgnoreCase("no accepted")) {
+            statusText = "6";
+          }
           if (comment.getStatus().equalsIgnoreCase("pending")) {
             statusText = "";
           }

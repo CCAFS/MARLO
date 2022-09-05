@@ -78,6 +78,7 @@ public class DeleteFeedbackRepliesAction extends BaseAction {
               comment.setApprovalDate(null);
               comment.setReply(null);
               comment.setUserApproval(null);
+              comment.setFeedbackStatus(null);
               commentManager.saveFeedbackQAComment(comment);
             }
           }
