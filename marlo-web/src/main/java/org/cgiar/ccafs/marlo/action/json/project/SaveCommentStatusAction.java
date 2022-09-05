@@ -19,8 +19,10 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -49,12 +51,16 @@ public class SaveCommentStatusAction extends BaseAction {
   private Long commentId;
   private FeedbackQACommentManager commentQAManager;
   private UserManager userManager;
+  private FeedbackQAComment commentSave;
+  private FeedbackStatusManager feedbackStatusManager;
 
   @Inject
-  public SaveCommentStatusAction(APConfig config, FeedbackQACommentManager commentQAManager, UserManager userManager) {
+  public SaveCommentStatusAction(APConfig config, FeedbackQACommentManager commentQAManager,
+    FeedbackStatusManager feedbackStatusManager, UserManager userManager) {
     super(config);
     this.commentQAManager = commentQAManager;
     this.userManager = userManager;
+    this.feedbackStatusManager = feedbackStatusManager;
   }
 
   @Override
@@ -64,7 +70,7 @@ public class SaveCommentStatusAction extends BaseAction {
     save = new HashMap<String, Object>();
     if (status != null && commentId != null) {
 
-      FeedbackQAComment commentSave = new FeedbackQAComment();
+      commentSave = new FeedbackQAComment();
 
       // get existing object from database
       try {
@@ -91,10 +97,17 @@ public class SaveCommentStatusAction extends BaseAction {
       if (status.equals("4")) {
         statusText = "accepted";
       }
+      if (status.equals("5")) {
+        statusText = "rejected";
+      }
+      if (status.equals("6")) {
+        statusText = "no accepted";
+      }
       if (status == null) {
         statusText = "pending";
       }
       commentSave.setStatus(statusText);
+      this.saveFeedbackStatus();
 
       if (userId != null) {
         try {
@@ -156,6 +169,28 @@ public class SaveCommentStatusAction extends BaseAction {
       }
     } catch (Exception e) {
       logger.error("unable to get user", e);
+    }
+  }
+
+  /**
+   * Save feedback status id relation with feedback status table
+   */
+  public void saveFeedbackStatus() {
+    if (status != null) {
+      long idStatus;
+      try {
+        if (status.equals("0")) {
+          idStatus = 5;
+        } else {
+          idStatus = Long.valueOf(status);
+        }
+        FeedbackStatus feedbackStatus = feedbackStatusManager.getFeedbackStatusById(idStatus);
+        commentSave.setFeedbackStatus(feedbackStatus);
+        commentSave = commentQAManager.saveFeedbackQAComment(commentSave);
+      } catch (Exception e) {
+        logger.error("unable to get feedback status id", e);
+      }
+
     }
   }
 
