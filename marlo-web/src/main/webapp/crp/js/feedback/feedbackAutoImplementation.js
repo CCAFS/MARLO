@@ -124,6 +124,7 @@ function attachEventsFeedback() {
     if (editComment != '' && editComment != ' ') {
       showEditComment(block, commentID, 2);
       updateComment(editComment, fieldID, name, this, commentID);
+      editCommentReadonly.css('border', '1px solid #ccc');
     } else {
       editCommentReadonly.css('border', '2px solid red');
     } 
