@@ -129,3 +129,7 @@ a.downloadBaseline {
     display: block !important;
     margin-right: 5px;
 }
+
+.text {
+    display: flex;
+}
