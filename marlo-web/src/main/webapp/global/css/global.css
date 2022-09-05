@@ -7171,7 +7171,7 @@ img.fileIcon {
 
 .input-container {
   display: flex;
-  align-items: flex-end;
+  align-items: baseline;
 }
 
 .feedback-flex-items.radioFlat-flex{

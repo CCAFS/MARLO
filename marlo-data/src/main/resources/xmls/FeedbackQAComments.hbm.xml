@@ -66,5 +66,9 @@
 			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
 			<column name="project_id" />
 		</many-to-one>
+		<many-to-one name="feedbackStatus"
+			class="org.cgiar.ccafs.marlo.data.model.FeedbackStatus" fetch="select">
+			<column name="status_id" />
+		</many-to-one>
 	</class>
 </hibernate-mapping>
