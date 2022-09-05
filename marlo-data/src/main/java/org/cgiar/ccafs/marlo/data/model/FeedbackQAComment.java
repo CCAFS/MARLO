@@ -42,6 +42,8 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   @Expose
   private Project project;
   @Expose
+  private FeedbackStatus feedbackStatus;
+  @Expose
   private String link;
   @Expose
   private String fieldDescription;
@@ -68,6 +70,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
 
   public Date getCommentDate() {
     return commentDate;
+  }
+
+  public FeedbackStatus getFeedbackStatus() {
+    return feedbackStatus;
   }
 
   public FeedbackQACommentableFields getField() {
@@ -152,6 +158,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
 
   public void setCommentDate(Date commentDate) {
     this.commentDate = commentDate;
+  }
+
+  public void setFeedbackStatus(FeedbackStatus feedbackStatus) {
+    this.feedbackStatus = feedbackStatus;
   }
 
   public void setField(FeedbackQACommentableFields field) {

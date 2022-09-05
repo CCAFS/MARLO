@@ -135,14 +135,14 @@
                     [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive/]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
-                    <div class="input"><p>${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
+                    <div class="input"><p class="text">${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
                   [/#if]
                 [#else]
                   [#if editable]
                     [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
-                    <div class="input"><p>${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
+                    <div class="input"><p class="text">${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
                   [/#if]
                 [/#if]
                 </div>
@@ -153,7 +153,7 @@
                     <div class="selectList">   
                         [#if projectOutcome.crpProgramOutcome.srfTargetUnit?has_content]
                         <input type="hidden" name="projectOutcome.expectedUnit.id" value="${(projectOutcome.crpProgramOutcome.srfTargetUnit.id)!}" class="">
-                        <p>${(projectOutcome.crpProgramOutcome.srfTargetUnit.name)!}</p>
+                        <p class="text">${(projectOutcome.crpProgramOutcome.srfTargetUnit.name)!}</p>
                         [/#if]
                     </div> 
                   </div>

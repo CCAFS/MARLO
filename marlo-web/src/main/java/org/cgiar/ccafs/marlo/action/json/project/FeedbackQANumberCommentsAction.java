@@ -71,7 +71,8 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
               feedbackComments.addAll(commentManager.findAll().stream()
                 .filter(c -> c.getField() != null && c.getField().getId() != null
                   && c.getField().getId().equals(fieldIdLocal) && c.getPhase() != null && c.getPhase().getId() != null
-                  && c.getPhase().getId().equals(phaseId) && c.getParentId() == parentId && c.getStatus() != null)
+                  && c.getPhase().getId().equals(phaseId) && c.getParentId() == parentId && c.getStatus() != null
+                  && !c.getStatus().equalsIgnoreCase("pending") && !c.getStatus().equalsIgnoreCase("no accepted"))
                 .collect(Collectors.toList()));
 
             }

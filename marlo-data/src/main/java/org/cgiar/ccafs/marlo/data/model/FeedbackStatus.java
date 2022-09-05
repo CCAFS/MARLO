@@ -2,6 +2,9 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.google.gson.annotations.Expose;
 
 public class FeedbackStatus extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
@@ -10,12 +13,15 @@ public class FeedbackStatus extends MarloBaseEntity implements java.io.Serializa
 
   @Expose
   private String statusName;
-
   @Expose
   private String statusDescription;
-
+  private Set<FeedbackQAComment> feedbackQAComments = new HashSet<>(0);
 
   public FeedbackStatus() {
+  }
+
+  public Set<FeedbackQAComment> getFeedbackQAComments() {
+    return feedbackQAComments;
   }
 
   @Override
@@ -44,6 +50,10 @@ public class FeedbackStatus extends MarloBaseEntity implements java.io.Serializa
   @Override
   public boolean isActive() {
     return false;
+  }
+
+  public void setFeedbackQAComments(Set<FeedbackQAComment> feedbackQAComments) {
+    this.feedbackQAComments = feedbackQAComments;
   }
 
   @Override
