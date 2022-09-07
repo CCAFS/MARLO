@@ -113,6 +113,40 @@ public class SaveFeedbackCommentsAction extends BaseAction {
           FeedbackQAComment qaCommentDB = commentQAManager.getFeedbackQACommentById(commentId);
           if (qaCommentDB != null && qaCommentDB.getId() != null) {
             qaComment = qaCommentDB;
+
+            boolean isEdited = this.saveEditorInfo();
+            if (!isEdited) {
+              if (userId != null) {
+                try {
+                  User user = userManager.getUser(userId);
+                  if (user != null) {
+                    qaComment.setUser(this.getCurrentUser());
+                  }
+                } catch (Exception e) {
+                  logger.error("unable to set User object", e);
+                }
+              }
+              date = new Date();
+              if (date != null) {
+                qaComment.setCommentDate(date);
+              }
+            }
+          }
+        } else {
+          if (userId != null) {
+            try {
+              User user = userManager.getUser(userId);
+              if (user != null) {
+                qaComment.setUser(this.getCurrentUser());
+              }
+            } catch (Exception e) {
+              logger.error("unable to set User object", e);
+            }
+          }
+
+          date = new Date();
+          if (date != null) {
+            qaComment.setCommentDate(date);
           }
         }
       } catch (Exception e) {
@@ -213,6 +247,12 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         qaComment.setParentId(parentId);
       }
 
+      if (fieldId != null) {
+        FeedbackQACommentableFields field =
+          feedbackQACommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
+        qaComment.setField(field);
+      }
+
       if (projectId != null) {
         try {
           Project project = new Project();
@@ -223,27 +263,6 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         } catch (Exception e) {
           logger.error("unable to set Project object", e);
         }
-      }
-
-      if (userId != null) {
-        try {
-          User user = userManager.getUser(userId);
-          if (user != null) {
-            qaComment.setUser(this.getCurrentUser());
-          }
-        } catch (Exception e) {
-          logger.error("unable to set User object", e);
-        }
-      }
-
-      if (fieldId != null) {
-        FeedbackQACommentableFields field =
-          feedbackQACommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
-        qaComment.setField(field);
-      }
-      date = new Date();
-      if (date != null) {
-        qaComment.setCommentDate(date);
       }
 
       qaComment = commentQAManager.saveFeedbackQAComment(qaComment);
@@ -391,6 +410,23 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
     } catch (Exception e) {
       logger.error("unable to get deliverable ID value", e);
+    }
+  }
+
+  /**
+   * Validate if the comment is being edited and add the editor information
+   * 
+   * @return true if the comment is being edited
+   */
+  public boolean saveEditorInfo() {
+    if (qaComment.getId() != null && qaComment.getUserEditor() == null && qaComment.getEditionDate() == null
+      && qaComment.getUser() != null && qaComment.getCommentDate() != null) {
+      qaComment.setUserEditor(this.getCurrentUser());
+      date = new Date();
+      qaComment.setEditionDate(date);
+      return true;
+    } else {
+      return false;
     }
   }
 
