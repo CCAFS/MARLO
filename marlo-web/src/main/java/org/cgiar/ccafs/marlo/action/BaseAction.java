@@ -726,6 +726,51 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.securityContext.hasPermission(permission);
   }
 
+  /**
+   * Validate if the current user can approve feedback draft comments
+   * 
+   * @param projectID
+   * @return yes if the user has a role that allows approve comments
+   */
+  public boolean canApproveComments(Long projectID) {
+    boolean response = false;
+    if (this.canAccessSuperAdmin()) {
+      response = true;
+    }
+
+    if (this.getRolesList() != null && !this.getRolesList().isEmpty()) {
+
+      Project project = projectManager.getProjectById(projectID);
+      project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+
+      if (project.getProjectInfo() != null && project.getProjectInfo().getClusterType() != null
+        && project.getProjectInfo().getClusterType().getName() != null) {
+        String clusterType = project.getProjectInfo().getClusterType().getName();
+        for (Role role : this.getRolesList()) {
+          if (role != null && role.getAcronym() != null) {
+
+            switch (role.getAcronym()) {
+              case "PMU":
+                if (clusterType.equalsIgnoreCase("Theme") || clusterType.equalsIgnoreCase("Regional")) {
+                  response = true;
+                }
+                break;
+              case "RPL":
+                if (clusterType.equalsIgnoreCase("Country")) {
+                  response = true;
+                }
+                break;
+              default:
+                response = false;
+                break;
+            }
+          }
+        }
+      }
+    }
+    return response;
+  }
+
   public boolean canBeDeleted(long id, String className) {
     Class<?> clazz;
     try {
