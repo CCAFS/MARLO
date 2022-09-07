@@ -1305,6 +1305,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+  /**
+   * Validate if the user has a role that allows leave initial comments
+   * 
+   * @return true if the user can leave draft comments
+   */
   public boolean canLeaveComments() {
     boolean response = false;
 
@@ -1328,6 +1333,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return response;
   }
 
+  /**
+   * Validate the user permission to replay or react to a comment
+   * 
+   * @param projectID
+   * @return true if the current user rol is PL or PC
+   */
   public boolean canManageFeedback(Long projectID) {
     boolean response = false;
 
@@ -1726,6 +1737,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return INPUT;
   }
 
+  /**
+   * Validate if the feedback specificity is active
+   * 
+   * @return string feedback specificity
+   */
   public String feedbackModule() {
     return APConstants.FEEDBACK_ACTIVE;
   }
