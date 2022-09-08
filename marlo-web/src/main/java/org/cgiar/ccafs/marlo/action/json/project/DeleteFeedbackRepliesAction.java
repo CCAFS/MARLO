@@ -20,8 +20,11 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackStatusManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
+import org.cgiar.ccafs.marlo.data.model.FeedbackStatus;
+import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.HashMap;
@@ -46,13 +49,15 @@ public class DeleteFeedbackRepliesAction extends BaseAction {
   private Long commentId;
   private FeedbackQAReplyManager replyQAManager;
   private FeedbackQACommentManager commentManager;
+  private FeedbackStatusManager feedbackStatusManager;
 
   @Inject
   public DeleteFeedbackRepliesAction(APConfig config, FeedbackQAReplyManager replyQAManager,
-    FeedbackQACommentManager commentManager) {
+    FeedbackQACommentManager commentManager, FeedbackStatusManager feedbackStatusManager) {
     super(config);
     this.replyQAManager = replyQAManager;
     this.commentManager = commentManager;
+    this.feedbackStatusManager = feedbackStatusManager;
   }
 
   @Override
@@ -74,11 +79,13 @@ public class DeleteFeedbackRepliesAction extends BaseAction {
               && c.getReply().getId() != null && c.getReply().getId().equals(localID)).collect(Collectors.toList())
               .get(0);
             if (comment != null && comment.getId() != null) {
-              comment.setStatus("accepted");
+              comment.setStatus(FeedbackStatusEnum.Accepted.getStatus());
               comment.setApprovalDate(null);
               comment.setReply(null);
               comment.setUserApproval(null);
-              comment.setFeedbackStatus(null);
+              FeedbackStatus feedbackStatusApproved =
+                feedbackStatusManager.getFeedbackStatusById(Long.valueOf(FeedbackStatusEnum.Accepted.getStatusId()));
+              comment.setFeedbackStatus(feedbackStatusApproved);
               commentManager.saveFeedbackQAComment(comment);
             }
           }
