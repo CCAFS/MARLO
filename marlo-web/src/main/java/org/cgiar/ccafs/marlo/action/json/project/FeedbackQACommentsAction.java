@@ -183,6 +183,34 @@ public class FeedbackQACommentsAction extends BaseAction {
         } else {
           fieldsMap.put("date", "");
         }
+        if (comment.getUserApproval() != null && comment.getUserApproval().getFirstName() != null
+          && comment.getUserApproval().getLastName() != null) {
+          fieldsMap.put("approvalUserName",
+            comment.getUserApproval().getFirstName() + " " + comment.getUserApproval().getLastName());
+        } else {
+          fieldsMap.put("approvalUserName", "");
+        }
+        if (comment.getApprovalDate() != null && comment.getApprovalDate().toString() != null) {
+          String dateString = comment.getApprovalDate().toString();
+          fieldsMap.put("approvalDate", dateString);
+        } else {
+          fieldsMap.put("approvalDate", "");
+        }
+
+        // Editor user
+        if (comment.getUserEditor() != null && comment.getUserEditor().getFirstName() != null
+          && comment.getUserEditor().getLastName() != null) {
+          fieldsMap.put("editorUsername",
+            comment.getUserEditor().getFirstName() + " " + comment.getUserEditor().getLastName());
+        } else {
+          fieldsMap.put("editorUsername", "");
+        }
+        if (comment.getEditionDate() != null && comment.getEditionDate().toString() != null) {
+          String dateString = comment.getEditionDate().toString();
+          fieldsMap.put("editionDate", dateString);
+        } else {
+          fieldsMap.put("editionDate", "");
+        }
         if (comment.getReply() != null && comment.getReply().getId() != null) {
           FeedbackQAReply reply = new FeedbackQAReply();
           if (feedbackQAReplyManager.existFeedbackComment(comment.getReply().getId())) {
