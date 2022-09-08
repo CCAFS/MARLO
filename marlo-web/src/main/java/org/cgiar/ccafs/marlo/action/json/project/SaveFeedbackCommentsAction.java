@@ -419,8 +419,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
    * @return true if the comment is being edited
    */
   public boolean saveEditorInfo() {
-    if (qaComment.getId() != null && qaComment.getUserEditor() == null && qaComment.getEditionDate() == null
-      && qaComment.getUser() != null && qaComment.getCommentDate() != null) {
+    if (qaComment.getId() != null && qaComment.getUser() != null && qaComment.getCommentDate() != null) {
       qaComment.setUserEditor(this.getCurrentUser());
       date = new Date();
       qaComment.setEditionDate(date);
