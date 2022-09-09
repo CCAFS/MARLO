@@ -760,9 +760,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                   response = true;
                 }
                 break;
-              default:
-                response = false;
-                break;
             }
           }
         }
