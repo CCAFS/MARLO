@@ -207,7 +207,10 @@
   
 <div class="simpleBox">
   <div class="form-group row yesNoInputDeliverable">
-    <label class="col-md-9 yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=(reportingActive) /]</label>
+  <span class="col-md-9">
+    <label class="yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=(reportingActive) /]</label>
+    <p><small>[@s.text name="project.deliverable.dissemination.involveParticipantsSub" /] </small></p>
+  </span>
     [#if capacityEventType]
         <div class="col-md-3">[@customForm.yesNoInputDeliverableParticipants name="${customName}.hasParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" value = "true" /] </div>  
     [#else]
