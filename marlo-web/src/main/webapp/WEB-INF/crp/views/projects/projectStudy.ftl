@@ -6,7 +6,7 @@
   "${baseUrlMedia}/js/projects/projectStudy.js?20220721",
   "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220905"
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220909"
   ] 
 /]
 [#assign customCSS = [
