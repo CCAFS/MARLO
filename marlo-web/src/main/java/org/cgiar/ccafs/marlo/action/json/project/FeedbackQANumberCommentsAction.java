@@ -6,6 +6,7 @@ import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
+import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -72,7 +73,8 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
                 .filter(c -> c.getField() != null && c.getField().getId() != null
                   && c.getField().getId().equals(fieldIdLocal) && c.getPhase() != null && c.getPhase().getId() != null
                   && c.getPhase().getId().equals(phaseId) && c.getParentId() == parentId && c.getStatus() != null
-                  && !c.getStatus().equalsIgnoreCase("pending") && !c.getStatus().equalsIgnoreCase("no accepted"))
+                  && !c.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Pending.getStatus())
+                  && !c.getStatus().equalsIgnoreCase(FeedbackStatusEnum.NoAccepted.getStatus()))
                 .collect(Collectors.toList()));
 
             }
@@ -82,8 +84,8 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
               totalComments = feedbackComments.size();
 
               try {
-                feedbackComments = feedbackComments.stream()
-                  .filter(f -> f != null && ((f.getStatus() != null && f.getStatus().equals("approved"))
+                feedbackComments = feedbackComments.stream().filter(f -> f != null
+                  && ((f.getStatus() != null && f.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Approved.getStatus()))
                     || (f.getStatus() != null && f.getReply() != null)))
                   .collect(Collectors.toList());
                 if (feedbackComments != null) {

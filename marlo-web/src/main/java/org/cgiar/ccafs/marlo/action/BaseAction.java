@@ -726,6 +726,48 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.securityContext.hasPermission(permission);
   }
 
+  /**
+   * Validate if the current user can approve feedback draft comments
+   * 
+   * @param projectID
+   * @return yes if the user has a role that allows approve comments
+   */
+  public boolean canApproveComments(Long projectID) {
+    boolean response = false;
+    if (this.canAccessSuperAdmin()) {
+      response = true;
+    }
+
+    if (this.getRolesList() != null && !this.getRolesList().isEmpty()) {
+
+      Project project = projectManager.getProjectById(projectID);
+      project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+
+      if (project.getProjectInfo() != null && project.getProjectInfo().getClusterType() != null
+        && project.getProjectInfo().getClusterType().getName() != null) {
+        String clusterType = project.getProjectInfo().getClusterType().getName();
+        for (Role role : this.getRolesList()) {
+          if (role != null && role.getAcronym() != null) {
+
+            switch (role.getAcronym()) {
+              case "PMU":
+                if (clusterType.equalsIgnoreCase("Theme") || clusterType.equalsIgnoreCase("Regional")) {
+                  response = true;
+                }
+                break;
+              case "RPL":
+                if (clusterType.equalsIgnoreCase("Country")) {
+                  response = true;
+                }
+                break;
+            }
+          }
+        }
+      }
+    }
+    return response;
+  }
+
   public boolean canBeDeleted(long id, String className) {
     Class<?> clazz;
     try {
@@ -1305,6 +1347,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+  /**
+   * Validate if the user has a role that allows leave initial comments
+   * 
+   * @return true if the user can leave draft comments
+   */
   public boolean canLeaveComments() {
     boolean response = false;
 
@@ -1328,6 +1375,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return response;
   }
 
+  /**
+   * Validate the user permission to replay or react to a comment
+   * 
+   * @param projectID
+   * @return true if the current user rol is PL or PC
+   */
   public boolean canManageFeedback(Long projectID) {
     boolean response = false;
 
@@ -1726,6 +1779,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return INPUT;
   }
 
+  /**
+   * Validate if the feedback specificity is active
+   * 
+   * @return string feedback specificity
+   */
   public String feedbackModule() {
     return APConstants.FEEDBACK_ACTIVE;
   }
