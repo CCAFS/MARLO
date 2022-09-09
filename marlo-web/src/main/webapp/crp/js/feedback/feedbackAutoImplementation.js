@@ -418,6 +418,7 @@ function hideShowOptionButtons(block, status) {
                   block.find('.containerReactionComment p.reactionComment').html(reactionName(qaComments[i][j].status)+`${qaComments[i][j].approvalUserName} at ${qaComments[i][j].approvalDate}`);                 
               }if(qaComments[i][j].status =='' ){
                 block.find('.containerReactionComment').hide();
+                block.find('.commentContainer .commentTitle').html(`[Draft] - Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
               }
               //////////////////////////////////////////////////////////////////
               //waiting for endpoint to show clarificationCommentBtn
@@ -451,7 +452,13 @@ function hideShowOptionButtons(block, status) {
                 }
               }
   
-              if (userCanManageFeedback == 'true') {
+              if (userCanApproveFeedback == 'false') {
+                block.find('.editCommentBtn').hide();
+                block.find('.dismissCommentBtn').hide();
+                block.find('.correctCommentBtn').hide();  
+              }
+
+              if (userCanManageFeedback == 'true') {userCanApproveFeedback
                 block.find('.buttonsContainer').show();
                 block.find('.optionsContainer').css('display', 'flex');
               }

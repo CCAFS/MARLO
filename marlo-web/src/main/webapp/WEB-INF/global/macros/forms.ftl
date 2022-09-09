@@ -962,7 +962,7 @@
         <div class="editCommentBtn qaOptionsComment" title="Edit" style="cursor:pointer" >✏️</div>
         <img class="dismissCommentBtn qaOptionsComment" title="Dismiss comment" src="${baseUrlCdn}/global/images/remove.png">
         <img class="correctCommentBtn qaOptionsComment" title="Admit comment" src="${baseUrlCdn}/global/images/correct.png">
-        <div class="editCommentBtn qaOptionsComment" title="Edit" style="cursor:pointer" ></div>
+        
         <div class="containerSentCommentBtn" title="Send"><img class="sentCommentBtn" src="${baseUrlCdn}/global/images/send.png"></div>
         <img class="agreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/agree.png" title="Agree">
         <img class="disagreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/disagree.png" title="Disagree">
