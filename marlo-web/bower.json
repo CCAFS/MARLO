@@ -28,7 +28,7 @@
     "dropzone": "^4.3.0",
     "jsUri": "jsuri#^1.3.1",
     "animate.css": "^3.5.1",
-    "bootstrap": "^3.3.6",
+    "bootstrap": "^4.0.0",
     "flat-flags": "*",
     "flag-icon-css": "*",
     "bootstrap-select": "^1.10.0",
