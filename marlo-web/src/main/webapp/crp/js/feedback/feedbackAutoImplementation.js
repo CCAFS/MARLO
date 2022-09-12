@@ -453,7 +453,6 @@ function hideShowOptionButtons(block, status) {
               }
   
               if (userCanApproveFeedback == 'false') {
-                block.find('.editCommentBtn').hide();
                 block.find('.dismissCommentBtn').hide();
                 block.find('.correctCommentBtn').hide();  
               }
