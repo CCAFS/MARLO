@@ -248,6 +248,13 @@
               [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone${reportingActive?string('.reporting', '')}"  listName="" keyFieldName="id" displayFieldName="title" className="" value="" /]
             </div>
             [/#if]
+            [#if totalParticipants?number > 0]
+              </br>
+              <div id="note" class="note left helpMessage3">
+                <p>[#-- <a href="#capdev"></a>--]<i>[@s.text name="projectOutcomes.helpParticipantsSection" /]</i></p>
+              </div>
+              </br>
+             [/#if]
           </div>        
           
           [#-- Communications --]
@@ -391,7 +398,7 @@
           
           [#-- capdev --]
           [#if totalParticipants?number > 0]
-          <h4 class="headTitle"> Capacity Development</h4>
+          <h4 class="headTitle"> <a id="capdev">Capacity Development</a></h4>
           <div class="borderBox">
                    [#-- CapDevCharts--]
                     <div class="form-group row">
