@@ -7418,6 +7418,7 @@ cursor: pointer;
 }
 
 .addCommentContainer {
+  padding-top: 15px;
   width: 25px;
   height: 25px;
   display: none;
