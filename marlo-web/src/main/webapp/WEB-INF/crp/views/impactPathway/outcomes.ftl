@@ -253,6 +253,7 @@
         [#else]
           <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Baseline Indicators <span class="badge">${(outcome.indicators?size)!'0'}</span></a></li>
         [/#if]
+        <li role="presentation"><a href="#instructions-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Instructions <span class="badge"></span></a></li>
       [/#if]
       [#if !action.isAiccra()]
         <li role="presentation" ><a href="#subIdos-tab-${index}" aria-controls="home" role="tab" data-toggle="tab">Sub-IDOs <span class="badge">${(outcome.subIdos?size)!'0'}</span></a></li>
@@ -333,6 +334,14 @@
         [/#if]
       </div>
       [/#if]
+
+      [#-- Instructions tab--]
+      <div role="tabpanel" class="tab-pane fade" id="instructions-tab-${index}">
+         <p class="subTitle col-md-12"><i> [@s.text name="outcome.instructions.help" /] </i> </p><br />
+         <div class="form-group">
+          [@customForm.textArea name="${outcomeCustomName}.instructions" i18nkey="outcome.instructions" required=false className="milestone-statement" editable=editableMilestone /]
+        </div>
+      </div>
 
       [#-- Outcome Milestones List --]
       <div role="tabpanel" class="tab-pane fade in active" id="milestones-tab-${index}">
