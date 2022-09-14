@@ -1800,7 +1800,6 @@ public class POISummary {
   }
 
   public void textHyperlink(String url, String text, XWPFParagraph paragraph) {
-
     // Add the link as External relationship
     String id = paragraph.getDocument().getPackagePart()
       .addExternalRelationship(url, XWPFRelation.HYPERLINK.getRelation()).getId();
@@ -2097,8 +2096,13 @@ public class POISummary {
           }
         }
         // Hyperlink
-        else if (poiParameter.getUrl() != null && !poiParameter.getUrl().isEmpty()) {
-          this.textHyperlink(poiParameter.getUrl(), poiParameter.getText(), paragraph);
+        else if (poiParameter.getUrl() != null && !poiParameter.getUrl().isEmpty() && poiParameter.getText() != null
+          && paragraph != null) {
+          try {
+            this.textHyperlink(poiParameter.getUrl().trim(), poiParameter.getText(), paragraph);
+          } catch (Exception e) {
+            System.out.println(e);
+          }
         } else {
 
           if (poiParameter.isHtml()) {
