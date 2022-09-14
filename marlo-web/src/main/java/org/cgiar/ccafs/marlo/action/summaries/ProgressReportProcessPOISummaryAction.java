@@ -417,8 +417,9 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
         String disseminationURL = "";
         if (deliverable.getDissemination(this.getSelectedPhase()) != null
-          && deliverable.getDissemination(this.getSelectedPhase()).getDisseminationUrl() != null) {
-          disseminationURL = deliverable.getDissemination(this.getSelectedPhase()).getDisseminationUrl();
+          && deliverable.getDissemination(this.getSelectedPhase()).getDisseminationUrl() != null
+          && !deliverable.getDissemination(this.getSelectedPhase()).getDisseminationUrl().isEmpty()) {
+          disseminationURL = deliverable.getDissemination(this.getSelectedPhase()).getDisseminationUrl().trim();
         }
 
         // Tag for shared deliverable
