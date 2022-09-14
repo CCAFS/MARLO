@@ -1,0 +1,1 @@
+ALTER TABLE crp_program_outcomes ADD instructions text NULL;

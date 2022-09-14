@@ -38,6 +38,9 @@
 		<property name="acronym" type="string">
 			<column name="acronym" sql-type="TEXT" not-null="false" />
 		</property>
+		<property name="instructions" type="string">
+            <column name="instructions" sql-type="TEXT" not-null="false" />
+        </property>
 		<property name="indicator" type="string">
       <column name="indicator" sql-type="TEXT"  />
     </property>
