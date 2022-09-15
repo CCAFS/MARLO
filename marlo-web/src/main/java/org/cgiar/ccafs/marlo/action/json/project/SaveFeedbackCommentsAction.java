@@ -163,7 +163,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       String statusText = null;
       if (status != null) {
         if (status.equals("0")) {
-          statusText = "rejected";
+          statusText = FeedbackStatusEnum.Rejected.getStatus();
         }
         if (status.equals(FeedbackStatusEnum.Approved.getStatusId())) {
           statusText = FeedbackStatusEnum.Approved.getStatus();
