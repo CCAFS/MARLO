@@ -124,7 +124,7 @@
 	     </ul>
 	   </li>
 	  </ul>
-	  <ul class="visible-md-block visible-lg-block">
+	  <ul class="visible-md-block visible-lg-block visible-ul">
 	    [@mainMenuList /]
 	  </ul>
 
