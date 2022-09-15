@@ -411,6 +411,7 @@ function hideShowOptionButtons(block, status) {
               block.find('.editCommentReadonly').attr('commentId', qaComments[i][j].commentId);
               block.find('.commentReadonly').attr('commentId', qaComments[i][j].commentId);
               block.find('.editCommentBtn').attr('commentId', qaComments[i][j].commentId);
+              block.find('.commentCheckContainer').attr('commentId', qaComments[i][j].commentId);              
               block.attr('commentId', qaComments[i][j].commentId);
 
               if(qaComments[i][j].status) {               
@@ -431,6 +432,7 @@ function hideShowOptionButtons(block, status) {
                 let btnsContainer = block.find('.buttonsContainer');
                 let addBtn = block.find('.addCommentContainer');
                 const index = commentsLength - 2;
+               
   
                 if (addBtn.attr('index') == index) {
                   btnsContainer.show();
@@ -451,13 +453,32 @@ function hideShowOptionButtons(block, status) {
                   commentReadonly.hide();
                 }
               }
-  
+              // console.log(commentsLength.toString());
               if (userCanApproveFeedback == 'false') {
+                let commentReadonly = $(`div[commentID="${qaComments[i][j].commentId}"].qaCommentReplyBlock`);
+                let commentCheckContainer = $(`div[commentID="${qaComments[i][j].commentId}"].commentCheckContainer`);
+                let deleteCommentBtn = $(`div[commentID="${qaComments[i][j].commentId}"].deleteCommentBtn`);
+                
+               
+                if(qaComments[i][j].status == '6') {  
+                           
+                  if(j == (commentsLength - 2)){
+                    // console.log(j)
+                    // console.log(commentsLength - 2)      
+                    commentCheckContainer.hide()
+                    block.find('.addCommentContainer').show();
+                    deleteCommentBtn.remove();
+                  }
+                  else{
+                    console.log('entra a este')
+                    commentReadonly.hide();
+                  }
+                }
                 block.find('.dismissCommentBtn').hide();
                 block.find('.correctCommentBtn').hide();  
               }
 
-              if (userCanManageFeedback == 'true') {userCanApproveFeedback
+              if (userCanManageFeedback == 'true') {
                 block.find('.buttonsContainer').show();
                 block.find('.optionsContainer').css('display', 'flex');
               }
