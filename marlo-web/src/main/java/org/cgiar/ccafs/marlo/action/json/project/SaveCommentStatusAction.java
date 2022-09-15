@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.FeedbackStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackStatus;
+import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -83,28 +84,28 @@ public class SaveCommentStatusAction extends BaseAction {
       }
       String statusText = null;
       if (status.equals("0")) {
-        statusText = "rejected";
+        statusText = FeedbackStatusEnum.Rejected.getStatus();
       }
       if (status.equals("1")) {
-        statusText = "approved";
+        statusText = FeedbackStatusEnum.Approved.getStatus();
       }
       if (status.equals("2")) {
-        statusText = "clarification needed";
+        statusText = FeedbackStatusEnum.ClarificatioNeeded.getStatus();
       }
       if (status.equals("3")) {
-        statusText = "pending";
+        statusText = FeedbackStatusEnum.Pending.getStatus();
       }
       if (status.equals("4")) {
-        statusText = "accepted";
+        statusText = FeedbackStatusEnum.Accepted.getStatus();
       }
       if (status.equals("5")) {
-        statusText = "rejected";
+        statusText = FeedbackStatusEnum.Rejected.getStatus();
       }
       if (status.equals("6")) {
-        statusText = "no accepted";
+        statusText = FeedbackStatusEnum.NoAccepted.getStatus();
       }
       if (status == null) {
-        statusText = "pending";
+        statusText = FeedbackStatusEnum.Pending.getStatus();
       }
       commentSave.setStatus(statusText);
       this.saveFeedbackStatus();
