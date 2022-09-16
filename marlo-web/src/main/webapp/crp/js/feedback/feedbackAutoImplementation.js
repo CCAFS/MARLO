@@ -612,16 +612,37 @@ function hideShowOptionButtons(block, status) {
 
       let qaCommentFinded = qaComments.find(qaComment => qaComment.frontName == field[1]);
       if (qaCommentFinded) {
-        let allFieldsdone = true;
-        getNumberOfComments(qaCommentFinded.frontName);
+      let commentEmpty = []
+      getNumberOfComments(qaCommentFinded.frontName);
         Object.keys(qaCommentFinded).map(keycomment=>{
+          const {status} = qaCommentFinded[keycomment]
+          if(status === "0"|| status === "1" || status === "2"|| status === ""|| status === "4")commentEmpty.push(true)       
+        })
+        if(commentEmpty[0]){
+        let allFieldsdone = true;
+        
+        Object.keys(qaCommentFinded).map(keycomment=>{
+          
           if (qaCommentFinded[keycomment] == qaCommentFinded.frontName) return ;
           if(!allFieldsdone) return;
           const {status, reply} = qaCommentFinded[keycomment]
           if (status === "4") allFieldsdone = false;
-          if (status === "0" || status === "2") allFieldsdone = !!Object.keys(reply).length; 
+          if (status === "0" || status === "2"|| status === "") allFieldsdone = !!Object.keys(reply).length; 
+          if(userCanLeaveComments == 'false' ){
+            if (status === "") allFieldsdone = true; 
+          }
+         
         })
         commentIcon.attr('src', qaCommentsStatus(allFieldsdone ? 'done' : 'pending'))
+      }
+      else{
+        // console.log('enter')
+        commentIcon.attr('src', qaCommentsStatus('start'))
+      }
+        // if('solo hay comment dismiss') {
+        //   commentIcon.attr('src', qaCommentsStatus('start'))
+        // }
+        
       }
 
       const currentqaComments = qaComments.filter(qaCommentsFilter => qaCommentsFilter.frontName == field[1])
