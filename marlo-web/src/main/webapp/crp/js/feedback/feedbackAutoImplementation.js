@@ -462,15 +462,13 @@ function hideShowOptionButtons(block, status) {
                
                 if(qaComments[i][j].status == '6') {  
                            
-                  if(j == (commentsLength - 2)){
-                    // console.log(j)
-                    // console.log(commentsLength - 2)      
+                  if(j == (commentsLength - 2)){ 
+                    commentReadonly.show();   
                     commentCheckContainer.hide()
                     block.find('.addCommentContainer').show();
                     deleteCommentBtn.remove();
                   }
                   else{
-                    console.log('entra a este')
                     commentReadonly.hide();
                   }
                 }
