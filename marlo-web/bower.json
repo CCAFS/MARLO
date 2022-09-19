@@ -48,7 +48,7 @@
     "pickadate": "^3.5.6",
     "components-font-awesome": "^5.0.6",
     "pusher-js": "pusher#^4.2.2",
-    "trumbowyg": "^2.15.1",
+    "trumbowyg": "^2.25.2",
     "malihu-custom-scrollbar-plugin": "^3.1.5",
     "cookieconsent": "^3.1.0",
     "vue": "^2.6.10"
