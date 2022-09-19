@@ -489,5 +489,6 @@
     <mapping resource="xmls/DeliverableCrpOutcomes.hbm.xml" />
     <mapping resource="xmls/Timeline.hbm.xml" />
     <mapping resource="xmls/FeedbackStatuses.hbm.xml" />
+    <mapping resource="xmls/FeedbackPermissions.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
