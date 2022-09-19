@@ -417,19 +417,28 @@ function hideShowOptionButtons(block, status) {
 
          
                let commentEmpty = []
-               commentEmpty[0] = true;
+               let statusArray = false;
+              //  commentEmpty[0] = true;
+
                if(userCanApproveFeedback == 'false'){
                for (let j = 0; j < commentsLength; j++) {
                 if (qaComments[i][j] !== undefined) {
-                  if(qaComments[i][j].status === "0"|| qaComments[i][j].status === "1" || qaComments[i][j].status === "2"|| qaComments[i][j].status === ""|| qaComments[i][j].status === "4"){
-                    commentEmpty[0]=true;
-                  }else{
-                    commentEmpty[0]=false;
-                  }       
+                  // if(qaComments[i][j].status === "0"|| qaComments[i][j].status === "1" || qaComments[i][j].status === "2"|| qaComments[i][j].status === ""|| qaComments[i][j].status === "4"){
+                  //   commentEmpty[0]=true;
+                  // }else{
+                  //   commentEmpty[0]=false;
+                  // }    
+                  commentEmpty.push(qaComments[i][j].status);
                 }
-                }}
+                }
+                statusArray =commentEmpty.every((el) => el == '6');
+              }
+                
+                // console.log(commentEmpty)
+                // console.log(statusArray)
+                // console.log(commentEmpty.every((el) => el == '6'))
 
-if(commentEmpty[0] == true){
+if(!statusArray){
           for (let j = 0; j < commentsLength; j++) {
             if (qaComments[i][j] !== undefined) {
               let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
