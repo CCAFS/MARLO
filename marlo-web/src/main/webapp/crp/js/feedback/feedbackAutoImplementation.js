@@ -4,6 +4,7 @@ var contributionCRPAjaxURL = `/fieldsBySectionAndParent.do?sectionName=${section
 var arrayName = 'fieldsMap';
 let fieldID = '';
 let qaComments = '';
+let nameNewComment ='';
 fieldsSections = [];
 
 function feedbackAutoImplementation (){
@@ -14,6 +15,9 @@ function feedbackAutoImplementation (){
   userCanManageFeedback = $('#userCanManageFeedback').html();
   userCanLeaveComments = $('#userCanLeaveComments').html();
   userCanApproveFeedback = $('#userCanApproveFeedback').html();
+  // userCanManageFeedback = 'true';
+  // userCanLeaveComments = 'false';
+  // userCanApproveFeedback = 'false';
   isFeedbackActive = $('#isFeedbackActive').html();
   console.log(userCanManageFeedback);
   console.log(userCanLeaveComments);
@@ -32,6 +36,7 @@ function attachEventsFeedback() {
   // Multiple comments-replies
   $('img.qaComment').on('click', function (event) {
     let name = this.name;
+    nameNewComment= this.name;
     let popUpTitle = $(this).attr('description');
     let qaPopup = $(`div[id^="qaPopup-${name}"]`);
     let block = $(`div[id^="qaCommentReply-${name}"]`);
@@ -243,6 +248,37 @@ function attachEventsFeedback() {
   });
 }
 
+function addNewComment(){
+
+ 
+    let name = nameNewComment;
+    let block = $(`div[id^="qaCommentReply-${name}"]`);
+    block.find('.buttonsContainer').hide();
+    let qaPopup = $(`div[id^="qaPopup-${name}"]`);
+    let lastIndex = block.last().attr('index');
+    lastIndex = parseInt(lastIndex) + 1;
+    let commentReplyBlock = qaPopup.siblings('#qaTemplate').find('.qaPopup').children()[2];
+    let newBlock = $(commentReplyBlock).clone(true).attr('id', `qaCommentReply-${name}[${lastIndex}]`);
+
+    newBlock.attr('index', `${lastIndex}`);
+    newBlock.find('.sendCommentContainer').attr('name', `${name}[${lastIndex}]`);
+    newBlock.find('.sendReplyContainer').attr('name', `${name}[${lastIndex}]`);
+    newBlock.find('.addCommentContainer').attr('name', `${name}`);
+    newBlock.find('.addCommentContainer').attr('index', `${lastIndex}`);
+    newBlock.find('.deleteCommentBtn').attr('name', `${name}[${lastIndex}]`);
+    newBlock.find('.containerSentCommentBtn').attr('name', `${name}[${lastIndex}]`);
+    
+    
+    if(block.last().attr('newComment') != 'true'){
+      newBlock.attr('newComment', 'true');
+      newBlock.appendTo(qaPopup).hide().show();      
+    }
+    
+
+ 
+
+}
+
 //function to hide and show input to be able to edit
 function showEditComment(block, commentID, option) {
   
@@ -370,12 +406,30 @@ function hideShowOptionButtons(block, status) {
   function loadCommentsByUser(name) {
     try {
 
+
+
     // Removes the last index in brackets, i.e: [0]
     name = name.replace(/\[[^\]]*\]$/, '');
     if (qaComments.length > 0) {
       for (let i = 0; i < qaComments.length; i++) {
         if (qaComments[i].frontName == name) {
           let commentsLength = Object.keys(qaComments[i]).length;
+
+         
+               let commentEmpty = []
+               commentEmpty[0] = true;
+               if(userCanApproveFeedback == 'false'){
+               for (let j = 0; j < commentsLength; j++) {
+                if (qaComments[i][j] !== undefined) {
+                  if(qaComments[i][j].status === "0"|| qaComments[i][j].status === "1" || qaComments[i][j].status === "2"|| qaComments[i][j].status === ""|| qaComments[i][j].status === "4"){
+                    commentEmpty[0]=true;
+                  }else{
+                    commentEmpty[0]=false;
+                  }       
+                }
+                }}
+
+if(commentEmpty[0] == true){
           for (let j = 0; j < commentsLength; j++) {
             if (qaComments[i][j] !== undefined) {
               let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
@@ -388,6 +442,8 @@ function hideShowOptionButtons(block, status) {
                 block = $(`div[id^="qaPopup-${name}["]`).find('.qaCommentReplyBlock')
               }
               // div[id^="qaCommentReply-deliverable.deliverableInfo.title[0]"]             
+
+              
 
               block.find('textarea[id="New comment"]').hide();
               block.find('textarea[id="New comment"]').next().next('p.charCount').hide();
@@ -459,6 +515,7 @@ function hideShowOptionButtons(block, status) {
                 let commentCheckContainer = $(`div[commentID="${qaComments[i][j].commentId}"].commentCheckContainer`);
                 let deleteCommentBtn = $(`div[commentID="${qaComments[i][j].commentId}"].deleteCommentBtn`);
                 
+
                
                 if(qaComments[i][j].status == '6') {  
                            
@@ -539,6 +596,17 @@ function hideShowOptionButtons(block, status) {
                 }
               }
             }
+          }}else{
+            for (let j = 0; j < commentsLength; j++) {
+              if (qaComments[i][j] !== undefined) {               
+                  let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
+                  block.hide();
+                  if(j == 0){
+                    addNewComment()
+                  }           
+                
+              }}
+
           }
         }
       }
@@ -608,16 +676,19 @@ function hideShowOptionButtons(block, status) {
         $(item).find('.replyCommentBtn').attr('name', `${field[1]}[${index}]`);
         $(item).find('.sendReplyContainer').attr('name', `${field[1]}[${index}]`);
         $(item).find('div.addCommentContainer').attr('name', field[1]);
+        
       });
 
       let qaCommentFinded = qaComments.find(qaComment => qaComment.frontName == field[1]);
       if (qaCommentFinded) {
+
       let commentEmpty = []
       getNumberOfComments(qaCommentFinded.frontName);
         Object.keys(qaCommentFinded).map(keycomment=>{
           const {status} = qaCommentFinded[keycomment]
           if(status === "0"|| status === "1" || status === "2"|| status === ""|| status === "4")commentEmpty.push(true)       
         })
+
         if(commentEmpty[0]){
         let allFieldsdone = true;
         
@@ -636,17 +707,22 @@ function hideShowOptionButtons(block, status) {
         commentIcon.attr('src', qaCommentsStatus(allFieldsdone ? 'done' : 'pending'))
       }
       else{
-        // console.log('enter')
         commentIcon.attr('src', qaCommentsStatus('start'))
       }
-        // if('solo hay comment dismiss') {
-        //   commentIcon.attr('src', qaCommentsStatus('start'))
-        // }
+        
         
       }
 
-      const currentqaComments = qaComments.filter(qaCommentsFilter => qaCommentsFilter.frontName == field[1])
-      if (userCanLeaveComments == 'true' || currentqaComments.length>=1) {
+      // const currentqaComments = qaComments.filter(qaCommentsFilter => qaCommentsFilter.frontName == field[1])
+      let commentEmpty2 = []
+      if (qaCommentFinded) {
+      Object.keys(qaCommentFinded).map(keycomment=>{
+        const {status} = qaCommentFinded[keycomment]
+        if(status === "0"|| status === "1" || status === "2"|| status === "4")commentEmpty2.push(true)  
+        // console.log(status)     
+      })
+    }
+      if (userCanLeaveComments == 'true' || commentEmpty2[0]==true) {
         commentIcon.show();
         commentIcon.parent().css('display', 'flex');
       }            
