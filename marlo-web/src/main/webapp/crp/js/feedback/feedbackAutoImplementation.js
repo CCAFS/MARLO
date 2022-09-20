@@ -12,12 +12,12 @@ function feedbackAutoImplementation (){
   projectID = $('#projectID').html();
   phaseID = $('#phaseID').html();
   userID = $('#userID').html();
-  // userCanManageFeedback = $('#userCanManageFeedback').html();
-  // userCanLeaveComments = $('#userCanLeaveComments').html();
-  // userCanApproveFeedback = $('#userCanApproveFeedback').html();
-  userCanManageFeedback = 'true';
-  userCanLeaveComments = 'true';
-  userCanApproveFeedback = 'false';
+  userCanManageFeedback = $('#userCanManageFeedback').html();
+  userCanLeaveComments = $('#userCanLeaveComments').html();
+  userCanApproveFeedback = $('#userCanApproveFeedback').html();
+  // userCanManageFeedback = 'true';
+  // userCanLeaveComments = 'true';
+  // userCanApproveFeedback = 'false';
   isFeedbackActive = $('#isFeedbackActive').html();
   console.log(userCanManageFeedback);
   console.log(userCanLeaveComments);
