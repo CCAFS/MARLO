@@ -368,8 +368,12 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
   }
 
   private String getInnovationDirectLink(String center, Long innovationId, String phaseId, Long projectId) {
-    return this.getBaseUrl() + "/projects/" + center + "/innovation.do?innovationID=" + innovationId + "&phaseID="
-      + phaseId + "&projectID=" + projectId;
+    /*
+     * return this.getBaseUrl() + "/projects/" + center + "/innovation.do?innovationID=" + innovationId + "&phaseID="
+     * + phaseId + "&projectID=" + projectId;
+     */
+    return this.getBaseUrl() + "/summaries/" + center + "/projectInnovationSummary.do?innovationID=" + innovationId
+      + "&phaseID=" + phaseId;
   }
 
   @Override
@@ -637,6 +641,7 @@ public class ProjectPolicySummaryAction extends BaseSummariesAction implements S
           && projectPolicyInnovation.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()) != null) {
           String url = this.getInnovationDirectLink(this.crp, projectPolicyInnovation.getProjectInnovation().getId(),
             phaseID, projectPolicyInfo.getProjectPolicy().getProject().getId());
+          url = shortener.getShortUrlService(url);
 
           deliverablesSet
             .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● I" + projectPolicyInnovation.getProjectInnovation().getId() + " - "
