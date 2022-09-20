@@ -19,12 +19,14 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.submissiontools;
 
+import org.cgiar.ccafs.marlo.rest.dto.EndOfInitiativeOutcomeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InitiativesDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
+import org.cgiar.ccafs.marlo.rest.mappers.EOIOutcomeMapper;
 import org.cgiar.ccafs.marlo.rest.mappers.InitiativeMapper;
 import org.cgiar.ccafs.marlo.rest.services.submissionTools.InitiativesList;
-import org.cgiar.ccafs.marlo.rest.services.submissionTools.Response;
+import org.cgiar.ccafs.marlo.rest.services.submissionTools.eoi.EOIOutcomesByInitiativesList;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.FileNotFoundException;
@@ -58,28 +60,66 @@ import org.springframework.http.ResponseEntity;
 public class InitiativesItem<T> {
 
   public InitiativeMapper initiativeMapper;
+  public EOIOutcomeMapper eoiOutcomeMapper;
 
   protected APConfig config;
 
   @Inject
-  public InitiativesItem(InitiativeMapper initiativeMapper, APConfig config) {
+  public InitiativesItem(InitiativeMapper initiativeMapper, EOIOutcomeMapper eoiOutcomeMapper, APConfig config) {
     super();
     this.initiativeMapper = initiativeMapper;
+    this.eoiOutcomeMapper = eoiOutcomeMapper;
     this.config = config;
+  }
+
+  public ResponseEntity<List<EndOfInitiativeOutcomeDTO>> getEndOfInitiativeOutcomes() {
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    List<EndOfInitiativeOutcomeDTO> initiativeListDTO = new ArrayList<>();
+    org.cgiar.ccafs.marlo.rest.services.submissionTools.eoi.Response response = null;
+    String url = config.getUrlSubmissionTools();
+    if (url != null) {
+      try {
+        // getting token
+        JsonElement json = this.getSubmissionElement(url + "stages-control/proposal/eoi/all/initiatives");
+
+        response = new Gson().fromJson(json, org.cgiar.ccafs.marlo.rest.services.submissionTools.eoi.Response.class);
+        if (response.getResponse() != null) {
+          EOIOutcomesByInitiativesList eoiOutcomesByInitiativesList = response.getResponse();
+          if (eoiOutcomesByInitiativesList.getEoi_outcome_by_initiatives() != null) {
+            initiativeListDTO = eoiOutcomesByInitiativesList.getEoi_outcome_by_initiatives().stream()
+              .map(eoi -> this.eoiOutcomeMapper.endOfInitiativeOutcomeToEndOfInitiativeOutcomeDTO(eoi))
+              .collect(Collectors.toList());
+          }
+
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+        fieldErrors.add(new FieldErrorDTO("getInitiatives", "JSON element",
+          "Error trying to get data from service  " + e.getMessage()));
+      }
+
+    }
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+    return Optional.ofNullable(initiativeListDTO).map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+      .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
   public ResponseEntity<List<InitiativesDTO>> getInitiatives() {
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     List<InitiativesDTO> initiativeListDTO = new ArrayList<InitiativesDTO>();
-    Response response = null;
+    org.cgiar.ccafs.marlo.rest.services.submissionTools.Response response = null;
     String url = config.getUrlSubmissionTools();
     if (url != null) {
       try {
         // getting token
         JsonElement json = this.getSubmissionElement(url + "initiatives");
 
-
-        response = new Gson().fromJson(json, Response.class);
+        response = new Gson().fromJson(json, org.cgiar.ccafs.marlo.rest.services.submissionTools.Response.class);
         if (response.getResponse() != null) {
           InitiativesList initiativesList = response.getResponse();
           if (initiativesList.getInitiatives() != null) {

@@ -342,10 +342,16 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             Set<String> studyPoliciesSet = new HashSet<>();
             if (studyPoliciesList != null && studyPoliciesList.size() > 0) {
               for (ProjectExpectedStudyPolicy projectExpectedStudyPolicy : studyPoliciesList) {
+                String policyUrl = this.getPolicyDirectLink(this.getLoggedCrp().getAcronym(),
+                  projectExpectedStudyPolicy.getProjectPolicy().getId(),
+                  String.valueOf(this.getSelectedPhase().getId()),
+                  projectExpectedStudyPolicy.getProjectPolicy().getProject().getId());
+                policyUrl = urlShortener.getShortUrlService(policyUrl);
                 if (projectExpectedStudyPolicy.getProjectPolicy()
                   .getProjectPolicyInfo(this.getSelectedPhase()) != null) {
                   studyPoliciesSet.add(
-                    "<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + projectExpectedStudyPolicy.getProjectPolicy().getComposedName());
+                    "<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + projectExpectedStudyPolicy.getProjectPolicy().getComposedName()
+                      + " <font color=\"blue\">(" + policyUrl + ")</font>");
                 }
               }
               studyPolicies = String.join("", studyPoliciesSet);
@@ -534,9 +540,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         Set<String> innovationSet = new HashSet<>();
         if (studyInnovationList != null && studyInnovationList.size() > 0) {
           for (ProjectExpectedStudyInnovation studyInnovation : studyInnovationList) {
-            studyInnovation.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase());
-            innovationSet
-              .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyInnovation.getProjectInnovation().getComposedName());
+            String innovationUrl = this.getInnovationDirectLink(this.getLoggedCrp().getAcronym(),
+              studyInnovation.getProjectInnovation().getId(), String.valueOf(this.getSelectedPhase().getId()),
+              studyInnovation.getProjectInnovation().getProject().getId());
+            innovationUrl = urlShortener.getShortUrlService(innovationUrl);
+            if (studyInnovation.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()) != null) {
+              innovationSet
+                .add("<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + studyInnovation.getProjectInnovation().getComposedName()
+                  + " <font color=\"blue\">(" + innovationUrl + ")</font>");
+            }
           }
           cgiarInnovations = String.join("", innovationSet);
         }
@@ -975,6 +987,24 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     }
 
     return model;
+  }
+
+  private String getInnovationDirectLink(String center, Long innovationId, String phaseId, Long projectId) {
+    /*
+     * return this.getBaseUrl() + "/projects/" + center + "/innovation.do?innovationID=" + innovationId + "&phaseID="
+     * + phaseId + "&projectID=" + projectId;
+     */
+    return this.getBaseUrl() + "/summaries/" + center + "/projectInnovationSummary.do?innovationID=" + innovationId
+      + "&phaseID=" + phaseId;
+  }
+
+  private String getPolicyDirectLink(String center, Long policyId, String phaseId, Long projectId) {
+    /*
+     * return this.getBaseUrl() + "/projects/" + center + "/innovation.do?innovationID=" + innovationId + "&phaseID="
+     * + phaseId + "&projectID=" + projectId;
+     */
+    return this.getBaseUrl() + "/summaries/" + center + "/projectPolicySummary.do?policyID=" + policyId + "&phaseID="
+      + phaseId;
   }
 
 }
