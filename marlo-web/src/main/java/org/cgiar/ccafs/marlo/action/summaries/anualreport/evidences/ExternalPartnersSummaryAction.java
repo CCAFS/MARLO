@@ -249,10 +249,17 @@ public class ExternalPartnersSummaryAction extends BaseSummariesAction implement
 
     List<ReportSynthesisKeyPartnershipExternal> externalPartnerships;
     List<Institution> evidencePartners;
-
-    LiaisonInstitution liaisonInstitutionPMU = this.getLoggedCrp().getLiaisonInstitutions().stream()
-      .filter(o -> o.isActive() && o.getAcronym() != null && o.getAcronym().equals("PMU")).collect(Collectors.toList())
-      .get(0);
+    LiaisonInstitution liaisonInstitutionPMU = new LiaisonInstitution();
+    if (this.getLoggedCrp().getLiaisonInstitutions() != null
+      && !this.getLoggedCrp().getLiaisonInstitutions().isEmpty()) {
+      try {
+        liaisonInstitutionPMU = this.getLoggedCrp().getLiaisonInstitutions().stream()
+          .filter(o -> o != null && o.isActive() && o.getAcronym() != null && o.getAcronym().equals("PMU"))
+          .collect(Collectors.toList()).get(0);
+      } catch (Exception e) {
+        LOG.error("Error generating liaisonInstitutionPMU " + e.getMessage());
+      }
+    }
 
     List<LiaisonInstitution> liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
