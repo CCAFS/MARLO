@@ -1791,13 +1791,16 @@ function study_types() {
 			// print data
 			manageSpinner(false,"study_types");
 			console.log(data);
-			let nameColumns = ['Code', 'Name']
+			let nameColumns = ['Code', 'Name', 'Description']
 
 
 			$.each(data, function (index, item) {				
 				$('#list-print-study_types').append(
-					'<tr>' + '<td >' + item['id'] + '</td>' + '<td>'
-					+ item['name'] + '</td>' + '</tr>')
+					'<tr>' + 
+					'<td >' + item['id'] + '</td>' + 
+					'<td>' + item['name'] + '</td>' + 
+					'<td>' + item['description'] + '</td>' + 
+					'</tr>')
 			});
 setTimeout(() => {
 	updateDataTable("study_types");
