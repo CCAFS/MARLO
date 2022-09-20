@@ -16,7 +16,7 @@ function feedbackAutoImplementation (){
   userCanLeaveComments = $('#userCanLeaveComments').html();
   userCanApproveFeedback = $('#userCanApproveFeedback').html();
   // userCanManageFeedback = 'true';
-  // userCanLeaveComments = 'false';
+  // userCanLeaveComments = 'true';
   // userCanApproveFeedback = 'false';
   isFeedbackActive = $('#isFeedbackActive').html();
   console.log(userCanManageFeedback);
@@ -46,9 +46,7 @@ function attachEventsFeedback() {
     block.each((index, item) => {
       if ($(item).attr('index') == 0) {
         $(item).find('textarea[id="New comment"]').prev('label').html(`Comment on "${popUpTitle}":`);
-      }
-
-     
+      }    
     });
 
     loadCommentsByUser(name);
@@ -83,7 +81,7 @@ function attachEventsFeedback() {
     } else {
       cleanComment = comment?.replaceAll('.<br>.', '');
     }
-   
+  
     cleanComment = cleanComment ? cleanComment.replaceAll('&nbsp;', ' ') : '';
 
     if (cleanComment != '' && cleanComment != ' ') {
@@ -248,9 +246,7 @@ function attachEventsFeedback() {
   });
 }
 
-function addNewComment(){
-
- 
+function addNewComment(){ 
     let name = nameNewComment;
     let block = $(`div[id^="qaCommentReply-${name}"]`);
     block.find('.buttonsContainer').hide();
@@ -266,16 +262,12 @@ function addNewComment(){
     newBlock.find('.addCommentContainer').attr('name', `${name}`);
     newBlock.find('.addCommentContainer').attr('index', `${lastIndex}`);
     newBlock.find('.deleteCommentBtn').attr('name', `${name}[${lastIndex}]`);
-    newBlock.find('.containerSentCommentBtn').attr('name', `${name}[${lastIndex}]`);
-    
+    newBlock.find('.containerSentCommentBtn').attr('name', `${name}[${lastIndex}]`);    
     
     if(block.last().attr('newComment') != 'true'){
       newBlock.attr('newComment', 'true');
       newBlock.appendTo(qaPopup).hide().show();      
     }
-    
-
- 
 
 }
 
@@ -405,147 +397,139 @@ function hideShowOptionButtons(block, status) {
   // Multiple comments-replies
   function loadCommentsByUser(name) {
     try {
+      // Removes the last index in brackets, i.e: [0]
+      name = name.replace(/\[[^\]]*\]$/, '');
+      if (qaComments.length > 0) {
+        for (let i = 0; i < qaComments.length; i++) {
+          if (qaComments[i].frontName == name) {
+            let commentsLength = Object.keys(qaComments[i]).length;
+            let commentEmpty = []
+            let statusArray = false;
 
-
-
-    // Removes the last index in brackets, i.e: [0]
-    name = name.replace(/\[[^\]]*\]$/, '');
-    if (qaComments.length > 0) {
-      for (let i = 0; i < qaComments.length; i++) {
-        if (qaComments[i].frontName == name) {
-          let commentsLength = Object.keys(qaComments[i]).length;
-
-         
-               let commentEmpty = []
-               let statusArray = false;
-              //  commentEmpty[0] = true;
-
-               if(userCanApproveFeedback == 'false'){
-               for (let j = 0; j < commentsLength; j++) {
-                if (qaComments[i][j] !== undefined) {
-                  // if(qaComments[i][j].status === "0"|| qaComments[i][j].status === "1" || qaComments[i][j].status === "2"|| qaComments[i][j].status === ""|| qaComments[i][j].status === "4"){
-                  //   commentEmpty[0]=true;
-                  // }else{
-                  //   commentEmpty[0]=false;
-                  // }    
-                  commentEmpty.push(qaComments[i][j].status);
-                }
+              if(userCanApproveFeedback == 'false'){
+                for (let j = 0; j < commentsLength; j++) {
+                  if (qaComments[i][j] !== undefined) {                 
+                    commentEmpty.push(qaComments[i][j].status);
+                  }
                 }
                 statusArray =commentEmpty.every((el) => el == '6');
               }
-                
-                // console.log(commentEmpty)
-                // console.log(statusArray)
-                // console.log(commentEmpty.every((el) => el == '6'))
 
-if(!statusArray){
-          for (let j = 0; j < commentsLength; j++) {
-            if (qaComments[i][j] !== undefined) {
-              let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
+              if(!statusArray){
+                for (let j = 0; j < commentsLength; j++) {
+                  if (qaComments[i][j] !== undefined) {
+                    let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
 
-              if (j != 0) {
-                block.find('textarea[id="New comment"]').prev().hide();
-              }
+                    if (j != 0) {
+                      block.find('textarea[id="New comment"]').prev().hide();
+                    }
 
-              if (!block.exists()) {
-                block = $(`div[id^="qaPopup-${name}["]`).find('.qaCommentReplyBlock')
-              }
-              // div[id^="qaCommentReply-deliverable.deliverableInfo.title[0]"]             
+                    if (!block.exists()) {
+                      block = $(`div[id^="qaPopup-${name}["]`).find('.qaCommentReplyBlock')
+                    }
 
+                    block.find('textarea[id="New comment"]').hide();
+                    block.find('textarea[id="New comment"]').next().next('p.charCount').hide();
+                    block.find('.commentContainer').show();
+                    block.find('.commentContainer .commentTitle').html(`Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
+                    block.find('.commentContainer p.commentReadonly').html(`${qaComments[i][j].comment}`);
+                    block.find('.commentContainer textarea.editCommentReadonly').html(`${qaComments[i][j].comment}`);
+                    block.find('.sendCommentContainer').hide();              
+                    if (qaComments[i][j].userID != userID) block.find('.deleteCommentBtn').remove();
+                    if (qaComments[i][j].reply.userID == userID) block.find('.deleteReplyBtn').show();
+                    if (userCanApproveFeedback == 'false' && userCanManageFeedback =='true' &&  userCanLeaveComments =='true' && qaComments[i][j].userID != userID) block.find('.editCommentBtn').remove();
+                    if (userCanManageFeedback =='false'){
+                    }                    
+                    block.find('.deleteCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.containerSentCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.deleteReplyBtn').attr('replyId', qaComments[i][j].reply.id);
+                    block.find('.sendReplyContainer').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.agreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.disagreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.clarificationCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.correctCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.dismissCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.replyCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.editCommentReadonly').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.commentReadonly').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.editCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.commentCheckContainer').attr('commentId', qaComments[i][j].commentId);              
+                    block.attr('commentId', qaComments[i][j].commentId);
+
+                    if(qaComments[i][j].status) {               
+                        block.find('.containerReactionComment').show();
+                        block.find('.containerReactionComment p.reactionComment').html(reactionName(qaComments[i][j].status)+`${qaComments[i][j].approvalUserName} at ${qaComments[i][j].approvalDate}`);                 
+                    }if(qaComments[i][j].status =='' ){
+                      block.find('.containerReactionComment').hide();
+                      block.find('.commentContainer .commentTitle').html(`[Draft] - Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
+                    }
+                    //////////////////////////////////////////////////////////////////
+                    //waiting for endpoint to show clarificationCommentBtn
+                    if(false){
+                      block.find('.optionsContainer .clarificationCommentBtn').remove();
+                    }
+                    ///////////////////////////////////////////////////////////////
               
-
-              block.find('textarea[id="New comment"]').hide();
-              block.find('textarea[id="New comment"]').next().next('p.charCount').hide();
-              block.find('.commentContainer').show();
-              block.find('.commentContainer .commentTitle').html(`Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
-              block.find('.commentContainer p.commentReadonly').html(`${qaComments[i][j].comment}`);
-              block.find('.commentContainer textarea.editCommentReadonly').html(`${qaComments[i][j].comment}`);
-              block.find('.sendCommentContainer').hide();              
-              if (qaComments[i][j].userID != userID) block.find('.deleteCommentBtn').remove();
-              if (qaComments[i][j].reply.userID == userID) block.find('.deleteReplyBtn').show();
-              block.find('.deleteCommentBtn').attr('commentId', qaComments[i][j].commentId);
-              block.find('.containerSentCommentBtn').attr('commentId', qaComments[i][j].commentId);
-              block.find('.deleteReplyBtn').attr('replyId', qaComments[i][j].reply.id);
-              block.find('.sendReplyContainer').attr('commentId', qaComments[i][j].commentId);
-              block.find('.agreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
-              block.find('.disagreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
-              block.find('.clarificationCommentBtn').attr('commentId', qaComments[i][j].commentId);
-              block.find('.correctCommentBtn').attr('commentId', qaComments[i][j].commentId);
-              block.find('.dismissCommentBtn').attr('commentId', qaComments[i][j].commentId);
-              block.find('.replyCommentBtn').attr('commentId', qaComments[i][j].commentId);
-              block.find('.editCommentReadonly').attr('commentId', qaComments[i][j].commentId);
-              block.find('.commentReadonly').attr('commentId', qaComments[i][j].commentId);
-              block.find('.editCommentBtn').attr('commentId', qaComments[i][j].commentId);
-              block.find('.commentCheckContainer').attr('commentId', qaComments[i][j].commentId);              
-              block.attr('commentId', qaComments[i][j].commentId);
-
-              if(qaComments[i][j].status) {               
-                  block.find('.containerReactionComment').show();
-                  block.find('.containerReactionComment p.reactionComment').html(reactionName(qaComments[i][j].status)+`${qaComments[i][j].approvalUserName} at ${qaComments[i][j].approvalDate}`);                 
-              }if(qaComments[i][j].status =='' ){
-                block.find('.containerReactionComment').hide();
-                block.find('.commentContainer .commentTitle').html(`[Draft] - Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
-              }
-              //////////////////////////////////////////////////////////////////
-              //waiting for endpoint to show clarificationCommentBtn
-              if(false){
-                block.find('.optionsContainer .clarificationCommentBtn').remove();
-              }
-              ///////////////////////////////////////////////////////////////
-              
-              if (userCanLeaveComments == 'true') {
-                let btnsContainer = block.find('.buttonsContainer');
-                let addBtn = block.find('.addCommentContainer');
-                const index = commentsLength - 2;
-               
+                  if (userCanLeaveComments == 'true') {
+                    let btnsContainer = block.find('.buttonsContainer');
+                    let addBtn = block.find('.addCommentContainer');
+                    const index = commentsLength - 2;
   
-                if (addBtn.attr('index') == index) {
-                  btnsContainer.show();
-                  addBtn.show();  
-                  let blockDup = $(`div[id="qaCommentReply-${name}[${j + 1}]"]`);  
-                  if (blockDup.length != 0) {
-                    btnsContainer.hide();
-                    addBtn.hide();
+                    if (addBtn.attr('index') == index) {
+                      btnsContainer.show();
+                      addBtn.show();  
+                      let blockDup = $(`div[id="qaCommentReply-${name}[${j + 1}]"]`);  
+                      if (blockDup.length != 0) {
+                        btnsContainer.hide();
+                        addBtn.hide();
+                      }
+                    }else {
+                      btnsContainer.hide();
+                      addBtn.hide();
+                    }
+                  }else{
+                    let commentReadonly = $(`div[commentID="${qaComments[i][j].commentId}"].qaCommentReplyBlock`);
+                    block.find('.editCommentBtn').remove();
+                    if(qaComments[i][j].status == '') {
+                      commentReadonly.hide();
+                    }
                   }
-                } else {
-                  btnsContainer.hide();
-                  addBtn.hide();
-                }
-              }else{
-                let commentReadonly = $(`div[commentID="${qaComments[i][j].commentId}"].qaCommentReplyBlock`);
-                block.find('.editCommentBtn').remove();
-                if(qaComments[i][j].status == '') {
-                  commentReadonly.hide();
-                }
-              }
-              // console.log(commentsLength.toString());
-              if (userCanApproveFeedback == 'false') {
-                let commentReadonly = $(`div[commentID="${qaComments[i][j].commentId}"].qaCommentReplyBlock`);
-                let commentCheckContainer = $(`div[commentID="${qaComments[i][j].commentId}"].commentCheckContainer`);
-                let deleteCommentBtn = $(`div[commentID="${qaComments[i][j].commentId}"].deleteCommentBtn`);
-                
+            
+                if (userCanApproveFeedback == 'false') {
+                  let commentReadonly = $(`div[commentID="${qaComments[i][j].commentId}"].qaCommentReplyBlock`);
+                  let commentCheckContainer = $(`div[commentID="${qaComments[i][j].commentId}"].commentCheckContainer`);
+                  let deleteCommentBtn = $(`div[commentID="${qaComments[i][j].commentId}"].deleteCommentBtn`);
 
-               
-                if(qaComments[i][j].status == '6') {  
-                           
-                  if(j == (commentsLength - 2)){ 
-                    commentReadonly.show();   
-                    commentCheckContainer.hide()
-                    block.find('.addCommentContainer').show();
-                    deleteCommentBtn.remove();
+                  if(qaComments[i][j].status == '6'){
+                    
+                    if(j == (commentsLength - 2)){ 
+                      commentReadonly.show();   
+                      commentCheckContainer.hide()
+                      block.find('.addCommentContainer').show();
+                      deleteCommentBtn.remove();
+                    }
+                    else{
+                      commentReadonly.hide();
+                    }
                   }
-                  else{
-                    commentReadonly.hide();
-                  }
+                  block.find('.dismissCommentBtn').hide();
+                  block.find('.correctCommentBtn').hide();  
                 }
-                block.find('.dismissCommentBtn').hide();
-                block.find('.correctCommentBtn').hide();  
-              }
 
               if (userCanManageFeedback == 'true') {
                 block.find('.buttonsContainer').show();
                 block.find('.optionsContainer').css('display', 'flex');
+              }else{
+                block.find('img.agreeCommentBtn').remove();
+                block.find('img.disagreeCommentBtn').remove();
+                block.find('img.clarificationCommentBtn').remove();
               }
+
+              if (userCanLeaveComments == 'true' && userCanManageFeedback == 'false') {                
+                block.find('.buttonsContainer').show();
+                block.find('.optionsContainer').css('display', 'flex');
+              }
+
   
               hideShowOptionButtons(block, qaComments[i][j].status);
   
@@ -557,7 +541,6 @@ if(!statusArray){
                 block.find('.replyTextContainer').show();
                 block.find('.replyTextContainer .replyTitle').html(`Reply by ${qaComments[i][j].reply['userName']} at ${qaComments[i][j].reply['date']}`);
                 block.find('.replyTextContainer p.replyReadonly').html(`${qaComments[i][j].reply['text']}`);
-                // block.find('.buttonsContainer').hide();
                 block.find('.replyCommentBtn').hide();
                 block.find('.sendReplyContainer').hide();
               } else {
@@ -593,29 +576,23 @@ if(!statusArray){
                     block.find('.replyCommentBtn').hide();
                     block.find('.sendReplyContainer').show();
                   }
-                  //  else {
-                  //   block.find('textarea[id="Reply"]').parent().show();
-                  //   block.find('.replyContainer').css('display', 'flex');
-                  //   block.find('.replyTextContainer').hide();
-                  //   block.find('.replyCommentBtn').hide();
-                  //   block.find('.sendReplyContainer').show();
-                  // }
+                  
                 } else {
                   block.find('.replyCommentBtn').hide();
                 }
               }
             }
-          }}else{
-            for (let j = 0; j < commentsLength; j++) {
-              if (qaComments[i][j] !== undefined) {               
-                  let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
-                  block.hide();
-                  if(j == 0){
-                    addNewComment()
-                  }           
-                
-              }}
-
+          }
+        }else{
+          for (let j = 0; j < commentsLength; j++) {
+            if (qaComments[i][j] !== undefined) {               
+              let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
+              block.hide();
+                if(j == 0){
+                  addNewComment()
+                }
+              }
+            }
           }
         }
       }
@@ -629,14 +606,14 @@ if(!statusArray){
   runaddfeedbackFlexItemsClass = true;
   function addfeedbackFlexItemsClass(fieldsMap){
     if (!runaddfeedbackFlexItemsClass) return;
-    fieldsMap.map(field=>{
-      if ($(`[name="${field.fieldName}"]`).closest('.fieldReference').length ==2) {
-        $(`[name="${field.fieldName}"]`).closest('.fieldReference').first().next().remove();
-      }
-      let fieldReference = $(`[name="${field.fieldName}"]`).closest('.fieldReference').exists() == true ?  $(`[name="${field.fieldName}"]`).closest('.fieldReference').last()  : $(`[name="${field.fieldName}[]"]`).closest('.fieldReference').last() ;
-      fieldReference.appendTo(fieldReference.prev());
-      fieldReference.closest('.feedback-flex-items').next().appendTo(fieldReference.closest('.feedback-flex-items'))
-    })
+      fieldsMap.map(field=>{
+        if ($(`[name="${field.fieldName}"]`).closest('.fieldReference').length ==2) {
+          $(`[name="${field.fieldName}"]`).closest('.fieldReference').first().next().remove();
+        }
+        let fieldReference = $(`[name="${field.fieldName}"]`).closest('.fieldReference').exists() == true ?  $(`[name="${field.fieldName}"]`).closest('.fieldReference').last()  : $(`[name="${field.fieldName}[]"]`).closest('.fieldReference').last() ;
+        fieldReference.appendTo(fieldReference.prev());
+        fieldReference.closest('.feedback-flex-items').next().appendTo(fieldReference.closest('.feedback-flex-items'))
+      })
     runaddfeedbackFlexItemsClass = false;
   }
   
@@ -691,28 +668,30 @@ if(!statusArray){
       let qaCommentFinded = qaComments.find(qaComment => qaComment.frontName == field[1]);
       if (qaCommentFinded) {
 
-      let commentEmpty = []
-      getNumberOfComments(qaCommentFinded.frontName);
+        let commentEmpty = []
+        let statusComments =false;
+        getNumberOfComments(qaCommentFinded.frontName);
         Object.keys(qaCommentFinded).map(keycomment=>{
           const {status} = qaCommentFinded[keycomment]
-          if(status === "0"|| status === "1" || status === "2"|| status === ""|| status === "4")commentEmpty.push(true)       
+          commentEmpty.push(status);   
         })
+        statusComments =commentEmpty.some((el) => el == ''||el == '0'||el == '1'||el == '2'||el == '4');
 
-        if(commentEmpty[0]){
-        let allFieldsdone = true;
+        if(statusComments){
+          let allFieldsdone = true;
         
-        Object.keys(qaCommentFinded).map(keycomment=>{
+          Object.keys(qaCommentFinded).map(keycomment=>{
+            
+            if (qaCommentFinded[keycomment] == qaCommentFinded.frontName) return ;
+            if(!allFieldsdone) return;
+            const {status, reply} = qaCommentFinded[keycomment]
+            if (status === "4") allFieldsdone = false;
+            if (status === "0" || status === "2"|| status === "") allFieldsdone = !!Object.keys(reply).length; 
+            if(userCanLeaveComments == 'false' ){
+              if (status === "") allFieldsdone = true; 
+            }
           
-          if (qaCommentFinded[keycomment] == qaCommentFinded.frontName) return ;
-          if(!allFieldsdone) return;
-          const {status, reply} = qaCommentFinded[keycomment]
-          if (status === "4") allFieldsdone = false;
-          if (status === "0" || status === "2"|| status === "") allFieldsdone = !!Object.keys(reply).length; 
-          if(userCanLeaveComments == 'false' ){
-            if (status === "") allFieldsdone = true; 
-          }
-         
-        })
+          })
         commentIcon.attr('src', qaCommentsStatus(allFieldsdone ? 'done' : 'pending'))
       }
       else{
@@ -728,7 +707,6 @@ if(!statusArray){
       Object.keys(qaCommentFinded).map(keycomment=>{
         const {status} = qaCommentFinded[keycomment]
         if(status === "0"|| status === "1" || status === "2"|| status === "4")commentEmpty2.push(true)  
-        // console.log(status)     
       })
     }
       if (userCanLeaveComments == 'true' || commentEmpty2[0]==true) {
@@ -955,7 +933,7 @@ if(!statusArray){
     data.map(function (x) {
       let p = $(`img.qaComment[name="${name}"]`).prev().find('p');
       p.css('display', 'block');
-      if(x[0] == x[1]) p.css('border', '2px solid #8dc02c');
+      if(x[0] == x[1] && x[1]) p.css('border', '2px solid #8dc02c');
       if(x[0] != x[1]) p.css('border', '2px solid #ffffff00');
       p.html(`${x[0]}/${x[1]}`);
     });
