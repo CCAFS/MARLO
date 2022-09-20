@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.rest.dto.ActionAreaOutcomeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ActionAreaOutcomeIndicatorDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ActionAreasDTO;
 import org.cgiar.ccafs.marlo.rest.dto.DepthDescriptionsDTO;
+import org.cgiar.ccafs.marlo.rest.dto.EndOfInitiativeOutcomeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GlobalTargetDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ImpactAreasIndicatorsDTO;
@@ -323,6 +324,15 @@ public class SubmissionToolsControlLists {
   @RequestMapping(value = "/action-areas", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<ActionAreasDTO> getAllActionAreas() {
     return this.actionAreasItem.getAllActionAreas();
+  }
+
+  @ApiOperation(tags = {"Submission Tool Control Lists"}, value = "${SubmissionToolsControlLists.EOIOutcome.all.value}",
+    response = EndOfInitiativeOutcomeDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/end-of-initiative-outcomes", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<EndOfInitiativeOutcomeDTO>> getAllEndOfInitiativeOutcomes() {
+    return this.initiativesItem.getEndOfInitiativeOutcomes();
   }
 
   @ApiOperation(tags = {"Submission Tool Control Lists"},
