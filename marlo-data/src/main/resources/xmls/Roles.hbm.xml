@@ -30,5 +30,12 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.UserRole" />
 		</set>
+		<set name="feedbackRoles" table="feedback_roles_permissions"
+			inverse="true" fetch="select">
+			<key>
+				<column name="role_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.FeedbackRolesPermission" />
+		</set>
 	</class>
 </hibernate-mapping>

@@ -940,7 +940,7 @@
       <div class="commentContainer">
         <div class="commentTitle"></div>
         <p class="commentReadonly"></p> 
-        <textarea class="editCommentReadonly" rows="2" cols="50" style="display:none"></textarea>
+        <textarea class="editCommentReadonly form-control" rows="2" cols="50" style="display:none"></textarea>
         <div class="containerReactionComment" style="display:none">
           <p class="reactionComment"></p>
         </div>
@@ -958,9 +958,11 @@
     <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
     <div class="buttonsContainer">
       <div class="optionsContainer">
-        <div style="position: absolute; bottom: 60px !important; right: 0;" title="delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
+        <div style="position: absolute; bottom: 60px !important; right: 0;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
         <div class="editCommentBtn qaOptionsComment" title="Edit" style="cursor:pointer" >✏️</div>
+        <img class="dismissCommentBtn qaOptionsComment" title="Dismiss comment" src="${baseUrlCdn}/global/images/remove.png">
         <img class="correctCommentBtn qaOptionsComment" title="Admit comment" src="${baseUrlCdn}/global/images/correct.png">
+        
         <div class="containerSentCommentBtn" title="Send"><img class="sentCommentBtn" src="${baseUrlCdn}/global/images/send.png"></div>
         <img class="agreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/agree.png" title="Agree">
         <img class="disagreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/disagree.png" title="Disagree">
