@@ -79,12 +79,12 @@ public class DeleteFeedbackRepliesAction extends BaseAction {
               && c.getReply().getId() != null && c.getReply().getId().equals(localID)).collect(Collectors.toList())
               .get(0);
             if (comment != null && comment.getId() != null) {
-              comment.setStatus(FeedbackStatusEnum.Accepted.getStatus());
+              comment.setStatus(FeedbackStatusEnum.Admitted.getStatus());
               comment.setApprovalDate(null);
               comment.setReply(null);
               comment.setUserApproval(null);
               FeedbackStatus feedbackStatusApproved =
-                feedbackStatusManager.getFeedbackStatusById(Long.valueOf(FeedbackStatusEnum.Accepted.getStatusId()));
+                feedbackStatusManager.getFeedbackStatusById(Long.valueOf(FeedbackStatusEnum.Agreed.getStatusId()));
               comment.setFeedbackStatus(feedbackStatusApproved);
               commentManager.saveFeedbackQAComment(comment);
             }
