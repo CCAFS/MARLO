@@ -84,28 +84,28 @@ public class SaveCommentStatusAction extends BaseAction {
       }
       String statusText = null;
       if (status.equals("0")) {
-        statusText = FeedbackStatusEnum.Rejected.getStatus();
+        statusText = FeedbackStatusEnum.Disagreed.getStatus();
       }
       if (status.equals("1")) {
-        statusText = FeedbackStatusEnum.Approved.getStatus();
+        statusText = FeedbackStatusEnum.Agreed.getStatus();
       }
       if (status.equals("2")) {
         statusText = FeedbackStatusEnum.ClarificatioNeeded.getStatus();
       }
       if (status.equals("3")) {
-        statusText = FeedbackStatusEnum.Pending.getStatus();
+        statusText = FeedbackStatusEnum.Draft.getStatus();
       }
       if (status.equals("4")) {
-        statusText = FeedbackStatusEnum.Accepted.getStatus();
+        statusText = FeedbackStatusEnum.Admitted.getStatus();
       }
       if (status.equals("5")) {
-        statusText = FeedbackStatusEnum.Rejected.getStatus();
+        statusText = FeedbackStatusEnum.Disagreed.getStatus();
       }
       if (status.equals("6")) {
-        statusText = FeedbackStatusEnum.NoAccepted.getStatus();
+        statusText = FeedbackStatusEnum.Dismissed.getStatus();
       }
       if (status == null) {
-        statusText = FeedbackStatusEnum.Pending.getStatus();
+        statusText = FeedbackStatusEnum.Draft.getStatus();
       }
       commentSave.setStatus(statusText);
       this.saveFeedbackStatus();
