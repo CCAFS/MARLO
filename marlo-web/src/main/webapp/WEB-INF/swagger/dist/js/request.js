@@ -697,26 +697,26 @@ function all_end_of_initiative_outcomes() {
 			let nameColumns = ['Code','Official Code', 'Short name','Name','Status','Action area id', 'Action area description','','Stage id', 'Stage Desciption' ]			
 
 			$.each(data, function (index, initiative) {
-				let static_data_row = '<tr>' + 
-				'<td>' + initiative['initiativeId'] + '</td>' + 
+				let static_data_row = '<tr>' +  
 				'<td>' + initiative['initiativeOfficialCode'] + '</td>' +
-				'<td>' + initiative['initiativeName'] + '</td>' +
-				'<td>' + initiative['initiativeStageName'] + '</td>';
+				'<td>' + initiative['initiativeName'] + '</td>';
 
 				if(Array.isArray(initiative['initiativeOutcomes']) && initiative['initiativeOutcomes'].length){
 					$.each(initiative['initiativeOutcomes'], function(index, item){			
 						$('#list-print-all_end_of_initiative_outcomes').append(
 							static_data_row + 
-								'<td>' + item['tocInitiativeOutcomeId'] + '</td>' +
-								'<td>' + item['initiativeOutcomeTitle'] + '</td>' +
+								'<td>' + item['eoiOutcomeId'] + '</td>' +
+								'<td>' + item['eoiShortTitle'] + '</td>' +
+								'<td>' + item['eoiOutcomeStatement'] + '</td>' +
 							'</tr>'
 						)
 					});
 				} else {
 					$('#list-print-all_end_of_initiative_outcomes').append(
 						static_data_row + 
-							'<td> <p class="nomar"><strong>No data</strong> </td>' +
-							'<td> <p class="nomar"><strong>No data</strong> </td>' +
+							'<td> <p class="nomar"><strong>No EOI Outcomes available</strong> </td>' +
+							'<td> <p class="nomar"><strong>No EOI Outcomes available</strong> </td>' +
+							'<td> <p class="nomar"><strong>No EOI Outcomes available</strong> </td>' +
 						'</tr>'
 					);
 				}
