@@ -29,19 +29,28 @@ public class InitiativeOutcome implements Serializable {
   private static final long serialVersionUID = 1L;
 
   private String toc_result_id;
-  private String result_title;
+  private String short_title;
+  private String outcome_statement;
 
 
-  public String getResult_title() {
-    return result_title;
+  public String getOutcome_statement() {
+    return outcome_statement;
+  }
+
+  public String getShort_title() {
+    return short_title;
   }
 
   public String getToc_result_id() {
     return toc_result_id;
   }
 
-  public void setResult_title(String result_title) {
-    this.result_title = result_title;
+  public void setOutcome_statement(String outcome_statement) {
+    this.outcome_statement = outcome_statement;
+  }
+
+  public void setShort_title(String short_title) {
+    this.short_title = short_title;
   }
 
   public void setToc_result_id(String toc_result_id) {
