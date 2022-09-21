@@ -913,7 +913,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         Boolean isAdministrative = true;
         int countAdministrative = 0;
         if (countAdministrative == 0) {
-          if (projectById.getProjecInfoPhase(this.getSelectedPhase()).getAdministrative() != null) {
+          if (projectById != null && projectById.getProjecInfoPhase(this.getSelectedPhase()) != null
+            && projectById.getProjecInfoPhase(this.getSelectedPhase()).getAdministrative() != null) {
             isAdministrative = projectById.getProjecInfoPhase(this.getSelectedPhase()).getAdministrative();
           } else {
             isAdministrative = false;

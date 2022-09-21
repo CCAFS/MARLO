@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.data.model;
 
 public enum FeedbackStatusEnum {
 
-  Approved("1", "Approved"), ClarificatioNeeded("2", "Clarification needed"), Pending("3", "Pending"),
-  Accepted("4", "Accepted"), Rejected("5", "Rejected"), NoAccepted("6", "No Accepted");
+  Agreed("1", "Agreed"), ClarificatioNeeded("2", "Clarification needed"), Draft("3", "Draft"),
+  Admitted("4", "Admitted"), Disagreed("5", "Disagreed"), Dismissed("6", "Dismissed");
 
   /**
    * Look for the FeedbackStatusEnum with id
