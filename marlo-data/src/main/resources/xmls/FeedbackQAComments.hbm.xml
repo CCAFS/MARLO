@@ -66,5 +66,18 @@
 			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
 			<column name="project_id" />
 		</many-to-one>
+		<many-to-one name="feedbackStatus"
+			class="org.cgiar.ccafs.marlo.data.model.FeedbackStatus" fetch="select">
+			<column name="status_id" />
+		</many-to-one>
+		      <many-to-one name="userEditor"
+            class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="user_editor_id">
+                <comment>This field is a link to the table users</comment>
+            </column>
+        </many-to-one>
+        <property name="editionDate" type="timestamp">
+            <column name="edition_date" />
+        </property>
 	</class>
 </hibernate-mapping>

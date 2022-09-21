@@ -5,7 +5,7 @@
 [#assign customJS = [ 
   "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220707B", 
   "${baseUrlCdn}/global/js/fieldsValidation.js?20220613",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220729",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220920",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
@@ -94,6 +94,7 @@
           <span id="projectID" style="display: none;">${projectID!}</span>
           <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
           <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
+          <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID)?c)!}</span>
           <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
 
           [#-- Outcomen name --]
@@ -135,14 +136,14 @@
                     [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive/]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
-                    <div class="input"><p>${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
+                    <div class="input"><p class="text">${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
                   [/#if]
                 [#else]
                   [#if editable]
                     [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
-                    <div class="input"><p>${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
+                    <div class="input"><p class="text">${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
                   [/#if]
                 [/#if]
                 </div>
@@ -153,7 +154,7 @@
                     <div class="selectList">   
                         [#if projectOutcome.crpProgramOutcome.srfTargetUnit?has_content]
                         <input type="hidden" name="projectOutcome.expectedUnit.id" value="${(projectOutcome.crpProgramOutcome.srfTargetUnit.id)!}" class="">
-                        <p>${(projectOutcome.crpProgramOutcome.srfTargetUnit.name)!}</p>
+                        <p class="text">${(projectOutcome.crpProgramOutcome.srfTargetUnit.name)!}</p>
                         [/#if]
                     </div> 
                   </div>
@@ -248,6 +249,13 @@
               [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone${reportingActive?string('.reporting', '')}"  listName="" keyFieldName="id" displayFieldName="title" className="" value="" /]
             </div>
             [/#if]
+            [#if totalParticipants?number > 0]
+              </br>
+              <div id="note" class="note left helpMessage3">
+                <p>[#-- <a href="#capdev"></a>--]<i>[@s.text name="projectOutcomes.helpParticipantsSection" /]</i></p>
+              </div>
+              </br>
+             [/#if]
           </div>        
           
           [#-- Communications --]
@@ -391,7 +399,7 @@
           
           [#-- capdev --]
           [#if totalParticipants?number > 0]
-          <h4 class="headTitle"> Capacity Development</h4>
+          <h4 class="headTitle"> <a id="capdev">Capacity Development</a></h4>
           <div class="borderBox">
                    [#-- CapDevCharts--]
                     <div class="form-group row">
@@ -507,7 +515,7 @@
           [/#if]
                     
           [#-- Lessons and progress --]
-          [#if !action.isProjectNew(project.id) && action.isReportingActive()]
+          [#if !action.isProjectNew(project.id) && action.isReportingActive() && action.isLessonsActive()]
           <div id="lessons" class="borderBox">
             [#-- Lessons learnt from last planning/reporting cycle --]
             [#if (projectOutcome.projectComponentLessonPreview.lessons?has_content)!false]

@@ -468,9 +468,23 @@ public class DeliverableValidator extends BaseValidator {
       action.addMessage(action.getText("project.deliverable.generalInformation.description"));
       action.getInvalidFields().put("input-deliverable.deliverableInfo.description", InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null) {
-      if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == null
-        || deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == -1) {
+
+    if (deliverable.getDeliverableInfo(action.getActualPhase()) != null
+      && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null) {
+
+      // Deliverable category
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory() == null
+        || (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType()
+          .getDeliverableCategory() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory()
+            .getId() == -1)) {
+        action.addMessage(action.getText("project.deliverable.generalInformation.category"));
+        action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableCategory.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+        deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
+      }
+
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == -1) {
         action.addMessage(action.getText("project.deliverable.generalInformation.subType"));
         action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.id",
           InvalidFieldsMessages.EMPTYFIELD);
@@ -742,6 +756,7 @@ public class DeliverableValidator extends BaseValidator {
         action.addMessage(action.getText("involveParticipants.typeActivity"));
         action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTypeActivity.id",
           InvalidFieldsMessages.EMPTYFIELD);
+        deliverableParticipant.setRepIndTypeActivity(null);
       } else {
         RepIndTypeActivity repIndTypeActivity =
           repIndTypeActivityManager.getRepIndTypeActivityById(deliverableParticipant.getRepIndTypeActivity().getId());
