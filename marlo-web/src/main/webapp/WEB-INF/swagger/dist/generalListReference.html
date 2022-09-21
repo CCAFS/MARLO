@@ -2012,7 +2012,7 @@
                   </div>
                   <div class="parameters">
                     <h3>Functionality</h3>
-                    <p class="justifyParagraph">Gets all the End of Initiative Outcomes</p>
+                    <p class="justifyParagraph">The following control list displays all the End of Initiative Outcomes reported thorough the Online Submission Tool (OST), using the Theory of Change (TOC) Board.</p>
                     <h3>Parameters</h3>
                     <div>No parameters</div>
                     <table style="width: 70%">
@@ -2057,8 +2057,9 @@
     <span class="blueCode">"initiativeOutcomes"</span><span class="WhiteCode"> : </span>
     <span class="yellowCode"> [</span>
       <span class="yellowCode">{</span>
-       <span class="blueCode">"tocInitiativeOutcomeId"</span><span class="WhiteCode"> : "String",</span>
-       <span class="blueCode">"initiativeOutcomeTitle"</span><span class="WhiteCode"> : "long"</span>
+       <span class="blueCode">"eoiOutcomeId"</span><span class="WhiteCode"> : "String",</span>
+       <span class="blueCode">"eoiShortTitle"</span><span class="WhiteCode"> : "String",</span>
+       <span class="blueCode">"eoiOutcomeStatement"</span><span class="WhiteCode"> : "String"</span>
       <span class="yellowCode">}</span>
     <span class="yellowCode">]</span>
   <span class="yellowCode">}</span>
@@ -4349,12 +4350,11 @@
           <table class="table dataTable" id=all_end_of_initiative_outcomes>
             <thead class="thead-dark">
               <tr id="#list-print-columns-name">
-                <td>Initiative ID</td>
-                <td>Official Code</td>
-                <td>Name</td>
-                <td>Stage Description</td>
-                <td>TOC Result ID</td>
-                <td>Result Title</td>
+                <td>Initiative Official Code</td>
+                <td>Initiative Name</td>
+                <td>EOI Outcome ID</td>
+                <td>EOI Short Title</td>
+                <td>EOI Outcome Statement</td>
               </tr>
             </thead>
             <tbody id="list-print-all_end_of_initiative_outcomes">
@@ -5012,7 +5012,7 @@
 
 <button>Toggle slideUp() and slideDown()</button> -->
 <script src="conf/endpoint.conf.js"></script>
-<script src="js/request.js?20220920b"></script>
+<script src="js/request.js?20220921a"></script>
 <script>
   var coll = document.getElementsByClassName("collap");
   var i;
