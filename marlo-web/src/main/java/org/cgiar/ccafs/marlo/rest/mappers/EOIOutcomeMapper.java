@@ -44,7 +44,8 @@ public interface EOIOutcomeMapper {
   public abstract List<InitiativeOutcomeDTO>
     initiativeOutcomeListToInitiativeOutcomeDTOList(List<InitiativeOutcome> ios);
 
-  @Mappings({@Mapping(source = "result_title", target = "initiativeOutcomeTitle"),
-    @Mapping(source = "toc_result_id", target = "tocInitiativeOutcomeId")})
+  @Mappings({@Mapping(source = "outcome_statement", target = "eoiOutcomeStatement"),
+    @Mapping(source = "short_title", target = "eoiShortTitle"),
+    @Mapping(source = "toc_result_id", target = "eoiOutcomeId")})
   public abstract InitiativeOutcomeDTO initiativeOutcomeToInitiativeOutcomeDTO(InitiativeOutcome io);
 }

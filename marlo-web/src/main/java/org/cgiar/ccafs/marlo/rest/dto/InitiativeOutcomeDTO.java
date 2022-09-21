@@ -22,23 +22,32 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 public class InitiativeOutcomeDTO {
 
-  private String tocInitiativeOutcomeId;
-  private String initiativeOutcomeTitle;
+  private String eoiOutcomeId;
+  private String eoiShortTitle;
+  private String eoiOutcomeStatement;
 
 
-  public String getInitiativeOutcomeTitle() {
-    return initiativeOutcomeTitle;
+  public String getEoiOutcomeId() {
+    return eoiOutcomeId;
   }
 
-  public String getTocInitiativeOutcomeId() {
-    return tocInitiativeOutcomeId;
+  public String getEoiOutcomeStatement() {
+    return eoiOutcomeStatement;
   }
 
-  public void setInitiativeOutcomeTitle(String initiativeOutcomeTitle) {
-    this.initiativeOutcomeTitle = initiativeOutcomeTitle;
+  public String getEoiShortTitle() {
+    return eoiShortTitle;
   }
 
-  public void setTocInitiativeOutcomeId(String tocInitiativeOutcomeId) {
-    this.tocInitiativeOutcomeId = tocInitiativeOutcomeId;
+  public void setEoiOutcomeId(String eoiOutcomeId) {
+    this.eoiOutcomeId = eoiOutcomeId;
+  }
+
+  public void setEoiOutcomeStatement(String eoiOutcomeStatement) {
+    this.eoiOutcomeStatement = eoiOutcomeStatement;
+  }
+
+  public void setEoiShortTitle(String eoiShortTitle) {
+    this.eoiShortTitle = eoiShortTitle;
   }
 }
