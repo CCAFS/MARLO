@@ -42,11 +42,17 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   @Expose
   private Project project;
   @Expose
+  private FeedbackStatus feedbackStatus;
+  @Expose
   private String link;
   @Expose
   private String fieldDescription;
   @Expose
   private String parentFieldDescription;
+  @Expose
+  private User userEditor;
+  @Expose
+  private Date editionDate;
 
   public FeedbackQAComment() {
   }
@@ -68,6 +74,14 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
 
   public Date getCommentDate() {
     return commentDate;
+  }
+
+  public Date getEditionDate() {
+    return editionDate;
+  }
+
+  public FeedbackStatus getFeedbackStatus() {
+    return feedbackStatus;
   }
 
   public FeedbackQACommentableFields getField() {
@@ -137,6 +151,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     return userApproval;
   }
 
+  public User getUserEditor() {
+    return userEditor;
+  }
+
   @Override
   public boolean isActive() {
     return true;
@@ -152,6 +170,14 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
 
   public void setCommentDate(Date commentDate) {
     this.commentDate = commentDate;
+  }
+
+  public void setEditionDate(Date editionDate) {
+    this.editionDate = editionDate;
+  }
+
+  public void setFeedbackStatus(FeedbackStatus feedbackStatus) {
+    this.feedbackStatus = feedbackStatus;
   }
 
   public void setField(FeedbackQACommentableFields field) {
@@ -206,5 +232,8 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   public void setUserApproval(User userApproval) {
     this.userApproval = userApproval;
   }
-}
 
+  public void setUserEditor(User userEditor) {
+    this.userEditor = userEditor;
+  }
+}

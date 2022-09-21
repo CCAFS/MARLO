@@ -46,6 +46,9 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
   @Expose
   private Set<UserRole> userRoles = new HashSet<UserRole>(0);
 
+  @Expose
+  private Set<FeedbackRolesPermission> feedbackRoles = new HashSet<FeedbackRolesPermission>(0);
+
   public Role() {
   }
 
@@ -134,6 +137,10 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
     return this.description;
   }
 
+  public Set<FeedbackRolesPermission> getFeedbackRoles() {
+    return feedbackRoles;
+  }
+
   public Integer getOrder() {
     return order;
   }
@@ -154,13 +161,17 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
     this.acronym = acronym;
   }
 
+
   public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
 
-
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public void setFeedbackRoles(Set<FeedbackRolesPermission> feedbackRoles) {
+    this.feedbackRoles = feedbackRoles;
   }
 
   public void setOrder(Integer order) {

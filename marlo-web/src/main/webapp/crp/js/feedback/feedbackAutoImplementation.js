@@ -4,18 +4,24 @@ var contributionCRPAjaxURL = `/fieldsBySectionAndParent.do?sectionName=${section
 var arrayName = 'fieldsMap';
 let fieldID = '';
 let qaComments = '';
+let nameNewComment ='';
 fieldsSections = [];
 
 function feedbackAutoImplementation (){
-  console.log('%c feedback auto implementation init', 'background: white; color: black');
   parentID = $('#parentID').html();
   projectID = $('#projectID').html();
   phaseID = $('#phaseID').html();
   userID = $('#userID').html();
   userCanManageFeedback = $('#userCanManageFeedback').html();
   userCanLeaveComments = $('#userCanLeaveComments').html();
-  console.log('can comment', userCanLeaveComments, 'can reply', userCanManageFeedback);
+  userCanApproveFeedback = $('#userCanApproveFeedback').html();
+  // userCanManageFeedback = 'true';
+  // userCanLeaveComments = 'true';
+  // userCanApproveFeedback = 'false';
   isFeedbackActive = $('#isFeedbackActive').html();
+  console.log(userCanManageFeedback);
+  console.log(userCanLeaveComments);
+  console.log(userCanApproveFeedback);
   attachEventsFeedback();
 }
 
@@ -30,6 +36,7 @@ function attachEventsFeedback() {
   // Multiple comments-replies
   $('img.qaComment').on('click', function (event) {
     let name = this.name;
+    nameNewComment= this.name;
     let popUpTitle = $(this).attr('description');
     let qaPopup = $(`div[id^="qaPopup-${name}"]`);
     let block = $(`div[id^="qaCommentReply-${name}"]`);
@@ -39,9 +46,7 @@ function attachEventsFeedback() {
     block.each((index, item) => {
       if ($(item).attr('index') == 0) {
         $(item).find('textarea[id="New comment"]').prev('label').html(`Comment on "${popUpTitle}":`);
-      }
-
-     
+      }    
     });
 
     loadCommentsByUser(name);
@@ -76,7 +81,7 @@ function attachEventsFeedback() {
     } else {
       cleanComment = comment?.replaceAll('.<br>.', '');
     }
-   
+  
     cleanComment = cleanComment ? cleanComment.replaceAll('&nbsp;', ' ') : '';
 
     if (cleanComment != '' && cleanComment != ' ') {
@@ -115,6 +120,23 @@ function attachEventsFeedback() {
     deleteQAComment(commentID, name, this);
   });
 
+  $('div.containerSentCommentBtn').on('click', function () {
+
+    let name = $(this).attr('name');
+    let commentID = $(this).attr('commentId');
+    let block = $(this).parent().parent().parent();
+    let editComment = $(`textarea[commentID="${commentID}"].editCommentReadonly`).val();
+    let editCommentReadonly = $(`textarea[commentID="${commentID}"].editCommentReadonly`);
+
+    if (editComment != '' && editComment != ' ') {
+      showEditComment(block, commentID, 2);
+      updateComment(editComment, fieldID, name, this, commentID);
+      editCommentReadonly.css('border', '1px solid #ccc');
+    } else {
+      editCommentReadonly.css('border', '2px solid red');
+    } 
+  });
+
   $('div.deleteReplyBtn').on('click', function () {
 
     let name = $(this).attr('name');
@@ -132,6 +154,32 @@ function attachEventsFeedback() {
     hideShowOptionButtons(block, '2');
     saveCommentStatus(2, commentID, name);
     block.find('img.replyCommentBtn').click();
+  });
+
+  $('img.correctCommentBtn ').on('click', function () {
+    let name = $(this).attr('name');
+    let commentID = $(this).attr('commentId');
+    let block = $(this).parent().parent().parent();
+    
+    hideShowOptionButtons(block, 1);
+    saveCommentStatus(4, commentID, name);
+  });
+
+  $('img.dismissCommentBtn ').on('click', function () {
+    let name = $(this).attr('name');
+    let commentID = $(this).attr('commentId');
+    let block = $(this).parent().parent().parent();
+    
+    hideShowOptionButtons(block, '6');
+    saveCommentStatus(6, commentID, name);
+  });
+
+  $('.editCommentBtn ').on('click', function () {
+    let name = $(this).attr('name');
+    let commentID = $(this).attr('commentId');
+    let block = $(this).parent().parent().parent();
+
+    showEditComment(block, commentID, 1);
   });
 
   $('img.replyCommentBtn').on('click', function () {
@@ -177,6 +225,8 @@ function attachEventsFeedback() {
     lastIndex = parseInt(lastIndex) + 1;
     let commentReplyBlock = qaPopup.siblings('#qaTemplate').find('.qaPopup').children()[2];
     let newBlock = $(commentReplyBlock).clone(true).attr('id', `qaCommentReply-${name}[${lastIndex}]`);
+    let editCommentReadonly = $(`.editCommentReadonly`);
+    let commentReadonly = $(`p.commentReadonly`); 
 
     newBlock.attr('index', `${lastIndex}`);
     newBlock.find('.sendCommentContainer').attr('name', `${name}[${lastIndex}]`);
@@ -184,9 +234,72 @@ function attachEventsFeedback() {
     newBlock.find('.addCommentContainer').attr('name', `${name}`);
     newBlock.find('.addCommentContainer').attr('index', `${lastIndex}`);
     newBlock.find('.deleteCommentBtn').attr('name', `${name}[${lastIndex}]`);
+    newBlock.find('.containerSentCommentBtn').attr('name', `${name}[${lastIndex}]`);
     
     newBlock.appendTo(qaPopup).hide().show();
+    editCommentReadonly.hide();
+    commentReadonly.show();
+    block.find('.correctCommentBtn').show();
+    block.find('.dismissCommentBtn').show();
+    block.find('.editCommentBtn').show();
+    // block.find('.editCommentBtn').show();
   });
+}
+
+function addNewComment(){ 
+    let name = nameNewComment;
+    let block = $(`div[id^="qaCommentReply-${name}"]`);
+    block.find('.buttonsContainer').hide();
+    let qaPopup = $(`div[id^="qaPopup-${name}"]`);
+    let lastIndex = block.last().attr('index');
+    lastIndex = parseInt(lastIndex) + 1;
+    let commentReplyBlock = qaPopup.siblings('#qaTemplate').find('.qaPopup').children()[2];
+    let newBlock = $(commentReplyBlock).clone(true).attr('id', `qaCommentReply-${name}[${lastIndex}]`);
+
+    newBlock.attr('index', `${lastIndex}`);
+    newBlock.find('.sendCommentContainer').attr('name', `${name}[${lastIndex}]`);
+    newBlock.find('.sendReplyContainer').attr('name', `${name}[${lastIndex}]`);
+    newBlock.find('.addCommentContainer').attr('name', `${name}`);
+    newBlock.find('.addCommentContainer').attr('index', `${lastIndex}`);
+    newBlock.find('.deleteCommentBtn').attr('name', `${name}[${lastIndex}]`);
+    newBlock.find('.containerSentCommentBtn').attr('name', `${name}[${lastIndex}]`);    
+    
+    if(block.last().attr('newComment') != 'true'){
+      newBlock.attr('newComment', 'true');
+      newBlock.appendTo(qaPopup).hide().show();      
+    }
+
+}
+
+//function to hide and show input to be able to edit
+function showEditComment(block, commentID, option) {
+  
+  let editCommentReadonly = $(`textarea[commentID="${commentID}"].editCommentReadonly`);
+  let commentReadonly = $(`p[commentID="${commentID}"].commentReadonly`); 
+
+  switch (option) {
+    case 1:
+      commentReadonly.hide();
+      editCommentReadonly.show();
+      block.find('.editCommentBtn').hide();
+      block.find('div.deleteCommentBtn').hide();
+      block.find('img.agreeCommentBtn').hide();
+      block.find('img.disagreeCommentBtn').hide();
+      block.find('img.replyCommentBtn ').hide();
+      block.find('img.clarificationCommentBtn').hide();
+      block.find('.containerSentCommentBtn').show();
+      block.find('.correctCommentBtn').hide(); 
+      block.find('.dismissCommentBtn').hide(); 
+      break;
+    case 2:
+      commentReadonly.show();
+      block.find('.correctCommentBtn').show();
+      editCommentReadonly.hide();
+      block.find('.editCommentBtn').show();
+      block.find('.dismissCommentBtn').show(); 
+      break;
+  }
+
 }
 
 function hideShowOptionButtons(block, status) {
@@ -195,13 +308,17 @@ function hideShowOptionButtons(block, status) {
     switch (status) {
       case '0':
         textarea.prev().find('span.red.requiredTag').show();
-        // block.find('.buttonsContainer').hide();
         block.find('img.disagreeCommentBtn').hide();
         block.find('.commentContainer').css('background', '#e8a9a4');
         block.find('.replyTextContainer').css('background', '#e8a9a4');
         block.find('img.agreeCommentBtn').hide();
         block.find('div.deleteCommentBtn').hide();
         block.find('img.clarificationCommentBtn').hide();
+        block.find('.correctCommentBtn').hide();
+        block.find('.editCommentBtn').hide();
+        block.find('.containerSentCommentBtn').hide();
+        block.find('.dismissCommentBtn').hide();
+
         break;
       case '1':
         textarea.prev().find('span.red.requiredTag').hide();
@@ -211,26 +328,68 @@ function hideShowOptionButtons(block, status) {
         block.find('img.disagreeCommentBtn').hide();
         block.find('img.clarificationCommentBtn').hide();
         block.find('div.deleteCommentBtn').hide();
+        block.find('.correctCommentBtn').hide();
+        block.find('.editCommentBtn').hide();
+        block.find('.containerSentCommentBtn').hide();
+        block.find('.dismissCommentBtn').hide();
 
         break;
       case '2':
         textarea.prev().find('span.red.requiredTag').show();
-        // block.find('.buttonsContainer').hide();
         block.find('img.clarificationCommentBtn').hide();
         block.find('.commentContainer').css('background', '#a4cde8');
         block.find('.replyTextContainer').css('background', '#a4cde8');
         block.find('img.agreeCommentBtn').hide();
         block.find('img.disagreeCommentBtn').hide();
         block.find('div.deleteCommentBtn').hide();
+        block.find('.correctCommentBtn').hide();
+        block.find('.editCommentBtn').hide();
+        block.find('.containerSentCommentBtn').hide();
+        block.find('.dismissCommentBtn').hide();
 
         break;
-      case '' || ' ':
-        block.find('img.agreeCommentBtn').show();
-        block.find('img.disagreeCommentBtn').show();
-        block.find('img.clarificationCommentBtn').show();
+      case '4':          
+          block.find('.editCommentBtn').hide();
+          block.find('div.deleteCommentBtn').show();
+          block.find('.correctCommentBtn').hide();
+          block.find('.containerSentCommentBtn').hide();
+          block.find('img.agreeCommentBtn').show();
+          block.find('img.disagreeCommentBtn').show();
+          block.find('img.clarificationCommentBtn').show();
+          block.find('.commentTitle').css('font-style', 'normal');
+          block.find('.commentTitle').css('font-weight', '600');
+          block.find('.commentReadonly').css('font-style', 'normal');
+          block.find('.commentReadonly').css('font-weight', '600');
+          block.find('.dismissCommentBtn').hide();
+          block.find('.containerReactionComment').css('background', '#f0f0f0');
+  
+          break;
+        case '6':          
+          block.find('.editCommentBtn').hide();
+          block.find('div.deleteCommentBtn').show();
+          block.find('.correctCommentBtn').hide();
+          block.find('.containerSentCommentBtn').hide();
+          block.find('img.agreeCommentBtn').hide();
+          block.find('img.disagreeCommentBtn').hide();
+          block.find('img.clarificationCommentBtn').hide();
+          block.find('.dismissCommentBtn').hide();
+          block.find('.commentContainer').css('background', '#9b99964a');
+          block.find('.commentTitle').css('font-style', 'oblique');
+          block.find('.commentTitle').css('font-weight', '200');
+          block.find('.commentReadonly').css('font-style', 'oblique');
+          block.find('.commentReadonly').css('font-weight', '400');
+  
+          break;
+      case "":
+        block.find('img.agreeCommentBtn').hide();
+        block.find('img.disagreeCommentBtn').hide();
+        block.find('img.clarificationCommentBtn').hide();
         block.find('div.deleteCommentBtn').show();
-        break;
-      default:
+        block.find('.containerSentCommentBtn').hide();
+        block.find('.commentTitle').css('font-style', 'oblique');
+        block.find('.commentTitle').css('font-weight', '200');
+        block.find('.commentReadonly').css('font-style', 'oblique');
+        block.find('.commentReadonly').css('font-weight', '400');
         break;
     }
 }
@@ -238,82 +397,139 @@ function hideShowOptionButtons(block, status) {
   // Multiple comments-replies
   function loadCommentsByUser(name) {
     try {
+      // Removes the last index in brackets, i.e: [0]
+      name = name.replace(/\[[^\]]*\]$/, '');
+      if (qaComments.length > 0) {
+        for (let i = 0; i < qaComments.length; i++) {
+          if (qaComments[i].frontName == name) {
+            let commentsLength = Object.keys(qaComments[i]).length;
+            let commentEmpty = []
+            let statusArray = false;
 
-    // Removes the last index in brackets, i.e: [0]
-    name = name.replace(/\[[^\]]*\]$/, '');
-    if (qaComments.length > 0) {
-      for (let i = 0; i < qaComments.length; i++) {
-        if (qaComments[i].frontName == name) {
-          let commentsLength = Object.keys(qaComments[i]).length;
-  
-          for (let j = 0; j < commentsLength; j++) {
-            if (qaComments[i][j] !== undefined) {
-              let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
-
-              if (j != 0) {
-                block.find('textarea[id="New comment"]').prev().hide();
-              }
-
-              if (!block.exists()) {
-                 block = $(`div[id^="qaPopup-${name}["]`).find('.qaCommentReplyBlock')
-              }
-              // div[id^="qaCommentReply-deliverable.deliverableInfo.title[0]"]
-              //console.log("load ids")
-
-              block.find('textarea[id="New comment"]').hide();
-              block.find('textarea[id="New comment"]').next().next('p.charCount').hide();
-              block.find('.commentContainer').show();
-              block.find('.commentContainer .commentTitle').html(`Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
-              block.find('.commentContainer p.commentReadonly').html(`${qaComments[i][j].comment}`);
-              block.find('.sendCommentContainer').hide();
-              if (qaComments[i][j].userID != userID) block.find('.deleteCommentBtn').remove();
-              if (qaComments[i][j].reply.userID == userID) block.find('.deleteReplyBtn').show();
-              block.find('.deleteCommentBtn').attr('commentId', qaComments[i][j].commentId);
-              block.find('.deleteReplyBtn').attr('replyId', qaComments[i][j].reply.id);
-              block.find('.sendReplyContainer').attr('commentId', qaComments[i][j].commentId);
-              block.find('.agreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
-              block.find('.disagreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
-              block.find('.clarificationCommentBtn').attr('commentId', qaComments[i][j].commentId);
-              block.find('.replyCommentBtn').attr('commentId', qaComments[i][j].commentId);
-
-              if(qaComments[i][j].status) {               
-                  block.find('.containerReactionComment').show();
-                  block.find('.containerReactionComment p.reactionComment').html(reactionName(qaComments[i][j].status)+`${qaComments[i][j].approvalUserName} at ${qaComments[i][j].approvalDate}`);                 
-              }if(qaComments[i][j].status ==''){
-                block.find('.containerReactionComment').hide();
-              }
-              //////////////////////////////////////////////////////////////////
-              //waiting for endpoint to show clarificationCommentBtn
-              if(false){
-                block.find('.optionsContainer .clarificationCommentBtn').remove();
-              }
-              ///////////////////////////////////////////////////////////////
-              
-              if (userCanLeaveComments == 'true') {
-                let btnsContainer = block.find('.buttonsContainer');
-                let addBtn = block.find('.addCommentContainer');
-                const index = commentsLength - 2;
-  
-                if (addBtn.attr('index') == index) {
-                  btnsContainer.show();
-                  addBtn.show();
-  
-                  let blockDup = $(`div[id="qaCommentReply-${name}[${j + 1}]"]`);
-  
-                  if (blockDup.length != 0) {
-                    btnsContainer.hide();
-                    addBtn.hide();
+              if(userCanApproveFeedback == 'false'){
+                for (let j = 0; j < commentsLength; j++) {
+                  if (qaComments[i][j] !== undefined) {                 
+                    commentEmpty.push(qaComments[i][j].status);
                   }
-                } else {
-                  btnsContainer.hide();
-                  addBtn.hide();
                 }
+                statusArray =commentEmpty.every((el) => el == '6');
               }
+
+              if(!statusArray){
+                for (let j = 0; j < commentsLength; j++) {
+                  if (qaComments[i][j] !== undefined) {
+                    let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
+
+                    if (j != 0) {
+                      block.find('textarea[id="New comment"]').prev().hide();
+                    }
+
+                    if (!block.exists()) {
+                      block = $(`div[id^="qaPopup-${name}["]`).find('.qaCommentReplyBlock')
+                    }
+
+                    block.find('textarea[id="New comment"]').hide();
+                    block.find('textarea[id="New comment"]').next().next('p.charCount').hide();
+                    block.find('.commentContainer').show();
+                    block.find('.commentContainer .commentTitle').html(`Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
+                    block.find('.commentContainer p.commentReadonly').html(`${qaComments[i][j].comment}`);
+                    block.find('.commentContainer textarea.editCommentReadonly').html(`${qaComments[i][j].comment}`);
+                    block.find('.sendCommentContainer').hide();              
+                    if (qaComments[i][j].userID != userID) block.find('.deleteCommentBtn').remove();
+                    if (qaComments[i][j].reply.userID == userID) block.find('.deleteReplyBtn').show();
+                    if (userCanApproveFeedback == 'false' && userCanManageFeedback =='true' &&  userCanLeaveComments =='true' && qaComments[i][j].userID != userID) block.find('.editCommentBtn').remove();
+                    if (userCanManageFeedback =='false'){
+                    }                    
+                    block.find('.deleteCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.containerSentCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.deleteReplyBtn').attr('replyId', qaComments[i][j].reply.id);
+                    block.find('.sendReplyContainer').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.agreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.disagreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.clarificationCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.correctCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.dismissCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.replyCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.editCommentReadonly').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.commentReadonly').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.editCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                    block.find('.commentCheckContainer').attr('commentId', qaComments[i][j].commentId);              
+                    block.attr('commentId', qaComments[i][j].commentId);
+
+                    if(qaComments[i][j].status) {               
+                        block.find('.containerReactionComment').show();
+                        block.find('.containerReactionComment p.reactionComment').html(reactionName(qaComments[i][j].status)+`${qaComments[i][j].approvalUserName} at ${qaComments[i][j].approvalDate}`);                 
+                    }if(qaComments[i][j].status =='' ){
+                      block.find('.containerReactionComment').hide();
+                      block.find('.commentContainer .commentTitle').html(`[Draft] - Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
+                    }
+                    //////////////////////////////////////////////////////////////////
+                    //waiting for endpoint to show clarificationCommentBtn
+                    if(false){
+                      block.find('.optionsContainer .clarificationCommentBtn').remove();
+                    }
+                    ///////////////////////////////////////////////////////////////
+              
+                  if (userCanLeaveComments == 'true') {
+                    let btnsContainer = block.find('.buttonsContainer');
+                    let addBtn = block.find('.addCommentContainer');
+                    const index = commentsLength - 2;
   
+                    if (addBtn.attr('index') == index) {
+                      btnsContainer.show();
+                      addBtn.show();  
+                      let blockDup = $(`div[id="qaCommentReply-${name}[${j + 1}]"]`);  
+                      if (blockDup.length != 0) {
+                        btnsContainer.hide();
+                        addBtn.hide();
+                      }
+                    }else {
+                      btnsContainer.hide();
+                      addBtn.hide();
+                    }
+                  }else{
+                    let commentReadonly = $(`div[commentID="${qaComments[i][j].commentId}"].qaCommentReplyBlock`);
+                    block.find('.editCommentBtn').remove();
+                    if(qaComments[i][j].status == '') {
+                      commentReadonly.hide();
+                    }
+                  }
+            
+                if (userCanApproveFeedback == 'false') {
+                  let commentReadonly = $(`div[commentID="${qaComments[i][j].commentId}"].qaCommentReplyBlock`);
+                  let commentCheckContainer = $(`div[commentID="${qaComments[i][j].commentId}"].commentCheckContainer`);
+                  let deleteCommentBtn = $(`div[commentID="${qaComments[i][j].commentId}"].deleteCommentBtn`);
+
+                  if(qaComments[i][j].status == '6'){
+                    
+                    if(j == (commentsLength - 2)){ 
+                      commentReadonly.show();   
+                      commentCheckContainer.hide()
+                      block.find('.addCommentContainer').show();
+                      deleteCommentBtn.remove();
+                    }
+                    else{
+                      commentReadonly.hide();
+                    }
+                  }
+                  block.find('.dismissCommentBtn').hide();
+                  block.find('.correctCommentBtn').hide();  
+                }
+
               if (userCanManageFeedback == 'true') {
                 block.find('.buttonsContainer').show();
                 block.find('.optionsContainer').css('display', 'flex');
+              }else{
+                block.find('img.agreeCommentBtn').remove();
+                block.find('img.disagreeCommentBtn').remove();
+                block.find('img.clarificationCommentBtn').remove();
               }
+
+              if (userCanLeaveComments == 'true' && userCanManageFeedback == 'false') {                
+                block.find('.buttonsContainer').show();
+                block.find('.optionsContainer').css('display', 'flex');
+              }
+
   
               hideShowOptionButtons(block, qaComments[i][j].status);
   
@@ -325,7 +541,6 @@ function hideShowOptionButtons(block, status) {
                 block.find('.replyTextContainer').show();
                 block.find('.replyTextContainer .replyTitle').html(`Reply by ${qaComments[i][j].reply['userName']} at ${qaComments[i][j].reply['date']}`);
                 block.find('.replyTextContainer p.replyReadonly').html(`${qaComments[i][j].reply['text']}`);
-                // block.find('.buttonsContainer').hide();
                 block.find('.replyCommentBtn').hide();
                 block.find('.sendReplyContainer').hide();
               } else {
@@ -336,15 +551,45 @@ function hideShowOptionButtons(block, status) {
                     block.find('.replyTextContainer').hide();
                     block.find('.replyCommentBtn').show();
                     block.find('.sendReplyContainer').show();
-                  } else {
+                  }if (qaComments[i][j].status == '4') {
+                    block.find('textarea[id="Reply"]').parent().hide();
+                    block.find('.replyContainer').hide();
+                    block.find('.replyTextContainer').hide();
+                    block.find('.replyCommentBtn').hide();
+                    block.find('.sendReplyContainer').show();
+                  }if (qaComments[i][j].status == '0') {
                     block.find('textarea[id="Reply"]').parent().show();
                     block.find('.replyContainer').css('display', 'flex');
                     block.find('.replyTextContainer').hide();
                     block.find('.replyCommentBtn').hide();
                     block.find('.sendReplyContainer').show();
+                  }if (qaComments[i][j].status == '2') {
+                    block.find('textarea[id="Reply"]').parent().show();
+                    block.find('.replyContainer').css('display', 'flex');
+                    block.find('.replyTextContainer').hide();
+                    block.find('.replyCommentBtn').hide();
+                    block.find('.sendReplyContainer').show();
+                  }if (qaComments[i][j].status == '6') {
+                    block.find('textarea[id="Reply"]').parent().hide();
+                    block.find('.replyContainer').hide();
+                    block.find('.replyTextContainer').hide();
+                    block.find('.replyCommentBtn').hide();
+                    block.find('.sendReplyContainer').show();
                   }
+                  
                 } else {
                   block.find('.replyCommentBtn').hide();
+                }
+              }
+            }
+          }
+        }else{
+          for (let j = 0; j < commentsLength; j++) {
+            if (qaComments[i][j] !== undefined) {               
+              let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
+              block.hide();
+                if(j == 0){
+                  addNewComment()
                 }
               }
             }
@@ -361,14 +606,14 @@ function hideShowOptionButtons(block, status) {
   runaddfeedbackFlexItemsClass = true;
   function addfeedbackFlexItemsClass(fieldsMap){
     if (!runaddfeedbackFlexItemsClass) return;
-    fieldsMap.map(field=>{
-      if ($(`[name="${field.fieldName}"]`).closest('.fieldReference').length ==2) {
-        $(`[name="${field.fieldName}"]`).closest('.fieldReference').first().next().remove();
-      }
-      let fieldReference = $(`[name="${field.fieldName}"]`).closest('.fieldReference').exists() == true ?  $(`[name="${field.fieldName}"]`).closest('.fieldReference').last()  : $(`[name="${field.fieldName}[]"]`).closest('.fieldReference').last() ;
-      fieldReference.appendTo(fieldReference.prev());
-      fieldReference.closest('.feedback-flex-items').next().appendTo(fieldReference.closest('.feedback-flex-items'))
-    })
+      fieldsMap.map(field=>{
+        if ($(`[name="${field.fieldName}"]`).closest('.fieldReference').length ==2) {
+          $(`[name="${field.fieldName}"]`).closest('.fieldReference').first().next().remove();
+        }
+        let fieldReference = $(`[name="${field.fieldName}"]`).closest('.fieldReference').exists() == true ?  $(`[name="${field.fieldName}"]`).closest('.fieldReference').last()  : $(`[name="${field.fieldName}[]"]`).closest('.fieldReference').last() ;
+        fieldReference.appendTo(fieldReference.prev());
+        fieldReference.closest('.feedback-flex-items').next().appendTo(fieldReference.closest('.feedback-flex-items'))
+      })
     runaddfeedbackFlexItemsClass = false;
   }
   
@@ -400,51 +645,76 @@ function hideShowOptionButtons(block, status) {
     data.map(function (field) {
       var commentIcon = $(`img.qaComment[name="${field[1]}"]`);
       commentIcon.attr('fieldID', `${field[0]}`);
-      commentIcon.attr('description', `${field[2]}`);
+      commentIcon.attr('description', `${field[2]}`);      
+      let block = $(`div[id^="qaCommentReply-${field[1]}"]`);
 
-      
-     let block = $(`div[id^="qaCommentReply-${field[1]}"]`);
-
-     block.each((index, item) => {        
-  
-      $(item).find('.agreeCommentBtn').attr('name', `${field[1]}[${index}]`);
-      $(item).find('.deleteCommentBtn').attr('name', `${field[1]}[${index}]`);
-      $(item).find('.deleteReplyBtn').attr('name', `${field[1]}[${index}]`);
-      $(item).find('.sendCommentContainer').attr('name', `${field[1]}[${index}]`);
-      $(item).find('.agreeCommentBtn').attr('name', `${field[1]}[${index}]`);
-      $(item).find('.disagreeCommentBtn').attr('name', `${field[1]}[${index}]`);
-      $(item).find('.clarificationCommentBtn').attr('name', `${field[1]}[${index}]`);
-      $(item).find('.replyCommentBtn').attr('name', `${field[1]}[${index}]`);
-      $(item).find('.sendReplyContainer').attr('name', `${field[1]}[${index}]`);
-      $(item).find('div.addCommentContainer').attr('name', field[1]);
-       
+      block.each((index, item) => {
+        $(item).find('.agreeCommentBtn').attr('name', `${field[1]}[${index}]`);
+        $(item).find('.deleteCommentBtn').attr('name', `${field[1]}[${index}]`);
+        $(item).find('.containerSentCommentBtn').attr('name', `${field[1]}[${index}]`);
+        $(item).find('.deleteReplyBtn').attr('name', `${field[1]}[${index}]`);
+        $(item).find('.sendCommentContainer').attr('name', `${field[1]}[${index}]`);
+        $(item).find('.agreeCommentBtn').attr('name', `${field[1]}[${index}]`);
+        $(item).find('.disagreeCommentBtn').attr('name', `${field[1]}[${index}]`);
+        $(item).find('.clarificationCommentBtn').attr('name', `${field[1]}[${index}]`);
+        $(item).find('.correctCommentBtn').attr('name', `${field[1]}[${index}]`)
+        $(item).find('.dismissCommentBtn').attr('name', `${field[1]}[${index}]`)
+        $(item).find('.replyCommentBtn').attr('name', `${field[1]}[${index}]`);
+        $(item).find('.sendReplyContainer').attr('name', `${field[1]}[${index}]`);
+        $(item).find('div.addCommentContainer').attr('name', field[1]);
+        
       });
 
       let qaCommentFinded = qaComments.find(qaComment => qaComment.frontName == field[1]);
       if (qaCommentFinded) {
-        let allFieldsdone = true;
+
+        let commentEmpty = []
+        let statusComments =false;
         getNumberOfComments(qaCommentFinded.frontName);
         Object.keys(qaCommentFinded).map(keycomment=>{
-          if (qaCommentFinded[keycomment] == qaCommentFinded.frontName) return ;
-          if(!allFieldsdone) return;
-          const {status, reply} = qaCommentFinded[keycomment]
-          if (status === "") allFieldsdone = false;
-          if (status === "0" || status === "2") allFieldsdone = !!Object.keys(reply).length; 
-          
-          console.log(qaCommentFinded)
+          const {status} = qaCommentFinded[keycomment]
+          commentEmpty.push(status);   
         })
+        statusComments =commentEmpty.some((el) => el == ''||el == '0'||el == '1'||el == '2'||el == '4');
+
+        if(statusComments){
+          let allFieldsdone = true;
+        
+          Object.keys(qaCommentFinded).map(keycomment=>{
+            
+            if (qaCommentFinded[keycomment] == qaCommentFinded.frontName) return ;
+            if(!allFieldsdone) return;
+            const {status, reply} = qaCommentFinded[keycomment]
+            if (status === "4") allFieldsdone = false;
+            if (status === "0" || status === "2"|| status === "") allFieldsdone = !!Object.keys(reply).length; 
+            if(userCanLeaveComments == 'false' ){
+              if (status === "") allFieldsdone = true; 
+            }
+          
+          })
         commentIcon.attr('src', qaCommentsStatus(allFieldsdone ? 'done' : 'pending'))
       }
+      else{
+        commentIcon.attr('src', qaCommentsStatus('start'))
+      }
+        
+        
+      }
 
-      const currentqaComments = qaComments.filter(qaCommentsFilter => qaCommentsFilter.frontName == field[1])
-      if (userCanLeaveComments == 'true' || currentqaComments.length>=1) {
+      // const currentqaComments = qaComments.filter(qaCommentsFilter => qaCommentsFilter.frontName == field[1])
+      let commentEmpty2 = []
+      if (qaCommentFinded) {
+      Object.keys(qaCommentFinded).map(keycomment=>{
+        const {status} = qaCommentFinded[keycomment]
+        if(status === "0"|| status === "1" || status === "2"|| status === "4")commentEmpty2.push(true)  
+      })
+    }
+      if (userCanLeaveComments == 'true' || commentEmpty2[0]==true) {
         commentIcon.show();
         commentIcon.parent().css('display', 'flex');
-      }
-   
-            
+      }            
 
-       for (let i = 0; i < qaComments.length; i++) {
+      // for (let i = 0; i < qaComments.length; i++) {
         
       //   if (x[1] == qaComments[i].frontName) {
       //     getNumberOfComments(x[1]);
@@ -456,7 +726,6 @@ function hideShowOptionButtons(block, status) {
       //     //       commentIcon.attr('src', qaCommentsStatus('pending'));
   
       //     //       if (qaComments[i][j].status != '') {
-      //     //         console.log(qaComments)
       //     //         if (qaComments[i][j].status == '1') {
       //     //           commentIcon.attr('src', qaCommentsStatus('done'));
       //     //         } else {
@@ -479,14 +748,9 @@ function hideShowOptionButtons(block, status) {
       // if (userCanLeaveComments == 'true') {
       //   commentIcon.show();
       //   commentIcon.parent().css('display', 'flex');
-       }
+      //  }
 
     });
-
-
-      
-
-
 
 
   }
@@ -521,6 +785,24 @@ function hideShowOptionButtons(block, status) {
       }
     });
   }
+
+    // Update comments 
+    function updateComment(comment, fieldID, name, reference, commentID) {
+      let indexToCute = $(reference).attr("name").substring(0,$(reference).attr("name").length-3);
+      let objectField = fieldsSections.find(field => field.fieldName == indexToCute)
+      let inputValue = $(`input[name="${objectField.parentFieldDescription}"]`).val()
+      var finalAjaxURL = `/saveFeedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&comment=${comment}&phaseID=${phaseID}&fieldID=${fieldID}&userID=${userID}&projectID=${projectID}&commentID=${commentID}`;
+
+      $.ajax({
+        url: baseURL + finalAjaxURL,
+        async: false,
+        success: function (data) {
+          getQAComments();
+          loadCommentsByUser(name);
+          loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+        }
+      });
+    }
   
   function saveFeedbackReply(reply, commentID, name) {
     var finalAjaxURL = `/saveFeedbackReply.do?reply=${reply}&commentID=${commentID}&userID=${userID}`;
@@ -536,7 +818,7 @@ function hideShowOptionButtons(block, status) {
     });
   }
   
-  function saveCommentStatus(status, commentID, name) {
+  function saveCommentStatus(status, commentID, name) {    
     var finalAjaxURL = `/saveCommentStatus.do?status=${status}&commentID=${commentID}&userID=${userID}`;
     $.ajax({
       url: baseURL + finalAjaxURL,
@@ -613,7 +895,7 @@ function hideShowOptionButtons(block, status) {
           getQAComments();
           loadCommentsByUser(name);
           loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
-           return;
+          return;
         }
         qaPopup.find('.qaCommentReplyBlock').last().remove();
         qaPopup.find('.qaCommentReplyBlock').last().find('.addCommentContainer').show();
@@ -651,7 +933,7 @@ function hideShowOptionButtons(block, status) {
     data.map(function (x) {
       let p = $(`img.qaComment[name="${name}"]`).prev().find('p');
       p.css('display', 'block');
-      if(x[0] == x[1]) p.css('border', '2px solid #8dc02c');
+      if(x[0] == x[1] && x[1]) p.css('border', '2px solid #8dc02c');
       if(x[0] != x[1]) p.css('border', '2px solid #ffffff00');
       p.html(`${x[0]}/${x[1]}`);
     });
@@ -666,6 +948,10 @@ function hideShowOptionButtons(block, status) {
         return 'Accepted by ';
       case "2":
         return 'Required clarification by ';
+      case "4":
+        return 'Admited by ';
+      case "6":
+          return 'Dismissed by ';
     }
   }
 

@@ -7171,7 +7171,7 @@ img.fileIcon {
 
 .input-container {
   display: flex;
-  align-items: flex-end;
+  align-items: baseline;
 }
 
 .feedback-flex-items.radioFlat-flex{
@@ -7388,6 +7388,23 @@ img.qaCommentStatus {
   float: right;
 }
 
+.sentCommentBtn {
+width: 15px;
+margin-left: 3px;
+cursor: pointer;
+}
+
+.containerSentCommentBtn {
+  position: absolute; 
+  bottom: 5px !important; 
+  right: 0; 
+  background: #0b5da6; 
+  border-radius: 50%; 
+  text-align: center; 
+  height: 25px; 
+  width: 25px;
+  }
+
 .sendReplyContainer {
   width: 25px;
   height: 25px;
@@ -7401,6 +7418,7 @@ img.qaCommentStatus {
 }
 
 .addCommentContainer {
+  padding-top: 15px;
   width: 25px;
   height: 25px;
   display: none;
@@ -7434,6 +7452,12 @@ img.sendComment {
 
 img.qaOptions {
   width: 20px;
+  margin-left: 3px;
+  cursor: pointer;
+}
+
+img.qaOptionsComment {
+  width: 22px;
   margin-left: 3px;
   cursor: pointer;
 }

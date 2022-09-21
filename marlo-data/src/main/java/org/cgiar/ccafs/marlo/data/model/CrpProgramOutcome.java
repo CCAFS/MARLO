@@ -48,6 +48,8 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
   private String description;
   @Expose
   private String acronym;
+  @Expose
+  private String instructions;
 
   @Expose
   private String indicator;
@@ -190,6 +192,10 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return indicators;
   }
 
+  public String getInstructions() {
+    return instructions;
+  }
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -201,10 +207,10 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return milestones;
   }
 
+
   public String getPAcronym() {
     return this.getCrpProgram().getAcronym();
   }
-
 
   public Phase getPhase() {
     return phase;
@@ -242,6 +248,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.composeID = composeID;
   }
 
+
   public void setCrpClusterKeyOutputOutcomes(Set<CrpClusterKeyOutputOutcome> crpClusterKeyOutputOutcomes) {
     this.crpClusterKeyOutputOutcomes = crpClusterKeyOutputOutcomes;
   }
@@ -250,7 +257,6 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
   public void setCrpMilestones(Set<CrpMilestone> crpMilestones) {
     this.crpMilestones = crpMilestones;
   }
-
 
   public void setCrpOutcomeSubIdos(Set<CrpOutcomeSubIdo> crpOutcomeSubIdos) {
     this.crpOutcomeSubIdos = crpOutcomeSubIdos;
@@ -282,6 +288,10 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
 
   public void setIndicators(List<CrpProgramOutcomeIndicator> indicators) {
     this.indicators = indicators;
+  }
+
+  public void setInstructions(String instructions) {
+    this.instructions = instructions;
   }
 
   public void setMilestones(List<CrpMilestone> milestones) {

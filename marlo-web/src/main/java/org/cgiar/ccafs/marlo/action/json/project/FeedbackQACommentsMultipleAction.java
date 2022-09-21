@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
+import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -146,16 +147,30 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                   if (comment.getStatus() != null) {
 
                     String statusText = null;
-                    if (comment.getStatus().equalsIgnoreCase("rejected")) {
+                    if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Disagreed.getStatus())) {
                       statusText = "0";
                     }
-                    if (comment.getStatus().equalsIgnoreCase("approved")) {
-                      statusText = "1";
+                    if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Agreed.getStatus())) {
+                      statusText = FeedbackStatusEnum.Agreed.getStatusId();
                     }
-                    if (comment.getStatus().equalsIgnoreCase("clarification needed")) {
-                      statusText = "2";
+                    if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.ClarificatioNeeded.getStatus())) {
+                      statusText = FeedbackStatusEnum.ClarificatioNeeded.getStatusId();
                     }
-                    if (comment.getStatus().equalsIgnoreCase("pending")) {
+                    if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Draft.getStatus())) {
+                      statusText = FeedbackStatusEnum.Draft.getStatusId();
+                    }
+                    if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Admitted.getStatus())) {
+                      statusText = FeedbackStatusEnum.Admitted.getStatusId();
+                    }
+                    /*
+                     * if (comment.getStatus().equalsIgnoreCase("rejected")) {
+                     * statusText = "5";
+                     * }
+                     */
+                    if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Dismissed.getStatus())) {
+                      statusText = FeedbackStatusEnum.Dismissed.getStatusId();
+                    }
+                    if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Draft.getStatus())) {
                       statusText = "";
                     }
 
@@ -188,6 +203,22 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                   } else {
                     fieldsMap.put("approvalDate", "");
                   }
+
+                  // Editor user
+                  if (comment.getUserEditor() != null && comment.getUserEditor().getFirstName() != null
+                    && comment.getUserEditor().getLastName() != null) {
+                    fieldsMap.put("editorUsername",
+                      comment.getUserEditor().getFirstName() + " " + comment.getUserEditor().getLastName());
+                  } else {
+                    fieldsMap.put("editorUsername", "");
+                  }
+                  if (comment.getEditionDate() != null && comment.getEditionDate().toString() != null) {
+                    String dateString = comment.getEditionDate().toString();
+                    fieldsMap.put("editionDate", dateString);
+                  } else {
+                    fieldsMap.put("editionDate", "");
+                  }
+
                   if (comment.getField().getParentFieldDescription() != null) {
                     fieldsMap.put("fieldDescription", comment.getField().getParentFieldDescription());
                   } else {

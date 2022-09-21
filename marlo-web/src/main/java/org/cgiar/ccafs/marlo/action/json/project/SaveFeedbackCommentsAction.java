@@ -21,12 +21,15 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
+import org.cgiar.ccafs.marlo.data.model.FeedbackStatus;
+import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -69,18 +72,20 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private Date date;
   private Long projectId;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+  private FeedbackStatusManager feedbackStatusManager;
   private ProjectManager projectManager;
   private FeedbackQACommentManager commentQAManager;
   private FeedbackQAReplyManager commentManager;
   private PhaseManager phaseManager;
   private UserManager userManager;
+  private FeedbackQAComment qaComment;
 
 
   @Inject
   public SaveFeedbackCommentsAction(APConfig config,
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentQAManager,
     FeedbackQAReplyManager commentManager, PhaseManager phaseManager, UserManager userManager,
-    ProjectManager projectManager) {
+    FeedbackStatusManager feedbackStatusManager, ProjectManager projectManager) {
     super(config);
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.commentQAManager = commentQAManager;
@@ -88,6 +93,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
     this.phaseManager = phaseManager;
     this.userManager = userManager;
     this.projectManager = projectManager;
+    this.feedbackStatusManager = feedbackStatusManager;
   }
 
   @Override
@@ -99,7 +105,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
     if (fieldId != null) {
 
       // Create feedback Comment save object
-      FeedbackQAComment qaComment = new FeedbackQAComment();
+      qaComment = new FeedbackQAComment();
 
       // get existing object from database
       try {
@@ -107,6 +113,40 @@ public class SaveFeedbackCommentsAction extends BaseAction {
           FeedbackQAComment qaCommentDB = commentQAManager.getFeedbackQACommentById(commentId);
           if (qaCommentDB != null && qaCommentDB.getId() != null) {
             qaComment = qaCommentDB;
+
+            boolean isEdited = this.saveEditorInfo();
+            if (!isEdited) {
+              if (userId != null) {
+                try {
+                  User user = userManager.getUser(userId);
+                  if (user != null) {
+                    qaComment.setUser(this.getCurrentUser());
+                  }
+                } catch (Exception e) {
+                  logger.error("unable to set User object", e);
+                }
+              }
+              date = new Date();
+              if (date != null) {
+                qaComment.setCommentDate(date);
+              }
+            }
+          }
+        } else {
+          if (userId != null) {
+            try {
+              User user = userManager.getUser(userId);
+              if (user != null) {
+                qaComment.setUser(this.getCurrentUser());
+              }
+            } catch (Exception e) {
+              logger.error("unable to set User object", e);
+            }
+          }
+
+          date = new Date();
+          if (date != null) {
+            qaComment.setCommentDate(date);
           }
         }
       } catch (Exception e) {
@@ -114,7 +154,6 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
 
       qaComment.setComment(comment);
-
 
       if (phaseId != null) {
         Phase phase = phaseManager.getPhaseById(phaseId);
@@ -124,24 +163,34 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       String statusText = null;
       if (status != null) {
         if (status.equals("0")) {
-          statusText = "rejected";
+          statusText = FeedbackStatusEnum.Disagreed.getStatus();
         }
-        if (status.equals("1")) {
-          statusText = "approved";
+        if (status.equals(FeedbackStatusEnum.Agreed.getStatusId())) {
+          statusText = FeedbackStatusEnum.Agreed.getStatus();
         }
-        if (status.equals("2")) {
-          statusText = "clarification needed";
+        if (status.equals(FeedbackStatusEnum.ClarificatioNeeded.getStatusId())) {
+          statusText = FeedbackStatusEnum.ClarificatioNeeded.getStatus();
         }
-        if (status.equals("3")) {
-          statusText = "pending";
+        if (status.equals(FeedbackStatusEnum.Draft.getStatusId())) {
+          statusText = FeedbackStatusEnum.Draft.getStatus();
+        }
+        if (status.equals(FeedbackStatusEnum.Admitted.getStatusId())) {
+          statusText = FeedbackStatusEnum.Admitted.getStatus();
+        }
+        if (status.equals(FeedbackStatusEnum.Disagreed.getStatusId())) {
+          statusText = FeedbackStatusEnum.Disagreed.getStatus();
+        }
+        if (status.equals(FeedbackStatusEnum.Dismissed.getStatusId())) {
+          statusText = FeedbackStatusEnum.Dismissed.getStatus();
         }
         if (status == null) {
-          statusText = "pending";
+          statusText = FeedbackStatusEnum.Draft.getStatus();
         }
       }
 
       if (status != null) {
         qaComment.setStatus(statusText);
+        this.saveFeedbackStatus();
       }
 
       if (fieldId != null && phaseId != null && parentId != null) {
@@ -198,6 +247,12 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         qaComment.setParentId(parentId);
       }
 
+      if (fieldId != null) {
+        FeedbackQACommentableFields field =
+          feedbackQACommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
+        qaComment.setField(field);
+      }
+
       if (projectId != null) {
         try {
           Project project = new Project();
@@ -208,27 +263,6 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         } catch (Exception e) {
           logger.error("unable to set Project object", e);
         }
-      }
-
-      if (userId != null) {
-        try {
-          User user = userManager.getUser(userId);
-          if (user != null) {
-            qaComment.setUser(this.getCurrentUser());
-          }
-        } catch (Exception e) {
-          logger.error("unable to set User object", e);
-        }
-      }
-
-      if (fieldId != null) {
-        FeedbackQACommentableFields field =
-          feedbackQACommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
-        qaComment.setField(field);
-      }
-      date = new Date();
-      if (date != null) {
-        qaComment.setCommentDate(date);
       }
 
       qaComment = commentQAManager.saveFeedbackQAComment(qaComment);
@@ -376,6 +410,44 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
     } catch (Exception e) {
       logger.error("unable to get deliverable ID value", e);
+    }
+  }
+
+  /**
+   * Validate if the comment is being edited and add the editor information
+   * 
+   * @return true if the comment is being edited
+   */
+  public boolean saveEditorInfo() {
+    if (qaComment.getId() != null && qaComment.getUser() != null && qaComment.getCommentDate() != null) {
+      qaComment.setUserEditor(this.getCurrentUser());
+      date = new Date();
+      qaComment.setEditionDate(date);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Save feedback status id relation with feedback status table
+   */
+  public void saveFeedbackStatus() {
+    if (status != null) {
+      long idStatus;
+      try {
+        if (status.equals("0")) {
+          idStatus = 5;
+        } else {
+          idStatus = Long.valueOf(status);
+        }
+        FeedbackStatus feedbackStatus = feedbackStatusManager.getFeedbackStatusById(idStatus);
+        qaComment.setFeedbackStatus(feedbackStatus);
+        qaComment = commentQAManager.saveFeedbackQAComment(qaComment);
+      } catch (Exception e) {
+        logger.error("unable to get feedback status id", e);
+      }
+
     }
   }
 
