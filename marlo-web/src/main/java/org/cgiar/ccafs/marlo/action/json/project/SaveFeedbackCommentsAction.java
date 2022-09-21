@@ -163,28 +163,28 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       String statusText = null;
       if (status != null) {
         if (status.equals("0")) {
-          statusText = FeedbackStatusEnum.Rejected.getStatus();
+          statusText = FeedbackStatusEnum.Disagreed.getStatus();
         }
-        if (status.equals(FeedbackStatusEnum.Approved.getStatusId())) {
-          statusText = FeedbackStatusEnum.Approved.getStatus();
+        if (status.equals(FeedbackStatusEnum.Agreed.getStatusId())) {
+          statusText = FeedbackStatusEnum.Agreed.getStatus();
         }
         if (status.equals(FeedbackStatusEnum.ClarificatioNeeded.getStatusId())) {
           statusText = FeedbackStatusEnum.ClarificatioNeeded.getStatus();
         }
-        if (status.equals(FeedbackStatusEnum.Pending.getStatusId())) {
-          statusText = FeedbackStatusEnum.Pending.getStatus();
+        if (status.equals(FeedbackStatusEnum.Draft.getStatusId())) {
+          statusText = FeedbackStatusEnum.Draft.getStatus();
         }
-        if (status.equals(FeedbackStatusEnum.Accepted.getStatusId())) {
-          statusText = FeedbackStatusEnum.Accepted.getStatus();
+        if (status.equals(FeedbackStatusEnum.Admitted.getStatusId())) {
+          statusText = FeedbackStatusEnum.Admitted.getStatus();
         }
-        if (status.equals(FeedbackStatusEnum.Rejected.getStatusId())) {
-          statusText = FeedbackStatusEnum.Rejected.getStatus();
+        if (status.equals(FeedbackStatusEnum.Disagreed.getStatusId())) {
+          statusText = FeedbackStatusEnum.Disagreed.getStatus();
         }
-        if (status.equals(FeedbackStatusEnum.NoAccepted.getStatusId())) {
-          statusText = FeedbackStatusEnum.NoAccepted.getStatus();
+        if (status.equals(FeedbackStatusEnum.Dismissed.getStatusId())) {
+          statusText = FeedbackStatusEnum.Dismissed.getStatus();
         }
         if (status == null) {
-          statusText = FeedbackStatusEnum.Pending.getStatus();
+          statusText = FeedbackStatusEnum.Draft.getStatus();
         }
       }
 
