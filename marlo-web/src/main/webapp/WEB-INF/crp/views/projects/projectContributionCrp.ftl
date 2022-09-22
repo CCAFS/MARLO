@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220707B", 
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220922", 
   "${baseUrlCdn}/global/js/fieldsValidation.js?20220613",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220920",
   "https://www.gstatic.com/charts/loader.js",
@@ -15,7 +15,7 @@
 /] 
 [#assign customCSS = [ 
   "${baseUrlMedia}/css/projects/projectContributionCrp.css?20220613",
-  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20220620",
+  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20220922",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
 /]
@@ -623,28 +623,35 @@
       
 
       <div class="modal-evidences" style="display: none">
+
         <div class="content-modal">
-          <div class="button-exit close-modal-evidences">X</div>
-          <p class="title-modal-evidences">Important information</p>
-          <div class="text-modal-evidences">
-            <p>
-              ${(projectOutcome.crpProgramOutcome.instructions)!}
-            </p>
-          
+
+          <div class="button-exit close-modal-evidences">
+            <div class="x-close-modal" ></div>
           </div>
+            <p class="title-modal-evidences">Important information</p>
+            <div class="text-modal-evidences">
+              <p>
+                ${(projectOutcome.crpProgramOutcome.instructions)!}
+              </p>          
+            </div>
           
           <div class="container-buttons-evidences">
-           <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank">
-            <div class="button-pdf-modal" >
-            <p>Read full guidance</p>
-              <img src="${baseUrlCdn}/global/images/pdf.png" alt="Download document" />
-            </div>
-            </a>
+            [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
+              <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank">
+                <div class="button-pdf-modal" >
+                <p>Read full guidance</p>
+                  <img src="${baseUrlCdn}/global/images/pdf.png" alt="Download document" />
+                </div>
+                </a>
+            [/#if]
             <div class="button-close-modal close-modal-evidences">
               <p>Close</p>
             </div>
-          </div>          
+          </div>    
+        
         </div>
+        
       </div>
       
       [#--  Means of verification
