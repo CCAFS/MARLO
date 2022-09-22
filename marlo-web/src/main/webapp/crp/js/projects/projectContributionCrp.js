@@ -6,7 +6,7 @@ $(document).ready(init);
 function init() {
   milestonesCount = $('form .outcomeMilestoneYear').length;
   outcomeID = $('#outcomeId').val();
-
+  
   // Set Select2 widget to already saved data
   $('form select').select2();
   $('form .milestonesYearSelect select').select2({
@@ -24,6 +24,7 @@ function init() {
   // Attaching events functions
   attachEvents();
   feedbackAutoImplementation();
+  re_animate();
 }
 
 function attachEvents() {
@@ -38,6 +39,13 @@ function attachEvents() {
 
   // Remove a next user
   $('.removeNextUser').on('click', removeNextUser);
+
+  // open modal evidences
+  $('.button-evidences').on('click', openModalEvidences);
+
+  // close modal evidences
+  $('.close-modal-evidences').on('click', closeModalEvidences);
+
 }
 
 /** FUNCTIONS * */
@@ -197,4 +205,14 @@ function formatState(state) {
     return $state;
   }
 
+};
+
+function openModalEvidences(){
+  let modal = $('.modal-evidences');
+  modal.show();
+};
+
+function closeModalEvidences(){
+  let modal = $('.modal-evidences');
+  modal.hide();
 };
