@@ -1637,6 +1637,10 @@ public class DeliverableAction extends BaseAction {
         for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
           .filter(ca -> ca.isActive() && ca.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
 
+          if (!this.programOutcomes.contains(projectOutcome.getCrpProgramOutcome())) {
+            this.programOutcomes.add(projectOutcome.getCrpProgramOutcome());
+          }
+
           for (CrpClusterKeyOutputOutcome keyOutcome : projectOutcome.getCrpProgramOutcome()
             .getCrpClusterKeyOutputOutcomes().stream()
             .filter(ko -> ko.isActive() && ko.getCrpClusterKeyOutput() != null && ko.getCrpClusterKeyOutput().isActive()
@@ -1651,9 +1655,6 @@ public class DeliverableAction extends BaseAction {
                 this.keyOutputs.add(keyOutcome.getCrpClusterKeyOutput());
               }
 
-              if (!this.programOutcomes.contains(projectOutcome.getCrpProgramOutcome())) {
-                this.programOutcomes.add(projectOutcome.getCrpProgramOutcome());
-              }
             }
 
           }
