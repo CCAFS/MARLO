@@ -138,28 +138,28 @@ public class FeedbackQACommentsAction extends BaseAction {
         if (comment.getStatus() != null) {
 
           String statusText = null;
-          if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Rejected.getStatus())) {
+          if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Disagreed.getStatus())) {
             statusText = "0";
           }
-          if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Approved.getStatus())) {
-            statusText = FeedbackStatusEnum.Approved.getStatusId();
+          if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Agreed.getStatus())) {
+            statusText = FeedbackStatusEnum.Agreed.getStatusId();
           }
           if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.ClarificatioNeeded.getStatus())) {
             statusText = FeedbackStatusEnum.ClarificatioNeeded.getStatusId();
           }
-          if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Pending.getStatus())) {
-            statusText = FeedbackStatusEnum.Pending.getStatusId();
+          if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Draft.getStatus())) {
+            statusText = FeedbackStatusEnum.Draft.getStatusId();
           }
-          if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Accepted.getStatus())) {
-            statusText = FeedbackStatusEnum.Accepted.getStatusId();
+          if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Admitted.getStatus())) {
+            statusText = FeedbackStatusEnum.Admitted.getStatusId();
           }
           /*
            * if (comment.getStatus().equalsIgnoreCase("rejected")) {
            * statusText = "5";
            * }
            */
-          if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.NoAccepted.getStatus())) {
-            statusText = FeedbackStatusEnum.NoAccepted.getStatusId();
+          if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Dismissed.getStatus())) {
+            statusText = FeedbackStatusEnum.Dismissed.getStatusId();
           }
 
           fieldsMap.put("status", statusText);

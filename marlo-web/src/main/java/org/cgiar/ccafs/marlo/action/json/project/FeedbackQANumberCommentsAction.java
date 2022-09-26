@@ -73,8 +73,8 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
                 .filter(c -> c.getField() != null && c.getField().getId() != null
                   && c.getField().getId().equals(fieldIdLocal) && c.getPhase() != null && c.getPhase().getId() != null
                   && c.getPhase().getId().equals(phaseId) && c.getParentId() == parentId && c.getStatus() != null
-                  && !c.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Pending.getStatus())
-                  && !c.getStatus().equalsIgnoreCase(FeedbackStatusEnum.NoAccepted.getStatus()))
+                  && !c.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Draft.getStatus())
+                  && !c.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Dismissed.getStatus()))
                 .collect(Collectors.toList()));
 
             }
@@ -84,9 +84,10 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
               totalComments = feedbackComments.size();
 
               try {
-                feedbackComments = feedbackComments.stream().filter(f -> f != null
-                  && ((f.getStatus() != null && f.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Approved.getStatus()))
-                    || (f.getStatus() != null && f.getReply() != null)))
+                feedbackComments = feedbackComments.stream()
+                  .filter(f -> f != null
+                    && ((f.getStatus() != null && f.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Agreed.getStatus()))
+                      || (f.getStatus() != null && f.getReply() != null)))
                   .collect(Collectors.toList());
                 if (feedbackComments != null) {
                   answeredComments = feedbackComments.size();
