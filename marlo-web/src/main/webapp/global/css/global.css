@@ -1681,6 +1681,15 @@ a#userLogOut {
   color: #5FAAC7;
 }
 
+
+
+
+@media screen and (max-width: 1335px) {
+
+  #mainMenu .menuContent .visible-ul  {
+    margin-left: -50px;
+  }
+}
 /*************** BREADCRUMB NAVIGATION ***********/
 /*
 #breadcrumb {
