@@ -102,6 +102,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.setAcronym(other.getAcronym());
     this.setFile(other.getFile());
     this.setIndicator(other.getIndicator());
+    this.setInstructions(other.getInstructions());
     this.setModificationJustification(other.getModificationJustification());
     this.setModifiedBy(other.getModifiedBy());
     this.setSrfTargetUnit(other.getSrfTargetUnit());

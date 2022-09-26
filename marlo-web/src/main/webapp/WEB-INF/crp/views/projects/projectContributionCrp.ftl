@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220707B", 
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220922", 
   "${baseUrlCdn}/global/js/fieldsValidation.js?20220613",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20220920",
   "https://www.gstatic.com/charts/loader.js",
@@ -15,7 +15,8 @@
 /] 
 [#assign customCSS = [ 
   "${baseUrlMedia}/css/projects/projectContributionCrp.css?20220613",
-  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20220613"
+  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20220922",
+  "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
 /]
 [#assign currentSection = "projects" /]
@@ -373,8 +374,8 @@
                             <div class="" id="baseline">
                               <div class="form-group text-left">
                                 [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                                  <p><b>Baseline Instructions:</b></p>
-                                  <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a>
+                                  <!--  <p><b>Baseline Instructions:</b></p>
+                                  <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a>  -->
                                   [#-- ${ (projectOutcome.crpProgramOutcome.file.fileName)!} --]
                                   <p><br></p> 
                                 [#else]
@@ -608,6 +609,51 @@
       <div class="form-group">
         <span class="title">${(element.title)!}</span>
       </div>
+
+
+      
+      [#--  Text and Button Evidences --]
+      
+        <div class="container-evidences">
+          <p class="text-evidences">Here you could find information about the evidences that expects  to be reported</p>
+          <div class="button-evidences animated animate__shakeX">
+            <p>View More</p>
+          </div>
+        </div>
+      
+
+      <div class="modal-evidences" style="display: none">
+
+        <div class="content-modal">
+
+          <div class="button-exit close-modal-evidences">
+            <div class="x-close-modal" ></div>
+          </div>
+            <p class="title-modal-evidences">Important information</p>
+            <div class="text-modal-evidences">
+              <p>
+                ${(projectOutcome.crpProgramOutcome.instructions)!}
+              </p>          
+            </div>
+          
+          <div class="container-buttons-evidences">
+            [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
+              <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${(projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank">
+                <div class="button-pdf-modal" >
+                <p>Read full guidance</p>
+                  <img src="${baseUrlCdn}/global/images/pdf.png" alt="Download document" />
+                </div>
+                </a>
+            [/#if]
+            <div class="button-close-modal close-modal-evidences">
+              <p>Close</p>
+            </div>
+          </div>    
+        
+        </div>
+        
+      </div>
+      
       [#--  Means of verification
       <div class="form-group">
         <strong>[@s.text name="outcome.milestone.powbMilestoneVerification" /]</strong>

@@ -594,3 +594,161 @@ div#chart13 {
   font-size: 2rem;
   margin: 0.8rem 0 0 0;
 }
+
+.container-evidences{
+  display: flex;
+}
+
+.container-evidences .button-evidences {
+  background-color: #ffffff;
+  min-width: 120px;
+  height: 30px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: 600;
+  border: #0779a4 solid 2px;
+  color: #0779a4;
+  animation-delay: 3s;
+  animation-duration: 3s;
+}
+
+@keyframes slidein {
+  from {
+    margin-left: 100%;
+    width: 300%
+  }
+
+  to {
+    margin-left: 0%;
+    width: 100%;
+  }
+}
+
+.container-evidences .button-evidences p{
+  margin: auto;
+}
+
+.button-evidences:focus-visible {
+ color: red;
+}
+
+.container-evidences .text-evidences{
+  padding-right: 20px;
+  font-weight: 620;
+}
+
+.modal-evidences{
+  display: flex;
+  background-color: #50505070;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1000;
+}
+
+
+.button-exit{
+ float: right;
+ font-size: 18px;
+ cursor: pointer;
+}
+
+.x-close-modal{
+  padding: 10px 20px;
+  background-image: url(../../../global/images/icon-remove.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #D5504C;
+  /* position: absolute; */
+  top: 0;
+  right: 0;
+  border-radius: 0px 3px 0px 8px;
+  cursor: pointer;
+  margin: -23px -40px 0px 0px;
+}
+
+.title-modal-evidences{
+  font-size: 25px;
+  font-weight: 600;
+  margin-top: -8px;
+}
+
+.text-modal-evidences{
+  margin-top: 25px;
+}
+
+.content-modal{
+  background-color: #fff;
+  width: 600px;
+  max-width: 100%;
+  padding: 30px 50px;
+  border-radius: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  /* text-align: center; */
+}
+
+.container-buttons-evidences{
+  float: right;
+  display: flex;
+}
+
+.button-pdf-modal{
+  background-color: #ffffff;
+  min-width: 160px;
+  height: 40px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: 600;
+  border: #f79090 solid 2px;
+  color: #ff6464;
+}
+
+.button-pdf-modal p{
+  margin: auto;
+}
+
+.button-pdf-modal img{
+  width: 20px;
+  margin-right: 10px;
+}
+
+.button-close-modal{
+  background-color: #0779a4;
+  min-width: 120px;
+  height: 40px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: 600;
+  /* border: #0779a4 solid 2px; */
+  color: #ffffff;
+  margin-left: 11px;
+}
+
+.button-close-modal p{
+  margin: auto;
+}
+
+.milestoneYear .container-evidences{
+  display: none;
+}
+
+#milestoneYear-0 .container-evidences{
+  display: flex !important;
+}
+
