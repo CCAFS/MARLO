@@ -484,15 +484,17 @@ public class DeliverableValidator extends BaseValidator {
         deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
       }
 
-      if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == -1) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()) != null
+        && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
+        && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == -1) {
         action.addMessage(action.getText("project.deliverable.generalInformation.subType"));
         action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.id",
           InvalidFieldsMessages.EMPTYFIELD);
         deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
 
       } else {
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType()
-          .getDeliverableCategory() != null) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null && deliverable
+          .getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory() != null) {
           if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory()
             .getId() == -1) {
             action.addMessage(action.getText("project.deliverable.generalInformation.type"));
