@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Impact Pathway - Outcomes" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
+[#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
   "${baseUrlMedia}/js/impactPathway/outcomes.js?20201709",
@@ -254,6 +254,13 @@
           <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Baseline Indicators <span class="badge">${(outcome.indicators?size)!'0'}</span></a></li>
         [/#if]
       [/#if]
+      [#if outcome.instructions?has_content]
+        [#local instructionIndicator = '1'/]
+      [#else]
+        [#local instructionIndicator = '0'/]
+      [/#if]
+         <li role="presentation"><a href="#instructions-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Instructions <span class="badge">${(instructionIndicator)}</span></a></li>
+   
       [#if !action.isAiccra()]
         <li role="presentation" ><a href="#subIdos-tab-${index}" aria-controls="home" role="tab" data-toggle="tab">Sub-IDOs <span class="badge">${(outcome.subIdos?size)!'0'}</span></a></li>
       [/#if]
@@ -333,6 +340,16 @@
         [/#if]
       </div>
       [/#if]
+
+      [#-- Instructions tab--]
+      <div role="tabpanel" class="tab-pane fade" id="instructions-tab-${index}">
+      [#--  
+         <p class="subTitle col-md-12"><i> [@s.text name="outcome.instructions.help" /] </i> </p><br />
+         --]
+         <div class="form-group">
+          [@customForm.textArea name="${outcomeCustomName}.instructions" i18nkey="outcome.instructions" required=false className="milestone-statement" editable=editableMilestone allowTextEditor=true/]
+        </div>
+      </div>
 
       [#-- Outcome Milestones List --]
       <div role="tabpanel" class="tab-pane fade in active" id="milestones-tab-${index}">
