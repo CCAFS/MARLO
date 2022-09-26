@@ -638,7 +638,7 @@
           
           <div class="container-buttons-evidences">
             [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-              <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank">
+              <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${(projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank">
                 <div class="button-pdf-modal" >
                 <p>Read full guidance</p>
                   <img src="${baseUrlCdn}/global/images/pdf.png" alt="Download document" />
