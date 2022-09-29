@@ -116,6 +116,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Named
 public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator {
@@ -169,6 +171,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private final ProjectInnovationCountryManager projectInnovationCountryManager;
 
+  private final FeedbackStatusValidator feedbackStatusValidator;
+
   private final FundingSourceManager fundingSourceManager;
 
   private final DeliverableIntellectualAssetManager deliverableIntellectualAssetManager;
@@ -209,6 +213,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   private final SafeguardsManager safeguardsManager;
 
   private final ProjectImpactsValidator projectImpactsValidator;
+  private final Logger logger = LoggerFactory.getLogger(ProjectSectionValidator.class);
+
 
   @Inject
   public ProjectSectionValidator(ProjectManager projectManager, ProjectLocationValidator locationValidator,
@@ -236,7 +242,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     ProjectPolicyCountryManager projectPolicyCountryManager, ProjectPolicyRegionManager projectPolicyRegionManager,
     ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager,
     ProjectInnovationRegionManager projectInnovationRegionManager, ProjectImpactsManager projectImpactsManager,
-    ProjectImpactsValidator projectImpactsValidator, SafeguardValidator safeguardValidator) {
+    ProjectImpactsValidator projectImpactsValidator, SafeguardValidator safeguardValidator,
+    FeedbackStatusValidator feedbackStatusValidator) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -282,6 +289,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.projectImpactsValidator = projectImpactsValidator;
     this.safeguardValidator = safeguardValidator;
     this.safeguardsManager = safeguardsManager;
+    this.feedbackStatusValidator = feedbackStatusValidator;
   }
 
 
@@ -541,6 +549,14 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     }
   }
 
+  public void validateFeedback(BaseAction action, Long projectID) {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    feedbackStatusValidator.validate(action, project, false);
+  }
+
+
   public void validateHighlight(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -567,7 +583,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     }
 
   }
-
 
   public void validateInnovations(BaseAction action, Long projectID) {
     // Getting the project information.
@@ -701,6 +716,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
+
   public void validateOtherContributions(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -717,7 +733,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
 
   }
-
 
   public void validateOutcomesPandR(BaseAction action, Long projectID) {
     // Getting the project information.
@@ -1042,11 +1057,17 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
           List<DeliverableUserPartnership> deList = deliverable.getDeliverableUserPartnerships().stream()
             .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(phase.getId())
+              && dp.getDeliverablePartnerType() != null && dp.getDeliverablePartnerType().getId() != null
               && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
             .collect(Collectors.toList());
 
           if (deList != null && !deList.isEmpty()) {
-            Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            try {
+              // Collections.sort(deList, (p1, p2) ->
+              // p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            } catch (Exception e) {
+              logger.error("unable to get deliverables user partnerships", e);
+            }
             deliverable.setResponsiblePartnership(new ArrayList<>());
             for (DeliverableUserPartnership deliverableUserPartnership : deList) {
 
@@ -1074,17 +1095,27 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
             .collect(Collectors.toList());
 
           if (deList != null && !deList.isEmpty()) {
-            Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
-            deliverable.setOtherPartnerships(new ArrayList<>());
-            for (DeliverableUserPartnership deliverableUserPartnership : deList) {
+            try {
+              // Collections.sort(deList, (p1, p2) ->
+              // p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            } catch (Exception e) {
+              logger.error("unable to get deliverables user partnerships", e);
+            }
 
-              if (deliverableUserPartnership.getDeliverableUserPartnershipPersons() != null) {
-                List<DeliverableUserPartnershipPerson> partnershipPersons =
-                  new ArrayList<>(deliverableUserPartnership.getDeliverableUserPartnershipPersons().stream()
-                    .filter(d -> d.isActive()).collect(Collectors.toList()));
-                deliverableUserPartnership.setPartnershipPersons(partnershipPersons);
+            deliverable.setOtherPartnerships(new ArrayList<>());
+            try {
+              for (DeliverableUserPartnership deliverableUserPartnership : deList) {
+
+                if (deliverableUserPartnership.getDeliverableUserPartnershipPersons() != null) {
+                  List<DeliverableUserPartnershipPerson> partnershipPersons =
+                    new ArrayList<>(deliverableUserPartnership.getDeliverableUserPartnershipPersons().stream()
+                      .filter(d -> d.isActive()).collect(Collectors.toList()));
+                  deliverableUserPartnership.setPartnershipPersons(partnershipPersons);
+                }
+                deliverable.getOtherPartnerships().add(deliverableUserPartnership);
               }
-              deliverable.getOtherPartnerships().add(deliverableUserPartnership);
+            } catch (Exception e) {
+              logger.error("unable to get deliverables user partnerships", e);
             }
 
           }
@@ -1116,6 +1147,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         }
         deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
+
+        // Deliverable Crp Outcome list
+        if (deliverable.getDeliverableCrpOutcomes() != null) {
+          deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
 
         deliverable.setProjectOutcomes(deliverable.getDeliverableProjectOutcomes().stream()
           .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));

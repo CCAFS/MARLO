@@ -27,9 +27,6 @@
 		<property name="fieldValue" type="string">
 			<column name="field_value" sql-type="TEXT" />
 		</property>
-		<property name="status" type="string">
-			<column name="status" sql-type="TEXT"/>
-		</property>
 		<property name="link" type="string">
 			<column name="link" sql-type="TEXT" />
 		</property>
