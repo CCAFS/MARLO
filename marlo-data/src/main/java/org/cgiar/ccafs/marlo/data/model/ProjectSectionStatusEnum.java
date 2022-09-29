@@ -30,7 +30,7 @@ public enum ProjectSectionStatusEnum {
   FUNDINGSOURCE("fundingSource"), CRP_INDICATORS("crpIndicators"), EXPECTEDSTUDIES("studies"),
   INNOVATIONS("innovationsList"), INNOVATION("innovation"), HIGHLIGHT("highlight"), EXPECTEDSTUDY("study"),
   POLICIES("policies"), POLICY("policy"), CONTRIBUTIONLP6("contributionsLP6"), IMPACTS("impacts"),
-  SAFEGUARDS("safeguards");
+  SAFEGUARDS("safeguards"), FEEDBACK("feedback");
 
   public static ProjectSectionStatusEnum value(String status) {
     ProjectSectionStatusEnum[] lst = ProjectSectionStatusEnum.values();
