@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
+import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -242,15 +243,23 @@ public class DeliverableListAction extends BaseAction {
 
                 if (deliverable != null && deliverable.getId() != null && commentableField != null
                   && commentableField.getId() != null) {
-                  List<FeedbackQAComment> comments = commentManager
-                    .findAll().stream().filter(f -> f != null && f.getParentId() == deliverable.getId()
+                  List<FeedbackQAComment> comments = commentManager.findAll().stream()
+                    .filter(f -> f != null && f.getParentId() == deliverable.getId()
+
+                      && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null && (!f
+                        .getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))
+                      // &&
+                      // !f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))
+                      ))
+
                       && f.getField() != null && f.getField().getId().equals(commentableField.getId()))
                     .collect(Collectors.toList());
                   if (comments != null && !comments.isEmpty()) {
                     totalComments += comments.size();
                     comments = comments.stream()
-                      .filter(f -> f != null && ((f.getStatus() != null && f.getStatus().equals("approved"))
-                        || (f.getStatus() != null && f.getReply() != null)))
+                      .filter(f -> f != null && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId()
+                        .equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
+                        || (f.getFeedbackStatus() != null && f.getReply() != null)))
                       .collect(Collectors.toList());
                     if (comments != null) {
                       answeredComments += comments.size();
@@ -273,6 +282,7 @@ public class DeliverableListAction extends BaseAction {
 
       }
     } catch (Exception e) {
+      logger.error("unable to get feedbackcomments info", e);
       e.printStackTrace();
     }
   }
@@ -425,6 +435,7 @@ public class DeliverableListAction extends BaseAction {
       }
     } catch (Exception e) {
       e.printStackTrace();
+      logger.error("unable to get deliverable info", e);
       return new ArrayList<>();
     }
   }
@@ -462,10 +473,14 @@ public class DeliverableListAction extends BaseAction {
    * Copy method from project.getCurrentDeliverables to allow add the shared deliverables to list
    */
   public void loadCurrentDeliverables() {
-    currentDeliverableList = new ArrayList<>();
-    currentDeliverableList = this.getDeliverables().stream().filter(
-      d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null && !d.getDeliverableInfo().isPrevious())
-      .collect(Collectors.toList());
+    try {
+      currentDeliverableList = new ArrayList<>();
+      currentDeliverableList =
+        this.getDeliverables().stream().filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+          && !d.getDeliverableInfo().isPrevious()).collect(Collectors.toList());
+    } catch (Exception e) {
+      logger.error("unable to get shared deliverables", e);
+    }
 
     // Load Shared deliverables
     previousSharedDeliverableList = new ArrayList<>();
@@ -550,54 +565,66 @@ public class DeliverableListAction extends BaseAction {
     }
 
     // shared with
+
     if (currentDeliverableList != null && !currentDeliverableList.isEmpty()) {
       List<ProjectDeliverableShared> deliverablesShared = new ArrayList<>();
-      for (Deliverable deliverableTemp : currentDeliverableList) {
-        if (deliverableTemp != null && deliverableTemp.getId() != null) {
-          deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
-          if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
-            deliverablesShared = deliverablesShared.stream()
-              .filter(ds -> ds.getDeliverable() != null && ds.getDeliverable().getProject().getId().equals(projectID))
-              .collect(Collectors.toList());
-          }
-
-          // Owner
-          if (deliverableTemp.getProject() != null && !deliverableTemp.getProject().getId().equals(projectID)) {
-            deliverableTemp
-              .setOwner(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-            deliverableTemp
-              .setSharedWithMe(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-          } else {
-            deliverableTemp.setOwner("This Cluster");
-            deliverableTemp.setSharedWithMe("Not Applicable");
-          }
-
-          // Shared with others
-          for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
-            // String projectsSharedText = null;
-            if (deliverableShared.getDeliverable().getSharedWithProjects() == null) {
-              deliverableShared.getDeliverable().setSharedWithProjects(
-                "" + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-            } else {
-              if (!deliverableShared.getDeliverable().getSharedWithProjects()
-                .contains(deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
-                deliverableShared.getDeliverable()
-                  .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; "
-                    + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-              }
+      try {
+        for (Deliverable deliverableTemp : currentDeliverableList) {
+          if (deliverableTemp != null && deliverableTemp.getId() != null) {
+            deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
+            if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+              deliverablesShared = deliverablesShared.stream()
+                .filter(ds -> ds.getDeliverable() != null && ds.getDeliverable().getProject().getId().equals(projectID))
+                .collect(Collectors.toList());
             }
-            // deliverableShared.getDeliverable().setSharedWithProjects(projectsSharedText);
+
+            // Owner
+            if (deliverableTemp.getProject() != null && !deliverableTemp.getProject().getId().equals(projectID)) {
+              deliverableTemp
+                .setOwner(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+              deliverableTemp
+                .setSharedWithMe(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+            } else {
+              deliverableTemp.setOwner("This Cluster");
+              deliverableTemp.setSharedWithMe("Not Applicable");
+            }
+
+            // Shared with others
+            for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+              // String projectsSharedText = null;
+              if (deliverableShared.getDeliverable().getSharedWithProjects() == null) {
+                deliverableShared.getDeliverable().setSharedWithProjects(
+                  "" + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+              } else {
+                if (deliverableShared.getDeliverable() != null
+                  && deliverableShared.getDeliverable().getSharedWithProjects() != null
+                  && deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
+                  && !deliverableShared.getDeliverable().getSharedWithProjects()
+                    .contains(deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
+                  deliverableShared.getDeliverable()
+                    .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; "
+                      + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                }
+              }
+              // deliverableShared.getDeliverable().setSharedWithProjects(projectsSharedText);
+            }
+            // deliverableTemp.setSharedWithProjects(projectsSharedText);
+            // deliverableTemp.setSharedDeliverables(deliverablesShared);
           }
-          // deliverableTemp.setSharedWithProjects(projectsSharedText);
-          // deliverableTemp.setSharedDeliverables(deliverablesShared);
         }
+      } catch (Exception e) {
+        logger.error("unable to get shared deliverables", e);
       }
     }
 
 
     if (currentDeliverableList != null && !currentDeliverableList.isEmpty()) {
-      currentDeliverableList.stream().sorted((d1, d2) -> d1.getId().compareTo((d2.getId())))
-        .collect(Collectors.toList());
+      try {
+        currentDeliverableList.stream().sorted((d1, d2) -> d1.getId().compareTo((d2.getId())))
+          .collect(Collectors.toList());
+      } catch (Exception e) {
+        logger.error("unable to get shared deliverables", e);
+      }
       // deliverables.addAll(currentDeliverableList);
     }
 
