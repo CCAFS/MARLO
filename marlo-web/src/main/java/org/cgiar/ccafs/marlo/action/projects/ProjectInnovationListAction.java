@@ -40,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressInnovat
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
+import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
@@ -368,15 +369,23 @@ public class ProjectInnovationListAction extends BaseAction {
 
                 if (study != null && study.getId() != null && commentableField != null
                   && commentableField.getId() != null) {
-                  List<FeedbackQAComment> comments = commentManager
-                    .findAll().stream().filter(f -> f != null && f.getParentId() == study.getId()
+                  List<FeedbackQAComment> comments = commentManager.findAll().stream()
+                    .filter(f -> f != null && f.getParentId() == study.getId()
+
+                      && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null && (!f
+                        .getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))
+                      // &&
+                      // !f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))
+                      ))
+
                       && f.getField() != null && f.getField().getId().equals(commentableField.getId()))
                     .collect(Collectors.toList());
                   if (comments != null && !comments.isEmpty()) {
                     totalComments += comments.size();
                     comments = comments.stream()
-                      .filter(f -> f != null && ((f.getStatus() != null && f.getStatus().equals("approved"))
-                        || (f.getStatus() != null && f.getReply() != null)))
+                      .filter(f -> f != null && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId()
+                        .equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
+                        || (f.getFeedbackStatus() != null && f.getReply() != null)))
                       .collect(Collectors.toList());
                     if (comments != null) {
                       answeredComments += comments.size();
