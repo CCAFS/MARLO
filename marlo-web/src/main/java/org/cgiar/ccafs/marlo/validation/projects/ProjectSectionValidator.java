@@ -1148,6 +1148,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
 
+        // Deliverable Crp Outcome list
+        if (deliverable.getDeliverableCrpOutcomes() != null) {
+          deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
         deliverable.setProjectOutcomes(deliverable.getDeliverableProjectOutcomes().stream()
           .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
