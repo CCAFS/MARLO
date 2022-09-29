@@ -225,3 +225,151 @@ span.timelineControl {
 span.timelineControl:hover {
     color: #117fa8;
 }
+
+.homeTitleTimeline {
+    display: flex;
+    justify-content: center;
+    font-size: 3.0em;
+    color: rgb(110, 110, 110);
+    padding: 5px 30px 14px 14px;
+    width: 100%;
+    position: absolute;
+  }
+  
+  .timeline{
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);
+      border-radius: 10px;
+      height: 406px;
+  }
+  
+  .timeline-line{
+      height: 6px;
+      background: rgb(228, 228, 228);
+      width: 200px;
+      position:absolute;
+      margin-top: -17px;
+      border: none;
+      z-index: -1;
+  }
+  
+  .scroll-x-containerTimeline {
+      position: relative;
+      scroll-behavior: smooth;
+      overflow-x: scroll;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      margin: 0 auto;
+      display: flex;
+      margin-top: 135px;
+  }
+  
+  
+  
+  .timeline-innerline {
+      background-color: brown;
+  
+  }
+  
+  .containerTimeline {
+      width: 85%;
+      position: relative;
+  }
+  
+  .infTimelineTimeline {
+      min-width: 173px;
+      /* border: 1px solid black; */
+      text-align: center;
+  }
+  
+  .timeline-pointTimeline {
+      border: none;
+      cursor: pointer;
+      border-radius: 50%;
+      background: rgb(228, 228, 228);
+      max-width:  30px;
+      height: 30px;
+      margin: auto;
+  }
+  
+  .titleTimeline {
+      writing-mode: vertical-rl;
+      height: 200px;
+      -webkit-transform: rotate(231deg); 
+      text-align: left;
+      padding-left: -25px;
+      font-weight: 500;
+      /* background-color: blue; */
+      margin-bottom: -26px;
+      margin-left: 171px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+  
+  .dateTimeline {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+  
+  .sideButtonTimeline {
+      background:rgba(133, 133, 133, 0.7);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 27px;
+      font-weight: bold;
+      font-family: monospace;
+      text-align: center;
+      cursor: pointer;
+  }
+  
+  .buttonLeftTimeline {
+  left: -30px;
+  }
+  
+  .buttonRightTimeline {
+      right: -30px;
+  }
+  
+  .timelineBackSuccess {
+    background: #8eaf92;
+  }
+  
+  .timelineBackAlert {
+    background: #f7d46a;
+  }
+  
+  .timelineColorSuccess {
+    color: #8eaf92;
+  }
+  
+  .timelineColorAlert {
+    color: #f1c43d;
+  }
+
+  .timelineAlert {
+    background-color: #ffd966;
+    height: 86px;
+    width: 187px;
+    position: absolute;
+    left: 42px;
+    top: 54px;
+    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);
+    border-radius: 10px;
+    text-align: center;
+    padding: 2px;
+    padding-top: 5px;
+  }
+  
+  .timelineAlertText {
+    font-weight: 600;
+  }
+
+  .imgTimeline {
+    margin-top: 7px;
+
+  }

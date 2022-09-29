@@ -40,12 +40,31 @@
     window.location.href = window.location.href;
   </script>
 [/#if]
-
+<div id="ulListado"></div>
 <section class="marlo-content">
   <div class="container">
     [#-- What do you want to do --]
-    <div class="homeTitle2"><b>[@s.text name="dashboard.homepage.title" /] ${(currentUser.firstName)!}!</b></div>
-    <div class="homeDescription2 col-md-12">[@s.text name="dashboard.homepage.description" /]</div>
+    <!--  <div class="homeTitle2"><b>[@s.text name="dashboard.homepage.title" /] ${(currentUser.firstName)!}!</b></div>  -->
+    
+    <!--  <div class="homeDescription2 col-md-12">[@s.text name="dashboard.homepage.description" /]</div>  -->
+
+  <section class="timeline">	
+  <div class="homeTitleTimeline"><b>AICCRA Planning report</b></div>
+    <div class="timelineAlert">
+      <img src="${baseUrlCdn}/global/images/icon-transparent-warning.png" width="35">
+      <p class="timelineAlertText"> days left until the end of the activity</p>
+    </div>
+		<div class="containerTimeline">
+			<!--  <a href="#item1">touch me</a>  -->
+			<div class="scroll-x-containerTimeline " id="listItemTimeline">
+			</div>
+			<div class="sideButtonTimeline buttonLeftTimeline"><p><</p></div>
+			<div class="sideButtonTimeline buttonRightTimeline"><p>></p></div>
+		</div>
+	</section>
+
+
+  
 
     [#if !action.isAiccra()]
     <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
@@ -156,7 +175,7 @@
       [/#if]
 
         [#if aiccra]
-            <p><h3>What is a Cluster?</h3></p><p>A cluster is defined as the group of AICCRA main activities led by each AICCRA Country Leader (Ghana, Mali, Senegal, Ethiopia, Kenya and Zambia), AICCRA Regional Leaders (Western Africa and Eastern & Southern Africa), and  AICCRA Thematic leaders (Theme 1, Theme 2, Theme 3, and Theme 4). In each cluster, participants are involved as leaders, coordinators and collaborators with specific budget allocations for each AICCRA main activity with a set of deliverables and contributions towards our performance indicators.</p>
+            <!--  <p><h3>What is a Cluster?</h3></p><p>A cluster is defined as the group of AICCRA main activities led by each AICCRA Country Leader (Ghana, Mali, Senegal, Ethiopia, Kenya and Zambia), AICCRA Regional Leaders (Western Africa and Eastern & Southern Africa), and  AICCRA Thematic leaders (Theme 1, Theme 2, Theme 3, and Theme 4). In each cluster, participants are involved as leaders, coordinators and collaborators with specific budget allocations for each AICCRA main activity with a set of deliverables and contributions towards our performance indicators.</p>  -->
         [#else]
             [@s.text name="dashboard.aiccra.instructions" ] [@s.param] <a href="https://docs.google.com/document/d/1hy2yt6E4pJ5orGqHxBSX_ACcr72pPTwaSesQ9P6vHYQ/edit" target="_blank">here</a>.[/@s.param][/@s.text]
             <img src="${baseUrlCdn}/global/images/aiccra-planning.png" width="450">
@@ -165,8 +184,8 @@
     </div>
 
     [#-- Dashboard --]
-    <div id="dashboardContent" class="col-md-12">
-      <div class="homeTitle col-md-12">[#-- <strong>Dashboard</strong> --]</div>
+    <!--  <div id="dashboardContent" class="col-md-12">
+      <div class="homeTitle col-md-12"></div>
       <div class="col-md-12">
       [#if !action.isAiccra()]
         <ul class="nav nav-tabs" role="tablist">
@@ -212,16 +231,13 @@
               </div>
             </div>
             <div id="contentGraph">
-              [#-- Download button--]
-              [#--  <span id="buttonShowAll"><span class="glyphicon glyphicon-download-alt"></span></span>--]
               <div id="impactGraphic" ></div>
-              [#-- Download button--]
               <span title="View full graph" id="fullscreen" class="glyphicon glyphicon-fullscreen"></span>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </div>  -->
 
 
     <div id="impactGraphic-content"  style="display:none;" >
