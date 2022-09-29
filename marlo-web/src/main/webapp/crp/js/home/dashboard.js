@@ -1,6 +1,11 @@
 // $.fn.dataTableExt.sErrMode = 'throw';
 $(document).ready(initDashboard);
 
+let timelineElements;
+
+// console.log(baseURL)
+
+
 function initDashboard() {
 
   // Set timeline dates completion
@@ -19,7 +24,88 @@ function initDashboard() {
 
   // Initialize datatable of projects
   // initDatatable();
+  getTimeline();
 
+  $('.buttonRightTimeline').on("click", moveScrollRight);
+
+  $('.buttonLeftTimeline').on("click", moveScrollLeft);
+
+  var counter = 0;
+
+  timelineElements.forEach(function(data,index){
+
+
+
+  var listItemTimeline=document.getElementById("listItemTimeline"); 
+
+  var newDiv= document.createElement("div")    
+  newDiv.className='infTimelineTimeline';
+  listItemTimeline.appendChild(newDiv);
+  var newDivTitle= document.createElement("span")    
+  newDivTitle.className='titleTimeline';
+  newDiv.appendChild(newDivTitle)
+  var newDivPoint= document.createElement("div") 
+  newDivPoint.className='timeline-pointTimeline';
+  newDiv.appendChild(newDivPoint)
+  var newDivTimeLine= document.createElement("div") 
+  newDivTimeLine.className='timeline-line';
+  newDiv.appendChild(newDivTimeLine)
+  var newPTimeLine= document.createElement("p") 
+  newPTimeLine.className='date';
+  newDiv.appendChild(newPTimeLine)
+
+var description = document.createTextNode(data.description);
+var dateMonthStart = new Date(data.startDate).toLocaleString("en-US", { month: "short" });
+var dateDayStart = new Date(data.startDate).getDate()+1;
+var dateMonthEnd =new Date(data.endDate).toLocaleString("en-US", { month: "short" });
+var dateDayEnd = new Date(data.endDate).getDate()+1;
+var date =document.createTextNode(dateMonthStart+' '+ dateDayStart+' - '+dateMonthEnd+' '+ dateDayEnd)
+newDivTitle.appendChild(description);
+newPTimeLine.appendChild(date);
+  // newDivTimeLine.setAttribute("id","currentActivity")
+
+if(new Date(data.endDate) < new Date()){
+  var newImgTimeLine= document.createElement("img");
+  newImgTimeLine.className='imgTimeline';
+  newImgTimeLine.setAttribute("src",baseURL +"/global/images/icon-check-tiny-white.png")
+  newDivPoint.appendChild(newImgTimeLine);
+  newDivTitle.classList.add('timelineColorSuccess');
+  newDivPoint.classList.add('timelineBackSuccess');
+  newDivTimeLine.classList.add('timelineBackSuccess');
+
+}if(counter == 0 && (new Date(data.endDate) > new Date())){
+  let daysActivity = ((new Date(data.endDate).getDate()+1) - new Date().getDate());
+  newDivTitle.classList.add('timelineColorAlert');
+  newDivPoint.classList.add('timelineBackAlert');
+  newDivPoint.setAttribute("id","currentActivity"+index)
+  
+  $('.timelineAlertText').text(daysActivity+' days left until the end of the activity');
+  // console.log(new Date())
+  // newDivTimeLine.setAttribute("id","currentActivity")
+  counter = 1;
+}
+
+})
+
+
+// window.location.href='#currentActivity8'
+
+// console.log(new Date())
+// console.log(timelineElements);
+// console.log(obj)
+
+// document.querySelector(".iter").innerHTML = JSON.stringify(obj)
+
+}
+
+function moveScrollRight() {
+  const element = document.querySelector(".scroll-x-containerTimeline");
+  element.scrollLeft += 200;
+}
+
+function moveScrollLeft() {
+  const element = document.querySelector(".scroll-x-containerTimeline");
+  element.scrollLeft -= 200;
 }
 
 function setCompletionDates() {
@@ -247,3 +333,18 @@ $("#fullscreen").on("click", function() {
   });
 
 });
+
+function getTimeline() {
+  var finalAjaxURL = `/getTimelineInformation.do`;
+
+  $.ajax({
+    url: baseURL + finalAjaxURL,
+    async: false,
+    success: function (data) {
+      if (data && Object.keys(data).length != 0) {
+        timelineElements = data['information'];
+        // console.log(data['information'])
+      }
+    }
+  });
+}

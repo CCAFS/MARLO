@@ -2,12 +2,19 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800);@import url("custom.pickadate.css"); @import url("custom.bootstrap.css");@import url("customLogin.css?20201120"); @import url("customInputsFlat.css");@import url("customTrumbowyg.css");@import url(https://fonts.googleapis.com/icon?family=Material+Icons);/* END IMPORTS*/
 
 :root{
+  /* Alert colors */
   --alertColorSuccess: #37c06f;
   --alertColorWarning: #f5b10c;
   --alertColorInfo: #40aad4;
   --alertColorBackgroundInfo: #d9edf7;
   --alertColorBackgroundSuccess: #c7f9da;
   --alertColorBackgroundWarning: #fff3e5;
+
+  /*Timeline colors */
+  --timelineSuccess:  #8eaf92;
+  --timelineAlert: #f7d46a;
+  --timelineColorSuccess:  #8eaf92;
+  --timelineColorAlert: #ffc107;
 }
 .mce-widget.mce-tooltip {
   display: none !important;
