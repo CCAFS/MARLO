@@ -116,6 +116,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Named
 public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator {
@@ -209,6 +211,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   private final SafeguardsManager safeguardsManager;
 
   private final ProjectImpactsValidator projectImpactsValidator;
+  private final Logger logger = LoggerFactory.getLogger(ProjectSectionValidator.class);
+
 
   @Inject
   public ProjectSectionValidator(ProjectManager projectManager, ProjectLocationValidator locationValidator,
@@ -1042,11 +1046,16 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
           List<DeliverableUserPartnership> deList = deliverable.getDeliverableUserPartnerships().stream()
             .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(phase.getId())
+              && dp.getDeliverablePartnerType() != null && dp.getDeliverablePartnerType().getId() != null
               && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
             .collect(Collectors.toList());
 
           if (deList != null && !deList.isEmpty()) {
-            Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            try {
+              Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            } catch (Exception e) {
+              logger.error("unable to get deliverables user partnerships", e);
+            }
             deliverable.setResponsiblePartnership(new ArrayList<>());
             for (DeliverableUserPartnership deliverableUserPartnership : deList) {
 
@@ -1074,7 +1083,11 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
             .collect(Collectors.toList());
 
           if (deList != null && !deList.isEmpty()) {
-            Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            try {
+              Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            } catch (Exception e) {
+              logger.error("unable to get deliverables user partnerships", e);
+            }
             deliverable.setOtherPartnerships(new ArrayList<>());
             for (DeliverableUserPartnership deliverableUserPartnership : deList) {
 
