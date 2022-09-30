@@ -225,3 +225,162 @@ span.timelineControl {
 span.timelineControl:hover {
     color: #117fa8;
 }
+
+.homeTitleTimeline {
+    display: flex;
+    justify-content: center;
+    font-size: 3.0em;
+    color: rgb(110, 110, 110);
+    padding: 22px 30px 14px 14px;
+    width: 100%;
+    position: absolute;
+  }
+  
+  .timeline{
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);
+    border-radius: 10px;
+    height: 459px;
+  }
+
+  .porcentTimeLine {
+    height: 6px;
+    width: 70%;
+    background: #f7d46a;
+    position: absolute;
+    margin-top: -20px;
+    border-radius: 0 10px 10px 0;
+    max-width: 135px;
+  }
+  
+  .timeline-line{
+    height: 6px;
+    background: rgb(228, 228, 228);
+    width: 170px;
+    position: absolute;
+    margin-top: -19px;
+    border: none;
+    z-index: -1;
+  }
+  
+  .scroll-x-containerTimeline {
+    position: relative;
+    scroll-behavior: smooth;
+    overflow-x: scroll;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    margin: 0 auto;
+    display: flex;
+    margin-top: 173px;
+  }
+  
+  
+  
+  .timeline-innerline {
+    background-color: brown;
+  
+  }
+  
+  .containerTimeline {
+    width: 85%;
+    position: relative;
+  }
+  
+  .infTimelineTimeline {
+    min-width: 173px;
+    text-align: center;
+    position: relative;
+  }
+  
+  .timeline-pointTimeline {
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    background: rgb(228, 228, 228);
+    max-width: 30px;
+    height: 30px;
+    position: absolute;
+    right: 0;
+    width: 30px;
+    bottom: 32px;
+    z-index: 1;
+  }
+  
+  .titleTimeline {
+    writing-mode: vertical-rl;
+    height: 200px;
+    -webkit-transform: rotate(224deg);
+    text-align: left;
+    padding-left: -25px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    margin-left: 114px;
+  }
+  
+  .dateTimeline {
+    margin-right: 25px;
+  }
+  
+  .sideButtonTimeline {
+    background:rgba(133, 133, 133, 0.5);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 27px;
+    font-weight: bold;
+    font-family: monospace;
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  .buttonLeftTimeline {
+    left: -30px;
+  }
+  
+  .buttonRightTimeline {
+    right: -30px;
+  }
+  
+  .timelineBackSuccess {
+    background: #8eaf92;
+  }
+  
+  .timelineBackAlert {
+    background: #f7d46a;
+  }
+  
+  .timelineColorSuccess {
+    color: #8eaf92;
+  }
+  
+  .timelineColorAlert {
+    color: #f1c43d;
+  }
+
+  .timelineAlert {
+    background-color: #ffd966;
+    height: 86px;
+    width: 187px;
+    position: absolute;
+    left: 42px;
+    top: 95px;
+    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);
+    border-radius: 10px;
+    text-align: center;
+    padding: 2px;
+    padding-top: 5px;
+  }
+  
+  .timelineAlertText {
+    font-weight: 600;
+  }
+
+  .imgTimeline {
+    margin-top: 7px;
+  }

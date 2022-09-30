@@ -2,6 +2,7 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800);@import url("custom.pickadate.css"); @import url("custom.bootstrap.css");@import url("customLogin.css?20201120"); @import url("customInputsFlat.css");@import url("customTrumbowyg.css");@import url(https://fonts.googleapis.com/icon?family=Material+Icons);/* END IMPORTS*/
 
 :root{
+  /* Alert colors */
   --alertColorSuccess: #37c06f;
   --alertColorWarning: #f5b10c;
   --alertColorInfo: #40aad4;

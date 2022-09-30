@@ -144,22 +144,29 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                   } else {
                     fieldsMap.put("reply", "");
                   }
-                  if (comment.getStatus() != null) {
+                  if (comment.getFeedbackStatus() != null) {
 
                     String statusText = null;
-                    if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Disagreed.getStatus())) {
+                    if (comment.getFeedbackStatus().getId()
+                      .equals(Long.parseLong(FeedbackStatusEnum.Disagreed.getStatusId()))) {
                       statusText = "0";
                     }
-                    if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Agreed.getStatus())) {
+                    if (comment.getFeedbackStatus().getId()
+                      .equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId()))) {
                       statusText = FeedbackStatusEnum.Agreed.getStatusId();
                     }
-                    if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.ClarificatioNeeded.getStatus())) {
+                    if (comment.getFeedbackStatus().getId()
+                      .equals(Long.parseLong(FeedbackStatusEnum.ClarificatioNeeded.getStatusId()))) {
                       statusText = FeedbackStatusEnum.ClarificatioNeeded.getStatusId();
                     }
-                    if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Draft.getStatus())) {
-                      statusText = FeedbackStatusEnum.Draft.getStatusId();
-                    }
-                    if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Admitted.getStatus())) {
+                    /*
+                     * if (comment.getFeedbackStatus().getId()
+                     * .equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))) {
+                     * statusText = FeedbackStatusEnum.Draft.getStatusId();
+                     * }
+                     */
+                    if (comment.getFeedbackStatus().getId()
+                      .equals(Long.parseLong(FeedbackStatusEnum.Admitted.getStatusId()))) {
                       statusText = FeedbackStatusEnum.Admitted.getStatusId();
                     }
                     /*
@@ -167,10 +174,12 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                      * statusText = "5";
                      * }
                      */
-                    if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Dismissed.getStatus())) {
+                    if (comment.getFeedbackStatus().getId()
+                      .equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))) {
                       statusText = FeedbackStatusEnum.Dismissed.getStatusId();
                     }
-                    if (comment.getStatus().equalsIgnoreCase(FeedbackStatusEnum.Draft.getStatus())) {
+                    if (comment.getFeedbackStatus().getId()
+                      .equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))) {
                       statusText = "";
                     }
 

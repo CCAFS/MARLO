@@ -107,7 +107,7 @@ public class SaveCommentStatusAction extends BaseAction {
       if (status == null) {
         statusText = FeedbackStatusEnum.Draft.getStatus();
       }
-      commentSave.setStatus(statusText);
+      // commentSave.setStatus(statusText);
       this.saveFeedbackStatus();
 
       if (userId != null) {

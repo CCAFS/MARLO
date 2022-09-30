@@ -29,7 +29,6 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 import org.cgiar.ccafs.marlo.data.model.FeedbackStatus;
-import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -160,39 +159,6 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         qaComment.setPhase(phase);
       }
 
-      String statusText = null;
-      if (status != null) {
-        if (status.equals("0")) {
-          statusText = FeedbackStatusEnum.Disagreed.getStatus();
-        }
-        if (status.equals(FeedbackStatusEnum.Agreed.getStatusId())) {
-          statusText = FeedbackStatusEnum.Agreed.getStatus();
-        }
-        if (status.equals(FeedbackStatusEnum.ClarificatioNeeded.getStatusId())) {
-          statusText = FeedbackStatusEnum.ClarificatioNeeded.getStatus();
-        }
-        if (status.equals(FeedbackStatusEnum.Draft.getStatusId())) {
-          statusText = FeedbackStatusEnum.Draft.getStatus();
-        }
-        if (status.equals(FeedbackStatusEnum.Admitted.getStatusId())) {
-          statusText = FeedbackStatusEnum.Admitted.getStatus();
-        }
-        if (status.equals(FeedbackStatusEnum.Disagreed.getStatusId())) {
-          statusText = FeedbackStatusEnum.Disagreed.getStatus();
-        }
-        if (status.equals(FeedbackStatusEnum.Dismissed.getStatusId())) {
-          statusText = FeedbackStatusEnum.Dismissed.getStatus();
-        }
-        if (status == null) {
-          statusText = FeedbackStatusEnum.Draft.getStatus();
-        }
-      }
-
-      if (status != null) {
-        qaComment.setStatus(statusText);
-        this.saveFeedbackStatus();
-      }
-
       if (fieldId != null && phaseId != null && parentId != null) {
         FeedbackQACommentableFields field =
           feedbackQACommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
@@ -264,6 +230,8 @@ public class SaveFeedbackCommentsAction extends BaseAction {
           logger.error("unable to set Project object", e);
         }
       }
+      // qaComment.setStatus(statusText);
+      this.saveFeedbackStatus();
 
       qaComment = commentQAManager.saveFeedbackQAComment(qaComment);
 
@@ -433,7 +401,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
    * Save feedback status id relation with feedback status table
    */
   public void saveFeedbackStatus() {
-    if (status != null) {
+    if (status != null && !status.isEmpty()) {
       long idStatus;
       try {
         if (status.equals("0")) {
@@ -443,11 +411,15 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         }
         FeedbackStatus feedbackStatus = feedbackStatusManager.getFeedbackStatusById(idStatus);
         qaComment.setFeedbackStatus(feedbackStatus);
-        qaComment = commentQAManager.saveFeedbackQAComment(qaComment);
+        // qaComment = commentQAManager.saveFeedbackQAComment(qaComment);
       } catch (Exception e) {
         logger.error("unable to get feedback status id", e);
       }
 
+    } else {
+      FeedbackStatus feedbackStatus = feedbackStatusManager.getFeedbackStatusById(3);
+      qaComment.setFeedbackStatus(feedbackStatus);
+      // qaComment = commentQAManager.saveFeedbackQAComment(qaComment);
     }
   }
 
