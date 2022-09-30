@@ -405,11 +405,11 @@ jQuery.fn.setTrumbowyg = function() {
     $editor.trumbowyg({
         btns: [
           [
-              'link', 'strong', 'em'
+              'link'
           ]
         ],
         allowTagsFromPaste: [
-            'a', 'p', 'br', 'b', 'strong', 'i', 'em'
+            'a', 'p', 'br', 'b', 'i'
         ],
         urlProtocol: true,
         autogrow: true,
