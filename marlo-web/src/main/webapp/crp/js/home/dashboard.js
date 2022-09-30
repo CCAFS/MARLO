@@ -90,7 +90,7 @@ function createTimeline() {
     // Define the color and percentage of the bar
     if(counter == 0 && (new Date(data.endDate) > new Date())){
 
-      let dateDiff = new Date(data.endDate).getTime() - new Date(previusDate).getTime();
+      let dateDiff = new Date(data.endDate).getTime() - new Date(data.startDate).getTime();
       let daysFinalizeActivity = ((new Date(data.endDate).getTime() - new Date().getTime())/(1000*60*60*24));
       newPorcentTimeLine.className='porcentTimeLine';
       newDivTitle.classList.add('timelineColorAlert');
@@ -99,14 +99,16 @@ function createTimeline() {
       linePorcent = -(daysFinalizeActivity*100)/(dateDiff/(1000*60*60*24))+100;
       newDivTimeLine.style["margin-top"] = "0";
       newPorcentTimeLine.style["width"] = Math.round(linePorcent)+'%';
+      if(linePorcent < 0) newPorcentTimeLine.style["width"] = Math.round(0)+'%';
       newPorcentTimeLine.appendChild(newDivTimeLine);      
       $('.timelineAlertText').text(Math.round(daysFinalizeActivity+1)+' days left until the end of the activity');
       counter = 1;
+      console.log(linePorcent)
     }
   })
   // Locate pending activity
   const element = document.querySelector(".scroll-x-containerTimeline");
-  element.scrollLeft += 173*counterActvi;
+  element.scrollLeft += 173*(counterActvi-2);
 
 }
 

@@ -44,10 +44,11 @@
   <div class="container">
     [#-- What do you want to do --]
 
+[#if action.hasSpecificities('homepage_timeline_active') ]
   <section class="timeline">	
     <div class="homeTitleTimeline"><b>AICCRA Planning report</b></div>
     <div class="timelineAlert">
-      <img src="${baseUrlCdn}/global/images/icon-transparent-warning.png" width="35">
+      <img src="${baseUrlCdn}/global/images/icon-transparent-warning.png" width="30">
       <p class="timelineAlertText"> days left until the end of the activity</p>
     </div>
 		<div class="containerTimeline">
@@ -58,7 +59,7 @@
 			<div class="sideButtonTimeline buttonRightTimeline"><p>></p></div>
 		</div>
 	</section>
-
+[/#if]
     <div class="homeTitle2"><b>[@s.text name="dashboard.homepage.title" /] ${(currentUser.firstName)!}!</b></div>  
     <div class="homeDescription2 col-md-12">[@s.text name="dashboard.homepage.description" /]</div> 
 
