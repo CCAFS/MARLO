@@ -27,8 +27,7 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   private String comment;
   @Expose
   private String fieldValue;
-  @Expose
-  private String status;
+
   @Expose
   private FeedbackQAReply reply;
   @Expose
@@ -139,10 +138,6 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     return reply;
   }
 
-  public String getStatus() {
-    return status;
-  }
-
   public User getUser() {
     return user;
   }
@@ -219,10 +214,6 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
 
   public void setReply(FeedbackQAReply reply) {
     this.reply = reply;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
   }
 
   public void setUser(User user) {

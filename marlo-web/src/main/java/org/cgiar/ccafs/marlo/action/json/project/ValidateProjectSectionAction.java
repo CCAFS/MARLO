@@ -187,6 +187,9 @@ public class ValidateProjectSectionAction extends BaseAction {
         case CONTRIBUTIONLP6:
           this.projectSectionValidator.validateContributionLp6(this, this.getProjectID());
           break;
+        case FEEDBACK:
+          this.projectSectionValidator.validateFeedback(this, this.getProjectID());
+          break;
         default:
           break;
       }

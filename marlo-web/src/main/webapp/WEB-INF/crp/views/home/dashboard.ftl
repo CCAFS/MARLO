@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/home/dashboard.js",
+  "${baseUrlMedia}/js/home/dashboard.js?20220929",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20210826",
+  "${baseUrlMedia}/css/home/dashboard.css?20220929",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css"
   ]
@@ -40,12 +40,30 @@
     window.location.href = window.location.href;
   </script>
 [/#if]
-
 <section class="marlo-content">
   <div class="container">
     [#-- What do you want to do --]
-    <div class="homeTitle2"><b>[@s.text name="dashboard.homepage.title" /] ${(currentUser.firstName)!}!</b></div>
-    <div class="homeDescription2 col-md-12">[@s.text name="dashboard.homepage.description" /]</div>
+
+[#if action.hasSpecificities('homepage_timeline_active') ]
+  <section class="timeline">	
+    <div class="homeTitleTimeline"><b>AICCRA Planning report</b></div>
+    <div class="timelineAlert">
+      <img src="${baseUrlCdn}/global/images/icon-transparent-warning.png" width="30">
+      <p class="timelineAlertText"> days left until the end of the activity</p>
+    </div>
+		<div class="containerTimeline">
+			<!--  <a href="#item1">touch me</a>  -->
+			<div class="scroll-x-containerTimeline " id="listItemTimeline">
+			</div>
+			<div class="sideButtonTimeline buttonLeftTimeline"><p><</p></div>
+			<div class="sideButtonTimeline buttonRightTimeline"><p>></p></div>
+		</div>
+	</section>
+[/#if]
+    <div class="homeTitle2"><b>[@s.text name="dashboard.homepage.title" /] ${(currentUser.firstName)!}!</b></div>  
+    <div class="homeDescription2 col-md-12">[@s.text name="dashboard.homepage.description" /]</div> 
+
+  
 
     [#if !action.isAiccra()]
     <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
@@ -165,8 +183,8 @@
     </div>
 
     [#-- Dashboard --]
-    <div id="dashboardContent" class="col-md-12">
-      <div class="homeTitle col-md-12">[#-- <strong>Dashboard</strong> --]</div>
+     <div id="dashboardContent" class="col-md-12">
+      <div class="homeTitle col-md-12"></div>
       <div class="col-md-12">
       [#if !action.isAiccra()]
         <ul class="nav nav-tabs" role="tablist">
@@ -212,16 +230,13 @@
               </div>
             </div>
             <div id="contentGraph">
-              [#-- Download button--]
-              [#--  <span id="buttonShowAll"><span class="glyphicon glyphicon-download-alt"></span></span>--]
               <div id="impactGraphic" ></div>
-              [#-- Download button--]
               <span title="View full graph" id="fullscreen" class="glyphicon glyphicon-fullscreen"></span>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </div>  
 
 
     <div id="impactGraphic-content"  style="display:none;" >
