@@ -248,7 +248,7 @@ span.timelineControl:hover {
   .porcentTimeLine {
     height: 6px;
     width: 70%;
-    background: #8eaf92;
+    background: #f7d46a;
     position: absolute;
     margin-top: -20px;
     border-radius: 0 10px 10px 0;
@@ -312,12 +312,12 @@ span.timelineControl:hover {
   .titleTimeline {
     writing-mode: vertical-rl;
     height: 200px;
-    -webkit-transform: rotate(231deg); 
+    -webkit-transform: rotate(224deg);
     text-align: left;
     padding-left: -25px;
     font-weight: 500;
-    margin-bottom: 2px;
-    margin-left: 239px;
+    margin-bottom: 12px;
+    margin-left: 114px;
   }
   
   .dateTimeline {
