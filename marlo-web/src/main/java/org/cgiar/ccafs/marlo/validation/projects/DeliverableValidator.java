@@ -486,6 +486,7 @@ public class DeliverableValidator extends BaseValidator {
 
       if (deliverable.getDeliverableInfo(action.getActualPhase()) != null
         && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
+        && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != null
         && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == -1) {
         action.addMessage(action.getText("project.deliverable.generalInformation.subType"));
         action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.id",
