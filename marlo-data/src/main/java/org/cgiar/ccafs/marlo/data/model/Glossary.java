@@ -19,38 +19,91 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import java.util.Date;
 
-public class Glossary extends MarloAuditableEntity implements java.io.Serializable {
-
+public class Glossary extends MarloBaseEntity implements java.io.Serializable {
 
   /**
    * 
    */
   private static final long serialVersionUID = -4418504193664414295L;
 
-
   private String applicationName;
   private String title;
   private String definition;
+  private Date activeSince;
+  private boolean active = true;
+  private String createdBy;
+  private Date modificationDate;
+  private String modifiedBy;
+  private String modificationJustification;
+
+  public Date getActiveSince() {
+    return this.activeSince;
+  }
 
   public String getApplicationName() {
     return applicationName;
+  }
+
+  public String getCreatedBy() {
+    return createdBy;
   }
 
   public String getDefinition() {
     return definition;
   }
 
+  public Date getModificationDate() {
+    return modificationDate;
+  }
+
+  public String getModificationJustification() {
+    return modificationJustification;
+  }
+
+  public String getModifiedBy() {
+    return modifiedBy;
+  }
+
   public String getTitle() {
     return title;
+  }
+
+  public boolean isActive() {
+    return this.active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
   }
 
   public void setApplicationName(String applicationName) {
     this.applicationName = applicationName;
   }
 
+  public void setCreatedBy(String createdBy) {
+    this.createdBy = createdBy;
+  }
+
   public void setDefinition(String definition) {
     this.definition = definition;
+  }
+
+  public void setModificationDate(Date modificationDate) {
+    this.modificationDate = modificationDate;
+  }
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
+  }
+
+  public void setModifiedBy(String modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
   public void setTitle(String title) {
