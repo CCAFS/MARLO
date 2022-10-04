@@ -22,5 +22,17 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
+    <property name="createdBy" type="string" >
+      <column name="created_by" sql-type="TEXT" />
+    </property>
+    <property name="modificationDate" type="timestamp" update="false">
+			<column name="modification_date" length="19" not-null="true" />
+		</property>
+    <property name="modifiedBy" type="string" >
+      <column name="modified_by" sql-type="TEXT" />
+    </property>
+    <property name="modificationJustification" type="string" >
+      <column name="modification_justification" sql-type="TEXT" />
+    </property>
   </class>
 </hibernate-mapping>
