@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 import org.cgiar.ccafs.marlo.data.model.FeedbackStatus;
+import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -206,7 +207,9 @@ public class SaveFeedbackCommentsAction extends BaseAction {
 
       if (replyId != null) {
         FeedbackQAReply reply = commentManager.getFeedbackCommentById(replyId);
-        qaComment.setReply(reply);
+        if (reply != null) {
+          qaComment.setReply(reply);
+        }
       }
 
       if (parentId != null) {
@@ -231,7 +234,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         }
       }
       // qaComment.setStatus(statusText);
-      this.saveFeedbackStatus();
+      this.setFeedbackStatus();
 
       qaComment = commentQAManager.saveFeedbackQAComment(qaComment);
 
@@ -398,14 +401,14 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   }
 
   /**
-   * Save feedback status id relation with feedback status table
+   * Set feedback status id relation with feedback status table
    */
-  public void saveFeedbackStatus() {
+  public void setFeedbackStatus() {
     if (status != null && !status.isEmpty()) {
       long idStatus;
       try {
         if (status.equals("0")) {
-          idStatus = 5;
+          idStatus = (Long.parseLong(FeedbackStatusEnum.Disagreed.getStatusId()));
         } else {
           idStatus = Long.valueOf(status);
         }
@@ -417,9 +420,21 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
 
     } else {
-      FeedbackStatus feedbackStatus = feedbackStatusManager.getFeedbackStatusById(3);
+      // New comments
+      FeedbackStatus feedbackStatus;
+      if (this.hasSpecificities(APConstants.FEEDBACK_DRAFT_ACTIVE)) {
+        feedbackStatus =
+          feedbackStatusManager.getFeedbackStatusById(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()));
+      } else {
+        // Set comment as Agreed
+        feedbackStatus =
+          feedbackStatusManager.getFeedbackStatusById(Long.parseLong(FeedbackStatusEnum.Admitted.getStatusId()));
+      }
+      qaComment.setUserApproval(this.getCurrentUser());
+      qaComment.setApprovalDate(date);
+
       qaComment.setFeedbackStatus(feedbackStatus);
-      // qaComment = commentQAManager.saveFeedbackQAComment(qaComment);
+
     }
   }
 
