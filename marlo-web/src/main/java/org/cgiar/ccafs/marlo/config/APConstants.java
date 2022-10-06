@@ -134,6 +134,7 @@ public final class APConstants {
   public static final String PREVIOUS_PROJECT_ID_ACTIVE = "previous_project_id_field_active";
   public static final String FEEDBACK_ACTIVE = "feedback_active";
   public static final String FEEDBACK_CLARIFICATION_NEEDED_ACTIVE = "feedback_clarification_needed_active";
+  public static final String FEEDBACK_DRAFT_ACTIVE = "feedback_draft_active";
   public static final String CRP_BI_MODULE_ACTIVE = "crp_bi_module_active";
   public static final String HOMEPAGE_TIMELINE_ACTIVE = "homepage_timeline_active";
 
