@@ -3,7 +3,6 @@ $(document).ready(initDashboard);
 
 let timelineElements;
 
-// console.log(baseURL)
 
 
 function initDashboard() {
@@ -23,6 +22,8 @@ function initDashboard() {
   $('.buttonRightTimeline').on("click", moveScrollRight);
 
   $('.buttonLeftTimeline').on("click", moveScrollLeft);
+
+  $('.itemsTablet').on("click", updateTable);
 
   
 }
@@ -103,13 +104,23 @@ function createTimeline() {
       newPorcentTimeLine.appendChild(newDivTimeLine);      
       $('.timelineAlertText').text(Math.round(daysFinalizeActivity+1)+' days left until the end of the activity');
       counter = 1;
-      console.log(linePorcent)
     }
   })
   // Locate pending activity
   const element = document.querySelector(".scroll-x-containerTimeline");
   element.scrollLeft += 173*(counterActvi-2);
 
+}
+
+function updateTable(){
+  // console.log(this.attr("id"))
+  let nameId =$(this).attr("id")
+  console.log($('div#'+nameId))
+  // let activeCurrent = $('a#'+nameId).parent().addClass('active');
+  $("li.active").removeClass('active')
+  $('div.active').removeClass('in active')
+  $('div#'+nameId+'_wrapper').parent().addClass('in active')
+  $('a#'+nameId).parent().addClass('active');
 }
 
 function setCompletionDates() {
@@ -347,7 +358,6 @@ function getTimeline() {
     success: function (data) {
       if (data && Object.keys(data).length != 0) {
         timelineElements = data['information'];
-        // console.log(data['information'])
       }
     }
   });

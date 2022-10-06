@@ -60,6 +60,88 @@
 		</div>
 	</section>
 [/#if]
+
+  <section class="containerTabletItems">	
+    <div class="tableItemsTitle">
+      <p>Select the evidence type to see in the table</p>
+    </div>
+    <div class="containerSeccionItems">
+      <div class="containerItems">
+        <div class="itemsTablet" id="projects">
+          <img src="${baseUrlCdn}/global/images/1309-load-balancer-outline.gif" width="70">
+          <p>Clusters</p>
+        </div>
+        <div class="itemsTablet" id="deliverables">
+          <img src="${baseUrlCdn}/global/images/107-box-package-open-outline.gif" width="70">
+          <p>Deliverables</p>
+        </div>
+        <div class="itemsTablet" id="studies">
+          <img src="${baseUrlCdn}/global/images/27-globe-outline.gif" width="70">
+          <p>OICRs & MELIAs</p>
+        </div>
+        <div class="itemsTablet" id="innovations">
+          <img src="${baseUrlCdn}/global/images/478-computer-display-outline.gif" width="70">
+          <p>Innovations</p>
+        </div>
+      </div>
+      <div id="dashboardContent" class="">
+        <div class="homeTitle col-md-12"></div>
+        <div class="col-md-12">
+        [#if !action.isAiccra()]
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myProjects.title" /]</a></li>
+            <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
+          </ul>
+        [#else]
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myProjects.title" /]</a></li>
+            <li role="presentation"><a id="deliverables" href="#myDeliverables" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myDeliverables.title" /]</a></li>
+            <li role="presentation"><a id="studies" href="#myStudies" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.studies.table.title" /]</a></li>
+            <li role="presentation"><a id="innovations" href="#myInnovations" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.innovations.table.title" /]</a></li>
+            <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
+          </ul>
+        [/#if]
+
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade in active" id="myProjects">
+              [#if !action.isAiccra()]
+                  [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
+              [#else]
+                [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/description" /]
+              [/#if]
+            </div>
+
+            <div role="tabpanel" class="tab-pane fade" id="myDeliverables">
+              [@indicatorLists.deliverablesHomeList deliverables=myDeliverables canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" /]
+            </div>
+            
+            <div role="tabpanel" class="tab-pane fade" id="myStudies">
+              [@indicatorLists.studiesHomeList studies=myStudies canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/study" /]
+            </div>
+            
+            <div role="tabpanel" class="tab-pane fade" id="myInnovations">
+              [@indicatorLists.innovationsHomeList innovations=myInnovations canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/innovation" /]
+            </div>
+
+            <div role="tabpanel" class="tab-pane fade" id="impactP">
+              <div id="infoRelations" class="panel panel-default">
+                <div class="panel-heading"><strong>Relations</strong></div>
+                <div id="infoContent" class="panel-body">
+                  <ul></ul>
+                </div>
+              </div>
+              <div id="contentGraph">
+                <div id="impactGraphic" ></div>
+                <span title="View full graph" id="fullscreen" class="glyphicon glyphicon-fullscreen"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> 
+    </div>
+	</section>
+
+
     <div class="homeTitle2"><b>[@s.text name="dashboard.homepage.title" /] ${(currentUser.firstName)!}!</b></div>  
     <div class="homeDescription2 col-md-12">[@s.text name="dashboard.homepage.description" /]</div> 
 
@@ -183,7 +265,7 @@
     </div>
 
     [#-- Dashboard --]
-     <div id="dashboardContent" class="col-md-12">
+    <div id="dashboardContent" class="col-md-12">
       <div class="homeTitle col-md-12"></div>
       <div class="col-md-12">
       [#if !action.isAiccra()]
@@ -226,7 +308,7 @@
             <div id="infoRelations" class="panel panel-default">
               <div class="panel-heading"><strong>Relations</strong></div>
               <div id="infoContent" class="panel-body">
-               <ul></ul>
+                <ul></ul>
               </div>
             </div>
             <div id="contentGraph">
