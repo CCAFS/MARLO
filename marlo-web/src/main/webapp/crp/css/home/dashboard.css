@@ -384,3 +384,57 @@ span.timelineControl:hover {
   .imgTimeline {
     margin-top: 7px;
   }
+
+
+  /**************** Content Items Table **************/
+  .containerTabletItems{
+    display: block;
+    padding: 30px 0;
+    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);
+    border-radius: 10px;
+  }
+
+  .tableItemsTitle{
+    width: 100%;
+    text-align: center;
+    font-weight: 700;
+    font-size: 3.0em;
+    color: rgb(110, 110, 110);
+    margin-bottom: 40px;
+  }
+  
+  .containerSeccionItems {
+    display: flex   ;
+  }
+
+  .containerItems {
+    flex-wrap: wrap;
+    display: flex;
+    width: 50%;
+    padding: 0 80px;
+    margin: auto;
+  }
+
+  .itemsTablet{
+    height: 150px;
+    width: 150px;
+    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);
+    /* background-color: #117fa8; */
+    margin: 10px;
+    text-align: center;
+    border-radius: 5px;
+  }
+
+  .itemsTablet:active{
+    background: #c3e0f9;
+  }
+
+ .itemsTablet img{
+  margin-top: 30px;
+ }
+
+ .itemsTablet p{
+  font-weight: 700;
+  font-size: 1.2em;
+  color: rgb(110, 110, 110);
+ }
