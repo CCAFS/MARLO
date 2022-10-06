@@ -305,7 +305,7 @@ span.timelineControl:hover {
     position: absolute;
     right: 0;
     width: 30px;
-    bottom: 32px;
+    bottom: 39px;
     z-index: 1;
   }
   
@@ -322,7 +322,7 @@ span.timelineControl:hover {
   
   .dateTimeline {
     margin-right: 25px;
-    margin-top: -37px;
+    margin-top: -30px;
   }
   
   .sideButtonTimeline {
