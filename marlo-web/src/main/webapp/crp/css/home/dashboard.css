@@ -229,7 +229,7 @@ span.timelineControl:hover {
 .homeTitleTimeline {
     display: flex;
     justify-content: center;
-    font-size: 3.0em;
+    font-size: 2.0em;
     color: rgb(110, 110, 110);
     padding: 22px 30px 14px 14px;
     width: 100%;
@@ -242,25 +242,25 @@ span.timelineControl:hover {
     justify-content: center;
     -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);
     border-radius: 10px;
-    height: 459px;
+    height: 297px;
   }
 
   .porcentTimeLine {
     height: 6px;
     width: 70%;
-    background: #f7d46a;
+    background: #eb9d46;
     position: absolute;
-    margin-top: -20px;
+    margin-top: -56px;
     border-radius: 0 10px 10px 0;
-    max-width: 135px;
+    max-width: 195px;
   }
   
   .timeline-line{
     height: 6px;
     background: rgb(228, 228, 228);
-    width: 170px;
+    width: 243px;
     position: absolute;
-    margin-top: -19px;
+    margin-top: -56px;
     border: none;
     z-index: -1;
   }
@@ -274,7 +274,7 @@ span.timelineControl:hover {
     margin-right: auto;
     margin: 0 auto;
     display: flex;
-    margin-top: 173px;
+    margin-top: 63px;
   }
   
   
@@ -290,7 +290,7 @@ span.timelineControl:hover {
   }
   
   .infTimelineTimeline {
-    min-width: 173px;
+    min-width: 243px;
     text-align: center;
     position: relative;
   }
@@ -312,16 +312,17 @@ span.timelineControl:hover {
   .titleTimeline {
     writing-mode: vertical-rl;
     height: 200px;
-    -webkit-transform: rotate(224deg);
+    -webkit-transform: rotate(270deg);
     text-align: left;
-    padding-left: -25px;
+    /* padding-left: -25px; */
     font-weight: 500;
-    margin-bottom: 12px;
-    margin-left: 114px;
+    /* margin-bottom: -70px; */
+    margin: 0 auto;
   }
   
   .dateTimeline {
     margin-right: 25px;
+    margin-top: -37px;
   }
   
   .sideButtonTimeline {
@@ -352,7 +353,7 @@ span.timelineControl:hover {
   }
   
   .timelineBackAlert {
-    background: #f7d46a;
+    background: #eb9d46;
   }
   
   .timelineColorSuccess {
@@ -360,16 +361,16 @@ span.timelineControl:hover {
   }
   
   .timelineColorAlert {
-    color: #f1c43d;
+    color: #da9343;
   }
 
   .timelineAlert {
     background-color: #ffd966;
     height: 86px;
-    width: 187px;
+    width: 147px;
     position: absolute;
     left: 42px;
-    top: 95px;
+    top: 65px;
     -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);
     border-radius: 10px;
     text-align: center;
