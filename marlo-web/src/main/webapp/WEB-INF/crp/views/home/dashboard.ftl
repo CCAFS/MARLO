@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/home/dashboard.js?20220929",
+  "${baseUrlMedia}/js/home/dashboard.js?20221006",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20220929",
+  "${baseUrlMedia}/css/home/dashboard.css?20221006",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css"
   ]

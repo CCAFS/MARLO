@@ -108,8 +108,8 @@ function createTimeline() {
   })
   // Locate pending activity
   const element = document.querySelector(".scroll-x-containerTimeline");
-  element.scrollLeft += 173*(counterActvi-2);
-
+  element.scrollLeft += 243*(counterActvi-2);
+  element.scrollTop += 10
 }
 
 function updateTable(){
