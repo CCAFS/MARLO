@@ -21,7 +21,7 @@ $(document).ready(function() {
           {
               bSortable: false,
               aTargets: [
-                  -1, -2
+                  -1
               ]
           }, {
               sType: "natural",
