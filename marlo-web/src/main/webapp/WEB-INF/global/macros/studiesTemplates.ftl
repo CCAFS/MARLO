@@ -353,7 +353,7 @@
         </div>
         --]
        <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
-          [@customForm.elementsListComponent name="${customName}.projectOutcomes" elementType="projectOutcome" elementList=(element.projectOutcomes)![] label="study.outcomes"  listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName"/]
+          [@customForm.elementsListComponent name="${customName}.projectOutcomes" elementType="projectOutcome" elementList=(element.projectOutcomes)![] label="study.outcomes"  listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName" required=!action.isPOWB()/]
           <div class="note">[@s.text name="study.outcomes.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
          <br/>      
         </div>
