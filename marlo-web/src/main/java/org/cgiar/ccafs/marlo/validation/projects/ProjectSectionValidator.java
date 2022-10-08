@@ -1337,7 +1337,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
       .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(action.getActualPhase()) != null)
       .collect(Collectors.toList());
-    if (studies != null && studies.size() > 0) {
+    if (studies != null && !studies.isEmpty()) {
       allProjectStudies.addAll(studies);
     }
 
@@ -1479,9 +1479,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           expectedStudy.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
         }
       }
-      if (action.isAiccra() == false) {
-        projectExpectedStudiesValidator.validate(action, project, expectedStudy, false);
-      }
+
+      projectExpectedStudiesValidator.validate(action, project, expectedStudy, false);
+
     }
 
 
