@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/home/dashboard.js?20221006",
+  "${baseUrlMedia}/js/home/dashboard.js?20221010",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20221006",
+  "${baseUrlMedia}/css/home/dashboard.css?20221010",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css"
   ]
@@ -46,9 +46,9 @@
 
 [#if action.hasSpecificities('homepage_timeline_active') ]
   <section class="timeline">	
-    <div class="homeTitleTimeline"><b>AICCRA Planning report</b></div>
+    <div class="homeTitleTimeline"><b>Schedule</b></div>
     <div class="timelineAlert">
-      <img src="${baseUrlCdn}/global/images/icon-transparent-warning.png" width="30">
+      <!--  <img src="${baseUrlCdn}/global/images/icon-transparent-warning.png" width="30">  -->
       <p class="timelineAlertText"> days left until the end of the activity</p>
     </div>
 		<div class="containerTimeline">
