@@ -156,7 +156,7 @@ function attachEventsFeedback() {
     block.find('img.replyCommentBtn').click();
   });
 
-  $('img.correctCommentBtn ').on('click', function () {
+  $('img.correctCommentBtn').on('click', function () {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(this).parent().parent().parent();
@@ -165,7 +165,7 @@ function attachEventsFeedback() {
     saveCommentStatus(4, commentID, name);
   });
 
-  $('img.dismissCommentBtn ').on('click', function () {
+  $('img.dismissCommentBtn').on('click', function () {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(this).parent().parent().parent();
@@ -174,7 +174,7 @@ function attachEventsFeedback() {
     saveCommentStatus(6, commentID, name);
   });
 
-  $('.editCommentBtn ').on('click', function () {
+  $('.editCommentBtn').on('click', function () {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(this).parent().parent().parent();
@@ -281,6 +281,7 @@ function showEditComment(block, commentID, option) {
     case 1:
       commentReadonly.hide();
       editCommentReadonly.show();
+      editCommentReadonly.focus();
       block.find('.editCommentBtn').hide();
       block.find('div.deleteCommentBtn').hide();
       block.find('img.agreeCommentBtn').hide();
@@ -773,7 +774,7 @@ function hideShowOptionButtons(block, status) {
     let indexToCute = $(reference).attr("name").substring(0,$(reference).attr("name").length-3);
     let objectField = fieldsSections.find(field => field.fieldName == indexToCute)
     let inputValue = $(`input[name="${objectField.parentFieldDescription}"]`).val()
-    var finalAjaxURL = `/saveFeedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&comment=${comment}&phaseID=${phaseID}&fieldID=${fieldID}&userID=${userID}&projectID=${projectID}&parentFieldDescription=${inputValue}`;
+    var finalAjaxURL = `/saveFeedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&comment=${encodeURIComponent(comment)}&phaseID=${phaseID}&fieldID=${fieldID}&userID=${userID}&projectID=${projectID}&parentFieldDescription=${inputValue}`;
   
     $.ajax({
       url: baseURL + finalAjaxURL,
@@ -791,7 +792,7 @@ function hideShowOptionButtons(block, status) {
       let indexToCute = $(reference).attr("name").substring(0,$(reference).attr("name").length-3);
       let objectField = fieldsSections.find(field => field.fieldName == indexToCute)
       let inputValue = $(`input[name="${objectField.parentFieldDescription}"]`).val()
-      var finalAjaxURL = `/saveFeedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&comment=${comment}&phaseID=${phaseID}&fieldID=${fieldID}&userID=${userID}&projectID=${projectID}&commentID=${commentID}`;
+      var finalAjaxURL = `/saveFeedbackComments.do?sectionName=${sectionName}&parentID=${parentID}&comment=${encodeURIComponent(comment)}&phaseID=${phaseID}&fieldID=${fieldID}&userID=${userID}&projectID=${projectID}&commentID=${commentID}`;
 
       $.ajax({
         url: baseURL + finalAjaxURL,
@@ -805,7 +806,7 @@ function hideShowOptionButtons(block, status) {
     }
   
   function saveFeedbackReply(reply, commentID, name) {
-    var finalAjaxURL = `/saveFeedbackReply.do?reply=${reply}&commentID=${commentID}&userID=${userID}`;
+    var finalAjaxURL = `/saveFeedbackReply.do?reply=${encodeURIComponent(reply)}&commentID=${commentID}&userID=${userID}`;
   
     $.ajax({
       url: baseURL + finalAjaxURL,

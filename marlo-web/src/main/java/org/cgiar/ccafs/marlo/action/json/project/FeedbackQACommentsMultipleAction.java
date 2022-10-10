@@ -332,9 +332,13 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
       frontName =
         StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FRONT_REQUEST_NAME).getMultipleValues()[0]));
     }
-    if (parameters.get(APConstants.PHASE_ID).isDefined()) {
-      phaseId =
-        Long.parseLong(StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0])));
+    try {
+      if (parameters.get(APConstants.PHASE_ID).isDefined()) {
+        phaseId = Long
+          .parseLong(StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0])));
+      }
+    } catch (Exception e) {
+      logger.error("error getting phase id information in feedbackQAComments service", e);
     }
     if (parameters.get(APConstants.FIELD_REQUEST_ID).isDefined()) {
       fieldId = Long.parseLong(
