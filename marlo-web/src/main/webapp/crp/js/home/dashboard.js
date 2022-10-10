@@ -66,10 +66,11 @@ function createTimeline() {
 
     var description = document.createTextNode(data.description);
     var dateMonthStart = new Date(data.startDate).toLocaleString("en-US", { month: "short" });
-    var dateDayStart = new Date(data.startDate).getDate()+1;
+    var dateDayStart = new Date(data.startDate).getDate()+1;    
+    var dateMonthYear =new Date(data.endDate).getFullYear();
     var dateMonthEnd =new Date(data.endDate).toLocaleString("en-US", { month: "short" });
     var dateDayEnd = new Date(data.endDate).getDate()+1;
-    var date =document.createTextNode(dateMonthStart+' '+ dateDayStart+' - '+dateMonthEnd+' '+ dateDayEnd)
+    var date =document.createTextNode(dateMonthEnd+' '+ dateDayEnd+' - '+dateMonthYear)
     newDivTitle.appendChild(description);
     newPTimeLine.appendChild(date);
     var endDate = new Date(data.endDate);
@@ -92,7 +93,7 @@ function createTimeline() {
     // Define the color and percentage of the bar
     if(counter == 0 && (endDate > new Date())){
 
-      let dateDiff = endDate.getTime() - new Date(data.startDate).getTime();
+      let dateDiff = endDate.getTime() - new Date(previusDate).getTime();
       let daysFinalizeActivity = ((endDate.getTime() - new Date().getTime())/(1000*60*60*24));
       newPorcentTimeLine.className='porcentTimeLine';
       newDivTitle.classList.add('timelineColorAlert');
@@ -103,9 +104,11 @@ function createTimeline() {
       newPorcentTimeLine.style["width"] = Math.round(linePorcent)+'%';
       if(linePorcent < 0) newPorcentTimeLine.style["width"] = Math.round(0)+'%';
       newPorcentTimeLine.appendChild(newDivTimeLine);      
-      $('.timelineAlertText').text(Math.round(daysFinalizeActivity+1)+' days left until the end of the activity');
+      let textAlert ='';
+      textAlert = Math.round(daysFinalizeActivity+1)+' day left to finalize the current activity';
+      if(Math.round(daysFinalizeActivity+1)>1) textAlert = Math.round(daysFinalizeActivity+1)+' days left to finalize the current activity';
       counter = 1;
-      // console.log(linePorcent)
+      $('.timelineAlertText').text(textAlert);
     }
   })
   // Locate pending activity

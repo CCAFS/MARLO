@@ -230,7 +230,7 @@ span.timelineControl:hover {
     display: flex;
     justify-content: center;
     font-size: 2.0em;
-    color: rgb(110, 110, 110);
+    color: #333;
     padding: 22px 30px 14px 14px;
     width: 100%;
     position: absolute;
@@ -240,8 +240,8 @@ span.timelineControl:hover {
     margin: 30px 0;
     display: flex;
     justify-content: center;
-    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);
-    border-radius: 10px;
+    -webkit-box-shadow: 0px 0px 10px rgb(0 0 0 / 15%);
+    border-radius: 5px;
     height: 297px;
   }
 
@@ -293,6 +293,7 @@ span.timelineControl:hover {
     min-width: 243px;
     text-align: center;
     position: relative;
+    cursor: default;
   }
   
   .timeline-pointTimeline {
@@ -314,14 +315,15 @@ span.timelineControl:hover {
     height: 200px;
     -webkit-transform: rotate(270deg);
     text-align: left;
+    color: #5f5e5e;
     /* padding-left: -25px; */
-    font-weight: 500;
+    /* font-weight: 500; */
     /* margin-bottom: -70px; */
-    margin: 0 auto;
+    margin:  auto;
   }
   
   .dateTimeline {
-    margin-right: 25px;
+    margin-right: -211px;
     margin-top: -30px;
   }
   
@@ -365,21 +367,21 @@ span.timelineControl:hover {
   }
 
   .timelineAlert {
-    background-color: #ffd966;
-    height: 86px;
+    background-color: #ffde85;
+    height: auto;
     width: 147px;
     position: absolute;
-    left: 42px;
-    top: 65px;
-    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);
-    border-radius: 10px;
-    text-align: center;
-    padding: 2px;
-    padding-top: 5px;
+    right: 34px;
+    top: 46px;
+    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 12%);
+    border-radius: 5px;
+    padding-top: 12px;
   }
   
   .timelineAlertText {
     font-weight: 600;
+    text-align: center;
+    /* margin: auto; */
   }
 
   .imgTimeline {
