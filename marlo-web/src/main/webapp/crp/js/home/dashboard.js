@@ -75,6 +75,8 @@ function createTimeline() {
     newPTimeLine.appendChild(date);
     var endDate = new Date(data.endDate);
     endDate.setDate(endDate.getDate() + 1)
+
+    if(description.length > 120)newDivTitle.style["width"] = '120px';
     
     // Define the color of elements
     if(endDate < new Date()){
