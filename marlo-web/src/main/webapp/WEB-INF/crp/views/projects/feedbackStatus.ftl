@@ -8,7 +8,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/feedbackStatus.css?20220629"
+  "${baseUrlMedia}/css/projects/feedbackStatus.css?20221010"
   ]
 /]
 
