@@ -796,7 +796,7 @@ public final class APConstants {
 
   // Marlo PDF Manual Name
   public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_V2.9.pdf";
-  public static final String AICCRA_PDF_MANUAL_NAME = "(BETA_Version)_Introduction_to_MARLO-AICCRA_User_Guide.pdf";
+  public static final String AICCRA_PDF_MANUAL_NAME = "Introduction_to_MARLO-AICCRA_User_Guide.pdf";
 
   // GeoiIp maps database
   public static final String DATABASE_COUNTRY_FILENAME = "GeoLite2-Country.mmdb";
