@@ -67,15 +67,18 @@ function createTimeline() {
 
     var description = document.createTextNode(data.description);
     var dateMonthStart = new Date(data.startDate).toLocaleString("en-US", { month: "short" });
-    var dateDayStart = new Date(data.startDate).getDate()+1;
+    var dateDayStart = new Date(data.startDate).getDate()+1;    
+    var dateMonthYear =new Date(data.endDate).getFullYear();
     var dateMonthEnd =new Date(data.endDate).toLocaleString("en-US", { month: "short" });
     var dateDayEnd = new Date(data.endDate).getDate()+1;
-    var date =document.createTextNode(dateMonthStart+' '+ dateDayStart+' - '+dateMonthEnd+' '+ dateDayEnd)
+    var date =document.createTextNode(dateMonthEnd+' '+ dateDayEnd+' - '+dateMonthYear)
     newDivTitle.appendChild(description);
     newPTimeLine.appendChild(date);
-
+    var endDate = new Date(data.endDate);
+    endDate.setDate(endDate.getDate() + 1)
+    
     // Define the color of elements
-    if(new Date(data.endDate) < new Date()){
+    if(endDate < new Date()){
 
       var newImgTimeLine= document.createElement("img");
       newImgTimeLine.className='imgTimeline';
@@ -89,10 +92,10 @@ function createTimeline() {
 
     }
     // Define the color and percentage of the bar
-    if(counter == 0 && (new Date(data.endDate) > new Date())){
+    if(counter == 0 && (endDate > new Date())){
 
-      let dateDiff = new Date(data.endDate).getTime() - new Date(data.startDate).getTime();
-      let daysFinalizeActivity = ((new Date(data.endDate).getTime() - new Date().getTime())/(1000*60*60*24));
+      let dateDiff = endDate.getTime() - new Date(previusDate).getTime();
+      let daysFinalizeActivity = ((endDate.getTime() - new Date().getTime())/(1000*60*60*24));
       newPorcentTimeLine.className='porcentTimeLine';
       newDivTitle.classList.add('timelineColorAlert');
       newDivPoint.classList.add('timelineBackAlert');
@@ -102,14 +105,16 @@ function createTimeline() {
       newPorcentTimeLine.style["width"] = Math.round(linePorcent)+'%';
       if(linePorcent < 0) newPorcentTimeLine.style["width"] = Math.round(0)+'%';
       newPorcentTimeLine.appendChild(newDivTimeLine);      
-      $('.timelineAlertText').text(Math.round(daysFinalizeActivity+1)+' days left until the end of the activity');
+      let textAlert ='';
+      textAlert = Math.round(daysFinalizeActivity+1)+' day left to finalize the current activity';
+      if(Math.round(daysFinalizeActivity+1)>1) textAlert = Math.round(daysFinalizeActivity+1)+' days left to finalize the current activity';
       counter = 1;
+      $('.timelineAlertText').text(textAlert);
     }
   })
   // Locate pending activity
   const element = document.querySelector(".scroll-x-containerTimeline");
   element.scrollLeft += 243*(counterActvi-2);
-  element.scrollTop += 10
 }
 
 function updateTable(){
