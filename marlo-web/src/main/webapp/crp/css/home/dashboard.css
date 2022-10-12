@@ -285,7 +285,7 @@ span.timelineControl:hover {
   }
   
   .containerTimeline {
-    width: 85%;
+    width: 90%;
     position: relative;
   }
   
@@ -312,7 +312,7 @@ span.timelineControl:hover {
   
   .titleTimeline {
     writing-mode: vertical-rl;
-    height: 200px;
+    height: 204px;
     -webkit-transform: rotate(270deg);
     text-align: left;
     color: #5f5e5e;
