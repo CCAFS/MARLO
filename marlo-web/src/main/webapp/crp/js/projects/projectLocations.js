@@ -10,7 +10,6 @@ var arSelectedLocations = [];
 var arInfoWindows = [];
 
 function init() {
-  console.log('key google: '+GOOGLE_API_KEY);
 // Init select2
   $('form select').select2({
     width: "100%"
@@ -1214,7 +1213,6 @@ function removeSuggestedCountry(locIso,locId,countryRow,countryList) {
 
 // Set default country to countries select
 function addLocationFromMap() {
-  console.log(GOOGLE_API_KEY);
 // Ajax for country name
   $.ajax({
       'url': 'https://maps.googleapis.com/maps/api/geocode/json',
