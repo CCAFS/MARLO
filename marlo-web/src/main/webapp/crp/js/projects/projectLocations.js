@@ -10,6 +10,7 @@ var arSelectedLocations = [];
 var arInfoWindows = [];
 
 function init() {
+  console.log('GOOGLE KEY: '+GOOGLE_API_KEY)
 // Init select2
   $('form select').select2({
     width: "100%"
