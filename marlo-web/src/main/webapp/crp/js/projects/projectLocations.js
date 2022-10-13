@@ -1213,6 +1213,7 @@ function removeSuggestedCountry(locIso,locId,countryRow,countryList) {
 
 // Set default country to countries select
 function addLocationFromMap() {
+  console.log(GOOGLE_API_KEY);
 // Ajax for country name
   $.ajax({
       'url': 'https://maps.googleapis.com/maps/api/geocode/json',
