@@ -121,13 +121,16 @@ function createTimeline() {
 
 function updateTable(){
   // console.log(this.attr("id"))
-  let nameId =$(this).attr("id")
-  console.log($('div#'+nameId))
+  let nameId =$(this).attr("id");
   // let activeCurrent = $('a#'+nameId).parent().addClass('active');
-  $("li.active").removeClass('active')
-  $('div.active').removeClass('in active')
-  $('div#'+nameId+'_wrapper').parent().addClass('in active')
+  $("li.active").removeClass('active');
+  $('div.active').removeClass('in active');
+  $('div#'+nameId+'_wrapper').parent().addClass('in active');
   $('a#'+nameId).parent().addClass('active');
+
+  $(".itemsTablet").removeClass('itemsActive');
+  $(`#${nameId}`).addClass('itemsActive');
+  $(`.${nameId}`).addClass('itemsActive');
 }
 
 function setCompletionDates() {

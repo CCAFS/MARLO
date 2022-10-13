@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/home/dashboard.js?20221011",
+  "${baseUrlMedia}/js/home/dashboard.js?20221010",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20221011",
+  "${baseUrlMedia}/css/home/dashboard.css?20221010",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css"
   ]
@@ -61,13 +61,14 @@
 	</section>
 [/#if]
 
-  <section class="containerTabletItems">	
+  <section class="containerTabletItems">
+  <div class="tableItemsBackground"></div>	
     <div class="tableItemsTitle">
       <p>Select the evidence type to see in the table</p>
     </div>
     <div class="containerSeccionItems">
       <div class="containerItems">
-        <div class="itemsTablet" id="projects">
+        <div class="itemsTablet itemsActive projects" id="projects">
           <img src="${baseUrlCdn}/global/images/1309-load-balancer-outline.gif" width="70">
           <p>Clusters</p>
         </div>
@@ -85,14 +86,16 @@
         </div>
       </div>
       <div id="dashboardContent" class="">
-        <div class="homeTitle col-md-12"></div>
+        
         <div class="col-md-12">
         [#if !action.isAiccra()]
+          
           <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myProjects.title" /]</a></li>
             <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
           </ul>
         [#else]
+        <div class="infTableItems">[@s.text name="dashboard.homepage.description" /]</div>
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myProjects.title" /]</a></li>
             <li role="presentation"><a id="deliverables" href="#myDeliverables" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myDeliverables.title" /]</a></li>
