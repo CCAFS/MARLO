@@ -225,3 +225,165 @@ span.timelineControl {
 span.timelineControl:hover {
     color: #117fa8;
 }
+
+.homeTitleTimeline {
+    display: flex;
+    justify-content: center;
+    font-size: 2.0em;
+    color: #333;
+    padding: 22px 30px 14px 14px;
+    width: 100%;
+    position: absolute;
+  }
+  
+  .timeline{
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+    -webkit-box-shadow: 0px 0px 10px rgb(0 0 0 / 15%);
+    border-radius: 5px;
+    height: 297px;
+  }
+
+  .porcentTimeLine {
+    height: 6px;
+    width: 70%;
+    background: #eb9d46;
+    position: absolute;
+    margin-top: -56px;
+    border-radius: 0 10px 10px 0;
+    max-width: 195px;
+  }
+  
+  .timeline-line{
+    height: 6px;
+    background: rgb(228, 228, 228);
+    width: 243px;
+    position: absolute;
+    margin-top: -56px;
+    border: none;
+    z-index: -1;
+  }
+  
+  .scroll-x-containerTimeline {
+    position: relative;
+    scroll-behavior: smooth;
+    overflow-x: scroll;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    margin: 0 auto;
+    display: flex;
+    margin-top: 63px;
+  }
+  
+  
+  
+  .timeline-innerline {
+    background-color: brown;
+  
+  }
+  
+  .containerTimeline {
+    width: 90%;
+    position: relative;
+  }
+  
+  .infTimelineTimeline {
+    min-width: 243px;
+    text-align: center;
+    position: relative;
+    cursor: default;
+  }
+  
+  .timeline-pointTimeline {
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    background: rgb(228, 228, 228);
+    max-width: 30px;
+    height: 30px;
+    position: absolute;
+    right: 0;
+    width: 30px;
+    bottom: 39px;
+    z-index: 1;
+  }
+  
+  .titleTimeline {
+    writing-mode: vertical-rl;
+    height: 204px;
+    -webkit-transform: rotate(270deg);
+    text-align: left;
+    color: #5f5e5e;
+    /* padding-left: -25px; */
+    /* font-weight: 500; */
+    /* margin-bottom: -70px; */
+    margin:  auto;
+  }
+  
+  .dateTimeline {
+    margin-right: -211px;
+    margin-top: -30px;
+  }
+  
+  .sideButtonTimeline {
+    background:rgba(133, 133, 133, 0.5);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 27px;
+    font-weight: bold;
+    font-family: monospace;
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  .buttonLeftTimeline {
+    left: -30px;
+  }
+  
+  .buttonRightTimeline {
+    right: -30px;
+  }
+  
+  .timelineBackSuccess {
+    background: #8eaf92;
+  }
+  
+  .timelineBackAlert {
+    background: #eb9d46;
+  }
+  
+  .timelineColorSuccess {
+    color: #8eaf92;
+  }
+  
+  .timelineColorAlert {
+    color: #da9343;
+  }
+
+  .timelineAlert {
+    background-color: #ffde85;
+    height: auto;
+    width: 147px;
+    position: absolute;
+    right: 34px;
+    top: 46px;
+    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 12%);
+    border-radius: 5px;
+    padding-top: 12px;
+  }
+  
+  .timelineAlertText {
+    font-weight: 600;
+    text-align: center;
+    /* margin: auto; */
+  }
+
+  .imgTimeline {
+    margin-top: 7px;
+  }
