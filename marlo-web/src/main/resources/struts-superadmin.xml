@@ -224,5 +224,16 @@
         <param name="phaseID">${phaseID}</param>
       </result>
     </action>
+    
+    <action name="timelineManagement"
+			class="org.cgiar.ccafs.marlo.action.superadmin.TimelineManagementAction">
+			<interceptor-ref name="superAdminStack" />
+			<result name="input">/WEB-INF/global/views/superadmin/timelineManagement.ftl</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">timelineManagement</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
+			</result>
+		</action>
 	</package>
 </struts>

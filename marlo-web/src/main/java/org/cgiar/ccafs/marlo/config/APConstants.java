@@ -136,6 +136,8 @@ public final class APConstants {
   public static final String FEEDBACK_CLARIFICATION_NEEDED_ACTIVE = "feedback_clarification_needed_active";
   public static final String FEEDBACK_DRAFT_ACTIVE = "feedback_draft_active";
   public static final String CRP_BI_MODULE_ACTIVE = "crp_bi_module_active";
+  public static final String HOMEPAGE_TIMELINE_ACTIVE = "homepage_timeline_active";
+
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
     "is_expected_deliverable_report_all_years_visible";
