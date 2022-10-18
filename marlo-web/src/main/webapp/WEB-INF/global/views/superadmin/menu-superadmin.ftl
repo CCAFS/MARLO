@@ -28,7 +28,8 @@
     { 'slug': 'permissions',    'name': 'menu.superadmin.permissions', 'action': 'marloPermissions',   'active': false }
     { 'slug': 'parameters',    'name': 'menu.superadmin.parameters', 'action': 'marloParameters',   'active': true },
     <#--  { 'slug': 'institutions',    'name': 'menu.superadmin.institutions', 'action': 'marloInstitutions',   'active': true }  -->
-    { 'slug': 'bulkReplication',    'name': 'menu.superadmin.bulkReplication', 'action': 'deliverablesReplication',   'active': true }
+    { 'slug': 'bulkReplication',    'name': 'menu.superadmin.bulkReplication', 'action': 'deliverablesReplication',   'active': true },
+    { 'slug': 'timelineManagement',    'name': 'menu.superadmin.timelineManagement', 'action': 'timelineManagement',   'active': false, 'development': true }
   ]/]
 [/#if]
 
