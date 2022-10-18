@@ -76,5 +76,14 @@
         <property name="editionDate" type="timestamp">
             <column name="edition_date" />
         </property>
+        <property name="draftActionDate" type="timestamp">
+            <column name="draft_action_date" />
+        </property>
+        <many-to-one name="draftActionUser"
+            class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="draft_action_user_id">
+                <comment>This field is a link to the table users</comment>
+            </column>
+        </many-to-one>
 	</class>
 </hibernate-mapping>

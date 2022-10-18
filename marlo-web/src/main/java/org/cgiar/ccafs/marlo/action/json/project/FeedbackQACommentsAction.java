@@ -213,6 +213,20 @@ public class FeedbackQACommentsAction extends BaseAction {
         } else {
           fieldsMap.put("editionDate", "");
         }
+        // draft message
+        if (comment.getDraftActionDate() != null && comment.getDraftActionDate().toString() != null) {
+          String dateString = comment.getDraftActionDate().toString();
+          fieldsMap.put("draftActionDate", dateString);
+        } else {
+          fieldsMap.put("draftActionDate", "");
+        }
+        if (comment.getDraftActionUser() != null && comment.getDraftActionUser().getFirstName() != null
+          && comment.getDraftActionUser().getLastName() != null) {
+          fieldsMap.put("draftActionUser",
+            comment.getDraftActionUser().getFirstName() + " " + comment.getDraftActionUser().getLastName());
+        } else {
+          fieldsMap.put("draftActionUser", "");
+        }
         if (comment.getReply() != null && comment.getReply().getId() != null) {
           FeedbackQAReply reply = new FeedbackQAReply();
           if (feedbackQAReplyManager.existFeedbackComment(comment.getReply().getId())) {
