@@ -136,6 +136,8 @@ public final class APConstants {
   public static final String FEEDBACK_CLARIFICATION_NEEDED_ACTIVE = "feedback_clarification_needed_active";
   public static final String FEEDBACK_DRAFT_ACTIVE = "feedback_draft_active";
   public static final String CRP_BI_MODULE_ACTIVE = "crp_bi_module_active";
+  public static final String HOMEPAGE_TIMELINE_ACTIVE = "homepage_timeline_active";
+
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
     "is_expected_deliverable_report_all_years_visible";
@@ -796,7 +798,7 @@ public final class APConstants {
 
   // Marlo PDF Manual Name
   public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_V2.9.pdf";
-  public static final String AICCRA_PDF_MANUAL_NAME = "(BETA_Version)_Introduction_to_MARLO-AICCRA_User_Guide.pdf";
+  public static final String AICCRA_PDF_MANUAL_NAME = "Introduction_to_MARLO-AICCRA_User_Guide.pdf";
 
   // GeoiIp maps database
   public static final String DATABASE_COUNTRY_FILENAME = "GeoLite2-Country.mmdb";
