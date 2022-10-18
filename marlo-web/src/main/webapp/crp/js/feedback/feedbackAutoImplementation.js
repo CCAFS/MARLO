@@ -950,7 +950,7 @@ function hideShowOptionButtons(block, status) {
       case "2":
         return 'Required clarification by ';
       case "4":
-        return 'Admited by ';
+        return 'Admitted by ';
       case "6":
           return 'Dismissed by ';
     }
