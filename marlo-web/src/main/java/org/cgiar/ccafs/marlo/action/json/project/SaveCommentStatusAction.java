@@ -108,23 +108,7 @@ public class SaveCommentStatusAction extends BaseAction {
         statusText = FeedbackStatusEnum.Draft.getStatus();
       }
       // commentSave.setStatus(statusText);
-      this.saveFeedbackStatus();
-
-      if (userId != null) {
-        try {
-          User user = userManager.getUser(userId);
-          if (user != null) {
-            commentSave.setUserApproval(this.getCurrentUser());
-          }
-        } catch (Exception e) {
-          logger.error("unable to set User object", e);
-        }
-      }
-
-      date = new Date();
-      if (date != null) {
-        commentSave.setApprovalDate(date);
-      }
+      this.setFeedbackStatus();
 
       commentSave = commentQAManager.saveFeedbackQAComment(commentSave);
 
@@ -174,9 +158,20 @@ public class SaveCommentStatusAction extends BaseAction {
   }
 
   /**
-   * Save feedback status id relation with feedback status table
+   * Set feedback status id relation with feedback status table
    */
-  public void saveFeedbackStatus() {
+  public void setFeedbackStatus() {
+    User user = new User();
+    if (userId != null) {
+      try {
+        user = userManager.getUser(userId);
+      } catch (Exception e) {
+        logger.error("unable to set User object", e);
+      }
+    }
+
+    date = new Date();
+
     if (status != null) {
       long idStatus;
       try {
@@ -185,9 +180,22 @@ public class SaveCommentStatusAction extends BaseAction {
         } else {
           idStatus = Long.valueOf(status);
         }
+
+        if (commentSave.getFeedbackStatus().getId() == Long.parseLong(FeedbackStatusEnum.Draft.getStatusId())) {
+          if (user != null) {
+            commentSave.setDraftActionUser(user);
+          }
+          commentSave.setDraftActionDate(date);
+        } else {
+          if (user != null) {
+            commentSave.setUserApproval(this.getCurrentUser());
+          }
+          commentSave.setApprovalDate(date);
+        }
+
         FeedbackStatus feedbackStatus = feedbackStatusManager.getFeedbackStatusById(idStatus);
         commentSave.setFeedbackStatus(feedbackStatus);
-        commentSave = commentQAManager.saveFeedbackQAComment(commentSave);
+        // commentSave = commentQAManager.saveFeedbackQAComment(commentSave);
       } catch (Exception e) {
         logger.error("unable to get feedback status id", e);
       }
