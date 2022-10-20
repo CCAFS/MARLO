@@ -412,10 +412,11 @@ span.timelineControl:hover {
 
   .containerItems {
     flex-wrap: wrap;
-    width: 600px;
-    padding: 0 80px;
+    min-width: 345px;
+    max-width: 345px;
     display: table-cell;
-    text-align: center;
+    text-align: center;    
+    margin-left: 30px;
   }
 
   .itemsTablet{
@@ -454,8 +455,8 @@ span.timelineControl:hover {
  }
 
  .containerTabletItems .infTableItems{
-    border: aliceblue;
-    background: #e3e3e3;
+    border: #ebebeb solid 1px;
+    background: #f8f8f9;
     padding: 7px 18px;
  }
 
@@ -466,5 +467,7 @@ span.timelineControl:hover {
 
  .containerTabletItems #dashboardContent{
   margin-top: 10px;
+  margin-left: 20px;
+  width: auto;
   margin-right: 30px;
  }
