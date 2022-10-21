@@ -230,6 +230,51 @@
           [#-- Project Milestones and Communications contributions per year--]
           <h4 class="headTitle"> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
           
+
+          [#-- Year Tabs --]
+          <ul class="nav nav-tabs budget-tabs" role="tablist">
+            [#list milestonesProjectYear as year]
+              <li class="[#if year == currentCycleYear]active[/#if]"><a href="#milestoneYear-${year}" role="tab" data-toggle="tab">${year} </a></li>
+            [/#list]
+          </ul>
+
+          [#-- Years Content --]
+          [#-- 
+          <div class="tab-content contributionContent">
+              [#list milestonesProjectYear as year]
+                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="milestoneYear-${year}">
+                
+                    
+                    <div class="milestonesYearBlock borderBox" listname="milestonesProject">
+                      <div class="milestonesYearList">
+                      [#assign milestoneElement = milestoneYear(year)/]
+                        [#if milestoneElement?has_content]                         
+                            [@milestoneMacro element=milestoneElement name="projectOutcome.milestones" index=milestone_index /]
+                        [#else]
+                          <p class="emptyMessage text-center">There is not a Intermediate Target added.</p>
+                        [/#if]
+                      </div>
+                      
+                      [#if false]
+                      
+                      <div class="milestonesYearSelect"> 
+                        <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
+                        <span class="milestonesSelectedIds" style="display:none">[#if milestonesProject?has_content][#list milestonesProject as e]${(e.id)!}[#if e_has_next],[/#if][/#list][/#if]</span>
+                        [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone${reportingActive?string('.reporting', '')}"  listName="" keyFieldName="id" displayFieldName="title" className="" value="" /]
+                      </div>
+                      [/#if]
+                      [#if totalParticipants?number > 0]
+                        </br>
+                        <div id="note" class="note left helpMessage3">
+                          <p><i>[@s.text name="projectOutcomes.helpParticipantsSection" /]</i></p>
+                        </div>
+                        </br>
+                      [/#if]
+                    </div>      
+                </div>
+              [/#list]
+          </div>
+          --]
           [#-- List milestones  --]
           <div class="milestonesYearBlock borderBox" listname="milestonesProject">
             <div class="milestonesYearList">
