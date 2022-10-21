@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "Project Submission" /]
+[#assign title = "Cluster Submission" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign customJS = [] /]
 [#assign currentSection = "projects" /]
@@ -7,7 +7,7 @@
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
-  {"text":"P${project.id}", "nameSpace":"/projects", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
+  {"text":"C${project.id}", "nameSpace":"/projects", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
   {"label":"projectSubmission", "nameSpace":"/projects", "action":""}
 ] /]
 
@@ -25,10 +25,10 @@
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
-        <h1 class="successfullyTitle">Project Submit</h1>
+        <h1 class="successfullyTitle">Cluster Submit</h1>
         <div class="borderBox">
         [#if completed]
-          <h2 class="successTitle">The project has been successfully submitted</h2>
+          <h2 class="successTitle">The cluster has been successfully submitted</h2>
           <div class="fullPartBlock">
             <h6>Project title</h6>
             <p>${(project.projectInfo.title)!"Title not defined"}</p>
@@ -41,11 +41,11 @@
               [/#if]
           </div> 
           <div class="fullPartBlock">
-              <h6>Download Full Project Report</h6>
+              <h6>Download Full Cluster Report</h6>
               <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" class="button-pdf-format" target="__BLANK">PDF Format</a> 
           </div> 
         [#else]
-          <p>The project is still incomplete, please go to the sections without the green check mark and complete the missing fields before submitting your project.</p>
+          <p>The cluster is still incomplete, please go to the sections without the green check mark and complete the missing fields before submitting your cluster.</p>
         [/#if]
         </div>
       </div>
