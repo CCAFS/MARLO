@@ -14,15 +14,10 @@
 package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.SrfCrossCuttingIssueManager;
-import org.cgiar.ccafs.marlo.data.manager.SrfSloManager;
 import org.cgiar.ccafs.marlo.data.manager.TimelineManager;
-import org.cgiar.ccafs.marlo.data.model.SrfCrossCuttingIssue;
-import org.cgiar.ccafs.marlo.data.model.SrfSlo;
 import org.cgiar.ccafs.marlo.data.model.Timeline;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -32,44 +27,15 @@ public class TimelineManagementAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
 
-  private HashMap<Long, String> idoList;
-
-  private final SrfSloManager srfSloManager;
-
-  private final SrfCrossCuttingIssueManager srfCrossCuttingIssueManager;
-
-  private List<SrfSlo> slosList;
-
-  private List<SrfCrossCuttingIssue> srfCrossCuttingIssues;
-
   private List<Timeline> timelineActivities;
 
-  private TimelineManager timelineManager;
+  private final TimelineManager timelineManager;
 
   @Inject
-  public TimelineManagementAction(APConfig config, SrfSloManager srfSloManager,
-    SrfCrossCuttingIssueManager srfCrossCuttingIssueManager, TimelineManager timelineManager) {
+  public TimelineManagementAction(APConfig config, TimelineManager timelineManager) {
     super(config);
-    this.srfSloManager = srfSloManager;
-    this.srfCrossCuttingIssueManager = srfCrossCuttingIssueManager;
     this.timelineManager = timelineManager;
   }
-
-
-  public HashMap<Long, String> getIdoList() {
-    return idoList;
-  }
-
-
-  public List<SrfSlo> getSlosList() {
-    return slosList;
-  }
-
-
-  public List<SrfCrossCuttingIssue> getSrfCrossCuttingIssues() {
-    return srfCrossCuttingIssues;
-  }
-
 
   public List<Timeline> getTimelineActivities() {
     return timelineActivities;
@@ -78,13 +44,9 @@ public class TimelineManagementAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-    slosList = srfSloManager.findAll();
     timelineActivities = timelineManager.findAll();
 
-    srfCrossCuttingIssues = srfCrossCuttingIssueManager.findAll();
-
     if (this.isHttpPost()) {
-      slosList.clear();
     }
   }
 
@@ -95,14 +57,6 @@ public class TimelineManagementAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
-  }
-
-  public void setIdoList(HashMap<Long, String> idoList) {
-    this.idoList = idoList;
-  }
-
-  public void setSlosList(List<SrfSlo> slosList) {
-    this.slosList = slosList;
   }
 
   public void setTimelineActivities(List<Timeline> timelineActivities) {
