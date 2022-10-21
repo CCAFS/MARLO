@@ -84,9 +84,9 @@ public class SendMailTest extends BaseAction {
 
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("Full_Project_Report-");
+    fileName.append("Full_Cluster_Report-");
     fileName.append("ccafs" + "-");
-    fileName.append("P" + 60 + "-");
+    fileName.append("C" + 60 + "-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
     return fileName.toString();
