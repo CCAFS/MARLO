@@ -583,7 +583,7 @@
       <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${dataUrl}"></div>
     [/#if]
     [#if !isEditable && !hasFile]
-      <p>Prefilled if available</p>
+      <p>Not provided</p>
     [/#if]
     [#-- Uploaded File --]
     <p class="fileUploaded textMessage" style="display:${hasFile?string('block','none')}">

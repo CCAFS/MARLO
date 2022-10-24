@@ -387,10 +387,10 @@ public class ProjectOutcomeAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public String getBaseLineFileURL(String outcomeID) {
     return config.getDownloadURL() + "/file.do?" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
   }
+
 
   public String getBaseLineFileUrlPath(String outcomeID) {
     return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
@@ -436,6 +436,26 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
     return 0;
+  }
+
+  /**
+   * Set index for each milestone year
+   * 
+   * @return
+   * @return year
+   **/
+  public int getIndexMilestone(int year) {
+    int i = 0;
+    if (milestonesProject != null && !milestonesProject.isEmpty()) {
+      for (CrpMilestone milestoneElement : milestonesProject) {
+        if (milestoneElement != null && milestoneElement.getYear() != null
+          && milestoneElement.getYear().intValue() == year) {
+          return i;
+        }
+        i++;
+      }
+    }
+    return -1;
   }
 
   public int getIndexMilestone(long milestoneId, int year) {
@@ -511,17 +531,35 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
   /**
+   * Get a milestones list
+   * 
+   * @returns list of CrpMilestones
+   **/
+  public List<CrpMilestone> getMilestonesYear() {
+    List<CrpMilestone> projectMilestonesElement = new ArrayList<>();
+    if (milestonesProject != null && !milestonesProject.isEmpty()) {
+      try {
+        projectMilestonesElement =
+          milestonesProject.stream().filter(m -> m != null && m.isActive()).collect(Collectors.toList());
+      } catch (Exception e) {
+        LOG.error(e + "error to get milestone by year");
+      }
+    }
+    return projectMilestonesElement;
+  }
+
+  /**
    * Get a milestone from an specific year
    * 
    * @param year of milestone to get
    * @returns year CrpMilestone
    **/
-  private CrpMilestone getMilestoneYear(int year) {
+  public CrpMilestone getMilestoneYear(int year) {
     CrpMilestone projectMilestoneElement = new CrpMilestone();
     if (milestonesProject != null && !milestonesProject.isEmpty()) {
       try {
-        projectMilestoneElement =
-          milestonesProject.stream().filter(m -> m != null && m.getYear() != null).collect(Collectors.toList()).get(0);
+        projectMilestoneElement = milestonesProject.stream()
+          .filter(m -> m != null && m.getYear() != null && m.getYear() == year).collect(Collectors.toList()).get(0);
       } catch (Exception e) {
         LOG.error(e + "error to get milestone by year");
       }

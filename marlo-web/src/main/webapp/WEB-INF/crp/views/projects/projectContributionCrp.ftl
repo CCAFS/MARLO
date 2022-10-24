@@ -19,7 +19,7 @@
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
 /]
-[#assign currentSection = "projects" /]
+[#assign currentSection = "clusters" /]
 [#assign currentStage = "contributionsCrpList" /]
 
 [#assign breadCrumb = [
@@ -116,7 +116,18 @@
             <div class="col-md-6"><strong>Target Unit:</strong> ${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</div>
             </div>
             [/#if]
+            </br>
+            </br>
+            <div class="container-evidences">
+              <p class="text-evidences">Here you could find information about the evidences that expects  to be reported</p>
+              <div class="button-evidences animated animate__shakeX">
+                <p>View More</p>
+              </div>
+            </div>
             <div class="clearfix"></div>
+  
+            [#--  Text and Button Evidences --]
+            
           </div>
           <br />
           
@@ -187,7 +198,7 @@
                     <label for="">[@s.text name="projectOutcome.achievedUnit" /]:</label>
                     <div class="selectList">   
                         <input type="hidden" name="projectOutcome.achievedUnit.id" value="${(projectOutcome.crpProgramOutcome.srfTargetUnit.id)!}" class="">
-                        <p>${(projectOutcome.crpProgramOutcome.srfTargetUnit.name)!'Prefilled if available'}</p>
+                        <p>${(projectOutcome.crpProgramOutcome.srfTargetUnit.name)!'Not provided'}</p>
                     </div> 
                   </div>
                 </div>
@@ -239,29 +250,30 @@
           </ul>
 
           [#-- Years Content --]
-          [#-- 
           <div class="tab-content contributionContent">
+          
               [#list milestonesProjectYear as year]
-                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="milestoneYear-${year}">
+                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="milestoneYear-${year}" role="tab" data-toggle="tab">
                 
-                    
+                [#assign milestoneElement = action.milestonesYear!{}/]
+                [#assign milestoneIndex = (action.indexMilestone(year))!'-1' /]
+
                     <div class="milestonesYearBlock borderBox" listname="milestonesProject">
                       <div class="milestonesYearList">
-                      [#assign milestoneElement = milestoneYear(year)/]
-                        [#if milestoneElement?has_content]                         
-                            [@milestoneMacro element=milestoneElement name="projectOutcome.milestones" index=milestone_index /]
-                        [#else]
-                          <p class="emptyMessage text-center">There is not a Intermediate Target added.</p>
-                        [/#if]
+                          
+                          [#if milestoneElement?has_content]           
+                              [@milestoneMacro element=milestoneElement[milestoneIndex] name="projectOutcome.milestones" index=0 /]
+                          [#else]
+                            <p class="emptyMessage text-center">There is not a Intermediate Target added for ${year}.</p>
+                          [/#if]
                       </div>
                       
-                      [#if false]
-                      
-                      <div class="milestonesYearSelect"> 
-                        <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
-                        <span class="milestonesSelectedIds" style="display:none">[#if milestonesProject?has_content][#list milestonesProject as e]${(e.id)!}[#if e_has_next],[/#if][/#list][/#if]</span>
-                        [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone${reportingActive?string('.reporting', '')}"  listName="" keyFieldName="id" displayFieldName="title" className="" value="" /]
-                      </div>
+                      [#if false] 
+                        <div class="milestonesYearSelect"> 
+                          <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
+                          <span class="milestonesSelectedIds" style="display:none">[#if milestonesProject?has_content][#list milestonesProject as e]${(e.id)!}[#if e_has_next],[/#if][/#list][/#if]</span>
+                          [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone${reportingActive?string('.reporting', '')}"  listName="" keyFieldName="id" displayFieldName="title" className="" value="" /]
+                        </div>
                       [/#if]
                       [#if totalParticipants?number > 0]
                         </br>
@@ -274,8 +286,9 @@
                 </div>
               [/#list]
           </div>
-          --]
+         
           [#-- List milestones  --]
+          [#--  
           <div class="milestonesYearBlock borderBox" listname="milestonesProject">
             <div class="milestonesYearList">
               [#if milestonesProject?has_content]
@@ -286,8 +299,8 @@
                 <p class="emptyMessage text-center">There is not a Intermediate Target added.</p>
               [/#if]
             </div>
-            [#-- Select a milestone  --]
-            [#if false][#-- Change false to editable to enable the component --]
+            
+            [#if false]
             
             <div class="milestonesYearSelect"> 
               <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
@@ -298,11 +311,12 @@
             [#if totalParticipants?number > 0]
               </br>
               <div id="note" class="note left helpMessage3">
-                <p>[#-- <a href="#capdev"></a>--]<i>[@s.text name="projectOutcomes.helpParticipantsSection" /]</i></p>
+                <p><i>[@s.text name="projectOutcomes.helpParticipantsSection" /]</i></p>
               </div>
               </br>
              [/#if]
           </div>        
+          --]
           
           [#-- Communications --]
           [#if reportingActive && action.hasSpecificities('crp_show_project_outcome_communications') ]  
@@ -354,11 +368,7 @@
                                 </div>
                                 [#-- Indicators --]
                                 [#list projectOutcomeLastPhase.crpProgramOutcome.indicators as  indicator   ]
-                                  [#if action.isAiccra()]
-                                    [@baselineAiccraPrevIndicatorMacro element=indicator name="projectOutcomeLastPhase.indicators" index=indicator_index  AREditable=false/]
-                                  [#else]
-                                    [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
-                                  [/#if]
+                                    [@baselineAiccraPrevIndicatorMacro element=indicator name="projectOutcomeLastPhase.indicators" index=indicator_index  AREditable=false/]                
                                 [/#list]
                               </div>
                             </div>
@@ -379,20 +389,10 @@
                               <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
                               <div class="form-group">
                                 <div class="" id="baseline">
-                                  <div class="form-group text-right">
-                                    [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                                      [#--  <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a>--] 
-                                    [#else]
-                                      <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
-                                    [/#if]
-                                  </div>
+
                                   [#-- Indicators --]
                                   [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
-                                    [#if action.isAiccra()]
                                       [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index AREditable=true/]
-                                    [#else]
-                                      [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
-                                    [/#if]
                                   [/#list]
                                 </div>
                               </div>
@@ -417,23 +417,10 @@
                           <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
                           <div class="form-group">
                             <div class="" id="baseline">
-                              <div class="form-group text-left">
-                                [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                                  <!--  <p><b>Baseline Instructions:</b></p>
-                                  [#--  <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a>  -->--]
-                                  [#-- ${ (projectOutcome.crpProgramOutcome.file.fileName)!} --]
-                                  <p><br></p> 
-                                [#else]
-                                  <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
-                                [/#if]
-                              </div>
+
                               [#-- Indicators --]
                               [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
-                                [#if action.isAiccra()]
                                   [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  AREditable=true/]
-                                [#else]
-                                  [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
-                                [/#if]
                               [/#list]
                             </div>
                           </div>
@@ -628,36 +615,32 @@
     [#if editable && (!reportingActive || isNewAtReporting) && (milestoneYear gte currentCycleYear)!true]<div class="removeElement removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
     --]
     <div class="leftHead sm">
-      <span class="index">${index+1}</span>
-      <span class="elementId">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${(element.year)!}</span>
+      [#--  <span class="index">${index+1}</span>--]
+      <span class="index">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${(element.year)!}</span>
     </div>
 
     [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
     [#local prefilled]<p style="opacity:0.6">[@s.text name="form.values.fieldEmpty" /]</p>[/#local]
     
     [#-- Milestone Title --]
+    [#-- 
     <div class="form-group grayBox">
       [#if showMilestoneValue]
         <div class="form-group pull-right">
           <strong>AICCRA Target to ${(element.year)!}:</strong> ${(element.value)!}
         </div>
       [/#if]
-      [#-- Milestone Year --]
+ 
       <div class="row">
         <div class="col-md-6">
           <strong>Cluster contribution to this indicator in <span class="crpMilestoneYear">${(element.year)!} [#if hasExtendedYear] Extended to ${(element.extendedYear)!}[/#if]  </span> </strong> 
         </div>
       </div>
-      
+  
  
-      [#--  Title --]
       <div class="form-group">
         <span class="title">${(element.title)!}</span>
       </div>
-
-
-      
-      [#--  Text and Button Evidences --]
       
         <div class="container-evidences">
           <p class="text-evidences">Here you could find information about the evidences that expects  to be reported</p>
@@ -698,14 +681,15 @@
         </div>
         
       </div>
-      
+      --]
       [#--  Means of verification
       <div class="form-group">
         <strong>[@s.text name="outcome.milestone.powbMilestoneVerification" /]</strong>
         <br /> [#if (element.powbMilestoneVerification?has_content)!false]${element.powbMilestoneVerification}[#else]${prefilled}[/#if]
       </div>
        --]
-      [#-- DAC Markers --]
+
+      [#--
       [#if !action.isAiccra()]
         <div class="form-group row">
           <div class="col-md-3"><strong>Gender</strong> <br /> ${(element.genderFocusLevel.powbName)!prefilled} </div>
@@ -714,8 +698,10 @@
           <div class="col-md-3"><strong>Climate Change</strong> <br /> ${(element.climateFocusLevel.powbName)!prefilled}</div>
         </div>
       [/#if]
+      --]
+      [#--
     </div>
-    
+    --]
     <div role="tabpanel" class="tab-pane [#if milestoneYear == currentCycleYear]active[/#if]" id="milestoneYear${index}-${milestoneYear}">
       [#local customName = "${name}[${projectMilestoneIndex}]" /]
       <div class="outcomeMilestoneYear">
@@ -724,11 +710,20 @@
         <input type="hidden" name="${customName}.year" class="crpMilestoneYearInput" value="${(year)!}" class="year" />
         <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" class="crpMilestoneId" />
         
+        <div class="row">
+          <div class="col-md-12">
+            <strong>AICCRA Target to ${(element.year)!}:</strong> ${(element.value)!}
+            </br>
+            </br>
+          </div>
+        </div>
+        
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
           <div class="col-md-4 input-container" style="padding-top:3px">
-            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) /]
+            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) help="projectOutcomeMilestone.pmcValue.helpText" helpIcon=false/]
           </div>
-          
+          <br>
+          <br>
           <div class="col-md-4 input-container">
             [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
           </div>
@@ -745,19 +740,17 @@
           </div>
           --]
           [#-- REPORTING BLOCK --]
-          [#if reportingActive]
-            [#if !isYearRequired(milestoneYear) && action.isAiccra()]
+            [#if !action.isUpKeepActive() && !isYearRequired(milestoneYear) && action.isPOWB()]
               <div class="col-md-4 input-container">
-                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) /]
+                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) && reportingActive editable=reportingActive && (editable || isTemplate) && isYearRequired(milestoneYear) /]
               </div>
             [#else]
-             [#if isYearRequired(milestoneYear)]
+             [#if action.isUpKeepActive() && isYearRequired(milestoneYear)]
               <div class="col-md-4 input-container">
-                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) && reportingActive/]
+                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedSoFar" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) && reportingActive/]
               </div>
              [/#if]
             [/#if]
-          [/#if]
         </div>
         
         <div class="form-group text-area-container">
@@ -771,11 +764,10 @@
               [/#if]
         </div>
         [#-- REPORTING BLOCK --]
-        [#if reportingActive]
+        
         <div class="form-group ">
-          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable=(editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
+          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) && reportingActive className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable= reportingActive && (editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
         </div>
-        [/#if]
       </div>
     </div>
        
