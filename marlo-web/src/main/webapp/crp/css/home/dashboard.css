@@ -373,7 +373,7 @@ span.timelineControl:hover {
     position: absolute;
     right: 34px;
     top: 46px;
-    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 12%);
+    -webkit-box-shadow: 0px 0px 10px rgb(0 0 0 / 15%);
     border-radius: 5px;
     padding-top: 12px;
   }
@@ -387,3 +387,87 @@ span.timelineControl:hover {
   .imgTimeline {
     margin-top: 7px;
   }
+
+
+  /**************** Content Items Table **************/
+  .containerTabletItems{
+    display: block;
+    padding: 30px 0px 45px 0;
+    -webkit-box-shadow: 0px 0px 10px rgb(0 0 0 / 15%);
+    border-radius: 5px;
+  }
+
+  .tableItemsTitle{
+    width: 100%;
+    text-align: center;
+    font-weight: 700;
+    font-size: 2.0em;
+    color: #333;
+    margin-bottom: 30px;
+  }
+  
+  .containerSeccionItems {
+    display: flex   ;
+  }
+
+  .containerItems {
+    flex-wrap: wrap;
+    min-width: 345px;
+    max-width: 345px;
+    display: table-cell;
+    text-align: center;    
+    margin-left: 30px;
+  }
+
+  .itemsTablet{
+    height: 150px;
+    width: 150px;
+    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);
+    /* background-color: #117fa8; */
+    margin: 10px;
+    text-align: center;
+    border-radius: 2px;
+    display: inline-block;
+        text-align: center;
+    cursor: pointer;
+  }
+
+  .itemsTablet:active{
+    background: #c3e0f9;
+  }
+
+  .itemsActive{
+    background: #c3e0f9;
+  }
+
+ .itemsTablet img{
+  margin-top: 30px;
+ }
+
+ .itemsTablet p{
+  font-weight: 700;
+  font-size: 1.2em;
+  color: rgb(110, 110, 110);
+ }
+
+ .containerTabletItems .nav{
+  display: none;
+ }
+
+ .containerTabletItems .infTableItems{
+    border: #ebebeb solid 1px;
+    background: #f8f8f9;
+    padding: 7px 18px;
+ }
+
+ .containerTabletItems .subHeader{
+  background-color: #0377a3;
+
+ }
+
+ .containerTabletItems #dashboardContent{
+  margin-top: 10px;
+  margin-left: 20px;
+  width: auto;
+  margin-right: 30px;
+ }
