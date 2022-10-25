@@ -98,7 +98,7 @@
           <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID)?c)!}</span>
           <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
 
-          [#-- Outcomen name --]
+          [#-- Outcome name --]
           [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
 
           <div class="grayBox">
@@ -107,14 +107,10 @@
             </div>
             <div class="clearfix"></div>
             [#if showOutcomeValue]
-            <div class="form-group">
-            [#if !action.isAiccra()]
-              <div class="col-md-4"><strong>Target Value:</strong> ${projectOutcome.crpProgramOutcome.value} </div>
-            [#else]
-              <div class="col-md-4"><strong>AICCRA Target Value:</strong> ${projectOutcome.crpProgramOutcome.value} </div>
-            [/#if]
-            <div class="col-md-6"><strong>Target Unit:</strong> ${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</div>
-            </div>
+              <div class="form-group">          
+                <div class="col-md-4"><strong>AICCRA Target Value:</strong> ${projectOutcome.crpProgramOutcome.value} </div>
+                <div class="col-md-6"><strong>Target Unit:</strong> ${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</div>
+              </div>
             [/#if]
             </br>
             </br>
@@ -125,9 +121,7 @@
               </div>
             </div>
             <div class="clearfix"></div>
-  
-            [#--  Text and Button Evidences --]
-            
+              
           </div>
           <br />
           
@@ -143,35 +137,14 @@
             <div class="form-group">
               <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
                 <div class="col-md-5 input-container">
-                [#if !action.isAiccra()]
-                  [#if editable]
-                    [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive/]
-                  [#else]
-                    <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
-                    <div class="input"><p class="text">${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
-                  [/#if]
-                [#else]
                   [#if editable]
                     [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                   [#else]
-                    <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
+                    <label for="">[@s.text name="projectOutcome.expectedValue" /]: </label>
                     <div class="input"><p class="text">${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
-                  [/#if]
-                [/#if]
+                  [/#if]               
                 </div>
-                [#if !action.isAiccra()]
-                <div class="col-md-7">
-                  <div class="select">
-                    <label for="">[@s.text name="projectOutcome.expectedUnit" /]:</label>
-                    <div class="selectList">   
-                        [#if projectOutcome.crpProgramOutcome.srfTargetUnit?has_content]
-                        <input type="hidden" name="projectOutcome.expectedUnit.id" value="${(projectOutcome.crpProgramOutcome.srfTargetUnit.id)!}" class="">
-                        <p class="text">${(projectOutcome.crpProgramOutcome.srfTargetUnit.name)!}</p>
-                        [/#if]
-                    </div> 
-                  </div>
-                </div>
-                [/#if]
+
               </div>
               <div class="form-group ">
                 [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-100" editable=editable && (!reportingActive || (!(projectOutcome.narrativeTarget?has_content)!false))/]
@@ -208,34 +181,7 @@
               </div>
             </div>
             [/#if]
-                        
-            [#-- Baseline Indicators --]
-            [#if !action.isAiccra()]
-              [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
-                <h5 class="sectionSubTitle">Progress to Targets</h5>
-                <div class="form-group">
-                  <div class="" id="baseline">
-                    <div class="form-group text-right">
-                      [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                        [#--  <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a>--]
-                        [#-- (projectOutcome.crpProgramOutcome.file.fileName)! --] 
-                      [#else]
-                        <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
-                      [/#if]
-                    </div>
-                    [#-- Indicators --]
-                    [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
-                    [#if action.isAiccra()]
-                      [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index AREditable=true/]
-                    [#else]
-                      [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
-                    [/#if]
-                    [/#list]
-                  </div>
-                </div>
-              [/#if]
-             [/#if]
-            
+                                    
           </div>
                     
           [#-- Project Milestones and Communications contributions per year--]
@@ -286,38 +232,7 @@
                 </div>
               [/#list]
           </div>
-         
-          [#-- List milestones  --]
-          [#--  
-          <div class="milestonesYearBlock borderBox" listname="milestonesProject">
-            <div class="milestonesYearList">
-              [#if milestonesProject?has_content]
-                [#list milestonesProject as milestone]
-                  [@milestoneMacro element=milestone name="projectOutcome.milestones" index=milestone_index /]
-                [/#list]
-              [#else]
-                <p class="emptyMessage text-center">There is not a Intermediate Target added.</p>
-              [/#if]
-            </div>
-            
-            [#if false]
-            
-            <div class="milestonesYearSelect"> 
-              <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
-              <span class="milestonesSelectedIds" style="display:none">[#if milestonesProject?has_content][#list milestonesProject as e]${(e.id)!}[#if e_has_next],[/#if][/#list][/#if]</span>
-              [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone${reportingActive?string('.reporting', '')}"  listName="" keyFieldName="id" displayFieldName="title" className="" value="" /]
-            </div>
-            [/#if]
-            [#if totalParticipants?number > 0]
-              </br>
-              <div id="note" class="note left helpMessage3">
-                <p><i>[@s.text name="projectOutcomes.helpParticipantsSection" /]</i></p>
-              </div>
-              </br>
-             [/#if]
-          </div>        
-          --]
-          
+                   
           [#-- Communications --]
           [#if reportingActive && action.hasSpecificities('crp_show_project_outcome_communications') ]  
           <div class="">
@@ -402,9 +317,7 @@
                       [#else]
                         <h5 class="headTitle">No Progress to Target indicators added</h5>
                       [/#if]
-                    </div>
-                  
-                        
+                    </div>                     
               </div>   
             </div>
           [#else]     
@@ -622,86 +535,7 @@
     [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
     [#local prefilled]<p style="opacity:0.6">[@s.text name="form.values.fieldEmpty" /]</p>[/#local]
     
-    [#-- Milestone Title --]
-    [#-- 
-    <div class="form-group grayBox">
-      [#if showMilestoneValue]
-        <div class="form-group pull-right">
-          <strong>AICCRA Target to ${(element.year)!}:</strong> ${(element.value)!}
-        </div>
-      [/#if]
- 
-      <div class="row">
-        <div class="col-md-6">
-          <strong>Cluster contribution to this indicator in <span class="crpMilestoneYear">${(element.year)!} [#if hasExtendedYear] Extended to ${(element.extendedYear)!}[/#if]  </span> </strong> 
-        </div>
-      </div>
-  
- 
-      <div class="form-group">
-        <span class="title">${(element.title)!}</span>
-      </div>
-      
-        <div class="container-evidences">
-          <p class="text-evidences">Here you could find information about the evidences that expects  to be reported</p>
-          <div class="button-evidences animated animate__shakeX">
-            <p>View More</p>
-          </div>
-        </div>
-      
 
-      <div class="modal-evidences" style="display: none">
-
-        <div class="content-modal">
-
-          <div class="button-exit close-modal-evidences">
-            <div class="x-close-modal" ></div>
-          </div>
-            <p class="title-modal-evidences">Important information</p>
-            <div class="text-modal-evidences">
-              <p>
-                ${(projectOutcome.crpProgramOutcome.instructions)!}
-              </p>          
-            </div>
-          
-          <div class="container-buttons-evidences">
-            [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-              <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${(projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank">
-                <div class="button-pdf-modal" >
-                <p>Read full guidance</p>
-                  <img src="${baseUrlCdn}/global/images/pdf.png" alt="Download document" />
-                </div>
-                </a>
-            [/#if]
-            <div class="button-close-modal close-modal-evidences">
-              <p>Close</p>
-            </div>
-          </div>    
-        
-        </div>
-        
-      </div>
-      --]
-      [#--  Means of verification
-      <div class="form-group">
-        <strong>[@s.text name="outcome.milestone.powbMilestoneVerification" /]</strong>
-        <br /> [#if (element.powbMilestoneVerification?has_content)!false]${element.powbMilestoneVerification}[#else]${prefilled}[/#if]
-      </div>
-       --]
-
-      [#--
-      [#if !action.isAiccra()]
-        <div class="form-group row">
-          <div class="col-md-3"><strong>Gender</strong> <br /> ${(element.genderFocusLevel.powbName)!prefilled} </div>
-          <div class="col-md-3"><strong>Youth</strong> <br /> ${(element.youthFocusLevel.powbName)!prefilled}</div>
-          <div class="col-md-3"><strong>CapDev</strong> <br /> ${(element.capdevFocusLevel.powbName)!prefilled}</div>
-          <div class="col-md-3"><strong>Climate Change</strong> <br /> ${(element.climateFocusLevel.powbName)!prefilled}</div>
-        </div>
-      [/#if]
-      --]
-      [#--
-    </div>
-    --]
     <div role="tabpanel" class="tab-pane [#if milestoneYear == currentCycleYear]active[/#if]" id="milestoneYear${index}-${milestoneYear}">
       [#local customName = "${name}[${projectMilestoneIndex}]" /]
       <div class="outcomeMilestoneYear">
