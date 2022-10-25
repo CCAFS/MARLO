@@ -245,7 +245,7 @@
           [#-- Year Tabs --]
           <ul class="nav nav-tabs budget-tabs" role="tablist">
             [#list milestonesProjectYear as year]
-              <li class="[#if year == currentCycleYear]active[/#if]"><a href="#milestoneYear-${year}" role="tab" data-toggle="tab">${year} </a></li>
+              <li class="[#if year == currentCycleYear]active[/#if]"><a href="#milestoneYear-${year}" role="tab" data-toggle="tab">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${year} </a></li>
             [/#list]
           </ul>
 
@@ -336,7 +336,7 @@
           </div>
           [/#if]          
            
-          <br>       
+             
           [#if reportingActive]
             <div class="deliverableTabs"> 
               <ul class="nav nav-tabs" role="tablist"> 
@@ -613,12 +613,12 @@
     [#-- Remove Button --]
     [#-- 
     [#if editable && (!reportingActive || isNewAtReporting) && (milestoneYear gte currentCycleYear)!true]<div class="removeElement removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
-    --]
+    
     <div class="leftHead sm">
-      [#--  <span class="index">${index+1}</span>--]
+      <span class="index">${index+1}</span>
       <span class="index">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${(element.year)!}</span>
     </div>
-
+--]
     [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
     [#local prefilled]<p style="opacity:0.6">[@s.text name="form.values.fieldEmpty" /]</p>[/#local]
     
@@ -764,10 +764,11 @@
               [/#if]
         </div>
         [#-- REPORTING BLOCK --]
-        
-        <div class="form-group ">
-          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) && reportingActive className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable= reportingActive && (editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
-        </div>
+        [#if !action.isUpKeepActive() && !isYearRequired(milestoneYear) && action.isPOWB()]
+          <div class="form-group ">
+            [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) && reportingActive className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable= reportingActive && (editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
+          </div>
+        [/#if]
       </div>
     </div>
        
