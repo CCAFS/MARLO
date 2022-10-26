@@ -666,7 +666,7 @@
             [#assign hasDeliverables = (projectBudgetDeliverables?size > 0) ]
             [#if projectBudget.year == year]
              <tr class="projectBudgetItem projectBudget-${projectBudget.id}">
-              <td><a href="${projectBudgetURL}">P${(projectBudget.project.id)!}</a></td>
+              <td><a href="${projectBudgetURL}">C${(projectBudget.project.id)!}</a></td>
               <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.project.projectInfo.title)!}</a> </td>
               <td> ${(projectBudget.rationale)!} </td>
               <td> ${(projectBudget.institution.acronymName)!(projectBudget.institution.name)}</td>
@@ -682,7 +682,7 @@
         
         [#-- Button to map Funding Source to a project --  && action.canMapProjects(year) --]
         [#if editable && (year == currentCycleYear)]
-          <button type="button" class="btn btn-primary pull-right year-" data-year="${year}" data-toggle="modal" data-target="#mapFundingToProject">Map Funding Source to a Project</button>
+          <button type="button" class="btn btn-primary pull-right year-" data-year="${year}" data-toggle="modal" data-target="#mapFundingToProject">Map Funding Source to a Cluster</button>
           <div class="clearfix"></div>
         [/#if]
         

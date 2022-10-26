@@ -82,7 +82,7 @@
     [#if ((deliverable.genderLevels[0])?? && deliverable.genderLevels[0].descriptionGenderLevel??)]
     <label for="">[@customForm.text name="deliverable.genderLevels" readText=!editable /]:</label>
     <div class="input"> 
-      <span>${(deliverable.genderLevels[0].nameGenderLevel)!'Prefilled if available'}</span> - <i><span>${(deliverable.genderLevels[0].descriptionGenderLevel)!}</span></i>
+      <span>${(deliverable.genderLevels[0].nameGenderLevel)!'Not provided'}</span> - <i><span>${(deliverable.genderLevels[0].descriptionGenderLevel)!}</span></i>
       <input type="hidden" name="deliverable.genderLevels[0].genderLevel" value="${(deliverable.genderLevels[0].genderLevel)!}" />
     </div>
     [/#if]
@@ -394,7 +394,7 @@
         [#else]
         <div class="input">
           <label for="disChannel" style="display:block;">Dissemination channel:</label>
-          <p>${((deliverable.dissemination.disseminationChannel?upper_case)!)!'Prefilled if available'}</p>
+          <p>${((deliverable.dissemination.disseminationChannel?upper_case)!)!'Not provided'}</p>
         </div>
         [/#if]
       </div>

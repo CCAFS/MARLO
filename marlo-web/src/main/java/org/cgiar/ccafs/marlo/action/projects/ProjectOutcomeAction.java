@@ -113,6 +113,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private Project project;
   private List<CrpMilestone> milestones;
   private List<CrpMilestone> milestonesProject;
+  private List<Integer> milestonesProjectYear;
   private List<SrfTargetUnit> targetUnits;
   private CrpProgramOutcome crpProgramOutcome;
   private ProjectOutcome projectOutcome;
@@ -363,6 +364,20 @@ public class ProjectOutcomeAction extends BaseAction {
     return orderIndex;
   }
 
+  /**
+   * Fill the milestone project year list for tabs information
+   **/
+  public void fillMilestonesProjectYearsList() {
+    if (milestonesProject != null && !milestonesProject.isEmpty()) {
+      milestonesProjectYear = new ArrayList<>();
+      for (CrpMilestone milestoneElement : milestonesProject) {
+        if (milestoneElement != null && milestoneElement.getYear() != null && !milestoneElement.getYear().equals(0)) {
+          milestonesProjectYear.add(milestoneElement.getYear());
+        }
+      }
+    }
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = projectOutcome.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -372,10 +387,10 @@ public class ProjectOutcomeAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public String getBaseLineFileURL(String outcomeID) {
     return config.getDownloadURL() + "/file.do?" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
   }
+
 
   public String getBaseLineFileUrlPath(String outcomeID) {
     return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
@@ -421,6 +436,26 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
     return 0;
+  }
+
+  /**
+   * Set index for each milestone year
+   * 
+   * @return
+   * @return year
+   **/
+  public int getIndexMilestone(int year) {
+    int i = 0;
+    if (milestonesProject != null && !milestonesProject.isEmpty()) {
+      for (CrpMilestone milestoneElement : milestonesProject) {
+        if (milestoneElement != null && milestoneElement.getYear() != null
+          && milestoneElement.getYear().intValue() == year) {
+          return i;
+        }
+        i++;
+      }
+    }
+    return -1;
   }
 
   public int getIndexMilestone(long milestoneId, int year) {
@@ -491,6 +526,48 @@ public class ProjectOutcomeAction extends BaseAction {
     return milestonesProject;
   }
 
+  public List<Integer> getMilestonesProjectYear() {
+    return milestonesProjectYear;
+  }
+
+  /**
+   * Get a milestones list
+   * 
+   * @returns list of CrpMilestones
+   **/
+  public List<CrpMilestone> getMilestonesYear() {
+    List<CrpMilestone> projectMilestonesElement = new ArrayList<>();
+    if (milestonesProject != null && !milestonesProject.isEmpty()) {
+      try {
+        projectMilestonesElement =
+          milestonesProject.stream().filter(m -> m != null && m.isActive()).collect(Collectors.toList());
+      } catch (Exception e) {
+        LOG.error(e + "error to get milestone by year");
+      }
+    }
+    return projectMilestonesElement;
+  }
+
+  /**
+   * Get a milestone from an specific year
+   * 
+   * @param year of milestone to get
+   * @returns year CrpMilestone
+   **/
+  public CrpMilestone getMilestoneYear(int year) {
+    CrpMilestone projectMilestoneElement = new CrpMilestone();
+    if (milestonesProject != null && !milestonesProject.isEmpty()) {
+      try {
+        projectMilestoneElement = milestonesProject.stream()
+          .filter(m -> m != null && m.getYear() != null && m.getYear() == year).collect(Collectors.toList()).get(0);
+      } catch (Exception e) {
+        LOG.error(e + "error to get milestone by year");
+      }
+    }
+    return projectMilestoneElement;
+  }
+
+
   public ProjectOutcomeIndicator getPreIndicator(Long indicatorID) {
     if (projectOutcome.getIndicators() != null) {
       for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
@@ -506,6 +583,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectOutcomeIndicator;
 
   }
+
 
   public int getPrevIndexIndicator(Long indicatorID) {
     if (this.getPrevIndicator(indicatorID) == null && this.getPrevIndicator(indicatorID - 1) != null) {
@@ -529,7 +607,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return 0;
   }
 
-
   public ProjectOutcomeIndicator getPrevIndicator(Long indicatorID) {
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeLastPhase.getIndicators()) {
       if (projectOutcomeIndicator != null && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
@@ -543,7 +620,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectOutcomeIndicator;
 
   }
-
 
   public Project getProject() {
     return project;
@@ -605,6 +681,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipantFormalTrainingLongFemale;
   }
 
+
   public Double getTotalParticipantFormalTrainingLongMale() {
     return totalParticipantFormalTrainingLongMale;
   }
@@ -612,7 +689,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public Double getTotalParticipantFormalTrainingPhdFemale() {
     return totalParticipantFormalTrainingPhdFemale;
   }
-
 
   public Double getTotalParticipantFormalTrainingPhdMale() {
     return totalParticipantFormalTrainingPhdMale;
@@ -626,6 +702,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipantFormalTrainingShortMale;
   }
 
+
   public Double getTotalParticipants() {
     return totalParticipants;
   }
@@ -633,7 +710,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public Double getTotalYouth() {
     return totalYouth;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -646,6 +722,7 @@ public class ProjectOutcomeAction extends BaseAction {
   public boolean isEditMilestoneExpectedValue() {
     return editMilestoneExpectedValue;
   }
+
 
   public boolean isEditOutcomeExpectedValue() {
     return editOutcomeExpectedValue;
@@ -707,7 +784,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -869,6 +945,8 @@ public class ProjectOutcomeAction extends BaseAction {
     milestonesProject.addAll(crpMilestones);
     milestonesProject.sort(Comparator.comparing(CrpMilestone::getYear, Comparator.reverseOrder()));
     // Collections.sort(milestonesProject, (m1, m2) -> m1.getIndex().compareTo(m2.getIndex()));
+
+    this.fillMilestonesProjectYearsList();
 
     if (this.isReportingActive()) {
       if (projectOutcomeLastPhase != null) {
@@ -1121,6 +1199,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
 
@@ -1322,7 +1401,6 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
   }
-
 
   private void saveMilestones(ProjectOutcome projectOutcomeDB) {
 
@@ -1558,6 +1636,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public void setMilestonesProject(List<CrpMilestone> milestonesProject) {
     this.milestonesProject = milestonesProject;
+  }
+
+  public void setMilestonesProjectYear(List<Integer> milestonesProjectYear) {
+    this.milestonesProjectYear = milestonesProjectYear;
   }
 
   public void setProject(Project project) {

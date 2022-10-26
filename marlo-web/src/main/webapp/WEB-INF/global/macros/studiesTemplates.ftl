@@ -181,7 +181,7 @@
       [#-- Who is commissioning this study --]
       [#if !isOutcomeCaseStudy]
       <div class="form-group">
-        [@customForm.input name="${customName}.projectExpectedStudyInfo.commissioningStudy" i18nkey="study.commissioningStudy" help="study.commissioningStudy.help" className="" helpIcon=false required=true editable=editable /]
+        [@customForm.input name="${customName}.projectExpectedStudyInfo.commissioningStudy" i18nkey="study.commissioningStudy" help="study.commissioningStudy.help" className="" helpIcon=false required=!action.isPOWB() editable=editable /]
       </div>
       [/#if]
       
@@ -230,12 +230,12 @@
         [#local isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
         [#local isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
         
-        <label for="">[@s.text name="study.geographicScopeTopic" /]:[@customForm.req required=editable /]</label>
+        <label for="">[@s.text name="study.geographicScopeTopic" /]:[@customForm.req required=editable && !action.isPOWB() /]</label>
         <div class="form-group simpleBox">
           <div class="form-group row">
             <div class="col-md-6">
               [#-- Geographic Scope --]
-              [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes  label="study.geographicScope" listName="geographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
+              [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes  label="study.geographicScope" listName="geographicScopes" keyFieldName="id" displayFieldName="name" required=!action.isPOWB() /]
             </div>
           </div>
           <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
@@ -244,7 +244,7 @@
           </div>
           <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
             [#-- Multinational, National and Subnational scope --]
-            [@customForm.select name="${customName}.countriesIds" label="" i18nkey="study.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
+            [@customForm.select name="${customName}.countriesIds" label="" i18nkey="study.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=!action.isPOWB() className="countriesSelect" disabled=!editable/]
           </div>
           <div class="form-group">
             [#-- Comment box --]
@@ -260,7 +260,7 @@
           [#-- Does this outcome reflect a contribution of the CGIAR in influencing or modifying policies/ strategies / laws/ regulations/ budgets/ investments or  curricula?  --]
           <div class="form-group">
             
-            <label for="">[@s.text name="study.reportingIndicatorThree" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.reportingIndicatorThree.help" showIcon=false editable=editable/]</label>
+            <label for="">[@s.text name="study.reportingIndicatorThree" /]:[@customForm.req required=editable && !action.isPOWB() /][@customForm.helpLabel name="study.reportingIndicatorThree.help" showIcon=false editable=editable/]</label>
             [#assign studyIndicatorThree = "studyIndicatorThree"]
             [#assign showPolicyIndicator = (element.projectExpectedStudyInfo.isContribution?string)!"" /]
             [@customForm.radioFlat id="${studyIndicatorThree}-yes" name="${name}.projectExpectedStudyInfo.isContribution" label="Yes" value="true" checked=(showPolicyIndicator == "true") cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-yes" editable=editable /]
@@ -282,7 +282,7 @@
       [#-- 4.  Maturity of change reported (tick-box)  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        <label for="">[@s.text name="study.maturityChange" /]:[@customForm.req required=editable && !(isPolicy && stageProcessOne) /]
+        <label for="">[@s.text name="study.maturityChange" /]:[@customForm.req required=editable && !action.isPOWB() && !(isPolicy && stageProcessOne) /]
           [@customForm.helpLabel name="study.maturityChange.help" showIcon=false editable=editable/][@customForm.helpLabel name="study.maturityChange.help2" showIcon=true editable=editable/]
         </label>
         <div class="form-group">
@@ -296,11 +296,11 @@
       [#-- 5. Links to the Strategic Results Framework  --]
       <div class="form-group">
         [#if isOutcomeCaseStudy]
-          <label for="">[@s.text name="study.stratgicResultsLink" /]:[@customForm.req required=editable /]
+          <label for="">[@s.text name="study.stratgicResultsLink" /]:[@customForm.req required=editable && !action.isPOWB() /]
             [@customForm.helpLabel name="study.stratgicResultsLink.help" showIcon=false editable=editable/]
           </label>
         [#elseif !action.isAiccra()]
-          <label for="">[@s.text name="study.relevantTo" /]:[@customForm.req required=editable /]
+          <label for="">[@s.text name="study.relevantTo" /]:[@customForm.req required=editable && !action.isPOWB()/]
           </label> 
         [/#if]
         [#-- Sub IDOs (maxLimit=3) --]
@@ -317,14 +317,14 @@
         
         [#-- SRF Targets (maxLimit=2)  --]
         <div class="form-group simpleBox stageProcessOne">
-          <label for="">[@s.text name="study.targetsOption" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.targetsOption.help" showIcon=false editable=editable/]</label><br />
+          <label for="">[@s.text name="study.targetsOption" /]:[@customForm.req required=editable && !action.isPOWB() /][@customForm.helpLabel name="study.targetsOption.help" showIcon=false editable=editable/]</label><br />
           [#local targetsOption = (element.projectExpectedStudyInfo.isSrfTarget)!""]
           [#list ["targetsOptionYes", "targetsOptionNo", "targetsOptionTooEarlyToSay"] as option]
             [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.isSrfTarget" i18nkey="study.${option}" value="${option}" checked=(option == targetsOption) cssClass="radioType-targetsOption" cssClassLabel="font-normal" editable=editable /] 
           [/#list]
           [#local showTargetsComponent = (element.projectExpectedStudyInfo.isSrfTarget == "targetsOptionYes")!false /]
           <div class="srfTargetsComponent" style="display:${showTargetsComponent?string('block', 'none')}">
-            [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.stratgicResultsLink.srfTargets" listName="targets" maxLimit=2  keyFieldName="id" displayFieldName="title" required=editable && !(isPolicy && stageProcessOne)/]          
+            [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.stratgicResultsLink.srfTargets" listName="targets" maxLimit=2  keyFieldName="id" displayFieldName="title" required=editable && !action.isPOWB() && !(isPolicy && stageProcessOne)/]          
           </div>
         </div>
         
@@ -339,7 +339,7 @@
       [#-- Milestones --]
         [#--[#if isOutcomeCaseStudy]  --]
         <div class="form-group">          
-          <label for="">[@s.text name="study.outcomes" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.outcomes.help" showIcon=false editable=editable/]</label>
+          <label for="">[@s.text name="study.outcomes" /]:[@customForm.req required=editable && !action.isPOWB() /][@customForm.helpLabel name="study.outcomes.help" showIcon=false editable=editable/]</label>
           [#assign studyMilestoneLink = "studyMilestoneLink"]
           [#assign showMilestoneIndicator = (expectedStudy.projectExpectedStudyInfo.hasMilestones?string)!"" /]
           [@customForm.radioFlat id="${studyMilestoneLink}-yes" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
@@ -353,7 +353,7 @@
         </div>
         --]
        <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
-          [@customForm.elementsListComponent name="${customName}.projectOutcomes" elementType="projectOutcome" elementList=(element.projectOutcomes)![] label="study.outcomes"  listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName"/]
+          [@customForm.elementsListComponent name="${customName}.projectOutcomes" elementType="projectOutcome" elementList=(element.projectOutcomes)![] label="study.outcomes"  listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName" required=!action.isPOWB()/]
           <div class="note">[@s.text name="study.outcomes.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
          <br/>      
         </div>
@@ -390,7 +390,7 @@
         [#-- Centers --]
         [#if isOutcomeCaseStudy]
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="study.keyContributors.centers"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
+          [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="study.keyContributors.centers"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=!action.isPOWB()/]
           <div class="note">[@s.text name="study.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
         </div>
         [/#if]
@@ -434,7 +434,7 @@
       [#--  CGIAR innovation(s) or findings that have resulted in this outcome or impact.   --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.cgiarInnovation" i18nkey="study.innovationsNarrative" help="study.innovationsNarrative.help" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.cgiarInnovation" i18nkey="study.innovationsNarrative" help="study.innovationsNarrative.help" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) && !action.isPOWB() editable=editable /]
          
         [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="study.innovationsList"  listName="innovationsList" keyFieldName="id" displayFieldName="composedNameAlternative" required=false /]
       </div>
@@ -443,7 +443,7 @@
       [#--  Elaboration of Outcome/Impact Statement  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.elaborationOutcomeImpactStatement" i18nkey="study.elaborationStatement" help="study.elaborationStatement.help" helpIcon=false className="limitWords-400" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.elaborationOutcomeImpactStatement" i18nkey="study.elaborationStatement" help="study.elaborationStatement.help" helpIcon=false className="limitWords-400" required=editable && !(isPolicy && stageProcessOne) && !action.isPOWB() editable=editable /]
       </div>
       [/#if]
       
@@ -451,7 +451,7 @@
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         <div class="form-group">
-          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable && !action.isPOWB() /]
         </div>
         <p class="note"> <small>[@s.text name="message.shortenURLsDisclaimer"][@s.param value="93" /][/@s.text]</small> </p>
         [#-- 
@@ -510,7 +510,7 @@
         </label>
         [#-- Gender --]
         <div class="simpleBox ccRelevanceBlock">
-          <label for="">[@s.text name="study.genderRelevance" /]:[@customForm.req required=editable /]</label>
+          <label for="">[@s.text name="study.genderRelevance" /]:[@customForm.req required=editable && !action.isPOWB() /]</label>
           <div class="form-group">
             [#assign genderLevel = (element.projectExpectedStudyInfo.genderLevel.id)!1 ]
             [#list focusLevels  as cc]
@@ -525,7 +525,7 @@
         </div>
         [#-- Youth  --]
         <div class="simpleBox ccRelevanceBlock">
-          <label for="">[@s.text name="study.youthRelevance" /]:[@customForm.req required=editable /]</label>
+          <label for="">[@s.text name="study.youthRelevance" /]:[@customForm.req required=editable && !action.isPOWB() /]</label>
           <div class="form-group">
             [#assign youthLevel = (element.projectExpectedStudyInfo.youthLevel.id)!1 ]
             [#list focusLevels  as cc]
@@ -540,7 +540,7 @@
         </div>
         [#-- CapDev   --]
         <div class="simpleBox ccRelevanceBlock">
-          <label for="">[@s.text name="study.capDevRelevance" /]:[@customForm.req required=editable /]</label>
+          <label for="">[@s.text name="study.capDevRelevance" /]:[@customForm.req required=editable && !action.isPOWB() /]</label>
           <div class="form-group">
             [#assign capdevLevel = (element.projectExpectedStudyInfo.capdevLevel.id)!1 ]
             [#list focusLevels  as cc]
@@ -555,7 +555,7 @@
         </div>
         [#-- Climate Change  --]
         <div class="simpleBox ccRelevanceBlock">
-          <label for="">[@s.text name="study.climateChangeRelevance" /]:[@customForm.req required=editable /]</label>
+          <label for="">[@s.text name="study.climateChangeRelevance" /]:[@customForm.req required=editable && !action.isPOWB() /]</label>
           <div class="form-group">
             [#assign climateChangeLevel = (element.projectExpectedStudyInfo.climateChangeLevel.id)!1 ]
             [#list focusLevels  as cc]
@@ -613,14 +613,14 @@
       [#--  Contact person    --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.contacts" help="study.contacts.help" className="" helpIcon=false required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.contacts" help="study.contacts.help" className="" helpIcon=false required=editable && !(isPolicy && stageProcessOne) editable=editable && !action.isPOWB() /]
       </div>
       [/#if]
       
       [#--  Comments for other studies--]
       [#if !isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.activityDescription"  placeholder="" className="limitWords-100" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.activityDescription"  placeholder="" className="limitWords-100" required=editable && !(isPolicy && stageProcessOne) && !action.isPOWB() editable=editable /]
       </div>
       
       <div class="form-group stageProcessOne">
@@ -694,7 +694,7 @@
       [#if editable]<div class="removeIcon removeElement removeQuantification" title="Remove"></div>[/#if]
       [#-- Quantification type --]
       <div class="form-group">
-        <label for="">[@s.text name="study.quantificationType" /]:[@customForm.req required=editable /]</label>
+        <label for="">[@s.text name="study.quantificationType" /]:[@customForm.req required=editable && !action.isPOWB() /]</label>
         <br />[@customForm.radioFlat id="quantificationType-1" name="${customName}.typeQuantification" i18nkey="study.quantification.quantificationType-1" value="A" checked=((element.typeQuantification == "A")!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
         <br />[@customForm.radioFlat id="quantificationType-2" name="${customName}.typeQuantification" i18nkey="study.quantification.quantificationType-2" value="B" checked=((element.typeQuantification == "B")!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
       </div>
@@ -702,15 +702,15 @@
     [#-- Units --]
     <div class="form-group row">
       <div class="col-md-4">
-        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" className="numericInput" required=true editable=editable /]
+        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" className="numericInput" required=!action.isPOWB() editable=editable /]
       </div>
       <div class="col-md-4"> 
-        [@customForm.input name="${customName}.targetUnit" i18nkey="study.quantification.targetUnit" className="" required=true editable=editable /]
+        [@customForm.input name="${customName}.targetUnit" i18nkey="study.quantification.targetUnit" className="" required=!action.isPOWB() editable=editable /]
       </div> 
     </div>
     [#-- Comments --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.comments" i18nkey="study.quantification.comments" help="study.quantification.comments.help"  placeholder="" className="" required=true editable=editable /]
+      [@customForm.textArea name="${customName}.comments" i18nkey="study.quantification.comments" help="study.quantification.comments.help"  placeholder="" className="" required=!action.isPOWB() editable=editable /]
     </div>
   </div>
 [/#macro]
