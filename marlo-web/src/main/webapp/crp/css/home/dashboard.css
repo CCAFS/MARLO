@@ -403,7 +403,6 @@ span.timelineControl:hover {
     font-weight: 700;
     font-size: 2.0em;
     color: #333;
-    margin-bottom: 30px;
   }
   
   .containerSeccionItems {
@@ -456,8 +455,9 @@ span.timelineControl:hover {
 
  .containerTabletItems .infTableItems{
     border: #ebebeb solid 1px;
-    background: #f8f8f9;
+    background: #E8F4FF;
     padding: 7px 18px;
+    color: black;
  }
 
  .containerTabletItems .subHeader{
@@ -470,4 +470,8 @@ span.timelineControl:hover {
   margin-left: 20px;
   width: auto;
   margin-right: 30px;
+ }
+
+ .sectionItems{
+  margin-left: 30px;
  }
