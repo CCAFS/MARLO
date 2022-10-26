@@ -24,7 +24,7 @@ function init() {
   // Attaching events functions
   attachEvents();
   feedbackAutoImplementation();
-  re_animate();
+  //re_animate();
 }
 
 function attachEvents() {
