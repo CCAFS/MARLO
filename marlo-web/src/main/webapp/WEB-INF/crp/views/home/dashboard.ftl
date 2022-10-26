@@ -40,7 +40,21 @@
     window.location.href = window.location.href;
   </script>
 [/#if]
+<!--  africa-color.svg  -->
 <section class="marlo-content">
+  <section class="sectionMap">	
+    <div class="containerTextMap">
+      <p class="titleMap">What is a Cluster?</p>
+      <p class="textMap">A cluster is defined as the group of AICCRA main activities led by each AICCRA Country Leader (Ghana, Mali, Senegal, Ethiopia, Kenya and Zambia), AICCRA Regional Leaders (Western Africa and Eastern & Southern Africa), and  AICCRA Thematic leaders (Theme 1, Theme 2, Theme 3, and Theme 4). In each cluster, participants are involved as leaders, coordinators and collaborators with specific budget allocations for each AICCRA main activity with a set of deliverables and contributions towards our performance indicators.</p>
+    </div>
+    <div class="containerImgMap">
+      <img src="${baseUrlCdn}/global/images/africa-color.svg">
+      <div></div>
+    </div>
+  </section>
+  <div class="borderMap"></div>
+
+
   <div class="container">
     [#-- What do you want to do --]
 

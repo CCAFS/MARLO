@@ -387,3 +387,50 @@ span.timelineControl:hover {
   .imgTimeline {
     margin-top: 7px;
   }
+
+  /*************** sectionMap ********************/
+
+  .sectionMap{
+    width: 100%;
+    height: 320px;
+    background: #0478a3;
+    display: flex;
+    /* border-radius: 0 0 50% 50%; */
+    
+  }
+
+  .borderMap{
+    width: 100%;
+    height: 100px;
+    background-image: url(../../../global/images/header.svg);
+    background-repeat: no-repeat;    
+    background-size: 100%;
+    margin-top: -1px;
+  }
+
+  .containerTextMap{
+    width: 60%;
+    margin: 30px 67px 30px 88px;
+    color: #ddd;
+  }
+
+  .containerTextMap .titleMap{
+    font-size: 35px;
+    font-weight: 700;
+  }
+
+  .containerTextMap .textMap{
+    font-size: 21px;
+    margin-left: 75px;
+  }
+
+  .containerImgMap{
+    width: 40%;    
+    text-align: center;
+  }
+  
+  .containerImgMap img{
+    width: 240px;
+    margin-top: 50px;
+  }
+
