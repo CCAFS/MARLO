@@ -8,7 +8,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20221010",
+  "${baseUrlMedia}/css/home/dashboard.css?20221026",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css"
   ]
@@ -63,26 +63,28 @@
 
   <section class="containerTabletItems">
   <div class="tableItemsBackground"></div>	
-    <div class="tableItemsTitle">
-      <p>Select the evidence type to see in the table</p>
-    </div>
     <div class="containerSeccionItems">
-      <div class="containerItems">
-        <div class="itemsTablet itemsActive projects" id="projects">
-          <img src="${baseUrlCdn}/global/images/1309-load-balancer-outline.gif" width="70">
-          <p>Clusters</p>
+      <div class="sectionItems">
+        <div class="tableItemsTitle">
+          <p>Select the category you want to call in</p>
         </div>
-        <div class="itemsTablet" id="deliverables">
-          <img src="${baseUrlCdn}/global/images/107-box-package-open-outline.gif" width="70">
-          <p>Deliverables</p>
-        </div>
-        <div class="itemsTablet" id="studies">
-          <img src="${baseUrlCdn}/global/images/27-globe-outline.gif" width="70">
-          <p>OICRs & MELIAs</p>
-        </div>
-        <div class="itemsTablet" id="innovations">
-          <img src="${baseUrlCdn}/global/images/478-computer-display-outline.gif" width="70">
-          <p>Innovations</p>
+        <div class="containerItems">
+          <div class="itemsTablet itemsActive projects" id="projects">
+            <img src="${baseUrlCdn}/global/images/1309-load-balancer-outline.gif" width="70">
+            <p>Clusters</p>
+          </div>
+          <div class="itemsTablet" id="deliverables">
+            <img src="${baseUrlCdn}/global/images/verification.gif" width="70">
+            <p>Deliverables</p>
+          </div>
+          <div class="itemsTablet" id="studies">
+            <img src="${baseUrlCdn}/global/images/56-document-outline.gif" width="70">
+            <p>OICRs & MELIAs</p>
+          </div>
+          <div class="itemsTablet" id="innovations">
+            <img src="${baseUrlCdn}/global/images/ocurrencia.gif" width="70">
+            <p>Innovations</p>
+          </div>
         </div>
       </div>
       <div id="dashboardContent" class="">
