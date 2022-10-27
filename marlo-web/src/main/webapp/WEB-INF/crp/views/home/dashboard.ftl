@@ -8,7 +8,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20221026",
+  "${baseUrlMedia}/css/home/dashboard.css?20221027",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css"
   ]
@@ -70,21 +70,25 @@
         </div>
         <div class="containerItems">
           <div class="itemsTablet itemsActive projects" id="projects">
-            <img src="${baseUrlCdn}/global/images/1309-load-balancer-outline.gif" width="70">
+            <img class="itemimgprojects" src="${baseUrlCdn}/global/images/1309-load-balancer-outline.png" width="70">
+            <img class="itemgifprojects" src="${baseUrlCdn}/global/images/1309-load-balancer-outline.gif" style="display:none;" width="70">
             <p>Clusters</p>
           </div>
           <div class="itemsTablet" id="deliverables">
-            <img src="${baseUrlCdn}/global/images/verification.gif" width="70">
+            <img class="itemimgdeliverables" src="${baseUrlCdn}/global/images/verification.png" width="70">
+            <img class="itemgifdeliverables" src="${baseUrlCdn}/global/images/verification.gif" style="display:none;" width="70">
             <p>Deliverables</p>
           </div>
           <div class="itemsTablet" id="studies">
-            <img src="${baseUrlCdn}/global/images/56-document-outline.gif" width="70">
+            <img class="itemimgstudies" src="${baseUrlCdn}/global/images/oicrs_icon.png" width="70">
+            <img class="itemgifstudies" src="${baseUrlCdn}/global/images/oicrs_icon.gif" style="display:none;" width="70">
             <p>OICRs & MELIAs</p>
           </div>
-          <div class="itemsTablet" id="innovations">
-            <img src="${baseUrlCdn}/global/images/ocurrencia.gif" width="70">
+          <!--  <div class="itemsTablet" id="innovations">
+            <img class="itemimginnovations" src="${baseUrlCdn}/global/images/ocurrencia.png" width="70">
+            <img class="itemgifinnovations" src="${baseUrlCdn}/global/images/ocurrencia.gif" style="display:none;" width="70">
             <p>Innovations</p>
-          </div>
+          </div>  -->
         </div>
       </div>
       <div id="dashboardContent" class="">
