@@ -25,7 +25,21 @@ function initDashboard() {
 
   $('.itemsTablet').on("click", updateTable);
 
+  $('.itemsTablet').hover(updateGif, updateImg);
   
+}
+
+
+function updateImg() {
+  let name = $(this).attr("id");
+  $('.itemimg'+name).show();
+  $('.itemgif'+name).hide();
+}
+
+function updateGif() {
+  let name = $(this).attr("id");
+  $('.itemimg'+name).hide();
+  $('.itemgif'+name).show();
 }
 
 function moveScrollRight() {
