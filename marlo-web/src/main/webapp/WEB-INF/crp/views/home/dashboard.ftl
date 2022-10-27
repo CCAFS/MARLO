@@ -49,7 +49,11 @@
     </div>
     <div class="containerImgMap">
       <img src="${baseUrlCdn}/global/images/africa-color.svg">
-      <div></div>
+      <div class="circleMap cluster1"></div>
+      <div class="circleMap cluster2"></div>
+      <div class="circleMap cluster3"></div>
+      <div class="circleMap cluster4"></div>
+      <div class="circleMap cluster5"></div>
     </div>
   </section>
   <div class="borderMap"></div>

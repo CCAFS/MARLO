@@ -425,8 +425,9 @@ span.timelineControl:hover {
   }
 
   .containerImgMap{
-    width: 40%;    
+    width: 400px;    
     text-align: center;
+    position: relative;
   }
   
   .containerImgMap img{
@@ -434,3 +435,14 @@ span.timelineControl:hover {
     margin-top: 50px;
   }
 
+.circleMap{
+  width: 30px;
+  height: 30px;
+  background-color: #5f5e5e;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.circleMap:hover{
+  
+}
