@@ -25,6 +25,51 @@ function initDashboard() {
   $('.buttonLeftTimeline').on("click", moveScrollLeft);
 
   
+  $('.circleMap').hover(itemMapHover, itemMap);
+}
+
+function itemMapHover(){
+  let item = $(this).attr('id').split('cluster')[1];
+  $('#cluster'+item).css("-webkit-box-shadow", " 0px 0px 10px rgb(0 0 0 / 100%)")
+  $('.dialogMap').css("display", "block")
+  $('.dialogMap').addClass('animate__animated animate__backInRight')
+  $('.dialogMapText').text(contentDialog(item));
+}
+
+function itemMap(){
+  let item = $(this).attr('id').split('cluster')[1];
+  $('#cluster'+item).css("-webkit-box-shadow", " 0px 0px 10px rgb(0 0 0 / 0%)")  
+  $('.dialogMap').css("display", "none")
+}
+
+function contentDialog(id){
+
+  switch (id) {
+    case '1':
+      return "Senegal: Activities led by ILRI"
+    case '2':
+      return "Ethiopia: Activities led by ILRI"
+    case '3':
+      return "Ghana: Activities led by IITA"
+    case '4':
+      return "Kenya: Activities led by ILRI"
+    case '5':
+      return "Zambia: Activities led by IWMI"
+    case '6':
+      return "Theme 1: Activities led by ILRI"
+    case '7':
+      return "Theme 2: Activities led by the Alliance"
+    case '8':
+      return "East and Southern Africa"
+    case '9':
+      return "Theme 4: Activities led by Columbia University"
+    case '10':
+      return "Theme 3: Gender and Social Inclusion Leader (Lead by ILRI)"
+    case '11':
+      return "West Africa "
+  }
+
+  
 }
 
 function moveScrollRight() {
