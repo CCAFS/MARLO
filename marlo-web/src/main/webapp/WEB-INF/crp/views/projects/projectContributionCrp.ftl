@@ -15,7 +15,7 @@
 /] 
 [#assign customCSS = [ 
   "${baseUrlMedia}/css/projects/projectContributionCrp.css?20221028",
-  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20220922",
+  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20221028",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
 /]
@@ -117,7 +117,7 @@
             <div class="container-evidences">
               <p class="text-evidences">Here you could find information about the evidences that expects  to be reported</p>
               <div class="button-evidences animated animate__shakeX">
-                <p>View More</p>
+                <p>See detail</p>
               </div>
             </div>
             <div class="clearfix"></div>
@@ -633,7 +633,7 @@
 
             <div class="note left">
               <div id="popup" class="helpMessage3">
-                <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]${totalParticipants}[/@s.param][/@s.text]</a></p>
+                <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]<b>${totalParticipants}</b>[/@s.param][/@s.text]</a></p>
               </div>
             </div>
             <div class="clearfix"></div>
