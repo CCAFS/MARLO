@@ -206,21 +206,24 @@
                 [#assign milestoneElement = action.milestonesYear!{}/]
                 [#assign milestoneIndex = (action.indexMilestone(year))!'-1' /]
 
-                    <div class="milestonesYearBlock borderBox" listname="milestonesProject">
+                    <!--<div class="milestonesYearBlock borderBox" listname="milestonesProject">-->
                       <div class="milestonesYearList">
                           
                           [#if milestoneElement?has_content]           
                               [@milestoneMacro element=milestoneElement[milestoneIndex] name="projectOutcome.milestones" index=0 /]
 
                               [#-- progress targets --]
-                              [#if year == currentCycleYear]
+                              <br>
+                              [#if year == currentCycleYear && projectOutcome.crpProgramOutcome.indicators?size != 0]
+                                <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
+                                <!--<h4 class="headTitle">Progress to Targets</h4>-->
+
                                 [#if reportingActive]
                                   <div class="deliverableTabs"> 
                                     <ul class="nav nav-tabs" role="tablist"> 
-                                      <li role="presentation" class=""><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Progress ${currentCycleYear}</a></li>                       
-                                      <li role="presentation" class="active"><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Reporting ${currentCycleYear}</a></li>                            
+                                      <li role="presentation" class=""><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Progress <!--${currentCycleYear}--></a></li>                       
+                                      <li role="presentation" class="active"><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Reporting <!--${currentCycleYear}--></a></li>                            
                                     </ul>
-                                    
                                     <div class="tab-content ">          
                                       [#-- Progress tab --]  
                                         <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade">
@@ -228,12 +231,10 @@
                                             [#-- 
                                             && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content
                                             --]
-                                            <h4 class="headTitle">Progress to Targets</h4>
-                                            <div class="nextUsersBlock borderBox">
                                               <div class="nextUsersList">
                                                 [#-- Baseline Indicators --]
                                                 [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcomeLastPhase.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content)!false)]
-                                                  <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
+                                                  <!--<h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>-->
                                                   <div class="form-group">
                                                     <div class="" id="baseline">
                                                       <div class="form-group text-right">
@@ -250,7 +251,6 @@
                                                     </div>
                                                   </div>
                                                 [/#if]
-                                              </div>           
                                             </div>
                                           [/#if]
                                         </div>  
@@ -259,11 +259,10 @@
                                           <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade in active">
                                             [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
                                               <h4 class="headTitle">Progress to Targets</h4>
-                                              <div class="nextUsersBlock borderBox">
                                                 <div class="nextUsersList">
                                                   [#-- Baseline Indicators --]
                                                   [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
-                                                    <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
+                                                    <!--<h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>-->
                                                     <div class="form-group">
                                                       <div class="" id="baseline">
 
@@ -275,7 +274,6 @@
                                                     </div>
                                                   [/#if]
                                                 </div>           
-                                              </div>
                                             [#else]
                                               <h5 class="headTitle">No Progress to Target indicators added</h5>
                                             [/#if]
@@ -284,12 +282,10 @@
                                   </div>
                                 [#else]     
                                   [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
-                                      <h4 class="headTitle">Progress to Targets</h4>
-                                      <div class="nextUsersBlock borderBox">
                                             <div class="nextUsersList">
                                               [#-- Baseline Indicators --]
                                               [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
-                                                <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
+                                                <!--<h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>-->
                                                 <div class="form-group">
                                                   <div class="" id="baseline">
 
@@ -301,7 +297,6 @@
                                                 </div>
                                               [/#if]
                                             </div>           
-                                      </div>
                                   [/#if]
                                 [/#if]
                               [/#if]   
@@ -328,7 +323,7 @@
                         </br>
                       [/#if]
                       --]
-                    </div>      
+                    <!--</div>-->      
                 </div>
               [/#list]
           </div>
@@ -353,104 +348,7 @@
             </div>
           </div>
           [/#if]          
-                         
-          
-          [#-- capdev --]
-          [#if totalParticipants?number > 0]
-          <h4 class="headTitle"> <a id="capdev">Capacity Development</a></h4>
-          <div class="borderBox">
-                   [#-- CapDevCharts--]
-                    <div class="form-group row">
-                      <div class="col-md-4">
-                        <div id="" class="simpleBox numberBox">
-                            <label for="">Total of Participants</label><br />
-                            <span>${(totalParticipants?number?string(",##0"))!0}</span>
-                         </div>
-                        <div id="" class="simpleBox numberBox">
-                            <label for="">Total of Females</label><br />
-                            <span>${(totalFemales?number?string(",##0"))!0}</span>
-                         </div>
-                        <div id="" class="simpleBox numberBox">
-                            <label for="">Total of Africans</label><br />
-                            <span>${(totalAfricans?number?string(",##0"))!0}</span>
-                         </div>
-                         [#--  
-                         <div id="" class="simpleBox numberBox">
-                            <label for="">Participants in [@s.text name="totalParticipantFormalTraining" /]</label><br />
-                            <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
-                         </div>
-                         --]
-                      </div>
-                      <div class="col-md-8">
-                        [#-- Trainees in Short-Term --]
-                        [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
-                        <div id="chart12" class="chartBox simpleBox">
-                          [#assign chartData = [
-                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
-                            {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
-                          ] /] 
-                          <ul class="chartData" style="display:none">
-                            <li>
-                              <span>[@s.text name="{customLabel}" /]</span>
-                              <span>[@s.text name="Short-Term" /]</span>
-                              <span class="json">{"role":"annotation"}</span>
-                            </li>
-                            [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
-                              [#list chartData as data]
-                                <li>
-                                  <span>${data.name}</span>
-                                  <span class="number">${data.value}</span>
-                                  <span>${data.value}</span>
-                                </li>
-                              [/#list]
-                            [/#if]
-                          </ul>
-                        </div>
-                        [/#if]
-                        <br />
-                        [#-- Trainees in Long-Term --]
-                        [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
-                        <div id="chart13" class="chartBox simpleBox">
-                          [#assign chartData = [
-                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
-                            {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
-                          ] /] 
-                          <ul class="chartData" style="display:none">
-                            <li>
-                              <span>[@s.text name="chart13" /]</span>
-                              <span>[@s.text name="Long-Term" /]</span>
-                              <span class="json">{"role":"annotation"}</span>
-                              <span>[@s.text name="PhD" /]</span>
-                              <span class="json">{"role":"annotation"}</span>
-                            </li>
-                            [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
-                              [#list chartData as data]
-                                <li><span>${data.name}</span>
-                                <span class="number">${data.value}</span>
-                                <span>${data.value}</span>
-                                <span class="number">${data.valuePhD}</span>
-                                <span>${data.valuePhD}</span></li>
-                              [/#list]
-                            [/#if]
-                          </ul>
-                         </div>
-                         [/#if]
-                      </div>
-                    </div>
-                    
-                    [#-- Deliverables Participants & Trainees --]
-                    <div class="form-group">
-                      <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Deliverables Participants & Trainees" /]</h4>
-                      <div class="viewMoreSyntesis-block">
-                      
-                      <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
-                        [@tableParticipantsTrainingsMacro list=(deliverableParticipants)![] /]
-                      </div>
-                      
-                     </div>
-                    </div> 
-          </div>  
-          [/#if]
+                                  
           
           [#-- Next Users --]
           [#-- For A4NH CRP, nextusers aren't required --]
@@ -514,7 +412,8 @@
 
 
 [#macro milestoneMacro element name index isTemplate=false]
-  <div id="milestoneYear-${isTemplate?string('template', index)}" class="milestoneYear simpleBox" style="display:${isTemplate?string('none','block')}">
+
+  <div id="milestoneYear-${isTemplate?string('template', index)}" class="milestoneYear" style="display:${isTemplate?string('none','block')}">
     [#-- Milestone content --]
     [#if isTemplate]
       [#local year = -1 /]
@@ -543,7 +442,7 @@
       <span class="index">${index+1}</span>
       <span class="index">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${(element.year)!}</span>
     </div>
---]
+      --]
 
       <div class="modal-evidences" style="display: none">
 
@@ -631,7 +530,122 @@
              [/#if]
             [/#if]
         </div>
-        
+        <br>
+        [#-- Deliverable table with categories and sub categories --]
+        <div class="form-group deliverableTypeMessage">
+          <div id="dialog" title="Capacity development" style="display: none">
+          
+          
+          [#-- capdev --]
+          [#if totalParticipants?number > 0]
+          <!--<h4 class="headTitle"> <a id="capdev">Capacity Development</a></h4>-->
+          <div class="borderBox">
+                   [#-- CapDevCharts--]
+                    <div class="form-group row">
+                      <div class="col-md-4">
+                        <div id="" class="simpleBox numberBox">
+                            <label for="">Total of Participants</label><br />
+                            <span>${(totalParticipants?number?string(",##0"))!0}</span>
+                         </div>
+                        <div id="" class="simpleBox numberBox">
+                            <label for="">Total of Females</label><br />
+                            <span>${(totalFemales?number?string(",##0"))!0}</span>
+                         </div>
+                        <div id="" class="simpleBox numberBox">
+                            <label for="">Total of Africans</label><br />
+                            <span>${(totalAfricans?number?string(",##0"))!0}</span>
+                         </div>
+                         [#--  
+                         <div id="" class="simpleBox numberBox">
+                            <label for="">Participants in [@s.text name="totalParticipantFormalTraining" /]</label><br />
+                            <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
+                         </div>
+                         --]
+                      </div>
+                      <!--<div class="col-md-8">
+                        [#-- Trainees in Short-Term --]
+                        [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
+                        <div id="chart12" class="chartBox simpleBox">
+                          [#assign chartData = [
+                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
+                            {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
+                          ] /] 
+                          <ul class="chartData" style="display:none">
+                            <li>
+                              <span>[@s.text name="{customLabel}" /]</span>
+                              <span>[@s.text name="Short-Term" /]</span>
+                              <span class="json">{"role":"annotation"}</span>
+                            </li>
+                            [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
+                              [#list chartData as data]
+                                <li>
+                                  <span>${data.name}</span>
+                                  <span class="number">${data.value}</span>
+                                  <span>${data.value}</span>
+                                </li>
+                              [/#list]
+                            [/#if]
+                          </ul>
+                        </div>
+                        [/#if]
+                        <br />
+                        [#-- Trainees in Long-Term --]
+                        [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
+                        <div id="chart13" class="chartBox simpleBox">
+                          [#assign chartData = [
+                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
+                            {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
+                          ] /] 
+                          <ul class="chartData" style="display:none">
+                            <li>
+                              <span>[@s.text name="chart13" /]</span>
+                              <span>[@s.text name="Long-Term" /]</span>
+                              <span class="json">{"role":"annotation"}</span>
+                              <span>[@s.text name="PhD" /]</span>
+                              <span class="json">{"role":"annotation"}</span>
+                            </li>
+                            [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
+                              [#list chartData as data]
+                                <li><span>${data.name}</span>
+                                <span class="number">${data.value}</span>
+                                <span>${data.value}</span>
+                                <span class="number">${data.valuePhD}</span>
+                                <span>${data.valuePhD}</span></li>
+                              [/#list]
+                            [/#if]
+                          </ul>
+                         </div>
+                         [/#if]
+                      </div>-->
+                    </div>
+                    
+                    [#-- Deliverables Participants & Trainees --]
+                    <div class="form-group">
+                      <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Deliverables Participants & Trainees" /]</h4>
+                      <div class="viewMoreSyntesis-block">
+                      
+                      <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
+                        [@tableParticipantsTrainingsMacro list=(deliverableParticipants)![] /]
+                      </div>
+                      
+                     </div>
+                    </div> 
+          </div>  
+          [/#if]
+
+          
+            
+          </div> <!-- End dialog-->
+
+          <div class="note left">
+            <div id="popup" class="helpMessage3">
+              <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]${totalParticipants}[/@s.param][/@s.text]</a></p>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+
+        <br>
         <div class="form-group text-area-container">
           [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isYearRequired(milestoneYear) className="limitWords-100" editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false/]
               [#if isYearRequired(milestoneYear)]
@@ -806,11 +820,11 @@
         <th id="tb-id">[@s.text name="Activity Event" /]</th>
         <th id="tb-title">[@s.text name="Activity Type" /]</th>        
         <th id="tb-organization-type">[@s.text name="Participants Type" /]</th>
+        <th id="tb-type">[@s.text name="Total Participants" /]</th>
         <th id="tb-type">[@s.text name="Males" /]</th>
         <th id="tb-type">[@s.text name="Females" /]</th>
         <th id="tb-type">[@s.text name="Africans" /]</th>
         <th id="tb-type">[@s.text name="Youth" /]</th>
-        <th id="tb-type">[@s.text name="total Participants" /]</th>
         <th id="tb-training-period">[@s.text name="Training Period" /]</th>
         [#--  
         <th id="tb-training-period">[@s.text name="Event Focus" /]</th>
@@ -847,6 +861,13 @@
           [#assign isEstimateYouth = (item.estimateYouth?has_content)!false]
           [#-- Total Participants --]
           <td class="text-center">
+            ${(item.participants?number?string(",##0"))!0}
+            [#if isEstimateTotalParticipants ]
+              <i><small> (Estimated value)</small></i>
+            [/#if]
+          </td>
+          [#-- Number of males --]
+          <td class="text-center">
             [#if knowFemale && !hasFemale ]
               <i><small>Not specified</small></i>
               [#else]
@@ -877,13 +898,6 @@
             ${(item.youth?number?string(",##0"))!0}
             [#--<p><i><small>(${(item.youthPercentage?number?string(",##0"))!0}% )</small></i></p>--]
             [#if isEstimateYouth ]
-              <i><small> (Estimated value)</small></i>
-            [/#if]
-          </td>
-          [#-- Total Participants --]
-          <td class="text-center">
-            ${(item.participants?number?string(",##0"))!0}
-            [#if isEstimateTotalParticipants ]
               <i><small> (Estimated value)</small></i>
             [/#if]
           </td>
