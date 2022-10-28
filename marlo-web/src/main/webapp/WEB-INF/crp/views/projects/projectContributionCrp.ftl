@@ -14,7 +14,7 @@
   ] 
 /] 
 [#assign customCSS = [ 
-  "${baseUrlMedia}/css/projects/projectContributionCrp.css?20220613",
+  "${baseUrlMedia}/css/projects/projectContributionCrp.css?20221028",
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20220922",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 

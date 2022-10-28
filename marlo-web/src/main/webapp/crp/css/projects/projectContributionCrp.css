@@ -133,3 +133,8 @@ a.downloadBaseline {
 .text {
     display: flex;
 }
+
+a#opener {
+  width: 100%;
+  cursor: pointer;
+}
