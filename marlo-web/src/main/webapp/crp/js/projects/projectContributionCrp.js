@@ -14,6 +14,9 @@ function init() {
     templateSelection: formatState,
     width: '100%'
   });
+  
+  // Capdev popup
+  $('.helpMessage3').on("click", openDialog);
 
   // Numeric inputs
   $('input.targetValue').numericInput();
@@ -205,14 +208,22 @@ function formatState(state) {
     return $state;
   }
 
-};
+}
+
+function openDialog() {
+  $("#dialog").dialog({
+      width: '980',
+      modal: true,
+      closeText: ""
+  });
+}
 
 function openModalEvidences(){
   let modal = $('.modal-evidences');
   modal.show();
-};
+}
 
 function closeModalEvidences(){
   let modal = $('.modal-evidences');
   modal.hide();
-};
+}
