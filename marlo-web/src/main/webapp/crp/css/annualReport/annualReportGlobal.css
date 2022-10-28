@@ -600,18 +600,18 @@ div#chart13 {
 }
 
 .container-evidences .button-evidences {
-  background-color: #ffffff;
+  background-color: #0779a4;
   min-width: 120px;
-  height: 30px;
+  height: 34px;
   text-align: center;
   display: flex;
   align-items: center;
-  font-size: 12px;
+  font-size: 14px;
   cursor: pointer;
-  border-radius: 6px;
-  font-weight: 600;
+  border-radius: 3px;
+  font-weight: 430;
   border: #0779a4 solid 2px;
-  color: #0779a4;
+  color: #ffffff;
   animation-delay: 3s;
   animation-duration: 3s;
 }
