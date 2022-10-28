@@ -531,119 +531,114 @@
             [/#if]
         </div>
         <br>
-        [#-- Deliverable table with categories and sub categories --]
-        <div class="form-group deliverableTypeMessage">
-          <div id="dialog" title="Capacity development" style="display: none">
-          
-          
-          [#-- capdev --]
-          [#if totalParticipants?number > 0]
-          <!--<h4 class="headTitle"> <a id="capdev">Capacity Development</a></h4>-->
-          <div class="borderBox">
-                   [#-- CapDevCharts--]
-                    <div class="form-group row">
-                      <div class="col-md-4">
-                        <div id="" class="simpleBox numberBox">
-                            <label for="">Total of Participants</label><br />
-                            <span>${(totalParticipants?number?string(",##0"))!0}</span>
-                         </div>
-                        <div id="" class="simpleBox numberBox">
-                            <label for="">Total of Females</label><br />
-                            <span>${(totalFemales?number?string(",##0"))!0}</span>
-                         </div>
-                        <div id="" class="simpleBox numberBox">
-                            <label for="">Total of Africans</label><br />
-                            <span>${(totalAfricans?number?string(",##0"))!0}</span>
-                         </div>
-                         [#--  
-                         <div id="" class="simpleBox numberBox">
-                            <label for="">Participants in [@s.text name="totalParticipantFormalTraining" /]</label><br />
-                            <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
-                         </div>
-                         --]
-                      </div>
-                      <!--<div class="col-md-8">
-                        [#-- Trainees in Short-Term --]
-                        [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
-                        <div id="chart12" class="chartBox simpleBox">
-                          [#assign chartData = [
-                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
-                            {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
-                          ] /] 
-                          <ul class="chartData" style="display:none">
-                            <li>
-                              <span>[@s.text name="{customLabel}" /]</span>
-                              <span>[@s.text name="Short-Term" /]</span>
-                              <span class="json">{"role":"annotation"}</span>
-                            </li>
+        [#-- capdev --]
+        [#if totalParticipants?number > 0]
+          <div class="form-group deliverableTypeMessage">
+            <div id="dialog" title="Capacity development" style="display: none">
+                
+              <!--<h4 class="headTitle"> <a id="capdev">Capacity Development</a></h4>-->
+                <div class="borderBox">
+                      [#-- CapDevCharts--]
+                        <div class="form-group row">
+                          <div class="col-md-4">
+                            <div id="" class="simpleBox numberBox">
+                                <label for="">Total of Participants</label><br />
+                                <span>${(totalParticipants?number?string(",##0"))!0}</span>
+                            </div>
+                            <div id="" class="simpleBox numberBox">
+                                <label for="">Total of Females</label><br />
+                                <span>${(totalFemales?number?string(",##0"))!0}</span>
+                            </div>
+                            <div id="" class="simpleBox numberBox">
+                                <label for="">Total of Africans</label><br />
+                                <span>${(totalAfricans?number?string(",##0"))!0}</span>
+                            </div>
+                            [#--  
+                            <div id="" class="simpleBox numberBox">
+                                <label for="">Participants in [@s.text name="totalParticipantFormalTraining" /]</label><br />
+                                <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
+                            </div>
+                            --]
+                          </div>
+                          <!--<div class="col-md-8">
+                            [#-- Trainees in Short-Term --]
                             [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
-                              [#list chartData as data]
+                            <div id="chart12" class="chartBox simpleBox">
+                              [#assign chartData = [
+                                {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
+                                {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
+                              ] /] 
+                              <ul class="chartData" style="display:none">
                                 <li>
-                                  <span>${data.name}</span>
-                                  <span class="number">${data.value}</span>
-                                  <span>${data.value}</span>
+                                  <span>[@s.text name="{customLabel}" /]</span>
+                                  <span>[@s.text name="Short-Term" /]</span>
+                                  <span class="json">{"role":"annotation"}</span>
                                 </li>
-                              [/#list]
+                                [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
+                                  [#list chartData as data]
+                                    <li>
+                                      <span>${data.name}</span>
+                                      <span class="number">${data.value}</span>
+                                      <span>${data.value}</span>
+                                    </li>
+                                  [/#list]
+                                [/#if]
+                              </ul>
+                            </div>
                             [/#if]
-                          </ul>
-                        </div>
-                        [/#if]
-                        <br />
-                        [#-- Trainees in Long-Term --]
-                        [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
-                        <div id="chart13" class="chartBox simpleBox">
-                          [#assign chartData = [
-                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
-                            {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
-                          ] /] 
-                          <ul class="chartData" style="display:none">
-                            <li>
-                              <span>[@s.text name="chart13" /]</span>
-                              <span>[@s.text name="Long-Term" /]</span>
-                              <span class="json">{"role":"annotation"}</span>
-                              <span>[@s.text name="PhD" /]</span>
-                              <span class="json">{"role":"annotation"}</span>
-                            </li>
+                            <br />
+                            [#-- Trainees in Long-Term --]
                             [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
-                              [#list chartData as data]
-                                <li><span>${data.name}</span>
-                                <span class="number">${data.value}</span>
-                                <span>${data.value}</span>
-                                <span class="number">${data.valuePhD}</span>
-                                <span>${data.valuePhD}</span></li>
-                              [/#list]
+                            <div id="chart13" class="chartBox simpleBox">
+                              [#assign chartData = [
+                                {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
+                                {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
+                              ] /] 
+                              <ul class="chartData" style="display:none">
+                                <li>
+                                  <span>[@s.text name="chart13" /]</span>
+                                  <span>[@s.text name="Long-Term" /]</span>
+                                  <span class="json">{"role":"annotation"}</span>
+                                  <span>[@s.text name="PhD" /]</span>
+                                  <span class="json">{"role":"annotation"}</span>
+                                </li>
+                                [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
+                                  [#list chartData as data]
+                                    <li><span>${data.name}</span>
+                                    <span class="number">${data.value}</span>
+                                    <span>${data.value}</span>
+                                    <span class="number">${data.valuePhD}</span>
+                                    <span>${data.valuePhD}</span></li>
+                                  [/#list]
+                                [/#if]
+                              </ul>
+                            </div>
                             [/#if]
-                          </ul>
-                         </div>
-                         [/#if]
-                      </div>-->
-                    </div>
-                    
-                    [#-- Deliverables Participants & Trainees --]
-                    <div class="form-group">
-                      <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Deliverables Participants & Trainees" /]</h4>
-                      <div class="viewMoreSyntesis-block">
-                      
-                      <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
-                        [@tableParticipantsTrainingsMacro list=(deliverableParticipants)![] /]
-                      </div>
-                      
-                     </div>
-                    </div> 
-          </div>  
-          [/#if]
-
-          
+                          </div>-->
+                        </div>
+                        
+                        [#-- Deliverables Participants & Trainees --]
+                        <div class="form-group">
+                          <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Deliverables Participants & Trainees" /]</h4>
+                          <div class="viewMoreSyntesis-block">                    
+                            <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
+                              [@tableParticipantsTrainingsMacro list=(deliverableParticipants)![] /]
+                            </div>
+                          </div>
+                        </div> 
+                </div>  
+              
             
-          </div> <!-- End dialog-->
+            </div> <!-- End dialog-->
 
-          <div class="note left">
-            <div id="popup" class="helpMessage3">
-              <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]${totalParticipants}[/@s.param][/@s.text]</a></p>
+            <div class="note left">
+              <div id="popup" class="helpMessage3">
+                <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]${totalParticipants}[/@s.param][/@s.text]</a></p>
+              </div>
             </div>
+            <div class="clearfix"></div>
           </div>
-          <div class="clearfix"></div>
-        </div>
+        [/#if]
 
         <br>
         <div class="form-group text-area-container">
