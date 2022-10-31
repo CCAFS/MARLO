@@ -30,7 +30,9 @@ function initDashboard() {
 
 function itemMapHover(){
   let item = $(this).attr('id').split('cluster')[1];
+  locateContentDialog(item);
   $('#cluster'+item).css("-webkit-box-shadow", " 0px 0px 10px rgb(0 0 0 / 100%)")
+  $('#cluster'+item).css("background-color", " white")
   $('.dialogMap').css("display", "block")
   $('.dialogMap').addClass('animate__animated animate__backInRight')
   $('.dialogMapText').text(contentDialog(item));
@@ -39,6 +41,7 @@ function itemMapHover(){
 function itemMap(){
   let item = $(this).attr('id').split('cluster')[1];
   $('#cluster'+item).css("-webkit-box-shadow", " 0px 0px 10px rgb(0 0 0 / 0%)")  
+  $('#cluster'+item).css("background-color", " #b3b3b3")  
   $('.dialogMap').css("display", "none")
 }
 
@@ -67,6 +70,59 @@ function contentDialog(id){
       return "Theme 3: Gender and Social Inclusion Leader (Lead by ILRI)"
     case '11':
       return "West Africa "
+  }
+
+  
+}
+
+function locateContentDialog(id){
+  console.log(id)
+
+  switch (id) {
+    case '1':
+      $('.dialogMap').css("top", "110px")
+      $('.dialogMap').css("left", "35px")
+      break;
+    case '2':
+      $('.dialogMap').css("top", "106px")
+      $('.dialogMap').css("left", "107px")      
+      break;
+    case '3':
+      $('.dialogMap').css("top", "164px")
+      $('.dialogMap').css("left", "112px")      
+      break;
+    case '4':
+      $('.dialogMap').css("top", "145px")
+      $('.dialogMap').css("left", "173px")      
+      break;
+    case '5':
+      $('.dialogMap').css("top", "231px")
+      $('.dialogMap').css("left", "116px")      
+      break;
+    case '6':
+      $('.dialogMap').css("top", "46px")
+      $('.dialogMap').css("left", "94px")     
+      break;
+    case '7':
+      $('.dialogMap').css("top", "75px")
+      $('.dialogMap').css("left", "11px")     
+      break;
+    case '8':
+      $('.dialogMap').css("top", "132px")
+      $('.dialogMap').css("left", "0px")      
+      break;
+    case '9':
+      $('.dialogMap').css("top", "195px")
+      $('.dialogMap').css("left", "76px")      
+      break;
+    case '10':
+      $('.dialogMap').css("top", "218px")
+      $('.dialogMap').css("left", "171px")      
+      break;
+    case '11':
+      $('.dialogMap').css("top", "103px")
+      $('.dialogMap').css("left", "169px")     
+      break;
   }
 
   
