@@ -116,7 +116,8 @@
             </br>
             <div class="container-evidences">
               <p class="text-evidences">Here you could find information about the evidences that expects  to be reported</p>
-              <div class="button-evidences animated animate__shakeX">
+              <div class="button-evidences">
+              [#-- animated animate__shakeX --]
                 <p>See detail</p>
               </div>
             </div>
