@@ -3,19 +3,19 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20221028", 
-  "${baseUrlCdn}/global/js/fieldsValidation.js?20220613",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20221006",
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20221031", 
+  "${baseUrlCdn}/global/js/fieldsValidation.js?20221031",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20221031",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_ccDimensions.js?20220613" 
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_ccDimensions.js?20221031" 
   ] 
 /] 
 [#assign customCSS = [ 
-  "${baseUrlMedia}/css/projects/projectContributionCrp.css?20221028",
-  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20221028",
+  "${baseUrlMedia}/css/projects/projectContributionCrp.css?20221031",
+  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20221031",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
 /]
@@ -115,13 +115,44 @@
             </br>
             </br>
             <div class="container-evidences">
-              <p class="text-evidences">Here you could find information about the evidences that expects  to be reported</p>
+              <p class="text-evidences">Here you could find information about the evidences that expects to be reported</p>
               <div class="button-evidences">
               [#-- animated animate__shakeX --]
-                <p>See detail</p>
+                <p>See details</p>
               </div>
             </div>
             <div class="clearfix"></div>
+
+            
+            <div class="modal-evidences" style="display: none">
+              <div class="content-modal">
+                <div class="button-exit close-modal-evidences">
+                  <div class="x-close-modal" ></div>
+                </div>
+                  <p class="title-modal-evidences">Important information</p>
+                <div class="text-modal-evidences">
+                  <p>
+                    ${(projectOutcome.crpProgramOutcome.instructions)!}
+                  </p>          
+                </div>
+                
+                <div class="container-buttons-evidences">
+                  [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
+                    <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${(projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank">
+                      <div class="button-pdf-modal" >
+                        <p>Read full guidance</p>
+                        <img src="${baseUrlCdn}/global/images/pdf.png" alt="Download document" />
+                      </div>
+                    </a>
+                  [/#if]
+                  <div class="button-close-modal close-modal-evidences">
+                    <p>Close</p>
+                  </div>
+                </div>    
+              
+              </div>
+              
+            </div>
               
           </div>
           <br />
@@ -444,39 +475,7 @@
       <span class="index">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${(element.year)!}</span>
     </div>
       --]
-
-      <div class="modal-evidences" style="display: none">
-
-        <div class="content-modal">
-
-          <div class="button-exit close-modal-evidences">
-            <div class="x-close-modal" ></div>
-          </div>
-            <p class="title-modal-evidences">Important information</p>
-            <div class="text-modal-evidences">
-              <p>
-                ${(projectOutcome.crpProgramOutcome.instructions)!}
-              </p>          
-            </div>
-          
-          <div class="container-buttons-evidences">
-            [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-              <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${(projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank">
-                <div class="button-pdf-modal" >
-                <p>Read full guidance</p>
-                  <img src="${baseUrlCdn}/global/images/pdf.png" alt="Download document" />
-                </div>
-                </a>
-            [/#if]
-            <div class="button-close-modal close-modal-evidences">
-              <p>Close</p>
-            </div>
-          </div>    
-        
-        </div>
-        
-      </div>
-      
+    
       
     [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
     [#local prefilled]<p style="opacity:0.6">[@s.text name="form.values.fieldEmpty" /]</p>[/#local]
@@ -541,16 +540,16 @@
                 <div class="borderBox">
                       [#-- CapDevCharts--]
                         <div class="form-group row">
-                          <div class="col-md-4">
-                            <div id="" class="simpleBox numberBox">
+                          <div class="col-md-12" display="flex">
+                            <div id="" class="simpleBox numberBox col-md-3" >
                                 <label for="">Total of Participants</label><br />
                                 <span>${(totalParticipants?number?string(",##0"))!0}</span>
                             </div>
-                            <div id="" class="simpleBox numberBox">
+                            <div id="" class="simpleBox numberBox col-md-3">
                                 <label for="">Total of Females</label><br />
                                 <span>${(totalFemales?number?string(",##0"))!0}</span>
                             </div>
-                            <div id="" class="simpleBox numberBox">
+                            <div id="" class="simpleBox numberBox col-md-3">
                                 <label for="">Total of Africans</label><br />
                                 <span>${(totalAfricans?number?string(",##0"))!0}</span>
                             </div>
