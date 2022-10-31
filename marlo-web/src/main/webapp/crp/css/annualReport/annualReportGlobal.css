@@ -709,7 +709,7 @@ div#chart13 {
   align-items: center;
   font-size: 13px;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 3px;
   font-weight: 600;
   border: #f79090 solid 2px;
   color: #ff6464;
@@ -733,7 +733,7 @@ div#chart13 {
   align-items: center;
   font-size: 15px;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 3px;
   font-weight: 600;
   /* border: #0779a4 solid 2px; */
   color: #ffffff;
