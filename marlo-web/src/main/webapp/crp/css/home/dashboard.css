@@ -372,7 +372,7 @@ span.timelineControl:hover {
     width: 147px;
     position: absolute;
     right: 34px;
-    top: 405px;
+    top: 370px;
     -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 12%);
     border-radius: 5px;
     padding-top: 12px;
@@ -409,7 +409,8 @@ span.timelineControl:hover {
     background-image: url(../../../global/images/header.svg);
     background-repeat: no-repeat;    
     background-size: 100%;
-    margin-top: -1px;
+    margin-top: -1px;    
+    margin-bottom: -38px;
   }
 
   .containerTextMap{
@@ -419,26 +420,6 @@ span.timelineControl:hover {
     text-align: justify;
   }
 
-  @media (max-width:1770px){
-    .containerTextMap {
-      margin: 30px 50px 30px 40px;
-    }
-  }
-
-  @media (max-width:1550px){
-    .containerTextMap {
-      margin: 10px 0px 10px 30px;
-    }
-    .sectionMap{
-      height: 290px;
-    }
-    .containerTextMap{
-      margin: 15px 0px 30px 40px;
-    }
-    .timelineAlert {     
-      top: 435px;
-    }
-  }
 
   .containerTextMap .titleMap{
     font-size: 33px;
@@ -536,23 +517,40 @@ span.timelineControl:hover {
   font-size: 17px;
   font-weight: 500;
 }
-/* 
-#lineMap1{
-  width: 109px;
-  height: 2px;
-  background: white;
-  top: 115px;
-  left: 20px;
-  -webkit-transform: rotate(171deg);
-  display: none;
+
+@media (max-width:1770px){
+  .containerTextMap {
+    margin: 30px 50px 30px 40px;
+  }
 }
 
-#lineMap2{
-  width: 109px;
-  height: 2px;
-  background: white;
-  top: 115px;
-  left: 20px;
-  -webkit-transform: rotate(171deg);
-  display: none;
-} */
+@media (max-width:1550px){
+  .containerTextMap {
+    margin: 10px 0px 10px 30px;
+  }
+  .sectionMap{
+    height: 290px;
+  }
+  .containerTextMap{
+    margin: 15px 0px 30px 40px;
+  }
+  .timelineAlert {     
+    top: 400px;
+  }
+  #cluster4 {
+    bottom: 152px;
+    right: 135px;
+  }
+  #cluster5 {
+    bottom: 64px;
+    right: 183px;
+  }
+  #cluster9 {
+    bottom: 100px;
+    right: 225px;
+  }
+  #cluster10 {
+    bottom: 80px;
+    right: 125px;
+  }
+}
