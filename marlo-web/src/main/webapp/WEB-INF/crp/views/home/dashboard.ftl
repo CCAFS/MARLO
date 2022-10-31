@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/home/dashboard.js?20221028",
+  "${baseUrlMedia}/js/home/dashboard.js?20221031",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20221028",
+  "${baseUrlMedia}/css/home/dashboard.css?20221031",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -42,9 +42,15 @@
   </script>
 [/#if]
 <!--  africa-color.svg  -->
-<section class="marlo-content">
+
+
+
+  <div class="container">
+    [#-- What do you want to do --]
+
+    <section class="marlo-content">
   <section class="sectionMap">	
-  <div class="container containerMapsection">
+  <div class="containerMapsection">
     <div class="containerTextMap">
       <p class="titleMap">What is a Cluster?</p>
       <p class="textMap">A cluster is defined as the group of AICCRA main activities led by each AICCRA Country Leader (Ghana, Mali, Senegal, Ethiopia, Kenya and Zambia), AICCRA Regional Leaders (Western Africa and Eastern & Southern Africa), and  AICCRA Thematic leaders (Theme 1, Theme 2, Theme 3, and Theme 4). In each cluster, participants are involved as leaders, coordinators and collaborators with specific budget allocations for each AICCRA main activity with a set of deliverables and contributions towards our performance indicators.</p>
@@ -70,10 +76,6 @@
     </div>
   </section>
   <div class="borderMap"></div>
-
-
-  <div class="container">
-    [#-- What do you want to do --]
 
 [#if action.hasSpecificities('homepage_timeline_active') ]
   <section class="timeline">	
