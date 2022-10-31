@@ -372,8 +372,8 @@ span.timelineControl:hover {
     width: 147px;
     position: absolute;
     right: 34px;
-    top: 46px;
-    -webkit-box-shadow: 0px 0px 10px rgb(0 0 0 / 15%);
+    top: 370px;
+    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 12%);
     border-radius: 5px;
     padding-top: 12px;
   }
@@ -496,21 +496,17 @@ span.timelineControl:hover {
     background-image: url(../../../global/images/header.svg);
     background-repeat: no-repeat;    
     background-size: 100%;
-    margin-top: -1px;
+    margin-top: -1px;    
+    margin-bottom: -38px;
   }
 
   .containerTextMap{
     width: 100%;
-    margin: 30px 0px 30px 0px;
+    margin: 30px 240px 30px 40px;
     color: #fff;
     text-align: justify;
   }
 
-  @media (max-width:1550px){
-    .containerTextMap {
-      margin: 10px 0px 10px 0px;
-  }
-  }
 
   .containerTextMap .titleMap{
     font-size: 33px;
@@ -530,14 +526,13 @@ span.timelineControl:hover {
   
   .containerImgMap img{    
     width: 220px;
-    margin-right: -145px;
     margin-top: 36px;
   }
 
 .circleMap{
-  width: 13px;
-  height: 13px;
-  background-color: white;
+  width: 9px;
+  height: 9px;
+  background-color: #b3b3b3;
   border-radius: 50%;
   position: absolute;
 }
@@ -545,61 +540,60 @@ span.timelineControl:hover {
 
 #cluster1{
   top: 95px;
-  right: 186px;
+  right: 261px;
 }
 #cluster2{
   top: 90px;
-  right: 112px;
+  right: 188px;
 }
 #cluster3{
   top: 149px;
-  right: 116px;
+  right: 188px;
 }
 #cluster4{
   bottom: 122px;
-  right: 60px;
+  right: 135px;
 }
 #cluster5{
   bottom: 33px;
-  right: 103px;
+  right: 183px;
 }
 #cluster6{
-  top: 31px;
-  left: 249px;
+  top: 34px;
+  left: 183px;
 }
 #cluster7{
   top: 61px;
-  right: 211px;
+  right: 289px;
 }
 #cluster8{
   top: 118px;
-  left: 161px;
+  left: 90px;
 }
 #cluster9{
   bottom: 70px;
-  right: 150px;
+  right: 223px;
 }
 #cluster10{
   bottom: 48px;
-  right: 48px;
+  right: 125px;
 }
 #cluster11{
   top: 88px;
-  right: 58px;
+  right: 133px;
 }
 
 .dialogMap{
   position: absolute;
-  min-width: 193px;
+  width: 200px;
   min-height: 100px;
   background: white;
   border-radius: 6px;
-  top: 27px;
-  left: -166px;
   text-align: initial;
   padding: 10px;
   -webkit-box-shadow:0px 0px 10px rgb(0 0 0 / 100%);
   display: none;
+  z-index: 1;
 }
 
 .lineMap{
@@ -609,4 +603,41 @@ span.timelineControl:hover {
 .dialogMapTitle{
   font-size: 17px;
   font-weight: 500;
+}
+
+@media (max-width:1770px){
+  .containerTextMap {
+    margin: 30px 50px 30px 40px;
+  }
+}
+
+@media (max-width:1550px){
+  .containerTextMap {
+    margin: 10px 0px 10px 30px;
+  }
+  .sectionMap{
+    height: 290px;
+  }
+  .containerTextMap{
+    margin: 15px 0px 30px 40px;
+  }
+  .timelineAlert {     
+    top: 400px;
+  }
+  #cluster4 {
+    bottom: 152px;
+    right: 135px;
+  }
+  #cluster5 {
+    bottom: 64px;
+    right: 183px;
+  }
+  #cluster9 {
+    bottom: 100px;
+    right: 225px;
+  }
+  #cluster10 {
+    bottom: 80px;
+    right: 125px;
+  }
 }
