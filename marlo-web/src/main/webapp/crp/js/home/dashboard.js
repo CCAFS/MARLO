@@ -3,7 +3,6 @@ $(document).ready(initDashboard);
 
 let timelineElements;
 
-// console.log(baseURL)
 
 
 function initDashboard() {
@@ -24,6 +23,9 @@ function initDashboard() {
 
   $('.buttonLeftTimeline').on("click", moveScrollLeft);
 
+  $('.itemsTablet').on("click", updateTable);
+
+  $('.itemsTablet').hover(updateGif, updateImg);
   
   $('.circleMap').hover(itemMapHover, itemMap);
 }
@@ -134,6 +136,19 @@ function locateContentDialog(id){
   
 }
 
+
+function updateImg() {
+  let name = $(this).attr("id");
+  $('.itemimg'+name).show();
+  $('.itemgif'+name).hide();
+}
+
+function updateGif() {
+  let name = $(this).attr("id");
+  $('.itemimg'+name).hide();
+  $('.itemgif'+name).show();
+}
+
 function moveScrollRight() {
   const element = document.querySelector(".scroll-x-containerTimeline");
   element.scrollLeft += 200;
@@ -223,6 +238,20 @@ function createTimeline() {
   // Locate pending activity
   const element = document.querySelector(".scroll-x-containerTimeline");
   element.scrollLeft += 243*(counterActvi-2);
+}
+
+function updateTable(){
+  // console.log(this.attr("id"))
+  let nameId =$(this).attr("id");
+  // let activeCurrent = $('a#'+nameId).parent().addClass('active');
+  $("li.active").removeClass('active');
+  $('div.active').removeClass('in active');
+  $('div#'+nameId+'_wrapper').parent().addClass('in active');
+  $('a#'+nameId).parent().addClass('active');
+
+  $(".itemsTablet").removeClass('itemsActive');
+  $(`#${nameId}`).addClass('itemsActive');
+  $(`.${nameId}`).addClass('itemsActive');
 }
 
 function setCompletionDates() {
@@ -460,7 +489,6 @@ function getTimeline() {
     success: function (data) {
       if (data && Object.keys(data).length != 0) {
         timelineElements = data['information'];
-        // console.log(data['information'])
       }
     }
   });
