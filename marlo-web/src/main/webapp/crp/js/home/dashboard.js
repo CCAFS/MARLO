@@ -71,7 +71,9 @@ function contentDialog(id){
     case '10':
       return "Theme 3: Gender and Social Inclusion Leader (Lead by ILRI)"
     case '11':
-      return "West Africa "
+      return "West Africa"
+    case '12':
+      return "Mali: Activities led by AfricaRice"
   }
 
   
@@ -94,24 +96,24 @@ function locateContentDialog(id){
 
   switch (id) {
     case '1':
-      $('.dialogMap').css("top", "110px")
-      $('.dialogMap').css("left", "35px")
+      $('.dialogMap').css("top", "119px")
+      $('.dialogMap').css("left", "13px")
       break;
     case '2':
-      $('.dialogMap').css("top", "106px")
-      $('.dialogMap').css("left", "107px")      
+      $('.dialogMap').css("top", "131px")
+      $('.dialogMap').css("left", "161px")      
       break;
     case '3':
-      $('.dialogMap').css("top", "164px")
-      $('.dialogMap').css("left", "112px")      
+      $('.dialogMap').css("top", "145px")
+      $('.dialogMap').css("left", "49px")      
       break;
     case '4':
-      $('.dialogMap').css("top", "145px")
-      $('.dialogMap').css("left", "173px")      
+      $('.dialogMap').css("top", "165px")
+      $('.dialogMap').css("left", "165px")      
       break;
     case '5':
-      $('.dialogMap').css("top", "231px")
-      $('.dialogMap').css("left", "116px")      
+      $('.dialogMap').css("top", "217px")
+      $('.dialogMap').css("left", "127px")      
       break;
     case '6':
       $('.dialogMap').css("top", "46px")
@@ -137,7 +139,13 @@ function locateContentDialog(id){
       $('.dialogMap').css("top", "103px")
       $('.dialogMap').css("left", "169px")     
       break;
-  }  
+    case '12':
+      $('.dialogMap').css("top", "106px")
+      $('.dialogMap').css("left", "49px")     
+      break;
+  }
+
+  
 }
 
 function moveScrollRight() {

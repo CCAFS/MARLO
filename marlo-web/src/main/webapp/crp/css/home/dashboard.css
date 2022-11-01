@@ -514,7 +514,7 @@ span.timelineControl:hover {
   }
 
   .containerTextMap .textMap{
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .containerImgMap{
@@ -539,28 +539,28 @@ span.timelineControl:hover {
 
 
 #cluster1{
-  top: 95px;
-  right: 261px;
+  top: 106px;
+  right: 282px;
 }
 #cluster2{
-  top: 90px;
-  right: 188px;
+  top: 117px;
+  right: 139px;
 }
 #cluster3{
-  top: 149px;
-  right: 188px;
+  top: 131px;
+  right: 250px;
 }
 #cluster4{
-  bottom: 122px;
+  bottom: 100px;
   right: 135px;
 }
 #cluster5{
-  bottom: 33px;
-  right: 183px;
+  bottom: 47px;
+  right: 173px;
 }
 #cluster6{
   top: 34px;
-  left: 183px;
+  right: 207px;
 }
 #cluster7{
   top: 61px;
@@ -568,11 +568,11 @@ span.timelineControl:hover {
 }
 #cluster8{
   top: 118px;
-  left: 90px;
+  right: 301px;
 }
 #cluster9{
-  bottom: 70px;
-  right: 223px;
+  top: 179px;
+  right: 224px;
 }
 #cluster10{
   bottom: 48px;
@@ -581,6 +581,10 @@ span.timelineControl:hover {
 #cluster11{
   top: 88px;
   right: 133px;
+}
+#cluster12{
+  top: 93px;
+  right: 253px;
 }
 
 .dialogMap{
@@ -625,12 +629,12 @@ span.timelineControl:hover {
     top: 400px;
   }
   #cluster4 {
-    bottom: 152px;
-    right: 135px;
+    bottom: 129px;
+    right: 136px;
   }
   #cluster5 {
-    bottom: 64px;
-    right: 183px;
+    bottom: 76px;
+    right: 175px;
   }
   #cluster9 {
     bottom: 100px;
