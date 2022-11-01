@@ -67,7 +67,7 @@
     
     [#-- SLO Title --]
     <div class="blockTitle closed">
-      <strong>Timeline Activity ${index+1}: </strong>${(element.description?substring(0,25))!'Timeline Activity'}...
+      <strong>Timeline Activity ${index+1}: </strong>${(element.description[0..*99])!'Timeline Activity'}...
     </div>
     
     <div class="blockContent" style="display:none">
