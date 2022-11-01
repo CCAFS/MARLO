@@ -63,13 +63,13 @@ function contentDialog(id){
     case '7':
       return "Theme 2: Activities led by the Alliance"
     case '8':
-      return "East and Southern Africa"
+      return "West Africa"
     case '9':
       return "Theme 4: Activities led by Columbia University"
     case '10':
       return "Theme 3: Gender and Social Inclusion Leader (Lead by ILRI)"
     case '11':
-      return "West Africa"
+      return "East and Southern Africa"
     case '12':
       return "Mali: Activities led by AfricaRice"
   }
