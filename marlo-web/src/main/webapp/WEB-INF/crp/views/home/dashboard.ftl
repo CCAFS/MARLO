@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/home/dashboard.js?20221101A",
+  "${baseUrlMedia}/js/home/dashboard.js?20221101B",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20221101A",
+  "${baseUrlMedia}/css/home/dashboard.css?20221101B",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -48,7 +48,7 @@
   <div class="container">
     [#-- What do you want to do --]
 
-    <section class="marlo-content">
+  <section class="marlo-content">
   <section class="sectionMap">	
   <div class="containerMapsection">
     <div class="containerTextMap">

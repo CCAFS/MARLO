@@ -388,93 +388,6 @@ span.timelineControl:hover {
     margin-top: 7px;
   }
 
-
-  /**************** Content Items Table **************/
-  .containerTabletItems{
-    display: block;
-    padding: 30px 0px 45px 0;
-    -webkit-box-shadow: 0px 0px 10px rgb(0 0 0 / 15%);
-    border-radius: 5px;
-  }
-
-  .tableItemsTitle{
-    width: 100%;
-    text-align: center;
-    font-weight: 700;
-    font-size: 2.0em;
-    color: #333;
-  }
-  
-  .containerSeccionItems {
-    display: flex   ;
-  }
-
-  .containerItems {
-    flex-wrap: wrap;
-    min-width: 345px;
-    max-width: 345px;
-    display: table-cell;
-    text-align: center;    
-    margin-left: 30px;
-  }
-
-  .itemsTablet{
-    height: 150px;
-    width: 150px;
-    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);   
-    float: left;
-    margin: 10px;
-    text-align: center;
-    border-radius: 2px;
-    display: inline-block;
-        text-align: center;
-    cursor: pointer;
-  }
-
-  .itemsTablet:active{
-    background: #c3e0f9;
-  }
-
-  .itemsActive{
-    background: #c3e0f9;
-  }
-
- .itemsTablet img{
-  margin-top: 30px;
- }
-
- .itemsTablet p{
-  font-weight: 700;
-  font-size: 1.2em;
-  color: rgb(110, 110, 110);
- }
-
- .containerTabletItems .nav{
-  display: none;
- }
-
- .containerTabletItems .infTableItems{
-    border: #ebebeb solid 1px;
-    background: #E8F4FF;
-    padding: 7px 18px;
-    color: black;
- }
-
- .containerTabletItems .subHeader{
-  background-color: #0377a3;
-
- }
-
- .containerTabletItems #dashboardContent{
-  margin-top: 10px;
-  margin-left: 20px;
-  width: auto;
-  margin-right: 30px;
- }
-
- .sectionItems{
-  margin-left: 35px;
- }
   /*************** sectionMap ********************/
 
   .sectionMap{
@@ -645,3 +558,90 @@ span.timelineControl:hover {
     right: 125px;
   }
 }
+
+  /**************** Content Items Table **************/
+  .containerTabletItems{
+    display: block;
+    padding: 30px 0px 45px 0;
+    -webkit-box-shadow: 0px 0px 10px rgb(0 0 0 / 15%);
+    border-radius: 5px;
+  }
+
+  .tableItemsTitle{
+    width: 100%;
+    text-align: center;
+    font-weight: 700;
+    font-size: 2.0em;
+    color: #333;
+  }
+  
+  .containerSeccionItems {
+    display: flex   ;
+  }
+
+  .containerItems {
+    flex-wrap: wrap;
+    min-width: 345px;
+    max-width: 345px;
+    display: table-cell;
+    text-align: center;    
+    margin-left: 30px;
+  }
+
+  .itemsTablet{
+    height: 150px;
+    width: 150px;
+    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);   
+    float: left;
+    margin: 10px;
+    text-align: center;
+    border-radius: 2px;
+    display: inline-block;
+        text-align: center;
+    cursor: pointer;
+  }
+
+  .itemsTablet:active{
+    background: #c3e0f9;
+  }
+
+  .itemsActive{
+    background: #c3e0f9;
+  }
+
+ .itemsTablet img{
+  margin-top: 30px;
+ }
+
+ .itemsTablet p{
+  font-weight: 700;
+  font-size: 1.2em;
+  color: rgb(110, 110, 110);
+ }
+
+ .containerTabletItems .nav{
+  display: none;
+ }
+
+ .containerTabletItems .infTableItems{
+    border: #ebebeb solid 1px;
+    background: #E8F4FF;
+    padding: 7px 18px;
+    color: black;
+ }
+
+ .containerTabletItems .subHeader{
+  background-color: #0377a3;
+
+ }
+
+ .containerTabletItems #dashboardContent{
+  margin-top: 10px;
+  margin-left: 20px;
+  width: auto;
+  margin-right: 30px;
+ }
+
+ .sectionItems{
+  margin-left: 35px;
+ }
