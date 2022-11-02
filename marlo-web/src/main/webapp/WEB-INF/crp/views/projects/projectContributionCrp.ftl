@@ -15,7 +15,7 @@
 /] 
 [#assign customCSS = [ 
   "${baseUrlMedia}/css/projects/projectContributionCrp.css?20221031",
-  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20221031",
+  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20221101",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
 /]
@@ -119,6 +119,7 @@
               <div class="button-evidences">
               [#-- animated animate__shakeX --]
                 <p>See details</p>
+                <img class="animate__animated animate__delay-3s animate__rubberBand" src="${baseUrlCdn}/global/images/28-info-outline.png" width="28" />
               </div>
             </div>
             <div class="clearfix"></div>
