@@ -614,6 +614,11 @@ div#chart13 {
   color: #ffffff;
   animation-delay: 3s;
   animation-duration: 3s;
+  margin-top: -8px;
+}
+
+.container-evidences .button-evidences img{
+  margin-right: 4px;
 }
 
 @keyframes slidein {
