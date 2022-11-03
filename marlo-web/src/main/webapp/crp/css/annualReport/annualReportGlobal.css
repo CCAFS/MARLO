@@ -690,6 +690,10 @@ div#chart13 {
   margin-top: 25px;
 }
 
+.text-modal-evidences p{
+  max-width: 500px;
+}
+
 .content-modal{
   background-color: #fff;
   width: 600px;
