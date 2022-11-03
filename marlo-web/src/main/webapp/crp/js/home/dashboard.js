@@ -3,7 +3,6 @@ $(document).ready(initDashboard);
 
 let timelineElements;
 
-// console.log(baseURL)
 
 
 function initDashboard() {
@@ -24,7 +23,130 @@ function initDashboard() {
 
   $('.buttonLeftTimeline').on("click", moveScrollLeft);
 
+  $('.itemsTablet').on("click", updateTable);
+
+  $('.itemsTablet').hover(updateGif, updateImg);
   
+  $('.circleMap').hover(itemMapHover, itemMap);
+}
+
+function itemMapHover(){
+  let item = $(this).attr('id').split('cluster')[1];
+  locateContentDialog(item);
+  $('#cluster'+item).css("-webkit-box-shadow", " 0px 0px 10px rgb(0 0 0 / 100%)")
+  $('#cluster'+item).css("background-color", " white")
+  $('.dialogMap').css("display", "block")
+  $('.dialogMap').addClass('animate__animated animate__backInRight')
+  $('.dialogMapText').text(contentDialog(item));
+}
+
+function itemMap(){
+  let item = $(this).attr('id').split('cluster')[1];
+  $('#cluster'+item).css("-webkit-box-shadow", " 0px 0px 10px rgb(0 0 0 / 0%)")  
+  $('#cluster'+item).css("background-color", " #b3b3b3")  
+  $('.dialogMap').css("display", "none")
+}
+
+function contentDialog(id){
+
+  switch (id) {
+    case '1':
+      return "Senegal: Activities led by ILRI"
+    case '2':
+      return "Ethiopia: Activities led by ILRI"
+    case '3':
+      return "Ghana: Activities led by IITA"
+    case '4':
+      return "Kenya: Activities led by ILRI"
+    case '5':
+      return "Zambia: Activities led by IWMI"
+    case '6':
+      return "Theme 1: Activities led by ILRI"
+    case '7':
+      return "Theme 2: Activities led by the Alliance"
+    case '8':
+      return "West Africa"
+    case '9':
+      return "Theme 4: Activities led by Columbia University"
+    case '10':
+      return "Theme 3: Gender and Social Inclusion Leader (Lead by ILRI)"
+    case '11':
+      return "East and Southern Africa"
+    case '12':
+      return "Mali: Activities led by AfricaRice"
+  }
+
+  
+}
+
+function locateContentDialog(id){
+  console.log(id)
+
+  switch (id) {
+    case '1':
+      $('.dialogMap').css("top", "119px")
+      $('.dialogMap').css("left", "13px")
+      break;
+    case '2':
+      $('.dialogMap').css("top", "131px")
+      $('.dialogMap').css("left", "161px")      
+      break;
+    case '3':
+      $('.dialogMap').css("top", "145px")
+      $('.dialogMap').css("left", "49px")      
+      break;
+    case '4':
+      $('.dialogMap').css("top", "165px")
+      $('.dialogMap').css("left", "165px")      
+      break;
+    case '5':
+      $('.dialogMap').css("top", "217px")
+      $('.dialogMap').css("left", "127px")      
+      break;
+    case '6':
+      $('.dialogMap').css("top", "46px")
+      $('.dialogMap').css("left", "94px")     
+      break;
+    case '7':
+      $('.dialogMap').css("top", "75px")
+      $('.dialogMap').css("left", "11px")     
+      break;
+    case '8':
+      $('.dialogMap').css("top", "132px")
+      $('.dialogMap').css("left", "0px")      
+      break;
+    case '9':
+      $('.dialogMap').css("top", "195px")
+      $('.dialogMap').css("left", "76px")      
+      break;
+    case '10':
+      $('.dialogMap').css("top", "218px")
+      $('.dialogMap').css("left", "171px")      
+      break;
+    case '11':
+      $('.dialogMap').css("top", "103px")
+      $('.dialogMap').css("left", "169px")     
+      break;
+    case '12':
+      $('.dialogMap').css("top", "106px")
+      $('.dialogMap').css("left", "49px")     
+      break;
+  }
+
+  
+}
+
+
+function updateImg() {
+  let name = $(this).attr("id");
+  $('.itemimg'+name).show();
+  $('.itemgif'+name).hide();
+}
+
+function updateGif() {
+  let name = $(this).attr("id");
+  $('.itemimg'+name).hide();
+  $('.itemgif'+name).show();
 }
 
 function moveScrollRight() {
@@ -116,6 +238,20 @@ function createTimeline() {
   // Locate pending activity
   const element = document.querySelector(".scroll-x-containerTimeline");
   element.scrollLeft += 243*(counterActvi-2);
+}
+
+function updateTable(){
+  // console.log(this.attr("id"))
+  let nameId =$(this).attr("id");
+  // let activeCurrent = $('a#'+nameId).parent().addClass('active');
+  $("li.active").removeClass('active');
+  $('div.active').removeClass('in active');
+  $('div#'+nameId+'_wrapper').parent().addClass('in active');
+  $('a#'+nameId).parent().addClass('active');
+
+  $(".itemsTablet").removeClass('itemsActive');
+  $(`#${nameId}`).addClass('itemsActive');
+  $(`.${nameId}`).addClass('itemsActive');
 }
 
 function setCompletionDates() {
@@ -353,7 +489,6 @@ function getTimeline() {
     success: function (data) {
       if (data && Object.keys(data).length != 0) {
         timelineElements = data['information'];
-        // console.log(data['information'])
       }
     }
   });

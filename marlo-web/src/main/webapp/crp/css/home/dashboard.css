@@ -372,7 +372,7 @@ span.timelineControl:hover {
     width: 147px;
     position: absolute;
     right: 34px;
-    top: 46px;
+    top: 370px;
     -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 12%);
     border-radius: 5px;
     padding-top: 12px;
@@ -387,3 +387,261 @@ span.timelineControl:hover {
   .imgTimeline {
     margin-top: 7px;
   }
+
+  /*************** sectionMap ********************/
+
+  .sectionMap{
+    width: 100%;
+    height: 260px;
+    background: #0478a3;
+    display: flex;
+    /* border-radius: 0 0 50% 50%; */
+    
+  }
+
+  .containerMapsection{
+    display: flex;
+  }
+
+  .borderMap{
+    width: 100%;
+    height: 100px;
+    background-image: url(../../../global/images/header.svg);
+    background-repeat: no-repeat;    
+    background-size: 100%;
+    margin-top: -1px;    
+    margin-bottom: -38px;
+  }
+
+  .containerTextMap{
+    width: 100%;
+    margin: 30px 240px 30px 40px;
+    color: #fff;
+    text-align: justify;
+  }
+
+
+  .containerTextMap .titleMap{
+    font-size: 2em;
+    font-weight: 700;
+  }
+
+  .containerTextMap .textMap{
+    font-size: 17px;
+  }
+
+  .containerImgMap{
+    min-width: 400px;    
+    text-align: center;
+    position: relative;
+    float: left;
+  }
+  
+  .containerImgMap img{    
+    width: 220px;
+    margin-top: 36px;
+  }
+
+.circleMap{
+  width: 9px;
+  height: 9px;
+  background-color: #b3b3b3;
+  border-radius: 50%;
+  position: absolute;
+}
+
+
+#cluster1{
+  top: 106px;
+  right: 282px;
+}
+#cluster2{
+  top: 117px;
+  right: 139px;
+}
+#cluster3{
+  top: 131px;
+  right: 250px;
+}
+#cluster4{
+  bottom: 100px;
+  right: 135px;
+}
+#cluster5{
+  bottom: 47px;
+  right: 173px;
+}
+#cluster6{
+  top: 34px;
+  right: 207px;
+}
+#cluster7{
+  top: 61px;
+  right: 289px;
+}
+#cluster8{
+  top: 118px;
+  right: 301px;
+}
+#cluster9{
+  top: 179px;
+  right: 224px;
+}
+#cluster10{
+  bottom: 48px;
+  right: 125px;
+}
+#cluster11{
+  top: 88px;
+  right: 133px;
+}
+#cluster12{
+  top: 93px;
+  right: 253px;
+}
+
+.dialogMap{
+  position: absolute;
+  width: 200px;
+  min-height: 100px;
+  background: white;
+  border-radius: 6px;
+  text-align: initial;
+  padding: 10px;
+  -webkit-box-shadow:0px 0px 10px rgb(0 0 0 / 100%);
+  display: none;
+  z-index: 1;
+}
+
+.lineMap{
+  position: absolute;
+}
+
+.dialogMapTitle{
+  font-size: 17px;
+  font-weight: 500;
+}
+
+@media (max-width:1770px){
+  .containerTextMap {
+    margin: 30px 50px 30px 40px;
+  }
+}
+
+@media (max-width:1550px){
+  .containerTextMap {
+    margin: 10px 0px 10px 30px;
+  }
+  .sectionMap{
+    height: 290px;
+  }
+  .containerTextMap{
+    margin: 15px 0px 30px 40px;
+  }
+  .timelineAlert {     
+    top: 400px;
+  }
+  #cluster4 {
+    bottom: 129px;
+    right: 136px;
+  }
+  #cluster5 {
+    bottom: 76px;
+    right: 175px;
+  }
+  #cluster9 {
+    bottom: 100px;
+    right: 225px;
+  }
+  #cluster10 {
+    bottom: 80px;
+    right: 125px;
+  }
+}
+
+  /**************** Content Items Table **************/
+  .containerTabletItems{
+    display: block;
+    padding: 30px 0px 45px 0;
+    -webkit-box-shadow: 0px 0px 10px rgb(0 0 0 / 15%);
+    border-radius: 5px;
+  }
+
+  .tableItemsTitle{
+    width: 100%;
+    text-align: center;
+    font-weight: 700;
+    font-size: 2.0em;
+    color: #333;
+  }
+  
+  .containerSeccionItems {
+    display: flex   ;
+  }
+
+  .containerItems {
+    flex-wrap: wrap;
+    min-width: 345px;
+    max-width: 345px;
+    display: table-cell;
+    text-align: center;    
+    margin-left: 30px;
+  }
+
+  .itemsTablet{
+    height: 150px;
+    width: 150px;
+    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);   
+    float: left;
+    margin: 10px;
+    text-align: center;
+    border-radius: 2px;
+    display: inline-block;
+        text-align: center;
+    cursor: pointer;
+  }
+
+  .itemsTablet:active{
+    background: #c3e0f9;
+  }
+
+  .itemsActive{
+    background: #c3e0f9;
+  }
+
+ .itemsTablet img{
+  margin-top: 30px;
+ }
+
+ .itemsTablet p{
+  font-weight: 700;
+  font-size: 1.2em;
+  color: rgb(110, 110, 110);
+ }
+
+ .containerTabletItems .nav{
+  display: none;
+ }
+
+ .containerTabletItems .infTableItems{
+    border: #ebebeb solid 1px;
+    background: #E8F4FF;
+    padding: 7px 18px;
+    color: black;
+ }
+
+ .containerTabletItems .subHeader{
+  background-color: #0377a3;
+
+ }
+
+ .containerTabletItems #dashboardContent{
+  margin-top: 10px;
+  margin-left: 20px;
+  width: auto;
+  margin-right: 30px;
+ }
+
+ .sectionItems{
+  margin-left: 35px;
+ }
