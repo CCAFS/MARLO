@@ -254,8 +254,8 @@
                                 [#if reportingActive]
                                   <div class="deliverableTabs"> 
                                     <ul class="nav nav-tabs" role="tablist"> 
-                                      <li role="presentation" class=""><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Progress <!--${currentCycleYear}--></a></li>                       
-                                      <li role="presentation" class="active"><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Reporting <!--${currentCycleYear}--></a></li>                            
+                                      <li role="presentation" class="active"><a index="1" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Reporting <!--${currentCycleYear}--></a></li>                            
+                                      <li role="presentation" class=""><a index="2" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Progress <!--${currentCycleYear}--></a></li>                       
                                     </ul>
                                     <div class="tab-content ">          
                                       [#-- Progress tab --]  
@@ -533,7 +533,7 @@
         </div>
         <br>
         [#-- capdev --]
-        [#if totalParticipants?number > 0]
+        [#if totalParticipants?number > 0 && year == currentCycleYear]
           <div class="form-group deliverableTypeMessage">
             <div id="dialog" title="Capacity development" style="display: none">
                 
