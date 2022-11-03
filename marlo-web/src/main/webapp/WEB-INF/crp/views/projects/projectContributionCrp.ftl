@@ -249,18 +249,19 @@
                               <br>
                               [#if year == currentCycleYear && projectOutcome.crpProgramOutcome.indicators?size != 0]
                                 <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
-                                <!--<h4 class="headTitle">Progress to Targets</h4>-->
+                                [#--  <h4 class="headTitle">Progress to Targets</h4>--]
 
                                 [#if reportingActive]
                                   <div class="deliverableTabs"> 
                                     <ul class="nav nav-tabs" role="tablist"> 
                                       <li role="presentation" class="active"><a index="1" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Reporting <!--${currentCycleYear}--></a></li>                            
-                                      <li role="presentation" class=""><a index="2" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Progress <!--${currentCycleYear}--></a></li>                       
+                                      <li role="presentation" class=""><a index="2" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Mid-year <!--${currentCycleYear}--></a></li>                       
                                     </ul>
                                     <div class="tab-content ">          
                                       [#-- Progress tab --]  
                                         <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade">
                                           [#if action.isAiccra()  && projectOutcomeLastPhase?has_content && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
+                                          <h4 class="headTitle">This information is only for reference and is not editable</h4>
                                             [#-- 
                                             && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content
                                             --]
@@ -291,7 +292,7 @@
                                         
                                           <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade in active">
                                             [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
-                                              <h4 class="headTitle">Progress to Targets</h4>
+                                              [#--  <h4 class="headTitle">Progress to Targets</h4> --]
                                                 <div class="nextUsersList">
                                                   [#-- Baseline Indicators --]
                                                   [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
@@ -725,6 +726,7 @@
       <div class="col-md-3">
         [@customForm.input name="${customName}.value" i18nkey="projectOutcomeBaseline.expectedValue" className="targetValue" placeholder="Numeric Value" value="${(projectOutcomeIndicator.value)!}" required=true editable=editable && !reportingActive /]
       </div>
+      fsdf
       <div class="col-md-3">
         [#if reportingActive]
           [@customForm.input name="${customName}.valueReporting" i18nkey="projectOutcomeBaseline.achievedValue" className="targetValue" placeholder="Numeric Value" required=true editable=editable /]
