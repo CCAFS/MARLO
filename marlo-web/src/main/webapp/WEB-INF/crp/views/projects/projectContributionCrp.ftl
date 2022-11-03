@@ -248,7 +248,8 @@
                               [#-- progress targets --]
                               <br>
                               [#if year == currentCycleYear && projectOutcome.crpProgramOutcome.indicators?size != 0]
-                                <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
+                                <h5 class="sectionSubTitle">Additional questions to Key Performance Indicator
+</h5>
                                 [#--  <h4 class="headTitle">Progress to Targets</h4>--]
 
                                 [#if reportingActive]
@@ -261,7 +262,7 @@
                                       [#-- Progress tab --]  
                                         <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade">
                                           [#if action.isAiccra()  && projectOutcomeLastPhase?has_content && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
-                                          <h4 class="headTitle">This information is only for reference and is not editable</h4>
+                                          <h4 class="headTitle" style="font-size: 15px;"> <i>This information is only for reference and is not editable</i></h4>
                                             [#-- 
                                             && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content
                                             --]
@@ -520,17 +521,7 @@
           </div>
           --]
           [#-- REPORTING BLOCK --]
-            [#if (!action.isUpKeepActive() && !isYearRequired(milestoneYear) && action.isPOWB()) || action.isReportingActive()]
-              <div class="col-md-4 input-container">
-                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) && reportingActive editable=reportingActive && (editable || isTemplate) && isYearRequired(milestoneYear) /]
-              </div>
-            [#else]
-             [#if action.isUpKeepActive() ]
-              <div class="col-md-4 input-container">
-                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedSoFar" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) && (reportingActive || action.isUpKeepActive()) /]
-              </div>
-             [/#if]
-            [/#if]
+    
         </div>
         <br>
         [#-- capdev --]
@@ -642,7 +633,22 @@
           </div>
         [/#if]
 
-        <br>
+        <div class="form-group row">
+          [#if (!action.isUpKeepActive() && !isYearRequired(milestoneYear) && action.isPOWB()) || action.isReportingActive()]
+              <div class="col-md-4">
+                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) && reportingActive editable=reportingActive && (editable || isTemplate) && isYearRequired(milestoneYear) /]
+              </div>
+            [#else]
+             [#if action.isUpKeepActive() ]
+              <div class="col-md-4">
+                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedSoFar" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) && (reportingActive || action.isUpKeepActive()) /]
+              </div>
+             [/#if]
+          [/#if]
+         
+        </div>
+        </br>
+        </br>
         <div class="form-group text-area-container">
           [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isYearRequired(milestoneYear) className="limitWords-100" editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false/]
               [#if isYearRequired(milestoneYear)]
@@ -726,7 +732,6 @@
       <div class="col-md-3">
         [@customForm.input name="${customName}.value" i18nkey="projectOutcomeBaseline.expectedValue" className="targetValue" placeholder="Numeric Value" value="${(projectOutcomeIndicator.value)!}" required=true editable=editable && !reportingActive /]
       </div>
-      fsdf
       <div class="col-md-3">
         [#if reportingActive]
           [@customForm.input name="${customName}.valueReporting" i18nkey="projectOutcomeBaseline.achievedValue" className="targetValue" placeholder="Numeric Value" required=true editable=editable /]
