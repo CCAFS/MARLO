@@ -761,3 +761,9 @@ div#chart13 {
   display: flex !important;
 }
 
+.textAchived{
+  position: absolute;
+  top: 59px;
+  margin-right: 14px;
+  font-size: 12px;
+}
