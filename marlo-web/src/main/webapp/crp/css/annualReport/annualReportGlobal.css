@@ -767,3 +767,9 @@ div#chart13 {
   margin-right: 14px;
   font-size: 12px;
 }
+
+@media (max-width:1580px){
+  .textAchived{
+    font-size: 10px;
+  }
+}
