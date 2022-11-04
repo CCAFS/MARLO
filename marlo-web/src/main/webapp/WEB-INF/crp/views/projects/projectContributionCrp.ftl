@@ -3,23 +3,23 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20220922", 
-  "${baseUrlCdn}/global/js/fieldsValidation.js?20220613",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20221006",
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20221031", 
+  "${baseUrlCdn}/global/js/fieldsValidation.js?20221031",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20221031",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_ccDimensions.js?20220613" 
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_ccDimensions.js?20221031" 
   ] 
 /] 
 [#assign customCSS = [ 
-  "${baseUrlMedia}/css/projects/projectContributionCrp.css?20220613",
-  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20220922",
+  "${baseUrlMedia}/css/projects/projectContributionCrp.css?20221031",
+  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20221101",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
 /]
-[#assign currentSection = "projects" /]
+[#assign currentSection = "clusters" /]
 [#assign currentStage = "contributionsCrpList" /]
 
 [#assign breadCrumb = [
@@ -98,7 +98,7 @@
           <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID)?c)!}</span>
           <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
 
-          [#-- Outcomen name --]
+          [#-- Outcome name --]
           [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
 
           <div class="grayBox">
@@ -107,16 +107,54 @@
             </div>
             <div class="clearfix"></div>
             [#if showOutcomeValue]
-            <div class="form-group">
-            [#if !action.isAiccra()]
-              <div class="col-md-4"><strong>Target Value:</strong> ${projectOutcome.crpProgramOutcome.value} </div>
-            [#else]
-              <div class="col-md-4"><strong>AICCRA Target Value:</strong> ${projectOutcome.crpProgramOutcome.value} </div>
+              <div class="form-group">          
+                <div class="col-md-4"><strong>AICCRA Target Value:</strong> ${projectOutcome.crpProgramOutcome.value} </div>
+                <div class="col-md-6"><strong>Target Unit:</strong> ${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</div>
+              </div>
             [/#if]
-            <div class="col-md-6"><strong>Target Unit:</strong> ${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</div>
+            </br>
+            </br>
+            <div class="container-evidences">
+              <p class="text-evidences">Here you could find information about the evidences that expects to be reported</p>
+              <div class="button-evidences">
+              [#-- animated animate__shakeX --]
+                <p>See details</p>
+                <img class="animate__animated animate__delay-3s animate__rubberBand" src="${baseUrlCdn}/global/images/28-info-outline.png" width="28" />
+              </div>
             </div>
-            [/#if]
             <div class="clearfix"></div>
+
+            
+            <div class="modal-evidences" style="display: none">
+              <div class="content-modal">
+                <div class="button-exit close-modal-evidences">
+                  <div class="x-close-modal" ></div>
+                </div>
+                  <p class="title-modal-evidences">Important information</p>
+                <div class="text-modal-evidences">
+                  <p>
+                    ${(projectOutcome.crpProgramOutcome.instructions)!}
+                  </p>          
+                </div>
+                
+                <div class="container-buttons-evidences">
+                  [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
+                    <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${(projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank">
+                      <div class="button-pdf-modal" >
+                        <p>Read full guidance</p>
+                        <img src="${baseUrlCdn}/global/images/pdf.png" alt="Download document" />
+                      </div>
+                    </a>
+                  [/#if]
+                  <div class="button-close-modal close-modal-evidences">
+                    <p>Close</p>
+                  </div>
+                </div>    
+              
+              </div>
+              
+            </div>
+              
           </div>
           <br />
           
@@ -132,35 +170,14 @@
             <div class="form-group">
               <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
                 <div class="col-md-5 input-container">
-                [#if !action.isAiccra()]
-                  [#if editable]
-                    [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive/]
-                  [#else]
-                    <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
-                    <div class="input"><p class="text">${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
-                  [/#if]
-                [#else]
                   [#if editable]
                     [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                   [#else]
-                    <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
+                    <label for="">[@s.text name="projectOutcome.expectedValue" /]: </label>
                     <div class="input"><p class="text">${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
-                  [/#if]
-                [/#if]
+                  [/#if]               
                 </div>
-                [#if !action.isAiccra()]
-                <div class="col-md-7">
-                  <div class="select">
-                    <label for="">[@s.text name="projectOutcome.expectedUnit" /]:</label>
-                    <div class="selectList">   
-                        [#if projectOutcome.crpProgramOutcome.srfTargetUnit?has_content]
-                        <input type="hidden" name="projectOutcome.expectedUnit.id" value="${(projectOutcome.crpProgramOutcome.srfTargetUnit.id)!}" class="">
-                        <p class="text">${(projectOutcome.crpProgramOutcome.srfTargetUnit.name)!}</p>
-                        [/#if]
-                    </div> 
-                  </div>
-                </div>
-                [/#if]
+
               </div>
               <div class="form-group ">
                 [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-100" editable=editable && (!reportingActive || (!(projectOutcome.narrativeTarget?has_content)!false))/]
@@ -187,7 +204,7 @@
                     <label for="">[@s.text name="projectOutcome.achievedUnit" /]:</label>
                     <div class="selectList">   
                         <input type="hidden" name="projectOutcome.achievedUnit.id" value="${(projectOutcome.crpProgramOutcome.srfTargetUnit.id)!}" class="">
-                        <p>${(projectOutcome.crpProgramOutcome.srfTargetUnit.name)!'Prefilled if available'}</p>
+                        <p>${(projectOutcome.crpProgramOutcome.srfTargetUnit.name)!'Not provided'}</p>
                     </div> 
                   </div>
                 </div>
@@ -197,68 +214,158 @@
               </div>
             </div>
             [/#if]
-                        
-            [#-- Baseline Indicators --]
-            [#if !action.isAiccra()]
-              [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
-                <h5 class="sectionSubTitle">Progress to Targets</h5>
-                <div class="form-group">
-                  <div class="" id="baseline">
-                    <div class="form-group text-right">
-                      [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                        <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a>
-                        [#-- (projectOutcome.crpProgramOutcome.file.fileName)! --] 
-                      [#else]
-                        <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
-                      [/#if]
-                    </div>
-                    [#-- Indicators --]
-                    [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
-                    [#if action.isAiccra()]
-                      [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index AREditable=true/]
-                    [#else]
-                      [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
-                    [/#if]
-                    [/#list]
-                  </div>
-                </div>
-              [/#if]
-             [/#if]
-            
+                                    
           </div>
                     
           [#-- Project Milestones and Communications contributions per year--]
           <h4 class="headTitle"> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
           
-          [#-- List milestones  --]
-          <div class="milestonesYearBlock borderBox" listname="milestonesProject">
-            <div class="milestonesYearList">
-              [#if milestonesProject?has_content]
-                [#list milestonesProject as milestone]
-                  [@milestoneMacro element=milestone name="projectOutcome.milestones" index=milestone_index /]
-                [/#list]
-              [#else]
-                <p class="emptyMessage text-center">There is not a Intermediate Target added.</p>
-              [/#if]
-            </div>
-            [#-- Select a milestone  --]
-            [#if false][#-- Change false to editable to enable the component --]
-            
-            <div class="milestonesYearSelect"> 
-              <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
-              <span class="milestonesSelectedIds" style="display:none">[#if milestonesProject?has_content][#list milestonesProject as e]${(e.id)!}[#if e_has_next],[/#if][/#list][/#if]</span>
-              [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone${reportingActive?string('.reporting', '')}"  listName="" keyFieldName="id" displayFieldName="title" className="" value="" /]
-            </div>
-            [/#if]
-            [#if totalParticipants?number > 0]
-              </br>
-              <div id="note" class="note left helpMessage3">
-                <p>[#-- <a href="#capdev"></a>--]<i>[@s.text name="projectOutcomes.helpParticipantsSection" /]</i></p>
-              </div>
-              </br>
-             [/#if]
-          </div>        
+
+          [#-- Year Tabs --]
+          [#if milestonesProjectYear?has_content]
+            <ul class="nav nav-tabs budget-tabs" role="tablist">
+              [#list milestonesProjectYear as year]
+                <li class="[#if year == currentCycleYear]active[/#if]"><a href="#milestoneYear-${year}" role="tab" data-toggle="tab">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${year} </a></li>
+              [/#list]
+            </ul>
           
+
+          [#-- Years Content --]
+          <div class="tab-content contributionContent">
+          
+              [#list milestonesProjectYear as year]
+                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="milestoneYear-${year}" role="tab" data-toggle="tab">
+                
+                [#assign milestoneElement = action.milestonesYear!{}/]
+                [#assign milestoneIndex = (action.indexMilestone(year))!'-1' /]
+
+                    <!--<div class="milestonesYearBlock borderBox" listname="milestonesProject">-->
+                      <div class="milestonesYearList">
+                          
+                          [#if milestoneElement?has_content]           
+                              [@milestoneMacro element=milestoneElement[milestoneIndex] name="projectOutcome.milestones" index=0 /]
+
+                              [#-- progress targets --]
+                              <br>
+                              [#if year == currentCycleYear && projectOutcome.crpProgramOutcome.indicators?size != 0]
+                                <h5 class="sectionSubTitle">Additional questions to Key Performance Indicator
+</h5>
+                                [#--  <h4 class="headTitle">Progress to Targets</h4>--]
+
+                                [#if reportingActive]
+                                  <div class="deliverableTabs"> 
+                                    <ul class="nav nav-tabs" role="tablist"> 
+                                      <li role="presentation" class="active"><a index="1" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Reporting <!--${currentCycleYear}--></a></li>                            
+                                      <li role="presentation" class=""><a index="2" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Mid-year <!--${currentCycleYear}--></a></li>                       
+                                    </ul>
+                                    <div class="tab-content ">          
+                                      [#-- Progress tab --]  
+                                        <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade">
+                                          [#if action.isAiccra()  && projectOutcomeLastPhase?has_content && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
+                                          <h4 class="headTitle" style="font-size: 15px;"> <i>This information is only for reference and is not editable</i></h4>
+                                            [#-- 
+                                            && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content
+                                            --]
+                                              <div class="nextUsersList">
+                                                [#-- Baseline Indicators --]
+                                                [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcomeLastPhase.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content)!false)]
+                                                  <!--<h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>-->
+                                                  <div class="form-group">
+                                                    <div class="" id="baseline">
+                                                      <div class="form-group text-right">
+                                                        [#if (projectOutcomeLastPhase.crpProgramOutcome.file.fileName??)!false]
+                                                          [#-- <a href="${action.getBaseLineFileURL((projectOutcomeLastPhase.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcomeLastPhase.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a>--] 
+                                                        [#else]
+                                                          <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
+                                                        [/#if]
+                                                      </div>
+                                                      [#-- Indicators --]
+                                                      [#list projectOutcomeLastPhase.crpProgramOutcome.indicators as  indicator   ]
+                                                          [@baselineAiccraPrevIndicatorMacro element=indicator name="projectOutcomeLastPhase.indicators" index=indicator_index  AREditable=false/]                
+                                                      [/#list]
+                                                    </div>
+                                                  </div>
+                                                [/#if]
+                                            </div>
+                                          [/#if]
+                                        </div>  
+                                        [#-- Reporting tab --]
+                                        
+                                          <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade in active">
+                                            [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
+                                              [#--  <h4 class="headTitle">Progress to Targets</h4> --]
+                                                <div class="nextUsersList">
+                                                  [#-- Baseline Indicators --]
+                                                  [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
+                                                    <!--<h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>-->
+                                                    <div class="form-group">
+                                                      <div class="" id="baseline">
+
+                                                        [#-- Indicators --]
+                                                        [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
+                                                            [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index AREditable=true/]
+                                                        [/#list]
+                                                      </div>
+                                                    </div>
+                                                  [/#if]
+                                                </div>           
+                                            [#else]
+                                              <h5 class="headTitle">No Progress to Target indicators added</h5>
+                                            [/#if]
+                                          </div>                     
+                                    </div>   
+                                  </div>
+                                [#else]     
+                                  [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
+                                            <div class="nextUsersList">
+                                              [#-- Baseline Indicators --]
+                                              [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
+                                                <!--<h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>-->
+                                                <div class="form-group">
+                                                  <div class="" id="baseline">
+
+                                                    [#-- Indicators --]
+                                                    [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
+                                                        [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  AREditable=true/]
+                                                    [/#list]
+                                                  </div>
+                                                </div>
+                                              [/#if]
+                                            </div>           
+                                  [/#if]
+                                [/#if]
+                              [/#if]   
+                              [#-- end progress targets--]
+                              
+                          [#else]
+                            <p class="emptyMessage text-center">There is not a Intermediate Target added for ${year}.</p>
+                          [/#if]
+                      </div>
+                      
+                      [#if false] 
+                        <div class="milestonesYearSelect"> 
+                          <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
+                          <span class="milestonesSelectedIds" style="display:none">[#if milestonesProject?has_content][#list milestonesProject as e]${(e.id)!}[#if e_has_next],[/#if][/#list][/#if]</span>
+                          [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone${reportingActive?string('.reporting', '')}"  listName="" keyFieldName="id" displayFieldName="title" className="" value="" /]
+                        </div>
+                      [/#if]
+                      [#-- 
+                      [#if totalParticipants?number > 0]
+                        </br>
+                        <div id="note" class="note left helpMessage3">
+                          <p><i>[@s.text name="projectOutcomes.helpParticipantsSection" /]</i></p>
+                        </div>
+                        </br>
+                      [/#if]
+                      --]
+                    <!--</div>-->      
+                </div>
+              [/#list]
+          </div>
+          [#else]
+          <p>No information</p>
+          [/#if]
+                   
           [#-- Communications --]
           [#if reportingActive && action.hasSpecificities('crp_show_project_outcome_communications') ]  
           <div class="">
@@ -276,224 +383,7 @@
             </div>
           </div>
           [/#if]          
-           
-          <br>       
-          [#if reportingActive]
-            <div class="deliverableTabs"> 
-              <ul class="nav nav-tabs" role="tablist"> 
-                 <li role="presentation" class=""><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Progress ${currentCycleYear}</a></li>                       
-                 <li role="presentation" class="active"><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Reporting ${currentCycleYear}</a></li>                            
-              </ul>
-              
-              <div class="tab-content ">          
-                [#-- Progress tab --]  
-                  <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade">
-                    [#if action.isAiccra()  && projectOutcomeLastPhase?has_content && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
-                      [#-- 
-                      && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content
-                      --]
-                      <h4 class="headTitle">Progress to Targets</h4>
-                      <div class="nextUsersBlock borderBox">
-                        <div class="nextUsersList">
-                          [#-- Baseline Indicators --]
-                          [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcomeLastPhase.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content)!false)]
-                            <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
-                            <div class="form-group">
-                              <div class="" id="baseline">
-                                <div class="form-group text-right">
-                                  [#if (projectOutcomeLastPhase.crpProgramOutcome.file.fileName??)!false]
-                                    <a href="${action.getBaseLineFileURL((projectOutcomeLastPhase.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcomeLastPhase.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a> 
-                                  [#else]
-                                    <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
-                                  [/#if]
-                                </div>
-                                [#-- Indicators --]
-                                [#list projectOutcomeLastPhase.crpProgramOutcome.indicators as  indicator   ]
-                                  [#if action.isAiccra()]
-                                    [@baselineAiccraPrevIndicatorMacro element=indicator name="projectOutcomeLastPhase.indicators" index=indicator_index  AREditable=false/]
-                                  [#else]
-                                    [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
-                                  [/#if]
-                                [/#list]
-                              </div>
-                            </div>
-                          [/#if]
-                        </div>           
-                      </div>
-                    [/#if]
-                  </div>  
-                  [#-- Reporting tab --]
-                  
-                    <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade in active">
-                      [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
-                        <h4 class="headTitle">Progress to Targets</h4>
-                        <div class="nextUsersBlock borderBox">
-                          <div class="nextUsersList">
-                            [#-- Baseline Indicators --]
-                            [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
-                              <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
-                              <div class="form-group">
-                                <div class="" id="baseline">
-                                  <div class="form-group text-right">
-                                    [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                                      <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a> 
-                                    [#else]
-                                      <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
-                                    [/#if]
-                                  </div>
-                                  [#-- Indicators --]
-                                  [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
-                                    [#if action.isAiccra()]
-                                      [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index AREditable=true/]
-                                    [#else]
-                                      [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
-                                    [/#if]
-                                  [/#list]
-                                </div>
-                              </div>
-                            [/#if]
-                          </div>           
-                        </div>
-                      [#else]
-                        <h5 class="headTitle">No Progress to Target indicators added</h5>
-                      [/#if]
-                    </div>
-                  
-                        
-              </div>   
-            </div>
-          [#else]     
-            [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
-                <h4 class="headTitle">Progress to Targets</h4>
-                <div class="nextUsersBlock borderBox">
-                      <div class="nextUsersList">
-                        [#-- Baseline Indicators --]
-                        [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
-                          <h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>
-                          <div class="form-group">
-                            <div class="" id="baseline">
-                              <div class="form-group text-left">
-                                [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                                  <!--  <p><b>Baseline Instructions:</b></p>
-                                  <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a>  -->
-                                  [#-- ${ (projectOutcome.crpProgramOutcome.file.fileName)!} --]
-                                  <p><br></p> 
-                                [#else]
-                                  <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
-                                [/#if]
-                              </div>
-                              [#-- Indicators --]
-                              [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
-                                [#if action.isAiccra()]
-                                  [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  AREditable=true/]
-                                [#else]
-                                  [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
-                                [/#if]
-                              [/#list]
-                            </div>
-                          </div>
-                        [/#if]
-                      </div>           
-                </div>
-            [/#if]
-          [/#if]        
-          
-          [#-- capdev --]
-          [#if totalParticipants?number > 0]
-          <h4 class="headTitle"> <a id="capdev">Capacity Development</a></h4>
-          <div class="borderBox">
-                   [#-- CapDevCharts--]
-                    <div class="form-group row">
-                      <div class="col-md-4">
-                        <div id="" class="simpleBox numberBox">
-                            <label for="">Total of Participants</label><br />
-                            <span>${(totalParticipants?number?string(",##0"))!0}</span>
-                         </div>
-                        <div id="" class="simpleBox numberBox">
-                            <label for="">Total of Females</label><br />
-                            <span>${(totalFemales?number?string(",##0"))!0}</span>
-                         </div>
-                        <div id="" class="simpleBox numberBox">
-                            <label for="">Total of Africans</label><br />
-                            <span>${(totalAfricans?number?string(",##0"))!0}</span>
-                         </div>
-                         [#--  
-                         <div id="" class="simpleBox numberBox">
-                            <label for="">Participants in [@s.text name="totalParticipantFormalTraining" /]</label><br />
-                            <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
-                         </div>
-                         --]
-                      </div>
-                      <div class="col-md-8">
-                        [#-- Trainees in Short-Term --]
-                        [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
-                        <div id="chart12" class="chartBox simpleBox">
-                          [#assign chartData = [
-                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
-                            {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
-                          ] /] 
-                          <ul class="chartData" style="display:none">
-                            <li>
-                              <span>[@s.text name="{customLabel}" /]</span>
-                              <span>[@s.text name="Short-Term" /]</span>
-                              <span class="json">{"role":"annotation"}</span>
-                            </li>
-                            [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
-                              [#list chartData as data]
-                                <li>
-                                  <span>${data.name}</span>
-                                  <span class="number">${data.value}</span>
-                                  <span>${data.value}</span>
-                                </li>
-                              [/#list]
-                            [/#if]
-                          </ul>
-                        </div>
-                        [/#if]
-                        <br />
-                        [#-- Trainees in Long-Term --]
-                        [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
-                        <div id="chart13" class="chartBox simpleBox">
-                          [#assign chartData = [
-                            {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
-                            {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
-                          ] /] 
-                          <ul class="chartData" style="display:none">
-                            <li>
-                              <span>[@s.text name="chart13" /]</span>
-                              <span>[@s.text name="Long-Term" /]</span>
-                              <span class="json">{"role":"annotation"}</span>
-                              <span>[@s.text name="PhD" /]</span>
-                              <span class="json">{"role":"annotation"}</span>
-                            </li>
-                            [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
-                              [#list chartData as data]
-                                <li><span>${data.name}</span>
-                                <span class="number">${data.value}</span>
-                                <span>${data.value}</span>
-                                <span class="number">${data.valuePhD}</span>
-                                <span>${data.valuePhD}</span></li>
-                              [/#list]
-                            [/#if]
-                          </ul>
-                         </div>
-                         [/#if]
-                      </div>
-                    </div>
-                    
-                    [#-- Deliverables Participants & Trainees --]
-                    <div class="form-group">
-                      <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Deliverables Participants & Trainees" /]</h4>
-                      <div class="viewMoreSyntesis-block">
-                      
-                      <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
-                        [@tableParticipantsTrainingsMacro list=(deliverableParticipants)![] /]
-                      </div>
-                      
-                     </div>
-                    </div> 
-          </div>  
-          [/#if]
+                                  
           
           [#-- Next Users --]
           [#-- For A4NH CRP, nextusers aren't required --]
@@ -557,7 +447,8 @@
 
 
 [#macro milestoneMacro element name index isTemplate=false]
-  <div id="milestoneYear-${isTemplate?string('template', index)}" class="milestoneYear simpleBox" style="display:${isTemplate?string('none','block')}">
+
+  <div id="milestoneYear-${isTemplate?string('template', index)}" class="milestoneYear" style="display:${isTemplate?string('none','block')}">
     [#-- Milestone content --]
     [#if isTemplate]
       [#local year = -1 /]
@@ -581,96 +472,18 @@
     [#-- Remove Button --]
     [#-- 
     [#if editable && (!reportingActive || isNewAtReporting) && (milestoneYear gte currentCycleYear)!true]<div class="removeElement removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
-    --]
+    
     <div class="leftHead sm">
       <span class="index">${index+1}</span>
-      <span class="elementId">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${(element.year)!}</span>
+      <span class="index">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${(element.year)!}</span>
     </div>
-
+      --]
+    
+      
     [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
     [#local prefilled]<p style="opacity:0.6">[@s.text name="form.values.fieldEmpty" /]</p>[/#local]
     
-    [#-- Milestone Title --]
-    <div class="form-group grayBox">
-      [#if showMilestoneValue]
-        <div class="form-group pull-right">
-          <strong>AICCRA Target to ${(element.year)!}:</strong> ${(element.value)!}
-        </div>
-      [/#if]
-      [#-- Milestone Year --]
-      <div class="row">
-        <div class="col-md-6">
-          <strong>Cluster contribution to this indicator in <span class="crpMilestoneYear">${(element.year)!} [#if hasExtendedYear] Extended to ${(element.extendedYear)!}[/#if]  </span> </strong> 
-        </div>
-      </div>
-      
- 
-      [#--  Title --]
-      <div class="form-group">
-        <span class="title">${(element.title)!}</span>
-      </div>
 
-
-      
-      [#--  Text and Button Evidences --]
-      
-        <div class="container-evidences">
-          <p class="text-evidences">Here you could find information about the evidences that expects  to be reported</p>
-          <div class="button-evidences animated animate__shakeX">
-            <p>View More</p>
-          </div>
-        </div>
-      
-
-      <div class="modal-evidences" style="display: none">
-
-        <div class="content-modal">
-
-          <div class="button-exit close-modal-evidences">
-            <div class="x-close-modal" ></div>
-          </div>
-            <p class="title-modal-evidences">Important information</p>
-            <div class="text-modal-evidences">
-              <p>
-                ${(projectOutcome.crpProgramOutcome.instructions)!}
-              </p>          
-            </div>
-          
-          <div class="container-buttons-evidences">
-            [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-              <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${(projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank">
-                <div class="button-pdf-modal" >
-                <p>Read full guidance</p>
-                  <img src="${baseUrlCdn}/global/images/pdf.png" alt="Download document" />
-                </div>
-                </a>
-            [/#if]
-            <div class="button-close-modal close-modal-evidences">
-              <p>Close</p>
-            </div>
-          </div>    
-        
-        </div>
-        
-      </div>
-      
-      [#--  Means of verification
-      <div class="form-group">
-        <strong>[@s.text name="outcome.milestone.powbMilestoneVerification" /]</strong>
-        <br /> [#if (element.powbMilestoneVerification?has_content)!false]${element.powbMilestoneVerification}[#else]${prefilled}[/#if]
-      </div>
-       --]
-      [#-- DAC Markers --]
-      [#if !action.isAiccra()]
-        <div class="form-group row">
-          <div class="col-md-3"><strong>Gender</strong> <br /> ${(element.genderFocusLevel.powbName)!prefilled} </div>
-          <div class="col-md-3"><strong>Youth</strong> <br /> ${(element.youthFocusLevel.powbName)!prefilled}</div>
-          <div class="col-md-3"><strong>CapDev</strong> <br /> ${(element.capdevFocusLevel.powbName)!prefilled}</div>
-          <div class="col-md-3"><strong>Climate Change</strong> <br /> ${(element.climateFocusLevel.powbName)!prefilled}</div>
-        </div>
-      [/#if]
-    </div>
-    
     <div role="tabpanel" class="tab-pane [#if milestoneYear == currentCycleYear]active[/#if]" id="milestoneYear${index}-${milestoneYear}">
       [#local customName = "${name}[${projectMilestoneIndex}]" /]
       <div class="outcomeMilestoneYear">
@@ -679,11 +492,19 @@
         <input type="hidden" name="${customName}.year" class="crpMilestoneYearInput" value="${(year)!}" class="year" />
         <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" class="crpMilestoneId" />
         
+        <div class="row">
+          <div class="col-md-12">
+            <strong>AICCRA Target to ${(element.year)!}:</strong> ${(element.value)!}
+            </br>
+            </br>
+          </div>
+        </div>
+        
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
           <div class="col-md-4 input-container" style="padding-top:3px">
-            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) /]
+            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) help="projectOutcomeMilestone.pmcValue.helpText" helpIcon=true/]
           </div>
-          
+    
           <div class="col-md-4 input-container">
             [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
           </div>
@@ -700,21 +521,134 @@
           </div>
           --]
           [#-- REPORTING BLOCK --]
-          [#if reportingActive]
-            [#if !isYearRequired(milestoneYear) && action.isAiccra()]
-              <div class="col-md-4 input-container">
-                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) /]
+    
+        </div>
+        <br>
+        [#-- capdev --]
+        [#if totalParticipants?number > 0 && year == currentCycleYear]
+          <div class="form-group deliverableTypeMessage">
+            <div id="dialog" title="Capacity development" style="display: none">
+                
+              <!--<h4 class="headTitle"> <a id="capdev">Capacity Development</a></h4>-->
+                <div class="borderBox">
+                      [#-- CapDevCharts--]
+                        <div class="form-group row">
+                          <div class="col-md-12" display="flex">
+                            <div id="" class="simpleBox numberBox col-md-3" >
+                                <label for="">Total of Participants</label><br />
+                                <span>${(totalParticipants?number?string(",##0"))!0}</span>
+                            </div>
+                            <div id="" class="simpleBox numberBox col-md-3">
+                                <label for="">Total of Females</label><br />
+                                <span>${(totalFemales?number?string(",##0"))!0}</span>
+                            </div>
+                            <div id="" class="simpleBox numberBox col-md-3">
+                                <label for="">Total of Africans</label><br />
+                                <span>${(totalAfricans?number?string(",##0"))!0}</span>
+                            </div>
+                            [#--  
+                            <div id="" class="simpleBox numberBox">
+                                <label for="">Participants in [@s.text name="totalParticipantFormalTraining" /]</label><br />
+                                <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
+                            </div>
+                            --]
+                          </div>
+                          <!--<div class="col-md-8">
+                            [#-- Trainees in Short-Term --]
+                            [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
+                            <div id="chart12" class="chartBox simpleBox">
+                              [#assign chartData = [
+                                {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
+                                {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
+                              ] /] 
+                              <ul class="chartData" style="display:none">
+                                <li>
+                                  <span>[@s.text name="{customLabel}" /]</span>
+                                  <span>[@s.text name="Short-Term" /]</span>
+                                  <span class="json">{"role":"annotation"}</span>
+                                </li>
+                                [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
+                                  [#list chartData as data]
+                                    <li>
+                                      <span>${data.name}</span>
+                                      <span class="number">${data.value}</span>
+                                      <span>${data.value}</span>
+                                    </li>
+                                  [/#list]
+                                [/#if]
+                              </ul>
+                            </div>
+                            [/#if]
+                            <br />
+                            [#-- Trainees in Long-Term --]
+                            [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
+                            <div id="chart13" class="chartBox simpleBox">
+                              [#assign chartData = [
+                                {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
+                                {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
+                              ] /] 
+                              <ul class="chartData" style="display:none">
+                                <li>
+                                  <span>[@s.text name="chart13" /]</span>
+                                  <span>[@s.text name="Long-Term" /]</span>
+                                  <span class="json">{"role":"annotation"}</span>
+                                  <span>[@s.text name="PhD" /]</span>
+                                  <span class="json">{"role":"annotation"}</span>
+                                </li>
+                                [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
+                                  [#list chartData as data]
+                                    <li><span>${data.name}</span>
+                                    <span class="number">${data.value}</span>
+                                    <span>${data.value}</span>
+                                    <span class="number">${data.valuePhD}</span>
+                                    <span>${data.valuePhD}</span></li>
+                                  [/#list]
+                                [/#if]
+                              </ul>
+                            </div>
+                            [/#if]
+                          </div>-->
+                        </div>
+                        
+                        [#-- Deliverables Participants & Trainees --]
+                        <div class="form-group">
+                          <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Deliverables Participants & Trainees" /]</h4>
+                          <div class="viewMoreSyntesis-block">                    
+                            <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
+                              [@tableParticipantsTrainingsMacro list=(deliverableParticipants)![] /]
+                            </div>
+                          </div>
+                        </div> 
+                </div>  
+              
+            
+            </div> <!-- End dialog-->
+
+            <div class="note left">
+              <div id="popup" class="helpMessage3">
+                <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]<b>${totalParticipants}</b>[/@s.param][/@s.text]</a></p>
+              </div>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        [/#if]
+
+        <div class="form-group row">
+          [#if (!action.isUpKeepActive() && !isYearRequired(milestoneYear) && action.isPOWB()) || action.isReportingActive()]
+              <div class="col-md-4">
+                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) && reportingActive editable=reportingActive && (editable || isTemplate) && isYearRequired(milestoneYear) /]
               </div>
             [#else]
-             [#if isYearRequired(milestoneYear)]
-              <div class="col-md-4 input-container">
-                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) && reportingActive/]
+             [#if action.isUpKeepActive() ]
+              <div class="col-md-4">
+                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedSoFar" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) && (reportingActive || action.isUpKeepActive()) /]
               </div>
              [/#if]
-            [/#if]
           [/#if]
+         
         </div>
-        
+        </br>
+        </br>
         <div class="form-group text-area-container">
           [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isYearRequired(milestoneYear) className="limitWords-100" editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false/]
               [#if isYearRequired(milestoneYear)]
@@ -726,10 +660,10 @@
               [/#if]
         </div>
         [#-- REPORTING BLOCK --]
-        [#if reportingActive]
-        <div class="form-group ">
-          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable=(editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
-        </div>
+        [#if (!action.isUpKeepActive() && !isYearRequired(milestoneYear) && action.isPOWB()) || action.isReportingActive()]
+          <div class="form-group ">
+            [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) && reportingActive className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable= reportingActive && (editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
+          </div>
         [/#if]
       </div>
     </div>
@@ -889,11 +823,11 @@
         <th id="tb-id">[@s.text name="Activity Event" /]</th>
         <th id="tb-title">[@s.text name="Activity Type" /]</th>        
         <th id="tb-organization-type">[@s.text name="Participants Type" /]</th>
+        <th id="tb-type">[@s.text name="Total Participants" /]</th>
         <th id="tb-type">[@s.text name="Males" /]</th>
         <th id="tb-type">[@s.text name="Females" /]</th>
         <th id="tb-type">[@s.text name="Africans" /]</th>
         <th id="tb-type">[@s.text name="Youth" /]</th>
-        <th id="tb-type">[@s.text name="total Participants" /]</th>
         <th id="tb-training-period">[@s.text name="Training Period" /]</th>
         [#--  
         <th id="tb-training-period">[@s.text name="Event Focus" /]</th>
@@ -930,6 +864,13 @@
           [#assign isEstimateYouth = (item.estimateYouth?has_content)!false]
           [#-- Total Participants --]
           <td class="text-center">
+            ${(item.participants?number?string(",##0"))!0}
+            [#if isEstimateTotalParticipants ]
+              <i><small> (Estimated value)</small></i>
+            [/#if]
+          </td>
+          [#-- Number of males --]
+          <td class="text-center">
             [#if knowFemale && !hasFemale ]
               <i><small>Not specified</small></i>
               [#else]
@@ -960,13 +901,6 @@
             ${(item.youth?number?string(",##0"))!0}
             [#--<p><i><small>(${(item.youthPercentage?number?string(",##0"))!0}% )</small></i></p>--]
             [#if isEstimateYouth ]
-              <i><small> (Estimated value)</small></i>
-            [/#if]
-          </td>
-          [#-- Total Participants --]
-          <td class="text-center">
-            ${(item.participants?number?string(",##0"))!0}
-            [#if isEstimateTotalParticipants ]
               <i><small> (Estimated value)</small></i>
             [/#if]
           </td>

@@ -405,7 +405,7 @@ jQuery.fn.setTrumbowyg = function() {
     $editor.trumbowyg({
         btns: [
           [
-              'link'
+              'strong', 'link'
           ]
         ],
         allowTagsFromPaste: [
@@ -414,7 +414,8 @@ jQuery.fn.setTrumbowyg = function() {
         urlProtocol: true,
         autogrow: true,
         minimalLinks: true,
-        semantic: true
+        semantic: true,
+        defaultLinkTarget: '_blank'
     });
 
     $editor.trumbowyg().on('tbwpaste ', function() {
