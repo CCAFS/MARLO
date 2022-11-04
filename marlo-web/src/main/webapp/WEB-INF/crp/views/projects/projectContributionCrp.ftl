@@ -15,7 +15,7 @@
 /] 
 [#assign customCSS = [ 
   "${baseUrlMedia}/css/projects/projectContributionCrp.css?20221031",
-  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20221101",
+  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20221104",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
 /]
@@ -494,8 +494,8 @@
         
         <div class="row">
           <div class="col-md-12">
-            <strong>AICCRA Target to ${(element.year)!}:</strong> ${(element.value)!}
-            </br>
+            <strong>Overall AICCRA target to ${(element.year)!}:</strong> ${(element.value)!}
+            </br>           
             </br>
           </div>
         </div>
@@ -511,11 +511,21 @@
           
           [#if (!action.isUpKeepActive() && !isYearRequired(milestoneYear) && action.isPOWB()) || action.isReportingActive()]
               <div class="col-md-4">
+                <div class="note left textAchived">
+                  <div id="popup" class="helpMessage3">
+                    <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]<b>${totalParticipants}</b>[/@s.param][/@s.text]</a></p>
+                  </div>
+                </div>
                 [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) && reportingActive editable=reportingActive && (editable || isTemplate) && isYearRequired(milestoneYear) /]
               </div>
             [#else]
              [#if action.isUpKeepActive() ]
               <div class="col-md-4">
+                <div class="note left textAchived">
+                  <div id="popup" class="helpMessage3">
+                    <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]<b>${totalParticipants}</b>[/@s.param][/@s.text]</a></p>
+                  </div>
+                </div>
                 [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedSoFar" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) && (reportingActive || action.isUpKeepActive()) /]
               </div>
              [/#if]
@@ -637,11 +647,7 @@
             
             </div> <!-- End dialog-->
 
-            <div class="note left">
-              <div id="popup" class="helpMessage3">
-                <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]<b>${totalParticipants}</b>[/@s.param][/@s.text]</a></p>
-              </div>
-            </div>
+            
             <div class="clearfix"></div>
           </div>
         [/#if]
