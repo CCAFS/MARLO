@@ -763,7 +763,8 @@ div#chart13 {
 
 .textAchived{
   position: absolute;
-  margin-right: 7px;
+  top: 59px;
+  margin-right: 14px;
   font-size: 12px;
 }
 
@@ -771,10 +772,4 @@ div#chart13 {
   .textAchived{
     font-size: 10px;
   }
-}
-
-.containerTextAchived{
-  float: right;
-    margin-top: -25px;
-    margin-right: -7px;
 }
