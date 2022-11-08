@@ -516,6 +516,13 @@
             [#else]
              [#if action.isUpKeepActive() ]
               <div class="col-md-4">
+              [#if totalParticipants?number > 0]
+                <div class="note left textAchived">
+                  <div id="popup" class="helpMessage3">
+                    <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]<b>${totalParticipants}</b>[/@s.param][/@s.text]</a></p>
+                  </div>
+                </div>
+              [/#if]
                 [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedSoFar" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) && (reportingActive || action.isUpKeepActive()) /]
               </div>
              [/#if]
@@ -637,18 +644,8 @@
             
             </div> <!-- End dialog-->
 
-            [#if action.isUpKeepActive() ]
-              [#if totalParticipants?number > 0]
-              <div class="col-md-4 containerTextAchived">
-                <div class="note left textAchived">
-                  <div id="popup" class="helpMessage3">
-                    <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]<b>${totalParticipants}</b>[/@s.param][/@s.text]</a></p>
-                  </div>
-                </div>              
-              </div>
-              [/#if]
-            [/#if]
-            <!--  <div class="clearfix"></div>  -->
+            
+            <div class="clearfix"></div>
           </div>
         [/#if]
 
