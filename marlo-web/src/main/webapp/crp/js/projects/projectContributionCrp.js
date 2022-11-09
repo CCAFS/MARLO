@@ -28,6 +28,9 @@ function init() {
   attachEvents();
   feedbackAutoImplementation();
   //re_animate();
+  $('.glyphicon-new-window').on("click", openTab);
+
+
 }
 
 function attachEvents() {
@@ -52,6 +55,10 @@ function attachEvents() {
 }
 
 /** FUNCTIONS * */
+
+function openTab(){
+ window.open($(this).parent().attr('href'), 'new tab');
+}
 
 function loadMilestonesByYear(i, e) {
   var $parent = $(e).parents('.tab-pane');
