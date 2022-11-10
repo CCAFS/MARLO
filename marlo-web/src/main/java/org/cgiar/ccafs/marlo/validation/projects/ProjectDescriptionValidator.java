@@ -191,6 +191,33 @@ public class ProjectDescriptionValidator extends BaseValidator {
       }
     }
 
+    // Cross cutting dimensions
+
+    // Gender
+    boolean genderValue = false;
+    if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() == null
+      || project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender().booleanValue() == false) {
+      genderValue = false;
+
+
+      if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getDimension())
+        && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getDimension()) <= 50)) {
+        action.addMessage(action.getText("project.projectInfo.dimension"));
+        action.getInvalidFields().put("input-project.projectInfo.dimension", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      genderValue = true;
+    }
+
+    // Gende, Youth and N/A
+    if ((genderValue == false)
+      && (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth() == null
+        || project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth().booleanValue() == false)
+      && (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingNa() == null
+        || project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingNa().booleanValue() == false)) {
+      action.addMessage(action.getText("project.projectInfo.crossCuttingNa"));
+      action.getInvalidFields().put("input-project.projectInfo.crossCuttingNa", InvalidFieldsMessages.EMPTYFIELD);
+    }
 
   }
 
