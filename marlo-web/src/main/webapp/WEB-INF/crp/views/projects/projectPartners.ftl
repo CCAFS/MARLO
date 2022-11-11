@@ -553,10 +553,10 @@
   <li id="locElement-${isTemplate?string('template', index)}" class="locElement userItem" style="display:${isTemplate?string('none','block')}">
     [#assign locElementName = "${name}[${index}]" ]
     [#-- Remove Button --]
-    [#if editable]<div class="removeLocElement removeIcon" title="Remove Location"></div>[/#if] 
+    [#if editable]<div class="removeLocElement removeIcon" title="Remove Location" style="top: 4px;"></div>[/#if] 
     
     [#-- Location Name --]
-    <span class="flag-icon"><i class="flag-icon flag-icon-${(element.locElement.isoAlpha2?lower_case)!}"></i></span> <span class="name">${(element.composedName)!'{name}'}</span><br />
+    <span class="flag-icon" style="height: 31px; position: relative;"><i class="flag-icon flag-icon-${(element.locElement.isoAlpha2?lower_case)!}" style="position: absolute; top: 8px;"></i></span> <span class="name">${(element.composedName)!'{name}'}</span><br />
     
     [#-- Hidden inputs --]
     <input type="hidden" class="locElementCountry" name="${locElementName}.locElement.isoAlpha2" value="${(element.locElement.isoAlpha2)!}" /> 
