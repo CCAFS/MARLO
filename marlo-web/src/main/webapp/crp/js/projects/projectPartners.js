@@ -59,7 +59,6 @@ function init() {
    * person = new PartnerPersonObject(contactPeople); person.setPartnerType(leaderType); person.changeType(); } }
    */
 
-  console.log($partnersBlock.find('.projectPartner').length);
   $('.loadingBlock').hide().next().fadeIn(500, function() {
     // Missing fields in parter person
     $("form .projectPartner ").each(function(i,e) {

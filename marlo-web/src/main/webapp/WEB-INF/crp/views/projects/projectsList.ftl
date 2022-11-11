@@ -40,7 +40,7 @@
 </div>
 -->
 <div class="animated flipInX container  viewMore-block containerAlertMargin">
-  <div class=" containerAlert alert-leftovers alertColorBackgroundInfo ">
+  <div class=" containerAlert alert-leftovers alertColorBackgroundInfo " id="containerAlert">
     <div class="containerLine alertColorInfo"></div>
     <div class="containerIcon">
       <div class="containerIcon alertColorInfo">
@@ -52,6 +52,7 @@
         [@s.text name="projectsList.help"][@s.param]${currentCycle}[/@s.param][/@s.text] 
       </p>
     </div>
+    <div  class="viewMoreCollapse closed"></div>
   </div>
 </div>
 

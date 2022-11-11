@@ -76,7 +76,6 @@ $(document).ready(function() {
 
   $(".removeHelp").on("click", function() {
     $(this).parent().parent().fadeOut(function() {
-      console.log(this);
       $(this).remove();
     });
   });
@@ -419,7 +418,6 @@ jQuery.fn.setTrumbowyg = function() {
     });
 
     $editor.trumbowyg().on('tbwpaste ', function() {
-      console.log('tbwpaste !');
     });
   }
 };
@@ -492,7 +490,7 @@ function setViewMore() {
 }
 
 function setViewMoreCollapse() {
-  var element = $('.containerAlert');
+  var element = $('#containerAlert');
   if($(element).height() < 100) {
     $(element).find('.viewMoreCollapse').hide();
   } else {
@@ -688,7 +686,6 @@ jQuery.fn.setOneToManyComponent = function() {
   var counted = $list.find('li').length;
   var updateIndex = 0;
 
-  console.log("init", elementType);
 
   // Disabled elements already selected
   $list.find("li").each(function(index,domElement) {
@@ -775,8 +772,8 @@ function onSelectElement() {
   $element.find('.elementName').html(name);
 
   // Add Item
-  console.log("Add item: " + id);
-  console.log($element);
+  // console.log("Add item: " + id);
+  // console.log($element);
 
   // Show the element
   $element.appendTo($list).hide().show(350, function() {
@@ -818,7 +815,6 @@ function onSelectElement() {
 }
 
 function onClickRemoveElement() {
-  console.log("remove element");
   var removeElementType = $(this).classParam('removeElementType');
   var $parent = $(this).parent();
   var $select = $(this).parents(".panel-body").find('select');
