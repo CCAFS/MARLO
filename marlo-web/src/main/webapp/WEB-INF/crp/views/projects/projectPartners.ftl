@@ -44,7 +44,7 @@
 </div>
 -->
 <div class="animated flipInX container  viewMore-block containerAlertMargin">
-  <div class=" containerAlert alert-leftovers alertColorBackgroundInfo ">
+  <div class=" containerAlert alert-leftovers alertColorBackgroundInfo" id="containerAlert">
     <div class="containerLine alertColorInfo"></div>
     <div class="containerIcon">
       <div class="containerIcon alertColorInfo">
@@ -56,6 +56,7 @@
         [#if project.projectInfo.isProjectEditLeader()] [#if reportingActive] [@s.text name="projectPartners.help3" /] [#else] [@s.text name="projectPartners.help2" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text] [/#if]  [#else] [@s.text name="projectPartners.help1" /] [/#if]
       </p>
     </div>
+  <div class="viewMoreCollapse closed"></div>  
   </div>
 </div>
     

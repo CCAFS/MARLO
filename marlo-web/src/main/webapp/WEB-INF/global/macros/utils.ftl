@@ -40,7 +40,7 @@
   </div>
   -->
   <div class="animated flipInX container  viewMore-block viewMore-block">
-    <div class=" containerAlert alert-leftovers alertColorBackgroundInfo ">
+    <div class=" containerAlert alert-leftovers alertColorBackgroundInfo " id="containerAlert">
       <div class="containerLine alertColorInfo"></div>
       <div class="containerIcon">
         <div class="containerIcon alertColorInfo">
@@ -54,6 +54,7 @@
           <p class="alertText"> ${text} </p>
         [/#if]
       </div>
+    <div  class="viewMoreCollapse closed"></div>
     </div>
   </div>
   [/#if]
