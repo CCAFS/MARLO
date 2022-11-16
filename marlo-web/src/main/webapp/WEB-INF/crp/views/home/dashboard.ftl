@@ -100,7 +100,7 @@
     <div class="containerSeccionItems">
       <div class="sectionItems">
         <div class="tableItemsTitle">
-          <p>Select the category you want to call in</p>
+          <p>Select a category you want to call in</p>
         </div>
         <div class="containerItems">
           <div class="itemsTablet itemsActive projects" id="projects">

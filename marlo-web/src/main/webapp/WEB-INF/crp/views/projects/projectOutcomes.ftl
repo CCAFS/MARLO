@@ -34,7 +34,7 @@
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectOutcomes.help1" ] [@s.param] <a href="${baseUrl}/glossary.do" target="_blank">Glossary</a>[/@s.param][/@s.text]</p>
   </div> 
-  <div style="display:none" class="viewMore closed"></div>
+  <div class="viewMoreCollapse closed"></div>
 </div>
     
 [#if (!availabePhase)!false]
