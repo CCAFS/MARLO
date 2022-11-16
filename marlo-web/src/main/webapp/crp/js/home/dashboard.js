@@ -163,6 +163,7 @@ function createTimeline() {
   var counterActvi = 0;
   var previusDate;
   var linePorcent;
+  var lastPosition = timelineElements.length;
 
   // iterate timeline elements
   timelineElements.forEach(function(data,index){
@@ -198,6 +199,9 @@ function createTimeline() {
     endDate.setDate(endDate.getDate() + 1)
 
     if(description.length > 120)newDivTitle.style["width"] = '120px';
+
+    //hide alert the days left to finalize activity 
+    if(((lastPosition - 1) == index) && endDate < new Date() )$('.timelineAlert').hide();
     
     // Define the color of elements
     if(endDate < new Date()){
