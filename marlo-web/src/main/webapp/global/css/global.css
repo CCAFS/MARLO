@@ -7617,7 +7617,7 @@ img.qaOptionsComment {
 }
 
 .DownloadButton:hover {
-	background: #32a562d1;
+	-webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 30%);
 }
 
 
@@ -7628,7 +7628,7 @@ img.qaOptionsComment {
 	justify-content: center;
 	width: 150px;
 	height: 40px;
-	background: #4ca973a6;
+	background: #32a562d1;
 	color: white;
 	font-size: 12px;
   line-height:110%;
