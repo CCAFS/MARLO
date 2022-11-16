@@ -484,7 +484,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
 
     if (!(this.isValidString(projectOutcome.getNarrativeTarget())
-      && this.wordCount(projectOutcome.getNarrativeTarget()) <= 100)) {
+      && this.wordCount(projectOutcome.getNarrativeTarget()) <= 150)) {
       action.addMessage(action.getText("projectOutcome.narrativeTarget"));
       action.getInvalidFields().put("input-projectOutcome.narrativeTarget", InvalidFieldsMessages.EMPTYFIELD);
     }
