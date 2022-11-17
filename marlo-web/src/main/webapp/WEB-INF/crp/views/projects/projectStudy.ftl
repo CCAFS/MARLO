@@ -6,7 +6,7 @@
   "${baseUrlMedia}/js/projects/projectStudy.js?20220721",
   "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20221006"
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20221117"
   ] 
 /]
 [#assign customCSS = [
@@ -42,13 +42,29 @@
 
 [#assign isOutcomeCaseStudy = ((expectedStudy.projectExpectedStudyInfo.studyType.id == 1)!false) && reportingActive/]
 [#if isOutcomeCaseStudy]
-  <div class="container helpText viewMore-block">
+  <!--  <div class="container helpText viewMore-block">
     <div class="helpMessage infoText">
       <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
       <p class="col-md-10"> [@s.text name="study.help" /] </p>
     </div> 
     <div style="display:none" class="viewMore closed"></div>
-  </div>
+  </div>  -->
+  <div class="animated flipInX container  viewMore-block containerAlertMargin">
+  <div class=" containerAlert alert-leftovers alertColorBackgroundInfo " id="containerAlert"> 
+    <div class="containerLine alertColorInfo"></div>
+    <div class="containerIcon">
+      <div class="containerIcon alertColorInfo">
+        <img src="${baseUrlCdn}/global/images/icon-question.png" />         
+      </div>
+    </div>
+    <div class="containerText col-md-12 alertCollapse">
+      <p class="alertText">
+       [@s.text name="study.help" /]
+      </p>
+    </div>
+    <div  class="viewMoreCollapse closed"></div>
+  </div>  
+</div>
 [/#if]
 
 <section class="container">
