@@ -30,7 +30,13 @@ function init() {
   //re_animate();
   $('.glyphicon-new-window').on("click", openTab);
 
+  targetBlankPopup();  
 
+}
+
+//add target="blank" element a in popup
+function targetBlankPopup() {
+  $(".text-modal-evidences a").attr('target', 'blank');
 }
 
 function attachEvents() {
