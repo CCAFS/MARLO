@@ -802,15 +802,23 @@ public class OutcomesAction extends BaseAction {
       // CrpProgramOutcome crpProgramOutcomeDB = crpProgramOutcomeManager.updateOutcome(crpProgramOutcomeDetached,
       // this.getActualPhase().getId(), this.getSelectedProgram().getId());
       CrpProgramOutcome crpProgramOutcome = null;
+      CrpProgramOutcome crpProgramOutcomeTemp = null;
+      crpProgramOutcomeTemp = crpProgramOutcomeManager.getCrpProgramOutcomeById(programOutcomeIncoming.getId());
+
       if (programOutcomeIncoming.getId() == null) {
         crpProgramOutcome = new CrpProgramOutcome();
         crpProgramOutcome.setPhase(this.getActualPhase());
       } else {
-        crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcomeById(programOutcomeIncoming.getId());
+        crpProgramOutcome = crpProgramOutcomeTemp;
         if (crpProgramOutcome == null) {
           crpProgramOutcome =
             crpProgramOutcomeManager.getCrpProgramOutcome(programOutcomeIncoming.getComposeID(), this.getActualPhase());
         }
+      }
+
+      if (crpProgramOutcomeTemp != null && crpProgramOutcomeTemp.getAcronym() != null) {
+        crpProgramOutcome.setAcronym(crpProgramOutcomeTemp.getAcronym());
+        programOutcomeIncoming.setAcronym(crpProgramOutcomeTemp.getAcronym());
       }
 
       if (programOutcomeIncoming.getFile() != null && programOutcomeIncoming.getFile().getId() == null) {
