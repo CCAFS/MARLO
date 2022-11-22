@@ -116,8 +116,10 @@ function attachEventsFeedback() {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(this).parent().parent().parent();
+    let nameCut =name.substring(0, name.length -3)
 
     deleteQAComment(commentID, name, this);
+    getNumberOfComments(nameCut);
   });
 
   $('div.containerSentCommentBtn').on('click', function () {
@@ -700,6 +702,8 @@ function hideShowOptionButtons(block, status) {
       }
         
         
+      }else{
+        commentIcon.attr('src', qaCommentsStatus('start'))
       }
 
       // const currentqaComments = qaComments.filter(qaCommentsFilter => qaCommentsFilter.frontName == field[1])
