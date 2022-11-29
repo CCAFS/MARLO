@@ -562,7 +562,7 @@
                         <div class="form-group row">
                           <div class="col-md-12" display="flex">
                             <div id="" class="simpleBox numberBox col-md-3" >
-                                <label for="">Total of Participants</label><br />
+                                <label for="">Total of Trainees</label><br />
                                 <span>${(totalParticipants?number?string(",##0"))!0}</span>
                             </div>
                             <div id="" class="simpleBox numberBox col-md-3">

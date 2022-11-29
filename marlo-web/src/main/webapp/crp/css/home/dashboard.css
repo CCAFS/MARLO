@@ -388,6 +388,67 @@ span.timelineControl:hover {
     margin-top: 7px;
   }
 
+  @media (max-width:750px){
+
+    .buttonLeftTimeline {
+      left: -10px;
+    }
+
+    .buttonRightTimeline {
+      right: -10px;
+    }
+
+    .timelineAlert {
+      top: 445px !important;
+    }
+
+    .timelineAlertText {
+      font-size: 7px;
+    }
+
+    .infTimelineTimeline {
+      min-width: 180px;
+    }
+
+    .titleTimeline {
+      height: 142px;
+      font-size: 10px;
+    }
+
+    .timeline {
+      height: 243px;
+    }
+
+    .dateTimeline {
+      margin-right: -130px;
+      margin-top: -27px;
+      font-size: 13px;
+    }
+
+    
+    .timeline-line {
+      width: 180px;
+      margin-top: -48px;
+    }
+
+    .timeline-pointTimeline {      
+      bottom: 32px;
+    }
+
+    .sideButtonTimeline {      
+      width: 30px;
+      height: 30px;
+      font-size: 22px;
+      top: 40%;
+    }
+
+    .porcentTimeLine {      
+      margin-top: -48px;
+      max-width: 143px;
+  }
+    
+  }
+
   /*************** sectionMap ********************/
 
   .sectionMap{
@@ -559,6 +620,31 @@ span.timelineControl:hover {
   }
 }
 
+@media (max-width:750px){
+
+  .containerTextMap .titleMap {
+    font-size: 1em;
+  }
+
+  .containerTextMap .textMap {
+    font-size: 10px;
+  }
+
+  .containerImgMap {
+    min-width: 150px;
+  }
+
+  .containerImgMap img {
+    width: 119px;
+    margin-top: 93px;
+  }
+
+  .circleMap {
+    display: none;
+  }
+
+ }
+
   /**************** Content Items Table **************/
   .containerTabletItems{
     display: block;
@@ -644,4 +730,37 @@ span.timelineControl:hover {
 
  .sectionItems{
   margin-left: 35px;
+ }
+
+ @media (max-width:750px){
+
+  .containerSeccionItems {
+    display: block;
+  }
+
+  .itemsTablet {
+    height: 80px;
+    width: 80px;
+  }
+
+  .itemsTablet img {
+    margin-top: 0px;
+    width: 43px;
+  }
+
+  .itemsTablet p {
+    font-size: 0.9em;
+  }
+
+  .containerTabletItems {
+    height: 1000px;
+  }
+
+  .containerTabletItems .infTableItems {
+    font-size: 10px;
+  }
+
+  table.dataTable {
+    font-size: 0.7em;
+  }
  }
