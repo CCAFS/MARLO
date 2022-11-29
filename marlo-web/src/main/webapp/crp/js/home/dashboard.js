@@ -75,7 +75,6 @@ function contentDialog(id){
     case '12':
       return "Mali: Activities led by AfricaRice"
   }
-
   
 }
 
