@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
@@ -504,21 +505,36 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
               .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
           }
 
-          if (deliverable.getProjectOutcomes() != null && deliverable.getProjectOutcomes().get(0) != null
-            && deliverable.getProjectOutcomes().get(0).getProjectOutcome() != null
-            && deliverable.getProjectOutcomes().get(0).getProjectOutcome().getCrpProgramOutcome() != null && deliverable
-              .getProjectOutcomes().get(0).getProjectOutcome().getCrpProgramOutcome().getDescription() != null) {
-            paramU =
-              deliverable.getProjectOutcomes().get(0).getProjectOutcome().getCrpProgramOutcome().getDescription();
-
-            if (deliverable.getProjectOutcomes().get(0).getProjectOutcome().getId() != null) {
-              indicatorURL = this.getBaseUrl() + "/clusters/" + this.getSelectedPhase().getCrp().getAcronym()
-                + "/contributionCrp.do?projectOutcomeID="
-                + deliverable.getProjectOutcomes().get(0).getProjectOutcome().getId() + "&phaseID="
-                + this.getSelectedPhase().getId();
-            }
+          if (deliverable.getDeliverableCrpOutcomes() != null) {
+            deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+              .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
           }
 
+          try {
+            if (deliverable != null && deliverable.getCrpOutcomes() != null) {
+              for (DeliverableCrpOutcome deliverableOutcomes : deliverable.getCrpOutcomes()) {
+                if (deliverableOutcomes != null && deliverableOutcomes.getCrpProgramOutcome() != null
+                  && deliverableOutcomes.getCrpProgramOutcome().getAcronym() != null) {
+                  if (paramU == null) {
+                    paramU = deliverableOutcomes.getCrpProgramOutcome().getAcronym();
+                  } else {
+                    paramU += "; " + deliverableOutcomes.getCrpProgramOutcome().getAcronym();
+                  }
+                }
+              }
+
+              /*
+               * if (deliverable.getProjectOutcomes().get(0).getProjectOutcome().getId() != null) {
+               * indicatorURL = this.getBaseUrl() + "/clusters/" + this.getSelectedPhase().getCrp().getAcronym()
+               * + "/contributionCrp.do?projectOutcomeID="
+               * + deliverable.getProjectOutcomes().get(0).getProjectOutcome().getId() + "&phaseID="
+               * + this.getSelectedPhase().getId();
+               * }
+               */
+            }
+          } catch (Exception e) {
+            LOG.warn("Error getting deliverables project outcomes" + e.getMessage());
+          }
 
           // Generate the deliverable url of MARLO
           // Publication

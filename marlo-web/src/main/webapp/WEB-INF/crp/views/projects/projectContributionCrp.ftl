@@ -180,7 +180,7 @@
 
               </div>
               <div class="form-group ">
-                [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-100" editable=editable && (!reportingActive || (!(projectOutcome.narrativeTarget?has_content)!false))/]
+                [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-150" editable=editable && (!reportingActive || (!(projectOutcome.narrativeTarget?has_content)!false))/]
               </div>
               
             </div> 

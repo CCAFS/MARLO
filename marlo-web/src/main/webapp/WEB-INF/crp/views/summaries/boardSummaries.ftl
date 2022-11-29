@@ -193,7 +193,7 @@
   [#-- DELIVERABLES REPORTS --]
   { "slug": "deliverables", "active": !centerGlobalUnit, "title":"summaries.board.options.deliverables", "reportsList": [
     { "active": true,
-      "available": true,
+      "available": false,
       "title": "summaries.board.report.expectedDeliverables", 
       "description": "summaries.board.report.expectedDeliverables.description",
       "namespace": "/projects",
@@ -215,7 +215,7 @@
       ]
     },
     { "active": true,
-      "available": true,
+      "available": false,
       "title": "summaries.board.report.reportedDeliverables", 
       "description": "summaries.board.report.reportedDeliverables.description",
       "namespace": "/projects",
