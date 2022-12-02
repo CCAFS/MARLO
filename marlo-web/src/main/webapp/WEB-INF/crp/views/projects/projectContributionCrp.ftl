@@ -562,7 +562,7 @@
                         <div class="form-group row">
                           <div class="col-md-12" display="flex">
                             <div id="" class="simpleBox numberBox col-md-3" >
-                                <label for="">Total of Participants</label><br />
+                                <label for="">Total of Trainees</label><br />
                                 <span>${(totalParticipants?number?string(",##0"))!0}</span>
                             </div>
                             <div id="" class="simpleBox numberBox col-md-3">
@@ -639,7 +639,7 @@
                         
                         [#-- Deliverables Participants & Trainees --]
                         <div class="form-group">
-                          <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Deliverables Participants & Trainees" /]</h4>
+                          <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Deliverables Trainees" /]</h4>
                           <div class="viewMoreSyntesis-block">                    
                             <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
                               [@tableParticipantsTrainingsMacro list=(deliverableParticipants)![] /]
@@ -832,8 +832,8 @@
       <tr class="subHeader">
         <th id="tb-id">[@s.text name="Activity Event" /]</th>
         <th id="tb-title">[@s.text name="Activity Type" /]</th>        
-        <th id="tb-organization-type">[@s.text name="Participants Type" /]</th>
-        <th id="tb-type">[@s.text name="Total Participants" /]</th>
+        <th id="tb-organization-type">[@s.text name="Trainees Type" /]</th>
+        <th id="tb-type">[@s.text name="Total Trainees" /]</th>
         <th id="tb-type">[@s.text name="Males" /]</th>
         <th id="tb-type">[@s.text name="Females" /]</th>
         <th id="tb-type">[@s.text name="Africans" /]</th>
