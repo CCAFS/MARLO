@@ -63,7 +63,8 @@ public class SafeguardValidator extends BaseValidator {
     ProjectInfo projectInfo = new ProjectInfo();
     projectInfo = project.getProjecInfoPhase(action.getActualPhase());
     if ((!(projectInfo.getAdministrative() != null && projectInfo.getAdministrative().booleanValue() == true))
-      && (action.isUpKeepActive() || action.isReportingActive())) {
+      && (action.isUpKeepActive() || action.isReportingActive())
+      && (projectInfo.getClusterType().getId() != 2 && projectInfo.getClusterType().getId() != 3)) {
 
       action.setInvalidFields(new HashMap<>());
       if (!saving) {
