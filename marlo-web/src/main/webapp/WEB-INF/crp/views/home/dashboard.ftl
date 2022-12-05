@@ -8,7 +8,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20221129",
+  "${baseUrlMedia}/css/home/dashboard.css?20221205",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -128,18 +128,18 @@
         </div>
         <div class="containerItems">
           <div class="itemsTablet itemsActive projects" id="projects">
-            <img class="itemimgprojects" src="${baseUrlCdn}/global/images/1309-load-balancer-outline.png" width="70">
-            <img class="itemgifprojects" src="${baseUrlCdn}/global/images/1309-load-balancer-outline.gif" style="display:none;" width="70">
+            <img class="itemimgprojects" src="${baseUrlCdn}/global/images/1309-load-balancer-outline.png" >
+            <img class="itemgifprojects" src="${baseUrlCdn}/global/images/1309-load-balancer-outline.gif" style="display:none;">
             <p>Clusters</p>
           </div>
           <div class="itemsTablet" id="deliverables">
-            <img class="itemimgdeliverables" src="${baseUrlCdn}/global/images/verification.png" width="70">
-            <img class="itemgifdeliverables" src="${baseUrlCdn}/global/images/verification.gif" style="display:none;" width="70">
+            <img class="itemimgdeliverables" src="${baseUrlCdn}/global/images/verification.png" >
+            <img class="itemgifdeliverables" src="${baseUrlCdn}/global/images/verification.gif" style="display:none;" >
             <p>Deliverables</p>
           </div>
           <div class="itemsTablet" id="studies">
-            <img class="itemimgstudies" src="${baseUrlCdn}/global/images/oicrs_icon.png" width="70">
-            <img class="itemgifstudies" src="${baseUrlCdn}/global/images/oicrs_icon.gif" style="display:none;" width="70">
+            <img class="itemimgstudies" src="${baseUrlCdn}/global/images/oicrs_icon.png" >
+            <img class="itemgifstudies" src="${baseUrlCdn}/global/images/oicrs_icon.gif" style="display:none;">
             <p>OICRs & MELIAs</p>
           </div>
           <!--  <div class="itemsTablet" id="innovations">
