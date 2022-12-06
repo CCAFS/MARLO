@@ -695,7 +695,7 @@ span.timelineControl:hover {
     width: 100%;
     text-align: center;
     font-weight: 700;
-    font-size: 2.0em;
+    font-size: 1.4em;
     color: #333;
   }
   
@@ -760,14 +760,20 @@ span.timelineControl:hover {
 
  .containerTabletItems #dashboardContent{
   margin-top: 10px;
-  margin-left: 20px;
+  margin-left: 0px;
   width: auto;
-  margin-right: 30px;
+  margin-right: 0px;
  }
 
  .sectionItems{
   margin-left: 10px;
  }
+
+ @media (max-width:1020px){
+    .tableItemsTitle{
+      font-size: 1.1em;
+    }
+  }
 
  @media (max-width:750px){
 
