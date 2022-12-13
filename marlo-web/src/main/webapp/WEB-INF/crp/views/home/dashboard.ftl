@@ -8,7 +8,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20221129",
+  "${baseUrlMedia}/css/home/dashboard.css?20221209",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -61,40 +61,40 @@
         <p class="dialogMapTitle">Cluster</p>
         <p class="dialogMapText"></p>
       </div>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102076" target="blank">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102076" target="blank"  rel="noreferrer noopener">
         <div class="circleMap" id="cluster1"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102088" target="blank">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102088" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster2"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102081" target="blank">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102081" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster3"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102085" target="blank">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102085" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster4"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102082" target="blank">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102082" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster5"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102084" target="blank">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102084" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster6"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102077" target="blank">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102077" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster7"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102086" target="blank">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102086" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster8"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102087" target="blank">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102087" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster9"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102090" target="blank">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102090" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster10"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102080" target="blank">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102080" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster11"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102083" target="blank">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102083" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster12"></div>
       </a>
     </div>
@@ -128,18 +128,18 @@
         </div>
         <div class="containerItems">
           <div class="itemsTablet itemsActive projects" id="projects">
-            <img class="itemimgprojects" src="${baseUrlCdn}/global/images/1309-load-balancer-outline.png" width="70">
-            <img class="itemgifprojects" src="${baseUrlCdn}/global/images/1309-load-balancer-outline.gif" style="display:none;" width="70">
+            <img class="itemimgprojects" src="${baseUrlCdn}/global/images/1309-load-balancer-outline.png" >
+            <img class="itemgifprojects" src="${baseUrlCdn}/global/images/1309-load-balancer-outline.gif" style="display:none;">
             <p>Clusters</p>
           </div>
           <div class="itemsTablet" id="deliverables">
-            <img class="itemimgdeliverables" src="${baseUrlCdn}/global/images/verification.png" width="70">
-            <img class="itemgifdeliverables" src="${baseUrlCdn}/global/images/verification.gif" style="display:none;" width="70">
+            <img class="itemimgdeliverables" src="${baseUrlCdn}/global/images/verification.png" >
+            <img class="itemgifdeliverables" src="${baseUrlCdn}/global/images/verification.gif" style="display:none;" >
             <p>Deliverables</p>
           </div>
           <div class="itemsTablet" id="studies">
-            <img class="itemimgstudies" src="${baseUrlCdn}/global/images/oicrs_icon.png" width="70">
-            <img class="itemgifstudies" src="${baseUrlCdn}/global/images/oicrs_icon.gif" style="display:none;" width="70">
+            <img class="itemimgstudies" src="${baseUrlCdn}/global/images/oicrs_icon.png" >
+            <img class="itemgifstudies" src="${baseUrlCdn}/global/images/oicrs_icon.gif" style="display:none;">
             <p>OICRs & MELIAs</p>
           </div>
           <!--  <div class="itemsTablet" id="innovations">
