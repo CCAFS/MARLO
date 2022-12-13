@@ -343,11 +343,11 @@ span.timelineControl:hover {
   }
   
   .buttonLeftTimeline {
-    left: -30px;
+    left: -45px;
   }
   
   .buttonRightTimeline {
-    right: -30px;
+    right: -45px;
   }
   
   .timelineBackSuccess {
@@ -453,7 +453,7 @@ span.timelineControl:hover {
 
   .sectionMap{
     width: 100%;
-    height: 260px;
+    height: 210px;
     background: #0478a3;
     display: flex;
     /* border-radius: 0 0 50% 50%; */
@@ -476,7 +476,7 @@ span.timelineControl:hover {
 
   .containerTextMap{
     width: 100%;
-    margin: 30px 240px 30px 40px;
+    margin: 10px 240px 30px 40px;
     color: #fff;
     text-align: justify;
   }
@@ -499,8 +499,8 @@ span.timelineControl:hover {
   }
   
   .containerImgMap img{    
-    width: 220px;
-    margin-top: 36px;
+    width: 200px;
+    margin-top: 17px;
   }
 
 .circleMap{
@@ -509,56 +509,57 @@ span.timelineControl:hover {
   background-color: #b3b3b3;
   border-radius: 50%;
   position: absolute;
+  cursor: pointer;
 }
 
 
 #cluster1{
-  top: 106px;
-  right: 282px;
+  top: 80px;
+  right: 273px;
 }
 #cluster2{
   top: 117px;
-  right: 139px;
+  right: 141px;
 }
 #cluster3{
-  top: 131px;
-  right: 250px;
+  top: 101px; 
+  right: 245px;
 }
 #cluster4{
-  bottom: 100px;
-  right: 135px;
+  bottom: 110px;
+  right: 147px;
 }
 #cluster5{
-  bottom: 47px;
+  bottom: 32px;
   right: 173px;
 }
 #cluster6{
-  top: 34px;
+  top: 16px;
   right: 207px;
 }
 #cluster7{
-  top: 61px;
-  right: 289px;
+  top: 37px;
+  right: 278px;
 }
 #cluster8{
-  top: 118px;
-  right: 301px;
+  top: 93px;
+  right: 290px;
 }
 #cluster9{
-  top: 179px;
-  right: 224px;
+  top: 147px;
+  right: 221px;
 }
 #cluster10{
-  bottom: 48px;
-  right: 125px;
+  bottom: 31px;
+  right: 132px;
 }
 #cluster11{
-  top: 88px;
-  right: 133px;
+  top: 65px;
+  right: 139px;
 }
 #cluster12{
-  top: 93px;
-  right: 253px;
+  top: 70px;
+  right: 248px;
 }
 
 .dialogMap{
@@ -583,44 +584,81 @@ span.timelineControl:hover {
   font-weight: 500;
 }
 
+
 @media (max-width:1770px){
   .containerTextMap {
-    margin: 30px 50px 30px 40px;
+    margin: 10px 50px 30px 40px;
   }
 }
 
-@media (max-width:1550px){
+@media (max-width:1480px){
   .containerTextMap {
-    margin: 10px 0px 10px 30px;
+    margin: 10px -35px 30px 40px;
   }
-  .sectionMap{
-    height: 290px;
+
+  .containerImgMap {
+    min-width: 350px;
   }
-  .containerTextMap{
-    margin: 15px 0px 30px 40px;
+
+  .containerImgMap img {
+    margin-top: 8px;
   }
-  .timelineAlert {     
-    top: 400px;
+  
+  #cluster1{
+    top: 70px;
+    right: 249px;
   }
-  #cluster4 {
-    bottom: 129px;
-    right: 136px;
+  #cluster2{
+    top: 107px;
+    right: 115px;
   }
-  #cluster5 {
-    bottom: 76px;
-    right: 175px;
+  #cluster3{
+    top: 91px; 
+    right: 219px;
   }
-  #cluster9 {
-    bottom: 100px;
-    right: 225px;
+  #cluster4{
+    bottom: 120px;
+    right: 122px;
   }
-  #cluster10 {
-    bottom: 80px;
-    right: 125px;
+  #cluster5{
+    bottom: 40px;
+    right: 147px;
+  }
+  #cluster6{
+    top: 6px;
+    right: 185px;
+  }
+  #cluster7{
+    top: 27px;
+    right: 252px;
+  }
+  #cluster8{
+    top: 83px;
+    right: 264px;
+  }
+  #cluster9{
+    top: 137px;
+    right: 197px;
+  }
+  #cluster10{
+    bottom: 41px;
+    right: 108px;
+  }
+  #cluster11{
+    top: 55px;
+    right: 115px;
+  }
+  #cluster12{
+    top: 60px;
+    right: 223px;
   }
 }
 
-@media (max-width:750px){
+@media (max-width:1000px){
+
+  .containerTextMap {
+    margin: 10px 35px 30px 40px;
+  }
 
   .containerTextMap .titleMap {
     font-size: 1em;
@@ -636,7 +674,7 @@ span.timelineControl:hover {
 
   .containerImgMap img {
     width: 119px;
-    margin-top: 93px;
+    margin-top: 8px;
   }
 
   .circleMap {
@@ -657,7 +695,7 @@ span.timelineControl:hover {
     width: 100%;
     text-align: center;
     font-weight: 700;
-    font-size: 2.0em;
+    font-size: 1.4em;
     color: #333;
   }
   
@@ -667,23 +705,21 @@ span.timelineControl:hover {
 
   .containerItems {
     flex-wrap: wrap;
-    min-width: 345px;
-    max-width: 345px;
+    width: 100%;
     display: table-cell;
-    text-align: center;    
-    margin-left: 30px;
-  }
+    text-align: center;
+    margin-left: 4px;
+    display: block;
+}
 
   .itemsTablet{
-    height: 150px;
-    width: 150px;
+    height: 120px;
+    width: 120px;
     -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);   
-    float: left;
-    margin: 10px;
+    margin: 10px auto;
     text-align: center;
     border-radius: 2px;
-    display: inline-block;
-        text-align: center;
+    text-align: center;
     cursor: pointer;
   }
 
@@ -696,7 +732,8 @@ span.timelineControl:hover {
   }
 
  .itemsTablet img{
-  margin-top: 30px;
+  margin-top: 10px;
+  width: 60px;
  }
 
  .itemsTablet p{
@@ -723,16 +760,27 @@ span.timelineControl:hover {
 
  .containerTabletItems #dashboardContent{
   margin-top: 10px;
-  margin-left: 20px;
+  margin-left: 0px;
   width: auto;
-  margin-right: 30px;
+  margin-right: 0px;
  }
 
  .sectionItems{
-  margin-left: 35px;
+  margin-left: 10px;
  }
 
+ @media (max-width:1020px){
+    .tableItemsTitle{
+      font-size: 1.1em;
+    }
+  }
+
  @media (max-width:750px){
+
+  .containerItems {
+    display: flex;
+    justify-content: center;
+}
 
   .containerSeccionItems {
     display: block;
@@ -741,6 +789,7 @@ span.timelineControl:hover {
   .itemsTablet {
     height: 80px;
     width: 80px;
+    margin: 10px;
   }
 
   .itemsTablet img {
