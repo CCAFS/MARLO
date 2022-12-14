@@ -61,40 +61,40 @@
         <p class="dialogMapTitle">Cluster</p>
         <p class="dialogMapText"></p>
       </div>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102076" target="blank"  rel="noreferrer noopener">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102076&edit=true" target="blank"  rel="noreferrer noopener">
         <div class="circleMap" id="cluster1"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102088" target="blank" rel="noreferrer noopener">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102088&edit=true" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster2"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102081" target="blank" rel="noreferrer noopener">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102081&edit=true" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster3"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102085" target="blank" rel="noreferrer noopener">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102085&edit=true" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster4"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102082" target="blank" rel="noreferrer noopener">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102082&edit=true" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster5"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102084" target="blank" rel="noreferrer noopener">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102084&edit=true" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster6"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102077" target="blank" rel="noreferrer noopener">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102077&edit=true" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster7"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102086" target="blank" rel="noreferrer noopener">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102086&edit=true" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster8"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102087" target="blank" rel="noreferrer noopener">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102087&edit=true" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster9"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102090" target="blank" rel="noreferrer noopener">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102090&edit=true" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster10"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102080" target="blank" rel="noreferrer noopener">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102080&edit=true" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster11"></div>
       </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102083" target="blank" rel="noreferrer noopener">
+      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102083&edit=true" target="blank" rel="noreferrer noopener">
         <div class="circleMap" id="cluster12"></div>
       </a>
     </div>
