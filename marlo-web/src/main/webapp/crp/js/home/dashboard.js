@@ -237,9 +237,12 @@ function createTimeline() {
       $('.timelineAlertText').text(textAlert);
     }
   })
+  $(".timelineRefresh").hide();
+  $(".timeline").show();
   // Locate pending activity
   const element = document.querySelector(".scroll-x-containerTimeline");
   element.scrollLeft += 243*(counterActvi-2);
+  
 }
 
 function updateTable(){
