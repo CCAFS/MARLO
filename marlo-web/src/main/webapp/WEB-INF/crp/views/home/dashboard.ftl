@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/home/dashboard.js?20221129",
+  "${baseUrlMedia}/js/home/dashboard.js?20221212",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20221209",
+  "${baseUrlMedia}/css/home/dashboard.css?20221219",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -103,7 +103,11 @@
   <div class="borderMap"></div>
 
 [#if action.hasSpecificities('homepage_timeline_active') ]
-  <section class="timeline">	
+  <section class="timelineRefresh">	
+    <div class="homeTitleTimeline"><b>Schedule</b></div>
+    <img class="itemimgdeliverables" src="${baseUrlCdn}/global/images/loading-loading-forever.gif" >    
+	</section>
+  <section class="timeline" style="display: none">	
     <div class="homeTitleTimeline"><b>Schedule</b></div>
     <div class="timelineAlert">
       <!--  <img src="${baseUrlCdn}/global/images/icon-transparent-warning.png" width="30">  -->
