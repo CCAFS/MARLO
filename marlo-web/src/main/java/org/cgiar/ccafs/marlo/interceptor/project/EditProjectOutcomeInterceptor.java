@@ -378,6 +378,13 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
       baseAction.setCanEdit(canEdit);
       baseAction.setCanSwitchProject(canSwitchProject && globalUnitProject.isOrigin());
 
+      // Allow Superadmin edit
+      if (baseAction.canAccessSuperAdmin() && editParameter) {
+        baseAction.setEditableParameter(true);
+        baseAction.setCanEdit(true);
+        baseAction.setEditStatus(true);
+      }
+
     } else {
       throw new NullPointerException();
     }

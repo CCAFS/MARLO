@@ -124,8 +124,9 @@
             </div>
             <div class="clearfix"></div>
 
-            
+           
             <div class="modal-evidences" style="display: none">
+             
               <div class="content-modal">
                 <div class="button-exit close-modal-evidences">
                   <div class="x-close-modal" ></div>
@@ -138,6 +139,8 @@
                 </div>
                 
                 <div class="container-buttons-evidences">
+                [#-- hide button guide for phase AWPB --]
+                [#if !action.isPOWB()]
                   [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
                     <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${(projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank">
                       <div class="button-pdf-modal" >
@@ -145,6 +148,7 @@
                         <img src="${baseUrlCdn}/global/images/pdf.png" alt="Download document" />
                       </div>
                     </a>
+                  [/#if]
                   [/#if]
                   <div class="button-close-modal close-modal-evidences">
                     <p>Close</p>
