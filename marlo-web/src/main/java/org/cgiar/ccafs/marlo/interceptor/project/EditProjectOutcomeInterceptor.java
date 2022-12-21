@@ -126,20 +126,24 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
             }
           }
 
-          if (!exist) {
-            // If not exist previously this project Milestone then it is added to the list
-            projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
-            projectMilestones.add(projectMilestone);
-          }
-
-        } else {
-          projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
-          projectMilestones.add(projectMilestone);
+          // If not exist previously this project Milestone then it is added to the list
+          /*
+           * if (!exist) {
+           * projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
+           * projectMilestones.add(projectMilestone);
+           * }
+           */
+          /*
+           * } else {
+           * projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
+           * projectMilestones.add(projectMilestone);
+           */
         }
+
       }
 
       if (projectMilestones != null && !projectMilestones.isEmpty()) {
-        projectOutcome.setMilestones(projectMilestones);
+        // projectOutcome.setMilestones(projectMilestones);
       }
     }
   }
