@@ -847,7 +847,7 @@ public class DeliverableAction extends BaseAction {
   }
 
   /**
-   * Verify if the deliverable mapped to trainees indicator - IPI 2.3
+   * Verify if the deliverable is mapped to trainees indicator - IPI 2.3
    * 
    * @return Yes when deliverable is mapped to IPI 2.3
    */
@@ -2264,9 +2264,12 @@ public class DeliverableAction extends BaseAction {
     try {
 
       // Check deliverable type
-      if ((this.hasDeliverableCapdevCategory()) || (deliverable.getDeliverableParticipant() != null
-        && deliverable.getDeliverableParticipant().getHasParticipants() != null
-        && deliverable.getDeliverableParticipant().getHasParticipants())) {
+      if ((this.hasDeliverableCapdevCategory())
+      /*
+       * || (deliverable.getDeliverableParticipant() != null
+       * && deliverable.getDeliverableParticipant().getHasParticipants() != null
+       * && deliverable.getDeliverableParticipant().getHasParticipants())
+       */) {
         addIPI = true;
       }
 
