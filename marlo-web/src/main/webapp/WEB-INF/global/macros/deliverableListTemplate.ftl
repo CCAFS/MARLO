@@ -85,7 +85,7 @@
                       && ((deliverable.deliverableInfo.newExpectedYear != -1)!false)
                     ]
                 ${deliverable.deliverableInfo.newExpectedYear} (Extended from 
-                ${(deliverable.deliverableInfo.year)!'None'} )
+                ${(deliverable.deliverableInfo.year)!'None'})
               [#else]
                 ${(deliverable.deliverableInfo.year)!'None'}
               [/#if]
