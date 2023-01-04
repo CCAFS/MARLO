@@ -1113,7 +1113,9 @@ public class ProjectDescriptionAction extends BaseAction {
           project.getProjectInfo().setClusterType(managementClusterType);
         }
       }
-
+      if (projectDB.getProjectInfo().getAcronym() != null) {
+        project.getProjectInfo().setAcronym(projectDB.getProjectInfo().getAcronym());
+      }
       project.getProjectInfo().setPhase(this.getActualPhase());
       project.getProjectInfo().setProject(project);
       project.getProjectInfo().setReporting(projectDB.getProjectInfo().getReporting());
