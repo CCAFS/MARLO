@@ -204,13 +204,30 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                     fieldsMap.put("approvalUserName",
                       comment.getUserApproval().getFirstName() + " " + comment.getUserApproval().getLastName());
                   } else {
-                    fieldsMap.put("approvalUserName", "");
+                    /*
+                     * Get info from draft action
+                     */
+                    if (comment.getDraftActionUser() != null && comment.getDraftActionUser().getFirstName() != null
+                      && comment.getDraftActionUser().getLastName() != null) {
+                      fieldsMap.put("approvalUserName",
+                        comment.getDraftActionUser().getFirstName() + " " + comment.getDraftActionUser().getLastName());
+                    } else {
+                      fieldsMap.put("approvalUserName", "");
+                    }
                   }
                   if (comment.getApprovalDate() != null && comment.getApprovalDate().toString() != null) {
                     String dateString = comment.getApprovalDate().toString();
                     fieldsMap.put("approvalDate", dateString);
                   } else {
-                    fieldsMap.put("approvalDate", "");
+                    /*
+                     * Get info from draft action
+                     */
+                    if (comment.getDraftActionDate() != null && comment.getDraftActionDate().toString() != null) {
+                      String dateString = comment.getDraftActionDate().toString();
+                      fieldsMap.put("approvalDate", dateString);
+                    } else {
+                      fieldsMap.put("approvalDate", "");
+                    }
                   }
 
                   // Editor user
