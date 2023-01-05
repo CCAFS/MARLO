@@ -79,13 +79,18 @@
             [#if deliverable.deliverableInfo.year== -1]
               None
             [#else]
-              ${(deliverable.deliverableInfo.year)!'None'}
               [#if
-                    ((deliverable.deliverableInfo.status == 4 || deliverable.deliverableInfo.status==3)!false )
-                    && ((deliverable.deliverableInfo.newExpectedYear != -1)!false)
+                [#-- ((deliverable.deliverableInfo.status == 4 || deliverable.deliverableInfo.status==3)!false ) --]
+                      ((deliverable.deliverableInfo.status == 4 || deliverable.deliverableInfo.status==3 || deliverable.deliverableInfo.status==5)!false )
+                      && ((deliverable.deliverableInfo.newExpectedYear != -1)!false)
                     ]
-                Extended to ${deliverable.deliverableInfo.newExpectedYear}
+                ${deliverable.deliverableInfo.newExpectedYear} (Extended from 
+                ${(deliverable.deliverableInfo.year)!'None'})
+              [#else]
+                ${(deliverable.deliverableInfo.year)!'None'}
               [/#if]
+              
+              
             [/#if]
 
           </td>
