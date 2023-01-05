@@ -14,6 +14,8 @@ $(document).ready(function() {
 
   // Pop up when exists a draft version $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a')
   $('#secondaryMenu a').on('click', function(e) {
+    //show load page for menu
+    $('.container_page_load').show();
     selectedUrl = $.trim($(this).attr("href"));
     selectedAction = getClassParameter($(this), 'action');
     console.log({

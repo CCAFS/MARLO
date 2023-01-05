@@ -369,7 +369,18 @@ $(document).ready(function() {
     $('#concurrenceBlock').fadeOut();
   });
 
+  //hide page load
+  $('.container_page_load').hide();
+
+  $('.button-save').on("click", openLoadPage);
+  $(".deliverableId a").on("click", openLoadPage);
+  $(".left a").on("click", openLoadPage);
 });
+
+function openLoadPage() {
+  //hide page load
+  $('.container_page_load').show();
+}
 
 $(document).ajaxError(function(event,jqxhr,settings,exception) {
   if(production && (jqxhr.status == 500)) {

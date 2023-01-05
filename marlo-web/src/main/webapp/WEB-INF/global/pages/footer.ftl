@@ -41,7 +41,7 @@
     
     [#-- Global Javascript --]
     <script type="text/javascript" src="${baseUrlCdn}/global/js/utils.js?20210203" ></script>
-    <script type="text/javascript" src="${baseUrlCdn}/global/js/global.js?20220105" ></script>
+    <script type="text/javascript" src="${baseUrlCdn}/global/js/global.js?20220105A" ></script>
     [#if logged]
       [#-- Pusher app --]
       <script type="text/javascript" src="${baseUrlCdn}/global/js/pusher-app.js" ></script>
@@ -50,7 +50,7 @@
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
     
     [#-- Changes on Save --]
-    <script type="text/javascript" src="${baseUrlCdn}/global/js/changes.js" ></script>
+    <script type="text/javascript" src="${baseUrlCdn}/global/js/changes.js?20220105" ></script>
 
     [/#compress]
     
