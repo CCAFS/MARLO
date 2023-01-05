@@ -82,6 +82,7 @@ $(document).ready(function() {
 
   // Save Button click (Loading state)
   $('button[name=save]').on('click', function(e) {
+    $('.container_page_load').show();
     if($(this).hasClass('disabled')) {
       e.preventDefault();
       return;
