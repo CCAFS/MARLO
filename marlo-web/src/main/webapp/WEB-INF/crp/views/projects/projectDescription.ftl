@@ -59,6 +59,12 @@
   <div style="display:none" class="viewMore closed"></div> 
 </div>
 -->
+<div class="container_page_load">
+  <div class="page_load">
+    <img src="${baseUrlCdn}/global/images/load.gif" />
+  </div>
+</div>
+
 <div class="animated flipInX container  viewMore-block containerAlertMargin">
   <div class="containerAlert alert-leftovers alertColorBackgroundInfo " id="containerAlert">
     <div class="containerLine alertColorInfo"></div>

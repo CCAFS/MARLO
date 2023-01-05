@@ -7726,5 +7726,25 @@ img.qaOptionsComment {
 
 .displayNone {
   display: none;
- 
+}
+
+.container_page_load{
+  display: none;
+}
+
+.page_load{
+  display: flex;
+  background-color: #50505070;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1001;
+}
+
+.page_load img{
+  width: 50px;
 }
