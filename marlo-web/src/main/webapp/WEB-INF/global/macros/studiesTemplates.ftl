@@ -23,13 +23,19 @@
   
   <div id="${customId}" class="caseStudy evidenceBlock isNew-${isNew?string}" style="display:${template?string('none','block')}">
     <div class="borderBox">
-    
+    [#-- previous link --]
+    [#--
       <div class="form-group">
         [#assign guideSheetURL = "https://drive.google.com/file/d/1sMmE8RK4mpDmJYl_S-bHy5CVK_ahCHr0/view" /]
         <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> Outcome Impact Case Report  -  Guideline </a> </small>
       </div>
       <br />
-    
+    --] 
+      <div class="form-group">
+        [#assign guideSheetURL = "https://cgiar.sharepoint.com/sites/AICCRA/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting%2FGuidance%20for%20AICCRA%20Outcome%20Impact%20Case%20Reports%2Epdf&parent=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting&p=true&ga=1" /]
+        <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> Outcome Impact Case Report  -  Guideline </a> </small>
+      </div>
+      <br />
       <div class="form-group row">
         <div class="col-md-4">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable && !isOutcomeCaseStudy /]
