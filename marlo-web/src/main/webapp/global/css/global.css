@@ -7728,10 +7728,6 @@ img.qaOptionsComment {
   display: none;
 }
 
-.container_page_load{
-  display: none;
-}
-
 .page_load{
   display: flex;
   background-color: #50505070;
@@ -7746,5 +7742,5 @@ img.qaOptionsComment {
 }
 
 .page_load img{
-  width: 50px;
+  width: 70px;
 }

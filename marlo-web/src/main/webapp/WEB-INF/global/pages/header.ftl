@@ -36,7 +36,7 @@
     <![endif]-->
     
     [#-- Second, import global javascripts and templates. --]
-    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20220105" />
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20220105A" />
     <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/jquery-ui.custom.css" />
     [#if centerGlobalUnit]
       <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global-center.css" />
@@ -103,7 +103,13 @@
       
         [#-- MARLO Admin Menu --]
         [#include "/WEB-INF/global/pages/superadmin-menu.ftl" /]
-        
+        <!--  page load  -->
+        <div class="container_page_load">
+          <div class="page_load">
+            <img src="${baseUrlCdn}/global/images/load.gif" />
+          </div>
+        </div>
+
         <div class="container">
           <div class="marlo-header">
             [#-- MARLO Title --]
