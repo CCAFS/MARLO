@@ -1522,7 +1522,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
   public ProjectOutcomeIndicator getIndicator(Long indicatorID, ProjectOutcome projectOutcome) {
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
-      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+      if (projectOutcomeIndicator != null && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
         && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId() != null
         && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
         return projectOutcomeIndicator;
