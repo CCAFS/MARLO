@@ -24,6 +24,7 @@ var notyDefaultOptions = {
  * Global javascript must be here.
  */
 $(document).ready(function() {
+  console.log('date here')
   showNotificationMessages();
   showHelpText();
 
@@ -374,12 +375,17 @@ $(document).ready(function() {
 
   $('.button-save').on("click", openLoadPage);
   $(".deliverableId a").on("click", openLoadPage);
-  $(".left a").on("click", openLoadPage);
+  $("tbody .left a").on("click", openLoadPage);
 });
 
 function openLoadPage() {
-  //hide page load
+  //show page load
   $('.container_page_load').show();
+}
+
+function closeLoadPage() {
+  //show page load
+  $('.container_page_load').hide();
 }
 
 $(document).ajaxError(function(event,jqxhr,settings,exception) {
