@@ -5,8 +5,7 @@
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js", 
   "${baseUrlCdn}/global/js/usersManagement.js", 
-  "${baseUrlMedia}/js/projects/projectPartners.js?191502", 
-  "${baseUrlCdn}/global/js/autoSave.js"
+  "${baseUrlMedia}/js/projects/projectPartners.js?191502"
   ] 
 /]  
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css"] /]

@@ -185,10 +185,88 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
 
 
   public String getComposedName() {
+    String status = "";
+    String year = "";
+    // Get status name
+    if (this.getDeliverableInfo() != null && this.getDeliverableInfo().getStatus() != null) {
+      switch (this.getDeliverableInfo().getStatus()) {
+
+        case 1:
+          status = "New";
+          break;
+        case 2:
+          status = "On Going";
+          break;
+        case 3:
+          status = "Completed";
+          break;
+        case 4:
+          status = "Extended";
+          break;
+        case 5:
+          status = "Cancelled";
+          break;
+      }
+
+      // get new expected year for extended deliverables and set the value in year variable
+      if (this.getDeliverableInfo().getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+        if (this.getDeliverableInfo().getNewExpectedYear() != null
+          && this.getDeliverableInfo().getNewExpectedYear() != -1
+          && this.getDeliverableInfo().getNewExpectedYear() != 1) {
+          year = this.getDeliverableInfo().getNewExpectedYear() + "";
+        }
+      }
+
+      // get the year for on going deliverables and set the value in year variable
+      if (this.getDeliverableInfo().getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+        if (this.getDeliverableInfo().getYear() != 0 && this.getDeliverableInfo().getYear() != -1
+          && this.getDeliverableInfo().getYear() != 1) {
+          year = this.getDeliverableInfo().getYear() + "";
+        }
+      }
+
+      // get the year/new expected year for completed and set the value in year variable
+      if (this.getDeliverableInfo().getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        if (this.getDeliverableInfo().getNewExpectedYear() != 0 && this.getDeliverableInfo().getNewExpectedYear() != -1
+          && this.getDeliverableInfo().getNewExpectedYear() != 1) {
+          year = this.getDeliverableInfo().getNewExpectedYear() + "";
+        } else {
+          if (this.getDeliverableInfo().getYear() != 0 && this.getDeliverableInfo().getYear() != -1
+            && this.getDeliverableInfo().getYear() != 1) {
+            year = this.getDeliverableInfo().getYear() + "";
+          }
+        }
+      }
+
+      // get the year/new expected year for cancelled and set the value in year variable
+      if (this.getDeliverableInfo().getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+        if (this.getDeliverableInfo().getNewExpectedYear() != 0 && this.getDeliverableInfo().getNewExpectedYear() != -1
+          && this.getDeliverableInfo().getNewExpectedYear() != 1) {
+          year = this.getDeliverableInfo().getNewExpectedYear() + "";
+        } else {
+          if (this.getDeliverableInfo().getYear() != 0 && this.getDeliverableInfo().getNewExpectedYear() != -1
+            && this.getDeliverableInfo().getYear() != 1) {
+            year = this.getDeliverableInfo().getYear() + "";
+          }
+        }
+      }
+
+    }
+
     if (this.getDeliverableInfo() != null) {
       try {
+
+        String statusInfo = status + " " + year;
+        if (statusInfo != null && !statusInfo.isEmpty()) {
+          statusInfo = statusInfo.trim();
+        }
+
         return "<b> (D" + this.getId() + ") " + this.getDeliverableInfo().getDeliverableType().getName() + "</b> - "
-          + this.getDeliverableInfo().getTitle();
+          + this.getDeliverableInfo().getTitle() + " (" + statusInfo + ")";
       } catch (Exception e) {
         return "<b> (D" + this.getId() + ") </b> - " + this.getDeliverableInfo().getTitle();
 
