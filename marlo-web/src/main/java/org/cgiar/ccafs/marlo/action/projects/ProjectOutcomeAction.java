@@ -530,17 +530,21 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
   public int getIndexIndicator(Long indicatorID) {
-
-    ProjectOutcomeIndicator projectOutcomeIndicator = this.getIndicator(indicatorID);
-    if (projectOutcomeIndicator != null && projectOutcome.getIndicators() != null) {
-      int i = 0;
-      for (ProjectOutcomeIndicator projectOutcomeIndicatorList : projectOutcome.getIndicators()) {
-        if (projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
-          .getCrpProgramOutcomeIndicator().getId().longValue()) {
-          return i;
+    if (indicatorID != null) {
+      ProjectOutcomeIndicator projectOutcomeIndicator = this.getIndicator(indicatorID);
+      if (projectOutcomeIndicator != null && projectOutcome.getIndicators() != null) {
+        int i = 0;
+        for (ProjectOutcomeIndicator projectOutcomeIndicatorList : projectOutcome.getIndicators()) {
+          if (projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator() != null
+            && projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId() != null
+            && projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId()
+              .longValue() == projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue()) {
+            return i;
+          }
+          i++;
         }
-        i++;
       }
+      return 0;
     }
     return 0;
   }
@@ -586,9 +590,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   public ProjectOutcomeIndicator getIndicator(Long indicatorID) {
-    if (projectOutcome.getIndicators() != null) {
+    if (indicatorID != null && projectOutcome.getIndicators() != null) {
       for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
-        if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+        if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+          && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
           return projectOutcomeIndicator;
         }
       }
