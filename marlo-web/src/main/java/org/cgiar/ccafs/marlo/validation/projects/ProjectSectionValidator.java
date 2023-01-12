@@ -1431,6 +1431,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
+      // Project outcomes list
+      if (expectedStudy.getProjectExpectedStudyProjectOutcomes() != null) {
+        expectedStudy.setProjectOutcomes(new ArrayList<>(expectedStudy.getProjectExpectedStudyProjectOutcomes().stream()
+          .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
       // Expected Study Institutions List
       if (expectedStudy.getProjectExpectedStudyInstitutions() != null) {
         expectedStudy.setInstitutions(new ArrayList<>(expectedStudy.getProjectExpectedStudyInstitutions().stream()
