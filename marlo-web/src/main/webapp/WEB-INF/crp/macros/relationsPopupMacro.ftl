@@ -52,7 +52,7 @@
             </div>
             <div class="modal-body">
               [#-- Projects table --]
-              <table class="table">
+              <table class="deliverableList">
                 <thead>
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
@@ -132,7 +132,7 @@
             </div>
             <div class="modal-body">
               [#-- Deliverables table --]
-              <table class="table">
+              <table class="deliverableList" id="deliverables">
                 <thead>
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
