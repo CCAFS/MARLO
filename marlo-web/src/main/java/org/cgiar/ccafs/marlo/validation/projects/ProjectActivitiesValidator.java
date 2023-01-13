@@ -37,6 +37,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.ibm.icu.util.Calendar;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -46,6 +48,9 @@ public class ProjectActivitiesValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
   List<Long> activityTitleIds;
+
+  private final Logger logger = LoggerFactory.getLogger(ProjectActivitiesValidator.class);
+
 
   @Inject
   public ProjectActivitiesValidator(GlobalUnitManager crpManager) {
@@ -92,11 +97,24 @@ public class ProjectActivitiesValidator extends BaseValidator {
 
     // Missing Deliverables activities
     List<Deliverable> deliverablesMissingActivity = new ArrayList<>();
+    List<Deliverable> prevMissingActivity = new ArrayList<>();
 
-    project
-      .getCurrentDeliverables(
-        action.getActualPhase())
-      .stream()
+    try {
+      prevMissingActivity = project.getCurrentDeliverables(action.getActualPhase());
+
+      if (prevMissingActivity != null && !prevMissingActivity.isEmpty()) {
+        prevMissingActivity = prevMissingActivity.stream()
+          .filter(d -> d != null && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+            && d.getDeliverableInfo(action.getActualPhase()).getStatus() != 5)
+          .collect(Collectors.toList());
+      }
+    } catch (Exception e) {
+      logger.error("unable to get deliverables without activities", e);
+      prevMissingActivity = new ArrayList<>();
+    }
+
+
+    prevMissingActivity.stream()
       .filter(
         (deliverable) -> (deliverable.getDeliverableActivities().isEmpty()
           || deliverable.getDeliverableActivities().stream().filter(
