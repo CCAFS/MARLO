@@ -459,11 +459,24 @@ public class ProjectActivitiesAction extends BaseAction {
       }
 
       deliverablesMissingActivity = new ArrayList<>();
+      List<Deliverable> prevMissingActivity = new ArrayList<>();
 
-      project
-        .getCurrentDeliverables(
-          this.getActualPhase())
-        .stream()
+      try {
+        prevMissingActivity = project.getCurrentDeliverables(this.getActualPhase());
+
+        if (prevMissingActivity != null && !prevMissingActivity.isEmpty()) {
+          prevMissingActivity = prevMissingActivity.stream()
+            .filter(d -> d != null && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+              && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 5)
+            .collect(Collectors.toList());
+        }
+      } catch (Exception e) {
+        logger.error("unable to get deliverables without activities", e);
+        prevMissingActivity = new ArrayList<>();
+      }
+
+
+      prevMissingActivity.stream()
         .filter(
           (deliverable) -> (deliverable.getDeliverableActivities().isEmpty()
             || deliverable.getDeliverableActivities().stream().filter(
