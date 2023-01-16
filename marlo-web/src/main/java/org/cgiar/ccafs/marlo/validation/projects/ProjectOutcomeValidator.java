@@ -388,7 +388,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
         if (action.isReportingActive() && projectMilestone.getYear() == action.getActualPhase().getYear()) {
           if (!(this.isValidString(projectMilestone.getNarrativeAchieved())
-            && this.wordCount(projectMilestone.getNarrativeAchieved()) <= 150)) {
+            && this.wordCount(projectMilestone.getNarrativeAchieved()) <= 200)) {
             action.addMessage(action.getText("projectOutcomeMilestone.achievedNarrative", params));
             action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeAchieved",
               InvalidFieldsMessages.EMPTYFIELD);
