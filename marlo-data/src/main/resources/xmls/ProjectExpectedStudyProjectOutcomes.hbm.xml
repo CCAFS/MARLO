@@ -3,7 +3,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Apr 30, 2018 10:52:36 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrpOutcome" table="project_expected_study_crp_outcomes" optimistic-lock="none">
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome" table="project_expected_study_project_outcomes" optimistic-lock="none">
         <id name="id" type="java.lang.Long">
             <column name="id" />
             <generator class="identity" />
@@ -14,8 +14,8 @@
         <many-to-one name="projectExpectedStudy" class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy" fetch="select">
             <column name="expected_id" />
         </many-to-one>
-        <many-to-one name="crpOutcome" class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" fetch="select">
-            <column name="crp_outcome_id" />
+        <many-to-one name="projectOutcome" class="org.cgiar.ccafs.marlo.data.model.ProjectOutcome" fetch="select">
+            <column name="project_outcome_id" />
         </many-to-one>
     </class>
 </hibernate-mapping>
