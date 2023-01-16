@@ -676,7 +676,7 @@
         [#-- REPORTING BLOCK --]
         [#if (!action.isUpKeepActive() && !isYearRequired(milestoneYear) && action.isPOWB()) || action.isReportingActive()]
           <div class="form-group ">
-            [@customForm.textArea help="projectOutcome.narrativeAchieved.helpText" helpIcon=false name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) && reportingActive className="limitWords-150 ${(reportingActive)?string('fieldFocus','')}" editable= reportingActive && (editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
+            [@customForm.textArea help="projectOutcome.narrativeAchieved.helpText" helpIcon=false name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) && reportingActive className="limitWords-200 ${(reportingActive)?string('fieldFocus','')}" editable= reportingActive && (editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
           </div>
         [/#if]
       </div>
