@@ -38,7 +38,7 @@
     [@customForm.qaPopUpMultiple canLeaveComments=(action.canLeaveComments()!false) template=true/]
   </div>
 [/#if]
-
+<input type="hidden"  name="expectedStudy.id" value="${(expectedStudy.id)!}" />
 [#assign isOutcomeCaseStudy = ((expectedStudy.projectExpectedStudyInfo.studyType.id == 1)!false) && reportingActive/]
 [#if isOutcomeCaseStudy]
   <!--  <div class="container helpText viewMore-block">

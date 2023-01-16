@@ -19,9 +19,6 @@ function feedbackAutoImplementation (){
   // userCanLeaveComments = 'true';
   // userCanApproveFeedback = 'false';
   isFeedbackActive = $('#isFeedbackActive').html();
-  console.log(userCanManageFeedback);
-  console.log(userCanLeaveComments);
-  console.log(userCanApproveFeedback);
   attachEventsFeedback();
 }
 
