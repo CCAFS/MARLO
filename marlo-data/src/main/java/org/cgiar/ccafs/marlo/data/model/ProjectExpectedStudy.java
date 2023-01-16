@@ -141,10 +141,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   private Set<ProjectExpectedStudyProjectOutcome> projectExpectedStudyProjectOutcomes =
     new HashSet<ProjectExpectedStudyProjectOutcome>(0);
 
-  private List<ProjectExpectedStudyCrpOutcome> crpOutcomes;
-  private Set<ProjectExpectedStudyCrpOutcome> projectExpectedStudyCrpOutcomes =
-    new HashSet<ProjectExpectedStudyCrpOutcome>(0);
-
   // clarisa field
   private String pdfLink;
 
@@ -311,10 +307,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   public Set<ProjectExpectedStudyCountry> getProjectExpectedStudyCountries() {
     return projectExpectedStudyCountries;
-  }
-
-  public Set<ProjectExpectedStudyCrpOutcome> getProjectExpectedStudyCrpOutcomes() {
-    return projectExpectedStudyCrpOutcomes;
   }
 
   public Set<ProjectExpectedStudyCrp> getProjectExpectedStudyCrps() {
@@ -584,9 +576,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.projectExpectedStudyCountries = projectExpectedStudyCountries;
   }
 
-  public void setProjectExpectedStudyCrpOutcomes(Set<ProjectExpectedStudyCrpOutcome> projectExpectedStudyCrpOutcomes) {
-    this.projectExpectedStudyCrpOutcomes = projectExpectedStudyCrpOutcomes;
-  }
 
   public void setProjectExpectedStudyCrps(Set<ProjectExpectedStudyCrp> projectExpectedStudyCrps) {
     this.projectExpectedStudyCrps = projectExpectedStudyCrps;
