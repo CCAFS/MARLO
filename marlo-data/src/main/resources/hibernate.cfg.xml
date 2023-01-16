@@ -423,5 +423,6 @@
   <mapping resource="xmls/FeedbackStatuses.hbm.xml"/>
   <mapping resource="xmls/FeedbackPermissions.hbm.xml"/>
   <mapping resource="xmls/FeedbackRolesPermissions.hbm.xml"/>
+  <mapping resource="xmls/ProjectExpectedStudyCrpOutcomes.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>
