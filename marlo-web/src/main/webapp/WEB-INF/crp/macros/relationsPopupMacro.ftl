@@ -155,8 +155,12 @@
                       <tr>
                         <th scope="row">D${d.id}</th>
                         <td>
-                        [#if (d.tagTitle?has_content)]${(d.tagTitle)!}[/#if]
-                        ${(d.deliverableInfo.title)!'Untitled'}</td>
+                        [#if (d.tagTitle?has_content)]
+                          ${(d.tagTitle)!}
+                        [#else]
+                          ${(d.deliverableInfo.title)!'Untitled'}
+                        [/#if]
+                        </td>
                         <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'-'}</td>
                         <td>${(d.owner)!'-'}</td>
                         <td class="col-md-2"> ${(d.sharedWithProjects)!'-'} </td>
