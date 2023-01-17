@@ -92,12 +92,16 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
   public void addAllCrpMilestones(ProjectOutcome projectOutcome) {
     List<CrpMilestone> milestones = new ArrayList<>();
-    if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
-      && projectOutcome.getCrpProgramOutcome().getCrpMilestones() != null
-      && !projectOutcome.getCrpProgramOutcome().getCrpMilestones().isEmpty()) {
-      // Fill Milestones list
-      milestones = projectOutcome.getCrpProgramOutcome().getCrpMilestones().stream().filter(c -> c.isActive())
-        .collect(Collectors.toList());
+
+    if (projectOutcome != null && projectOutcome.getId() != null) {
+      projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcome.getId());
+      if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
+        && projectOutcome.getCrpProgramOutcome().getCrpMilestones() != null
+        && !projectOutcome.getCrpProgramOutcome().getCrpMilestones().isEmpty()) {
+        // Fill Milestones list
+        milestones = projectOutcome.getCrpProgramOutcome().getCrpMilestones().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList());
+      }
     }
 
     if (projectOutcome != null && milestones != null) {
@@ -108,17 +112,20 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
         projectMilestone.setCrpMilestone(crpMilestone);
         projectMilestone.setProjectOutcome(projectOutcome);
 
-        if (crpMilestone.getExtendedYear() != null) {
+        if (crpMilestone.getExtendedYear() != null && crpMilestone.getExtendedYear() != -1) {
           projectMilestone.setYear(crpMilestone.getExtendedYear());
         } else if (crpMilestone.getYear() != null) {
           projectMilestone.setYear(crpMilestone.getYear());
         }
 
-
+        projectOutcome.setMilestones(
+          projectOutcome.getProjectMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         if (projectOutcome.getMilestones() != null && !projectOutcome.getMilestones().isEmpty()) {
 
           boolean exist = false;
           for (ProjectMilestone prevProjectMilestone : projectOutcome.getMilestones()) {
+            System.out.println("prevProjectMilestone.getCrpMilestone().getId() "
+              + prevProjectMilestone.getCrpMilestone().getId() + "-- crpMilestone.getId() " + crpMilestone.getId());
             if (prevProjectMilestone.getCrpMilestone() != null && crpMilestone != null && crpMilestone.getId() != null
               && prevProjectMilestone.getCrpMilestone().getId().equals(crpMilestone.getId())) {
               exist = true;
@@ -127,23 +134,23 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
           }
 
           // If not exist previously this project Milestone then it is added to the list
-          /*
-           * if (!exist) {
-           * projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
-           * projectMilestones.add(projectMilestone);
-           * }
-           */
-          /*
-           * } else {
-           * projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
-           * projectMilestones.add(projectMilestone);
-           */
+
+          if (!exist) {
+            projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
+            projectMilestones.add(projectMilestone);
+          }
+
+
+        } else {
+          projectMilestone = projectMilestoneManager.saveProjectMilestone(projectMilestone);
+          projectMilestones.add(projectMilestone);
+
         }
 
       }
 
       if (projectMilestones != null && !projectMilestones.isEmpty()) {
-        // projectOutcome.setMilestones(projectMilestones);
+        projectOutcome.setMilestones(projectMilestones);
       }
     }
   }
