@@ -1095,41 +1095,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
 
           return canDelete;
-        } else {
-
-          ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
-          List<CrpProgramOutcome> crpProgramOutcomes = new ArrayList<>();
-          List<ProjectOutcome> projectOutcomes = projectOutcome.getProject().getProjectOutcomes().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getPhase() != null)
-            .collect(Collectors.toList());
-          for (ProjectOutcome mProjectOutcome : projectOutcomes) {
-            crpProgramOutcomes.add(
-              this.crpProgramOutcomeManager.getCrpProgramOutcomeById(mProjectOutcome.getCrpProgramOutcome().getId()));
-          }
-          boolean canDelete = false;
-          List<Deliverable> projects =
-            this.getDeliverableRelationsProject(id, className, projectOutcome.getProject().getId());
-          if (!projects.isEmpty()) {
-            for (Deliverable deliverable : projects) {
-              CrpClusterKeyOutput clusterKeyOutput =
-                deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput();
-              List<CrpClusterKeyOutputOutcome> clusterKeyOutputOutcomes = clusterKeyOutput
-                .getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-              for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : clusterKeyOutputOutcomes) {
-                if (!crpClusterKeyOutputOutcome.getCrpProgramOutcome().equals(projectOutcome.getCrpProgramOutcome())) {
-                  if (crpProgramOutcomes.contains(crpClusterKeyOutputOutcome.getCrpProgramOutcome())) {
-                    canDelete = true;
-                  }
-
-                }
-              }
-
-            }
-
-            return canDelete;
-          } else {
-            canDelete = true;
-          }
         }
       }
 
@@ -3164,52 +3129,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           } catch (Exception e) {
             LOG.error("unable to get shared deliverables", e);
           }
-        } else {
-          deliverables = new ArrayList<>();
-          ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
-          List<CrpClusterKeyOutputOutcome> keyOutputOutcomes = projectOutcome.getCrpProgramOutcome()
-            .getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-          for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : keyOutputOutcomes) {
-
-            deliverables.addAll(this.getDeliverableRelationsImpact(
-              crpClusterKeyOutputOutcome.getCrpClusterKeyOutput().getId(), CrpClusterKeyOutput.class.getName()));
-          }
-
-          HashSet<Deliverable> deList = new HashSet<>();
-
-          for (Deliverable deliverable : deliverables) {
-            deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
-            if (deliverable.isActive() && deliverable.getProject() != null
-              && deliverable.getProject().getId().longValue() == projectID.longValue()) {
-              if (deliverable.getDeliverableInfo() != null) {
-                if (this.isReportingActive() || this.isUpKeepActive()) {
-                  if (deliverable.getDeliverableInfo().isRequiredToComplete()) {
-                    deList.add(deliverable);
-                  }
-                } else {
-                  if (deliverable.isActive() && deliverable.getDeliverableInfo().getNewExpectedYear() != null
-                    && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()
-                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                      .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-                    deList.add(deliverable);
-                  }
-                  if (deliverable.isActive()
-                    && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase()
-                      .getYear()
-                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                    && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                      .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-                    deList.add(deliverable);
-                  }
-                }
-              }
-
-            }
-          }
-          deliverables.clear();
-          deliverables.addAll(deList);
-
         }
       }
 
