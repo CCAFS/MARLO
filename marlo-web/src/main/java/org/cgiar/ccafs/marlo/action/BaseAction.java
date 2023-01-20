@@ -3025,7 +3025,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 ? this.projectDeliverableSharedManager.getByProjectAndPhase(projectID, this.getActualPhase().getId())
                   .stream()
                   .filter(px -> px.isActive() && px.getDeliverable().isActive()
-                    && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null)
+                    && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+                    && !px.getDeliverable().getDeliverableInfo().isPrevious())
                   .collect(Collectors.toList())
                 : Collections.emptyList();
 

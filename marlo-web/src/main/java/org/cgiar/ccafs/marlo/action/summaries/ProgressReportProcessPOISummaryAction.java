@@ -1235,7 +1235,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                     ? this.projectDeliverableSharedManager
                       .getByProjectAndPhase(projectID, this.getSelectedPhase().getId()).stream()
                       .filter(px -> px.isActive() && px.getDeliverable().isActive()
-                        && px.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null)
+                        && px.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
+                        && !px.getDeliverable().getDeliverableInfo().isPrevious())
                       .collect(Collectors.toList())
                     : Collections.emptyList();
 
