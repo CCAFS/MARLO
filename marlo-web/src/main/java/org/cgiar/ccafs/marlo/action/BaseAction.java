@@ -2942,49 +2942,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           deliverables = new ArrayList<>();
           ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
 
-          /*
-           * Commented for implement the new relationship deliverable_project_outcomes
-           * for (Deliverable deliverable : projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase())) {
-           * if (deliverable.getDeliverableInfo() != null
-           * && deliverable.getDeliverableInfo().getCrpProgramOutcome() != null && deliverable.getDeliverableInfo()
-           * .getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
-           * deliverables.add(deliverable);
-           * }
-           * }
-           */
-
-          // New method for new relationship deliverable_project_outcomes table
-          /*
-           * List<Deliverable> deliverablesTemp = null;
-           * deliverablesTemp = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
-           * if (this.isReportingActive()) {
-           * deliverablesTemp = deliverablesTemp.stream().filter(d -> d.getDeliverableInfo(this.getActualPhase()) !=
-           * null
-           * && d.getDeliverableInfo(this.getActualPhase()).getStatus() == 3).collect(Collectors.toList());
-           * }
-           * for (Deliverable deliverable : deliverablesTemp) {
-           * if (deliverable.getDeliverableProjectOutcomes() != null) {
-           * deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
-           * .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
-           * }
-           * if (deliverable != null && deliverable.getProjectOutcomes() != null
-           * && !deliverable.getProjectOutcomes().isEmpty()) {
-           * for (DeliverableProjectOutcome deliverableProjectOutcome : deliverable.getProjectOutcomes()) {
-           * if (deliverableProjectOutcome != null && deliverableProjectOutcome.getProjectOutcome() != null
-           * && deliverableProjectOutcome.getProjectOutcome().getId() != null
-           * && deliverableProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
-           * deliverables.add(deliverable);
-           * }
-           * }
-           * }
-           * }
-           */
-          // New method for new relationship deliverable_project_outcomes table
           List<Deliverable> deliverablesTemp = null;
 
           deliverablesTemp = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
 
-          if (this.reportingActive) {
+          if (this.getActualPhase().isReporting()) {
             deliverablesTemp = deliverablesTemp.stream().filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
               && d.getDeliverableInfo(this.getActualPhase()).getStatus() == 3).collect(Collectors.toList());
           }
@@ -3068,6 +3030,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 : Collections.emptyList();
 
             if (deliverableShared != null && !deliverableShared.isEmpty()) {
+
+              if (this.getActualPhase().isReporting()) {
+                deliverableShared = deliverableShared.stream()
+                  .filter(d -> d.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+                    && d.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() == 3)
+                  .collect(Collectors.toList());
+              }
+
               for (ProjectDeliverableShared deliverableS : deliverableShared) {
 
                 if (deliverableS.getDeliverable() != null && deliverableCrpOutcomeManager.findAll() != null) {
