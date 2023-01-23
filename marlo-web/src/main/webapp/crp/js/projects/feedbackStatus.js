@@ -152,7 +152,7 @@ function filterBi() {
   // console.log($('#clusterID-quote a p span').text())
   
   phaseID = Number($('#actualPhase').text());
-  culterId =  Number($('#clusterID-quote a p span').text());
+  culterId =  Number($('#projectID').text());
   const filters = [
     {
       $schema: "http://powerbi.com/product/schema#basic",
