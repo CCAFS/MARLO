@@ -78,7 +78,6 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
-import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -1219,11 +1218,12 @@ public class DeliverableAction extends BaseAction {
         }
 
         // Deliverable Project Outcome list
-        if (deliverable.getDeliverableProjectOutcomes() != null) {
-          deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
-            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
-        }
-
+        /*
+         * if (deliverable.getDeliverableProjectOutcomes() != null) {
+         * deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
+         * .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+         * }
+         */
         // Deliverable Crp Outcome list
         if (deliverable.getDeliverableCrpOutcomes() != null) {
           deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
@@ -1641,24 +1641,6 @@ public class DeliverableAction extends BaseAction {
             this.programOutcomes.add(projectOutcome.getCrpProgramOutcome());
           }
 
-          for (CrpClusterKeyOutputOutcome keyOutcome : projectOutcome.getCrpProgramOutcome()
-            .getCrpClusterKeyOutputOutcomes().stream()
-            .filter(ko -> ko.isActive() && ko.getCrpClusterKeyOutput() != null && ko.getCrpClusterKeyOutput().isActive()
-              && ko.getCrpClusterKeyOutput().getCrpClusterOfActivity() != null
-              && ko.getCrpClusterKeyOutput().getCrpClusterOfActivity().isActive())
-            .collect(Collectors.toList())) {
-
-            if (keyOutcome.getCrpClusterKeyOutput().getCrpClusterOfActivity().getPhase()
-              .equals(this.getActualPhase())) {
-
-              if (!this.keyOutputs.contains(keyOutcome.getCrpClusterKeyOutput())) {
-                this.keyOutputs.add(keyOutcome.getCrpClusterKeyOutput());
-              }
-
-            }
-
-          }
-
           // Fill projectOutcomes List
           if (projectOutcome.getCrpProgramOutcome() != null
             && projectOutcome.getCrpProgramOutcome().getComposedName() != null) {
@@ -1670,9 +1652,6 @@ public class DeliverableAction extends BaseAction {
 
         }
       }
-
-      keyOutputs.sort((k1, k2) -> k1.getCrpClusterOfActivity().getIdentifier()
-        .compareTo(k2.getCrpClusterOfActivity().getIdentifier()));
 
       programOutcomes.sort((k1, k2) -> k1.getId().compareTo(k2.getId()));
 
@@ -3620,16 +3599,6 @@ public class DeliverableAction extends BaseAction {
       deliverableInfoDb.setDeliverableType(deliverableType);
     } else {
       deliverableInfoDb.setDeliverableType(null);
-    }
-    // Set CrpClusterKeyOutput to null if has an -1 id
-
-    if (deliverable.getDeliverableInfo().getCrpClusterKeyOutput() == null
-      || deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getId() == null
-      || deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getId().longValue() == -1) {
-      deliverableInfoDb.setCrpClusterKeyOutput(null);
-    } else {
-      deliverableInfoDb.setCrpClusterKeyOutput(crpClusterKeyOutputManager.getCrpClusterKeyOutputById(
-        deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput().getId()));
     }
 
     // Set CrpProgramOutcome to null if has an -1 id
