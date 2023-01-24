@@ -1915,6 +1915,7 @@ public class DeliverableAction extends BaseAction {
           deliverable.getDeliverableParticipant().setRepIndTypeActivity(null);
           deliverable.getDeliverableParticipant().setRepIndTypeParticipant(null);
           deliverable.getDeliverableParticipant().setRepIndTrainingTerm(null);
+          deliverable.setDeliverableParticipant(null);
         }
 
         if (deliverable.getCountries() != null) {
@@ -2257,18 +2258,22 @@ public class DeliverableAction extends BaseAction {
     }
 
     // Search and deleted form Information
-    if (deliverable.getDeliverableCrpOutcomes() != null && !deliverable.getDeliverableCrpOutcomes().isEmpty()) {
+    try {
+      if (deliverable.getDeliverableCrpOutcomes() != null && !deliverable.getDeliverableCrpOutcomes().isEmpty()) {
 
-      List<DeliverableCrpOutcome> outcomePrev = new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
-        .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        List<DeliverableCrpOutcome> outcomePrev = new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+          .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
-      for (DeliverableCrpOutcome deliverableOutcome : outcomePrev) {
-        if (this.deliverable.getCrpOutcomes() == null
-          || !this.deliverable.getCrpOutcomes().contains(deliverableOutcome)) {
-          this.deliverableCrpOutcomeManager.deleteDeliverableCrpOutcome(deliverableOutcome.getId(),
-            this.getActualPhase().getId());
+        for (DeliverableCrpOutcome deliverableOutcome : outcomePrev) {
+          if (this.deliverable.getCrpOutcomes() == null
+            || !this.deliverable.getCrpOutcomes().contains(deliverableOutcome)) {
+            this.deliverableCrpOutcomeManager.deleteDeliverableCrpOutcome(deliverableOutcome.getId(),
+              this.getActualPhase().getId());
+          }
         }
       }
+    } catch (Exception e) {
+      logger.error("unable to delete crp outcome", e);
     }
 
     // Save form Information
@@ -2282,20 +2287,38 @@ public class DeliverableAction extends BaseAction {
       }
 
       for (DeliverableCrpOutcome deliverableOutcome : this.deliverable.getCrpOutcomes()) {
-        if (deliverableOutcome != null && deliverableOutcome.getId() == null) {
-          DeliverableCrpOutcome deliverableOutcomeSave = new DeliverableCrpOutcome();
-          deliverableOutcomeSave.setDeliverable(deliverable);
-          deliverableOutcomeSave.setPhase(phase);
+        DeliverableCrpOutcome deliverableOutcomeSave = new DeliverableCrpOutcome();
+
+        if (deliverableOutcome != null) {
+          // For new crp outcomes
+          if (deliverableOutcome.getId() == null) {
+            deliverableOutcomeSave.setDeliverable(deliverable);
+            deliverableOutcomeSave.setPhase(phase);
+          } else {
+            // For old crp outcomes
+            try {
+              if (deliverableOutcome.getId() != null) {
+                deliverableOutcomeSave =
+                  deliverableCrpOutcomeManager.getDeliverableCrpOutcomeById(deliverableOutcome.getId());
+              }
+            } catch (Exception e) {
+              logger.error("unable to get old crp outcome", e);
+            }
+          }
 
           if (deliverableOutcome.getCrpProgramOutcome() != null
             && deliverableOutcome.getCrpProgramOutcome().getId() != null) {
             CrpProgramOutcome outcome =
               crpProgramOutcomeManager.getCrpProgramOutcomeById(deliverableOutcome.getCrpProgramOutcome().getId());
-            deliverableOutcomeSave.setCrpProgramOutcome(outcome);
+            if (outcome != null) {
+              deliverableOutcomeSave.setCrpProgramOutcome(outcome);
+            }
 
             this.deliverableCrpOutcomeManager.saveDeliverableCrpOutcome(deliverableOutcomeSave);
             // This is to add studyCrpSave to generate correct auditlog.
-            this.deliverable.getDeliverableCrpOutcomes().add(deliverableOutcomeSave);
+            if (!this.deliverable.getDeliverableCrpOutcomes().contains(deliverableOutcomeSave)) {
+              this.deliverable.getDeliverableCrpOutcomes().add(deliverableOutcomeSave);
+            }
           }
         }
       }
