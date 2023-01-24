@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["powerbi-client"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/feedbackStatus.js?20220629",
+  "${baseUrlMedia}/js/projects/feedbackStatus.js?20230123",
   "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js"
   ]
 /]
@@ -93,6 +93,7 @@
                           <input type="hidden" id="reportName-${report.id}" name="reportName" value=${report.reportName} />
                           <input type="hidden" id="embeUrl-${report.id}" name="embedUrl" value=${report.embedUrl} /> 
                           <input type="hidden" id="reportID-${report.id}" name="reportId" value=${report.reportId} />
+                          <input type="hidden" id="projectID-${project.id}" name="projectID" value=${project.id} />
                         </div>
                     [/#list] 
                   </div>

@@ -165,7 +165,22 @@
                         <td>${(d.owner)!'-'}</td>
                         <td class="col-md-2"> ${(d.sharedWithProjects)!'-'} </td>
                         <td>${(d.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}</td>
-                        <td>${(d.deliverableInfo.year)!'none'}</td>
+                        [#-- Deliverable Year --]
+                          <td class="text-center">
+                            [#if d.deliverableInfo.year== -1]
+                              None
+                            [#else]
+                              [#if ((d.deliverableInfo.status == 4 || d.deliverableInfo.status==3 || d.deliverableInfo.status==5)!false )
+                                      && ((d.deliverableInfo.newExpectedYear != -1)!false)]
+                                ${d.deliverableInfo.newExpectedYear} (Extended from 
+                                ${(d.deliverableInfo.year)!'None'})
+                              [#else]
+                                ${(d.deliverableInfo.year)!'None'}
+                              [/#if]
+                                                            
+                            [/#if]
+                
+                          </td>
                         <td> <a href="${deliverableUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                       </tr>
                     [/#list]

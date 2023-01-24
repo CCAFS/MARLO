@@ -348,10 +348,17 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
         List<Project> projectList =
           projectSet.stream().sorted((p1, p2) -> p1.getId().compareTo(p2.getId())).collect(Collectors.toList());
         for (Project project : projectList) {
-          if (projects.isEmpty()) {
-            projects += "C" + project.getId();
+          String acronym = "";
+          if (project.getProjecInfoPhase(this.getSelectedPhase()) != null
+            && project.getProjecInfoPhase(this.getSelectedPhase()).getAcronym() != null) {
+            acronym = project.getProjecInfoPhase(this.getSelectedPhase()).getAcronym();
           } else {
-            projects += ", C" + project.getId();
+            acronym = "C" + project.getId();
+          }
+          if (projects.isEmpty()) {
+            projects += acronym;
+          } else {
+            projects += ", " + acronym;
           }
         }
       }

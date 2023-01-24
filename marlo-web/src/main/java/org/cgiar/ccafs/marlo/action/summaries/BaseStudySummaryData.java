@@ -30,7 +30,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
@@ -113,8 +112,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     masterReport.getParameterValues().put("i8nStudiesRKeyContributors",
       this.getText("summaries.study.keyContributors"));
     masterReport.getParameterValues().put("i8nStudiesRCrps", this.getText("study.keyContributors.crps"));
-    masterReport.getParameterValues().put("i8nStudiesRFlagships", this.getText("study.keyContributors.centers"));
-    masterReport.getParameterValues().put("i8nStudiesRCenters", this.getText("study.keyContributors.flagships"));
+    masterReport.getParameterValues().put("i8nStudiesRFlagships", this.getText("study.keyContributors.flagships"));
+    masterReport.getParameterValues().put("i8nStudiesRCenters", this.getText("study.keyContributors.centers"));
     masterReport.getParameterValues().put("i8nStudiesRRegions", this.getText("study.keyContributors.regions"));
     masterReport.getParameterValues().put("i8nStudiesRInstitutions",
       this.getText("study.keyContributors.externalPartners"));
@@ -261,28 +260,30 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           links = String.join("", linkSet);
         }
         // isContribution
-        if (projectExpectedStudyInfo.getIsContribution() != null) {
-          isContribution = projectExpectedStudyInfo.getIsContribution();
-          isContributionText = projectExpectedStudyInfo.getIsContribution() ? "Yes" : "No";
-          if (isContribution) {
-            // Policies Contribution
-            List<ProjectExpectedStudyPolicy> studyPoliciesList =
-              projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyPolicies().stream()
-                .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
-                .collect(Collectors.toList());
-            Set<String> studyPoliciesSet = new HashSet<>();
-            if (studyPoliciesList != null && studyPoliciesList.size() > 0) {
-              for (ProjectExpectedStudyPolicy projectExpectedStudyPolicy : studyPoliciesList) {
-                if (projectExpectedStudyPolicy.getProjectPolicy()
-                  .getProjectPolicyInfo(this.getSelectedPhase()) != null) {
-                  studyPoliciesSet.add(
-                    "<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + projectExpectedStudyPolicy.getProjectPolicy().getComposedName());
-                }
-              }
-              studyPolicies = String.join("", studyPoliciesSet);
-            }
-          }
-        }
+        /*
+         * if (projectExpectedStudyInfo.getIsContribution() != null) {
+         * isContribution = projectExpectedStudyInfo.getIsContribution();
+         * isContributionText = projectExpectedStudyInfo.getIsContribution() ? "Yes" : "No";
+         * if (isContribution) {
+         * // Policies Contribution
+         * List<ProjectExpectedStudyPolicy> studyPoliciesList =
+         * projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyPolicies().stream()
+         * .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
+         * .collect(Collectors.toList());
+         * Set<String> studyPoliciesSet = new HashSet<>();
+         * if (studyPoliciesList != null && studyPoliciesList.size() > 0) {
+         * for (ProjectExpectedStudyPolicy projectExpectedStudyPolicy : studyPoliciesList) {
+         * if (projectExpectedStudyPolicy.getProjectPolicy()
+         * .getProjectPolicyInfo(this.getSelectedPhase()) != null) {
+         * studyPoliciesSet.add(
+         * "<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + projectExpectedStudyPolicy.getProjectPolicy().getComposedName());
+         * }
+         * }
+         * studyPolicies = String.join("", studyPoliciesSet);
+         * }
+         * }
+         * }
+         */
         // Level of maturity
         if (projectExpectedStudyInfo.getRepIndStageStudy() != null) {
           stageStudy = projectExpectedStudyInfo.getRepIndStageStudy().getName();

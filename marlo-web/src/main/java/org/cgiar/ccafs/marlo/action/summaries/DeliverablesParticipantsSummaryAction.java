@@ -500,11 +500,6 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
           }
 
           // paramU - Performance Indicator
-          if (deliverable.getDeliverableProjectOutcomes() != null) {
-            deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
-              .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
-          }
-
           if (deliverable.getDeliverableCrpOutcomes() != null) {
             deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
               .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
