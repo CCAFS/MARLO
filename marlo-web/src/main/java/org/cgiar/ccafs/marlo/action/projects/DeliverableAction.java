@@ -2258,18 +2258,22 @@ public class DeliverableAction extends BaseAction {
     }
 
     // Search and deleted form Information
-    if (deliverable.getDeliverableCrpOutcomes() != null && !deliverable.getDeliverableCrpOutcomes().isEmpty()) {
+    try {
+      if (deliverable.getDeliverableCrpOutcomes() != null && !deliverable.getDeliverableCrpOutcomes().isEmpty()) {
 
-      List<DeliverableCrpOutcome> outcomePrev = new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
-        .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        List<DeliverableCrpOutcome> outcomePrev = new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+          .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
-      for (DeliverableCrpOutcome deliverableOutcome : outcomePrev) {
-        if (this.deliverable.getCrpOutcomes() == null
-          || !this.deliverable.getCrpOutcomes().contains(deliverableOutcome)) {
-          this.deliverableCrpOutcomeManager.deleteDeliverableCrpOutcome(deliverableOutcome.getId(),
-            this.getActualPhase().getId());
+        for (DeliverableCrpOutcome deliverableOutcome : outcomePrev) {
+          if (this.deliverable.getCrpOutcomes() == null
+            || !this.deliverable.getCrpOutcomes().contains(deliverableOutcome)) {
+            this.deliverableCrpOutcomeManager.deleteDeliverableCrpOutcome(deliverableOutcome.getId(),
+              this.getActualPhase().getId());
+          }
         }
       }
+    } catch (Exception e) {
+      logger.error("unable to delete crp outcome", e);
     }
 
     // Save form Information
