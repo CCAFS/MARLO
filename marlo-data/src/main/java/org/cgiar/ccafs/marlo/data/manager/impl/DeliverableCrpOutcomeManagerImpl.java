@@ -164,13 +164,12 @@ public class DeliverableCrpOutcomeManagerImpl implements DeliverableCrpOutcomeMa
 
     List<DeliverableCrpOutcome> deliverableOutcomes = deliverableCrpOutcomeDAO.findAll().stream()
       .filter(c -> c.getDeliverable().getId().equals(deliverableId) && c.getPhase().getId().equals(phase.getId())
-        && c.getCrpProgramOutcome().getId().equals(deliverableCrpOutcome.getCrpProgramOutcome().getId()))
+        && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+        && deliverableCrpOutcome.getCrpProgramOutcome().getComposedName() != null && c.getCrpProgramOutcome()
+          .getComposedName().equals(deliverableCrpOutcome.getCrpProgramOutcome().getComposedName()))
       .collect(Collectors.toList());
 
     // Get project outcomes phases
-    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableId);
-    Project project = deliverable.getProject();
-
     List<CrpProgramOutcome> crpOutcomes = phase.getOutcomes().stream()
       .filter(c -> c.isActive() && c.getComposeID().equals(deliverableCrpOutcome.getCrpProgramOutcome().getComposeID()))
       .collect(Collectors.toList());
