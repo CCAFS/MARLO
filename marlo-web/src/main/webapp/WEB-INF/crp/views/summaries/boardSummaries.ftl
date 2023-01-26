@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20210625a"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230126"
   ] 
 /]
 
@@ -402,6 +402,7 @@
 [#macro reportMacro report index]
 
 <div class="summariesFiles simpleBox ${(report.allowProjectID??)?string('allowProjectID','')}">
+  <img class="imgArrow" src="${baseUrlCdn}/global/images/arrow-down.png">
   [#if !(report.available)]<p class="text-center note">This report is under maintenance and will be available soon.</p>[/#if]
   <div class="loading" style="display:none"></div>
   <div class="form-group" style="opacity:${report.available?string('1','0.5')}">

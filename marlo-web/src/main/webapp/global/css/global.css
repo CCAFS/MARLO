@@ -1,5 +1,5 @@
 /************* 1. GENERAL ***************/
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800);@import url("custom.pickadate.css"); @import url("custom.bootstrap.css");@import url("customLogin.css?20201120"); @import url("customInputsFlat.css");@import url("customTrumbowyg.css");@import url(https://fonts.googleapis.com/icon?family=Material+Icons);/* END IMPORTS*/
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800);@import url("custom.pickadate.css"); @import url("custom.bootstrap.css");@import url("customLogin.css?20230125"); @import url("customInputsFlat.css");@import url("customTrumbowyg.css");@import url(https://fonts.googleapis.com/icon?family=Material+Icons);/* END IMPORTS*/
 
 :root{
   /* Alert colors */
@@ -2563,12 +2563,13 @@ h3.contentSubTitle {
 
 .readPrivileges {
   text-align: center;
-  background-color: rgb(255, 205, 205);
+  background-color: rgb(251 255 205);
   padding: 5px 0px;
-  font-weight: bold;
-  color: red;
+  font-weight: 600;
+  color: black;
   margin: 23px 0;
   border-radius: 4px;
+  -webkit-box-shadow: 2px 0px 7px rgb(0 0 0 / 9%);
 }
 
 p.projectSubmitted {
@@ -6103,7 +6104,7 @@ hr {
   /* width: 23px; */
   text-align: center;
   display: inline-block;
-  text-shadow: 1px 1px 2px #b5b4b4;
+  /* text-shadow: 1px 1px 2px #b5b4b4; */
   margin-right: 0px;
   vertical-align: middle;
   /* height: 19px; */
@@ -6141,7 +6142,7 @@ hr {
 }
 
 #draggable-button {
-  background-color: #0a7ba5;
+  /* background-color: #0a7ba5; */
   left: 1em;
   bottom: 1em;
   position: fixed;
@@ -6152,8 +6153,8 @@ hr {
   cursor: move;
   box-shadow: 0px 0px 3px #5e5e5e;
   z-index: 1001;
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   text-align: center;
 }
 
@@ -6161,6 +6162,12 @@ hr {
   cursor: pointer;
   margin: 0;
   line-height: 17px;
+}
+
+#draggable-button img{
+  cursor: pointer;
+  width: 37px;
+  margin-top: 3px
 }
 
 #concurrenceBlock {
