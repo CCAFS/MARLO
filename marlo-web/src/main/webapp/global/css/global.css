@@ -2563,12 +2563,14 @@ h3.contentSubTitle {
 
 .readPrivileges {
   text-align: center;
-  background-color: rgb(251 255 205);
+  background-color: #fff3e5;
   padding: 5px 0px;
   color: #5f5e5e;
   margin: 23px 0;
   border-radius: 4px;
   -webkit-box-shadow: 2px 0px 7px rgb(0 0 0 / 9%);
+  border: 1px solid #EEE;
+  border-radius: 15px 0;
 }
 
 p.projectSubmitted {
