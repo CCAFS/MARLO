@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230126"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230126a"
   ] 
 /]
 
@@ -257,7 +257,7 @@
     }
   ]},
   [#-- BUDGET REPORTS --]
-  { "slug": "budget", "active": true, "title":"summaries.board.options.budget", "reportsList": [
+  { "slug": "budget", "active": centerGlobalUnit, "title":"summaries.board.options.budget", "reportsList": [
     { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.powb", 
@@ -279,7 +279,7 @@
     }
   ]},
   [#-- CRP/PTF Level --]
-  { "slug": "globalUnitLevel", "active": !centerGlobalUnit, "title":"summaries.board.options.globalUnitLevel", "reportsList": [
+  { "slug": "globalUnitLevel", "active": centerGlobalUnit, "title":"summaries.board.options.globalUnitLevel", "reportsList": [
     { "active": true,
       "available": true,
       "title": "summaries.board.report.outcomeMilestoneEvidence", 
