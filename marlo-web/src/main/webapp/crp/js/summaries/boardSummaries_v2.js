@@ -87,10 +87,13 @@ function selectReport() {
   // Hide all reports
   $('.summariesFiles').removeClass("selected");
   $('.extraOptions').slideUp();
+  $('.imgArrow').removeClass("arrow-up");
+
   // Show selected report
   $(this).find('.extraOptions').slideDown();
   $(this).find('.extraOptions').find('select, input').attr('disabled', false).trigger("liszt:updated");
   $(this).addClass("selected");
+  $(this).find(".imgArrow").addClass("arrow-up");
 }
 
 function selectSummariesSection(e) {
