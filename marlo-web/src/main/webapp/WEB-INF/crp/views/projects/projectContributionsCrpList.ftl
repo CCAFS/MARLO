@@ -3,13 +3,15 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectContributionsCrpList.js?20180131_2",
-  "${baseUrlCdn}/global/js/fieldsValidation.js"
+  "${baseUrlMedia}/js/projects/projectContributionsCrpList.js?20230124",
+  "${baseUrlCdn}/global/js/fieldsValidation.js",
+  "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectContributionsCrpList.css?20230112",
-  "${baseUrlMedia}/css/projects/projectsContributionToLP6.css"
+  "${baseUrlMedia}/css/projects/projectContributionsCrpList.css?20230119",
+  "${baseUrlMedia}/css/projects/projectsContributionToLP6.css",
+  "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ] /]
 [#assign currentStage = "contributionsCrpList" /]
 [#assign isListSection = true /]
