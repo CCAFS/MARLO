@@ -41,7 +41,13 @@ function init() {
   });
 
   feedbackAutoImplementation();
+
+  bottonPading();
   
+}
+
+function bottonPading(){
+  $("[name='expectedStudy.projectExpectedStudyInfo.topLevelComments']").parent().css("padding-bottom", " 10px")  
 }
 
 function attachEvents() {
