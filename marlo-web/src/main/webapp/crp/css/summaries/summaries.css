@@ -239,6 +239,17 @@
   background: #337ab7;
 }
 
+.summariesFiles .tags .label.type-word {
+  background: #4584e3;
+}
+
+.summariesFiles .imgArrow{
+  position: absolute;
+  left: 0;
+  top: 17px;
+}
+
+
 .excelIcon {
   /* cursor: pointer; */
   /* color: #3c763d; */
