@@ -2462,7 +2462,7 @@ h3.contentSubTitle {
   box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.1);
   padding: 10px;
   border: 1px solid #EEE;
-  margin: 0 auto;
+  margin: 10px auto;
 }
 
 .helpMessage:before,.helpMessage:after {
@@ -2563,7 +2563,7 @@ h3.contentSubTitle {
 
 .readPrivileges {
   text-align: center;
-  background-color: #fff3e5;
+  background-color: #FFF7CF;
   padding: 5px 0px;
   color: #5f5e5e;
   margin: 23px 0;
@@ -2571,6 +2571,7 @@ h3.contentSubTitle {
   -webkit-box-shadow: 2px 0px 7px rgb(0 0 0 / 9%);
   border: 1px solid #EEE;
   border-radius: 15px 0;
+  font-style: italic;
 }
 
 p.projectSubmitted {
