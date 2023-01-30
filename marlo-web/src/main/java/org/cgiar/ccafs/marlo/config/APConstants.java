@@ -232,6 +232,7 @@ public final class APConstants {
   public static final String SECTION_REQUEST_NAME = "sectionName";
   public static final String FIELD_REQUEST_ID = "fieldID";
   public static final String PARENT_FIELD_DESCRIPTION = "parentFieldDescription";
+  public static final String RESPONSIBLE_USER_ID = "responsibleUserID";
   public static final String FRONT_REQUEST_NAME = "frontName";
   public static final String COMMENT_REQUEST = "comment";
   public static final String COMMENT_REPLY = "reply";
