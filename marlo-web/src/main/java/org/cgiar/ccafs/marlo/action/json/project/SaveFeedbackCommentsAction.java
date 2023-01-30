@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
@@ -25,6 +26,9 @@ import org.cgiar.ccafs.marlo.data.manager.FeedbackStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
@@ -35,9 +39,12 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -68,6 +75,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private String fieldDescription;
   private String fieldValue;
   private Long userId;
+  private Long responsibleId;
   private Long deliverableId;
   private Date date;
   private Long projectId;
@@ -78,14 +86,16 @@ public class SaveFeedbackCommentsAction extends BaseAction {
   private FeedbackQAReplyManager commentManager;
   private PhaseManager phaseManager;
   private UserManager userManager;
+  private DeliverableManager deliverableManager;
   private FeedbackQAComment qaComment;
+  private boolean isDeliverableSection;
 
 
   @Inject
   public SaveFeedbackCommentsAction(APConfig config,
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentQAManager,
     FeedbackQAReplyManager commentManager, PhaseManager phaseManager, UserManager userManager,
-    FeedbackStatusManager feedbackStatusManager, ProjectManager projectManager) {
+    FeedbackStatusManager feedbackStatusManager, ProjectManager projectManager, DeliverableManager deliverableManager) {
     super(config);
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.commentQAManager = commentQAManager;
@@ -94,6 +104,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
     this.userManager = userManager;
     this.projectManager = projectManager;
     this.feedbackStatusManager = feedbackStatusManager;
+    this.deliverableManager = deliverableManager;
   }
 
   @Override
@@ -155,8 +166,9 @@ public class SaveFeedbackCommentsAction extends BaseAction {
 
       qaComment.setComment(comment);
 
+      Phase phase = null;
       if (phaseId != null) {
-        Phase phase = phaseManager.getPhaseById(phaseId);
+        phase = phaseManager.getPhaseById(phaseId);
         qaComment.setPhase(phase);
       }
 
@@ -173,6 +185,7 @@ public class SaveFeedbackCommentsAction extends BaseAction {
             case "deliverable":
               link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
                 + "deliverableID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+              isDeliverableSection = true;
               break;
             case "study":
               link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/study.do?" + "expectedID="
@@ -204,6 +217,43 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       if (fieldValue != null) {
         qaComment.setFieldValue(fieldValue);
       }
+
+      // Responsible User - Deliverables
+      try {
+        if (isDeliverableSection && parentId != null) {
+          Deliverable deliverable = null;
+          deliverable = deliverableManager.getDeliverableById(parentId);
+          if (deliverable != null && phase != null) {
+
+            // Deliverable responsible
+            DeliverableUserPartnership deliverableUserPartnership = deliverable.getDeliverableUserPartnerships()
+              .stream()
+              .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+                && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+              .collect(Collectors.toList()).get(0);
+
+            if (deliverableUserPartnership != null
+              && deliverableUserPartnership.getDeliverableUserPartnershipPersons() != null) {
+              List<DeliverableUserPartnershipPerson> partnershipPersons =
+                new ArrayList<>(deliverableUserPartnership.getDeliverableUserPartnershipPersons().stream()
+                  .filter(d -> d.isActive()).collect(Collectors.toList()));
+              if (partnershipPersons != null && partnershipPersons.get(0) != null
+                && partnershipPersons.get(0).getUser() != null && partnershipPersons.get(0).getUser().getId() != null) {
+                User user = userManager.getUser(partnershipPersons.get(0).getUser().getId());
+                if (user != null) {
+                  qaComment.setResponsibleUser(user);
+                }
+              }
+            }
+
+          }
+
+        }
+
+      } catch (Exception e) {
+        logger.error("unable to set Responsible User object", e);
+      }
+
 
       if (replyId != null) {
         FeedbackQAReply reply = commentManager.getFeedbackCommentById(replyId);
@@ -327,6 +377,14 @@ public class SaveFeedbackCommentsAction extends BaseAction {
       }
     } catch (Exception e) {
       logger.error("unable to get user", e);
+    }
+    try {
+      if (parameters.get(APConstants.RESPONSIBLE_USER_ID).isDefined()) {
+        responsibleId = Long.parseLong(
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.RESPONSIBLE_USER_ID).getMultipleValues()[0])));
+      }
+    } catch (Exception e) {
+      logger.error("unable to get responsible user", e);
     }
     try {
       if (parameters.get(APConstants.COMMENT_STATUS_REQUEST).isDefined()) {
