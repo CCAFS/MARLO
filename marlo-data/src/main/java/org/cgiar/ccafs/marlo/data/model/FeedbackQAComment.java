@@ -56,6 +56,8 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   private Date editionDate;
   @Expose
   private Date draftActionDate;
+  @Expose
+  private User responsibleUser;
 
   public FeedbackQAComment() {
   }
@@ -150,6 +152,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     return reply;
   }
 
+  public User getResponsibleUser() {
+    return responsibleUser;
+  }
+
   public User getUser() {
     return user;
   }
@@ -236,6 +242,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     this.reply = reply;
   }
 
+  public void setResponsibleUser(User responsibleUser) {
+    this.responsibleUser = responsibleUser;
+  }
+
   public void setUser(User user) {
     this.user = user;
   }
@@ -247,4 +257,5 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   public void setUserEditor(User userEditor) {
     this.userEditor = userEditor;
   }
+
 }
