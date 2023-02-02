@@ -24,7 +24,6 @@ var notyDefaultOptions = {
  * Global javascript must be here.
  */
 $(document).ready(function() {
-  console.log('date here')
   showNotificationMessages();
   showHelpText();
 

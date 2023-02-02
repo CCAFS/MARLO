@@ -18,3 +18,7 @@
 #projectDescription .panel #projectsList ul.list li.clusterActivity{
   padding: 5px 10px ;
 }
+
+#guide-button{
+  display: block;
+}

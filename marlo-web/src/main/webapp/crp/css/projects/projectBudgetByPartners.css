@@ -166,3 +166,7 @@ span.contact.name {
 .removeW3bilateralFund {
   cursor: pointer;
 }
+
+#guide-button{
+    display: block;
+}

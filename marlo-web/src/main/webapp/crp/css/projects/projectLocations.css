@@ -609,3 +609,7 @@ div.suggestedLocations-separator{
 .csvUpload {
   height: 70px;
 }
+
+#guide-button{
+    display: block;
+}

@@ -138,3 +138,7 @@ a#opener {
   width: 100%;
   cursor: pointer;
 }
+
+#guide-button{
+    display: block;
+}

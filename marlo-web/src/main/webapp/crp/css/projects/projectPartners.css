@@ -32,3 +32,7 @@ p.fieldErrorInstitutions {
 p.fieldErrorInstitutions i {
   color: #e84444;
 }
+
+#guide-button{
+  display: block;
+}

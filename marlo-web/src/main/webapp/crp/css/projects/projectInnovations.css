@@ -78,3 +78,7 @@ form .form-group.margin-panel {
   color: #fff;
   text-decoration: initial;
 }
+
+#guide-button{
+  display: block;
+}
