@@ -763,3 +763,7 @@ div#ccDimension-capacity {
   flex-flow: column;
   width: 90%;
 }
+
+#guide-button{
+  display: block;
+}

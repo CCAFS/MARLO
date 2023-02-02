@@ -7752,3 +7752,138 @@ img.qaOptionsComment {
 .page_load img{
   width: 70px;
 }
+
+#guide-button{
+  background: #fff;
+  right: 1em;
+  bottom: 1em;
+  position: fixed;
+  color: #fff;
+  font-weight: bold;
+  padding: 6px 10px 4px 10px;
+  border-radius: 50%;
+  /* box-shadow: 0px 0px 3px #5e5e5e; */
+  z-index: 1000;
+  width: 70px;
+  height: 70px;
+  text-align: center;
+  display: none;
+}
+
+#guide-button img{
+  cursor: pointer;
+  width: 45px;
+  margin-top: 8px;
+}
+
+
+#guide {
+  background-color: #fff;
+    width: 450px;
+    max-width: 100%;
+    padding: 22px 16px 13px 13px;
+    border-radius: 15px;
+    box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
+    position: fixed;
+    z-index: 1000;
+    right: 50px;
+    bottom: 100px;
+    /* cursor: move; */
+    display: none;
+}
+
+.popup-guide .button-exit {
+  float: right;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.popup-guide .x-close-modal {
+  padding: 10px 20px;
+  background-image: url(../../global/images/icon-remove.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #D5504C;
+  /* position: absolute; */
+  top: 0;
+  right: 0;
+  border-radius: 0px 3px 0px 8px;
+  cursor: pointer;
+  margin: -16px -7px 0px 0px;
+}
+
+.popup-guide .title-modal-evidences {
+  font-size: 17px;
+  font-weight: 600;
+  margin-top: -19px;
+}
+
+.popup-guide .container-buttons-evidences {
+  float: right;
+  display: flex;
+  margin-top: 15px;
+}
+
+.popup-guide .button-pdf-modal {
+  background-color: #ffffff;
+  min-width: 160px;
+  height: 40px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 3px;
+  font-weight: 600;
+  border: #f79090 solid 2px;
+  color: #ff6464;
+}
+
+.popup-guide .button-pdf-modal p {
+    margin: auto;
+}
+
+.popup-guide .button-pdf-modal img {
+    width: 20px;
+    margin-right: 10px;
+}
+
+.popup-guide .button-close-modal {
+  background-color: #0779a4;
+  min-width: 120px;
+  height: 40px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  cursor: pointer;
+  border-radius: 3px;
+  font-weight: 600;
+  /* border: #0779a4 solid 2px; */
+  color: #ffffff;
+  margin-left: 11px;
+}
+
+.popup-guide .button-close-modal p {
+  margin: auto;
+}
+
+.popup-guide .line-modal{
+  height: 1px;
+  width: 100%;
+  margin-top: -6px;
+  background: #0000001c;
+}
+
+.popup-guide .text-inter{
+  margin: 0 12px;
+  max-height: 325px;
+  overflow: scroll;
+  overflow-x: hidden;
+  scrollbar-color: rgba(0, 0, 0, .5) rgba(0, 0, 0, 0);
+  scrollbar-width: thin;
+}
+
+.popup-guide .text-inter::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
