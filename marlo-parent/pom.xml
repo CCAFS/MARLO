@@ -62,7 +62,7 @@
 		<springfox-swagger2.version>2.9.2</springfox-swagger2.version>
 		<quartz.version>2.1.5</quartz.version>
 		<commons-validator>1.4.0</commons-validator>
-		<jsoup.version>1.11.3</jsoup.version>
+		<jsoup.version>1.15.3</jsoup.version>
 		<geoip2.version>2.12.0</geoip2.version>
 		<javax.inject.version>1</javax.inject.version>
 		<tomcat.version>8.0.53</tomcat.version>
