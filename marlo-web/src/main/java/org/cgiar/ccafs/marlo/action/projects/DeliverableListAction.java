@@ -577,9 +577,8 @@ public class DeliverableListAction extends BaseAction {
           if (deliverableTemp != null && deliverableTemp.getId() != null) {
             deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
             if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
-              deliverablesShared = deliverablesShared.stream()
-                .filter(ds -> ds.getDeliverable() != null && ds.getDeliverable().getProject().getId().equals(projectID))
-                .collect(Collectors.toList());
+              deliverablesShared = deliverablesShared.stream().filter(ds -> ds.isActive() && ds.getDeliverable() != null
+                && ds.getDeliverable().getProject().getId().equals(projectID)).collect(Collectors.toList());
             }
 
             // Owner
