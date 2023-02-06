@@ -88,9 +88,11 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
 
               try {
                 feedbackComments = feedbackComments.stream()
-                  .filter(f -> f != null && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null
-                    && f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
-                    || (f.getFeedbackStatus() != null && f.getReply() != null)))
+                  .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+                    && f.getPhase().getId().equals(phaseId)
+                    && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null
+                      && f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
+                      || (f.getFeedbackStatus() != null && f.getReply() != null)))
                   .collect(Collectors.toList());
                 if (feedbackComments != null) {
                   answeredComments = feedbackComments.size();

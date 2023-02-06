@@ -244,7 +244,9 @@ public class DeliverableListAction extends BaseAction {
                 if (deliverable != null && deliverable.getId() != null && commentableField != null
                   && commentableField.getId() != null) {
                   List<FeedbackQAComment> comments = commentManager.findAll().stream()
-                    .filter(f -> f != null && f.getParentId() == deliverable.getId()
+                    .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+                      && f.getPhase().getId().equals(this.getActualPhase().getId())
+                      && f.getParentId() == deliverable.getId()
 
                       && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null && (!f
                         .getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))
@@ -257,9 +259,11 @@ public class DeliverableListAction extends BaseAction {
                   if (comments != null && !comments.isEmpty()) {
                     totalComments += comments.size();
                     comments = comments.stream()
-                      .filter(f -> f != null && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId()
-                        .equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
-                        || (f.getFeedbackStatus() != null && f.getReply() != null)))
+                      .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+                        && f.getPhase().getId().equals(this.getActualPhase().getId())
+                        && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId()
+                          .equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
+                          || (f.getFeedbackStatus() != null && f.getReply() != null)))
                       .collect(Collectors.toList());
                     if (comments != null) {
                       answeredComments += comments.size();
@@ -573,9 +577,8 @@ public class DeliverableListAction extends BaseAction {
           if (deliverableTemp != null && deliverableTemp.getId() != null) {
             deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
             if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
-              deliverablesShared = deliverablesShared.stream()
-                .filter(ds -> ds.getDeliverable() != null && ds.getDeliverable().getProject().getId().equals(projectID))
-                .collect(Collectors.toList());
+              deliverablesShared = deliverablesShared.stream().filter(ds -> ds.isActive() && ds.getDeliverable() != null
+                && ds.getDeliverable().getProject().getId().equals(projectID)).collect(Collectors.toList());
             }
 
             // Owner
