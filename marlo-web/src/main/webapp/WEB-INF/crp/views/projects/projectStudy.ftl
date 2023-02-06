@@ -9,7 +9,7 @@
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectStudies.css"
+  "${baseUrlMedia}/css/projects/projectStudies.css?20230106"
   ] 
 /]
 

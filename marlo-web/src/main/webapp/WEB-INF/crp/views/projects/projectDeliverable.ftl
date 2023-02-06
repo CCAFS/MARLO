@@ -11,7 +11,7 @@
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
 ] /]
-[#assign customCSS = ["${baseUrl}/crp/css/projects/projectDeliverable.css"] /]
+[#assign customCSS = ["${baseUrl}/crp/css/projects/projectDeliverable.css?20230106"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]
 [#assign hideJustification = true /]
