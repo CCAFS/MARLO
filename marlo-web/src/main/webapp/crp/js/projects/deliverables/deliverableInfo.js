@@ -563,7 +563,7 @@ function showNewExpectedComponent(state) {
     $newExpectedYearBlock.show();
     $yearOverlay.show();
   } else {
-    $newExpectedYearBlock.hide();
+    // $newExpectedYearBlock.hide();
     if(isDeliverableNew) {
       $yearOverlay.hide();
     }
@@ -578,7 +578,7 @@ function validateDeliverableStatus() {
       $statuses.find('option').prop("disabled", true); // Disable All
       $statuses.find('option[value="3"]').prop("disabled", false); // Enable Complete
       $statuses.find('option[value="5"]').prop("disabled", false); // Enable Cancelled
-      $statuses.val("3"); // Set Complete
+      // $statuses.val("3"); // Set Complete
     } else {
       $statuses.find('option[value="2"]').prop("disabled", true);// Disable On-going
     }
