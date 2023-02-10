@@ -5,7 +5,7 @@
   <table class="projectsList" id="deliverables">
     <thead>
       <tr class="subHeader">
-        <th id="deliverableProject">[@s.text name="project.id" /]</th>
+        <th id="deliverableProject">[@s.text name="project" /]</th>
         <th id="ids">[@s.text name="project.deliverableList.deliverableId" /]</th>
         <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
         [#--  
@@ -29,7 +29,10 @@
           [#-- Project ID --]
           <td class="deliverableId">
             <a href="[@s.url namespace=namespace action='${(crpSession)!}/deliverableList'][@s.param name='projectID']${deliverable.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              C${deliverable.projectId}
+              [#if deliverable.projectAcronym?has_content]${deliverable.projectAcronym}
+              [#else]
+                C${deliverable.projectId}
+              [/#if]
             </a>
           </td>
           [#-- Deliverable ID --]
