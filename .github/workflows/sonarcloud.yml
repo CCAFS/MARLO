@@ -2,8 +2,7 @@ name: SonarCloud
 on:
   push:
     branches:
-      - aiccra-staging
-      - AICCRA
+      - aiccra-dev
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
