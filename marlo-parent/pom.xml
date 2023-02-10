@@ -69,7 +69,7 @@
 		<geoip2.version>2.12.0</geoip2.version>
 		<javax.inject.version>1</javax.inject.version>
 		<tomcat.version>8.0.53</tomcat.version>
-		<log4j.version>2.16.0</log4j.version>
+		<log4j.version>2.17.1</log4j.version>
 		<sonar.organization>ccafs</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
