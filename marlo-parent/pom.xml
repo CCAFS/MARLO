@@ -23,6 +23,9 @@
 		<struts2.version>2.5.26</struts2.version>
 		<mysql.version>8.0.16</mysql.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
+		<jaxb-api.version>2.3.0</jaxb-api.version>
+		<jaxb-core.version>2.3.0</jaxb-core.version>
+		<jaxb-impl.version>2.3.0</jaxb-impl.version>
 		<jsp-api.version>2.2.1</jsp-api.version>
 		<poi.version>3.13</poi.version>
 		<ooxml-schemas.version>1.0</ooxml-schemas.version>
@@ -67,6 +70,8 @@
 		<javax.inject.version>1</javax.inject.version>
 		<tomcat.version>8.0.53</tomcat.version>
 		<log4j.version>2.16.0</log4j.version>
+		<sonar.organization>ccafs</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 	<developers>
 		<developer>
@@ -425,6 +430,21 @@
 				<version>${servlet-api.version}</version>
 				<scope>provided</scope>
 			</dependency>
+			<dependency>
+	            <groupId>javax.xml.bind</groupId>
+	            <artifactId>jaxb-api</artifactId>
+	            <version>${jaxb-api.version}</version>	            
+            </dependency>
+			<dependency>
+	            <groupId>com.sun.xml.bind</groupId>
+	            <artifactId>jaxb-core</artifactId>
+	            <version>${jaxb-core.version}</version>	            
+            </dependency>
+			<dependency>
+	            <groupId>com.sun.xml.bind</groupId>
+	            <artifactId>jaxb-impl</artifactId>
+	            <version>${jaxb-impl.version}</version>	            
+            </dependency>
 			<dependency>
 				<groupId>javax.servlet.jsp</groupId>
 				<artifactId>javax.servlet.jsp-api</artifactId>
