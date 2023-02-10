@@ -23,6 +23,7 @@
 		<struts2.version>2.5.26</struts2.version>
 		<mysql.version>8.0.16</mysql.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
+		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<jsp-api.version>2.2.1</jsp-api.version>
 		<poi.version>3.13</poi.version>
 		<ooxml-schemas.version>1.0</ooxml-schemas.version>
@@ -427,6 +428,11 @@
 				<version>${servlet-api.version}</version>
 				<scope>provided</scope>
 			</dependency>
+			<dependency>
+	            <groupId>javax.xml.bind</groupId>
+	            <artifactId>jaxb-api</artifactId>
+	            <version>${jaxb-api.version}</version>	            
+            </dependency>
 			<dependency>
 				<groupId>javax.servlet.jsp</groupId>
 				<artifactId>javax.servlet.jsp-api</artifactId>
