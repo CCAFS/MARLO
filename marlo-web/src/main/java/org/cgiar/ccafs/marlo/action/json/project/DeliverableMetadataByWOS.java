@@ -203,6 +203,26 @@ public class DeliverableMetadataByWOS extends BaseAction {
     return element;
   }
 
+  private JsonElement readWOSDataFromClarisa2() throws IOException {
+    URL clarisaUrl = new URL(config.getClarisaWOSLink2().replace("{1}", this.link));
+    String loginData = config.getClarisaWOSUser() + ":" + config.getClarisaWOSPassword();
+    String encoded = Base64.encodeBase64String(loginData.getBytes());
+
+    HttpURLConnection conn = (HttpURLConnection) clarisaUrl.openConnection();
+    conn.setRequestProperty("Authorization", "Basic " + encoded);
+    JsonElement element = null;
+
+    if (conn.getResponseCode() < 300) {
+      try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
+        element = new JsonParser().parse(reader);
+      } catch (FileNotFoundException fnfe) {
+        element = JsonNull.INSTANCE;
+      }
+    }
+
+    return element;
+  }
+
   private void saveAffiliations(Phase phase, Deliverable deliverable) {
     DeliverableMetadataExternalSources externalSource =
       this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
@@ -517,6 +537,9 @@ public class DeliverableMetadataByWOS extends BaseAction {
     this.link = link;
 
     this.response = new Gson().fromJson(this.readWOSDataFromClarisa(), MetadataWOSModel.class);
+    if (this.response == null) {
+      this.response = new Gson().fromJson(this.readWOSDataFromClarisa2(), MetadataWOSModel.class);
+    }
 
     if (this.response != null) {
       this.saveInfo();
