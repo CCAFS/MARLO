@@ -63,7 +63,7 @@
 		<hibernate-validator.version>5.2.2.Final</hibernate-validator.version>
 		<aspectj.version>1.8.10</aspectj.version>
 		<springfox-swagger2.version>2.9.2</springfox-swagger2.version>
-		<quartz.version>2.1.5</quartz.version>
+		<quartz.version>2.3.2</quartz.version>
 		<commons-validator>1.4.0</commons-validator>
 		<jsoup.version>1.11.3</jsoup.version>
 		<geoip2.version>2.12.0</geoip2.version>
@@ -667,7 +667,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-collections4</artifactId>
-				<version>4.0</version>
+				<version>4.1</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
