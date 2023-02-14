@@ -49,6 +49,10 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
+		<dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+        </dependency>
 		<!-- mapstruct Library -->
 		<dependency>
 			<groupId>org.mapstruct</groupId>
@@ -138,6 +142,14 @@
 		<dependency>
 		    <groupId>javax.xml.bind</groupId>
 		    <artifactId>jaxb-api</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>com.sun.xml.bind</groupId>
+		    <artifactId>jaxb-core</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>com.sun.xml.bind</groupId>
+		    <artifactId>jaxb-impl</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
