@@ -7874,6 +7874,7 @@ img.qaOptionsComment {
   overflow-x: hidden;
   scrollbar-color: rgba(0, 0, 0, .5) rgba(0, 0, 0, 0);
   scrollbar-width: thin;
+  text-align: justify;
 }
 
 .popup-guide .text-inter::-webkit-scrollbar {
