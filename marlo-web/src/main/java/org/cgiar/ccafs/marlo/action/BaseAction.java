@@ -5371,6 +5371,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.availabePhase;
   }
 
+  public boolean isAWPBActive() {
+    if (this.getActualPhase() != null && this.getActualPhase().getName() != null
+      && (this.getActualPhase().getName().equals("POWB")
+        || this.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public boolean isCanEdit() {
     return this.canEdit;
   }
@@ -6705,6 +6715,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
     return false;
+  }
+
+  public boolean isProgressActive() {
+    return this.getActualPhase().getUpkeep();
   }
 
   /**
