@@ -383,7 +383,7 @@
       [#list projects as project]
         <tr>
         [#-- ID --]
-        <td class="projectId">
+        <td class="projectId center">
         [#if action.isAiccra()]
           <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> C${project.id}</a>
         [#else]
