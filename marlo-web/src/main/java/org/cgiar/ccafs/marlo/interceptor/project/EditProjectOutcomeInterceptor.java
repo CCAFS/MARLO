@@ -124,8 +124,6 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
           boolean exist = false;
           for (ProjectMilestone prevProjectMilestone : projectOutcome.getMilestones()) {
-            System.out.println("prevProjectMilestone.getCrpMilestone().getId() "
-              + prevProjectMilestone.getCrpMilestone().getId() + "-- crpMilestone.getId() " + crpMilestone.getId());
             if (prevProjectMilestone.getCrpMilestone() != null && crpMilestone != null && crpMilestone.getId() != null
               && prevProjectMilestone.getCrpMilestone().getId().equals(crpMilestone.getId())) {
               exist = true;
