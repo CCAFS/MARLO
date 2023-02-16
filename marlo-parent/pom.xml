@@ -23,9 +23,6 @@
 		<struts2.version>2.5.30</struts2.version>
 		<mysql.version>8.0.16</mysql.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
-		<jaxb-api.version>2.3.0</jaxb-api.version>
-		<jaxb-core.version>2.3.0</jaxb-core.version>
-		<jaxb-impl.version>2.3.0</jaxb-impl.version>
 		<jsp-api.version>2.2.1</jsp-api.version>
 		<poi.version>3.13</poi.version>
 		<ooxml-schemas.version>1.0</ooxml-schemas.version>
@@ -431,21 +428,6 @@
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
-	            <groupId>javax.xml.bind</groupId>
-	            <artifactId>jaxb-api</artifactId>
-	            <version>${jaxb-api.version}</version>	            
-            </dependency>
-			<dependency>
-	            <groupId>com.sun.xml.bind</groupId>
-	            <artifactId>jaxb-core</artifactId>
-	            <version>${jaxb-core.version}</version>	            
-            </dependency>
-			<dependency>
-	            <groupId>com.sun.xml.bind</groupId>
-	            <artifactId>jaxb-impl</artifactId>
-	            <version>${jaxb-impl.version}</version>	            
-            </dependency>
-			<dependency>
 				<groupId>javax.servlet.jsp</groupId>
 				<artifactId>javax.servlet.jsp-api</artifactId>
 				<version>${jsp-api.version}</version>
@@ -667,7 +649,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-collections4</artifactId>
-				<version>4.1</version>
+				<version>4.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
