@@ -235,7 +235,7 @@ import org.apache.struts2.interceptor.SessionAware;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.safety.Safelist;
+import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7357,7 +7357,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public String removeHtmlTags(String html) {
     if (html != null) {
-      Safelist whitelist = Safelist.none();
+      Whitelist whitelist = Whitelist.none();
       whitelist.addTags("a");
       whitelist.addAttributes("a", "href");
 
