@@ -235,7 +235,7 @@ import org.apache.struts2.interceptor.SessionAware;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.safety.Safelist;
+import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -5371,6 +5371,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.availabePhase;
   }
 
+  public boolean isAWPBActive() {
+    if (this.getActualPhase() != null && this.getActualPhase().getName() != null
+      && (this.getActualPhase().getName().equals("POWB")
+        || this.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public boolean isCanEdit() {
     return this.canEdit;
   }
@@ -6707,6 +6717,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+  public boolean isProgressActive() {
+    return this.getActualPhase().getUpkeep();
+  }
+
   /**
    * Check if the project was created in a Center
    *
@@ -7343,7 +7357,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public String removeHtmlTags(String html) {
     if (html != null) {
-      Safelist whitelist = Safelist.none();
+      Whitelist whitelist = Whitelist.none();
       whitelist.addTags("a");
       whitelist.addAttributes("a", "href");
 
