@@ -1499,6 +1499,18 @@ public class ProjectOutcomeAction extends BaseAction {
             if (this.canAccessSuperAdmin()) {
               projectMilestoneDB.setSettedValue(projectMilestone.getSettedValue());
             }
+
+            // Set project Milestone year
+            if (projectMilestoneDB.getYear() == -1 || projectMilestoneDB.getYear() == 0) {
+              if (projectMilestone.getYear() != -1 && projectMilestone.getYear() != 0) {
+                projectMilestoneDB.setYear(projectMilestone.getYear());
+              } else if (projectMilestoneDB.getCrpMilestone() != null
+                && projectMilestoneDB.getCrpMilestone().getYear() != -1
+                && projectMilestoneDB.getCrpMilestone().getYear() != 0) {
+                projectMilestoneDB.setYear(projectMilestoneDB.getCrpMilestone().getYear());
+              }
+            }
+
             projectMilestoneDB = projectMilestoneManager.saveProjectMilestone(projectMilestoneDB);
             // This add projectMilestone to generate correct auditlog.
             projectOutcome.getProjectMilestones().add(projectMilestoneDB);
