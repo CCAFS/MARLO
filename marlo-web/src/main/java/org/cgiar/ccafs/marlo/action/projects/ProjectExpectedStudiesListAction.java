@@ -428,24 +428,26 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     }
 
     ProjectInfo projectInfo = new ProjectInfo();
-
-    for (ProjectExpectedStudy study : projectStudies) {
-      if (study.getProject() != null && study.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
-        projectInfo = study.getProject().getProjecInfoPhase(this.getActualPhase());
-      }
-      if (projectInfo != null) {
-        study.getProject().setProjectInfo(projectInfo);
-      }
-    }
-    for (ProjectExpectedStudy studyOld : projectOldStudies) {
-      if (studyOld.getProject() != null && studyOld.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
-        projectInfo = studyOld.getProject().getProjecInfoPhase(this.getActualPhase());
-      }
-      if (projectInfo != null) {
-        studyOld.getProject().setProjectInfo(projectInfo);
+    if (projectStudies != null) {
+      for (ProjectExpectedStudy study : projectStudies) {
+        if (study.getProject() != null && study.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
+          projectInfo = study.getProject().getProjecInfoPhase(this.getActualPhase());
+        }
+        if (projectInfo != null) {
+          study.getProject().setProjectInfo(projectInfo);
+        }
       }
     }
-
+    if (projectOldStudies != null) {
+      for (ProjectExpectedStudy studyOld : projectOldStudies) {
+        if (studyOld.getProject() != null && studyOld.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
+          projectInfo = studyOld.getProject().getProjecInfoPhase(this.getActualPhase());
+        }
+        if (projectInfo != null) {
+          studyOld.getProject().setProjectInfo(projectInfo);
+        }
+      }
+    }
     if (this.hasSpecificities(this.feedbackModule())) {
       this.getCommentStatuses();
     }
