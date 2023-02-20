@@ -223,7 +223,7 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("OutcomesCaseStudiesSummary-");
+    fileName.append("OICRsMELIAsSummary-");
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedCycle() + "-");
     fileName.append(this.getSelectedYear() + "_");

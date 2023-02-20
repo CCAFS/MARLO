@@ -31,6 +31,9 @@
     <property name="modificationJustification" type="string">
       <column name="modification_justification" sql-type="TEXT" />
     </property>
+    <property name="acronym" type="string">
+            <column name="acronym" sql-type="TEXT" />
+    </property>
 		<set name="projectInfos" table="projects_info" inverse="true"
 			lazy="true" fetch="select">
 			<key>

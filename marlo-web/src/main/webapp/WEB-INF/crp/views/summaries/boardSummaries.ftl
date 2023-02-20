@@ -79,7 +79,7 @@
       "action": "${crpSession}/impactCovid19Summary",
       "formats": [ "Excel" ]
     },
-    { "active": !centerGlobalUnit && !action.isAiccra(),
+    { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.outcomeCaseStudies", 
       "description": "summaries.board.report.outcomeCaseStudies.description",
