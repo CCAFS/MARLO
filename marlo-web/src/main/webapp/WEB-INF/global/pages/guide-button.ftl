@@ -178,7 +178,6 @@
 
 
   <script>
-   console.log(phaseID)
     $('#guide-button').click(function() {
       if ($('.popup-guide').is(':visible')) {
         $('.popup-guide').slideUp();

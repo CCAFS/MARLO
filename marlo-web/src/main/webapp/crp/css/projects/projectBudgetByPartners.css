@@ -167,6 +167,6 @@ span.contact.name {
   cursor: pointer;
 }
 
-#guide-button{
-    display: block;
+.button-pdf-modal{
+    display: none;
 }
