@@ -1,9 +1,10 @@
 [#ftl]
 
+[#if canEdit || actionName == 'AICCRA/crpDashboard']
 <div id="guide-button" class="guide-button" >
   <img src="${baseUrlCdn}/global/images/guideButton.png" />
 </div>
-
+[/#if]
 
   <div class="popup-guide animate__animated animate__bounce" id="guide">
     <div class="button-exit close-modal-evidences">
@@ -177,7 +178,6 @@
 
 
   <script>
-   console.log(phaseID)
     $('#guide-button').click(function() {
       if ($('.popup-guide').is(':visible')) {
         $('.popup-guide').slideUp();
