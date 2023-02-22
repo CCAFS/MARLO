@@ -503,7 +503,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
           Double achievedValue = new Double(0);
 
           projectId = project.getId().toString();
-          projectUrl = "P" + project.getId().toString();
+          projectUrl = "C" + project.getId().toString();
           title = project.getProjectInfo().getTitle();
           if (project.getProjectInfo().getSummary() != null && !project.getProjectInfo().getSummary().isEmpty()) {
             projectSummary = project.getProjectInfo().getSummary();
