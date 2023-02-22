@@ -120,10 +120,10 @@ function date(start,end) {
   var dateFormat = "yy-mm-dd";
   var from = $(start).datepicker({
       dateFormat: dateFormat,
-      minDate: '2021-01-01',
-      maxDate: '2024-12-31',
+      minDate: '2023-01-01',
+      maxDate: '2026-12-31',
       changeMonth: true,
-      numberOfMonths: 1,
+      numberOfMonths: 2,
       changeYear: true,
       onChangeMonthYear: function(year,month,inst) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1);
@@ -140,10 +140,10 @@ function date(start,end) {
 
   var to = $(end).datepicker({
       dateFormat: dateFormat,
-      minDate: '2021-01-01',
-      maxDate: '2024-12-31',
+      minDate: '2023-01-01',
+      maxDate: '2026-12-31',
       changeMonth: true,
-      numberOfMonths: 1,
+      numberOfMonths: 2,
       changeYear: true,
       onChangeMonthYear: function(year,month,inst) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
