@@ -12,7 +12,6 @@
   { 'slug': 'customLocations',    'name': 'menu.superadmin.customLocations', 'action': 'customLocations',   'active': true }
 ]/]
 
-<<<<<<< HEAD
 [#assign toolItems= [
   { 'slug': 'notifications',    'name': 'menu.superadmin.notifications', 'action': 'notifications',   'active': true },
   { 'slug': 'emails',    'name': 'menu.superadmin.emails', 'action': 'emails',   'active': true },
@@ -21,7 +20,6 @@
   { 'slug': 'institutions',    'name': 'menu.superadmin.institutions', 'action': 'marloInstitutions',   'active': true }
   { 'slug': 'bulkReplication',    'name': 'menu.superadmin.bulkReplication', 'action': 'deliverablesReplication',   'active': true }
 ]/]
-=======
 [#if !action.isAiccra()]
   [#assign toolItems= [
     { 'slug': 'notifications',    'name': 'menu.superadmin.notifications', 'action': 'notifications',   'active': true },
@@ -42,7 +40,6 @@
     { 'slug': 'timelineManagement',    'name': 'menu.superadmin.timelineManagement', 'action': 'timelineManagement',   'active': true}
   ]/]
 [/#if]
->>>>>>> aiccra-contribution-indicators-improvements
 
 <nav id="secondaryMenu">
   <p>[@s.text name="menu.superadmin.srfMenuTitle"/]</p>
