@@ -11,10 +11,10 @@
         <property name="description" type="string">
             <column name="description" sql-type="TEXT" />
         </property>      
-        <property name="startDate" type="date" update="false">
+        <property name="startDate" type="date">
           <column name="start_date" not-null="true" />
         </property>
-        <property name="endDate" type="date" update="false">
+        <property name="endDate" type="date">
           <column name="end_date" not-null="true" />
         </property>
          <property name="order" type="java.lang.Double">
