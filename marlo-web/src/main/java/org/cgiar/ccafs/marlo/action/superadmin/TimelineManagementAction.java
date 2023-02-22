@@ -17,8 +17,13 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.TimelineManager;
 import org.cgiar.ccafs.marlo.data.model.Timeline;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.validation.superadmin.TimelineManagementValidator;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -30,11 +35,14 @@ public class TimelineManagementAction extends BaseAction {
   private List<Timeline> timelineActivities;
 
   private final TimelineManager timelineManager;
+  private TimelineManagementValidator validator;
 
   @Inject
-  public TimelineManagementAction(APConfig config, TimelineManager timelineManager) {
+  public TimelineManagementAction(APConfig config, TimelineManager timelineManager,
+    TimelineManagementValidator validator) {
     super(config);
     this.timelineManager = timelineManager;
+    this.validator = validator;
   }
 
   public List<Timeline> getTimelineActivities() {
@@ -47,13 +55,66 @@ public class TimelineManagementAction extends BaseAction {
     timelineActivities = timelineManager.findAll();
 
     if (this.isHttpPost()) {
+      timelineActivities.clear();
     }
   }
 
   @Override
   public String save() {
     if (this.canAccessSuperAdmin()) {
-      return SUCCESS;
+      if (timelineActivities != null && !timelineActivities.isEmpty()) {
+
+        List<Long> IDs =
+          timelineActivities.stream().map(Timeline::getId).filter(Objects::nonNull).collect(Collectors.toList());
+
+        timelineManager.findAll().stream()
+          .filter(activityDB -> activityDB.getId() != null && !IDs.contains(activityDB.getId())).map(Timeline::getId)
+          .forEach(timelineManager::deleteTimeline);
+
+
+        for (Timeline activity : timelineActivities) {
+
+          // New Activity
+          Timeline timeLineSave = new Timeline();
+
+          if (activity.getId() != null) {
+            timeLineSave = timelineManager.getTimelineById(activity.getId());
+          }
+          if (activity.getDescription() != null) {
+            timeLineSave.setDescription(activity.getDescription());
+          }
+          if (activity.getStartDate() != null) {
+            timeLineSave.setStartDate(activity.getStartDate());
+          }
+          if (activity.getEndDate() != null) {
+            timeLineSave.setEndDate(activity.getEndDate());
+          }
+          timeLineSave.setOrder(activity.getOrder());
+
+          timelineManager.saveTimeline(timeLineSave);
+
+        }
+      }
+
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        Collection<String> messages = this.getActionMessages();
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
+        }
+        return SUCCESS;
+      } else {
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        return REDIRECT;
+      }
+
     } else {
       return NOT_AUTHORIZED;
     }
@@ -66,7 +127,7 @@ public class TimelineManagementAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-
+      validator.validate(this, timelineActivities);
     }
   }
 
