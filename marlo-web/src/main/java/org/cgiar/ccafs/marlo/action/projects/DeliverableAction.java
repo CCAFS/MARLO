@@ -139,6 +139,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.doi.DOIService;
+import org.cgiar.ccafs.marlo.utils.handle.HandleService;
 import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
 
 import java.io.BufferedReader;
@@ -2953,6 +2954,7 @@ public class DeliverableAction extends BaseAction {
         if (deliverableMetadataElement != null && deliverableMetadataElement.getMetadataElement() != null) {
           deliverableMetadataElement.setDeliverable(deliverable);
           deliverableMetadataElement.setPhase(this.getActualPhase());
+          // Search by DOI
           if (deliverableMetadataElement.getMetadataElement().getId() != null
             && 36L == deliverableMetadataElement.getMetadataElement().getId()) {
             String cleanDoi = DOIService.tryGetDoiName(deliverableMetadataElement.getElementValue());
@@ -2960,6 +2962,17 @@ public class DeliverableAction extends BaseAction {
               && !deliverableMetadataElement.getElementValue().isEmpty() && !cleanDoi.isEmpty()) {
               deliverableMetadataElement.setElementValue(cleanDoi);
               deliverableMetadataElement.setHide(true);
+            }
+          } else {
+            // Search by handle
+            if (deliverableMetadataElement.getMetadataElement().getId() != null
+              && 35L == deliverableMetadataElement.getMetadataElement().getId()) {
+              String cleanHandle = HandleService.tryGetDoiName(deliverableMetadataElement.getElementValue());
+              if (deliverableMetadataElement.getElementValue() != null
+                && !deliverableMetadataElement.getElementValue().isEmpty() && !cleanHandle.isEmpty()) {
+                deliverableMetadataElement.setElementValue(cleanHandle);
+                deliverableMetadataElement.setHide(true);
+              }
             }
           }
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElement);

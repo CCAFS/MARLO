@@ -134,7 +134,7 @@ public class APConfig {
   @Value("${clarisa.wos.link}")
   private String CLARISA_WOS_LINK;
   // Clarisa WOS service link 2
-  @Value("${clarisa.wos.link}")
+  @Value("${clarisa.wos.link2}")
   private String CLARISA_WOS_LINK2;
 
   // Clarisa user for WOS synchronization
