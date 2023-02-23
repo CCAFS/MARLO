@@ -107,11 +107,9 @@ i.indicatorText {
 }
 
 .modal .modal-dialog{
-    /* width: 75%; */
+    width: 75%;
 }
 
 #guide-button{
     display: block;
-    max-width: 1250px;
-    width: 99%;
 }
