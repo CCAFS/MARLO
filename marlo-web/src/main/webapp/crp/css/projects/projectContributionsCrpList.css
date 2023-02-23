@@ -112,4 +112,6 @@ i.indicatorText {
 
 #guide-button{
     display: block;
+    max-width: 1250px;
+    width: 99%;
 }

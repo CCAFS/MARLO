@@ -60,11 +60,14 @@
         [#if currentStage == "feedback"]
         [#else]
           [#if project.projectInfo.isProjectEditLeader()]
-            [#if !(action.hasPermission("statusDescription")) ]
-              <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
-            [/#if]
             [#if action.hasSpecificities('feedback_active') && action.canLeaveComments()]
               <p class="helpMessage infoText" align="center">[@s.text name="saving.read.privileges.section.feedeback" /]</p>
+            [/#if]
+            [#if action.hasSpecificities('feedback_active') && !action.canLeaveComments()]
+              <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+            [/#if]
+            [#if !action.hasSpecificities('feedback_active') && !(action.hasPermission("statusDescription")) ]
+              <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
             [/#if]
           [#else]
             [#if !editStatus]

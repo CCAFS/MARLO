@@ -155,13 +155,32 @@
                       <tr>
                         <th scope="row">D${d.id}</th>
                         <td>
-                        [#if (d.tagTitle?has_content)]${(d.tagTitle)!}[/#if]
-                        ${(d.deliverableInfo.title)!'Untitled'}</td>
+                        [#if (d.tagTitle?has_content)]
+                          ${(d.tagTitle)!}
+                        [#else]
+                          ${(d.deliverableInfo.title)!'Untitled'}
+                        [/#if]
+                        </td>
                         <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'-'}</td>
                         <td>${(d.owner)!'-'}</td>
                         <td class="col-md-2"> ${(d.sharedWithProjects)!'-'} </td>
                         <td>${(d.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}</td>
-                        <td>${(d.deliverableInfo.year)!'none'}</td>
+                        [#-- Deliverable Year --]
+                          <td class="text-center">
+                            [#if d.deliverableInfo.year== -1]
+                              None
+                            [#else]
+                              [#if ((d.deliverableInfo.status == 4 || d.deliverableInfo.status==3 || d.deliverableInfo.status==5)!false )
+                                      && ((d.deliverableInfo.newExpectedYear != -1)!false)]
+                                ${d.deliverableInfo.newExpectedYear} (Extended from 
+                                ${(d.deliverableInfo.year)!'None'})
+                              [#else]
+                                ${(d.deliverableInfo.year)!'None'}
+                              [/#if]
+                                                            
+                            [/#if]
+                
+                          </td>
                         <td> <a href="${deliverableUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                       </tr>
                     [/#list]
@@ -260,13 +279,13 @@
             </div>
             <div class="modal-body">
               [#-- innovations table --]
-              <table class="table">
+              <table class="innovationList" id="innovation">
                 <thead>
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
                     <th id="innovationTitles" >[@s.text name="project.innovationList.innovationName" /]</th>
-                    [#--<th id="innovationType">[@s.text name="project.innovationList.type" /]</th>--]
-                    [#--<th id="innovationRole" >[@s.text name="project.innovationList.role" /]</th>--]
+                    <th class="innovationOwner">[@s.text name="project.innovationList.owner" /]</th>
+                    <th id="innovationYear">[@s.text name="project.innovationList.year" /]</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -276,8 +295,8 @@
                     <tr>
                       <th scope="row">${i.id}</th>
                       <td class="col-md-6">${(i.projectInnovationInfo.title)!'Untitled'}</td>
-                      [#--<td>${(i.innovationInfo.innovationType.name?capitalize)!'none'}</td>
-                      <td class="col-md-6">${(i.projectInnovationInfo.title)!'Untitled'}</td>--]
+                      <td class="col-md-6">${(i.project.projectInfo.acronym)}</td>
+                      <td>${(i.projectInnovationInfo.year)}</td>
                       <td> <a href="${innovationUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>
                     [/#list]
@@ -319,11 +338,13 @@
             </div>
             <div class="modal-body">
               [#-- Evidencies table --]
-              <table class="table">
+              <table class="evidencieList" id="evidencies">
                 <thead>
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
                     <th id="evidencyTitles" >[@s.text name="project.evidenceList.evidenceName" /]</th>
+                    <th id="evidencyOwner" >[@s.text name="project.evidenceList.owner" /]</th>
+                    <th id="evidencyYears" >[@s.text name="project.evidenceList.year" /]</th>
                     [#--<th id="evidencyType">[@s.text name="project.evidenceList.type" /]</th>--]
                     <th></th>
                   </tr>
@@ -334,6 +355,8 @@
                     <tr>
                       <th scope="row">${e.id}</th>
                       <td class="col-md-6">${(e.projectExpectedStudyInfo.title)!'Untitled'}</td>
+                      <td class="col-md-6">${(e.project.projectInfo.acronym)}</td>
+                      <td class="col-md-6">${(e.projectExpectedStudyInfo.year)}</td>
                       [#--<td>${(e.studyInfo.studyType.name?capitalize)!'none'}</td>--]
                       <td> <a href="${evidenceUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>

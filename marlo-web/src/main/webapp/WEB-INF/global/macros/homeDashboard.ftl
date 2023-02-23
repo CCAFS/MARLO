@@ -5,8 +5,8 @@
   <table class="projectsList" id="deliverables">
     <thead>
       <tr class="subHeader">
-        <th id="deliverableProject">[@s.text name="project.id" /]</th>
-        <th id="ids">[@s.text name="project.deliverableList.deliverableId" /]</th>
+        <th id="ids">ID</th>
+        <th id="deliverableProject">[@s.text name="project" /]</th>
         <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
         [#--  
         <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>--]
@@ -26,16 +26,19 @@
         [#local toReport = reportingActive && !isDeliverableComplete ]
 
         <tr>
-          [#-- Project ID --]
-          <td class="deliverableId">
-            <a href="[@s.url namespace=namespace action='${(crpSession)!}/deliverableList'][@s.param name='projectID']${deliverable.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              C${deliverable.projectId}
-            </a>
-          </td>
           [#-- Deliverable ID --]
           <td class="deliverableId">
             <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.deliverableId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               D${deliverable.deliverableId}
+            </a>
+          </td>
+          [#-- Project ID --]
+          <td class="deliverableId">
+            <a href="[@s.url namespace=namespace action='${(crpSession)!}/deliverableList'][@s.param name='projectID']${deliverable.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              [#if deliverable.projectAcronym?has_content]${deliverable.projectAcronym}
+              [#else]
+                C${deliverable.projectId}
+              [/#if]
             </a>
           </td>
           [#-- Deliverable Title --]
@@ -82,9 +85,9 @@
   <table class="projectsList" id="studies">
     <thead>
       <tr class="subHeader">
-        <th id="studyProject">[@s.text name="project.id" /]</th>
         <th id="ids">[@s.text name="dashboard.studies.id" /]</th>
-        <th id="studyTitles" >[@s.text name="dashboard.studies.title" /]</th>
+        <th id="studyProject">[@s.text name="project" /]</th>
+        <th id="studyTitles" >OICR/MELIA [@s.text name="dashboard.studies.title" /]</th>
         <th id="studyType">[@s.text name="dashboard.studies.type" /]</th>
         [#--<th id="studyEDY">[@s.text name="project.deliverableList.deliverySummaryYear" /]</th>--]
       </tr>
@@ -102,18 +105,21 @@
         [#local toReport = reportingActive && !isThisComplete ]
 
         <tr>
-          [#-- Project ID --]
-          <td class="deliverableId">
-            <a href="[@s.url namespace=namespace action='${(crpSession)!}/studies'][@s.param name='projectID']${study.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              C${study.projectId}
-            </a>
-          </td>
-          [#-- Study ID --]
+         [#-- Study ID --]
           <td class="deliverableId">
             <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='expectedID']${study.studyId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               ${study.studyId}
             </a>
           </td>
+          [#-- Project ID --]
+          <td class="deliverableId">
+            <a href="[@s.url namespace=namespace action='${(crpSession)!}/studies'][@s.param name='projectID']${study.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              [#if study.projectAcronym?has_content]${study.projectAcronym}
+              [#else]
+                C${study.projectId}
+              [/#if]
+            </a>
+          </td>          
           [#-- Study Title --]
           <td class="left">
             [#-- Hidden title to sort correctly by title --]

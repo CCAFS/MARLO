@@ -27,21 +27,28 @@ public class StudyHomeDTO {
   private long projectId;
   private String studyType;
   private String studyTitle;
+  private String projectAcronym;
 
   public StudyHomeDTO() {
   }
 
-  public StudyHomeDTO(long studyId, long expectedYear, long projectId, String studyType, String studyTitle) {
+  public StudyHomeDTO(long studyId, long expectedYear, long projectId, String studyType, String studyTitle,
+    String projectAcronym) {
     super();
     this.studyId = studyId;
     this.expectedYear = expectedYear;
     this.projectId = projectId;
     this.studyType = studyType;
     this.studyTitle = studyTitle;
+    this.projectAcronym = projectAcronym;
   }
 
   public long getExpectedYear() {
     return expectedYear;
+  }
+
+  public String getProjectAcronym() {
+    return projectAcronym;
   }
 
   public long getProjectId() {
@@ -62,6 +69,10 @@ public class StudyHomeDTO {
 
   public void setExpectedYear(long expectedYear) {
     this.expectedYear = expectedYear;
+  }
+
+  public void setProjectAcronym(String projectAcronym) {
+    this.projectAcronym = projectAcronym;
   }
 
   public void setProjectId(long projectId) {

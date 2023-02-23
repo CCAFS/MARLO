@@ -30,7 +30,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
@@ -76,8 +75,10 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     masterReport.getParameterValues().put("i8nStudiesLinkPerformance",
       this.getText("summaries.study.linkPerformanceIndicator"));
     masterReport.getParameterValues().put("i8nStudiesRCaseStudy", this.getText("summaries.study"));
+    masterReport.getParameterValues().put("i8nStudiesRSharedClusters", this.getText("study.sharedProjects.title"));
     masterReport.getParameterValues().put("i8nCaseStudiesRStudyProjects",
       this.getText("summaries.study.studyProjects"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRProject", this.getText("global.Project"));
     masterReport.getParameterValues().put("i8nCaseStudiesRPartI", this.getText("summaries.study.partI"));
     masterReport.getParameterValues().put("i8nStudiesRType", this.getText("study.type"));
     masterReport.getParameterValues().put("i8nStudiesRStatus", this.getText("study.status"));
@@ -113,8 +114,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     masterReport.getParameterValues().put("i8nStudiesRKeyContributors",
       this.getText("summaries.study.keyContributors"));
     masterReport.getParameterValues().put("i8nStudiesRCrps", this.getText("study.keyContributors.crps"));
-    masterReport.getParameterValues().put("i8nStudiesRFlagships", this.getText("study.keyContributors.centers"));
-    masterReport.getParameterValues().put("i8nStudiesRCenters", this.getText("study.keyContributors.flagships"));
+    masterReport.getParameterValues().put("i8nStudiesRFlagships", this.getText("study.keyContributors.flagships"));
+    masterReport.getParameterValues().put("i8nStudiesRCenters", this.getText("study.keyContributors.centers"));
     masterReport.getParameterValues().put("i8nStudiesRRegions", this.getText("study.keyContributors.regions"));
     masterReport.getParameterValues().put("i8nStudiesRInstitutions",
       this.getText("study.keyContributors.externalPartners"));
@@ -166,14 +167,14 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         "tagged", "cgiarInnovation", "cgiarInnovations", "climateRelevance", "link", "links", "studyPolicies",
         "isSrfTargetText", "otherCrossCuttingDimensionsSelection", "isContribution", "isRegional", "isNational",
         "isOutcomeCaseStudy", "isSrfTarget", "url", "studiesReference", "meliaPublications", "performanceIndicator",
-        "covidAnalysis", "centers"},
+        "covidAnalysis", "centers", "clusterAcronym"},
       new Class[] {Long.class, Integer.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class,
-        String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class},
       0);
 
     URLShortener urlShortener = new URLShortener();
@@ -193,7 +194,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           studyProjects = null, tagged = null, cgiarInnovation = null, cgiarInnovations = null, climateRelevance = null,
           link = null, links = null, studyPolicies = null, isSrfTargetText = null,
           otherCrossCuttingDimensionsSelection = null, url = null, studiesReference = null, meliaPublications = null,
-          performanceIndicator = null, covidAnalysis = null, centers = null;
+          performanceIndicator = null, covidAnalysis = null, centers = null, clusterAcronym = null;
 
         Boolean isContribution = false, isRegional = false, isNational = false, isOutcomeCaseStudy = false,
           isSrfTarget = false;
@@ -261,28 +262,30 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           links = String.join("", linkSet);
         }
         // isContribution
-        if (projectExpectedStudyInfo.getIsContribution() != null) {
-          isContribution = projectExpectedStudyInfo.getIsContribution();
-          isContributionText = projectExpectedStudyInfo.getIsContribution() ? "Yes" : "No";
-          if (isContribution) {
-            // Policies Contribution
-            List<ProjectExpectedStudyPolicy> studyPoliciesList =
-              projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyPolicies().stream()
-                .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
-                .collect(Collectors.toList());
-            Set<String> studyPoliciesSet = new HashSet<>();
-            if (studyPoliciesList != null && studyPoliciesList.size() > 0) {
-              for (ProjectExpectedStudyPolicy projectExpectedStudyPolicy : studyPoliciesList) {
-                if (projectExpectedStudyPolicy.getProjectPolicy()
-                  .getProjectPolicyInfo(this.getSelectedPhase()) != null) {
-                  studyPoliciesSet.add(
-                    "<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + projectExpectedStudyPolicy.getProjectPolicy().getComposedName());
-                }
-              }
-              studyPolicies = String.join("", studyPoliciesSet);
-            }
-          }
-        }
+        /*
+         * if (projectExpectedStudyInfo.getIsContribution() != null) {
+         * isContribution = projectExpectedStudyInfo.getIsContribution();
+         * isContributionText = projectExpectedStudyInfo.getIsContribution() ? "Yes" : "No";
+         * if (isContribution) {
+         * // Policies Contribution
+         * List<ProjectExpectedStudyPolicy> studyPoliciesList =
+         * projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyPolicies().stream()
+         * .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
+         * .collect(Collectors.toList());
+         * Set<String> studyPoliciesSet = new HashSet<>();
+         * if (studyPoliciesList != null && studyPoliciesList.size() > 0) {
+         * for (ProjectExpectedStudyPolicy projectExpectedStudyPolicy : studyPoliciesList) {
+         * if (projectExpectedStudyPolicy.getProjectPolicy()
+         * .getProjectPolicyInfo(this.getSelectedPhase()) != null) {
+         * studyPoliciesSet.add(
+         * "<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + projectExpectedStudyPolicy.getProjectPolicy().getComposedName());
+         * }
+         * }
+         * studyPolicies = String.join("", studyPoliciesSet);
+         * }
+         * }
+         * }
+         */
         // Level of maturity
         if (projectExpectedStudyInfo.getRepIndStageStudy() != null) {
           stageStudy = projectExpectedStudyInfo.getRepIndStageStudy().getName();
@@ -507,6 +510,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           }
         }
 
+        // Cluster Acronum
+        if (projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getAcronym() != null) {
+          clusterAcronym = projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getAcronym();
+        } else {
+          clusterAcronym = "C" + projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getId();
+        }
+
         // TODO: Add Quantifications in Pentaho/MySQL
 
         // Gender, Youth, and Capacity Development
@@ -623,13 +633,30 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             .sorted((sp1, sp2) -> sp2.getProject().getId().compareTo(sp1.getProject().getId()))
             .collect(Collectors.toList());
         Set<String> studyProjectSet = new HashSet<>();
-        if (projectExpectedStudyInfo.getProjectExpectedStudy().getProject() != null) {
-          studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● C"
-            + projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getId());
-        }
+        /*
+         * if (projectExpectedStudyInfo.getProjectExpectedStudy().getProject() != null) {
+         * if (projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getAcronym() != null) {
+         * studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● "
+         * + projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getAcronym());
+         * } else {
+         * studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● C"
+         * + projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getId());
+         * }
+         * }
+         */
         if (studyProjectList != null && studyProjectList.size() > 0) {
           for (ExpectedStudyProject studyProject : studyProjectList) {
-            studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● C" + studyProject.getProject().getId());
+            if (studyProject.getProject().getAcronym() != null) {
+              if (studyProjectSet != null && !studyProjectSet
+                .contains("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyProject.getProject().getAcronym())) {
+                studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyProject.getProject().getAcronym());
+              }
+            } else {
+              if (studyProjectSet != null
+                && !studyProjectSet.contains("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● C" + studyProject.getProject().getId())) {
+                studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● C" + studyProject.getProject().getId());
+              }
+            }
           }
         }
         if (studyProjectSet != null && !studyProjectSet.isEmpty()) {
@@ -643,7 +670,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           otherCrossCuttingDimensions, comunicationsMaterial, contacts, studyProjects, tagged, cgiarInnovation,
           cgiarInnovations, climateRelevance, link, links, studyPolicies, isSrfTargetText,
           otherCrossCuttingDimensionsSelection, isContribution, isRegional, isNational, isOutcomeCaseStudy, isSrfTarget,
-          url, studiesReference, meliaPublications, performanceIndicator, covidAnalysis, centers});
+          url, studiesReference, meliaPublications, performanceIndicator, covidAnalysis, centers, clusterAcronym});
 
       }
     }

@@ -6,9 +6,11 @@ import org.cgiar.ccafs.marlo.data.model.Timeline;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -37,6 +39,15 @@ public class TimelineInformationServiceAction extends BaseAction {
 
     try {
       timelineList = timelineManager.findAll();
+
+      try {
+        timelineList = timelineList.stream()
+          .sorted(Comparator.comparing(Timeline::getOrder, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList());
+      } catch (Exception e) {
+        logger.error("unable to order timeline items", e);
+      }
+
       if (timelineList != null) {
         int count = 0;
         for (Timeline timelineItem : timelineList) {
@@ -47,12 +58,12 @@ public class TimelineInformationServiceAction extends BaseAction {
             timelineMap.put("description", "");
           }
           if (timelineItem.getStartDate() != null) {
-            timelineMap.put("startDate", this.parseDate(timelineItem.getStartDate().toString()));
+            timelineMap.put("startDate", (timelineItem.getStartDate().toString()));
           } else {
             timelineMap.put("startDate", "");
           }
           if (timelineItem.getEndDate() != null) {
-            timelineMap.put("endDate", this.parseDate(timelineItem.getEndDate().toString()));
+            timelineMap.put("endDate", (timelineItem.getEndDate().toString()));
           } else {
             timelineMap.put("endDate", "");
           }

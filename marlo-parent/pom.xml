@@ -15,12 +15,12 @@
 		<hibernate-core-version>4.3.11.Final</hibernate-core-version>
 		<org.springframework-version>4.3.24.RELEASE</org.springframework-version>
 		<junit.version>4.12</junit.version>
-		<logback-classic.version>1.1.7</logback-classic.version>
+		<logback-classic.version>1.2.0</logback-classic.version>
 		<janino.version>2.7.8</janino.version>
 		<javax.inject.version>1</javax.inject.version>
 		<javax-mail.version>1.5.5</javax-mail.version>
 		<com.sun.mail.version>1.5.5</com.sun.mail.version>
-		<struts2.version>2.5.26</struts2.version>
+		<struts2.version>2.5.30</struts2.version>
 		<mysql.version>8.0.16</mysql.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
 		<jsp-api.version>2.2.1</jsp-api.version>
@@ -60,13 +60,15 @@
 		<hibernate-validator.version>5.2.2.Final</hibernate-validator.version>
 		<aspectj.version>1.8.10</aspectj.version>
 		<springfox-swagger2.version>2.9.2</springfox-swagger2.version>
-		<quartz.version>2.1.5</quartz.version>
+		<quartz.version>2.3.2</quartz.version>
 		<commons-validator>1.4.0</commons-validator>
 		<jsoup.version>1.11.3</jsoup.version>
 		<geoip2.version>2.12.0</geoip2.version>
 		<javax.inject.version>1</javax.inject.version>
 		<tomcat.version>8.0.53</tomcat.version>
 		<log4j.version>2.16.0</log4j.version>
+		<sonar.organization>ccafs</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 	<developers>
 		<developer>

@@ -78,7 +78,6 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
-import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -1219,11 +1218,12 @@ public class DeliverableAction extends BaseAction {
         }
 
         // Deliverable Project Outcome list
-        if (deliverable.getDeliverableProjectOutcomes() != null) {
-          deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
-            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
-        }
-
+        /*
+         * if (deliverable.getDeliverableProjectOutcomes() != null) {
+         * deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
+         * .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+         * }
+         */
         // Deliverable Crp Outcome list
         if (deliverable.getDeliverableCrpOutcomes() != null) {
           deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
@@ -1641,24 +1641,6 @@ public class DeliverableAction extends BaseAction {
             this.programOutcomes.add(projectOutcome.getCrpProgramOutcome());
           }
 
-          for (CrpClusterKeyOutputOutcome keyOutcome : projectOutcome.getCrpProgramOutcome()
-            .getCrpClusterKeyOutputOutcomes().stream()
-            .filter(ko -> ko.isActive() && ko.getCrpClusterKeyOutput() != null && ko.getCrpClusterKeyOutput().isActive()
-              && ko.getCrpClusterKeyOutput().getCrpClusterOfActivity() != null
-              && ko.getCrpClusterKeyOutput().getCrpClusterOfActivity().isActive())
-            .collect(Collectors.toList())) {
-
-            if (keyOutcome.getCrpClusterKeyOutput().getCrpClusterOfActivity().getPhase()
-              .equals(this.getActualPhase())) {
-
-              if (!this.keyOutputs.contains(keyOutcome.getCrpClusterKeyOutput())) {
-                this.keyOutputs.add(keyOutcome.getCrpClusterKeyOutput());
-              }
-
-            }
-
-          }
-
           // Fill projectOutcomes List
           if (projectOutcome.getCrpProgramOutcome() != null
             && projectOutcome.getCrpProgramOutcome().getComposedName() != null) {
@@ -1670,9 +1652,6 @@ public class DeliverableAction extends BaseAction {
 
         }
       }
-
-      keyOutputs.sort((k1, k2) -> k1.getCrpClusterOfActivity().getIdentifier()
-        .compareTo(k2.getCrpClusterOfActivity().getIdentifier()));
 
       programOutcomes.sort((k1, k2) -> k1.getId().compareTo(k2.getId()));
 
@@ -1936,6 +1915,7 @@ public class DeliverableAction extends BaseAction {
           deliverable.getDeliverableParticipant().setRepIndTypeActivity(null);
           deliverable.getDeliverableParticipant().setRepIndTypeParticipant(null);
           deliverable.getDeliverableParticipant().setRepIndTrainingTerm(null);
+          deliverable.setDeliverableParticipant(null);
         }
 
         if (deliverable.getCountries() != null) {
@@ -2278,18 +2258,22 @@ public class DeliverableAction extends BaseAction {
     }
 
     // Search and deleted form Information
-    if (deliverable.getDeliverableCrpOutcomes() != null && !deliverable.getDeliverableCrpOutcomes().isEmpty()) {
+    try {
+      if (deliverable.getDeliverableCrpOutcomes() != null && !deliverable.getDeliverableCrpOutcomes().isEmpty()) {
 
-      List<DeliverableCrpOutcome> outcomePrev = new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
-        .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        List<DeliverableCrpOutcome> outcomePrev = new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+          .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
-      for (DeliverableCrpOutcome deliverableOutcome : outcomePrev) {
-        if (this.deliverable.getCrpOutcomes() == null
-          || !this.deliverable.getCrpOutcomes().contains(deliverableOutcome)) {
-          this.deliverableCrpOutcomeManager.deleteDeliverableCrpOutcome(deliverableOutcome.getId(),
-            this.getActualPhase().getId());
+        for (DeliverableCrpOutcome deliverableOutcome : outcomePrev) {
+          if (this.deliverable.getCrpOutcomes() == null
+            || !this.deliverable.getCrpOutcomes().contains(deliverableOutcome)) {
+            this.deliverableCrpOutcomeManager.deleteDeliverableCrpOutcome(deliverableOutcome.getId(),
+              this.getActualPhase().getId());
+          }
         }
       }
+    } catch (Exception e) {
+      logger.error("unable to delete crp outcome", e);
     }
 
     // Save form Information
@@ -2303,20 +2287,38 @@ public class DeliverableAction extends BaseAction {
       }
 
       for (DeliverableCrpOutcome deliverableOutcome : this.deliverable.getCrpOutcomes()) {
-        if (deliverableOutcome != null && deliverableOutcome.getId() == null) {
-          DeliverableCrpOutcome deliverableOutcomeSave = new DeliverableCrpOutcome();
-          deliverableOutcomeSave.setDeliverable(deliverable);
-          deliverableOutcomeSave.setPhase(phase);
+        DeliverableCrpOutcome deliverableOutcomeSave = new DeliverableCrpOutcome();
+
+        if (deliverableOutcome != null) {
+          // For new crp outcomes
+          if (deliverableOutcome.getId() == null) {
+            deliverableOutcomeSave.setDeliverable(deliverable);
+            deliverableOutcomeSave.setPhase(phase);
+          } else {
+            // For old crp outcomes
+            try {
+              if (deliverableOutcome.getId() != null) {
+                deliverableOutcomeSave =
+                  deliverableCrpOutcomeManager.getDeliverableCrpOutcomeById(deliverableOutcome.getId());
+              }
+            } catch (Exception e) {
+              logger.error("unable to get old crp outcome", e);
+            }
+          }
 
           if (deliverableOutcome.getCrpProgramOutcome() != null
             && deliverableOutcome.getCrpProgramOutcome().getId() != null) {
             CrpProgramOutcome outcome =
               crpProgramOutcomeManager.getCrpProgramOutcomeById(deliverableOutcome.getCrpProgramOutcome().getId());
-            deliverableOutcomeSave.setCrpProgramOutcome(outcome);
+            if (outcome != null) {
+              deliverableOutcomeSave.setCrpProgramOutcome(outcome);
+            }
 
             this.deliverableCrpOutcomeManager.saveDeliverableCrpOutcome(deliverableOutcomeSave);
             // This is to add studyCrpSave to generate correct auditlog.
-            this.deliverable.getDeliverableCrpOutcomes().add(deliverableOutcomeSave);
+            if (!this.deliverable.getDeliverableCrpOutcomes().contains(deliverableOutcomeSave)) {
+              this.deliverable.getDeliverableCrpOutcomes().add(deliverableOutcomeSave);
+            }
           }
         }
       }
@@ -3620,16 +3622,6 @@ public class DeliverableAction extends BaseAction {
       deliverableInfoDb.setDeliverableType(deliverableType);
     } else {
       deliverableInfoDb.setDeliverableType(null);
-    }
-    // Set CrpClusterKeyOutput to null if has an -1 id
-
-    if (deliverable.getDeliverableInfo().getCrpClusterKeyOutput() == null
-      || deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getId() == null
-      || deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getId().longValue() == -1) {
-      deliverableInfoDb.setCrpClusterKeyOutput(null);
-    } else {
-      deliverableInfoDb.setCrpClusterKeyOutput(crpClusterKeyOutputManager.getCrpClusterKeyOutputById(
-        deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput().getId()));
     }
 
     // Set CrpProgramOutcome to null if has an -1 id

@@ -1154,8 +1154,10 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
             .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
-        deliverable.setProjectOutcomes(deliverable.getDeliverableProjectOutcomes().stream()
-          .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        /*
+         * deliverable.setProjectOutcomes(deliverable.getDeliverableProjectOutcomes().stream()
+         * .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+         */
 
         List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers =
           deliverable.getDeliverableCrossCuttingMarkers().stream()

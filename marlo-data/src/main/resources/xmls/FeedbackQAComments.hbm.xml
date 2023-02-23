@@ -53,6 +53,12 @@
 				<comment>This field is a link to the table users</comment>
 			</column>
 		</many-to-one>
+		<many-to-one name="responsibleUser"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+			<column name="responsible_user_id">
+				<comment>This field is a link to the table users</comment>
+			</column>
+		</many-to-one>
 		<property name="commentDate" type="timestamp">
 			<column name="comment_date" />
 		</property>

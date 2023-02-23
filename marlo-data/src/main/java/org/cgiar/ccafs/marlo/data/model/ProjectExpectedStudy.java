@@ -317,10 +317,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return projectExpectedStudyFlagships;
   }
 
+
   public Set<ProjectExpectedStudyGeographicScope> getProjectExpectedStudyGeographicScopes() {
     return projectExpectedStudyGeographicScopes;
   }
-
 
   public ProjectExpectedStudyInfo getProjectExpectedStudyInfo() {
     return projectExpectedStudyInfo;
@@ -575,6 +575,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public void setProjectExpectedStudyCountries(Set<ProjectExpectedStudyCountry> projectExpectedStudyCountries) {
     this.projectExpectedStudyCountries = projectExpectedStudyCountries;
   }
+
 
   public void setProjectExpectedStudyCrps(Set<ProjectExpectedStudyCrp> projectExpectedStudyCrps) {
     this.projectExpectedStudyCrps = projectExpectedStudyCrps;
