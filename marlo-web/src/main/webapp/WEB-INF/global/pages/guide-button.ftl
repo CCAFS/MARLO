@@ -164,7 +164,7 @@
         <a  target="_blank" href="${baseUrlCdn}/global/documents/AICCRA_Project_Planning_Detailed_Instructions.pdf" download>
       [/#if]
       [#if UpKeepActive?exists &&  UpKeepActive]
-        <a  target="_blank" href="${baseUrlCdn}/global/documents/MARLO_AICCRA_Half_year_Report_Detailed_instructions.pdf" download>
+        <a  target="_blank" href="${baseUrlCdn}/global/documents/MARLO_AICCRA_Mid_year_Report_Detailed_instructions.pdf" download>
       [/#if]
         <div class="button-pdf-modal" >
           <p>Read full guidance</p>

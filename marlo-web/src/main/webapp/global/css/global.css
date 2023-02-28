@@ -1,5 +1,5 @@
 /************* 1. GENERAL ***************/
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800);@import url("custom.pickadate.css"); @import url("custom.bootstrap.css");@import url("customLogin.css?20230125"); @import url("customInputsFlat.css");@import url("customTrumbowyg.css");@import url(https://fonts.googleapis.com/icon?family=Material+Icons);/* END IMPORTS*/
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800);@import url("custom.pickadate.css"); @import url("custom.bootstrap.css");@import url("customLogin.css?20230228"); @import url("customInputsFlat.css");@import url("customTrumbowyg.css");@import url(https://fonts.googleapis.com/icon?family=Material+Icons);/* END IMPORTS*/
 
 :root{
   /* Alert colors */
@@ -7762,7 +7762,7 @@ img.qaOptionsComment {
   font-weight: bold;
   padding: 6px 10px 4px 10px;
   border-radius: 50%;
-  /* box-shadow: 0px 0px 3px #5e5e5e; */
+  box-shadow: 0px 0px 3px #5e5e5e;
   z-index: 1000;
   width: 70px;
   height: 70px;
