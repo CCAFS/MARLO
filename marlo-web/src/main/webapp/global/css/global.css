@@ -6987,7 +6987,7 @@ div.radioFlat {
 
 /* Datatables button*/
 .dt-buttons{
-  
+  display: none;
 height: 33px;
 }
 

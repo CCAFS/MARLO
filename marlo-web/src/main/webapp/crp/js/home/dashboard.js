@@ -425,6 +425,9 @@ $('table.projectsList').dataTable({
     "bAutoWidth": false, // This option enables the auto adjust columns width
     "iDisplayLength": 5, // Number of rows to show on the table
     "pagingType": "simple",
+    language:{
+        searchPlaceholder: "Search..."
+      },
     "fnDrawCallback": function() {
       // This function locates the add activity button at left to the filter box
       var table = $(this).parent().find("table");
@@ -446,6 +449,19 @@ $('table.projectsList').dataTable({
         }
     ]
 });
+
+
+//Add styles to the table
+var iconSearch = $("<div></div>").addClass("iconSearch");
+var divDataTables_filter = $('.dataTables_filter').parent();
+iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Imagen"  style="width: 24px; margin: auto;" >');
+iconSearch.prependTo(divDataTables_filter)
+src="' + baseUrl + '/global/images/loading_3.gif"
+var divDataTables_length =$('.dataTables_length').parent();
+divDataTables_length.css("position", "absolute");
+divDataTables_length.css("bottom", "8px");
+divDataTables_length.css("margin-left", "43%");
+divDataTables_length.css("z-index", "1");
 
 $('a#impact[data-toggle="tab"]').on('shown.bs.tab', function(e) {
   e.target // newly activated tab
