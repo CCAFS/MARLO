@@ -829,3 +829,29 @@ span.timelineControl:hover {
     font-size: 0.7em;
   }
  }
+
+ 
+/* Add styles to the table */
+.dataTables_wrapper {
+  position: relative;
+}
+
+.dataTables_filter{
+  float: left !important;
+}
+
+.dataTables_filter label input{
+  height: 30px !important;
+  width: 295px !important;
+  margin-left: -44px !important;
+}
+
+.iconSearch{
+    background: #0b7ba6;
+    height: 30px;
+    width: 40px;
+    position: absolute;
+    margin-left: 285px;
+    border-radius: 0px 4px 4px 0px;
+    display: flex;
+}
