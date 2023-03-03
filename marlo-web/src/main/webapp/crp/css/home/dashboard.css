@@ -1,4 +1,8 @@
-#dashboardContent {float: left;display: inline-block;width: 58%;margin-left: 2%;}
+#dashboardContent {
+  float: left;display: inline-block;
+  /* width: 58%; */
+  margin-left: 2%;
+}
 
 #dashboardContent li a{
   background-color: white;
@@ -402,7 +406,7 @@ span.timelineControl:hover {
     }
 
     .timelineAlert {
-      top: 445px !important;
+      top: 325px !important;
     }
 
     .timelineAlertText {
@@ -728,7 +732,7 @@ span.timelineControl:hover {
     display: table-cell;
     text-align: center;
     margin-left: 4px;
-    display: block;
+    display: flex;
 }
 
   .itemsTablet{
@@ -786,6 +790,9 @@ span.timelineControl:hover {
 
  .sectionItems{
   margin-left: 10px;
+  width: 280px;
+  max-width: 280px;
+  min-width: 280px;
  }
 
  @media (max-width:1020px){
@@ -799,6 +806,12 @@ span.timelineControl:hover {
   .containerItems {
     display: flex;
     justify-content: center;
+}
+
+.sectionItems {
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
 }
 
   .containerSeccionItems {

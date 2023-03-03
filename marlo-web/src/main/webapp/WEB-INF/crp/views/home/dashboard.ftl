@@ -146,11 +146,11 @@
             <img class="itemgifstudies" src="${baseUrlCdn}/global/images/oicrs_icon.gif" style="display:none;">
             <p>OICRs & MELIAs</p>
           </div>
-          <!--  <div class="itemsTablet" id="innovations">
-            <img class="itemimginnovations" src="${baseUrlCdn}/global/images/ocurrencia.png" width="70">
-            <img class="itemgifinnovations" src="${baseUrlCdn}/global/images/ocurrencia.gif" style="display:none;" width="70">
+          <div class="itemsTablet" id="innovations">
+            <img class="itemimginnovations" src="${baseUrlCdn}/global/images/innovationDashboard.png" width="70">
+            <img class="itemgifinnovations" src="${baseUrlCdn}/global/images/innovationDashboard.gif" style="display:none;" width="70">
             <p>Innovations</p>
-          </div>  -->
+          </div>
         </div>
       </div>
       <div id="dashboardContent" class="">
