@@ -7813,7 +7813,7 @@ img.qaOptionsComment {
 }
 
 .popup-guide .title-modal-evidences {
-  font-size: 17px;
+  font-size: 23px;
   font-weight: 600;
   margin-top: -19px;
 }
@@ -7826,7 +7826,7 @@ img.qaOptionsComment {
 
 .popup-guide .button-pdf-modal {
   background-color: #ffffff;
-  min-width: 160px;
+  min-width: 181px;
   height: 40px;
   text-align: center;
   display: flex;
@@ -7835,12 +7835,14 @@ img.qaOptionsComment {
   cursor: pointer;
   border-radius: 3px;
   font-weight: 600;
-  border: #f79090 solid 2px;
-  color: #ff6464;
+  border: #f7909000 solid 2px;
+  color: #5f5e5e;
+  text-decoration: underline;
 }
 
 .popup-guide .button-pdf-modal p {
     margin: auto;
+    margin-right: 10px;
 }
 
 .popup-guide .button-pdf-modal img {
@@ -7875,6 +7877,17 @@ img.qaOptionsComment {
   background: #0000001c;
 }
 
+.popup-guide .line-modal-bottom{
+  /* position: absolute; */
+  /* right: 13px; */
+  /* bottom: 56px; */
+  width: 100%;
+  height: 1px;
+  background: #0000001c;
+  margin-bottom: -12px;
+  margin-top: 8px;
+}
+
 .popup-guide .text-inter{
   margin: 0 12px;
   max-height: 325px;
@@ -7887,4 +7900,9 @@ img.qaOptionsComment {
 
 .popup-guide .text-inter::-webkit-scrollbar {
   -webkit-appearance: none;
+}
+
+.text-modal-evidences h3 {
+  margin-top: 10px;
+  font-size: 18px;
 }
