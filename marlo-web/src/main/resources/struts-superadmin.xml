@@ -232,7 +232,6 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">timelineManagement</param>
 				<param name="edit">true</param>
-				<param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 	</package>

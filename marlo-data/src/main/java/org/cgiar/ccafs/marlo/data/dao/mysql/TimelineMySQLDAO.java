@@ -38,8 +38,7 @@ public class TimelineMySQLDAO extends AbstractMarloDAO<Timeline, Long> implement
   @Override
   public void deleteTimeline(long timelineId) {
     Timeline timeline = this.find(timelineId);
-    timeline.setActive(false);
-    this.update(timeline);
+    this.delete(timeline);
   }
 
   @Override
