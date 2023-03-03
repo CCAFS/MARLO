@@ -9,7 +9,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectContributionsCrpList.css?20230206",
+  "${baseUrlMedia}/css/projects/projectContributionsCrpList.css?20230303",
   "${baseUrlMedia}/css/projects/projectsContributionToLP6.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ] /]
