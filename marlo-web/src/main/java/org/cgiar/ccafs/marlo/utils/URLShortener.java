@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
  * URL Shortener
@@ -17,87 +19,20 @@ public class URLShortener {
   public URLShortener() {
   }
 
-  /*
-   * @param text + url - to detect url links and shorten them
-   * @return the text with tiny urllinks
-   */
   public String detectAndShortenLinks(String text) {
-    String url = "", referenceText = text;
-    if (text.length() > 0 && text.contains("http")) {
-      String textPart = null;
-      int startUrl = 0, finalUrl = 0;
-
-      for (int i = 0; i < text.length(); i++) {
-        if (i < text.length() - 6) {
-
-          if ((text.charAt(i) == 'h' && text.charAt(i + 1) == 't' && text.charAt(i + 2) == 't'
-            && text.charAt(i + 3) == 'p' && text.charAt(i + 4) == ':' && text.charAt(i + 5) == '/'
-            && text.charAt(i + 6) == '/')
-            || (text.charAt(i) == 'h' && text.charAt(i + 1) == 't' && text.charAt(i + 2) == 't'
-              && text.charAt(i + 3) == 'p' && text.charAt(i + 4) == 's' && text.charAt(i + 5) == ':'
-              && text.charAt(i + 6) == '/' && text.charAt(i + 7) == '/')) {
-            startUrl = i;
-            if (i > 1) {
-              textPart = text.substring(1, i - 1);
-            }
-            i = i + 6;
-          }
-
-        }
-        if (startUrl > 0) {
-          if ((text.charAt(i) == '<' && text.charAt(i + 1) == 'b' && text.charAt(i + 2) == 'r'
-            && text.charAt(i + 3) == '>')) {
-            finalUrl = i - 1;
-            i = i + 3;
-          }
-          if (text.charAt(i) == ')') {
-            finalUrl = i - 1;
-          }
-
-          if (text.charAt(i) == '(') {
-            finalUrl = i - 1;
-          }
-
-          if (text.charAt(i) == '[') {
-            finalUrl = i - 1;
-          }
-
-          if (text.charAt(i) == ' ') {
-            finalUrl = i - 1;
-          }
-
-          if ((i + 1) == text.length()) {
-            finalUrl = i + 1;
-          }
-        }
-
-        if (startUrl > 0) {
-          if (finalUrl > 0) {
-
-            url = text.substring(startUrl, finalUrl);
-            if (url.length() > LENGTH_LINK) {
-              String shortURL = null;
-              try {
-                shortURL = this.getShortUrlService(url);
-                System.out.println("short url " + shortURL);
-              } catch (Exception e) {
-                System.out.println(e);
-              }
-
-              if (shortURL != null) {
-                referenceText = referenceText.replace(url, shortURL);
-              }
-            }
-
-            startUrl = 0;
-            finalUrl = 0;
-            url = "";
-            textPart = "";
-          }
-        }
-      }
+    StringBuilder sb = new StringBuilder(text);
+    Pattern pattern = Pattern.compile("(https?://\\S+)");
+    Matcher matcher = pattern.matcher(text);
+    int offset = 0;
+    while (matcher.find()) {
+      String url = matcher.group(1);
+      String shortURL = this.getShortUrlService(url);
+      int start = matcher.start(1) + offset;
+      int end = matcher.end(1) + offset;
+      sb.replace(start, end, shortURL);
+      offset += shortURL.length() - url.length();
     }
-    return referenceText;
+    return sb.toString();
   }
 
   /*
@@ -163,7 +98,6 @@ public class URLShortener {
               String shortURL = null;
               try {
                 shortURL = this.getShortUrlService(url);
-                System.out.println("short url " + shortURL);
               } catch (Exception e) {
                 System.out.println(e);
               }
@@ -182,6 +116,113 @@ public class URLShortener {
       }
     }
     return referenceText;
+  }
+
+  /*
+   * @param text + url - to detect url links and shorten them
+   * @return the text with tiny urllinks
+   */
+  public String detectAndShortenLinksv2(String text) {
+    String url = "", referenceText = text;
+    if (text.length() > 0 && text.contains("http")) {
+      String textPart = null;
+      int startUrl = 0, finalUrl = 0;
+
+      for (int i = 0; i < text.length(); i++) {
+        if (i < text.length() - 6) {
+
+          if ((text.charAt(i) == 'h' && text.charAt(i + 1) == 't' && text.charAt(i + 2) == 't'
+            && text.charAt(i + 3) == 'p' && text.charAt(i + 4) == ':' && text.charAt(i + 5) == '/'
+            && text.charAt(i + 6) == '/')
+            || (text.charAt(i) == 'h' && text.charAt(i + 1) == 't' && text.charAt(i + 2) == 't'
+              && text.charAt(i + 3) == 'p' && text.charAt(i + 4) == 's' && text.charAt(i + 5) == ':'
+              && text.charAt(i + 6) == '/' && text.charAt(i + 7) == '/')) {
+            startUrl = i;
+            if (i > 1) {
+              textPart = text.substring(1, i - 1);
+            }
+            i = i + 6;
+          }
+
+        }
+        if (startUrl > 0) {
+          if ((text.charAt(i) == '<' && text.charAt(i + 1) == 'b' && text.charAt(i + 2) == 'r'
+            && text.charAt(i + 3) == '>')) {
+            finalUrl = i - 1;
+            i = i + 3;
+          }
+          if (text.charAt(i) == ')') {
+            finalUrl = i - 1;
+          }
+
+          if (text.charAt(i) == '(') {
+            finalUrl = i - 1;
+          }
+
+          if (text.charAt(i) == '[') {
+            finalUrl = i - 1;
+          }
+
+          if (text.charAt(i) == ' ') {
+            finalUrl = i - 1;
+          }
+
+          if ((i + 1) == text.length()) {
+            finalUrl = i + 1;
+          }
+        }
+
+        if (startUrl > 0) {
+          if (finalUrl > 0) {
+
+            url = text.substring(startUrl, finalUrl);
+            if (url.length() > LENGTH_LINK) {
+              String shortURL = null;
+              try {
+                shortURL = this.getShortUrlService(url);
+              } catch (Exception e) {
+                System.out.println(e);
+              }
+
+              if (shortURL != null) {
+                referenceText = referenceText.replace(url, shortURL);
+              }
+            }
+
+            startUrl = 0;
+            finalUrl = 0;
+            url = "";
+            textPart = "";
+          }
+        }
+      }
+    }
+    return referenceText;
+  }
+
+  /*
+   * @param text + url - to detect url links and shorten them
+   * @return the text with tiny urllinks
+   * @version 2
+   */
+  public String detectAndShortenLinksv3(String text) {
+    StringBuilder referenceText = new StringBuilder(text);
+    Matcher matcher = Pattern.compile("(https?://\\S+)").matcher(text);
+    while (matcher.find()) {
+      String url = matcher.group(1);
+      if (url.length() > LENGTH_LINK) {
+        String shortURL = null;
+        try {
+          shortURL = this.getShortUrlService(url);
+        } catch (Exception e) {
+          System.out.println(e);
+        }
+        if (shortURL != null) {
+          referenceText.replace(matcher.start(1), matcher.end(1), shortURL);
+        }
+      }
+    }
+    return referenceText.toString();
   }
 
   /*

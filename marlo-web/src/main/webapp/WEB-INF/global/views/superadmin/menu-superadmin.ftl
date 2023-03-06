@@ -30,6 +30,7 @@
     <#--  { 'slug': 'institutions',    'name': 'menu.superadmin.institutions', 'action': 'marloInstitutions',   'active': true }  -->
     { 'slug': 'bulkReplication',    'name': 'menu.superadmin.bulkReplication', 'action': 'deliverablesReplication',   'active': true },
     { 'slug': 'timelineManagement',    'name': 'menu.superadmin.timelineManagement', 'action': 'timelineManagement',   'active': true}
+    { 'slug': 'feedbackManagement',    'name': 'menu.superadmin.feedbackManagement', 'action': 'feedbackManagement',   'active': true}
   ]/]
 [/#if]
 
