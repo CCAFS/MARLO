@@ -526,16 +526,17 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
 
 
     }
-    for (ProjectMilestone projectMilestone : projectOutcomePrev.getProjectMilestones().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
-
-      if (projectOutcome.getMilestones() == null || projectOutcome.getMilestones().stream()
-        .filter(c -> c != null && c.getCrpMilestone() != null && c.getCrpMilestone().getComposeID() != null
-          && c.getCrpMilestone().getComposeID().equals(projectMilestone.getCrpMilestone().getComposeID()))
-        .collect(Collectors.toList()).isEmpty()) {
-        projectMilestoneDAO.deleteProjectMilestone(projectMilestone.getId());
-      }
-    }
+    /*
+     * for (ProjectMilestone projectMilestone : projectOutcomePrev.getProjectMilestones().stream()
+     * .filter(c -> c.isActive()).collect(Collectors.toList())) {
+     * if (projectOutcome.getMilestones() == null || projectOutcome.getMilestones().stream()
+     * .filter(c -> c != null && c.getCrpMilestone() != null && c.getCrpMilestone().getComposeID() != null
+     * && c.getCrpMilestone().getComposeID().equals(projectMilestone.getCrpMilestone().getComposeID()))
+     * .collect(Collectors.toList()).isEmpty()) {
+     * projectMilestoneDAO.deleteProjectMilestone(projectMilestone.getId());
+     * }
+     * }
+     */
     if (projectOutcome.getMilestones() != null) {
       for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
         if (projectMilestone != null) {

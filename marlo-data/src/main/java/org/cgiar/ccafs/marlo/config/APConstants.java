@@ -129,6 +129,7 @@ public final class APConstants {
   public static final String FEEDBACK_DRAFT_ACTIVE = "feedback_draft_active";
   public static final String PREVIOUS_PROJECT_ID_ACTIVE = "previous_project_id_field_active";
   public static final String HOMEPAGE_TIMELINE_ACTIVE = "homepage_timeline_active";
+  public static final String BUTTON_GUIDE_ACTIVE = "button_guide_active";
 
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =

@@ -85,11 +85,11 @@
       [#elseif actionName == 'AICCRA/contributionsCrpList']
         <h3 >[@s.text name="contribution.popup.title" /]</h3>   
         <div class="text-inter">
-          [@s.text name="contributionList.popup.descriptionAR" /]
+          [@s.text name="contributionList.popup.descriptionAWPB" /]
       [#elseif actionName =='AICCRA/contributionCrp']
         <h3 >[@s.text name="contribution.popup.title" /]</h3>   
         <div class="text-inter">
-          [@s.text name="contribution.popup.descriptionAR" /]
+          [@s.text name="contribution.popup.descriptionAWPB" /]
       [#elseif actionName == 'AICCRA/studies' || actionName =='AICCRA/study']
         <h3 >[@s.text name="oicrs.popup.title" /]</h3>   
         <div class="text-inter">
