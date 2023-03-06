@@ -24,8 +24,9 @@
     
     [#-- Importing Tawk.to Widget configuration --]
     [#include "/WEB-INF/global/pages/tawkto-widget.ftl" /]
-    [#include "/WEB-INF/global/pages/guide-button.ftl" /]
-    
+    [#if action.hasSpecificities('button_guide_active') ]
+      [#include "/WEB-INF/global/pages/guide-button.ftl" /]
+    [/#if]
     [#if baseUrl = "http://marlodev.ciat.cgiar.org"]
       <!-- Hotjar Tracking Code for http://marlodev.ciat.cgiar.org/ -->
       <script>

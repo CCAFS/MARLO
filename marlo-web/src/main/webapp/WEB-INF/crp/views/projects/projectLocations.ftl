@@ -36,6 +36,7 @@
   <div style="display:none" class="viewMore closed"></div>
 </div>
 -->
+[#if !reportingActive]
 <div class="animated flipInX container  viewMore-block containerAlertMargin">
   <div class="containerAlert alert-leftovers alertColorBackgroundInfo " id="containerAlert">
     <div class="containerLine alertColorInfo"></div>
@@ -46,12 +47,17 @@
     </div>
     <div class="containerText col-md-12">
       <p class="alertText">
-        [#if reportingActive] [@s.text name="projectLocations.help2" /] [#else] [@s.text name="projectLocations.help1" /] [/#if] 
+        <!--  [#if reportingActive] 
+          [@s.text name="projectLocations.help2" /] 
+        [#else]   -->
+          [@s.text name="projectLocations.help1" /] 
+        <!--  [/#if]   -->
       </p>
     </div>
     <div  class="viewMoreCollapse closed"></div>
   </div>
 </div>
+[/#if] 
 
 [#if (!availabePhase)!false]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
