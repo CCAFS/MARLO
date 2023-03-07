@@ -736,8 +736,8 @@ span.timelineControl:hover {
 }
 
   .itemsTablet{
-    height: 120px;
-    width: 120px;
+    height: 100px;
+    width: 100px;
     -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);   
     margin: 10px auto;
     text-align: center;
@@ -756,12 +756,12 @@ span.timelineControl:hover {
 
  .itemsTablet img{
   margin-top: 10px;
-  width: 60px;
+  width: 47px;
  }
 
  .itemsTablet p{
   font-weight: 700;
-  font-size: 1.2em;
+  font-size: 1.1em;
   color: rgb(110, 110, 110);
  }
 
@@ -790,9 +790,10 @@ span.timelineControl:hover {
 
  .sectionItems{
   margin-left: 10px;
-  width: 280px;
-  max-width: 280px;
-  min-width: 280px;
+  width: 240px;
+  max-width: 240px;
+  min-width: 240px;
+  margin-top: 30px;
  }
 
  @media (max-width:1020px){
