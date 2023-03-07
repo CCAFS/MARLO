@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.ExternalSourceAuthor;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataAltmetricModel;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataAltmetricModel2;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataGardianModel;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataWOSModel;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSAuthor;
@@ -82,6 +83,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
   private String link;
   private String jsonStringResponse;
   private MetadataWOSModel response;
+  private MetadataWOSModel response2;
   private Long deliverableId;
   private Long phaseId;
 
@@ -122,6 +124,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
      */
     if (this.jsonStringResponse != null && !StringUtils.equalsIgnoreCase(this.jsonStringResponse, "null")) {
       this.response = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
+      this.response2 = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
       this.phaseId = this.getActualPhase().getId();
 
       this.saveInfo();
@@ -161,6 +164,12 @@ public class DeliverableMetadataByWOS extends BaseAction {
     return response;
   }
 
+
+  public MetadataWOSModel getResponse2() {
+    return response2;
+  }
+
+
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
@@ -178,9 +187,14 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
     if (!this.link.isEmpty() && DOIService.REGEXP_PLAINDOI.matcher(this.link).lookingAt()) {
       JsonElement response = this.readWOSDataFromClarisa();
-
       this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
     }
+    if (!this.link.isEmpty() && this.link.contains("handle")) {
+      JsonElement response = this.readWOSDataFromClarisa2();
+      this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
+    }
+
+
   }
 
   private JsonElement readWOSDataFromClarisa() throws IOException {
@@ -205,8 +219,12 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
   private JsonElement readWOSDataFromClarisa2() throws IOException {
     URL clarisaUrl = new URL(config.getClarisaWOSLink2().replace("{1}", this.link));
+    System.out.println("clarisaUrl: " + clarisaUrl);
     String loginData = config.getClarisaWOSUser() + ":" + config.getClarisaWOSPassword();
+    System.out.println("login data: " + clarisaUrl);
+
     String encoded = Base64.encodeBase64String(loginData.getBytes());
+    System.out.println("Enconded: " + encoded);
 
     HttpURLConnection conn = (HttpURLConnection) clarisaUrl.openConnection();
     conn.setRequestProperty("Authorization", "Basic " + encoded);
@@ -214,7 +232,11 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
     if (conn.getResponseCode() < 300) {
       try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
+        System.out.println("Reader: " + reader);
+
         element = new JsonParser().parse(reader);
+        System.out.println("Element: " + element);
+
       } catch (FileNotFoundException fnfe) {
         element = JsonNull.INSTANCE;
       }
@@ -373,7 +395,79 @@ public class DeliverableMetadataByWOS extends BaseAction {
   private void saveAltmetricInfo(Phase phase, Deliverable deliverable) {
     DeliverableAltmetricInfo altmetricInfo =
       this.deliverableAltmetricInfoManager.findByPhaseAndDeliverable(phase, deliverable);
-    MetadataAltmetricModel incomingAltmetricInfo = this.response.getAltmetricInfo();
+    MetadataAltmetricModel incomingAltmetricInfo = null;
+    incomingAltmetricInfo = this.response.getAltmetricInfo();
+
+    if (incomingAltmetricInfo != null) {
+      if (altmetricInfo == null) {
+        altmetricInfo = new DeliverableAltmetricInfo();
+        altmetricInfo.setDeliverable(deliverable);
+        altmetricInfo.setPhase(phase);
+        altmetricInfo.setCreatedBy(this.getCurrentUser());
+        altmetricInfo.setLastSync(new Date());
+      }
+
+      altmetricInfo.setActive(true);
+      altmetricInfo.setAddedOn(
+        incomingAltmetricInfo.getAddedOn() != null ? new Date(incomingAltmetricInfo.getAddedOn() * 1000L) : null);
+      altmetricInfo.setAltmetricId(incomingAltmetricInfo.getAltmetricId());
+      altmetricInfo.setAltmetricJid(incomingAltmetricInfo.getAltmetricJid());
+      altmetricInfo.setAuthors(incomingAltmetricInfo.getAuthors() != null
+        ? incomingAltmetricInfo.getAuthors().stream().filter(StringUtils::isNotBlank).collect(Collectors.joining("; "))
+        : null);
+      altmetricInfo.setCitedByBlogs(incomingAltmetricInfo.getCitedByBlogs());
+      altmetricInfo.setCitedByDelicious(incomingAltmetricInfo.getCitedByDelicious());
+      altmetricInfo.setCitedByFacebookPages(incomingAltmetricInfo.getCitedByFacebookPages());
+      altmetricInfo.setCitedByForumUsers(incomingAltmetricInfo.getCitedByForumUsers());
+      altmetricInfo.setCitedByGooglePlusUsers(incomingAltmetricInfo.getCitedByGooglePlusUsers());
+      altmetricInfo.setCitedByLinkedinUsers(incomingAltmetricInfo.getCitedByLinkedinUsers());
+      altmetricInfo.setCitedByNewsOutlets(incomingAltmetricInfo.getCitedByNewsOutlets());
+      altmetricInfo.setCitedByPeerReviewSites(incomingAltmetricInfo.getCitedByPeerReviewSites());
+      altmetricInfo.setCitedByPinterestUsers(incomingAltmetricInfo.getCitedByPinterestUsers());
+      altmetricInfo.setCitedByPolicies(incomingAltmetricInfo.getCitedByPolicies());
+      altmetricInfo.setCitedByPosts(incomingAltmetricInfo.getCitedByPosts());
+      altmetricInfo.setCitedByRedditUsers(incomingAltmetricInfo.getCitedByRedditUsers());
+      altmetricInfo.setCitedByResearchHighlightPlatforms(incomingAltmetricInfo.getCitedByResearchHighlightPlatforms());
+      altmetricInfo.setCitedByStackExchangeResources(incomingAltmetricInfo.getCitedByStackExchangeResources());
+      altmetricInfo.setCitedByTwitterUsers(incomingAltmetricInfo.getCitedByTwitterUsers());
+      altmetricInfo.setCitedByWeiboUsers(incomingAltmetricInfo.getCitedByWeiboUsers());
+      altmetricInfo.setCitedByWikipediaPages(incomingAltmetricInfo.getCitedByWikipediaPages());
+      altmetricInfo.setCitedByYoutubeChannels(incomingAltmetricInfo.getCitedByYoutubeChannels());
+      altmetricInfo.setDetailsUrl(this.link);
+      altmetricInfo.setDoi(incomingAltmetricInfo.getDoi());
+      altmetricInfo.setHandle(incomingAltmetricInfo.getHandle());
+      altmetricInfo.setImageLarge(incomingAltmetricInfo.getImageLarge());
+      altmetricInfo.setImageMedium(incomingAltmetricInfo.getImageMedium());
+      altmetricInfo.setImageSmall(incomingAltmetricInfo.getImageSmall());
+      altmetricInfo.setIsOpenAccess(incomingAltmetricInfo.getIsOpenAccess());
+      altmetricInfo.setJournal(incomingAltmetricInfo.getJournal());
+      altmetricInfo.setLastUpdated(incomingAltmetricInfo.getLastUpdated() != null
+        ? new Date(incomingAltmetricInfo.getLastUpdated() * 1000L) : null);
+      altmetricInfo.setModifiedBy(this.getCurrentUser());
+      altmetricInfo.setPublishedOn(incomingAltmetricInfo.getPublishedOn() != null
+        ? new Date(incomingAltmetricInfo.getPublishedOn() * 1000L) : null);
+      altmetricInfo.setScore(incomingAltmetricInfo.getScore());
+      altmetricInfo.setTitle(incomingAltmetricInfo.getTitle());
+      altmetricInfo.setType(incomingAltmetricInfo.getTitle());
+      altmetricInfo.setUri(incomingAltmetricInfo.getUri());
+      altmetricInfo.setUrl(incomingAltmetricInfo.getUrl());
+
+      altmetricInfo = this.deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetricInfo);
+
+      if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+        this.deliverableAltmetricInfoManager.replicate(altmetricInfo,
+          phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+      }
+    } else {
+      this.saveAltmetricInfo2(phase, deliverable);
+    }
+  }
+
+  private void saveAltmetricInfo2(Phase phase, Deliverable deliverable) {
+    DeliverableAltmetricInfo altmetricInfo =
+      this.deliverableAltmetricInfoManager.findByPhaseAndDeliverable(phase, deliverable);
+    MetadataAltmetricModel2 incomingAltmetricInfo = null;
+    incomingAltmetricInfo = this.response2.getAltmetricInfo2();
 
     if (incomingAltmetricInfo != null) {
       if (altmetricInfo == null) {
@@ -537,15 +631,28 @@ public class DeliverableMetadataByWOS extends BaseAction {
     this.link = link;
 
     this.response = new Gson().fromJson(this.readWOSDataFromClarisa(), MetadataWOSModel.class);
-    if (this.response == null) {
-      this.response = new Gson().fromJson(this.readWOSDataFromClarisa2(), MetadataWOSModel.class);
-    }
+
 
     if (this.response != null) {
       this.saveInfo();
       return true;
     }
 
+    this.response2 = new Gson().fromJson(this.readWOSDataFromClarisa2(), MetadataWOSModel.class);
+    System.out.println("Response 2: " + response2);
+
+    if (this.response2 != null) {
+      Deliverable deliverable = this.deliverableManager.getDeliverableById(this.deliverableId);
+      Phase phase = this.phaseManager.getPhaseById(this.phaseId);
+      this.saveAltmetricInfo(phase, deliverable);
+      return true;
+    }
+
+
     return false;
+  }
+
+  public void setResponse2(MetadataWOSModel response2) {
+    this.response2 = response2;
   }
 }

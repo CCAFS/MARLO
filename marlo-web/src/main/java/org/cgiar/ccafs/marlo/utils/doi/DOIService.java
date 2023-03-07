@@ -135,8 +135,12 @@ public class DOIService {
     if (StringUtils.isBlank(possibleDoi)) {
       return doi;
     }
-
-    Matcher matcher = REGEXP_PLAINDOI.matcher(possibleDoi);
+    Matcher matcher = null;
+    if (!possibleDoi.isEmpty() && possibleDoi.contains("handle")) {
+      return possibleDoi;
+    } else {
+      matcher = REGEXP_PLAINDOI.matcher(possibleDoi);
+    }
 
     if (matcher.find()) {
       doi = matcher.group(0);
