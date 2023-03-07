@@ -104,7 +104,7 @@ public class ProjectInnovationMySQLDAO extends AbstractMarloDAO<ProjectInnovatio
   @Override
   public List<InnovationHomeDTO> getInnovationsByProjectAndPhaseHome(long phaseId, long projectId) {
     String query = "select pi.id as innovationId, pii.year as expectedYear, "
-      + "pr.id as projectId, coalesce(pii.repIndInnovationType.name, 'None') as innovationType, pii.title as innovationTitle, pi.acronym as projectAcronym "
+      + "pr.id as projectId, coalesce(pii.repIndInnovationType.name, 'None') as innovationType, pii.title as innovationTitle, pr.acronym as projectAcronym "
       + "from ProjectInnovation pi, ProjectInnovationInfo pii, Phase ph, Project pr "
       + "where pii.projectInnovation = pi and pi.active = true and "
       + "pi.project = pr and pr.id = :projectId and pr.active = true and "
