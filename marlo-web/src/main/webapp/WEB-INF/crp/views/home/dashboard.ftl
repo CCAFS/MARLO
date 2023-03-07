@@ -8,7 +8,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20230307",
+  "${baseUrlMedia}/css/home/dashboard.css?20230307A",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -144,7 +144,7 @@
           <div class="itemsTablet" id="studies">
             <img class="itemimgstudies" src="${baseUrlCdn}/global/images/oicrs_icon.png" >
             <img class="itemgifstudies" src="${baseUrlCdn}/global/images/oicrs_icon.gif" style="display:none;">
-            <p>OICRs & MELIAs</p>
+            <p class="textOICRs">OICRs & MELIAs</p>
           </div>
           <div class="itemsTablet" id="innovations">
             <img class="itemimginnovations" src="${baseUrlCdn}/global/images/innovationDashboard.png" width="70">

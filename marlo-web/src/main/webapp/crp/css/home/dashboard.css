@@ -765,6 +765,10 @@ span.timelineControl:hover {
   color: rgb(110, 110, 110);
  }
 
+ .itemsTablet .textOICRs{
+  font-size: 1em;
+ }
+
  .containerTabletItems .nav{
   display: none;
  }
