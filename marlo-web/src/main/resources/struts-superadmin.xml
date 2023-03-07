@@ -243,5 +243,14 @@
 				<param name="edit">true</param>
 			</result>
 		</action>
+    <action name="buttonGuideManagement"
+			class="org.cgiar.ccafs.marlo.action.superadmin.ButtonGuideManagementAction">
+			<interceptor-ref name="superAdminStack" />
+			<result name="input">/WEB-INF/global/views/superadmin/buttonGuideManagement.ftl</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">buttonGuideManagement</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
 	</package>
 </struts>

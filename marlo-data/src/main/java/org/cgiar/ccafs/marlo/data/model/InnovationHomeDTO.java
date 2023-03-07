@@ -27,18 +27,20 @@ public class InnovationHomeDTO {
   private long projectId;
   private String innovationType;
   private String innovationTitle;
+  private String projectAcronym;
 
   public InnovationHomeDTO() {
   }
 
   public InnovationHomeDTO(long innovationId, long expectedYear, long projectId, String innovationType,
-    String innovationTitle) {
+    String innovationTitle, String projectAcronym) {
     super();
     this.innovationId = innovationId;
     this.expectedYear = expectedYear;
     this.projectId = projectId;
     this.innovationType = innovationType;
     this.innovationTitle = innovationTitle;
+    this.projectAcronym = projectAcronym;
   }
 
   public long getExpectedYear() {
@@ -55,6 +57,10 @@ public class InnovationHomeDTO {
 
   public String getInnovationType() {
     return innovationType;
+  }
+
+  public String getProjectAcronym() {
+    return projectAcronym;
   }
 
   public long getProjectId() {
@@ -75,6 +81,10 @@ public class InnovationHomeDTO {
 
   public void setInnovationType(String innovationType) {
     this.innovationType = innovationType;
+  }
+
+  public void setProjectAcronym(String projectAcronym) {
+    this.projectAcronym = projectAcronym;
   }
 
   public void setProjectId(long projectId) {
