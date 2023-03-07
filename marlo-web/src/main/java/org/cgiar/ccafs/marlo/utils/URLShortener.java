@@ -19,29 +19,20 @@ public class URLShortener {
   public URLShortener() {
   }
 
-  /*
-   * @param text + url - to detect url links and shorten them
-   * @return the text with tiny urllinks
-   * @version 2
-   */
   public String detectAndShortenLinks(String text) {
-    StringBuilder referenceText = new StringBuilder(text);
-    Matcher matcher = Pattern.compile("(https?://\\S+)").matcher(text);
+    StringBuilder sb = new StringBuilder(text);
+    Pattern pattern = Pattern.compile("(https?://\\S+)");
+    Matcher matcher = pattern.matcher(text);
+    int offset = 0;
     while (matcher.find()) {
       String url = matcher.group(1);
-      if (url.length() > LENGTH_LINK) {
-        String shortURL = null;
-        try {
-          shortURL = this.getShortUrlService(url);
-        } catch (Exception e) {
-          System.out.println(e);
-        }
-        if (shortURL != null) {
-          referenceText.replace(matcher.start(1), matcher.end(1), shortURL);
-        }
-      }
+      String shortURL = this.getShortUrlService(url);
+      int start = matcher.start(1) + offset;
+      int end = matcher.end(1) + offset;
+      sb.replace(start, end, shortURL);
+      offset += shortURL.length() - url.length();
     }
-    return referenceText.toString();
+    return sb.toString();
   }
 
   /*
@@ -207,6 +198,31 @@ public class URLShortener {
       }
     }
     return referenceText;
+  }
+
+  /*
+   * @param text + url - to detect url links and shorten them
+   * @return the text with tiny urllinks
+   * @version 2
+   */
+  public String detectAndShortenLinksv3(String text) {
+    StringBuilder referenceText = new StringBuilder(text);
+    Matcher matcher = Pattern.compile("(https?://\\S+)").matcher(text);
+    while (matcher.find()) {
+      String url = matcher.group(1);
+      if (url.length() > LENGTH_LINK) {
+        String shortURL = null;
+        try {
+          shortURL = this.getShortUrlService(url);
+        } catch (Exception e) {
+          System.out.println(e);
+        }
+        if (shortURL != null) {
+          referenceText.replace(matcher.start(1), matcher.end(1), shortURL);
+        }
+      }
+    }
+    return referenceText.toString();
   }
 
   /*
