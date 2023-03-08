@@ -162,7 +162,7 @@
   <table class="projectsList" id="innovations">
     <thead>
       <tr class="subHeader">
-        <th id="innovationProject">[@s.text name="project.id" /]</th>
+        [#--  <th id="innovationProject">[@s.text name="project.id" /]</th>  --]
         <th id="studyProject">[@s.text name="project" /]</th>
         <th id="ids">[@s.text name="dashboard.innovations.id" /]</th>
         <th id="innovationTitles" >[@s.text name="dashboard.innovations.title" /]</th>
@@ -184,11 +184,11 @@
 
         <tr>
           [#-- Project ID --]
-          <td class="deliverableId">
+          [#--  <td class="deliverableId">
             <a href="[@s.url namespace=namespace action='${(crpSession)!}/innovationsList'][@s.param name='projectID']${innovation.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               C${innovation.projectId}
             </a>
-          </td>
+          </td>  --]
           <td class="deliverableId">
             <a href="[@s.url namespace=namespace action='${(crpSession)!}/innovation'][@s.param name='projectID']${innovation.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               [#if innovation.projectAcronym?has_content]${innovation.projectAcronym}
