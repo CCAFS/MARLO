@@ -39,12 +39,24 @@
       [#elseif actionName =='AICCRA/contributionCrp']
         <h3 >[@s.text name="contribution.popup.title" /]</h3>   
         <div class="text-inter">
-          [@s.text name="contribution.popup.descriptionAR" /]
-      [#elseif actionName == 'AICCRA/studies' || actionName =='AICCRA/study']
+          [#if projectOutcome.crpProgramOutcome.crpProgram.acronym ==' PDO']
+            [@s.text name="contributionPDO.popup.descriptionAR" /]
+          [#else]
+            [@s.text name="contribution.popup.descriptionAR" /]
+          [/#if]  
+      [#elseif actionName == 'AICCRA/studies']
+        <h3 >[@s.text name="oicrs.popup.title" /]</h3>   
+        <div class="text-inter">
+          [@s.text name="oicrsList.popup.descriptionAR" /]
+      [#elseif actionName =='AICCRA/study']
         <h3 >[@s.text name="oicrs.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="oicrs.popup.descriptionAR" /]
-      [#elseif actionName == 'AICCRA/deliverable' || actionName =='AICCRA/deliverableList']
+      [#elseif actionName =='AICCRA/deliverableList']
+        <h3 >[@s.text name="deliverable.popup.title" /]</h3>   
+        <div class="text-inter">
+          [@s.text name="deliverableList.popup.descriptionAR" /]
+      [#elseif actionName == 'AICCRA/deliverable']
         <h3 >[@s.text name="deliverable.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="deliverable.popup.descriptionAR" /]
@@ -90,11 +102,19 @@
         <h3 >[@s.text name="contribution.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="contribution.popup.descriptionAWPB" /]
-      [#elseif actionName == 'AICCRA/studies' || actionName =='AICCRA/study']
+      [#elseif actionName == 'AICCRA/studies']
+        <h3 >[@s.text name="oicrs.popup.title" /]</h3>   
+        <div class="text-inter">
+          [@s.text name="oicrsList.popup.descriptionAWPB" /]
+      [#elseif actionName =='AICCRA/study']
         <h3 >[@s.text name="oicrs.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="oicrs.popup.descriptionAWPB" /]
-      [#elseif actionName == 'AICCRA/deliverable' || actionName =='AICCRA/deliverableList']
+      [#elseif actionName =='AICCRA/deliverableList']
+        <h3 >[@s.text name="deliverable.popup.title" /]</h3>   
+        <div class="text-inter">
+          [@s.text name="deliverableList.popup.descriptionAWPB" /]
+      [#elseif actionName == 'AICCRA/deliverable']
         <h3 >[@s.text name="deliverable.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="deliverable.popup.descriptionAWPB" /]
@@ -140,11 +160,19 @@
         <h3 >[@s.text name="contribution.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="contribution.popup.descriptionMY" /]
-      [#elseif actionName == 'AICCRA/studies' || actionName =='AICCRA/study']
+      [#elseif actionName == 'AICCRA/studies']
+        <h3 >[@s.text name="oicrs.popup.title" /]</h3>   
+        <div class="text-inter">
+          [@s.text name="oicrsList.popup.descriptionMY" /]
+      [#elseif actionName =='AICCRA/study']
         <h3 >[@s.text name="oicrs.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="oicrs.popup.descriptionMY" /]
-      [#elseif actionName == 'AICCRA/deliverable' || actionName =='AICCRA/deliverableList']
+      [#elseif actionName =='AICCRA/deliverableList']
+        <h3 >[@s.text name="deliverable.popup.title" /]</h3>   
+        <div class="text-inter">
+          [@s.text name="deliverableList.popup.descriptionMY" /]
+      [#elseif actionName == 'AICCRA/deliverable']
         <h3 >[@s.text name="deliverable.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="deliverable.popup.descriptionMY" /]
