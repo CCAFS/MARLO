@@ -425,7 +425,11 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
         // Tag for shared deliverable
         String sharedTag = "";
         if (deliverable.getProject() != null && !deliverable.getProject().getId().equals(projectID)) {
-          sharedTag = " (Shared from C" + deliverable.getProject().getId() + ") ";
+          if (deliverable.getProject().getAcronym() != null) {
+            sharedTag = " (Shared from " + deliverable.getProject().getAcronym() + ") ";
+          } else {
+            sharedTag = " (Shared from C" + deliverable.getProject().getId() + ") ";
+          }
         }
 
         if (deliverable.getDissemination(this.getSelectedPhase()).getConfidential() != null
@@ -496,7 +500,11 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
         // Tag for shared deliverable
         String sharedTag = "";
         if (study.getProject() != null && !study.getProject().getId().equals(projectID)) {
-          sharedTag = " (Shared from C" + study.getProject().getId() + ") ";
+          if (study.getProject().getAcronym() != null) {
+            sharedTag = " (Shared from " + study.getProject().getAcronym() + ") ";
+          } else {
+            sharedTag = " (Shared from C" + study.getProject().getId() + ") ";
+          }
         }
 
         POIField[] sData = {new POIField("" + study.getId() + sharedTag + "", ParagraphAlignment.CENTER, false),
