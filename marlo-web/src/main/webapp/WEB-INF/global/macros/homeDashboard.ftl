@@ -163,7 +163,7 @@
     <thead>
       <tr class="subHeader">
         [#--  <th id="innovationProject">[@s.text name="project.id" /]</th>  --]
-        <th id="ids">[@s.text name="dashboard.innovations.id" /]</th>
+        <th id="ids">ID</th>
         <th id="studyProject">[@s.text name="project" /]</th>        
         <th id="innovationTitles" >[@s.text name="dashboard.innovations.title" /]</th>
         <th id="innovationType">[@s.text name="dashboard.innovations.type" /]</th>
