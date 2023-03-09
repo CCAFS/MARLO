@@ -91,8 +91,7 @@ $(document).ready(function() {
 var iconSearch = $("<div></div>").addClass("iconSearch");
 var divDataTables_filter = document.querySelectorAll('.dataTables_filter');
 iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Imagen"  style="width: 24px; margin: auto;" >');
-iconSearch.prependTo(divDataTables_filter)
-src="' + baseUrl + '/global/images/loading_3.gif"
+iconSearch.prependTo(divDataTables_filter);
 
 console.log($('.dataTables_filter'))
 
