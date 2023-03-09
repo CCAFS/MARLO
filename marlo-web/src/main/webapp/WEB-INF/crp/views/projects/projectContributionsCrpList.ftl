@@ -3,13 +3,13 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectContributionsCrpList.js?20230306",
+  "${baseUrlMedia}/js/projects/projectContributionsCrpList.js?20230309A",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectContributionsCrpList.css?20230306",
+  "${baseUrlMedia}/css/projects/projectContributionsCrpList.css?20230309",
   "${baseUrlMedia}/css/projects/projectsContributionToLP6.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ] /]
