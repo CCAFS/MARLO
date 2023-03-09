@@ -45,8 +45,7 @@ $(document).ready(function() {
   var iconSearch = $("<div></div>").addClass("iconSearch");
   var divDataTables_filter = $('.dataTables_filter').parent();
   iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Imagen"  style="width: 24px; margin: auto;" >');
-  iconSearch.prependTo(divDataTables_filter)
-  src="' + baseUrl + '/global/images/loading_3.gif"
+  iconSearch.prependTo(divDataTables_filter);
   var divDataTables_length =$('.dataTables_length').parent();
   divDataTables_length.css("position", "absolute");
   divDataTables_length.css("bottom", "8px");
