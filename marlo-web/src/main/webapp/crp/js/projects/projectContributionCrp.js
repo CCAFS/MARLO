@@ -48,6 +48,9 @@ function init() {
       "bSort": true, // this option enable the sort of contents by columns
       "bAutoWidth": false, // This option enables the auto adjust columns width
       "iDisplayLength": 25, // Number of rows to show on the table
+      "language": {
+        searchPlaceholder: "Search..."
+      },
       "fnDrawCallback": function() {
         // This function locates the add activity button at left to the filter box
         var table = $(this).parent().find("table");
@@ -82,6 +85,9 @@ function init() {
     "bSort": true, // this option enable the sort of contents by columns
     "bAutoWidth": false, // This option enables the auto adjust columns width
     "iDisplayLength": 25, // Number of rows to show on the table
+    "language": {
+      searchPlaceholder: "Search..."
+    },
     "fnDrawCallback": function() {
       // This function locates the add activity button at left to the filter box
       var table = $(this).parent().find("table");
@@ -116,6 +122,9 @@ function init() {
     "bSort": true, // this option enable the sort of contents by columns
     "bAutoWidth": false, // This option enables the auto adjust columns width
     "iDisplayLength": 25, // Number of rows to show on the table
+    "language": {
+      searchPlaceholder: "Search..."
+    },
     "fnDrawCallback": function() {
       // This function locates the add activity button at left to the filter box
       var table = $(this).parent().find("table");
