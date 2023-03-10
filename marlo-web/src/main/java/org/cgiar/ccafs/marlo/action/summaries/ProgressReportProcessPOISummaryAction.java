@@ -38,6 +38,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGeographicScopeMan
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeIndicatorManager;
@@ -59,6 +61,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator;
@@ -229,6 +233,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
   // Managers
   private PowbExpectedCrpProgressManager powbExpectedCrpProgressManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private ProjectInnovationManager projectInnovationManager;
+  private ProjectInnovationProjectOutcomeManager projectInnovationProjectOutcomeManager;
   private PowbSynthesisManager powbSynthesisManager;
   private PowbExpenditureAreasManager powbExpenditureAreasManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
@@ -286,7 +292,9 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     LocalizedTextProvider localizedTextProvider, ClusterTypeManager clusterTypeManager,
     DeliverableManager deliverableManager, ProjectMilestoneManager projectMilestoneManager,
     ProjectDeliverableSharedManager projectDeliverableSharedManager,
-    ProjectExpectedStudyProjectOutcomeManager projectExpectedStudyProjectOutcomeManager) {
+    ProjectExpectedStudyProjectOutcomeManager projectExpectedStudyProjectOutcomeManager,
+    ProjectInnovationManager projectInnovationManager,
+    ProjectInnovationProjectOutcomeManager projectInnovationProjectOutcomeManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -317,6 +325,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     this.projectMilestoneManager = projectMilestoneManager;
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
     this.projectExpectedStudyProjectOutcomeManager = projectExpectedStudyProjectOutcomeManager;
+    this.projectInnovationManager = projectInnovationManager;
+    this.projectInnovationProjectOutcomeManager = projectInnovationProjectOutcomeManager;
   }
 
   private void createCoverTable() {
@@ -434,11 +444,12 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
         if (deliverable.getDissemination(this.getSelectedPhase()).getConfidential() != null
           && deliverable.getDissemination(this.getSelectedPhase()).getConfidential()) {
-          POIField[] sData = {new POIField("D" + deliverable.getId() + sharedTag + "", ParagraphAlignment.LEFT, false),
-            new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
-            new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
-              ParagraphAlignment.LEFT, false),
-            new POIField("<Confidential Link Provided>", ParagraphAlignment.LEFT, false, "c92804", "")};
+          POIField[] sData =
+            {new POIField("D" + deliverable.getId() + sharedTag + "", ParagraphAlignment.CENTER, false),
+              new POIField(deliverable.getDeliverableInfo().getTitle(), ParagraphAlignment.LEFT, false),
+              new POIField(deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase()),
+                ParagraphAlignment.LEFT, false),
+              new POIField("<Confidential Link Provided>", ParagraphAlignment.LEFT, false, "c92804", "")};
           data = Arrays.asList(sData);
           datas.add(data);
         } else if (disseminationURL.isEmpty()) {
@@ -465,6 +476,70 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     }
   }
 
+  private void createInnovationsTable(List<ProjectInnovation> innovations) {
+
+    List<List<POIField>> headers = new ArrayList<>();
+
+    String blackColor = "000000";
+
+    Boolean bold = true;
+
+    bold = true;
+    POIField[] sHeader1 = {
+      new POIField(this.getText("summaries.progressReport2020.innovationsTable.Title1"), ParagraphAlignment.CENTER,
+        bold, blackColor),
+      new POIField(this.getText("summaries.progressReport2020.innovationsTable.Title2"), ParagraphAlignment.CENTER,
+        bold, blackColor),
+      new POIField(this.getText("summaries.progressReport2020.innovationsTable.Title3"), ParagraphAlignment.CENTER,
+        bold, blackColor)};
+
+    List<POIField> header1 = Arrays.asList(sHeader1);
+    // List<POIField> header2 = Arrays.asList(sHeader2);
+    headers.add(header1);
+    // headers.add(header2);
+
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    data = new ArrayList<>();
+
+
+    if (innovations != null && !innovations.isEmpty()) {
+
+      for (ProjectInnovation innovation : innovations) {
+
+
+        // Tag for shared deliverable
+        String sharedTag = "";
+        if (innovation.getProject() != null && !innovation.getProject().getId().equals(projectID)) {
+          if (innovation.getProject().getAcronym() != null) {
+            sharedTag = " (Shared from " + innovation.getProject().getAcronym() + ") ";
+          } else {
+            sharedTag = " (Shared from C" + innovation.getProject().getId() + ") ";
+          }
+        }
+
+        String innovationtype;
+        if (innovation.getProjectInnovationInfo() != null
+          && innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
+          && innovation.getProjectInnovationInfo().getRepIndInnovationType().getName() != null) {
+          innovationtype = innovation.getProjectInnovationInfo().getRepIndInnovationType().getName();
+        } else {
+          innovationtype = "<Not Defined>";
+        }
+
+        POIField[] sData = {new POIField("" + innovation.getId() + sharedTag + "", ParagraphAlignment.CENTER, false),
+          new POIField(innovation.getProjectInnovationInfo(this.getSelectedPhase()).getTitle(), ParagraphAlignment.LEFT,
+            false),
+          new POIField(innovationtype, ParagraphAlignment.LEFT, false)};
+        data = Arrays.asList(sData);
+        datas.add(data);
+
+      }
+      String text = "Progress";
+      poiSummary.textTable(document, headers, datas, false, text);
+    }
+  }
+
   private void createOICRsTable(List<ProjectExpectedStudy> studies) {
 
     List<List<POIField>> headers = new ArrayList<>();
@@ -475,11 +550,11 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
     bold = true;
     POIField[] sHeader1 = {
-      new POIField(this.getText("summaries.progressReport2020.deliverablesTable.Title1"), ParagraphAlignment.CENTER,
+      new POIField(this.getText("summaries.progressReport2020.innovationsTable.Title1"), ParagraphAlignment.CENTER,
         bold, blackColor),
-      new POIField(this.getText("summaries.progressReport2020.deliverablesTable.Title2"), ParagraphAlignment.CENTER,
+      new POIField(this.getText("summaries.progressReport2020.innovationsTable.Title2"), ParagraphAlignment.CENTER,
         bold, blackColor),
-      new POIField(this.getText("summaries.progressReport2020.deliverablesTable.Title3"), ParagraphAlignment.CENTER,
+      new POIField(this.getText("summaries.progressReport2020.innovationsTable.Title3"), ParagraphAlignment.CENTER,
         bold, blackColor)};
 
     List<POIField> header1 = Arrays.asList(sHeader1);
@@ -1389,6 +1464,45 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                   poiSummary.textParagraphFontCalibri(document.createParagraph(),
                     this.getText("summaries.progressReport2020.oicrStatus") + ":");
                   this.createOICRsTable(expectedStudies);
+                }
+                poiSummary.textLineBreak(document, 3);
+
+
+                // Innovations Table
+                List<ProjectInnovation> innovations = new ArrayList<>();
+                try {
+                  for (ProjectInnovation innovation : projectOutcome.getProject().getProjectInnovations().stream()
+                    .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(this.getActualPhase()) != null
+                      && ps.getProjectInnovationInfo(this.getActualPhase()).isActive())
+                    .collect(Collectors.toList())) {
+                    if (innovation.getProjectInnovationProjectOutcomes() != null) {
+                      innovation.setProjectOutcomes(new ArrayList<>(innovation.getProjectInnovationProjectOutcomes()
+                        .stream().filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
+                        .collect(Collectors.toList())));
+                    }
+                    if (innovation != null && innovation.getProjectOutcomes() != null
+                      && !innovation.getProjectOutcomes().isEmpty()) {
+                      for (ProjectInnovationProjectOutcome innovationStudyProjectOutcome : innovation
+                        .getProjectOutcomes()) {
+                        if (innovationStudyProjectOutcome != null
+                          && innovationStudyProjectOutcome.getProjectOutcome() != null
+                          && innovationStudyProjectOutcome.getProjectOutcome().getId() != null
+                          && innovationStudyProjectOutcome.getProjectOutcome().getId()
+                            .compareTo(projectOutcome.getId()) == 0) {
+                          innovations.add(innovation);
+                        }
+                      }
+                    }
+                  }
+                } catch (Exception e) {
+                  e.printStackTrace();
+                }
+
+                if (innovations != null && !innovations.isEmpty()) {
+                  poiSummary.textLineBreak(document, 1);
+                  poiSummary.textParagraphFontCalibri(document.createParagraph(),
+                    this.getText("summaries.progressReport2020.innovationStatus") + ":");
+                  this.createInnovationsTable(innovations);
                 }
                 poiSummary.textLineBreak(document, 3);
               }
