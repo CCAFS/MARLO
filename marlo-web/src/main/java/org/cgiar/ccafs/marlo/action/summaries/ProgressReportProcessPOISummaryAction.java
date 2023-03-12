@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -40,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyProjectOutcomeMana
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationProjectOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeIndicatorManager;
@@ -51,6 +53,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome;
+import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
@@ -63,6 +66,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator;
@@ -253,6 +257,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
   private DeliverableManager deliverableManager;
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
   private ProjectExpectedStudyProjectOutcomeManager projectExpectedStudyProjectOutcomeManager;
+  private ProjectInnovationSharedManager projectInnovationSharedManager;
+  private ExpectedStudyProjectManager expectedStudyProjectManager;
 
 
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
@@ -294,7 +300,9 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     ProjectDeliverableSharedManager projectDeliverableSharedManager,
     ProjectExpectedStudyProjectOutcomeManager projectExpectedStudyProjectOutcomeManager,
     ProjectInnovationManager projectInnovationManager,
-    ProjectInnovationProjectOutcomeManager projectInnovationProjectOutcomeManager) {
+    ProjectInnovationProjectOutcomeManager projectInnovationProjectOutcomeManager,
+    ProjectInnovationSharedManager projectInnovationSharedManager,
+    ExpectedStudyProjectManager expectedStudyProjectManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -327,6 +335,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     this.projectExpectedStudyProjectOutcomeManager = projectExpectedStudyProjectOutcomeManager;
     this.projectInnovationManager = projectInnovationManager;
     this.projectInnovationProjectOutcomeManager = projectInnovationProjectOutcomeManager;
+    this.projectInnovationSharedManager = projectInnovationSharedManager;
+    this.expectedStudyProjectManager = expectedStudyProjectManager;
   }
 
   private void createCoverTable() {
@@ -1459,6 +1469,27 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                   LOG.error("Error getting OICRs information " + e.getMessage());
                 }
 
+                try {
+                  // Load Shared studies
+                  List<ExpectedStudyProject> expectedStudyProject = this.expectedStudyProjectManager
+                    .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getPhaseID()) != null
+                      ? this.expectedStudyProjectManager
+                        .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getPhaseID()).stream()
+                        .filter(px -> px.isActive() && px.getProjectExpectedStudy().isActive()
+                          && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+                        .collect(Collectors.toList())
+                      : Collections.emptyList();
+                  if (expectedStudyProject != null && !expectedStudyProject.isEmpty()) {
+                    for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
+                      if (!expectedStudies.contains(expectedStudy.getProjectExpectedStudy())) {
+                        expectedStudies.add(expectedStudy.getProjectExpectedStudy());
+                      }
+                    }
+                  }
+                } catch (Exception e) {
+                  e.printStackTrace();
+                }
+
                 if (expectedStudies != null && !expectedStudies.isEmpty()) {
                   poiSummary.textLineBreak(document, 1);
                   poiSummary.textParagraphFontCalibri(document.createParagraph(),
@@ -1496,6 +1527,30 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                   }
                 } catch (Exception e) {
                   e.printStackTrace();
+                }
+
+                try {
+                  // Shared innovations
+                  List<ProjectInnovationShared> innovationShareds = projectInnovationSharedManager
+                    .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getActualPhase().getId());
+
+                  if (innovationShareds != null && !innovationShareds.isEmpty()) {
+                    for (ProjectInnovationShared innovationShared : innovationShareds) {
+                      if (!innovations.contains(innovationShared.getProjectInnovation())) {
+                        if (innovationShared.getProjectInnovation()
+                          .getProjectInnovationInfo(this.getActualPhase()) != null
+                          && innovationShared.getProjectInnovation().getProjectInnovationInfo().getYear() >= this
+                            .getActualPhase().getYear()) {
+
+
+                          innovations.add(innovationShared.getProjectInnovation());
+                        }
+                      }
+                    }
+                  }
+                } catch (Exception e) {
+
+                  LOG.error("unable to get shared innovations", e);
                 }
 
                 if (innovations != null && !innovations.isEmpty()) {

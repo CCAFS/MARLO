@@ -3292,7 +3292,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     } catch (Exception e) {
 
-      LOG.error("unable to get shared deliverables", e);
+      LOG.error("unable to get shared innovations", e);
     }
 
 
