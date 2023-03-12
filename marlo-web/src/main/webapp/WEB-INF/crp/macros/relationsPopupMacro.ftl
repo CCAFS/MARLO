@@ -295,7 +295,7 @@
                     <tr>
                       <th scope="row">${i.id}</th>
                       <td class="col-md-6">${(i.projectInnovationInfo.title)!'Untitled'}</td>
-                      <td class="col-md-6">${(i.project.projectInfo.acronym)}</td>
+                      <td class="col-md-6">${(i.project.acronym)!''}</td>
                       <td>${(i.projectInnovationInfo.year)}</td>
                       <td> <a href="${innovationUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>

@@ -102,6 +102,12 @@ public class ProjectInnovationSharedManagerImpl implements ProjectInnovationShar
   }
 
   @Override
+  public List<ProjectInnovationShared> getByProjectAndPhase(long projectId, long phaseId) {
+    return projectInnovationSharedDAO.getByProjectAndPhase(projectId, phaseId);
+
+  }
+
+  @Override
   public ProjectInnovationShared getProjectInnovationSharedById(long projectInnovationSharedID) {
 
     return projectInnovationSharedDAO.find(projectInnovationSharedID);
