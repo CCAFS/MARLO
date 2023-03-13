@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeRuleManager;
+import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -68,6 +69,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
@@ -276,6 +278,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ProjectInnovationInfoManager projectInnovationInfoManager;
+
+  @Inject
+  private ProjectInnovationSharedManager projectInnovationSharedManager;
+
+  @Inject
+  private ExpectedStudyProjectManager expectedStudyProjectManager;
 
   // Variables
   private String crpSession;
@@ -3078,6 +3086,27 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } catch (Exception e) {
       e.printStackTrace();
     }
+
+    try {
+      // Load Shared studies
+      List<ExpectedStudyProject> expectedStudyProject = this.expectedStudyProjectManager
+        .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getPhaseID()) != null
+          ? this.expectedStudyProjectManager
+            .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getPhaseID()).stream()
+            .filter(px -> px.isActive() && px.getProjectExpectedStudy().isActive()
+              && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+            .collect(Collectors.toList())
+          : Collections.emptyList();
+      if (expectedStudyProject != null && !expectedStudyProject.isEmpty()) {
+        for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
+          if (!expectedStudies.contains(expectedStudy.getProjectExpectedStudy())) {
+            expectedStudies.add(expectedStudy.getProjectExpectedStudy());
+          }
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     return expectedStudies;
   }
 
@@ -3242,6 +3271,31 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } catch (Exception e) {
       e.printStackTrace();
     }
+
+    try {
+      // Shared innovations
+      List<ProjectInnovationShared> innovationShareds = projectInnovationSharedManager
+        .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getActualPhase().getId());
+
+      if (innovationShareds != null && !innovationShareds.isEmpty()) {
+        for (ProjectInnovationShared innovationShared : innovationShareds) {
+          if (!innovations.contains(innovationShared.getProjectInnovation())) {
+            if (innovationShared.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null
+              && innovationShared.getProjectInnovation().getProjectInnovationInfo().getYear() >= this.getActualPhase()
+                .getYear()) {
+
+
+              innovations.add(innovationShared.getProjectInnovation());
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+
+      LOG.error("unable to get shared innovations", e);
+    }
+
+
     return innovations;
   }
 
