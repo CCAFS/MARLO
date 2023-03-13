@@ -2,10 +2,11 @@
 [#assign title = "Timeline Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/timelineManagement.js" ] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/timelineManagement.js",  "${baseUrlCdn}/global/js/fieldsValidation.js"
+ ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "superadmin" /]
-[#assign currentStage = "slos" /]
+[#assign currentStage = "timelineManagement" /]
 
 [#assign breadCrumb = [
   {"label":"superadmin", "nameSpace":"", "action":"marloBoard"},
@@ -19,6 +20,23 @@
   [#include "/WEB-INF/global/pages/breadcrumb.ftl" /]
 </div>
 [#include "/WEB-INF/global/pages/generalMessages.ftl" /]
+
+<div class="animated flipInX container  viewMore-block containerAlertMargin">
+  <div class=" containerAlert  alert-leftovers alertColorBackgroundInfo"  id="containerAlert">
+    <div class="containerLine alertColorInfo"></div>
+    <div class="containerIcon">
+      <div class="containerIcon alertColorInfo">
+        <img src="${baseUrlCdn}/global/images/icon-exclamation.png" />      
+      </div>
+    </div>
+    <div class="containerText col-md-12">
+      <p class="alertText">
+        [@s.text name="Please note that activities are displayed on the homepage timeline component in the order they are entered or in the order defined by the 'order' field, if its filled. By default, the dates of the activities do not determine their order." /] 
+      </p>
+    </div>
+    <div  class="viewMoreCollapse closed"></div>
+  </div>
+</div>
 
 <section class="marlo-content">
   <div class="container"> 
@@ -77,7 +95,7 @@
             
       [#-- Description  --]
       <div class="form-group">
-        [@customForm.textArea name="${name}.description" i18nkey="timeline.description" className="description limitWords-400" required=true /]
+        [@customForm.textArea name="${name}.description" i18nkey="timeline.description" className="description limitWords-100" required=true /]
       </div>
       <div class="clearfix"></div>
     
@@ -90,6 +108,12 @@
          <div class="col-md-6">
             [@customForm.input name="${name}.endDate" className="endDate"  i18nkey="project.endDate" type="text"  /]
          </div>
+      </div>
+      <br>
+      <hr>
+      <div class="clearfix"></div>
+      <div style="width: 20%;">
+        [@customForm.input name="${name}.order" type="number" i18nkey="Order" placeholder="Numeric value (optional)" required=false /]
       </div>
     
     </div>

@@ -371,101 +371,125 @@ public class ProjectOutcomeAction extends BaseAction {
   private void deliverableParticipantsInformation() {
 
     deliverableParticipants = new ArrayList<>();
-
-    for (Deliverable deliverable : projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase())) {
-      if (deliverable != null && deliverable.getDeliverableCrpOutcomes() != null) {
-        deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
-          .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
-
-        // Set deliverable participants
-        if (deliverable.getDeliverableParticipants() != null) {
-          List<DeliverableParticipant> deliverableParticipantsList = deliverable.getDeliverableParticipants().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-
-          if (!deliverableParticipantsList.isEmpty()) {
-            deliverable.setDeliverableParticipant(
-              deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipantsList.get(0).getId()));
-          }
-        }
+    List<Deliverable> currentDeliverables = new ArrayList<>();
+    currentDeliverables = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
+    try {
+      // Exclude deliverables cancelled
+      currentDeliverables = currentDeliverables.stream()
+        .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
+          && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+          && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 5L)
+        .collect(Collectors.toList());
+    } catch (Exception e) {
+      LOG.error(e + "error to filter canceled deliverable");
+    }
+    if (this.isReportingActive()) {
+      try {
+        // Exclude deliverables extended in AR
+        currentDeliverables = currentDeliverables.stream()
+          .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 4L)
+          .collect(Collectors.toList());
+      } catch (Exception e) {
+        LOG.error(e + "error to filter deliverable for AR");
       }
-      if (deliverable != null && deliverable.getDeliverableParticipant() != null
-        && deliverable.getDeliverableParticipant().getHasParticipants() != null
-        && deliverable.getDeliverableParticipant().getHasParticipants()) {
-        if (deliverable.getCrpOutcomes() != null && !deliverable.getCrpOutcomes().isEmpty()) {
+    }
+    if (currentDeliverables != null) {
+      for (Deliverable deliverable : currentDeliverables) {
+        if (deliverable != null && deliverable.getDeliverableCrpOutcomes() != null) {
+          deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
 
-          for (DeliverableCrpOutcome deliverableCrpOutcome : deliverable.getCrpOutcomes()) {
-            if (deliverableCrpOutcome != null && deliverableCrpOutcome.getCrpProgramOutcome() != null
-              && deliverableCrpOutcome.getCrpProgramOutcome().getId() != null && deliverableCrpOutcome
-                .getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
+          // Set deliverable participants
+          if (deliverable.getDeliverableParticipants() != null) {
+            List<DeliverableParticipant> deliverableParticipantsList = deliverable.getDeliverableParticipants().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
-              // Graphs
-
-              // Total Participants
-              Double numberParticipant = 0.0;
-              if (deliverable.getDeliverableParticipant().getParticipants() != null) {
-                numberParticipant = deliverable.getDeliverableParticipant().getParticipants();
-              }
-
-              totalParticipants += numberParticipant;
-
-              // Total Formal Training
-              if (deliverable.getDeliverableParticipant().getRepIndTypeActivity() != null) {
-                // && deliverable.getDeliverableParticipant().getRepIndTypeActivity().getIsFormal()
-                totalParticipantFormalTraining += numberParticipant;
-
-                // Total Female and Male per terms
-                // if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm() != null) {
-                Double numberFemales = 0.0;
-                if (deliverable.getDeliverableParticipant().getFemales() != null) {
-                  totalFemales += deliverable.getDeliverableParticipant().getFemales();
-                  numberFemales = deliverable.getDeliverableParticipant().getFemales();
-                }
-                if (deliverable.getDeliverableParticipant().getAfrican() != null) {
-                  totalAfricans += deliverable.getDeliverableParticipant().getAfrican();
-                  if (numberParticipant != null) {
-                    double africanPercentaje =
-                      Math.round(((100 * deliverable.getDeliverableParticipant().getAfrican())) / numberParticipant);
-                    deliverable.getDeliverableParticipant().setAfricanPercentage(africanPercentaje);
-                  }
-                }
-                if (deliverable.getDeliverableParticipant().getYouth() != null) {
-                  totalYouth += deliverable.getDeliverableParticipant().getYouth();
-                  if (numberParticipant != null) {
-                    double youthPercentaje =
-                      Math.round(((100 * deliverable.getDeliverableParticipant().getYouth())) / numberParticipant);
-                    deliverable.getDeliverableParticipant().setYouthPercentage(youthPercentaje);
-                  }
-                }
-                /*
-                 * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
-                 * .equals(APConstants.REP_IND_TRAINING_TERMS_SHORT)) {
-                 * }
-                 * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
-                 * .equals(APConstants.REP_IND_TRAINING_TERMS_LONG)) {
-                 * }
-                 * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
-                 * .equals(APConstants.REP_IND_TRAINING_TERMS_PHD)) {
-                 * }
-                 */
-                totalParticipantFormalTrainingShortFemale += numberFemales;
-                totalParticipantFormalTrainingShortMale += (numberParticipant - numberFemales);
-
-
-                totalParticipantFormalTrainingLongFemale += numberFemales;
-                totalParticipantFormalTrainingLongMale += (numberParticipant - numberFemales);
-
-
-                totalParticipantFormalTrainingPhdFemale += numberFemales;
-                totalParticipantFormalTrainingPhdMale += (numberParticipant - numberFemales);
-
-                // }
-              }
-
-              // Add deliverable participant to list
-              deliverableParticipants.add(deliverable.getDeliverableParticipant());
+            if (!deliverableParticipantsList.isEmpty()) {
+              deliverable.setDeliverableParticipant(deliverableParticipantManager
+                .getDeliverableParticipantById(deliverableParticipantsList.get(0).getId()));
             }
           }
+        }
+        if (deliverable != null && deliverable.getDeliverableParticipant() != null
+          && deliverable.getDeliverableParticipant().getHasParticipants() != null) {
+          if (deliverable.getCrpOutcomes() != null && !deliverable.getCrpOutcomes().isEmpty()) {
 
+            for (DeliverableCrpOutcome deliverableCrpOutcome : deliverable.getCrpOutcomes()) {
+              if (deliverableCrpOutcome != null && deliverableCrpOutcome.getCrpProgramOutcome() != null
+                && deliverableCrpOutcome.getCrpProgramOutcome().getId() != null && deliverableCrpOutcome
+                  .getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
+
+                // Graphs
+
+                // Total Participants
+                Double numberParticipant = 0.0;
+                if (deliverable.getDeliverableParticipant().getParticipants() != null) {
+                  numberParticipant = deliverable.getDeliverableParticipant().getParticipants();
+                }
+
+                totalParticipants += numberParticipant;
+
+                // Total Formal Training
+                if (deliverable.getDeliverableParticipant().getRepIndTypeActivity() != null) {
+                  // && deliverable.getDeliverableParticipant().getRepIndTypeActivity().getIsFormal()
+                  totalParticipantFormalTraining += numberParticipant;
+
+                  // Total Female and Male per terms
+                  // if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm() != null) {
+                  Double numberFemales = 0.0;
+                  if (deliverable.getDeliverableParticipant().getFemales() != null) {
+                    totalFemales += deliverable.getDeliverableParticipant().getFemales();
+                    numberFemales = deliverable.getDeliverableParticipant().getFemales();
+                  }
+                  if (deliverable.getDeliverableParticipant().getAfrican() != null) {
+                    totalAfricans += deliverable.getDeliverableParticipant().getAfrican();
+                    if (numberParticipant != null) {
+                      double africanPercentaje =
+                        Math.round(((100 * deliverable.getDeliverableParticipant().getAfrican())) / numberParticipant);
+                      deliverable.getDeliverableParticipant().setAfricanPercentage(africanPercentaje);
+                    }
+                  }
+                  if (deliverable.getDeliverableParticipant().getYouth() != null) {
+                    totalYouth += deliverable.getDeliverableParticipant().getYouth();
+                    if (numberParticipant != null) {
+                      double youthPercentaje =
+                        Math.round(((100 * deliverable.getDeliverableParticipant().getYouth())) / numberParticipant);
+                      deliverable.getDeliverableParticipant().setYouthPercentage(youthPercentaje);
+                    }
+                  }
+                  /*
+                   * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                   * .equals(APConstants.REP_IND_TRAINING_TERMS_SHORT)) {
+                   * }
+                   * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                   * .equals(APConstants.REP_IND_TRAINING_TERMS_LONG)) {
+                   * }
+                   * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
+                   * .equals(APConstants.REP_IND_TRAINING_TERMS_PHD)) {
+                   * }
+                   */
+                  totalParticipantFormalTrainingShortFemale += numberFemales;
+                  totalParticipantFormalTrainingShortMale += (numberParticipant - numberFemales);
+
+
+                  totalParticipantFormalTrainingLongFemale += numberFemales;
+                  totalParticipantFormalTrainingLongMale += (numberParticipant - numberFemales);
+
+
+                  totalParticipantFormalTrainingPhdFemale += numberFemales;
+                  totalParticipantFormalTrainingPhdMale += (numberParticipant - numberFemales);
+
+                  // }
+                }
+
+                // Add deliverable participant to list
+                deliverableParticipants.add(deliverable.getDeliverableParticipant());
+              }
+            }
+
+          }
         }
       }
     }
@@ -1475,6 +1499,18 @@ public class ProjectOutcomeAction extends BaseAction {
             if (this.canAccessSuperAdmin()) {
               projectMilestoneDB.setSettedValue(projectMilestone.getSettedValue());
             }
+
+            // Set project Milestone year
+            if (projectMilestoneDB.getYear() == -1 || projectMilestoneDB.getYear() == 0) {
+              if (projectMilestone.getYear() != -1 && projectMilestone.getYear() != 0) {
+                projectMilestoneDB.setYear(projectMilestone.getYear());
+              } else if (projectMilestoneDB.getCrpMilestone() != null
+                && projectMilestoneDB.getCrpMilestone().getYear() != -1
+                && projectMilestoneDB.getCrpMilestone().getYear() != 0) {
+                projectMilestoneDB.setYear(projectMilestoneDB.getCrpMilestone().getYear());
+              }
+            }
+
             projectMilestoneDB = projectMilestoneManager.saveProjectMilestone(projectMilestoneDB);
             // This add projectMilestone to generate correct auditlog.
             projectOutcome.getProjectMilestones().add(projectMilestoneDB);

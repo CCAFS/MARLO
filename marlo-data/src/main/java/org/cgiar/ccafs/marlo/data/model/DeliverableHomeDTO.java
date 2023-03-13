@@ -28,12 +28,13 @@ public class DeliverableHomeDTO {
   private long projectId;
   private String deliverableType;
   private String deliverableTitle;
+  private String projectAcronym;
 
   public DeliverableHomeDTO() {
   }
 
   public DeliverableHomeDTO(long deliverableId, long newExpectedYear, long expectedYear, long projectId,
-    String deliverableType, String deliverableTitle) {
+    String deliverableType, String deliverableTitle, String projectAcronym) {
     super();
     this.deliverableId = deliverableId;
     this.expectedYear = expectedYear;
@@ -41,6 +42,7 @@ public class DeliverableHomeDTO {
     this.projectId = projectId;
     this.deliverableType = deliverableType;
     this.deliverableTitle = deliverableTitle;
+    this.projectAcronym = projectAcronym;
   }
 
   public long getDeliverableId() {
@@ -61,6 +63,10 @@ public class DeliverableHomeDTO {
 
   public long getNewExpectedYear() {
     return newExpectedYear;
+  }
+
+  public String getProjectAcronym() {
+    return projectAcronym;
   }
 
   public long getProjectId() {
@@ -85,6 +91,11 @@ public class DeliverableHomeDTO {
 
   public void setNewExpectedYear(long newExpectedYear) {
     this.newExpectedYear = newExpectedYear;
+  }
+
+
+  public void setProjectAcronym(String projectAcronym) {
+    this.projectAcronym = projectAcronym;
   }
 
   public void setProjectId(long projectId) {
