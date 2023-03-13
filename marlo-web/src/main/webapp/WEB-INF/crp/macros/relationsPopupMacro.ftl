@@ -356,7 +356,7 @@
                     <tr>
                       <th scope="row">${e.id}</th>
                       <td class="col-md-6">${(e.projectExpectedStudyInfo.title)!'Untitled'}</td>
-                      <td class="col-md-6">${(e.project.projectInfo.acronym)}</td>
+                      <td class="col-md-6">${(e.project.acronym)!''}</td>
                       <td class="col-md-6">${(e.projectExpectedStudyInfo.statusName)!''}</td>
                       <td class="col-md-6">${(e.projectExpectedStudyInfo.year)}</td>
                       [#--<td>${(e.studyInfo.studyType.name?capitalize)!'none'}</td>--]
