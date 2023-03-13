@@ -7,7 +7,7 @@
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectStudies.css"
+  "${baseUrlMedia}/css/projects/projectStudies.css?20230106"
   ] 
 /]
 [#assign currentSection = "additionalReporting" /]

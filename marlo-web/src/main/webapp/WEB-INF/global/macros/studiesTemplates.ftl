@@ -457,7 +457,7 @@
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         <div class="form-group">
-          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable && !action.isPOWB() /]
+          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesEvidenceCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable && !action.isPOWB() /]
         </div>
         <p class="note"> <small>[@s.text name="message.shortenURLsDisclaimer"][@s.param value="93" /][/@s.text]</small> </p>
         [#-- 
