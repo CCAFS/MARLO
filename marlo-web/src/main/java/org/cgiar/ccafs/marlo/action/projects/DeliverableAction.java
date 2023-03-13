@@ -139,7 +139,6 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.doi.DOIService;
-import org.cgiar.ccafs.marlo.utils.handle.HandleService;
 import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
 
 import java.io.BufferedReader;
@@ -2967,7 +2966,8 @@ public class DeliverableAction extends BaseAction {
             // Search by handle
             if (deliverableMetadataElement.getMetadataElement().getId() != null
               && 35L == deliverableMetadataElement.getMetadataElement().getId()) {
-              String cleanHandle = HandleService.tryGetDoiName(deliverableMetadataElement.getElementValue());
+              // String cleanHandle = HandleService.tryGetDoiName(deliverableMetadataElement.getElementValue());
+              String cleanHandle = deliverableMetadataElement.getElementValue();
               if (deliverableMetadataElement.getElementValue() != null
                 && !deliverableMetadataElement.getElementValue().isEmpty() && !cleanHandle.isEmpty()) {
                 deliverableMetadataElement.setElementValue(cleanHandle);

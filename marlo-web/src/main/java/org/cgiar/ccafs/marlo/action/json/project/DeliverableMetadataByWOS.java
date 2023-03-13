@@ -451,7 +451,6 @@ public class DeliverableMetadataByWOS extends BaseAction {
       altmetricInfo.setType(incomingAltmetricInfo.getTitle());
       altmetricInfo.setUri(incomingAltmetricInfo.getUri());
       altmetricInfo.setUrl(incomingAltmetricInfo.getUrl());
-
       altmetricInfo = this.deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetricInfo);
 
       if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
@@ -467,17 +466,17 @@ public class DeliverableMetadataByWOS extends BaseAction {
     DeliverableAltmetricInfo altmetricInfo =
       this.deliverableAltmetricInfoManager.findByPhaseAndDeliverable(phase, deliverable);
     MetadataAltmetricModel2 incomingAltmetricInfo = null;
-    incomingAltmetricInfo = this.response2.getAltmetricInfo2();
-
+    if (this.response2 != null && this.response2.getAltmetricInfo2() != null) {
+      incomingAltmetricInfo = this.response2.getAltmetricInfo2();
+    }
     if (incomingAltmetricInfo != null) {
       if (altmetricInfo == null) {
         altmetricInfo = new DeliverableAltmetricInfo();
         altmetricInfo.setDeliverable(deliverable);
         altmetricInfo.setPhase(phase);
         altmetricInfo.setCreatedBy(this.getCurrentUser());
-        altmetricInfo.setLastSync(new Date());
       }
-
+      altmetricInfo.setLastSync(new Date());
       altmetricInfo.setActive(true);
       altmetricInfo.setAddedOn(
         incomingAltmetricInfo.getAddedOn() != null ? new Date(incomingAltmetricInfo.getAddedOn() * 1000L) : null);
@@ -635,11 +634,10 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
     if (this.response != null) {
       this.saveInfo();
-      return true;
+      // return true;
     }
 
     this.response2 = new Gson().fromJson(this.readWOSDataFromClarisa2(), MetadataWOSModel.class);
-    System.out.println("Response 2: " + response2);
 
     if (this.response2 != null) {
       Deliverable deliverable = this.deliverableManager.getDeliverableById(this.deliverableId);
