@@ -281,6 +281,9 @@ span.timelineControl:hover {
     margin-top: 63px;
   }
   
+  .scroll-x-containerTimeline::-webkit-scrollbar {
+    -webkit-appearance: none;
+  }
   
   
   .timeline-innerline {
@@ -872,4 +875,7 @@ span.timelineControl:hover {
     margin-left: 285px;
     border-radius: 0px 4px 4px 0px;
     display: flex;
+}
+ #guide-button{
+  display: block;
 }

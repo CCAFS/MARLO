@@ -9,7 +9,7 @@
 /]
 [#-- ,  
   "${baseUrlCdn}/global/js/autoSave.js?20210616"  --]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectActivities.css?20210621a"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectActivities.css?20230106"] /]
 [#assign currentStage = "activities" /]
 [#assign hideJustification = true /]
 

@@ -8,7 +8,7 @@
   "${baseUrlCdn}/global/js/autoSave.js"
   ] 
 /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectBudgetByPartners.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectBudgetByPartners.css?20230106"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "overviewByMogs" /]
 [#assign hideJustification = true /]

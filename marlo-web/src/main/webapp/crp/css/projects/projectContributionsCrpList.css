@@ -146,4 +146,9 @@ i.indicatorText {
     margin-left: 285px;
     border-radius: 0px 4px 4px 0px;
     display: flex;
+    width: 75%;
+}
+
+#guide-button{
+    display: block;
 }

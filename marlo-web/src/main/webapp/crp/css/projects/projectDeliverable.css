@@ -789,3 +789,6 @@ div#ccDimension-capacity {
     border-radius: 0px 4px 4px 0px;
     display: flex;
 }
+#guide-button{
+  display: block;
+}
