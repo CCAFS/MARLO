@@ -197,7 +197,7 @@
           </td>
           [#-- Name Cluster --]
           <td class="deliverableId">
-            <a href="[@s.url namespace=namespace action='${(crpSession)!}/innovation'][@s.param name='projectID']${innovation.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+            <a href="[@s.url namespace=namespace action='${(crpSession)!}/innovationsList'][@s.param name='projectID']${innovation.projectId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               [#if innovation.projectAcronym?has_content]${innovation.projectAcronym}
               [#else]
                 C${innovation.projectId}
