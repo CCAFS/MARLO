@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20230112", 
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20230310", 
   "${baseUrlCdn}/global/js/fieldsValidation.js?20221031",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20221117",
   "https://www.gstatic.com/charts/loader.js",
@@ -14,7 +14,7 @@
   ] 
 /] 
 [#assign customCSS = [ 
-  "${baseUrlMedia}/css/projects/projectContributionCrp.css?20221031",
+  "${baseUrlMedia}/css/projects/projectContributionCrp.css?20230309",
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20221104A",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
