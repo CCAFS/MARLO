@@ -124,6 +124,8 @@ public class MetadataAltmetricModel2 implements Serializable {
   @SerializedName("image_large")
   private String imageLarge;
 
+  HandleImageModel images;
+
 
   public MetadataAltmetricModel2() {
 
@@ -234,6 +236,10 @@ public class MetadataAltmetricModel2 implements Serializable {
     return imageMedium;
   }
 
+  public HandleImageModel getImages() {
+    return images;
+  }
+
   public String getImageSmall() {
     return imageSmall;
   }
@@ -274,10 +280,10 @@ public class MetadataAltmetricModel2 implements Serializable {
     return url;
   }
 
-
   public void setAddedOn(Long addedOn) {
     this.addedOn = addedOn;
   }
+
 
   public void setAltmetricId(String altmetricId) {
     this.altmetricId = altmetricId;
@@ -377,6 +383,10 @@ public class MetadataAltmetricModel2 implements Serializable {
 
   public void setImageMedium(String imageMedium) {
     this.imageMedium = imageMedium;
+  }
+
+  public void setImages(HandleImageModel images) {
+    this.images = images;
   }
 
   public void setImageSmall(String imageSmall) {
