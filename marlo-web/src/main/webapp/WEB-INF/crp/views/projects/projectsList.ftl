@@ -6,12 +6,12 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/projects/projectsList.js"
+  "${baseUrlMedia}/js/projects/projectsList.js?20230302"
   ]
 /]
 [#assign customCSS = [
   "${baseUrlCdn}/global/css/customDataTable.css",
-  "${baseUrlMedia}/css/projects/projectsList.css"]
+  "${baseUrlMedia}/css/projects/projectsList.css?20230303"]
 /]
 
 [#if !action.isAiccra()]
