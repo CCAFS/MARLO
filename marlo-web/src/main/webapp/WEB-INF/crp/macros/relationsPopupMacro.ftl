@@ -118,7 +118,7 @@
                 Deliverables funded by this funding source in this [@s.text name="global.Project" /]
                 [#else]
                  [#if className=="ProjectOutcome"]
-                    Deliverables that are contributing to ${(element.project.projectInfo.acronym)!} Outcome Contribution
+                    Deliverables that are contributing to ${(element.project.acronym)!} Outcome Contribution
                  [#else]
                   Deliverables that are contributing to this [@s.text name="global.${className}" /]
                   [/#if]
