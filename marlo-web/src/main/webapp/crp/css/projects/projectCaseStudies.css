@@ -32,9 +32,6 @@ table#projectHighlights {
     font-size: 0.94em;
 }
 
-#guide-button{
-    display: block;
-}
 /* Add styles to the table */
 .dataTables_wrapper {
     position: relative;
@@ -59,3 +56,6 @@ table#projectHighlights {
     border-radius: 0px 4px 4px 0px;
     display: flex;
   }
+#guide-button{
+    display: block;
+}

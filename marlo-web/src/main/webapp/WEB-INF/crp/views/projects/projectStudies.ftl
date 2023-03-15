@@ -163,7 +163,7 @@
             </td>
             <td class="owner text-center">
               [#if isOwner] <small><nobr>This Cluster</nobr></small>  [#else]
-                [#if item.project?has_content && item.project.projectInfo?has_content && item.project.projectInfo.acronym?has_content]${item.project.projectInfo.acronym}
+                [#if item.project?has_content && item.project.acronym?has_content]${item.project.acronym}
                 [#elseif item.project?has_content]C${item.project.id}
                 [#else]Not defined[/#if]
               [/#if]

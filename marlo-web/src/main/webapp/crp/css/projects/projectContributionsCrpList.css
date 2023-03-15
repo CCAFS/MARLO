@@ -109,11 +109,6 @@ i.indicatorText {
 .modal .modal-dialog{
     max-width: 1250px;
     width: 99%;
-    /* width: 75%; */
-}
-
-#guide-button{
-    display: block;
 }
 
 /* Add styles to the table */
@@ -151,4 +146,8 @@ i.indicatorText {
     margin-left: 285px;
     border-radius: 0px 4px 4px 0px;
     display: flex;
+}
+
+#guide-button{
+    display: block;
 }

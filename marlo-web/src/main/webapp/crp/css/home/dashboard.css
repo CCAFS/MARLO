@@ -851,9 +851,6 @@ span.timelineControl:hover {
   }
  }
 
- #guide-button{
-  display: block;
-}
  
 /* Add styles to the table */
 .dataTables_wrapper {
@@ -878,4 +875,7 @@ span.timelineControl:hover {
     margin-left: 285px;
     border-radius: 0px 4px 4px 0px;
     display: flex;
+}
+ #guide-button{
+  display: block;
 }
