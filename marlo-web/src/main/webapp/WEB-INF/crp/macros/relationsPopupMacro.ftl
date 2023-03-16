@@ -118,7 +118,7 @@
                 Deliverables funded by this funding source in this [@s.text name="global.Project" /]
                 [#else]
                  [#if className=="ProjectOutcome"]
-                    Deliverables that are contributing to ${(element.project.projectInfo.acronym)!} Outcome Contribution
+                    Deliverables that are contributing to ${(element.project.acronym)!} Outcome Contribution
                  [#else]
                   Deliverables that are contributing to this [@s.text name="global.${className}" /]
                   [/#if]
@@ -356,7 +356,7 @@
                     <tr>
                       <th scope="row">${e.id}</th>
                       <td class="col-md-6">${(e.projectExpectedStudyInfo.title)!'Untitled'}</td>
-                      <td class="col-md-6">${(e.project.projectInfo.acronym)}</td>
+                      <td class="col-md-6">${(e.project.acronym)!''}</td>
                       <td class="col-md-6">${(e.projectExpectedStudyInfo.statusName)!''}</td>
                       <td class="col-md-6">${(e.projectExpectedStudyInfo.year)}</td>
                       [#--<td>${(e.studyInfo.studyType.name?capitalize)!'none'}</td>--]

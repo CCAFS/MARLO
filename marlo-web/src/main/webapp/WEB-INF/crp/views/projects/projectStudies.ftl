@@ -3,9 +3,9 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectCaseStudiesList.js",
+  "${baseUrlMedia}/js/projects/projectCaseStudiesList.js?20230306",
   "${baseUrlCdn}/global/js/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectCaseStudies.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectCaseStudies.css?20230306"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "projectStudies" /]
 [#assign hideJustification = true /]
@@ -163,7 +163,7 @@
             </td>
             <td class="owner text-center">
               [#if isOwner] <small><nobr>This Cluster</nobr></small>  [#else]
-                [#if item.project?has_content && item.project.projectInfo?has_content && item.project.projectInfo.acronym?has_content]${item.project.projectInfo.acronym}
+                [#if item.project?has_content && item.project.acronym?has_content]${item.project.acronym}
                 [#elseif item.project?has_content]C${item.project.id}
                 [#else]Not defined[/#if]
               [/#if]

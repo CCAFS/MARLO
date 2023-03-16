@@ -24,7 +24,9 @@
     
     [#-- Importing Tawk.to Widget configuration --]
     [#include "/WEB-INF/global/pages/tawkto-widget.ftl" /]
-    
+    [#if action.hasSpecificities('button_guide_active') ]
+      [#include "/WEB-INF/global/pages/guide-button.ftl" /]
+    [/#if]
     [#if baseUrl = "http://marlodev.ciat.cgiar.org"]
       <!-- Hotjar Tracking Code for http://marlodev.ciat.cgiar.org/ -->
       <script>
@@ -41,7 +43,7 @@
     
     [#-- Global Javascript --]
     <script type="text/javascript" src="${baseUrlCdn}/global/js/utils.js?20210203" ></script>
-    <script type="text/javascript" src="${baseUrlCdn}/global/js/global.js?20230110" ></script>
+    <script type="text/javascript" src="${baseUrlCdn}/global/js/global.js?20230106" ></script>
     [#if logged]
       [#-- Pusher app --]
       <script type="text/javascript" src="${baseUrlCdn}/global/js/pusher-app.js" ></script>
