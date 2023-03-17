@@ -138,6 +138,9 @@
 		<property name="detailsUrl" type="string">
 			<column name="details_url" sql-type="TEXT" />
 		</property>
+		<property name="mendeleyReaders" type="string">
+            <column name="mendeley_readers" sql-type="TEXT" />
+        </property>
 		<property name="lastSync" type="timestamp" update="false" >
 			<column name="last_sync" length="19" not-null="true" />
 		</property>
