@@ -21,7 +21,7 @@ function init() {
 function attachEvents() {
   // Select reports type
   $('.summariesSection a, .summariesSection span').on('click', selectSummariesSection);
-  
+  $('.summariesSection a, .summariesSection img').on('click', selectSummariesSection);
   // Select a report
   $(".summariesFiles").on("click", selectReport);
   
