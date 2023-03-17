@@ -124,6 +124,9 @@ public class MetadataAltmetricModel implements Serializable {
   @SerializedName("image_large")
   private String imageLarge;
 
+  HandleImageModel images;
+
+  MetadataReadersModel readers;
 
   public MetadataAltmetricModel() {
 
@@ -234,6 +237,10 @@ public class MetadataAltmetricModel implements Serializable {
     return imageMedium;
   }
 
+  public HandleImageModel getImages() {
+    return images;
+  }
+
   public String getImageSmall() {
     return imageSmall;
   }
@@ -254,6 +261,10 @@ public class MetadataAltmetricModel implements Serializable {
     return publishedOn;
   }
 
+  public MetadataReadersModel getReaders() {
+    return readers;
+  }
+
   public String getScore() {
     return score;
   }
@@ -266,6 +277,7 @@ public class MetadataAltmetricModel implements Serializable {
     return type;
   }
 
+
   public String getUri() {
     return uri;
   }
@@ -273,7 +285,6 @@ public class MetadataAltmetricModel implements Serializable {
   public String getUrl() {
     return url;
   }
-
 
   public void setAddedOn(Long addedOn) {
     this.addedOn = addedOn;
@@ -379,6 +390,10 @@ public class MetadataAltmetricModel implements Serializable {
     this.imageMedium = imageMedium;
   }
 
+  public void setImages(HandleImageModel images) {
+    this.images = images;
+  }
+
   public void setImageSmall(String imageSmall) {
     this.imageSmall = imageSmall;
   }
@@ -397,6 +412,10 @@ public class MetadataAltmetricModel implements Serializable {
 
   public void setPublishedOn(Long publishedOn) {
     this.publishedOn = publishedOn;
+  }
+
+  public void setReaders(MetadataReadersModel readers) {
+    this.readers = readers;
   }
 
   public void setScore(String score) {
@@ -418,5 +437,4 @@ public class MetadataAltmetricModel implements Serializable {
   public void setUrl(String url) {
     this.url = url;
   }
-
 }

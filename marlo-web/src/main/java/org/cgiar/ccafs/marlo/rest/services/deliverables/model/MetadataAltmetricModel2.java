@@ -126,6 +126,7 @@ public class MetadataAltmetricModel2 implements Serializable {
 
   HandleImageModel images;
 
+  MetadataReadersModel readers;
 
   public MetadataAltmetricModel2() {
 
@@ -260,6 +261,10 @@ public class MetadataAltmetricModel2 implements Serializable {
     return publishedOn;
   }
 
+  public MetadataReadersModel getReaders() {
+    return readers;
+  }
+
   public String getScore() {
     return score;
   }
@@ -283,7 +288,6 @@ public class MetadataAltmetricModel2 implements Serializable {
   public void setAddedOn(Long addedOn) {
     this.addedOn = addedOn;
   }
-
 
   public void setAltmetricId(String altmetricId) {
     this.altmetricId = altmetricId;
@@ -407,6 +411,10 @@ public class MetadataAltmetricModel2 implements Serializable {
 
   public void setPublishedOn(Long publishedOn) {
     this.publishedOn = publishedOn;
+  }
+
+  public void setReaders(MetadataReadersModel readers) {
+    this.readers = readers;
   }
 
   public void setScore(String score) {

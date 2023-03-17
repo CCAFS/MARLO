@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataAltmetricModel;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataAltmetricModel2;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataGardianModel;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataReadersModel;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataWOSModel;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSAuthor;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSInstitution;
@@ -83,7 +84,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
   private String link;
   private String jsonStringResponse;
   private MetadataWOSModel response;
-  private MetadataWOSModel response2;
+  // private MetadataWOSModel response2;
   private Long deliverableId;
   private Long phaseId;
 
@@ -124,10 +125,11 @@ public class DeliverableMetadataByWOS extends BaseAction {
      */
     if (this.jsonStringResponse != null && !StringUtils.equalsIgnoreCase(this.jsonStringResponse, "null")) {
       this.response = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
-      this.response2 = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
+      // this.response2 = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
       this.phaseId = this.getActualPhase().getId();
 
       this.saveInfo();
+      this.manualSetAlmetricInfo();
     }
 
     return SUCCESS;
@@ -165,10 +167,70 @@ public class DeliverableMetadataByWOS extends BaseAction {
   }
 
 
-  public MetadataWOSModel getResponse2() {
-    return response2;
-  }
+  public void manualSetAlmetricInfo() {
+    if (this.response != null && this.response.getAltmetricInfo2() != null) {
 
+      MetadataAltmetricModel info = new MetadataAltmetricModel();
+      MetadataAltmetricModel2 info2 = this.response.getAltmetricInfo2();
+
+      info.setAltmetricId(info2.getAltmetricId());
+      info.setAltmetricJid(info2.getAltmetricJid());
+      info.setCitedByBlogs(info2.getCitedByBlogs());
+      info.setCitedByDelicious(info2.getCitedByDelicious());
+      info.setCitedByFacebookPages(info2.getCitedByFacebookPages());
+      info.setCitedByForumUsers(info2.getCitedByForumUsers());
+      info.setCitedByGooglePlusUsers(info2.getCitedByGooglePlusUsers());
+      info.setCitedByLinkedinUsers(info2.getCitedByLinkedinUsers());
+      info.setCitedByNewsOutlets(info2.getCitedByNewsOutlets());
+      info.setCitedByPeerReviewSites(info2.getCitedByPeerReviewSites());
+      info.setCitedByPinterestUsers(info2.getCitedByPinterestUsers());
+      info.setCitedByPolicies(info2.getCitedByPolicies());
+      info.setCitedByPosts(info2.getCitedByPosts());
+      info.setCitedByRedditUsers(info2.getCitedByRedditUsers());
+      info.setCitedByResearchHighlightPlatforms(info2.getCitedByResearchHighlightPlatforms());
+      info.setCitedByStackExchangeResources(info2.getCitedByStackExchangeResources());
+      info.setCitedByTwitterUsers(info2.getCitedByTwitterUsers());
+      info.setCitedByWeiboUsers(info2.getCitedByWeiboUsers());
+      info.setCitedByWikipediaPages(info2.getCitedByWikipediaPages());
+      info.setCitedByYoutubeChannels(info2.getCitedByYoutubeChannels());
+      info.setDoi(info2.getDoi());
+      info.setHandle(info2.getHandle());
+      if (info2.getImages() != null && info2.getImages().getLarge() != null) {
+        info.setImageLarge(info2.getImages().getLarge());
+      } else {
+        info.setImageLarge(info2.getImageLarge());
+      }
+      if (info2.getImages() != null && info2.getImages().getMedium() != null) {
+        info.setImageMedium(info2.getImages().getMedium());
+      } else {
+        info.setImageMedium(info2.getImageMedium());
+      }
+      if (info2.getImages() != null && info2.getImages().getSmall() != null) {
+        info.setImageSmall(info2.getImages().getSmall());
+      } else {
+        info.setImageSmall(info2.getImageSmall());
+      }
+      info.setIsOpenAccess(info2.getIsOpenAccess());
+      info.setJournal(info2.getJournal());
+      info.setLastUpdated(info2.getLastUpdated());
+      info.setPublishedOn(info2.getPublishedOn());
+      info.setScore(info2.getScore());
+      info.setTitle(info2.getTitle());
+      info.setType(info2.getTitle());
+      info.setUri(info2.getUri());
+      info.setUrl(info2.getUrl());
+
+      if (info2.getReaders() != null && info2.getReaders().getMendeley() != null) {
+        if (info.getReaders() == null) {
+          MetadataReadersModel readers = new MetadataReadersModel();
+          info.setReaders(readers);
+        }
+        info.getReaders().setMendeley(info2.getReaders().getMendeley());
+      }
+
+      this.response.setAltmetricInfo(info);
+    }
+  }
 
   @Override
   public void prepare() throws Exception {
@@ -188,8 +250,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
     if (!this.link.isEmpty() && DOIService.REGEXP_PLAINDOI.matcher(this.link).lookingAt()) {
       JsonElement response = this.readWOSDataFromClarisa();
       this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
-    }
-    if (!this.link.isEmpty() && this.link.contains("handle")) {
+    } else if (!this.link.isEmpty() && this.link.contains("handle")) {
       JsonElement response = this.readWOSDataFromClarisa2();
       this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
     }
@@ -436,9 +497,21 @@ public class DeliverableMetadataByWOS extends BaseAction {
       altmetricInfo.setDetailsUrl(this.link);
       altmetricInfo.setDoi(incomingAltmetricInfo.getDoi());
       altmetricInfo.setHandle(incomingAltmetricInfo.getHandle());
-      altmetricInfo.setImageLarge(incomingAltmetricInfo.getImageLarge());
-      altmetricInfo.setImageMedium(incomingAltmetricInfo.getImageMedium());
-      altmetricInfo.setImageSmall(incomingAltmetricInfo.getImageSmall());
+      if (incomingAltmetricInfo.getImages() != null && incomingAltmetricInfo.getImages().getLarge() != null) {
+        altmetricInfo.setImageLarge(incomingAltmetricInfo.getImages().getLarge());
+      } else {
+        altmetricInfo.setImageLarge(incomingAltmetricInfo.getImageLarge());
+      }
+      if (incomingAltmetricInfo.getImages() != null && incomingAltmetricInfo.getImages().getMedium() != null) {
+        altmetricInfo.setImageMedium(incomingAltmetricInfo.getImages().getMedium());
+      } else {
+        altmetricInfo.setImageMedium(incomingAltmetricInfo.getImageMedium());
+      }
+      if (incomingAltmetricInfo.getImages() != null && incomingAltmetricInfo.getImages().getSmall() != null) {
+        altmetricInfo.setImageSmall(incomingAltmetricInfo.getImages().getSmall());
+      } else {
+        altmetricInfo.setImageSmall(incomingAltmetricInfo.getImageSmall());
+      }
       altmetricInfo.setIsOpenAccess(incomingAltmetricInfo.getIsOpenAccess());
       altmetricInfo.setJournal(incomingAltmetricInfo.getJournal());
       altmetricInfo.setLastUpdated(incomingAltmetricInfo.getLastUpdated() != null
@@ -451,6 +524,9 @@ public class DeliverableMetadataByWOS extends BaseAction {
       altmetricInfo.setType(incomingAltmetricInfo.getTitle());
       altmetricInfo.setUri(incomingAltmetricInfo.getUri());
       altmetricInfo.setUrl(incomingAltmetricInfo.getUrl());
+      if (incomingAltmetricInfo.getReaders() != null) {
+        altmetricInfo.setMendeleyReaders(incomingAltmetricInfo.getReaders().getMendeley());
+      }
       altmetricInfo = this.deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetricInfo);
 
       if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
@@ -466,8 +542,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
     DeliverableAltmetricInfo altmetricInfo =
       this.deliverableAltmetricInfoManager.findByPhaseAndDeliverable(phase, deliverable);
     MetadataAltmetricModel2 incomingAltmetricInfo = null;
-    if (this.response2 != null && this.response2.getAltmetricInfo2() != null) {
-      incomingAltmetricInfo = this.response2.getAltmetricInfo2();
+    if (this.response != null && this.response.getAltmetricInfo2() != null) {
+      incomingAltmetricInfo = this.response.getAltmetricInfo2();
     }
     if (incomingAltmetricInfo != null) {
       if (altmetricInfo == null) {
@@ -506,9 +582,21 @@ public class DeliverableMetadataByWOS extends BaseAction {
       altmetricInfo.setDetailsUrl(this.link);
       altmetricInfo.setDoi(incomingAltmetricInfo.getDoi());
       altmetricInfo.setHandle(incomingAltmetricInfo.getHandle());
-      altmetricInfo.setImageLarge(incomingAltmetricInfo.getImageLarge());
-      altmetricInfo.setImageMedium(incomingAltmetricInfo.getImageMedium());
-      altmetricInfo.setImageSmall(incomingAltmetricInfo.getImageSmall());
+      if (incomingAltmetricInfo.getImages() != null && incomingAltmetricInfo.getImages().getLarge() != null) {
+        altmetricInfo.setImageLarge(incomingAltmetricInfo.getImages().getLarge());
+      } else {
+        altmetricInfo.setImageLarge(incomingAltmetricInfo.getImageLarge());
+      }
+      if (incomingAltmetricInfo.getImages() != null && incomingAltmetricInfo.getImages().getMedium() != null) {
+        altmetricInfo.setImageMedium(incomingAltmetricInfo.getImages().getMedium());
+      } else {
+        altmetricInfo.setImageMedium(incomingAltmetricInfo.getImageMedium());
+      }
+      if (incomingAltmetricInfo.getImages() != null && incomingAltmetricInfo.getImages().getSmall() != null) {
+        altmetricInfo.setImageSmall(incomingAltmetricInfo.getImages().getSmall());
+      } else {
+        altmetricInfo.setImageSmall(incomingAltmetricInfo.getImageSmall());
+      }
       altmetricInfo.setIsOpenAccess(incomingAltmetricInfo.getIsOpenAccess());
       altmetricInfo.setJournal(incomingAltmetricInfo.getJournal());
       altmetricInfo.setLastUpdated(incomingAltmetricInfo.getLastUpdated() != null
@@ -521,9 +609,12 @@ public class DeliverableMetadataByWOS extends BaseAction {
       altmetricInfo.setType(incomingAltmetricInfo.getTitle());
       altmetricInfo.setUri(incomingAltmetricInfo.getUri());
       altmetricInfo.setUrl(incomingAltmetricInfo.getUrl());
+      if (incomingAltmetricInfo.getReaders() != null) {
+        altmetricInfo.setMendeleyReaders(incomingAltmetricInfo.getReaders().getMendeley());
+      }
 
+      this.manualSetAlmetricInfo();
       altmetricInfo = this.deliverableAltmetricInfoManager.saveDeliverableAltmetricInfo(altmetricInfo);
-
       if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
         this.deliverableAltmetricInfoManager.replicate(altmetricInfo,
           phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
@@ -636,10 +727,15 @@ public class DeliverableMetadataByWOS extends BaseAction {
       this.saveInfo();
       // return true;
     }
+    MetadataAltmetricModel incomingAltmetricInfoTemp = null;
+    if (this.response != null && this.response.getAltmetricInfo() != null) {
+      incomingAltmetricInfoTemp = this.response.getAltmetricInfo();
+    }
+    if (incomingAltmetricInfoTemp == null) {
+      this.response = new Gson().fromJson(this.readWOSDataFromClarisa2(), MetadataWOSModel.class);
+    }
 
-    this.response2 = new Gson().fromJson(this.readWOSDataFromClarisa2(), MetadataWOSModel.class);
-
-    if (this.response2 != null) {
+    if (this.response != null) {
       Deliverable deliverable = this.deliverableManager.getDeliverableById(this.deliverableId);
       Phase phase = this.phaseManager.getPhaseById(this.phaseId);
       this.saveAltmetricInfo(phase, deliverable);
@@ -648,9 +744,5 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
 
     return false;
-  }
-
-  public void setResponse2(MetadataWOSModel response2) {
-    this.response2 = response2;
   }
 }
