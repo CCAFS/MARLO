@@ -133,6 +133,9 @@ public class APConfig {
   // Clarisa WOS service link
   @Value("${clarisa.wos.link}")
   private String CLARISA_WOS_LINK;
+  // Clarisa WOS service link 2
+  @Value("${clarisa.wos.link2}")
+  private String CLARISA_WOS_LINK2;
 
   // Clarisa user for WOS synchronization
   @Value("${clarisa.wos.user}")
@@ -309,6 +312,19 @@ public class APConfig {
       return null;
     }
     return CLARISA_WOS_LINK;
+  }
+
+  /**
+   * Get the Clarisa WOS service link 2
+   *
+   * @return a string with the WOS link 2
+   */
+  public String getClarisaWOSLink2() {
+    if (CLARISA_WOS_LINK2 == null) {
+      LOG.error("there is not a Clarisa WOS service link 2 configured.");
+      return null;
+    }
+    return CLARISA_WOS_LINK2;
   }
 
   /**

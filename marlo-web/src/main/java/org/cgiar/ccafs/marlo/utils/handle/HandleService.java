@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.utils.doi;
+package org.cgiar.ccafs.marlo.utils.handle;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,15 +34,15 @@ import org.apache.commons.lang3.StringUtils;
  * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-public class DOIService {
+public class HandleService {
 
   /**
    * DOI service URL. It returns a JSON as described in the DOI
    * <a href = "https://www.doi.org/factsheets/DOIProxy.html#rest-api">factsheet</a>
    */
-  public final static String DOI_SERVICE = "https://doi.org/api/handles/%s";
+  public final static String HANDLE_SERVICE = "https://doi.org/api/handles/%s";
 
-  public final static String DOI_SERVICE_RESPONSE_CODE = "responseCode";
+  public final static String HANDLE_SERVICE_RESPONSE_CODE = "responseCode";
 
   /**
    * Pattern defined according to the ShortDOI <a href = "http://shortdoi.org/">webpage</a>.
@@ -53,7 +53,7 @@ public class DOIService {
     Pattern.compile("\\b(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![\"&\\'])\\S)+)\\b");
 
   private static JsonElement getDoiElement(final String doi) throws IOException {
-    URL shortDoiServiceURL = new URL(String.format(DOI_SERVICE, doi));
+    URL shortDoiServiceURL = new URL(String.format(HANDLE_SERVICE, doi));
     HttpURLConnection connection = (HttpURLConnection) shortDoiServiceURL.openConnection();
     JsonElement element = JsonNull.INSTANCE;
 
@@ -65,7 +65,7 @@ public class DOIService {
         fnfe.printStackTrace();
       }
     } else {
-      throw new InvalidDOIException(doi);
+      throw new InvalidHandleException(doi);
     }
 
     return element;
@@ -76,8 +76,8 @@ public class DOIService {
     String doi = null;
     if (element.isJsonObject()) {
       JsonObject object = element.getAsJsonObject();
-      DOIHttpResponseCode responseCode =
-        DOIHttpResponseCode.getByErrorCode(object.get(DOI_SERVICE_RESPONSE_CODE).getAsInt());
+      HandleHttpResponseCode responseCode =
+        HandleHttpResponseCode.getByErrorCode(object.get(HANDLE_SERVICE_RESPONSE_CODE).getAsInt());
       switch (responseCode) {
         case SUCCESS:
           // TODO we are not sure if it ALWAYS is an array, so we need to check if it is a JsonArray first
@@ -135,12 +135,8 @@ public class DOIService {
     if (StringUtils.isBlank(possibleDoi)) {
       return doi;
     }
-    Matcher matcher = null;
-    if (!possibleDoi.isEmpty() && possibleDoi.contains("handle")) {
-      return possibleDoi;
-    } else {
-      matcher = REGEXP_PLAINDOI.matcher(possibleDoi);
-    }
+
+    Matcher matcher = REGEXP_PLAINDOI.matcher(possibleDoi);
 
     if (matcher.find()) {
       doi = matcher.group(0);

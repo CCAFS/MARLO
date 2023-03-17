@@ -13,19 +13,19 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.utils.doi;
+package org.cgiar.ccafs.marlo.utils.handle;
 
 
 /**************
  * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-public class InvalidDOIException extends IllegalArgumentException {
+public class InvalidHandleException extends IllegalArgumentException {
 
   /**
    * Constructs an <code>InvalidHandleException</code> with no detail message.
    */
-  public InvalidDOIException() {
+  public InvalidHandleException() {
     super();
   }
 
@@ -34,7 +34,7 @@ public class InvalidDOIException extends IllegalArgumentException {
    *
    * @param s the detail message.
    */
-  public InvalidDOIException(String s) {
+  public InvalidHandleException(String s) {
     super(String.format("From input string: %s", s));
   }
 }

@@ -334,7 +334,7 @@ function updateWOSFields(data) {
 
 function getWosInstitutions(institutions) {
 
-  console.log(institutions);
+  if(institutions != undefined && institutions != "null" && institutions != ""){
   institutions.forEach((element, index) => {
 
     if (parseInt(element.clarisaMatchConfidence) < Number($('#acceptationPercentageValue').val())) {
@@ -361,6 +361,7 @@ function getWosInstitutions(institutions) {
       });
     }
   });
+}
 
 }
 

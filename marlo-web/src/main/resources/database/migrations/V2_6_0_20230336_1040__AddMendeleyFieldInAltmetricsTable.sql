@@ -1,0 +1,1 @@
+ALTER TABLE deliverable_altmetric_info ADD mendeley_readers int(11) NULL;
