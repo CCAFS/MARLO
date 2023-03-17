@@ -4,11 +4,11 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230126a"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230316"
   ] 
 /]
 
-[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?2023/03/16"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [
@@ -333,22 +333,38 @@
 <span class="hidden planningYear">${(action.getPlanningYear())!}</span>
 <span class="hidden reportingYear">${(action.getReportingYear())!}</span>
     
-<section class="container">
+<section class="container sectionSummarie">
   <article id="" class="">
   
     [#--  Reports Tabs --]
-    <div class="summariesButtons col-md-3">
+    [#--<div class="summariesButtons col-md-3">
       [#list reportsTypes as reportType]
         [#if reportType.active]
           <div id="${reportType.slug}" class="summariesSection [#if reportType_index == 0]current[/#if]">
-            <span>[#-- Icon --]</span><a href="">[@s.text name=reportType.title /]</a>
+            <span> </span><a href="">[@s.text name=reportType.title /]</a>
           </div>
         [/#if]
       [/#list]
-    </div>
+    </div>--]
     [#--  Reports Content --]
     <div class="summariesContent col-md-9" style="min-height:550px;">
-      <h3 class="headTitle text-center">Summaries</h3>
+      <img class="img_aiccra" src="${baseUrlCdn}/global/images/crps/AICCRA.png">
+      <div class="containerHeader">
+        <img class="imgArrow" src="${baseUrlCdn}/global/images/summaries_icon.png">
+        <h3 class="headTitle text-center">Summaries</h3>        
+      </div>
+      <p class="descriptionSummaries">Here you can download reports with detailed summaries of all the information found in AICCRA</p>
+      <div class="menuSummaries"> 
+            <div id="projects" class="summariesSection current">
+              <img class="imgArrow" src="${baseUrlCdn}/global/images/cluster_summaries.png"><a href="">Clusters</a>
+            </div>
+            <div id="partners" class="summariesSection ">
+              <img class="imgArrow" src="${baseUrlCdn}/global/images/partners_summaries.png"><a href="">Partners</a>
+            </div>
+            <div id="deliverables" class="summariesSection ">
+              <img class="imgArrow" src="${baseUrlCdn}/global/images/deliverables_summaries.png"><a href="">Deliverables</a>
+            </div>
+      </div>
       <div class="loading" style="display:none"></div>
       <div class="summariesOptions">
         [#list reportsTypes as reportType]
