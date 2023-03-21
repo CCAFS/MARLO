@@ -45,27 +45,27 @@
 }
 
 .summariesSection {
-  width: 130px;
+  width: 110px;
   height: 100%;
   text-align: center;
-  border-right: solid 1px #ffffff3d;
+  border-right: solid 1px #ffffff;
 }
 
 #projects img{
-  width: 39px;
-  margin: 12px 0px 14px 0px;
+  width: 46px;
+  margin: 12px 0px 25px 0px;
   cursor: pointer;
 }
 
 #partners img{
-  width: 43px;
-  margin: 10px 0px 12px 0px;
+  width: 50px;
+  margin: 5px 0px 25px 0px;
   cursor: pointer;
 }
 
 #deliverables img{
-  width: 33px;
-  margin: 11px 0px 14px 0px;
+  width: 35px;
+  margin: 10px 0px 27px 0px;
   cursor: pointer;
 }
 
@@ -78,7 +78,7 @@
   line-height: 0px;
   text-decoration: none;
   color: #ffffff;
-  font-size: 1.2em;
+  font-size: 15px;
 }
 
 .summariesSection.current {
@@ -377,7 +377,7 @@ ul.tag-editor {
 .headTitle{
   font-weight: 600;
   color: black;
-  font-size: 30px;
+  font-size: 24pt;
 }
 
 .containerHeader{
@@ -398,23 +398,25 @@ ul.tag-editor {
 
 .menuSummaries{
   display: flex;
-  background: #0C9999;
-  height: 79px;
-  border-radius: 5px;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  background: rgb(12, 153, 153);
+  height: 91px;
+  border-radius: 10px;
+  /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
   margin-bottom: 20px;
 }
 
 .menuSummaries #projects{
-  border-radius: 5px 0 0 5px;
+  border-radius: 10px 0 0 10px;
 }
 
 .img_aiccra{
   position: absolute;
   width: 170px;
   top: 11px;
+  left: 57px;
 }
 
 .descriptionSummaries{
   text-align: center;
+  color: rgb(51, 51, 51);
 }

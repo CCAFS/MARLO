@@ -4,11 +4,11 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230316"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230321"
   ] 
 /]
 
-[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?2023/03/16"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20230321"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [
@@ -353,7 +353,7 @@
         <img class="imgArrow" src="${baseUrlCdn}/global/images/summaries_icon.png">
         <h3 class="headTitle text-center">Summaries</h3>        
       </div>
-      <p class="descriptionSummaries">Here you can download reports with detailed summaries of all the information found in AICCRA</p>
+      <p class="descriptionSummaries">Find detailed reports on all the activities reported in AICCRA</p>
       <div class="menuSummaries"> 
             <div id="projects" class="summariesSection current">
               <img class="imgArrow" src="${baseUrlCdn}/global/images/cluster_summaries.png"><a href="">Clusters</a>

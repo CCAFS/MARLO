@@ -77,6 +77,8 @@ function removeAllTags(){
 
 function selectReport() {
   if($(this).hasClass('selected')){
+    $('.summariesFiles').removeClass("selected");
+    $('.extraOptions').slideUp();
     return
   }
   // Update the project list if necessary
