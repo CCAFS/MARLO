@@ -31,7 +31,7 @@
     </div>
     <div class="containerText col-md-12">
       <p class="alertText">
-        [@s.text name="Please note that activities are displayed on the homepage timeline component in the order they are entered or in the order defined by the 'order' field, if its filled. By default, the dates of the activities do not determine their order." /] 
+        [@s.text name="timelineManagement.help" /] 
       </p>
     </div>
     <div  class="viewMoreCollapse closed"></div>
