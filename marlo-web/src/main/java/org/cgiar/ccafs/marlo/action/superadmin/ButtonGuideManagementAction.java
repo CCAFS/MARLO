@@ -52,11 +52,13 @@ public class ButtonGuideManagementAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
+    buttonGuideContents = new ArrayList<>();
     buttonGuideContents = buttonGuideContentManager.findAll();
 
     if (this.isHttpPost()) {
-      buttonGuideContents.clear();
+      if (buttonGuideContents != null && !buttonGuideContents.isEmpty()) {
+        buttonGuideContents.clear();
+      }
     }
   }
 
@@ -68,35 +70,38 @@ public class ButtonGuideManagementAction extends BaseAction {
         List<Long> IDs = buttonGuideContents.stream().map(ButtonGuideContent::getId).filter(Objects::nonNull)
           .collect(Collectors.toList());
 
-        buttonGuideContentManager.findAll().stream()
-          .filter(activityDB -> activityDB.getId() == null || IDs.contains(activityDB.getId()))
-          .map(ButtonGuideContent::getId).forEach(buttonGuideContentManager::deleteButtonGuideContent);
+        List<ButtonGuideContent> content = buttonGuideContentManager.findAll();
+        if (content != null) {
+          buttonGuideContentManager.findAll().stream()
+            .filter(c -> c != null && c.getId() == null || IDs.contains(c.getId())).map(ButtonGuideContent::getId)
+            .forEach(buttonGuideContentManager::deleteButtonGuideContent);
 
-        for (ButtonGuideContent fields : buttonGuideContents) {
 
-          // New Activity
-          ButtonGuideContent fieldSave = new ButtonGuideContent();
+          for (ButtonGuideContent fields : buttonGuideContents) {
 
-          if (fields.getId() != null) {
-            fieldSave = buttonGuideContentManager.getButtonGuideContentById(fields.getId());
-          }
-          if (fields.getActionName() != null) {
-            fieldSave.setActionName(fields.getActionName());
-          }
-          if (fields.getContent() != null) {
-            fieldSave.setContent(fields.getContent());
-          }
-          if (fields.getIdentifier() != null) {
-            fieldSave.setIdentifier(fields.getIdentifier());
-          }
-          if (fields.getSectionName() != null) {
-            fieldSave.setSectionName(fields.getSectionName());
-          }
-          buttonGuideContentManager.saveButtonGuideContent(fieldSave);
+            // New Activity
+            ButtonGuideContent fieldSave = new ButtonGuideContent();
 
+            if (fields.getId() != null) {
+              fieldSave = buttonGuideContentManager.getButtonGuideContentById(fields.getId());
+            }
+            if (fields.getActionName() != null) {
+              fieldSave.setActionName(fields.getActionName());
+            }
+            if (fields.getContent() != null) {
+              fieldSave.setContent(fields.getContent());
+            }
+            if (fields.getIdentifier() != null) {
+              fieldSave.setIdentifier(fields.getIdentifier());
+            }
+            if (fields.getSectionName() != null) {
+              fieldSave.setSectionName(fields.getSectionName());
+            }
+            buttonGuideContentManager.saveButtonGuideContent(fieldSave);
+
+          }
         }
       }
-
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
         Collection<String> messages = this.getActionMessages();
         if (!this.getInvalidFields().isEmpty()) {
