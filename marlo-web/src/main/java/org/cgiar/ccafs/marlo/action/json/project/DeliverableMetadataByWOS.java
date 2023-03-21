@@ -280,12 +280,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
   private JsonElement readWOSDataFromClarisa2() throws IOException {
     URL clarisaUrl = new URL(config.getClarisaWOSLink2().replace("{1}", this.link));
-    System.out.println("clarisaUrl: " + clarisaUrl);
     String loginData = config.getClarisaWOSUser() + ":" + config.getClarisaWOSPassword();
-    System.out.println("login data: " + clarisaUrl);
-
     String encoded = Base64.encodeBase64String(loginData.getBytes());
-    System.out.println("Enconded: " + encoded);
 
     HttpURLConnection conn = (HttpURLConnection) clarisaUrl.openConnection();
     conn.setRequestProperty("Authorization", "Basic " + encoded);
@@ -293,11 +289,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
     if (conn.getResponseCode() < 300) {
       try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
-        System.out.println("Reader: " + reader);
-
         element = new JsonParser().parse(reader);
-        System.out.println("Element: " + element);
-
       } catch (FileNotFoundException fnfe) {
         element = JsonNull.INSTANCE;
       }
