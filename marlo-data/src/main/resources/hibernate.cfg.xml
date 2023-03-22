@@ -423,6 +423,10 @@
   <mapping resource="xmls/FeedbackStatuses.hbm.xml"/>
   <mapping resource="xmls/FeedbackPermissions.hbm.xml"/>
   <mapping resource="xmls/FeedbackRolesPermissions.hbm.xml"/>
+<<<<<<< HEAD
   <mapping resource="xmls/ProjectExpectedStudyCrpOutcomes.hbm.xml"/>
+=======
+  <mapping resource="xmls/ButtonGuideContents.hbm.xml"/>
+>>>>>>> aiccra-staging
  </session-factory>
 </hibernate-configuration>

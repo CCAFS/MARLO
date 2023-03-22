@@ -9,7 +9,7 @@
   ] /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/projects/projectsContributionToLP6.css",
-  "${baseUrlMedia}/css/projects/projectContributionsCrpList.css"
+  "${baseUrlMedia}/css/projects/projectContributionsCrpList.css?20230106"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "contributionsLP6" /]

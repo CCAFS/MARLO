@@ -8,7 +8,7 @@
   "${baseUrlMedia}/js/projects/projectPartners.js?191502"
   ] 
 /]  
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20230106"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 [#assign hideJustification = true /]

@@ -3,11 +3,11 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovationsList.js",
+  "${baseUrlMedia}/js/projects/projectInnovationsList.js?20230306",
   "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20230306"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
 [#assign isListSection = true /]
@@ -132,7 +132,7 @@
               </td>
           [/#if]
           <td class="owner text-center">
-            [#if isOwner] <small><nobr>This Project</nobr></small>  [#else][#if innovation.project?has_content]P${innovation.project.id}[#else]Not defined[/#if][/#if]
+            [#if isOwner] <small><nobr>This Cluster</nobr></small>  [#else][#if innovation.project?has_content]${innovation.project.acronym}[#else]Not defined[/#if][/#if]
           </td>
           [#-- Missing fields --]
           [#if currentTable]
