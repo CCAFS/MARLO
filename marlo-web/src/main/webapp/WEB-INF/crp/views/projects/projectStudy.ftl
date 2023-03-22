@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "Project Study" /]
+[#assign title = "Cluster OICR" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${expectedID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload", "flag-icon-css", "components-font-awesome"] /]
 [#assign customJS = [
