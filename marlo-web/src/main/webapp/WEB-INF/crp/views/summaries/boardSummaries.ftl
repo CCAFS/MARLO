@@ -8,7 +8,7 @@
   ] 
 /]
 
-[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20230321"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20230322"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [

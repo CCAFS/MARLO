@@ -371,6 +371,7 @@ ul.tag-editor {
 }
 
 .sectionSummarie{
+  margin-top: 50px;
   border: solid 1px #9A9A9A;
 }
 
@@ -419,4 +420,12 @@ ul.tag-editor {
 .descriptionSummaries{
   text-align: center;
   color: rgb(51, 51, 51);
+}
+
+.timeline-phases{
+  display: none;
+}
+
+.subMainMenu{
+  display: none;
 }
