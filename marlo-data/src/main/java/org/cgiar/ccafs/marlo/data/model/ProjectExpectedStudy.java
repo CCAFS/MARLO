@@ -141,6 +141,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   private Set<ProjectExpectedStudyProjectOutcome> projectExpectedStudyProjectOutcomes =
     new HashSet<ProjectExpectedStudyProjectOutcome>(0);
 
+  private List<ProjectExpectedStudyCrpOutcome> crpOutcomes;
+  private Set<ProjectExpectedStudyCrpOutcome> projectExpectedStudyCrpOutcomes =
+    new HashSet<ProjectExpectedStudyCrpOutcome>(0);
+
   // clarisa field
   private String pdfLink;
 
@@ -238,6 +242,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return countriesIdsText;
   }
 
+  public List<ProjectExpectedStudyCrpOutcome> getCrpOutcomes() {
+    return crpOutcomes;
+  }
+
   public List<ProjectExpectedStudyCrp> getCrps() {
     return crps;
   }
@@ -309,6 +317,11 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return projectExpectedStudyCountries;
   }
 
+  public Set<ProjectExpectedStudyCrpOutcome> getProjectExpectedStudyCrpOutcomes() {
+    return projectExpectedStudyCrpOutcomes;
+  }
+
+
   public Set<ProjectExpectedStudyCrp> getProjectExpectedStudyCrps() {
     return projectExpectedStudyCrps;
   }
@@ -316,7 +329,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public Set<ProjectExpectedStudyFlagship> getProjectExpectedStudyFlagships() {
     return projectExpectedStudyFlagships;
   }
-
 
   public Set<ProjectExpectedStudyGeographicScope> getProjectExpectedStudyGeographicScopes() {
     return projectExpectedStudyGeographicScopes;
@@ -512,6 +524,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.countriesIdsText = countriesIdsText;
   }
 
+  public void setCrpOutcomes(List<ProjectExpectedStudyCrpOutcome> crpOutcomes) {
+    this.crpOutcomes = crpOutcomes;
+  }
+
   public void setCrps(List<ProjectExpectedStudyCrp> crps) {
     this.crps = crps;
   }
@@ -564,6 +580,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.policies = policies;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
   }
@@ -576,6 +593,9 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.projectExpectedStudyCountries = projectExpectedStudyCountries;
   }
 
+  public void setProjectExpectedStudyCrpOutcomes(Set<ProjectExpectedStudyCrpOutcome> projectExpectedStudyCrpOutcomes) {
+    this.projectExpectedStudyCrpOutcomes = projectExpectedStudyCrpOutcomes;
+  }
 
   public void setProjectExpectedStudyCrps(Set<ProjectExpectedStudyCrp> projectExpectedStudyCrps) {
     this.projectExpectedStudyCrps = projectExpectedStudyCrps;
