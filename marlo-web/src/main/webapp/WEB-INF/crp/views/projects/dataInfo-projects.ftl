@@ -4,7 +4,7 @@
     [#if action.isAiccra()]
       <div id="clusterID-quote" class="quote-id" title="C${(project.id)!} - [#if (project.projectInfo.title?has_content)!false]${(project.projectInfo.title)!}[/#if]">
         <a href="[@s.url namespace="/projects" action='${crpSession}/description'][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-          <p><span>&nbsp${(project.acronym)!}</span></p>
+          <p><span>&nbsp${project.acronym}</span></p>
         </a>
       </div>
     [#else]
