@@ -56,7 +56,7 @@ public class ButtonGuideManagementAction extends BaseAction {
     buttonGuideContents = buttonGuideContentManager.findAll();
 
     if (this.isHttpPost()) {
-      if (buttonGuideContents != null && !buttonGuideContents.isEmpty()) {
+      if (buttonGuideContents != null) {
         buttonGuideContents.clear();
       }
     }
@@ -72,34 +72,32 @@ public class ButtonGuideManagementAction extends BaseAction {
 
         List<ButtonGuideContent> content = buttonGuideContentManager.findAll();
         if (content != null) {
-          buttonGuideContentManager.findAll().stream()
-            .filter(c -> c != null && c.getId() == null || IDs.contains(c.getId())).map(ButtonGuideContent::getId)
-            .forEach(buttonGuideContentManager::deleteButtonGuideContent);
+          content.stream().filter(c -> c != null && c.getId() != null && !IDs.contains(c.getId()))
+            .map(ButtonGuideContent::getId).forEach(buttonGuideContentManager::deleteButtonGuideContent);
+        }
 
+        for (ButtonGuideContent fields : buttonGuideContents) {
 
-          for (ButtonGuideContent fields : buttonGuideContents) {
+          // New Activity
+          ButtonGuideContent fieldSave = new ButtonGuideContent();
 
-            // New Activity
-            ButtonGuideContent fieldSave = new ButtonGuideContent();
-
-            if (fields.getId() != null) {
-              fieldSave = buttonGuideContentManager.getButtonGuideContentById(fields.getId());
-            }
-            if (fields.getActionName() != null) {
-              fieldSave.setActionName(fields.getActionName());
-            }
-            if (fields.getContent() != null) {
-              fieldSave.setContent(fields.getContent());
-            }
-            if (fields.getIdentifier() != null) {
-              fieldSave.setIdentifier(fields.getIdentifier());
-            }
-            if (fields.getSectionName() != null) {
-              fieldSave.setSectionName(fields.getSectionName());
-            }
-            buttonGuideContentManager.saveButtonGuideContent(fieldSave);
-
+          if (fields.getId() != null) {
+            fieldSave = buttonGuideContentManager.getButtonGuideContentById(fields.getId());
           }
+          if (fields.getActionName() != null) {
+            fieldSave.setActionName(fields.getActionName());
+          }
+          if (fields.getContent() != null) {
+            fieldSave.setContent(fields.getContent());
+          }
+          if (fields.getIdentifier() != null) {
+            fieldSave.setIdentifier(fields.getIdentifier());
+          }
+          if (fields.getSectionName() != null) {
+            fieldSave.setSectionName(fields.getSectionName());
+          }
+          buttonGuideContentManager.saveButtonGuideContent(fieldSave);
+
         }
       }
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
