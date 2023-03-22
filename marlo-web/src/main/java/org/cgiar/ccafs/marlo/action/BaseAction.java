@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ButtonGuideContentManager;
 import org.cgiar.ccafs.marlo.data.manager.CenterOutputsOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ClusterTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
@@ -37,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeRuleManager;
+import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -67,6 +69,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
@@ -80,104 +83,7 @@ import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
-import org.cgiar.ccafs.marlo.data.model.Activity;
-import org.cgiar.ccafs.marlo.data.model.ActivityTitle;
-import org.cgiar.ccafs.marlo.data.model.Auditlog;
-import org.cgiar.ccafs.marlo.data.model.BudgetType;
-import org.cgiar.ccafs.marlo.data.model.CapDevSectionEnum;
-import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
-import org.cgiar.ccafs.marlo.data.model.CaseStudy;
-import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
-import org.cgiar.ccafs.marlo.data.model.CenterCycle;
-import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
-import org.cgiar.ccafs.marlo.data.model.CenterDeliverableOutput;
-import org.cgiar.ccafs.marlo.data.model.CenterImpact;
-import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
-import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
-import org.cgiar.ccafs.marlo.data.model.CenterProject;
-import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
-import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
-import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
-import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
-import org.cgiar.ccafs.marlo.data.model.CenterTopic;
-import org.cgiar.ccafs.marlo.data.model.ClusterType;
-import org.cgiar.ccafs.marlo.data.model.CrpCategoryEnum;
-import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
-import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
-import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
-import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
-import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
-import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
-import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
-import org.cgiar.ccafs.marlo.data.model.CrpUser;
-import org.cgiar.ccafs.marlo.data.model.CustomLevelSelect;
-import org.cgiar.ccafs.marlo.data.model.CustomParameter;
-import org.cgiar.ccafs.marlo.data.model.Deliverable;
-import org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome;
-import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
-import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
-import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
-import org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome;
-import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
-import org.cgiar.ccafs.marlo.data.model.DeliverableType;
-import org.cgiar.ccafs.marlo.data.model.DeliverableTypeRule;
-import org.cgiar.ccafs.marlo.data.model.FileDB;
-import org.cgiar.ccafs.marlo.data.model.FundingSource;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
-import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
-import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
-import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.IpProgram;
-import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
-import org.cgiar.ccafs.marlo.data.model.LocElement;
-import org.cgiar.ccafs.marlo.data.model.LocElementType;
-import org.cgiar.ccafs.marlo.data.model.MarloAuditableEntity;
-import org.cgiar.ccafs.marlo.data.model.MarloMessage;
-import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
-import org.cgiar.ccafs.marlo.data.model.PowbSynthesis2019SectionStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.ProgramType;
-import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
-import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
-import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
-import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
-import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
-import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationProjectOutcome;
-import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
-import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
-import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
-import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.Role;
-import org.cgiar.ccafs.marlo.data.model.SectionStatus;
-import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
-import org.cgiar.ccafs.marlo.data.model.Submission;
-import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.data.model.UserRole;
+import org.cgiar.ccafs.marlo.data.model.*;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -373,6 +279,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private ProjectInnovationInfoManager projectInnovationInfoManager;
 
+  @Inject
+  private ProjectInnovationSharedManager projectInnovationSharedManager;
+
+  @Inject
+  private ExpectedStudyProjectManager expectedStudyProjectManager;
+
   // Variables
   private String crpSession;
 
@@ -487,6 +399,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ProjectInnovationManager projectInnovationManager;
+
+  @Inject
+  private ButtonGuideContentManager buttonGuideContentManager;
+
   private String centerSession;
 
   private Long centerID;
@@ -2147,6 +2063,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  /**
+   * @param identifierText - Text with key to identify the text of the section
+   * @return text for the actual section
+   */
+  public String getButtonGuideContent(String identifierText) {
+    String content = "";
+    if (identifierText != null) {
+      ButtonGuideContent buttonGuideContent = null;
+      buttonGuideContent = buttonGuideContentManager.getButtonGuideContentByIdentifier(identifierText);
+      if (buttonGuideContent != null && buttonGuideContent.getContent() != null) {
+        content = buttonGuideContent.getContent();
+      }
+    }
+    return content;
+  }
+
   public List<CenterSubmission> getCapdevSubmissions(long capDevID) {
     CapacityDevelopment capacityDevelopment = this.capacityDevelopmentService.getCapacityDevelopmentById(capDevID);
 
@@ -3154,6 +3086,27 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } catch (Exception e) {
       e.printStackTrace();
     }
+
+    try {
+      // Load Shared studies
+      List<ExpectedStudyProject> expectedStudyProject = this.expectedStudyProjectManager
+        .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getPhaseID()) != null
+          ? this.expectedStudyProjectManager
+            .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getPhaseID()).stream()
+            .filter(px -> px.isActive() && px.getProjectExpectedStudy().isActive()
+              && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+            .collect(Collectors.toList())
+          : Collections.emptyList();
+      if (expectedStudyProject != null && !expectedStudyProject.isEmpty()) {
+        for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
+          if (!expectedStudies.contains(expectedStudy.getProjectExpectedStudy())) {
+            expectedStudies.add(expectedStudy.getProjectExpectedStudy());
+          }
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     return expectedStudies;
   }
 
@@ -3318,6 +3271,31 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } catch (Exception e) {
       e.printStackTrace();
     }
+
+    try {
+      // Shared innovations
+      List<ProjectInnovationShared> innovationShareds = projectInnovationSharedManager
+        .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getActualPhase().getId());
+
+      if (innovationShareds != null && !innovationShareds.isEmpty()) {
+        for (ProjectInnovationShared innovationShared : innovationShareds) {
+          if (!innovations.contains(innovationShared.getProjectInnovation())) {
+            if (innovationShared.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null
+              && innovationShared.getProjectInnovation().getProjectInnovationInfo().getYear() >= this.getActualPhase()
+                .getYear()) {
+
+
+              innovations.add(innovationShared.getProjectInnovation());
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+
+      LOG.error("unable to get shared innovations", e);
+    }
+
+
     return innovations;
   }
 

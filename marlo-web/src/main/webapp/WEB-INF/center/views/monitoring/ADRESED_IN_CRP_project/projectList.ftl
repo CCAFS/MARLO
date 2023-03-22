@@ -2,7 +2,7 @@
 [#assign title = "AICCRA Clusters" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrlMedia}/js/monitoring/projects/projectsList.js" ] /]
+[#assign customJS = ["${baseUrlMedia}/js/monitoring/projects/projectsList.js?20230323" ] /]
 [#assign customCSS = ["${baseUrlCdn}/global/css/customDataTable.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = (filterBy)!"all" /]

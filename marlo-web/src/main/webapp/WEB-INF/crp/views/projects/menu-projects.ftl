@@ -2,6 +2,16 @@
 [#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
 [#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
 [#assign isGlobalUnitProject = (centerGlobalUnit && isCenterProject) || (!centerGlobalUnit && isCrpProject) /]
+[#if project.projectInfo?has_content && project.projectInfo.clusterType?has_content && project.projectInfo.clusterType.id?has_content && project.projectInfo.clusterType.id == 1]
+  [#assign isCountryCluster = true]
+[#else]
+   [#assign isCountryCluster = false]
+[/#if]
+[#if project.projectInfo?has_content && project.projectInfo.clusterType?has_content && project.projectInfo.clusterType.id?has_content && project.projectInfo.clusterType.id == 4]
+  [#assign isRegionalCluster = true]
+[#else]
+   [#assign isRegionalCluster = false]
+[/#if]
 [#if !((project.projectInfo.isProjectEditLeader())!false)]
   [#assign menus= [
     { 'title': 'General Information', 'show': true,
@@ -60,9 +70,9 @@
       { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingActive && action.hasSpecificities("crp_leverages_module") && isCrpProject, "showCheck": isGlobalUnitProject}
       ]
     },
-    { 'title': 'Safeguards', 'show':(UpKeepActive || reportingActive) && !project.projectInfo.administrative && (project.projectInfo.clusterType.id == 1 || project.projectInfo.clusterType.id == 4),
+    { 'title': 'Safeguards', 'show':(UpKeepActive || reportingActive) && !project.projectInfo.administrative && (isCountryCluster || isRegionalCluster),
       'items': [
-      { 'slug': 'safeguards',  'name': 'projects.menu.safeguards',  'action': 'safeguards',  'active': true  ,'show': (UpKeepActive || reportingActive) && !project.projectInfo.administrative && (project.projectInfo.clusterType.id == 1 || project.projectInfo.clusterType.id == 4), "showCheck": true, "development": false }
+      { 'slug': 'safeguards',  'name': 'projects.menu.safeguards',  'action': 'safeguards',  'active': true  ,'show': (UpKeepActive || reportingActive) && !project.projectInfo.administrative && (isCountryCluster || isRegionalCluster), "showCheck": true, "development": false }
       ]
     },
     { 'title': 'Feedback', 'show': action.hasSpecificities(action.feedbackModule()),

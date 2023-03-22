@@ -1,4 +1,8 @@
-#dashboardContent {float: left;display: inline-block;width: 58%;margin-left: 2%;}
+#dashboardContent {
+  float: left;display: inline-block;
+  /* width: 58%; */
+  margin-left: 2%;
+}
 
 #dashboardContent li a{
   background-color: white;
@@ -402,7 +406,7 @@ span.timelineControl:hover {
     }
 
     .timelineAlert {
-      top: 445px !important;
+      top: 325px !important;
     }
 
     .timelineAlertText {
@@ -728,12 +732,12 @@ span.timelineControl:hover {
     display: table-cell;
     text-align: center;
     margin-left: 4px;
-    display: block;
+    display: flex;
 }
 
   .itemsTablet{
-    height: 120px;
-    width: 120px;
+    height: 100px;
+    width: 100px;
     -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);   
     margin: 10px auto;
     text-align: center;
@@ -752,13 +756,17 @@ span.timelineControl:hover {
 
  .itemsTablet img{
   margin-top: 10px;
-  width: 60px;
+  width: 47px;
  }
 
  .itemsTablet p{
   font-weight: 700;
-  font-size: 1.2em;
+  font-size: 1.1em;
   color: rgb(110, 110, 110);
+ }
+
+ .itemsTablet .textOICRs{
+  font-size: 1em;
  }
 
  .containerTabletItems .nav{
@@ -786,6 +794,10 @@ span.timelineControl:hover {
 
  .sectionItems{
   margin-left: 10px;
+  width: 240px;
+  max-width: 240px;
+  min-width: 240px;
+  margin-top: 30px;
  }
 
  @media (max-width:1020px){
@@ -799,6 +811,12 @@ span.timelineControl:hover {
   .containerItems {
     display: flex;
     justify-content: center;
+}
+
+.sectionItems {
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
 }
 
   .containerSeccionItems {
@@ -833,6 +851,31 @@ span.timelineControl:hover {
   }
  }
 
+ 
+/* Add styles to the table */
+.dataTables_wrapper {
+  position: relative;
+}
+
+.dataTables_filter{
+  float: left !important;
+}
+
+.dataTables_filter label input{
+  height: 30px !important;
+  width: 295px !important;
+  margin-left: -44px !important;
+}
+
+.iconSearch{
+    background: #0b7ba6;
+    height: 30px;
+    width: 40px;
+    position: absolute;
+    margin-left: 285px;
+    border-radius: 0px 4px 4px 0px;
+    display: flex;
+}
  #guide-button{
   display: block;
 }

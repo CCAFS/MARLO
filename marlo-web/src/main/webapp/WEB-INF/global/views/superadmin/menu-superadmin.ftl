@@ -28,9 +28,13 @@
     { 'slug': 'permissions',    'name': 'menu.superadmin.permissions', 'action': 'marloPermissions',   'active': false }
     { 'slug': 'parameters',    'name': 'menu.superadmin.parameters', 'action': 'marloParameters',   'active': true },
     <#--  { 'slug': 'institutions',    'name': 'menu.superadmin.institutions', 'action': 'marloInstitutions',   'active': true }  -->
-    { 'slug': 'bulkReplication',    'name': 'menu.superadmin.bulkReplication', 'action': 'deliverablesReplication',   'active': true },
+    { 'slug': 'bulkReplication',    'name': 'menu.superadmin.bulkReplication', 'action': 'deliverablesReplication',   'active': true }
+  ]/]
+  
+  [#assign managers= [
     { 'slug': 'timelineManagement',    'name': 'menu.superadmin.timelineManagement', 'action': 'timelineManagement',   'active': true}
     { 'slug': 'feedbackManagement',    'name': 'menu.superadmin.feedbackManagement', 'action': 'feedbackManagement',   'active': true}
+    { 'slug': 'buttonGuideManagement',    'name': 'menu.superadmin.buttonGuideManagement', 'action': 'buttonGuideManagement',   'active': true}
   ]/]
 [/#if]
 
@@ -70,6 +74,21 @@
     <li>
       <ul>
         [#list toolItems as item]
+          <li id="${item.slug}" class="[#if item.slug == currentStage]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
+            <a href="[@s.url action=item.action ][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}">
+              [@s.text name=item.name/]
+            </a>
+          </li>
+        [/#list] 
+      </ul>
+    </li>
+  </ul> 
+  
+  <p>Section Managers</p>
+  <ul>
+    <li>
+      <ul>
+        [#list managers as item]
           <li id="${item.slug}" class="[#if item.slug == currentStage]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
             <a href="[@s.url action=item.action ][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}">
               [@s.text name=item.name/]

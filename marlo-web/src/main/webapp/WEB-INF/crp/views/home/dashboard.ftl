@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/home/dashboard.js?20221212",
+  "${baseUrlMedia}/js/home/dashboard.js?20230302",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20230106",
+  "${baseUrlMedia}/css/home/dashboard.css?20230313",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -144,13 +144,13 @@
           <div class="itemsTablet" id="studies">
             <img class="itemimgstudies" src="${baseUrlCdn}/global/images/oicrs_icon.png" >
             <img class="itemgifstudies" src="${baseUrlCdn}/global/images/oicrs_icon.gif" style="display:none;">
-            <p>OICRs & MELIAs</p>
+            <p class="textOICRs">OICRs & MELIAs</p>
           </div>
-          <!--  <div class="itemsTablet" id="innovations">
-            <img class="itemimginnovations" src="${baseUrlCdn}/global/images/ocurrencia.png" width="70">
-            <img class="itemgifinnovations" src="${baseUrlCdn}/global/images/ocurrencia.gif" style="display:none;" width="70">
+          <div class="itemsTablet" id="innovations">
+            <img class="itemimginnovations" src="${baseUrlCdn}/global/images/innovationDashboard.png" width="70">
+            <img class="itemgifinnovations" src="${baseUrlCdn}/global/images/innovationDashboard.gif" style="display:none;" width="70">
             <p>Innovations</p>
-          </div>  -->
+          </div>
         </div>
       </div>
       <div id="dashboardContent" class="">

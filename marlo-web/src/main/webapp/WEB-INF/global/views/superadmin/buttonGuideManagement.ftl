@@ -1,16 +1,16 @@
 [#ftl]
-[#assign title = "Timeline Management" /]
+[#assign title = "Feedback Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/timelineManagement.js",  "${baseUrlCdn}/global/js/fieldsValidation.js"
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/buttonGuideManagement.js",  "${baseUrlCdn}/global/js/fieldsValidation.js"
  ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "superadmin" /]
-[#assign currentStage = "timelineManagement" /]
+[#assign currentStage = "buttonGuideManagement" /]
 
 [#assign breadCrumb = [
   {"label":"superadmin", "nameSpace":"", "action":"marloBoard"},
-  {"label":"timelineManagement", "nameSpace":"", "action":""}
+  {"label":"buttonGuideManagement", "nameSpace":"", "action":""}
 ]/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
@@ -21,6 +21,7 @@
 </div>
 [#include "/WEB-INF/global/pages/generalMessages.ftl" /]
 
+[#-- 
 <div class="animated flipInX container  viewMore-block containerAlertMargin">
   <div class=" containerAlert  alert-leftovers alertColorBackgroundInfo"  id="containerAlert">
     <div class="containerLine alertColorInfo"></div>
@@ -29,15 +30,16 @@
         <img src="${baseUrlCdn}/global/images/icon-exclamation.png" />      
       </div>
     </div>
-    <div class="containerText col-md-12">
+   <div class="containerText col-md-12">
       <p class="alertText">
-        [@s.text name="timelineManagement.help" /] 
+        [@s.text name="Please note that activities are displayed on the homepage timeline component in the order they are entered or in the order defined by the 'order' field, if its filled. By default, the dates of the activities do not determine their order." /] 
       </p>
-    </div>
-    <div  class="viewMoreCollapse closed"></div>
+    </div>   
+    <div class="viewMoreCollapse closed"></div>  
   </div>
 </div>
-
+ --]
+ 
 <section class="marlo-content">
   <div class="container"> 
     <div class="row">
@@ -48,16 +50,16 @@
         [@s.form action=actionName enctype="multipart/form-data" ]
         
         [#-- System Level Outcomes --]
-        <h4 class="sectionTitle">[@s.text name="timeline.title" /]</h4>
+        <h4 class="sectionTitle">[@s.text name="buttonGuideManagement.title" /]</h4>
         <div class="slos-list">
-        [#if timelineActivities?has_content]
-          [#list timelineActivities as slo]
-            [@srfSloMacro element=slo name="timelineActivities[${slo_index}]" index=slo_index  /]
+        [#if buttonGuideContents?has_content]
+          [#list buttonGuideContents as slo]
+            [@srfSloMacro element=slo name="buttonGuideContents[${slo_index}]" index=slo_index  /]
           [/#list]
         [/#if]
         </div>
         [#-- Add Outcome Button --]
-        <div class="addSlo bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addTimelineActivity"/]</div>
+        <div class="addSlo bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addButtonGuideContents"/]</div>
         
         [#-- Section Buttons--]
         <div class="buttons">
@@ -74,7 +76,7 @@
 </section>
 
 [#-- SLO Template --]
-[@srfSloMacro element={} name="timelineActivities[-1]" index=-1 isTemplate=true /]
+[@srfSloMacro element={} name="buttonGuideContents[-1]" index=-1 isTemplate=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
@@ -85,37 +87,34 @@
     
     [#-- SLO Title --]
     <div class="blockTitle closed">
-      <strong>Timeline Activity ${index+1}: </strong>${(element.description[0..*99])!'Timeline Activity'}...
+      <strong>Button Guide Content ${index+1}: </strong>${(element.sectionName)!''}
     </div>
     
     <div class="blockContent" style="display:none">
       <hr />
       [#-- SLO ID  --]
       <input type="hidden" name="${name}.id" value="${(element.id)!}"/>
-            
-      [#-- Description  --]
+      [#-- action name  --]
       <div class="form-group">
-        [@customForm.textArea name="${name}.description" i18nkey="timeline.description" className="description limitWords-100" required=true /]
+        [@customForm.input name="${name}.actionName" i18nkey="buttonGuideManagement.actionName" className="description limitWords-100" required=true /]
       </div>
       <div class="clearfix"></div>
-    
-      <div class="form-group row">
-        [#-- Start Date --]
-         <div class="col-md-6">
-            [@customForm.input name="${name}.startDate" className="startDate" i18nkey="project.startDate" type="text"  /]
-         </div>
-        [#-- End Date --]
-         <div class="col-md-6">
-            [@customForm.input name="${name}.endDate" className="endDate"  i18nkey="project.endDate" type="text"  /]
-         </div>
+      [#-- Section name  --]
+      <div class="form-group">
+        [@customForm.input name="${name}.sectionName" i18nkey="buttonGuideManagement.sectionName" className="description limitWords-100" required=true /]
       </div>
-      <br>
-      <hr>
+      <div class="clearfix"></div>      
+      [#-- Content  --]
+      <div class="form-group">
+        [@customForm.textArea name="${name}.content" i18nkey="buttonGuideManagement.content" className="description limitWords-300" required=true /]
+      </div>
       <div class="clearfix"></div>
-      <div style="width: 20%;">
-        [@customForm.input name="${name}.order" type="number" i18nkey="Order" placeholder="Numeric value (optional)" required=false /]
+      [#-- Identifier  --]
+      <div class="form-group">
+        [@customForm.input name="${name}.identifier" i18nkey="buttonGuideManagement.identifier" className="description limitWords-100" required=true /]
       </div>
-    
+      <div class="clearfix"></div>
+        
     </div>
   </div>
 [/#macro]
