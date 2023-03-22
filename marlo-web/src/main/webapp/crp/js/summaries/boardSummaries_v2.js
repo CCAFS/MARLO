@@ -21,7 +21,7 @@ function init() {
 function attachEvents() {
   // Select reports type
   $('.summariesSection a, .summariesSection span').on('click', selectSummariesSection);
-  
+  $('.summariesSection a, .summariesSection img').on('click', selectSummariesSection);
   // Select a report
   $(".summariesFiles").on("click", selectReport);
   
@@ -77,6 +77,10 @@ function removeAllTags(){
 
 function selectReport() {
   if($(this).hasClass('selected')){
+    $('.summariesFiles').removeClass("selected");
+    $('.extraOptions').slideUp();
+    $(this).find('.imgArrow').css("rotate", "0deg" )
+    $('.imgArrow').css("margin-top", "auto" )
     return
   }
   // Update the project list if necessary
@@ -87,11 +91,16 @@ function selectReport() {
   // Hide all reports
   $('.summariesFiles').removeClass("selected");
   $('.extraOptions').slideUp();
+  $('.imgArrow').css("rotate", "0deg" );
+  $('.imgArrow').css("margin-top", "auto" )
 
   // Show selected report
   $(this).find('.extraOptions').slideDown();
   $(this).find('.extraOptions').find('select, input').attr('disabled', false).trigger("liszt:updated");
   $(this).addClass("selected");
+  $(this).find('.imgArrow').css("rotate", "180deg" )
+  $(this).find('.imgArrow').css("margin-top", "-4px" )
+
 }
 
 function selectSummariesSection(e) {
