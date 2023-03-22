@@ -52,11 +52,13 @@ public class ButtonGuideManagementAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
+    buttonGuideContents = new ArrayList<>();
     buttonGuideContents = buttonGuideContentManager.findAll();
 
     if (this.isHttpPost()) {
-      buttonGuideContents.clear();
+      if (buttonGuideContents != null) {
+        buttonGuideContents.clear();
+      }
     }
   }
 
@@ -68,9 +70,11 @@ public class ButtonGuideManagementAction extends BaseAction {
         List<Long> IDs = buttonGuideContents.stream().map(ButtonGuideContent::getId).filter(Objects::nonNull)
           .collect(Collectors.toList());
 
-        buttonGuideContentManager.findAll().stream()
-          .filter(activityDB -> activityDB.getId() == null || IDs.contains(activityDB.getId()))
-          .map(ButtonGuideContent::getId).forEach(buttonGuideContentManager::deleteButtonGuideContent);
+        List<ButtonGuideContent> content = buttonGuideContentManager.findAll();
+        if (content != null) {
+          content.stream().filter(c -> c != null && c.getId() != null && !IDs.contains(c.getId()))
+            .map(ButtonGuideContent::getId).forEach(buttonGuideContentManager::deleteButtonGuideContent);
+        }
 
         for (ButtonGuideContent fields : buttonGuideContents) {
 
@@ -96,7 +100,6 @@ public class ButtonGuideManagementAction extends BaseAction {
 
         }
       }
-
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
         Collection<String> messages = this.getActionMessages();
         if (!this.getInvalidFields().isEmpty()) {

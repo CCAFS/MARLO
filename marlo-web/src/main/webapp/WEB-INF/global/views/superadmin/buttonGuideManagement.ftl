@@ -106,7 +106,7 @@
       <div class="clearfix"></div>      
       [#-- Content  --]
       <div class="form-group">
-        [@customForm.textArea name="${name}.content" i18nkey="buttonGuideManagement.content" className="description limitWords-100" required=true /]
+        [@customForm.textArea name="${name}.content" i18nkey="buttonGuideManagement.content" className="description limitWords-300" required=true /]
       </div>
       <div class="clearfix"></div>
       [#-- Identifier  --]
