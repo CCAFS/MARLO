@@ -4,11 +4,11 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230321"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230322"
   ] 
 /]
 
-[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20230322"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20230322A"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [
@@ -350,19 +350,19 @@
     <div class="summariesContent col-md-9" style="min-height:550px;">
       <img class="img_aiccra" src="${baseUrlCdn}/global/images/crps/AICCRA.png">
       <div class="containerHeader">
-        <img class="imgArrow" src="${baseUrlCdn}/global/images/summaries_icon.png">
+        <img src="${baseUrlCdn}/global/images/summaries_icon.png">
         <h3 class="headTitle text-center">Summaries</h3>        
       </div>
       <p class="descriptionSummaries">Find detailed reports on all the activities reported in AICCRA</p>
       <div class="menuSummaries"> 
             <div id="projects" class="summariesSection current">
-              <img class="imgArrow" src="${baseUrlCdn}/global/images/cluster_summaries.png"><a href="">Clusters</a>
+              <img src="${baseUrlCdn}/global/images/cluster_summaries.png"><a href="">Clusters</a>
             </div>
             <div id="partners" class="summariesSection ">
-              <img class="imgArrow" src="${baseUrlCdn}/global/images/partners_summaries.png"><a href="">Partners</a>
+              <img src="${baseUrlCdn}/global/images/partners_summaries.png"><a href="">Partners</a>
             </div>
             <div id="deliverables" class="summariesSection ">
-              <img class="imgArrow" src="${baseUrlCdn}/global/images/deliverables_summaries.png"><a href="">Deliverables</a>
+              <img src="${baseUrlCdn}/global/images/deliverables_summaries.png"><a href="">Deliverables</a>
             </div>
       </div>
       <div class="loading" style="display:none"></div>
