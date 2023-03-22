@@ -10,7 +10,7 @@
     [#else]
       <div id="projectID-quote" class="quote-id" title="[#if (project.projectInfo.title?has_content)!false]${(project.projectInfo.title)!}[/#if]">
         <a href="[@s.url namespace="/projects" action='${crpSession}/description'][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-          <p><span>&nbsp${project.id}</span></p>
+          <p><span>&nbsp${(project.id)!}</span></p>
         </a>
       </div>
     [/#if]

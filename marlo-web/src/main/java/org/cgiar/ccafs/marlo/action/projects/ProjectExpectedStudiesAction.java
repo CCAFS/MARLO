@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.EvidenceTagManager;
 import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
@@ -32,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyFlagshipManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
@@ -62,6 +64,7 @@ import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.EvidenceTag;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
@@ -77,6 +80,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
@@ -132,6 +136,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Christian Garcia - CIAT/CCAFS
@@ -142,6 +148,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = 597647662288518417L;
+  private final Logger logger = LoggerFactory.getLogger(ProjectExpectedStudiesAction.class);
+
 
   // Managers
   private ProjectExpectedStudyManager projectExpectedStudyManager;
@@ -177,6 +185,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private GeneralStatusManager generalStatusManager;
   private CrpMilestoneManager milestoneManager;
   private ProjectOutcomeManager projectOutcomeManager;
+  private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
 
   // AR 2018 Managers
@@ -192,7 +201,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager;
   private ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager;
   private ProjectExpectedStudyProjectOutcomeManager projectExpectedStudyProjectOutcomeManager;
-
+  private ProjectExpectedStudyCrpOutcomeManager projectExpectedStudyCrpOutcomeManager;
   private FeedbackQACommentManager feedbackQACommentManager;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
 
@@ -238,6 +247,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<CrpMilestone> milestones;
   private int newExpectedYear;
   private List<ProjectOutcome> projectOutcomes;
+  private List<CrpProgramOutcome> crpOutcomes;
 
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -269,7 +279,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectOutcomeManager projectOutcomeManager,
     ProjectExpectedStudyProjectOutcomeManager projectExpectedStudyProjectOutcomeManager,
     FeedbackQACommentManager feedbackQACommentManager,
-    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager) {
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
+    CrpProgramOutcomeManager crpProgramOutcomeManager,
+    ProjectExpectedStudyCrpOutcomeManager projectExpectedStudyCrpOutcomeManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -320,6 +332,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectExpectedStudyProjectOutcomeManager = projectExpectedStudyProjectOutcomeManager;
     this.feedbackQACommentManager = feedbackQACommentManager;
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
+    this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.projectExpectedStudyCrpOutcomeManager = projectExpectedStudyCrpOutcomeManager;
   }
 
   /**
@@ -379,6 +393,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public long getCrpMilestonePrimary() {
     return crpMilestonePrimary;
+  }
+
+  public List<CrpProgramOutcome> getCrpOutcomes() {
+    return crpOutcomes;
   }
 
   public List<GlobalUnit> getCrps() {
@@ -928,6 +946,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
+        // Expected Study Crp Outcome list
+        if (this.expectedStudy.getProjectExpectedStudyCrpOutcomes() != null) {
+          this.expectedStudy.setCrpOutcomes(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyCrpOutcomes()
+            .stream().filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
         // Expected Study Projects List
         if (this.expectedStudy.getExpectedStudyProjects() != null) {
           this.expectedStudy.setProjects(new ArrayList<>(this.expectedStudy.getExpectedStudyProjects().stream()
@@ -1147,12 +1171,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           .collect(Collectors.toList());
 
         if (projectOutcomesList != null) {
+          crpOutcomes = new ArrayList<>();
 
           for (ProjectOutcome projectOutcome : projectOutcomesList) {
             projectOutcome.setMilestones(projectOutcome.getProjectMilestones().stream()
               .filter(
                 m -> m != null && m.isActive() && m.getYear() != 0 && m.getYear() <= this.getActualPhase().getYear())
               .collect(Collectors.toList()));
+
+            if (!this.crpOutcomes.contains(projectOutcome.getCrpProgramOutcome())) {
+              this.crpOutcomes.add(projectOutcome.getCrpProgramOutcome());
+            }
 
             if (projectOutcome.getMilestones() != null) {
               for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
@@ -1172,7 +1201,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             projectOutcomes.add(projectOutcome);
           }
         }
-
+        crpOutcomes.sort((k1, k2) -> k1.getId().compareTo(k2.getId()));
 
         List<ProjectInnovation> innovations =
           projectL.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -1362,6 +1391,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.expectedStudy.getProjectOutcomes().clear();
       }
 
+      if (this.expectedStudy.getCrpOutcomes() != null) {
+        this.expectedStudy.getCrpOutcomes().clear();
+      }
+
       // HTTP Post info Values
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndOrganizationType(null);
@@ -1417,6 +1450,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveCenters(this.expectedStudyDB, phase);
       // this.saveMilestones(this.expectedStudyDB, phase);
       this.saveProjectOutcomes(this.expectedStudyDB, phase);
+      this.saveCrpOutcomes(this.expectedStudyDB, phase);
 
       // Save Geographic Scope Data
       this.saveGeographicScopes(this.expectedStudyDB, phase);
@@ -1657,7 +1691,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Expected Studies Centers/PPA partners Information
    * 
@@ -1699,6 +1732,78 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
 
+  }
+
+
+  /**
+   * Save study Crp Program Outcome Information
+   * 
+   * @param ProjectExpectedStudy
+   * @param phase
+   */
+  public void saveCrpOutcomes(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    try {
+      if (projectExpectedStudy.getProjectExpectedStudyCrpOutcomes() != null
+        && !projectExpectedStudy.getProjectExpectedStudyCrpOutcomes().isEmpty()) {
+
+        List<ProjectExpectedStudyCrpOutcome> outcomePrev =
+          new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyCrpOutcomes().stream()
+            .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+        for (ProjectExpectedStudyCrpOutcome studyOutcome : outcomePrev) {
+          if (this.expectedStudy.getCrpOutcomes() == null
+            || !this.expectedStudy.getCrpOutcomes().contains(studyOutcome)) {
+            this.projectExpectedStudyCrpOutcomeManager.deleteProjectExpectedStudyCrpOutcome(studyOutcome.getId(),
+              this.getActualPhase().getId());
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.error("unable to delete crp outcome", e);
+    }
+
+    // Save form Information
+    if (this.expectedStudy.getCrpOutcomes() != null) {
+
+      for (ProjectExpectedStudyCrpOutcome studyOutcome : this.expectedStudy.getCrpOutcomes()) {
+        ProjectExpectedStudyCrpOutcome projectExpectedStudyOutcomeSave = new ProjectExpectedStudyCrpOutcome();
+
+        if (studyOutcome != null) {
+          // For new crp outcomes
+          if (studyOutcome.getId() == null) {
+            projectExpectedStudyOutcomeSave.setProjectExpectedStudy(projectExpectedStudy);
+            projectExpectedStudyOutcomeSave.setPhase(phase);
+          } else {
+            // For old crp outcomes
+            try {
+              if (studyOutcome.getId() != null) {
+                projectExpectedStudyOutcomeSave =
+                  projectExpectedStudyCrpOutcomeManager.getProjectExpectedStudyCrpOutcomeById(studyOutcome.getId());
+              }
+            } catch (Exception e) {
+              logger.error("unable to get old crp outcome", e);
+            }
+          }
+
+          if (studyOutcome.getCrpOutcome() != null && studyOutcome.getCrpOutcome().getId() != null) {
+            CrpProgramOutcome outcome =
+              crpProgramOutcomeManager.getCrpProgramOutcomeById(studyOutcome.getCrpOutcome().getId());
+            if (outcome != null) {
+              projectExpectedStudyOutcomeSave.setCrpOutcome(outcome);
+            }
+
+            this.projectExpectedStudyCrpOutcomeManager
+              .saveProjectExpectedStudyCrpOutcome(projectExpectedStudyOutcomeSave);
+            // This is to add studyCrpSave to generate correct auditlog.
+            if (!this.expectedStudy.getProjectExpectedStudyCrpOutcomes().contains(projectExpectedStudyOutcomeSave)) {
+              this.expectedStudy.getProjectExpectedStudyCrpOutcomes().add(projectExpectedStudyOutcomeSave);
+            }
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -2220,7 +2325,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save Expected Studies Quantification Information
    * 
@@ -2292,6 +2396,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * Save Expected Studies Regions Information
@@ -2523,6 +2628,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setCrpMilestonePrimary(long crpMilestonePrimary) {
     this.crpMilestonePrimary = crpMilestonePrimary;
+  }
+
+  public void setCrpOutcomes(List<CrpProgramOutcome> crpOutcomes) {
+    this.crpOutcomes = crpOutcomes;
   }
 
   public void setCrps(List<GlobalUnit> crps) {
