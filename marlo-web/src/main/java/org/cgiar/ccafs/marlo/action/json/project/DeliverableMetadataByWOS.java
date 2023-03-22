@@ -129,7 +129,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
       this.phaseId = this.getActualPhase().getId();
 
       this.saveInfo();
-      this.manualSetAlmetricInfo();
+      // this.manualSetAlmetricInfo();
     }
 
     return SUCCESS;
@@ -282,12 +282,14 @@ public class DeliverableMetadataByWOS extends BaseAction {
     URL clarisaUrl = new URL(config.getClarisaWOSLink2().replace("{1}", this.link));
     String loginData = config.getClarisaWOSUser() + ":" + config.getClarisaWOSPassword();
     String encoded = Base64.encodeBase64String(loginData.getBytes());
-
-    HttpURLConnection conn = (HttpURLConnection) clarisaUrl.openConnection();
-    conn.setRequestProperty("Authorization", "Basic " + encoded);
+    HttpURLConnection conn = null;
+    if (this.hasSpecificities(APConstants.HANDLE_WOS_SERVICE_ACTIVE)) {
+      conn = (HttpURLConnection) clarisaUrl.openConnection();
+      conn.setRequestProperty("Authorization", "Basic " + encoded);
+    }
     JsonElement element = null;
 
-    if (conn.getResponseCode() < 300) {
+    if (conn != null && conn.getResponseCode() < 300) {
       try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
         element = new JsonParser().parse(reader);
       } catch (FileNotFoundException fnfe) {
