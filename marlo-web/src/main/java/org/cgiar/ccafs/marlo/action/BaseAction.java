@@ -3058,7 +3058,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.differences;
   }
 
-  public List<ProjectExpectedStudy> getexpectedProjectOutcomes(Long id) {
+  public List<ProjectExpectedStudy> getexpectedCrpOutcomes(Long id) {
     List<ProjectExpectedStudy> expectedStudies = new ArrayList<>();
     ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
 
@@ -3067,17 +3067,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
           && ps.getProjectExpectedStudyInfo(this.getActualPhase()).isActive())
         .collect(Collectors.toList())) {
-        if (expectedStudy.getProjectExpectedStudyProjectOutcomes() != null) {
-          expectedStudy
-            .setProjectOutcomes(new ArrayList<>(expectedStudy.getProjectExpectedStudyProjectOutcomes().stream()
-              .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+        if (expectedStudy.getProjectExpectedStudyCrpOutcomes() != null) {
+          expectedStudy.setCrpOutcomes(new ArrayList<>(expectedStudy.getProjectExpectedStudyCrpOutcomes().stream()
+            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
         }
-        if (expectedStudy != null && expectedStudy.getProjectOutcomes() != null
-          && !expectedStudy.getProjectOutcomes().isEmpty()) {
-          for (ProjectExpectedStudyProjectOutcome expectedStudyProjectOutcome : expectedStudy.getProjectOutcomes()) {
-            if (expectedStudyProjectOutcome != null && expectedStudyProjectOutcome.getProjectOutcome() != null
-              && expectedStudyProjectOutcome.getProjectOutcome().getId() != null
-              && expectedStudyProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+        if (expectedStudy != null && expectedStudy.getCrpOutcomes() != null
+          && !expectedStudy.getCrpOutcomes().isEmpty()) {
+          for (ProjectExpectedStudyCrpOutcome expectedStudyCrpOutcome : expectedStudy.getCrpOutcomes()) {
+            if (expectedStudyCrpOutcome != null && expectedStudyCrpOutcome.getCrpOutcome() != null
+              && expectedStudyCrpOutcome.getCrpOutcome().getId() != null && projectOutcome != null
+              && projectOutcome.getCrpProgramOutcome() != null && expectedStudyCrpOutcome.getCrpOutcome().getId()
+                .compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
               expectedStudies.add(expectedStudy);
             }
           }
@@ -3089,18 +3089,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     try {
       // Load Shared studies
-      List<ExpectedStudyProject> expectedStudyProject = this.expectedStudyProjectManager
-        .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getPhaseID()) != null
-          ? this.expectedStudyProjectManager
-            .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getPhaseID()).stream()
-            .filter(px -> px.isActive() && px.getProjectExpectedStudy().isActive()
-              && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
-            .collect(Collectors.toList())
-          : Collections.emptyList();
+      List<ExpectedStudyProject> expectedStudyProject =
+        expectedStudyProjectManager.getByProjectAndPhase(projectOutcome.getProject().getId(), this.getPhaseID());
       if (expectedStudyProject != null && !expectedStudyProject.isEmpty()) {
         for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
-          if (!expectedStudies.contains(expectedStudy.getProjectExpectedStudy())) {
-            expectedStudies.add(expectedStudy.getProjectExpectedStudy());
+          ProjectExpectedStudy projectExpectedStudy = expectedStudy.getProjectExpectedStudy();
+          if (projectExpectedStudy != null && projectExpectedStudy.getProjectExpectedStudyCrpOutcomes() != null) {
+            List<ProjectExpectedStudyCrpOutcome> filteredCrpOutcomes =
+              projectExpectedStudy.getProjectExpectedStudyCrpOutcomes().stream()
+                .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList());
+            projectExpectedStudy.setCrpOutcomes(new ArrayList<>(filteredCrpOutcomes));
+          }
+
+          boolean isExpectedStudyAlreadyAdded = expectedStudies.stream()
+            .anyMatch(es -> es.getCrpOutcomes() != null && es.getCrpOutcomes().stream()
+              .anyMatch(crp -> crp.getCrpOutcome() != null && crp.getCrpOutcome().getId() != null
+                && projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
+                && crp.getCrpOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0));
+
+          if (!isExpectedStudyAlreadyAdded) {
+            expectedStudies.add(projectExpectedStudy);
           }
         }
       }
@@ -3279,22 +3287,34 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       if (innovationShareds != null && !innovationShareds.isEmpty()) {
         for (ProjectInnovationShared innovationShared : innovationShareds) {
+          if (innovationShared.getProjectInnovation().getProjectInnovationProjectOutcomes() != null) {
+            innovationShared.getProjectInnovation()
+              .setProjectOutcomes(new ArrayList<>(innovationShared.getProjectInnovation()
+                .getProjectInnovationProjectOutcomes().stream()
+                .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+          }
+
           if (!innovations.contains(innovationShared.getProjectInnovation())) {
-            if (innovationShared.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null
-              && innovationShared.getProjectInnovation().getProjectInnovationInfo().getYear() >= this.getActualPhase()
-                .getYear()) {
+            for (ProjectInnovationProjectOutcome innovationOutcome : innovationShared.getProjectInnovation()
+              .getProjectOutcomes()) {
+              if (innovationShared.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null
+                && innovationShared.getProjectInnovation().getProjectInnovationInfo().getYear() >= this.getActualPhase()
+                  .getYear()
+                && innovationOutcome != null && innovationOutcome.getProjectOutcome() != null
+                && innovationOutcome.getProjectOutcome().getCrpProgramOutcome().getId()
+                  .compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
 
-
-              innovations.add(innovationShared.getProjectInnovation());
+                innovations.add(innovationShared.getProjectInnovation());
+              }
             }
+
+
           }
         }
       }
     } catch (Exception e) {
-
       LOG.error("unable to get shared innovations", e);
     }
-
 
     return innovations;
   }
