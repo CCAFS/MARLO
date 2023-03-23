@@ -73,6 +73,7 @@ public class DeliverableAltmetricInfo extends MarloAuditableEntity implements ja
   private String imageLarge;
   private String detailsUrl;
   private Date lastSync;
+  private String mendeleyReaders;
 
   public DeliverableAltmetricInfo() {
 
@@ -119,6 +120,7 @@ public class DeliverableAltmetricInfo extends MarloAuditableEntity implements ja
     this.setLastSync(other.getLastSync());
     this.setActive(other.isActive());
     this.setCreatedBy(other.getCreatedBy());
+    this.setMendeleyReaders(other.mendeleyReaders);
   }
 
   @Override
@@ -282,6 +284,10 @@ public class DeliverableAltmetricInfo extends MarloAuditableEntity implements ja
     return sb.toString();
   }
 
+  public String getMendeleyReaders() {
+    return mendeleyReaders;
+  }
+
   public Phase getPhase() {
     return phase;
   }
@@ -306,10 +312,10 @@ public class DeliverableAltmetricInfo extends MarloAuditableEntity implements ja
     return uri;
   }
 
-
   public String getUrl() {
     return url;
   }
+
 
   @Override
   public int hashCode() {
@@ -449,6 +455,10 @@ public class DeliverableAltmetricInfo extends MarloAuditableEntity implements ja
 
   public void setLastUpdated(Date lastUpdated) {
     this.lastUpdated = lastUpdated;
+  }
+
+  public void setMendeleyReaders(String mendeleyReaders) {
+    this.mendeleyReaders = mendeleyReaders;
   }
 
   public void setPhase(Phase phase) {
