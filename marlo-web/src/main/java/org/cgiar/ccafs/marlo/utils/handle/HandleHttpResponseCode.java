@@ -13,28 +13,52 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.utils.doi;
+package org.cgiar.ccafs.marlo.utils.handle;
 
 
 /**************
  * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-public class InvalidDOIException extends IllegalArgumentException {
+public enum HandleHttpResponseCode {
 
   /**
-   * Constructs an <code>InvalidHandleException</code> with no detail message.
+   * Success. (HTTP 200 OK)
    */
-  public InvalidDOIException() {
-    super();
+  SUCCESS(1),
+
+  /**
+   * Error. Something unexpected went wrong during handle resolution. (HTTP 500 Internal Server Error)
+   */
+  ERROR(2),
+
+  /**
+   * Handle Not Found. (HTTP 404 Not Found)
+   */
+  HANDLE_NOT_FOUND(100),
+
+  /**
+   * The handle exists but has no values (or no values according to the types and indices specified). (HTTP 200 OK)
+   */
+  VALUES_NOT_FOUND(200);
+
+  public static HandleHttpResponseCode getByErrorCode(int errorCode) {
+    for (HandleHttpResponseCode responseCode : HandleHttpResponseCode.values()) {
+      if (responseCode.getErrorCode() == errorCode) {
+        return responseCode;
+      }
+    }
+
+    return null;
   }
 
-  /**
-   * Constructs an <code>InvalidHandleException</code> with the specified detail message (DOI String).
-   *
-   * @param s the detail message.
-   */
-  public InvalidDOIException(String s) {
-    super(String.format("From input string: %s", s));
+  private int errorCode;
+
+  private HandleHttpResponseCode(int errorCode) {
+    this.errorCode = errorCode;
+  }
+
+  public int getErrorCode() {
+    return this.errorCode;
   }
 }

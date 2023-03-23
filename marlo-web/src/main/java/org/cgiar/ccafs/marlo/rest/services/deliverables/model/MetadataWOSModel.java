@@ -63,12 +63,19 @@ public class MetadataWOSModel implements Serializable {
   @SerializedName("altmetric")
   MetadataAltmetricModel altmetricInfo;
 
+  @SerializedName("handle_altmetric")
+  MetadataAltmetricModel2 altmetricInfo2;
+
   public MetadataWOSModel() {
 
   }
 
   public MetadataAltmetricModel getAltmetricInfo() {
     return altmetricInfo;
+  }
+
+  public MetadataAltmetricModel2 getAltmetricInfo2() {
+    return altmetricInfo2;
   }
 
   public List<WOSAuthor> getAuthors() {
@@ -137,6 +144,10 @@ public class MetadataWOSModel implements Serializable {
 
   public void setAltmetricInfo(MetadataAltmetricModel altmetricInfo) {
     this.altmetricInfo = altmetricInfo;
+  }
+
+  public void setAltmetricInfo2(MetadataAltmetricModel2 altmetricInfo2) {
+    this.altmetricInfo2 = altmetricInfo2;
   }
 
   public void setAuthors(List<WOSAuthor> authors) {

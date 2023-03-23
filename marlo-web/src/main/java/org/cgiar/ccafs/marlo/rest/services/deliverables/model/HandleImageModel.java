@@ -13,28 +13,42 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.utils.doi;
+package org.cgiar.ccafs.marlo.rest.services.deliverables.model;
 
+import java.io.Serializable;
 
-/**************
- * @author German C. Martinez - CIAT/CCAFS
- **************/
-
-public class InvalidDOIException extends IllegalArgumentException {
+public class HandleImageModel implements Serializable {
 
   /**
-   * Constructs an <code>InvalidHandleException</code> with no detail message.
+   * 
    */
-  public InvalidDOIException() {
-    super();
+  private static final long serialVersionUID = -8164203866320185115L;
+
+  private String small;
+  private String medium;
+  private String large;
+
+  public String getLarge() {
+    return large;
   }
 
-  /**
-   * Constructs an <code>InvalidHandleException</code> with the specified detail message (DOI String).
-   *
-   * @param s the detail message.
-   */
-  public InvalidDOIException(String s) {
-    super(String.format("From input string: %s", s));
+  public String getMedium() {
+    return medium;
+  }
+
+  public String getSmall() {
+    return small;
+  }
+
+  public void setLarge(String large) {
+    this.large = large;
+  }
+
+  public void setMedium(String medium) {
+    this.medium = medium;
+  }
+
+  public void setSmall(String small) {
+    this.small = small;
   }
 }

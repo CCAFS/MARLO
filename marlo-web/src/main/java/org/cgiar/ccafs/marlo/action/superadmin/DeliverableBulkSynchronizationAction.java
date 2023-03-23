@@ -139,12 +139,24 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
           .findFirst().orElse(null);
         if (doiMetadataElement != null) {
           link = DOIService.tryGetDoiName(StringUtils.stripToEmpty(doiMetadataElement.getElementValue()));
+        } else {
+          // search by handle
+          doiMetadataElement = metadataElements.stream()
+            .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+              && me.getMetadataElement().getId().longValue() == 35L && !StringUtils.isBlank(me.getElementValue()))
+            .findFirst().orElse(null);
+          if (doiMetadataElement != null) {
+            link = doiMetadataElement.getElementValue();
+          }
         }
       }
 
       if (StringUtils.isBlank(link)) {
         // DeliverableDissemination, dissemination URL (look for doi), articleURL (look for doi)
         DeliverableDissemination dissemination = deliverable.getDissemination(phase);
+        if (link != null && !link.isEmpty() && link.contains("handle")) {
+          return link;
+        }
 
         link = DOIService.tryGetDoiName(StringUtils.stripToEmpty(dissemination.getDisseminationUrl()));
         if (StringUtils.isBlank(link)) {

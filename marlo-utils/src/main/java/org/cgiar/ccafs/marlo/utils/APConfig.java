@@ -133,6 +133,9 @@ public class APConfig {
   // Clarisa WOS service link
   @Value("${clarisa.wos.link}")
   private String CLARISA_WOS_LINK;
+  // Clarisa WOS service link 2
+  @Value("${clarisa.wos.link2}")
+  private String CLARISA_WOS_LINK2;
 
   // Clarisa user for WOS synchronization
   @Value("${clarisa.wos.user}")
@@ -147,7 +150,7 @@ public class APConfig {
   private String CLARISA_API_USERNAME;
   @Value("${clarisa.api.password}")
   private String CLARISA_API_PASSWORD;
-  
+
   public APConfig() {
   }
 
@@ -244,6 +247,30 @@ public class APConfig {
     return CLARISA_SUMMARIES_PDF;
   }
 
+  public String getClarisaAPIHost() {
+    if (CLARISA_API_HOST == null) {
+      LOG.error("there is not a Clarisa API host configured.");
+      return null;
+    }
+    return CLARISA_API_HOST;
+  }
+
+  public String getClarisaAPIPassword() {
+    if (CLARISA_API_PASSWORD == null) {
+      LOG.error("there is not a Clarisa API password configured.");
+      return null;
+    }
+    return CLARISA_API_PASSWORD;
+  }
+
+  public String getClarisaAPIUsername() {
+    if (CLARISA_API_USERNAME == null) {
+      LOG.error("there is not a Clarisa API username configured.");
+      return null;
+    }
+    return CLARISA_API_USERNAME;
+  }
+
   public String getClarisaMapDatabase() {
 
     if (CLARISA_MAP_DATABASE_PATH == null) {
@@ -285,6 +312,19 @@ public class APConfig {
       return null;
     }
     return CLARISA_WOS_LINK;
+  }
+
+  /**
+   * Get the Clarisa WOS service link 2
+   *
+   * @return a string with the WOS link 2
+   */
+  public String getClarisaWOSLink2() {
+    if (CLARISA_WOS_LINK2 == null) {
+      LOG.error("there is not a Clarisa WOS service link 2 configured.");
+      return null;
+    }
+    return CLARISA_WOS_LINK2;
   }
 
   /**
@@ -714,30 +754,6 @@ public class APConfig {
       return false;
     }
     return MYSQL_SHOW_SQL.equals("true");
-  }
-
-  public String getClarisaAPIHost() {
-    if (CLARISA_API_HOST == null) {
-      LOG.error("there is not a Clarisa API host configured.");
-      return null;
-    }
-    return CLARISA_API_HOST;
-  }
-
-  public String getClarisaAPIUsername() {
-    if (CLARISA_API_USERNAME == null) {
-      LOG.error("there is not a Clarisa API username configured.");
-      return null;
-    }
-    return CLARISA_API_USERNAME;
-  }
-
-  public String getClarisaAPIPassword() {
-    if (CLARISA_API_PASSWORD == null) {
-      LOG.error("there is not a Clarisa API password configured.");
-      return null;
-    }
-    return CLARISA_API_PASSWORD;
   }
 
 }

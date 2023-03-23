@@ -13,28 +13,47 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.utils.doi;
+package org.cgiar.ccafs.marlo.rest.services.deliverables.model;
 
+import java.io.Serializable;
 
-/**************
- * @author German C. Martinez - CIAT/CCAFS
- **************/
-
-public class InvalidDOIException extends IllegalArgumentException {
+public class MetadataReadersModel implements Serializable {
 
   /**
-   * Constructs an <code>InvalidHandleException</code> with no detail message.
+   * 
    */
-  public InvalidDOIException() {
-    super();
+  private static final long serialVersionUID = -8164203866320185115L;
+
+  private String citeulike;
+  private String mendeley;
+  private String connotea;
+
+  public MetadataReadersModel() {
+
   }
 
-  /**
-   * Constructs an <code>InvalidHandleException</code> with the specified detail message (DOI String).
-   *
-   * @param s the detail message.
-   */
-  public InvalidDOIException(String s) {
-    super(String.format("From input string: %s", s));
+  public String getCiteulike() {
+    return citeulike;
   }
+
+  public String getConnotea() {
+    return connotea;
+  }
+
+  public String getMendeley() {
+    return mendeley;
+  }
+
+  public void setCiteulike(String citeulike) {
+    this.citeulike = citeulike;
+  }
+
+  public void setConnotea(String connotea) {
+    this.connotea = connotea;
+  }
+
+  public void setMendeley(String mendeley) {
+    this.mendeley = mendeley;
+  }
+
 }

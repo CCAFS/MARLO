@@ -176,7 +176,11 @@
         <h3 >[@s.text name="deliverable.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="deliverable.popup.descriptionMY" /]
-      [#elseif actionName == 'AICCRA/innovationsList' || actionName =='AICCRA/innovation']
+      [#elseif actionName == 'AICCRA/innovationsList']
+        <h3 >[@s.text name="innovation.popup.title" /]</h3>   
+        <div class="text-inter">
+          [@s.text name="innovationList.popup.descriptionMY" /]
+      [#elseif actionName =='AICCRA/innovation']
         <h3 >[@s.text name="innovation.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="innovation.popup.descriptionMY" /]

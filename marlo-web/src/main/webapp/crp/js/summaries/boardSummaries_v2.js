@@ -21,9 +21,11 @@ function init() {
 function attachEvents() {
   // Select reports type
   $('.summariesSection a, .summariesSection span').on('click', selectSummariesSection);
-  
+  $('.summariesSection a, .summariesSection img').on('click', selectSummariesSection);
   // Select a report
-  $(".summariesFiles").on("click", selectReport);
+  $(".collapseButton").on("click", selectReport);
+  $(".imgArrow").on("click", selectReport);
+  
   
   // Add predefined gender keywords
   $('.addGenderKeys').on('click', addGenderKeys);
@@ -76,22 +78,31 @@ function removeAllTags(){
 }
 
 function selectReport() {
-  if($(this).hasClass('selected')){
+  if($(this).parent().hasClass('selected')){
+    $('.summariesFiles').removeClass("selected");
+    $('.extraOptions').slideUp();
+    $(this).parent().find('.imgArrow').css("rotate", "0deg" )
+    $('.imgArrow').css("margin-top", "auto" )
     return
   }
   // Update the project list if necessary
-  var $parent = $(this);
+  var $parent = $(this).parent();
   if($parent.hasClass('allowProjectID')){
     getProjectsByCycleYear($parent, $parent.find('[name="phaseID"]').val());
   }
   // Hide all reports
   $('.summariesFiles').removeClass("selected");
   $('.extraOptions').slideUp();
+  $('.imgArrow').css("rotate", "0deg" );
+  $('.imgArrow').css("margin-top", "auto" )
 
   // Show selected report
-  $(this).find('.extraOptions').slideDown();
-  $(this).find('.extraOptions').find('select, input').attr('disabled', false).trigger("liszt:updated");
-  $(this).addClass("selected");
+  $(this).parent().find('.extraOptions').slideDown();
+  $(this).parent().find('.extraOptions').find('select, input').attr('disabled', false).trigger("liszt:updated");
+  $(this).parent().addClass("selected");
+  $(this).parent().find('.imgArrow').css("rotate", "180deg" )
+  $(this).parent().find('.imgArrow').css("margin-top", "-4px" )
+
 }
 
 function selectSummariesSection(e) {

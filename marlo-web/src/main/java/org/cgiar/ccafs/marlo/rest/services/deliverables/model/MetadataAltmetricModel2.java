@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-public class MetadataAltmetricModel implements Serializable {
+public class MetadataAltmetricModel2 implements Serializable {
 
   /**
    * 
@@ -128,7 +128,7 @@ public class MetadataAltmetricModel implements Serializable {
 
   MetadataReadersModel readers;
 
-  public MetadataAltmetricModel() {
+  public MetadataAltmetricModel2() {
 
   }
 
@@ -276,7 +276,6 @@ public class MetadataAltmetricModel implements Serializable {
   public String getType() {
     return type;
   }
-
 
   public String getUri() {
     return uri;
@@ -437,4 +436,5 @@ public class MetadataAltmetricModel implements Serializable {
   public void setUrl(String url) {
     this.url = url;
   }
+
 }

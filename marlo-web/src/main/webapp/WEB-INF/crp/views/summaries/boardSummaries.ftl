@@ -4,11 +4,11 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230126a"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230323"
   ] 
 /]
 
-[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20230322A"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [
@@ -333,22 +333,38 @@
 <span class="hidden planningYear">${(action.getPlanningYear())!}</span>
 <span class="hidden reportingYear">${(action.getReportingYear())!}</span>
     
-<section class="container">
+<section class="container sectionSummarie">
   <article id="" class="">
   
     [#--  Reports Tabs --]
-    <div class="summariesButtons col-md-3">
+    [#--<div class="summariesButtons col-md-3">
       [#list reportsTypes as reportType]
         [#if reportType.active]
           <div id="${reportType.slug}" class="summariesSection [#if reportType_index == 0]current[/#if]">
-            <span>[#-- Icon --]</span><a href="">[@s.text name=reportType.title /]</a>
+            <span> </span><a href="">[@s.text name=reportType.title /]</a>
           </div>
         [/#if]
       [/#list]
-    </div>
+    </div>--]
     [#--  Reports Content --]
     <div class="summariesContent col-md-9" style="min-height:550px;">
-      <h3 class="headTitle text-center">Summaries</h3>
+      <img class="img_aiccra" src="${baseUrlCdn}/global/images/crps/AICCRA.png">
+      <div class="containerHeader">
+        <img src="${baseUrlCdn}/global/images/summaries_icon.png">
+        <h3 class="headTitle text-center">Summaries</h3>        
+      </div>
+      <p class="descriptionSummaries">Find detailed reports on all the activities reported in AICCRA</p>
+      <div class="menuSummaries"> 
+            <div id="projects" class="summariesSection current">
+              <img src="${baseUrlCdn}/global/images/cluster_summaries.png"><a href="">Clusters</a>
+            </div>
+            <div id="partners" class="summariesSection ">
+              <img src="${baseUrlCdn}/global/images/partners_summaries.png"><a href="">Partners</a>
+            </div>
+            <div id="deliverables" class="summariesSection ">
+              <img src="${baseUrlCdn}/global/images/deliverables_summaries.png"><a href="">Deliverables</a>
+            </div>
+      </div>
       <div class="loading" style="display:none"></div>
       <div class="summariesOptions">
         [#list reportsTypes as reportType]
@@ -405,7 +421,7 @@
   <img class="imgArrow" src="${baseUrlCdn}/global/images/arrow-down.png">
   [#if !(report.available)]<p class="text-center note">This report is under maintenance and will be available soon.</p>[/#if]
   <div class="loading" style="display:none"></div>
-  <div class="form-group" style="opacity:${report.available?string('1','0.5')}">
+  <div class="form-group collapseButton" style="opacity:${report.available?string('1','0.5')}">
     [#-- Tags --]
     <div class="tags pull-right">
       [#list report.cycles![] as tag ]<span class="label label-default type-${tag?lower_case}">${tag}</span>[/#list]
