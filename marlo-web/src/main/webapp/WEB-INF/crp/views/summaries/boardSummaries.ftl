@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230322"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230323"
   ] 
 /]
 
@@ -421,7 +421,7 @@
   <img class="imgArrow" src="${baseUrlCdn}/global/images/arrow-down.png">
   [#if !(report.available)]<p class="text-center note">This report is under maintenance and will be available soon.</p>[/#if]
   <div class="loading" style="display:none"></div>
-  <div class="form-group" style="opacity:${report.available?string('1','0.5')}">
+  <div class="form-group collapseButton" style="opacity:${report.available?string('1','0.5')}">
     [#-- Tags --]
     <div class="tags pull-right">
       [#list report.cycles![] as tag ]<span class="label label-default type-${tag?lower_case}">${tag}</span>[/#list]
