@@ -62,6 +62,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
@@ -1471,18 +1472,28 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
                 try {
                   // Load Shared studies
-                  List<ExpectedStudyProject> expectedStudyProject = this.expectedStudyProjectManager
-                    .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getPhaseID()) != null
-                      ? this.expectedStudyProjectManager
-                        .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getPhaseID()).stream()
-                        .filter(px -> px.isActive() && px.getProjectExpectedStudy().isActive()
-                          && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
-                        .collect(Collectors.toList())
-                      : Collections.emptyList();
+                  List<ExpectedStudyProject> expectedStudyProject = expectedStudyProjectManager
+                    .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getPhaseID());
                   if (expectedStudyProject != null && !expectedStudyProject.isEmpty()) {
                     for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
-                      if (!expectedStudies.contains(expectedStudy.getProjectExpectedStudy())) {
-                        expectedStudies.add(expectedStudy.getProjectExpectedStudy());
+                      ProjectExpectedStudy projectExpectedStudy = expectedStudy.getProjectExpectedStudy();
+                      if (projectExpectedStudy != null
+                        && projectExpectedStudy.getProjectExpectedStudyCrpOutcomes() != null) {
+                        List<ProjectExpectedStudyCrpOutcome> filteredCrpOutcomes =
+                          projectExpectedStudy.getProjectExpectedStudyCrpOutcomes().stream()
+                            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
+                            .collect(Collectors.toList());
+                        projectExpectedStudy.setCrpOutcomes(new ArrayList<>(filteredCrpOutcomes));
+                      }
+
+                      boolean isExpectedStudyAlreadyAdded = expectedStudies.stream()
+                        .anyMatch(es -> es.getCrpOutcomes() != null && es.getCrpOutcomes().stream()
+                          .anyMatch(crp -> crp.getCrpOutcome() != null && crp.getCrpOutcome().getId() != null
+                            && projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null && crp
+                              .getCrpOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0));
+
+                      if (!isExpectedStudyAlreadyAdded) {
+                        expectedStudies.add(projectExpectedStudy);
                       }
                     }
                   }
@@ -1528,7 +1539,6 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 } catch (Exception e) {
                   e.printStackTrace();
                 }
-
                 try {
                   // Shared innovations
                   List<ProjectInnovationShared> innovationShareds = projectInnovationSharedManager
@@ -1536,20 +1546,33 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
                   if (innovationShareds != null && !innovationShareds.isEmpty()) {
                     for (ProjectInnovationShared innovationShared : innovationShareds) {
+                      if (innovationShared.getProjectInnovation().getProjectInnovationProjectOutcomes() != null) {
+                        innovationShared.getProjectInnovation().setProjectOutcomes(
+                          new ArrayList<>(innovationShared.getProjectInnovation().getProjectInnovationProjectOutcomes()
+                            .stream().filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
+                            .collect(Collectors.toList())));
+                      }
+
                       if (!innovations.contains(innovationShared.getProjectInnovation())) {
-                        if (innovationShared.getProjectInnovation()
-                          .getProjectInnovationInfo(this.getActualPhase()) != null
-                          && innovationShared.getProjectInnovation().getProjectInnovationInfo().getYear() >= this
-                            .getActualPhase().getYear()) {
+                        for (ProjectInnovationProjectOutcome innovationOutcome : innovationShared.getProjectInnovation()
+                          .getProjectOutcomes()) {
+                          if (innovationShared.getProjectInnovation()
+                            .getProjectInnovationInfo(this.getActualPhase()) != null
+                            && innovationShared.getProjectInnovation().getProjectInnovationInfo().getYear() >= this
+                              .getActualPhase().getYear()
+                            && innovationOutcome != null && innovationOutcome.getProjectOutcome() != null
+                            && innovationOutcome.getProjectOutcome().getCrpProgramOutcome().getId()
+                              .compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
 
-
-                          innovations.add(innovationShared.getProjectInnovation());
+                            innovations.add(innovationShared.getProjectInnovation());
+                          }
                         }
+
+
                       }
                     }
                   }
                 } catch (Exception e) {
-
                   LOG.error("unable to get shared innovations", e);
                 }
 

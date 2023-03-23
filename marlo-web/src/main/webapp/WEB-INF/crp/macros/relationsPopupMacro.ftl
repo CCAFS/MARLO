@@ -21,7 +21,7 @@
   [#local evidencies = (action.getStudyContributingByPartner(element.id))![] /]
   
   [#if tag == "expectedOutcomes"]
-    [#local evidencies = (action.getexpectedProjectOutcomes(element.id))![] /]
+    [#local evidencies = (action.getexpectedCrpOutcomes(element.id))![] /]
   [/#if]
   [#if tag == "innovationOutcomes"]
     [#local innovations = (action.getInnovationProjectOutcomes(element.id))![] /]
@@ -295,7 +295,7 @@
                     <tr>
                       <th scope="row">${i.id}</th>
                       <td class="col-md-6">${(i.projectInnovationInfo.title)!'Untitled'}</td>
-                      <td class="col-md-6">${(i.project.acronym)!''}</td>
+                      <td class="col-md-6">[#if i.project.id == (element.project.id)!1] This Cluster [#else]${(i.project.acronym)!''}[/#if]</td>
                       <td>${(i.projectInnovationInfo.year)}</td>
                       <td> <a href="${innovationUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>
@@ -356,9 +356,9 @@
                     <tr>
                       <th scope="row">${e.id}</th>
                       <td class="col-md-6">${(e.projectExpectedStudyInfo.title)!'Untitled'}</td>
-                      <td class="col-md-6">${(e.project.acronym)!''}</td>
+                      <td class="col-md-6">[#if e.project.id == (element.project.id)!1] This Cluster[#else]${(e.project.acronym)!''}[/#if]</td>
                       <td class="col-md-6">${(e.projectExpectedStudyInfo.statusName)!''}</td>
-                      <td class="col-md-6">${(e.projectExpectedStudyInfo.year)}</td>
+                      <td class="col-md-6">${(e.projectExpectedStudyInfo.year)!}</td>
                       [#--<td>${(e.studyInfo.studyType.name?capitalize)!'none'}</td>--]
                       <td> <a href="${evidenceUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>
