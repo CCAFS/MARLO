@@ -21,7 +21,7 @@
     <ul>
       <li><a target="_blank" href="[@s.url namespace="/" action='glossary'][/@s.url]">Glossary of relevant items </a></li>
       [#if action.isAiccra()]
-        <li><a data-toggle="modal" data-target="#modal1">Reporting Schedule </a></li>
+       <!-- <li><a data-toggle="modal" data-target="#modal1">Reporting Schedule </a></li>-->
 
           <!--Modal: Name-->
         <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
