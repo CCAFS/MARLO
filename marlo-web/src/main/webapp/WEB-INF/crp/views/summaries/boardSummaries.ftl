@@ -348,7 +348,7 @@
     </div>--]
     [#--  Reports Content --]
     <div class="summariesContent col-md-9" style="min-height:550px;">
-      <img class="img_aiccra" src="${baseUrlCdn}/global/images/crps/AICCRA.png">
+      [#--  <img class="img_aiccra" src="${baseUrlCdn}/global/images/crps/AICCRA.png">  --]
       <div class="containerHeader">
         <img src="${baseUrlCdn}/global/images/summaries_icon.png">
         <h3 class="headTitle text-center">Summaries</h3>        
