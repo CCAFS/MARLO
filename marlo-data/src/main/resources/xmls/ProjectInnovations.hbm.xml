@@ -156,5 +156,13 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationProjectOutcome" />
     </set>
+    <set name="projectInnovationCrpOutcomes" table="project_innovation_crp_outcomes"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrpOutcome" />
+    </set>
 	</class>
 </hibernate-mapping>

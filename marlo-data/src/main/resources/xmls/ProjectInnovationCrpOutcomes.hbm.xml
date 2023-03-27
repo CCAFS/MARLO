@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 30, 2018 10:52:36 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrpOutcome" table="project_innovation_crp_outcomes" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
+        <many-to-one name="projectInnovation" class="org.cgiar.ccafs.marlo.data.model.ProjectInnovation" fetch="select">
+            <column name="project_innovation_id" />
+        </many-to-one>
+        <many-to-one name="crpOutcome" class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" fetch="select">
+            <column name="crp_outcome_id" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

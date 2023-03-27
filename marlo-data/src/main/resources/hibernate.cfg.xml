@@ -425,5 +425,7 @@
   <mapping resource="xmls/FeedbackRolesPermissions.hbm.xml"/>
   <mapping resource="xmls/ProjectExpectedStudyCrpOutcomes.hbm.xml"/>
   <mapping resource="xmls/ButtonGuideContents.hbm.xml"/>
+  <mapping resource="xmls/ProjectInnovationCrpOutcomes.hbm.xml"/>
+
  </session-factory>
 </hibernate-configuration>
