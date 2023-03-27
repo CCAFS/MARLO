@@ -260,6 +260,13 @@
          <br/>
         </div> 
         
+        [#if action.canAccessSuperAdmin()]
+        <div class="form-group simpleBox block-${innovationMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
+          [@customForm.elementsListComponent name="innovation.crpOutcomes" elementType="crpOutcome" elementList=(innovation.crpOutcomes)![] label="innovation.outcomes" helpIcon=false listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=true /]
+         <div class="note">[@s.text name="innovation.outcomes.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+         <br/>
+        </div> 
+        [/#if]
           [#-- Contributing CRPs/Platforms --]
          [#if !action.isAiccra()]
           <div class="form-group">

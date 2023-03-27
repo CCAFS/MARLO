@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
@@ -33,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
@@ -57,6 +59,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
@@ -75,6 +78,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
@@ -173,6 +177,8 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationProjectOutcomeManager projectInnovationProjectOutcomeManager;
   private FeedbackQACommentManager feedbackQACommentManager;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+  private ProjectInnovationCrpOutcomeManager projectInnovationCrpOutcomeManager;
+  private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
   // Variables
   private long projectID;
@@ -216,6 +222,7 @@ public class ProjectInnovationAction extends BaseAction {
   private HashMap<Long, String> idoList;
   private List<ProjectOutcome> projectOutcomes;
   private List<FeedbackQACommentableFields> feedbackComments;
+  private List<CrpProgramOutcome> crpOutcomes;
 
 
   @Inject
@@ -246,7 +253,9 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectDeliverableSharedManager projectDeliverableSharedManager, ProjectOutcomeManager projectOutcomeManager,
     ProjectInnovationProjectOutcomeManager projectInnovationProjectOutcomeManager,
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
-    FeedbackQACommentManager feedbackQACommentManager) {
+    FeedbackQACommentManager feedbackQACommentManager,
+    ProjectInnovationCrpOutcomeManager projectInnovationCrpOutcomeManager,
+    CrpProgramOutcomeManager crpProgramOutcomeManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -289,6 +298,8 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationProjectOutcomeManager = projectInnovationProjectOutcomeManager;
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.feedbackQACommentManager = feedbackQACommentManager;
+    this.projectInnovationCrpOutcomeManager = projectInnovationCrpOutcomeManager;
+    this.crpProgramOutcomeManager = crpProgramOutcomeManager;
   }
 
   /**
@@ -384,6 +395,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public long getCrpMilestonePrimary() {
     return crpMilestonePrimary;
+  }
+
+  public List<CrpProgramOutcome> getCrpOutcomes() {
+    return crpOutcomes;
   }
 
   public List<RepIndDegreeInnovation> getDegreeInnovationList() {
@@ -881,6 +896,11 @@ public class ProjectInnovationAction extends BaseAction {
           innovation.setProjectOutcomes(new ArrayList<>(innovation.getProjectInnovationProjectOutcomes().stream()
             .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
+        // Expected Study crp Outcome list
+        if (innovation.getProjectInnovationCrpOutcomes() != null) {
+          innovation.setCrpOutcomes(new ArrayList<>(innovation.getProjectInnovationCrpOutcomes().stream()
+            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
 
         // SubIdos List
         if (innovation.getProjectInnovationSubIdos() != null) {
@@ -1131,12 +1151,17 @@ public class ProjectInnovationAction extends BaseAction {
         .collect(Collectors.toList());
 
       if (projectOutcomesList != null) {
+        crpOutcomes = new ArrayList<>();
 
         for (ProjectOutcome projectOutcome : projectOutcomesList) {
           projectOutcome.setMilestones(projectOutcome.getProjectMilestones().stream()
             .filter(
               m -> m != null && m.isActive() && m.getYear() != 0 && m.getYear() <= this.getActualPhase().getYear())
             .collect(Collectors.toList()));
+
+          if (!this.crpOutcomes.contains(projectOutcome.getCrpProgramOutcome())) {
+            this.crpOutcomes.add(projectOutcome.getCrpProgramOutcome());
+          }
 
           if (projectOutcome.getMilestones() != null) {
             for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
@@ -1156,6 +1181,7 @@ public class ProjectInnovationAction extends BaseAction {
           projectOutcomes.add(projectOutcome);
         }
       }
+      crpOutcomes.sort((k1, k2) -> k1.getId().compareTo(k2.getId()));
 
       // Shows the projects to create a shared link with their
       this.myProjects = new ArrayList<>();
@@ -1274,6 +1300,9 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getProjectOutcomes() != null) {
         innovation.getProjectOutcomes().clear();
       }
+      if (innovation.getCrpOutcomes() != null) {
+        innovation.getCrpOutcomes().clear();
+      }
       // HTTP Post info Values
       // innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
       // innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
@@ -1297,6 +1326,7 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -1317,6 +1347,7 @@ public class ProjectInnovationAction extends BaseAction {
       // this.saveMilestones(innovationDB, phase);
       this.saveStudies(innovationDB, phase);
       this.saveProjectOutcomes(innovationDB, phase);
+      this.saveCrpOutcomes(innovationDB, phase);
       this.saveGeographicScope(innovationDB, phase);
 
       boolean haveRegions = false;
@@ -1509,7 +1540,6 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
-
   public void saveCenters(ProjectInnovation projectInnovation, Phase phase) {
 
     // Search and deleted form Information
@@ -1595,6 +1625,75 @@ public class ProjectInnovationAction extends BaseAction {
             .saveProjectInnovationContributingOrganization(innovationOrganizationSave);
           // This is to add innovationOrganizationSave to generate correct auditlog.
           innovation.getProjectInnovationContributingOrganization().add(innovationOrganizationSave);
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Expected Studies Crp Outcome Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveCrpOutcomes(ProjectInnovation projectInnovation, Phase phase) {
+
+    // Search and deleted form Information
+    try {
+      if (projectInnovation.getProjectInnovationCrpOutcomes() != null
+        && !projectInnovation.getProjectInnovationCrpOutcomes().isEmpty()) {
+
+        List<ProjectInnovationCrpOutcome> outcomePrev =
+          new ArrayList<>(projectInnovation.getProjectInnovationCrpOutcomes().stream()
+            .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+        for (ProjectInnovationCrpOutcome innovationOutcome : outcomePrev) {
+          if (this.innovation.getCrpOutcomes() == null
+            || !this.innovation.getCrpOutcomes().contains(innovationOutcome)) {
+            this.projectInnovationCrpOutcomeManager.deleteProjectInnovationCrpOutcome(innovationOutcome.getId(),
+              this.getActualPhase().getId());
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.error("unable to delete crp outcome", e);
+    }
+
+    // Save form Information
+    if (this.innovation.getCrpOutcomes() != null) {
+      for (ProjectInnovationCrpOutcome innovationOutcome : this.innovation.getCrpOutcomes()) {
+        ProjectInnovationCrpOutcome innovationOutcomeSave = new ProjectInnovationCrpOutcome();
+
+        if (innovationOutcome != null) {
+          // For new crp outcomes
+          if (innovationOutcome.getId() == null) {
+            innovationOutcomeSave.setProjectInnovation(projectInnovation);
+            innovationOutcomeSave.setPhase(phase);
+          } else {
+            // For old crp outcomes
+            try {
+              if (innovationOutcome.getId() != null) {
+                innovationOutcomeSave =
+                  projectInnovationCrpOutcomeManager.getProjectInnovationCrpOutcomeById(innovationOutcome.getId());
+              }
+            } catch (Exception e) {
+              logger.error("unable to get old crp outcome", e);
+            }
+          }
+
+          if (innovationOutcome.getCrpOutcome() != null && innovationOutcome.getCrpOutcome().getId() != null) {
+            CrpProgramOutcome outcome =
+              crpProgramOutcomeManager.getCrpProgramOutcomeById(innovationOutcome.getCrpOutcome().getId());
+            if (outcome != null) {
+              innovationOutcomeSave.setCrpOutcome(outcome);
+            }
+
+            this.projectInnovationCrpOutcomeManager.saveProjectInnovationCrpOutcome(innovationOutcomeSave);
+            // This is to add studyCrpSave to generate correct auditlog.
+            if (!this.innovation.getProjectInnovationCrpOutcomes().contains(innovationOutcomeSave)) {
+              this.innovation.getProjectInnovationCrpOutcomes().add(innovationOutcomeSave);
+            }
+          }
         }
       }
     }
@@ -2145,6 +2244,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setCrpMilestonePrimary(long crpMilestonePrimary) {
     this.crpMilestonePrimary = crpMilestonePrimary;
+  }
+
+  public void setCrpOutcomes(List<CrpProgramOutcome> crpOutcomes) {
+    this.crpOutcomes = crpOutcomes;
   }
 
   public void setDegreeInnovationList(List<RepIndDegreeInnovation> degreeInnovationList) {
