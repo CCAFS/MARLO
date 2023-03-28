@@ -52,22 +52,15 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
-import org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome;
-import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbTocListDTO;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrpOutcome;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationProjectOutcome;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator;
@@ -94,7 +87,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -1323,97 +1315,8 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
                 }
                 // Deliverables Table
                 List<Deliverable> deliverables = new ArrayList<>();
-
-                List<ProjectDeliverableShared> deliverablesShared = this.projectDeliverableSharedManager
-                  .getByProjectAndPhase(projectID, this.getSelectedPhase().getId()) != null
-                    ? this.projectDeliverableSharedManager
-                      .getByProjectAndPhase(projectID, this.getSelectedPhase().getId()).stream()
-                      .filter(px -> px.isActive() && px.getDeliverable().isActive()
-                        && px.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
-                        && !px.getDeliverable().getDeliverableInfo().isPrevious())
-                      .collect(Collectors.toList())
-                    : Collections.emptyList();
-
-                try {
-                  for (Deliverable deliverable : projectOutcome.getProject()
-                    .getCurrentDeliverables(this.getSelectedPhase())) {
-                    if (deliverable.getDeliverableCrpOutcomes() != null) {
-                      if (this.getSelectedPhase().isReporting()) {
-                        // For reporting phase use just deliverables completed
-                        deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
-                          .filter(o -> o.getDeliverable() != null
-                            && o.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
-                            && o.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
-                            && o.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus() == 3
-                            && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-                          .collect(Collectors.toList())));
-                      } else {
-                        deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
-                          .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-                          .collect(Collectors.toList())));
-                      }
-                    }
-                    if (deliverable != null && deliverable.getCrpOutcomes() != null
-                      && !deliverable.getCrpOutcomes().isEmpty()) {
-
-                      for (DeliverableCrpOutcome deliverableCrpOutcome : deliverable.getCrpOutcomes()) {
-                        if (deliverableCrpOutcome != null && deliverableCrpOutcome.getCrpProgramOutcome() != null
-                          && deliverableCrpOutcome.getCrpProgramOutcome().getId() != null && projectOutcome != null
-                          && projectOutcome.getCrpProgramOutcome() != null
-                          && projectOutcome.getCrpProgramOutcome().getId() != null
-                          && deliverableCrpOutcome.getCrpProgramOutcome().getId()
-                            .compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
-                          deliverables.add(deliverable);
-                        }
-                      }
-
-                    }
-                  }
-                } catch (Exception e) {
-                  LOG.error("Error getting crp outcomes " + e.getMessage());
-                }
-
-                // deliverables shared
-                if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
-                  for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
-                    if (deliverableShared != null && deliverableShared.getDeliverable() != null
-                      && deliverableShared.getDeliverable().getDeliverableCrpOutcomes() != null) {
-
-                      // For reporting phase use just deliverables completed
-                      if (this.getSelectedPhase().isReporting()) {
-                        deliverableShared.getDeliverable().setCrpOutcomes(
-                          new ArrayList<>(deliverableShared.getDeliverable().getDeliverableCrpOutcomes().stream()
-                            .filter(o -> o.getDeliverable() != null
-                              && o.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
-                              && o.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
-                              && o.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus() == 3
-                              && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-                            .collect(Collectors.toList())));
-                      } else {
-                        deliverableShared.getDeliverable()
-                          .setCrpOutcomes(new ArrayList<>(deliverableShared.getDeliverable().getDeliverableCrpOutcomes()
-                            .stream().filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-                            .collect(Collectors.toList())));
-                      }
-
-                      if (deliverableShared != null && deliverableShared.getDeliverable().getCrpOutcomes() != null
-                        && !deliverableShared.getDeliverable().getCrpOutcomes().isEmpty()) {
-
-                        for (DeliverableCrpOutcome deliverableCrpOutcome : deliverableShared.getDeliverable()
-                          .getCrpOutcomes()) {
-                          if (deliverableCrpOutcome != null && deliverableCrpOutcome.getCrpProgramOutcome() != null
-                            && deliverableCrpOutcome.getCrpProgramOutcome().getId() != null && projectOutcome != null
-                            && projectOutcome.getCrpProgramOutcome() != null
-                            && projectOutcome.getCrpProgramOutcome().getId() != null
-                            && deliverableCrpOutcome.getCrpProgramOutcome().getId()
-                              .compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
-                            deliverables.add(deliverableShared.getDeliverable());
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
+                deliverables = this.getDeliverableRelationsProject(projectOutcome.getId(),
+                  projectOutcome.getClass().getName(), project.getId());
 
                 if (deliverables != null && !deliverables.isEmpty()) {
 
@@ -1429,77 +1332,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
                 // OICRs Table
                 List<ProjectExpectedStudy> expectedStudies = new ArrayList<>();
-                List<ProjectExpectedStudy> expectedStudiesTemp = new ArrayList<>();
-                expectedStudiesTemp = projectExpectedStudyManager.getAllStudiesByPhase(this.getSelectedPhase().getId());
-
-                if (expectedStudiesTemp != null) {
-                  expectedStudiesTemp = expectedStudiesTemp.stream()
-                    .filter(e -> e != null && e.getProject() != null && e.getProject().getId().equals(projectID)
-                      && e.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null
-                      && e.getProjectExpectedStudyInfo(this.getSelectedPhase()).isActive()
-                      && e.getProjectExpectedStudyInfo(this.getSelectedPhase()).getPhase().getId()
-                        .equals(this.getSelectedPhase().getId()))
-                    .collect(Collectors.toList());
-                }
-
-                try {
-                  for (ProjectExpectedStudy expectedStudy : expectedStudiesTemp) {
-                    if (expectedStudy.getProjectExpectedStudyProjectOutcomes() != null) {
-
-                      expectedStudy.setProjectOutcomes(
-                        new ArrayList<>(expectedStudy.getProjectExpectedStudyProjectOutcomes().stream()
-                          .filter(o -> o.getProjectExpectedStudy() != null
-                            && o.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()) != null)
-                          .collect(Collectors.toList())));
-                    }
-
-                    if (expectedStudy != null && expectedStudy.getProjectOutcomes() != null
-                      && !expectedStudy.getProjectOutcomes().isEmpty()) {
-
-                      for (ProjectExpectedStudyProjectOutcome studyOutcomes : expectedStudy.getProjectOutcomes()) {
-                        if (studyOutcomes != null && studyOutcomes.getProjectOutcome() != null
-                          && studyOutcomes.getProjectOutcome().getId() != null && projectOutcome != null
-                          && projectOutcome.getId() != null
-                          && studyOutcomes.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
-                          expectedStudies.add(studyOutcomes.getProjectExpectedStudy());
-                        }
-                      }
-                    }
-                  }
-                } catch (Exception e) {
-                  LOG.error("Error getting OICRs information " + e.getMessage());
-                }
-
-                try {
-                  // Load Shared studies
-                  List<ExpectedStudyProject> expectedStudyProject = expectedStudyProjectManager
-                    .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getPhaseID());
-                  if (expectedStudyProject != null && !expectedStudyProject.isEmpty()) {
-                    for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
-                      ProjectExpectedStudy projectExpectedStudy = expectedStudy.getProjectExpectedStudy();
-                      if (projectExpectedStudy != null
-                        && projectExpectedStudy.getProjectExpectedStudyCrpOutcomes() != null) {
-                        List<ProjectExpectedStudyCrpOutcome> filteredCrpOutcomes =
-                          projectExpectedStudy.getProjectExpectedStudyCrpOutcomes().stream()
-                            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
-                            .collect(Collectors.toList());
-                        projectExpectedStudy.setCrpOutcomes(new ArrayList<>(filteredCrpOutcomes));
-                      }
-
-                      boolean isExpectedStudyAlreadyAdded = expectedStudies.stream()
-                        .anyMatch(es -> es.getCrpOutcomes() != null && es.getCrpOutcomes().stream()
-                          .anyMatch(crp -> crp.getCrpOutcome() != null && crp.getCrpOutcome().getId() != null
-                            && projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null && crp
-                              .getCrpOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0));
-
-                      if (!isExpectedStudyAlreadyAdded) {
-                        expectedStudies.add(projectExpectedStudy);
-                      }
-                    }
-                  }
-                } catch (Exception e) {
-                  e.printStackTrace();
-                }
+                expectedStudies = this.getexpectedCrpOutcomes(projectOutcome.getId());
 
                 if (expectedStudies != null && !expectedStudies.isEmpty()) {
                   poiSummary.textLineBreak(document, 1);
@@ -1512,69 +1345,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
                 // Innovations Table
                 List<ProjectInnovation> innovations = new ArrayList<>();
-                try {
-                  for (ProjectInnovation innovation : projectOutcome.getProject().getProjectInnovations().stream()
-                    .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(this.getActualPhase()) != null
-                      && ps.getProjectInnovationInfo(this.getActualPhase()).isActive())
-                    .collect(Collectors.toList())) {
-                    if (innovation.getProjectInnovationProjectOutcomes() != null) {
-                      innovation.setProjectOutcomes(new ArrayList<>(innovation.getProjectInnovationProjectOutcomes()
-                        .stream().filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
-                        .collect(Collectors.toList())));
-                    }
-                    if (innovation != null && innovation.getProjectOutcomes() != null
-                      && !innovation.getProjectOutcomes().isEmpty()) {
-                      for (ProjectInnovationProjectOutcome innovationStudyProjectOutcome : innovation
-                        .getProjectOutcomes()) {
-                        if (innovationStudyProjectOutcome != null
-                          && innovationStudyProjectOutcome.getProjectOutcome() != null
-                          && innovationStudyProjectOutcome.getProjectOutcome().getId() != null
-                          && innovationStudyProjectOutcome.getProjectOutcome().getId()
-                            .compareTo(projectOutcome.getId()) == 0) {
-                          innovations.add(innovation);
-                        }
-                      }
-                    }
-                  }
-                } catch (Exception e) {
-                  e.printStackTrace();
-                }
-                try {
-                  // Shared innovations
-                  List<ProjectInnovationShared> innovationShareds = projectInnovationSharedManager
-                    .getByProjectAndPhase(projectOutcome.getProject().getId(), this.getActualPhase().getId());
-
-                  if (innovationShareds != null && !innovationShareds.isEmpty()) {
-                    for (ProjectInnovationShared innovationShared : innovationShareds) {
-                      if (innovationShared.getProjectInnovation().getProjectInnovationProjectOutcomes() != null) {
-                        innovationShared.getProjectInnovation().setProjectOutcomes(
-                          new ArrayList<>(innovationShared.getProjectInnovation().getProjectInnovationProjectOutcomes()
-                            .stream().filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
-                            .collect(Collectors.toList())));
-                      }
-
-                      if (!innovations.contains(innovationShared.getProjectInnovation())) {
-                        for (ProjectInnovationProjectOutcome innovationOutcome : innovationShared.getProjectInnovation()
-                          .getProjectOutcomes()) {
-                          if (innovationShared.getProjectInnovation()
-                            .getProjectInnovationInfo(this.getActualPhase()) != null
-                            && innovationShared.getProjectInnovation().getProjectInnovationInfo().getYear() >= this
-                              .getActualPhase().getYear()
-                            && innovationOutcome != null && innovationOutcome.getProjectOutcome() != null
-                            && innovationOutcome.getProjectOutcome().getCrpProgramOutcome().getId()
-                              .compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
-
-                            innovations.add(innovationShared.getProjectInnovation());
-                          }
-                        }
-
-
-                      }
-                    }
-                  }
-                } catch (Exception e) {
-                  LOG.error("unable to get shared innovations", e);
-                }
+                innovations = this.getInnovationProjectOutcomes(projectOutcome.getId());
 
                 if (innovations != null && !innovations.isEmpty()) {
                   poiSummary.textLineBreak(document, 1);

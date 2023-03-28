@@ -101,15 +101,28 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     // validate Milestones
+    /*
+     * if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()) != null
+     * && (projectInnovation.getProjectInnovationInfo().getHasMilestones() != null
+     * && projectInnovation.getProjectInnovationInfo().getHasMilestones() == true
+     * && (projectInnovation.getProjectOutcomes() == null || projectInnovation.getProjectOutcomes().isEmpty()))
+     * || projectInnovation.getProjectInnovationInfo().getHasMilestones() == null) {
+     * action.addMessage(action.getText("projectOutcomes"));
+     * action.addMissingField("innovation.projectOutcomes");
+     * action.getInvalidFields().put("list-innovation.projectOutcomes",
+     * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"projectOutcomes"}));
+     * }
+     */
+    // validate crp outcomes
     if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()) != null
       && (projectInnovation.getProjectInnovationInfo().getHasMilestones() != null
         && projectInnovation.getProjectInnovationInfo().getHasMilestones() == true
-        && (projectInnovation.getProjectOutcomes() == null || projectInnovation.getProjectOutcomes().isEmpty()))
+        && (projectInnovation.getCrpOutcomes() == null || projectInnovation.getCrpOutcomes().isEmpty()))
       || projectInnovation.getProjectInnovationInfo().getHasMilestones() == null) {
-      action.addMessage(action.getText("projectOutcomes"));
-      action.addMissingField("innovation.projectOutcomes");
-      action.getInvalidFields().put("list-innovation.projectOutcomes",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"projectOutcomes"}));
+      action.addMessage(action.getText("crpOutcomes"));
+      action.addMissingField("innovation.crpOutcomes");
+      action.getInvalidFields().put("list-innovation.crpOutcomes",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"crpOutcomes"}));
     }
 
     if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()) != null

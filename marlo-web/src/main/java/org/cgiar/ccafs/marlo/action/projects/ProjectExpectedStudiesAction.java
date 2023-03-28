@@ -1449,7 +1449,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       // AR 2019 Save
       this.saveCenters(this.expectedStudyDB, phase);
       // this.saveMilestones(this.expectedStudyDB, phase);
-      this.saveProjectOutcomes(this.expectedStudyDB, phase);
+      // this.saveProjectOutcomes(this.expectedStudyDB, phase);
       this.saveCrpOutcomes(this.expectedStudyDB, phase);
 
       // Save Geographic Scope Data
@@ -1766,7 +1766,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     // Save form Information
     if (this.expectedStudy.getCrpOutcomes() != null) {
-
       for (ProjectExpectedStudyCrpOutcome studyOutcome : this.expectedStudy.getCrpOutcomes()) {
         ProjectExpectedStudyCrpOutcome projectExpectedStudyOutcomeSave = new ProjectExpectedStudyCrpOutcome();
 

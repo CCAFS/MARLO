@@ -658,6 +658,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
+      // Expected Study crp Outcome list
+      if (innovation.getProjectInnovationCrpOutcomes() != null) {
+        innovation.setCrpOutcomes(new ArrayList<>(innovation.getProjectInnovationCrpOutcomes().stream()
+          .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
       // Innovation Milestone list
       if (innovation.getProjectInnovationMilestones() != null) {
         innovation.setMilestones(new ArrayList<>(innovation.getProjectInnovationMilestones().stream()
@@ -1436,6 +1442,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       // Project outcomes list
       if (expectedStudy.getProjectExpectedStudyProjectOutcomes() != null) {
         expectedStudy.setProjectOutcomes(new ArrayList<>(expectedStudy.getProjectExpectedStudyProjectOutcomes().stream()
+          .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
+      // Project outcomes list
+      if (expectedStudy.getProjectExpectedStudyCrpOutcomes() != null) {
+        expectedStudy.setCrpOutcomes(new ArrayList<>(expectedStudy.getProjectExpectedStudyCrpOutcomes().stream()
           .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 

@@ -3261,16 +3261,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(this.getActualPhase()) != null
           && ps.getProjectInnovationInfo(this.getActualPhase()).isActive())
         .collect(Collectors.toList())) {
-        if (innovation.getProjectInnovationProjectOutcomes() != null) {
-          innovation.setProjectOutcomes(new ArrayList<>(innovation.getProjectInnovationProjectOutcomes().stream()
+        if (innovation.getProjectInnovationCrpOutcomes() != null) {
+          innovation.setCrpOutcomes(new ArrayList<>(innovation.getProjectInnovationCrpOutcomes().stream()
             .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
         }
-        if (innovation != null && innovation.getProjectOutcomes() != null
-          && !innovation.getProjectOutcomes().isEmpty()) {
-          for (ProjectInnovationProjectOutcome innovationStudyProjectOutcome : innovation.getProjectOutcomes()) {
-            if (innovationStudyProjectOutcome != null && innovationStudyProjectOutcome.getProjectOutcome() != null
-              && innovationStudyProjectOutcome.getProjectOutcome().getId() != null
-              && innovationStudyProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+        if (innovation != null && innovation.getCrpOutcomes() != null && !innovation.getCrpOutcomes().isEmpty()) {
+          for (ProjectInnovationCrpOutcome innovationStudyCrpOutcome : innovation.getCrpOutcomes()) {
+            if (innovationStudyCrpOutcome != null && innovationStudyCrpOutcome.getCrpOutcome() != null
+              && innovationStudyCrpOutcome.getCrpOutcome().getId() != null && innovationStudyCrpOutcome.getCrpOutcome()
+                .getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
               innovations.add(innovation);
             }
           }
@@ -3287,22 +3286,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       if (innovationShareds != null && !innovationShareds.isEmpty()) {
         for (ProjectInnovationShared innovationShared : innovationShareds) {
-          if (innovationShared.getProjectInnovation().getProjectInnovationProjectOutcomes() != null) {
+          if (innovationShared.getProjectInnovation().getProjectInnovationCrpOutcomes() != null) {
             innovationShared.getProjectInnovation()
-              .setProjectOutcomes(new ArrayList<>(innovationShared.getProjectInnovation()
-                .getProjectInnovationProjectOutcomes().stream()
-                .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+              .setCrpOutcomes(new ArrayList<>(innovationShared.getProjectInnovation().getProjectInnovationCrpOutcomes()
+                .stream().filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
+                .collect(Collectors.toList())));
           }
 
           if (!innovations.contains(innovationShared.getProjectInnovation())) {
-            for (ProjectInnovationProjectOutcome innovationOutcome : innovationShared.getProjectInnovation()
-              .getProjectOutcomes()) {
+            for (ProjectInnovationCrpOutcome innovationOutcome : innovationShared.getProjectInnovation()
+              .getCrpOutcomes()) {
               if (innovationShared.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null
                 && innovationShared.getProjectInnovation().getProjectInnovationInfo().getYear() >= this.getActualPhase()
                   .getYear()
-                && innovationOutcome != null && innovationOutcome.getProjectOutcome() != null
-                && innovationOutcome.getProjectOutcome().getCrpProgramOutcome().getId()
-                  .compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
+                && innovationOutcome != null && innovationOutcome.getCrpOutcome() != null && innovationOutcome
+                  .getCrpOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
 
                 innovations.add(innovationShared.getProjectInnovation());
               }
