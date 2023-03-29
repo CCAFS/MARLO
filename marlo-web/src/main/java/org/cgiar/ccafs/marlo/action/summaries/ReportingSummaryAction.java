@@ -3874,7 +3874,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
       }
     }
-    title += "C" + Long.toString(projectID);
+    title += project.getAcronym() + " (C" + Long.toString(projectID) + ")";
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -3926,11 +3926,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
     centerURL = globalUnitProject.getGlobalUnit().getAcronym();
     Boolean isAdministrative = false;
-    String type = "Research Cluster";
+    String type = "";
+    if (projectInfo != null && projectInfo.getClusterType() != null && projectInfo.getClusterType().getName() != null) {
+      type = projectInfo.getClusterType().getName() + " Cluster";
+    }
+
     if (projectInfo != null && projectInfo.getAdministrative() != null) {
-      if (projectInfo.getAdministrative() == true) {
-        type = "Management Cluster";
-      }
       isAdministrative = projectInfo.getAdministrative();
     } else {
       isAdministrative = false;
