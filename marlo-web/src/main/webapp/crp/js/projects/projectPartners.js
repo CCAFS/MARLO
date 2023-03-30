@@ -6,6 +6,7 @@ var lWordsResp = 100;
 $(document).ready(init);
 
 function init() {
+
   // Setting global variables
   $removePartnerDialog = $('#partnerRemove-dialog');
   $partnersBlock = $('#projectPartnersBlock');
@@ -292,7 +293,8 @@ function attachEvents() {
    * Partner Person Events
    */
   // Add partner Person Event
-  $(".addContact a.addLink").on('click', addContactEvent);
+  // $(".addContact a.addLink").on('click', addContactEvent);
+  $(".addContact .addPartnerbutton").on('click', addContactEvent);
   // Remove partner person event
   $(".removePerson").on('click', removePersonEvent);
   // When partnerPersonType change
@@ -658,7 +660,7 @@ function addPartnerEvent(e) {
   // Organization
   $newElement.find("select.institutionsList").select2(searchInstitutionsOptions(canUpdatePPAPartners));
   $newElement.find("select.institutionsList").parent().find("span.select2-selection__placeholder")
-      .text(placeholderText);
+      .text(placeholderText); 
 
   // Role Selection
   $newElement.find("select.partnerPersonType").select2({
