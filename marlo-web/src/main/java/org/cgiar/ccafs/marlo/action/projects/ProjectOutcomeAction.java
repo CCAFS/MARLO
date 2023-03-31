@@ -124,7 +124,9 @@ public class ProjectOutcomeAction extends BaseAction {
   private boolean editOutcomeExpectedValue;
   private boolean editMilestoneExpectedValue;
   private List<DeliverableParticipant> deliverableParticipants;
+  private List<Deliverable> deliverableJournals;
   private List<FeedbackQACommentableFields> feedbackComments;
+  private int journalDeliverables;
   private Long userID;
 
   // capdev component
@@ -272,6 +274,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
+
   @Override
   public String cancel() {
 
@@ -364,6 +367,73 @@ public class ProjectOutcomeAction extends BaseAction {
     return orderIndex;
   }
 
+  /**
+   * Check deliverables mapped to this indicator and add the journal articles to deliverablejournals list 1.2
+   **/
+  private void deliverableJournalInformation() {
+    deliverableJournals = new ArrayList<>();
+    List<Deliverable> currentDeliverables = new ArrayList<>();
+    currentDeliverables = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
+    try {
+      // Exclude deliverables cancelled
+      if (currentDeliverables != null) {
+        currentDeliverables = currentDeliverables.stream()
+          .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 5L)
+          .collect(Collectors.toList());
+      }
+    } catch (Exception e) {
+      LOG.error(e + "error to filter canceled deliverable");
+    }
+    if (this.isReportingActive()) {
+      try {
+        // Exclude deliverables extended in AR
+        currentDeliverables = currentDeliverables.stream()
+          .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 4L)
+          .collect(Collectors.toList());
+      } catch (Exception e) {
+        LOG.error(e + "error to filter deliverable for AR");
+      }
+    }
+    if (currentDeliverables != null) {
+      currentDeliverables = currentDeliverables.stream()
+        .filter(d -> d != null && d.getDeliverableInfo(this.getActualPhase()) != null
+          && d.getDeliverableInfo(this.getActualPhase()).getDeliverableType() != null
+          && d.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId().equals(63L))
+        .collect(Collectors.toList());
+      if (currentDeliverables != null && !currentDeliverables.isEmpty()) {
+        journalDeliverables = currentDeliverables.size();
+        for (Deliverable deliverable : currentDeliverables) {
+          if (deliverable != null && deliverable.getDeliverableCrpOutcomes() != null) {
+            deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+              .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+          }
+
+          if (deliverable.getCrpOutcomes() != null && !deliverable.getCrpOutcomes().isEmpty()) {
+
+            for (DeliverableCrpOutcome deliverableCrpOutcome : deliverable.getCrpOutcomes()) {
+              if (deliverableCrpOutcome != null && deliverableCrpOutcome.getCrpProgramOutcome() != null
+                && deliverableCrpOutcome.getCrpProgramOutcome().getId() != null && deliverableCrpOutcome
+                  .getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
+
+
+                // Total Participants
+                Double numberParticipant = 0.0;
+                totalParticipants += numberParticipant;
+
+                // Add deliverable participant to list
+                deliverableJournals.add(deliverable);
+              }
+            }
+          }
+
+        }
+      }
+    }
+  }
 
   /**
    * Check deliverables mapped to this indicator and add the deliverable participants to deliverableParticipants list
@@ -375,11 +445,13 @@ public class ProjectOutcomeAction extends BaseAction {
     currentDeliverables = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
     try {
       // Exclude deliverables cancelled
-      currentDeliverables = currentDeliverables.stream()
-        .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
-          && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-          && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 5L)
-        .collect(Collectors.toList());
+      if (currentDeliverables != null) {
+        currentDeliverables = currentDeliverables.stream()
+          .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 5L)
+          .collect(Collectors.toList());
+      }
     } catch (Exception e) {
       LOG.error(e + "error to filter canceled deliverable");
     }
@@ -509,6 +581,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = projectOutcome.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -518,13 +591,16 @@ public class ProjectOutcomeAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public String getBaseLineFileURL(String outcomeID) {
     return config.getDownloadURL() + "/file.do?" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
   }
 
   public String getBaseLineFileUrlPath(String outcomeID) {
     return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
+  }
+
+  public List<Deliverable> getDeliverableJournals() {
+    return deliverableJournals;
   }
 
   public List<DeliverableParticipant> getDeliverableParticipants() {
@@ -534,6 +610,7 @@ public class ProjectOutcomeAction extends BaseAction {
   public List<FeedbackQACommentableFields> getFeedbackComments() {
     return feedbackComments;
   }
+
 
   public int getIndexCommunication(int year) {
 
@@ -612,7 +689,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return this.getIndexMilestone(milestoneId, year);
   }
 
-
   public ProjectOutcomeIndicator getIndicator(Long indicatorID) {
     if (indicatorID != null && projectOutcome.getIndicators() != null) {
       for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
@@ -627,6 +703,11 @@ public class ProjectOutcomeAction extends BaseAction {
     projectOutcome.getIndicators().add(projectOutcomeIndicator);
     return projectOutcomeIndicator;
   }
+
+  public int getJournalDeliverables() {
+    return journalDeliverables;
+  }
+
 
   public ProjectMilestone getMilestone(long milestoneId, int year) {
     ProjectMilestone projectMilestone = new ProjectMilestone();
@@ -684,7 +765,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectMilestonesElement;
   }
 
-
   /**
    * Get a milestone from an specific year
    * 
@@ -720,6 +800,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectOutcomeIndicator;
 
   }
+
 
   public int getPrevIndexIndicator(Long indicatorID) {
     if (this.getPrevIndicator(indicatorID) == null && this.getPrevIndicator(indicatorID - 1) != null) {
@@ -813,10 +894,10 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipantFormalTraining;
   }
 
-
   public Double getTotalParticipantFormalTrainingLongFemale() {
     return totalParticipantFormalTrainingLongFemale;
   }
+
 
   public Double getTotalParticipantFormalTrainingLongMale() {
     return totalParticipantFormalTrainingLongMale;
@@ -834,10 +915,10 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipantFormalTrainingShortFemale;
   }
 
-
   public Double getTotalParticipantFormalTrainingShortMale() {
     return totalParticipantFormalTrainingShortMale;
   }
+
 
   public Double getTotalParticipants() {
     return totalParticipants;
@@ -855,15 +936,14 @@ public class ProjectOutcomeAction extends BaseAction {
     return userID;
   }
 
-
   public boolean isEditMilestoneExpectedValue() {
     return editMilestoneExpectedValue;
   }
 
+
   public boolean isEditOutcomeExpectedValue() {
     return editOutcomeExpectedValue;
   }
-
 
   public boolean isExpectedValueEditable(Long milestoneId) {
     boolean editable = false;
@@ -896,6 +976,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return editable;
   }
 
+
   public ProjectCommunication loadProjectCommunication(int year) {
 
     List<ProjectCommunication> projectCommunications =
@@ -916,7 +997,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectOutcome.getMilestones().stream().filter(c -> c.getYear() == year).collect(Collectors.toList());
 
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -1137,6 +1217,10 @@ public class ProjectOutcomeAction extends BaseAction {
     if (projectOutcome.getCrpProgramOutcome() != null && projectOutcome.getCrpProgramOutcome().getDescription() != null
       && projectOutcome.getCrpProgramOutcome().getDescription().contains("2.3")) {
       this.deliverableParticipantsInformation();
+    }
+    if (projectOutcome.getCrpProgramOutcome() != null && projectOutcome.getCrpProgramOutcome().getDescription() != null
+      && projectOutcome.getCrpProgramOutcome().getDescription().contains("1.2")) {
+      this.deliverableJournalInformation();
     }
 
     /*
@@ -1366,6 +1450,7 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
   }
+
 
   public void saveIndicators(ProjectOutcome projectOutcomeDB) {
 
@@ -1653,6 +1738,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+  public void setDeliverableJournals(List<Deliverable> deliverableJournals) {
+    this.deliverableJournals = deliverableJournals;
+  }
+
   public void setDeliverableParticipants(List<DeliverableParticipant> deliverableParticipants) {
     this.deliverableParticipants = deliverableParticipants;
   }
@@ -1667,6 +1756,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public void setFeedbackComments(List<FeedbackQACommentableFields> feedbackComments) {
     this.feedbackComments = feedbackComments;
+  }
+
+  public void setJournalDeliverables(int journalDeliverables) {
+    this.journalDeliverables = journalDeliverables;
   }
 
   public void setMilestones(List<CrpMilestone> milestones) {
