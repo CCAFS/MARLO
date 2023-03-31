@@ -1113,7 +1113,7 @@
             [/#if]
           </td>
           [#-- Shared Clusters Type --]
-          <td class="">
+          <td class="text-center">
             [#if item.sharedWithProjects?has_content]${(item.sharedWithProjects)!}[#else]Not shared[/#if]
           </td>          
           
