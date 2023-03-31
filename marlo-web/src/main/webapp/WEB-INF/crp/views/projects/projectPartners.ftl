@@ -77,7 +77,7 @@
            
           <div class="containerTitlePartners">
             <h3 class="headTitle">[@s.text name="projectPartners.title" /]</h3>
-            <a class="tutorialButton" target="blank" href="https://i.imgur.com/QX8Igpj.gif">
+            <a class="tutorialButton" target="blank" href="https://drive.google.com/file/d/1TceZWtveeOfRQm-P-M28oAAYaZq5Pm6R/view">
               <img  src="${baseUrlCdn}/global/images/tutorial_icon.png" />
             </a>
           </div>
