@@ -49,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
@@ -118,6 +119,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
@@ -150,6 +152,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -545,6 +548,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nOutcomeCrossCutting", this.getText("outcome.crossCutting"));
     masterReport.getParameterValues().put("i8nOutcomeMilestones", this.getText("outcome.milestone"));
     masterReport.getParameterValues().put("i8nOutcomeNextUsers", this.getText("outcome.nextUsers"));
+    masterReport.getParameterValues().put("i8nOutcomeQuestions", this.getText("outcome.nextUsers"));
     masterReport.getParameterValues().put("i8nOutcomeLesssonsStatement",
       this.getText("projectOutcome.lessons.planning"));
     masterReport.getParameterValues().put("i8nOutcomeYear", this.getText("outcome.inputTargetYear.placeholder"));
@@ -1537,7 +1541,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                 deliverableTitle =
                   deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle();
               } else {
-                deliverableTitle = "&lt;Not Defined&gt;";
+                deliverableTitle = "&lt;Not Provided&gt;";
               }
               if (deliverables.isEmpty()) {
                 deliverables = "● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
@@ -2275,7 +2279,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                   restrictedDate =
                     "<b>Restricted access until: </b>" + deliverableDissemination.getRestrictedAccessUntil();
                 } else {
-                  restrictedDate = "<b>Restricted access until: </b>&lt;Not Defined&gt;";
+                  restrictedDate = "<b>Restricted access until: </b>&lt;Not Provided&gt;";
                 }
               }
               if (deliverableDissemination.getEffectiveDateRestriction() != null
@@ -2286,7 +2290,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                   restrictedDate =
                     "<b>Restricted embargoed date: </b>" + deliverableDissemination.getRestrictedEmbargoed();
                 } else {
-                  restrictedDate = "<b>Restricted embargoed date: </b>&lt;Not Defined&gt;";
+                  restrictedDate = "<b>Restricted embargoed date: </b>&lt;Not Provided&gt;";
                 }
               }
             }
@@ -2713,7 +2717,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
 
           if (delivDescription == null || delivDescription.isEmpty()) {
-            delivDescription = "<Not Defined>";
+            delivDescription = "<Not Provided>";
           }
 
           // Other partnert
@@ -2723,7 +2727,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             .collect(Collectors.toList());
 
           if (delivDescription == null || delivDescription.isEmpty()) {
-            delivDescription = "<Not Defined>";
+            delivDescription = "<Not Provided>";
           }
 
           if (otherPartners != null) {
@@ -3346,10 +3350,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     TypedTableModel model = new TypedTableModel(
       new String[] {"exp_value", "narrative", "outcome_id", "out_fl", "out_year", "out_value", "out_statement",
         "out_unit", "cross_cutting", "exp_unit", "ach_unit", "ach_value", "ach_narrative", "communications",
-        "showCommunications", "setted_value", "lessonsOutcome"},
+        "showCommunications", "setted_value", "lessonsOutcome", "question"},
       new Class[] {Long.class, String.class, Long.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, Boolean.class,
-        String.class, String.class},
+        String.class, String.class, String.class},
       0);
     if (!project.getProjectOutcomes().isEmpty()) {
       for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
@@ -3368,10 +3372,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String communications = null;
         String settedValue = null;
         String lessonsOutcome = null;
+        String question = null;
+        String narrative = null;
 
         if (projectOutcome.getCrpProgramOutcome() != null) {
           outYear = "" + projectOutcome.getCrpProgramOutcome().getYear();
-          outValue = "" + projectOutcome.getCrpProgramOutcome().getValue();
+
+          if (projectOutcome.getCrpProgramOutcome().getValue() != null) {
+            outValue = projectOutcome.getCrpProgramOutcome().getValue().doubleValue() + "";
+          }
+
           if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)) {
             outStatement = projectOutcome.getCrpProgramOutcome().getDescription();
             if (projectOutcome.getCrpProgramOutcome().getIndicator() != null
@@ -3389,7 +3399,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             outFl = projectOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym();
           }
         }
-        expValue = projectOutcome.getExpectedValue() + "";
+        if (projectOutcome.getExpectedValue() != null) {
+          expValue = (projectOutcome.getExpectedValue()).intValue() + "";
+        }
         if (projectOutcome.getAchievedValue() != null) {
           ach_value = projectOutcome.getAchievedValue() + "";
         }
@@ -3427,10 +3439,23 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           lessonsOutcome = projectOutcome.getProjectComponentLesson().getLessons();
         }
 
-        model
-          .addRow(new Object[] {expValue, projectOutcome.getNarrativeTarget(), projectOutcome.getId(), outFl, outYear,
-            outValue, outStatement, outUnit, crossCutting, expUnit, ach_unit, ach_value, ach_narrative, communications,
-            this.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS), settedValue, lessonsOutcome});
+        if (projectOutcome.getCrpProgramOutcome() != null
+          && projectOutcome.getCrpProgramOutcome().getIndicators() != null) {
+          for (CrpProgramOutcomeIndicator indicator : projectOutcome.getCrpProgramOutcome().getIndicators()) {
+            if (indicator.getIndicator() != null) {
+              question += indicator.getIndicator();
+              ProjectOutcomeIndicator outcomeIndicator = this.getIndicator(indicator.getId(), projectOutcome);
+              if (outcomeIndicator.getNarrative() != null && !outcomeIndicator.getNarrative().isEmpty()) {
+                question += outcomeIndicator.getNarrative();
+              }
+            }
+          }
+        }
+
+        model.addRow(new Object[] {expValue, projectOutcome.getNarrativeTarget(), projectOutcome.getId(), outFl,
+          outYear, outValue, outStatement, outUnit, crossCutting, expUnit, ach_unit, ach_value, ach_narrative,
+          communications, this.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS), settedValue,
+          lessonsOutcome, question});
       }
     }
     return model;
@@ -3469,6 +3494,21 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
   private String getHightlightImagePath(long projectID) {
     return config.getUploadsBaseFolder() + File.separator + this.getHighlightsImagesUrlPath(projectID) + File.separator;
+  }
+
+  public ProjectOutcomeIndicator getIndicator(Long indicatorID, ProjectOutcome projectOutcome) {
+    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+      if (projectOutcomeIndicator != null && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+        && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId() != null
+        && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+        return projectOutcomeIndicator;
+      }
+    }
+    ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
+    projectOutcomeIndicator.setCrpProgramOutcomeIndicator(new CrpProgramOutcomeIndicator(indicatorID));
+    projectOutcome.getIndicators().add(projectOutcomeIndicator);
+    return projectOutcomeIndicator;
+
   }
 
   private TypedTableModel getInnovationsTableModel() {
@@ -3574,7 +3614,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
         if (projectInnovation.getProjectInnovationGeographicScopes() == null
           || projectInnovation.getProjectInnovationGeographicScopes().isEmpty()) {
-          geographicScope = "<Not Defined>";
+          geographicScope = "<Not Provided>";
         } else {
           Set<String> geographicSet = new HashSet<>();
           for (ProjectInnovationGeographicScope innovationGeographicScope : projectInnovation
@@ -3610,7 +3650,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             }
             region = String.join("", regionsSet);
           } else {
-            region = "<Not Defined>";
+            region = "<Not Provided>";
           }
 
         } else {
@@ -3631,7 +3671,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             }
             countries = String.join("", countriesSet);
           } else {
-            countries = "<Not Defined>";
+            countries = "<Not Provided>";
           }
 
         } else {
@@ -3785,7 +3825,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         for (LocElement locElement : locElementsAll.stream()
           .filter(le -> le.isActive() && le.getLocElementType() != null
             && le.getLocElementType().getId() == projectLocType.getLocElementType().getId())
-          .collect(Collectors.toList())) {
+          .sorted(Comparator.comparing(le -> le.getLocElementType().getName())).collect(Collectors.toList())) {
           Double locLat = null;
           Double locLong = null;
           String locName = null;
@@ -3910,8 +3950,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             "Submission for " + this.getSelectedCycle() + " cycle " + this.getSelectedYear() + ": &lt;pending&gt;";
         }
       } else {
-        submission = "Submission for " + "&lt;Not Defined&gt;" + " cycle " + "&lt;Not Defined&gt;" + " year"
-          + ": &lt;Not Defined&gt;";
+        submission = "Submission for " + "&lt;Not Provided&gt;" + " cycle " + "&lt;Not Provided&gt;" + " year"
+          + ": &lt;Not Provided&gt;";
       }
     }
 
@@ -4033,7 +4073,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String milestones = "";
         if (projectOutcome.getCrpProgramOutcome() != null) {
           outYear = "" + projectOutcome.getCrpProgramOutcome().getYear();
-          outValue = "" + projectOutcome.getCrpProgramOutcome().getValue();
+          if (projectOutcome.getCrpProgramOutcome().getValue() != null) {
+            outValue = projectOutcome.getCrpProgramOutcome().getValue().doubleValue() + "";
+          }
           if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)) {
             outStatement = projectOutcome.getCrpProgramOutcome().getDescription();
             if (projectOutcome.getCrpProgramOutcome().getIndicator() != null
@@ -4051,7 +4093,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             outFl = projectOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym();
           }
         }
-        expValue = projectOutcome.getExpectedValue() + "";
+        if (projectOutcome.getExpectedValue() != null) {
+          expValue = projectOutcome.getExpectedValue().intValue() + "";
+        }
         if (outUnit == null) {
           if (projectOutcome.getExpectedUnit() != null) {
             expUnit = projectOutcome.getExpectedUnit().getName();
@@ -4088,7 +4132,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             if (milestone.getExpectedValue() == null) {
               expected2021 = "<Not provided>";
             } else {
-              expected2021 = Math.round(milestone.getExpectedValue()) + "";
+              expected2021 = milestone.getExpectedValue() + "";
             }
             if (milestone.getAchievedValue() == null) {
               progress2021 = "<Not provided>";
@@ -4443,7 +4487,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       if (project.getProjectInfoLast(this.getSelectedPhase()) != null) {
         overall = project.getProjectInfoLast(this.getSelectedPhase()).getPartnerOverall();
         if (overall == null || overall.isEmpty()) {
-          overall = "&lt;Not Defined&gt;";
+          overall = "&lt;Not Provided&gt;";
         }
       }
     }
@@ -5368,23 +5412,23 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             quantification += "<b>Quantification Type :</b>"
               + projectExpectedStudyQuantificationList.get(0).getTypeQuantification() + "<br>";
           } else {
-            quantification += " <not defined><br>";
+            quantification += " <not provided><br>";
           }
           if (projectExpectedStudyQuantificationList.get(0).getNumber() != null) {
             quantification += "<b>Number :</b>" + projectExpectedStudyQuantificationList.get(0).getNumber() + "<br>";
           } else {
-            quantification += " <not defined><br>";
+            quantification += " <not provided><br>";
           }
           if (projectExpectedStudyQuantificationList.get(0).getTargetUnit() != null) {
             quantification += "<b>Unit :</b>" + projectExpectedStudyQuantificationList.get(0).getTargetUnit() + "<br>";
           } else {
-            quantification += " <not defined><br>";
+            quantification += " <not provided><br>";
           }
           if (projectExpectedStudyQuantificationList.get(0).getComments() != null) {
             quantification +=
               "<b>Comments :</b>" + projectExpectedStudyQuantificationList.get(0).getComments() + "<br>";
           } else {
-            quantification += " <not defined><br>";
+            quantification += " <not provided><br>";
           }
 
         }
