@@ -687,12 +687,12 @@
           <div class="form-group deliverableTypeMessage">
             <div id="dialog" title="Journals Articles" style="display: none">
                 
-              <!--<h4 class="headTitle"> <a id="capdev">Journal Articles</a></h4>-->
+              <!--<h4 class="headTitle center"> <a id="capdev">Journal Articles</a></h4>-->
                 <div class="borderBox">
                       [#-- CapDevCharts--]
-                        <div class="form-group row">
-                          <div class="col-md-12" display="flex">
-                            <div id="" class="simpleBox numberBox col-md-3" >
+                        <div class="form-group row center">
+                          <div class="col-md-12 center" display="flex">
+                            <div id="" class="simpleBox center numberBox col-md-3" >
                                 <label for="">Total of Journal Articles</label><br />
                                 <span>${(journalDeliverables?number?string(",##0"))!0}</span>
                             </div>
@@ -763,7 +763,7 @@
                         
                         [#-- Deliverables Participants & Trainees --]
                         <div class="form-group">
-                          <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Deliverables type: Journals Articles" /]</h4>
+                          <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Peer-reviewed articles owned by this cluster" /]</h4>
                           <div class="viewMoreSyntesis-block">                    
                             <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
                               [@tableJournalsMacro list=(deliverableJournals)![] /]
@@ -1072,7 +1072,6 @@
   <table id="tableJournalsMacro" class="annual-report-table table-border">
     <thead>
       <tr class="subHeader">
-        <th id="tb-id">[@s.text name="Deliverable ID" /]</th>
         <th id="tb-id">[@s.text name="Deliverable Title" /]</th>
         <th id="tb-title">[@s.text name="Deliverable Year" /]</th>        
         <th id="tb-organization-type">[@s.text name="Shared Clusters" /]</th>
@@ -1085,14 +1084,11 @@
         [#local URL][@s.url namespace="/clusters" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${(item.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
           [#-- ID  --]
-          <td class="text-center">
-          D${(item.id)!''}<br />
+          <td class="">
+          D${(item.id)!''} - [@utils.tableText value=(item.deliverableInfo.title)!"" /]
             <a href="${URL}" target="_blank" class="pull-right"> <span class="glyphicon glyphicon-new-window"></span> </a>
           </td>
-          [#-- Title  --]
-          <td class="">
-            [@utils.tableText value=(item.deliverableInfo.title)!"" /] 
-          </td>
+   
           [#-- Year --]
           <td class="text-center">
             
