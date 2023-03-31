@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCommunicationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectNextuserManager;
@@ -46,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
+import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -105,6 +107,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private DeliverableParticipantManager deliverableParticipantManager;
   private FeedbackQACommentManager feedbackQACommentManager;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+  private ProjectDeliverableSharedManager projectDeliverableSharedManager;
 
   // Front-end
   private long projectID;
@@ -153,7 +156,8 @@ public class ProjectOutcomeAction extends BaseAction {
     ProjectOutcomeValidator projectOutcomeValidator, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager,
     PhaseManager phaseManager, DeliverableParticipantManager deliverableParticipantManager,
     FeedbackQACommentManager feedbackQACommentManager,
-    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager) {
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
+    ProjectDeliverableSharedManager projectDeliverableSharedManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -171,6 +175,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.deliverableParticipantManager = deliverableParticipantManager;
     this.feedbackQACommentManager = feedbackQACommentManager;
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
+    this.projectDeliverableSharedManager = projectDeliverableSharedManager;
   }
 
   public void addAllCrpMilestones() {
@@ -405,24 +410,18 @@ public class ProjectOutcomeAction extends BaseAction {
           && d.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId().equals(63L))
         .collect(Collectors.toList());
       if (currentDeliverables != null && !currentDeliverables.isEmpty()) {
-        journalDeliverables = currentDeliverables.size();
         for (Deliverable deliverable : currentDeliverables) {
           if (deliverable != null && deliverable.getDeliverableCrpOutcomes() != null) {
             deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
               .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
           }
 
-          if (deliverable.getCrpOutcomes() != null && !deliverable.getCrpOutcomes().isEmpty()) {
+          if (deliverable != null && deliverable.getCrpOutcomes() != null && !deliverable.getCrpOutcomes().isEmpty()) {
 
             for (DeliverableCrpOutcome deliverableCrpOutcome : deliverable.getCrpOutcomes()) {
               if (deliverableCrpOutcome != null && deliverableCrpOutcome.getCrpProgramOutcome() != null
                 && deliverableCrpOutcome.getCrpProgramOutcome().getId() != null && deliverableCrpOutcome
                   .getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
-
-
-                // Total Participants
-                Double numberParticipant = 0.0;
-                totalParticipants += numberParticipant;
 
                 // Add deliverable participant to list
                 deliverableJournals.add(deliverable);
@@ -431,6 +430,7 @@ public class ProjectOutcomeAction extends BaseAction {
           }
 
         }
+        journalDeliverables = deliverableJournals.size();
       }
     }
   }
@@ -581,7 +581,6 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = projectOutcome.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -590,6 +589,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
+
 
   public String getBaseLineFileURL(String outcomeID) {
     return config.getDownloadURL() + "/file.do?" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
@@ -611,7 +611,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return feedbackComments;
   }
 
-
   public int getIndexCommunication(int year) {
 
     int i = 0;
@@ -629,6 +628,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return this.getIndexCommunication(year);
 
   }
+
 
   public int getIndexIndicator(Long indicatorID) {
     if (indicatorID != null) {
@@ -708,7 +708,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return journalDeliverables;
   }
 
-
   public ProjectMilestone getMilestone(long milestoneId, int year) {
     ProjectMilestone projectMilestone = new ProjectMilestone();
     if (projectOutcome.getMilestones() != null) {
@@ -728,6 +727,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
+
 
   public List<CrpMilestone> getMilestones() {
     return milestones;
@@ -784,7 +784,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectMilestoneElement;
   }
 
-
   public ProjectOutcomeIndicator getPreIndicator(Long indicatorID) {
     if (projectOutcome.getIndicators() != null) {
       for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
@@ -823,6 +822,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
     return 0;
   }
+
 
   public ProjectOutcomeIndicator getPrevIndicator(Long indicatorID) {
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeLastPhase.getIndicators()) {
@@ -898,10 +898,10 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipantFormalTrainingLongFemale;
   }
 
-
   public Double getTotalParticipantFormalTrainingLongMale() {
     return totalParticipantFormalTrainingLongMale;
   }
+
 
   public Double getTotalParticipantFormalTrainingPhdFemale() {
     return totalParticipantFormalTrainingPhdFemale;
@@ -919,10 +919,10 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipantFormalTrainingShortMale;
   }
 
-
   public Double getTotalParticipants() {
     return totalParticipants;
   }
+
 
   public Double getTotalYouth() {
     return totalYouth;
@@ -940,10 +940,10 @@ public class ProjectOutcomeAction extends BaseAction {
     return editMilestoneExpectedValue;
   }
 
-
   public boolean isEditOutcomeExpectedValue() {
     return editOutcomeExpectedValue;
   }
+
 
   public boolean isExpectedValueEditable(Long milestoneId) {
     boolean editable = false;
@@ -974,6 +974,57 @@ public class ProjectOutcomeAction extends BaseAction {
       editable = true;
     }
     return editable;
+  }
+
+  public void loadDeliverablesShared() {
+
+    List<ProjectDeliverableShared> deliverablesShared = new ArrayList<>();
+    try {
+      for (Deliverable deliverableTemp : deliverableJournals) {
+        if (deliverableTemp != null && deliverableTemp.getId() != null) {
+          deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
+          if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+            deliverablesShared = deliverablesShared.stream().filter(ds -> ds.isActive() && ds.getDeliverable() != null
+              && ds.getDeliverable().getProject().getId().equals(projectID)).collect(Collectors.toList());
+          }
+
+          // Owner
+          if (deliverableTemp.getProject() != null && !deliverableTemp.getProject().getId().equals(projectID)) {
+            deliverableTemp
+              .setOwner(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+            deliverableTemp
+              .setSharedWithMe(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+          } else {
+            deliverableTemp.setOwner("This Cluster");
+            deliverableTemp.setSharedWithMe("Not Applicable");
+          }
+
+          // Shared with others
+          for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+            // String projectsSharedText = null;
+            if (deliverableShared.getDeliverable().getSharedWithProjects() == null) {
+              deliverableShared.getDeliverable().setSharedWithProjects(
+                "" + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+            } else {
+              if (deliverableShared.getDeliverable() != null
+                && deliverableShared.getDeliverable().getSharedWithProjects() != null
+                && deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
+                && !deliverableShared.getDeliverable().getSharedWithProjects()
+                  .contains(deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
+                deliverableShared.getDeliverable()
+                  .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; "
+                    + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+              }
+            }
+            // deliverableShared.getDeliverable().setSharedWithProjects(projectsSharedText);
+          }
+          // deliverableTemp.setSharedWithProjects(projectsSharedText);
+          // deliverableTemp.setSharedDeliverables(deliverablesShared);
+        }
+      }
+    } catch (Exception e) {
+      LOG.error("unable to get shared deliverables", e);
+    }
   }
 
 
@@ -1218,9 +1269,12 @@ public class ProjectOutcomeAction extends BaseAction {
       && projectOutcome.getCrpProgramOutcome().getDescription().contains("2.3")) {
       this.deliverableParticipantsInformation();
     }
+
     if (projectOutcome.getCrpProgramOutcome() != null && projectOutcome.getCrpProgramOutcome().getDescription() != null
-      && projectOutcome.getCrpProgramOutcome().getDescription().contains("1.2")) {
+      && projectOutcome.getCrpProgramOutcome().getDescription().contains("1.2")
+      && this.hasSpecificities(APConstants.JOURNAL_ARTICLES_INDICATOR_POPUP_ACTIVE)) {
       this.deliverableJournalInformation();
+      this.loadDeliverablesShared();
     }
 
     /*

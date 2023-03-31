@@ -139,6 +139,7 @@ public final class APConstants {
   public static final String HOMEPAGE_TIMELINE_ACTIVE = "homepage_timeline_active";
   public static final String BUTTON_GUIDE_ACTIVE = "button_guide_active";
   public static final String HANDLE_WOS_SERVICE_ACTIVE = "handle_wos_service_active";
+  public static final String JOURNAL_ARTICLES_INDICATOR_POPUP_ACTIVE = "journal_articles_indicator_popup_active";
 
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
