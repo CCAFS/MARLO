@@ -68,4 +68,7 @@ p.fieldErrorInstitutions i {
 
 .explanationText{
   font-style: italic;
+  font-size: 0.9em;
+  opacity: 0.7;
+  color: #5F5E5E;
 }
