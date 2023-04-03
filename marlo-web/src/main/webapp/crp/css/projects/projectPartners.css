@@ -65,3 +65,7 @@ p.fieldErrorInstitutions i {
 .popupInstitutions{
   cursor: pointer;
 }
+
+.explanationText{
+  font-style: italic;
+}

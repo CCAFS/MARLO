@@ -8,7 +8,7 @@
   "${baseUrlMedia}/js/projects/projectPartners.js?191502"
   ] 
 /]  
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20230327"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20230331"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 [#assign hideJustification = true /]
@@ -77,11 +77,11 @@
            
           <div class="containerTitlePartners">
             <h3 class="headTitle">[@s.text name="projectPartners.title" /]</h3>
-            <a class="tutorialButton" target="blank" href="https://drive.google.com/file/d/1TceZWtveeOfRQm-P-M28oAAYaZq5Pm6R/view">
+            <a class="tutorialButton" target="blank" href="https://drive.google.com/file/d/1WSvnbRH94ddzCF-pR0n6tt1scb-WA3vk/view">
               <img  src="${baseUrlCdn}/global/images/tutorial_icon.png" />
             </a>
           </div>
-          
+          <p class="explanationText">To learn more about how to use this module, you can watch the video tutorial</p>
           [#-- Listing Partners  --]
           <div class="loadingBlock"></div>
           <div style="display:none">
