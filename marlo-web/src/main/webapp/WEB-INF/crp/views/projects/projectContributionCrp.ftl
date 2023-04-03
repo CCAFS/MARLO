@@ -521,6 +521,15 @@
                       <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]<b>${totalParticipants}</b>[/@s.param][/@s.text]</a></p>
                     </div>
                   </div> 
+                 [/#if]    
+                 
+                 [#--  IPI 1.2 --]   
+                 [#if journalDeliverables?number > 0 && year == currentCycleYear]   
+                  <div class="note left textAchived">
+                    <div id="popup" class="helpMessage3">
+                      <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.journal.helpText" paramText="${journalDeliverables}"][@s.param]<b>${journalDeliverables}</b>[/@s.param][/@s.text]</a></p>
+                    </div>
+                  </div> 
                  [/#if]       
                 [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')} targetValue" required=isYearRequired(milestoneYear) && reportingActive editable=reportingActive && (editable || isTemplate) && isYearRequired(milestoneYear) /]
               </div>
@@ -534,11 +543,22 @@
                     </div>
                   </div>
                 [/#if]
+                
+                [#--  IPI 1.2 --]
+                [#if journalDeliverables?number > 0 && year == currentCycleYear]   
+                  <div class="note left textAchived">
+                    <div id="popup" class="helpMessage3">
+                      <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.journal.helpText" paramText="${journalDeliverables}"][@s.param]<b>${journalDeliverables}</b>[/@s.param][/@s.text]</a></p>
+                    </div>
+                  </div> 
+                [/#if]       
                 [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedSoFar" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')} targetValue" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) && (reportingActive || action.isUpKeepActive()) /]
               </div>
              [/#if]
           [/#if]
-         
+          
+          
+                      
       
           [#--  
           <div class="col-md-4">
@@ -651,6 +671,106 @@
                           </div>
                         </div> 
                 </div>  
+              
+            
+            </div> <!-- End dialog-->
+
+            
+            <div class="clearfix"></div>
+          </div>
+        [/#if]
+        
+        
+        
+        [#-- journal --]
+        [#if journalDeliverables?number > 0 && year == currentCycleYear]
+          <div class="form-group deliverableTypeMessage">
+            <div id="dialog" title="Journals Articles" style="display: none">
+                
+              <!--<h4 class="headTitle center"> <a id="capdev">Journal Articles</a></h4>-->
+                <div class="borderBox">
+                      [#-- CapDevCharts--]
+                        <div class="form-group row center">
+                          <div class="col-md-12 center" display="flex">
+                            <div id="" class="simpleBox center numberBox col-md-3" >
+                                <label for="">Total of Journal Articles</label><br />
+                                <span>${(journalDeliverables?number?string(",##0"))!0}</span>
+                            </div>
+                            
+                            [#--  
+                            <div id="" class="simpleBox numberBox">
+                                <label for="">Participants in [@s.text name="totalParticipantFormalTraining" /]</label><br />
+                                <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
+                            </div>
+                            --]
+                          </div>
+                          <!--<div class="col-md-8">
+                            [#-- Trainees in Short-Term --]
+                            [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
+                            <div id="chart12" class="chartBox simpleBox">
+                              [#assign chartData = [
+                                {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
+                                {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
+                              ] /] 
+                              <ul class="chartData" style="display:none">
+                                <li>
+                                  <span>[@s.text name="{customLabel}" /]</span>
+                                  <span>[@s.text name="Short-Term" /]</span>
+                                  <span class="json">{"role":"annotation"}</span>
+                                </li>
+                                [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
+                                  [#list chartData as data]
+                                    <li>
+                                      <span>${data.name}</span>
+                                      <span class="number">${data.value}</span>
+                                      <span>${data.value}</span>
+                                    </li>
+                                  [/#list]
+                                [/#if]
+                              </ul>
+                            </div>
+                            [/#if]
+                            <br />
+                            [#-- Trainees in Long-Term --]
+                            [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
+                            <div id="chart13" class="chartBox simpleBox">
+                              [#assign chartData = [
+                                {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
+                                {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
+                              ] /] 
+                              <ul class="chartData" style="display:none">
+                                <li>
+                                  <span>[@s.text name="chart13" /]</span>
+                                  <span>[@s.text name="Long-Term" /]</span>
+                                  <span class="json">{"role":"annotation"}</span>
+                                  <span>[@s.text name="PhD" /]</span>
+                                  <span class="json">{"role":"annotation"}</span>
+                                </li>
+                                [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
+                                  [#list chartData as data]
+                                    <li><span>${data.name}</span>
+                                    <span class="number">${data.value}</span>
+                                    <span>${data.value}</span>
+                                    <span class="number">${data.valuePhD}</span>
+                                    <span>${data.valuePhD}</span></li>
+                                  [/#list]
+                                [/#if]
+                              </ul>
+                            </div>
+                            [/#if]
+                          </div>-->
+                        </div>
+                        
+                        [#-- Deliverables Participants & Trainees --]
+                        <div class="form-group">
+                          <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Peer-reviewed articles owned by this cluster" /]</h4>
+                          <div class="viewMoreSyntesis-block">                    
+                            <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
+                              [@tableJournalsMacro list=(deliverableJournals)![] /]
+                            </div>
+                          </div>
+                        </div> 
+                     </div>  
               
             
             </div> <!-- End dialog-->
@@ -933,6 +1053,66 @@
           <td class="text-center">
             [@utils.tableText value=(item.likelyOutcomes)!"" /]
             --]
+          </td>
+        </tr>
+      [/#list]
+    [#else]
+      <tr>
+        <td class="text-center" colspan="5">
+          <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+        </td>
+      </tr>
+    [/#if]
+    </tbody>
+  </table>
+[/#macro]
+
+
+[#macro tableJournalsMacro list]
+  <table id="tableJournalsMacro" class="annual-report-table table-border">
+    <thead>
+      <tr class="subHeader">
+        <th id="tb-id">[@s.text name="Deliverable Title" /]</th>
+        <th id="tb-title">[@s.text name="Deliverable Year" /]</th>        
+        <th id="tb-organization-type">[@s.text name="Shared Clusters" /]</th>
+      </tr>
+    </thead>
+    <tbody>
+    [#-- Loading --]
+    [#if list?has_content]
+      [#list list as item]
+        [#local URL][@s.url namespace="/clusters" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${(item.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        <tr>
+          [#-- ID  --]
+          <td class="">
+          D${(item.id)!''} - [@utils.tableText value=(item.deliverableInfo.title)!"" /]
+            <a href="${URL}" target="_blank" class="pull-right"> <span class="glyphicon glyphicon-new-window"></span> </a>
+          </td>
+   
+          [#-- Year --]
+          <td class="text-center">
+            
+            [#if item.deliverableInfo.year== -1]
+              None
+            [#else]
+              [#if
+                [#-- ((deliverable.deliverableInfo.status == 4 || deliverable.deliverableInfo.status==3)!false ) --]
+                      ((item.deliverableInfo.status == 4 || item.deliverableInfo.status==3 || item.deliverableInfo.status==5)!false )
+                      && ((item.deliverableInfo.newExpectedYear != -1)!false)
+                    ]
+                ${item.deliverableInfo.newExpectedYear} (Extended from 
+                ${(item.deliverableInfo.year)!'None'})
+              [#else]
+                ${(item.deliverableInfo.year)!'None'}
+              [/#if]
+                            
+            [/#if]
+          </td>
+          [#-- Shared Clusters Type --]
+          <td class="text-center">
+            [#if item.sharedWithProjects?has_content]${(item.sharedWithProjects)!}[#else]Not shared[/#if]
+          </td>          
+          
           </td>
         </tr>
       [/#list]
