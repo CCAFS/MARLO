@@ -77,11 +77,23 @@ a.disabled {
 }
 
 a.addLink {
-  color: #2ABC68;
-  background-image: url(../../global/images/icon-add.png);
-  background-repeat: no-repeat;
-  padding-left: 20px;
+  color: #fff;
+  /* background-image: url(../../global/images/add_partner.png); */
+  /* background-repeat: no-repeat; */
+  padding-left: 36px;
   background-position: 0 1px;
+  font-weight: 600;
+}
+
+a.addLink:hover{
+  text-decoration: none;
+}
+
+.iconAddPartner{
+  width: 16px;
+  position: absolute;
+  left: 11px;
+  top: 5px;
 }
 
 a#btn-revokeChoice {
@@ -3677,10 +3689,24 @@ span.partnerTag {
 }
 
 .projectPartner .addContact {
-  text-align: right;
-  margin-top: -5px;
+  /* text-align: right; */
+  width: 100%;
+  margin-top: 13px;
   font-size: 1.05em;
+  margin-bottom: 30px;
 }
+
+.addPartnerbutton{
+  background: #0679a4;
+  width: 134px;
+  float: right;
+  height: 33px;
+  border-bottom: 3px solid #056082;
+  padding-top: 4px;
+  position: relative;
+  cursor:pointer;
+}
+
 
 .contactPerson {
   font-size: 0.96em;

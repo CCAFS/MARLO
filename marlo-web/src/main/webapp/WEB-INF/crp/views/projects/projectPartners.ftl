@@ -8,7 +8,7 @@
   "${baseUrlMedia}/js/projects/projectPartners.js?191502"
   ] 
 /]  
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20230106"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20230331"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 [#assign hideJustification = true /]
@@ -75,8 +75,13 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
-           
-          <h3 class="headTitle">[@s.text name="projectPartners.title" /]</h3>
+          <div class="containerTitlePartners">
+            <h3 class="headTitle">[@s.text name="projectPartners.title" /]</h3>
+            <a class="tutorialButton" target="blank" href="https://drive.google.com/file/d/1WSvnbRH94ddzCF-pR0n6tt1scb-WA3vk/view">
+              <img  src="${baseUrlCdn}/global/images/tutorial_icon.png" />
+            </a>
+          </div>
+          <p class="explanationText">To learn more about how to use this module, you can watch the video tutorial</p>
           [#-- Listing Partners  --]
           <div class="loadingBlock"></div>
           <div style="display:none">
@@ -429,7 +434,7 @@
           [/#if]
         [/#if]  
         [#if (editable && canEdit)]
-          <div class="addContact"><a href="" class="addLink">[@s.text name="projectPartners.addContact"/]</a></div> 
+          <div class="addContact"><div class="addPartnerbutton"><img class="iconAddPartner" src="${baseUrlCdn}/global/images/add_partner.png" /><a href="" class="addLink">[@s.text name="projectPartners.addContact"/]</a></div></div> 
         [/#if]
         </div>
       </div>
