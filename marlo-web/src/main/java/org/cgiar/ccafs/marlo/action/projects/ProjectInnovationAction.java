@@ -1346,7 +1346,7 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveCenters(innovationDB, phase);
       // this.saveMilestones(innovationDB, phase);
       this.saveStudies(innovationDB, phase);
-      this.saveProjectOutcomes(innovationDB, phase);
+      // this.saveProjectOutcomes(innovationDB, phase);
       this.saveCrpOutcomes(innovationDB, phase);
       this.saveGeographicScope(innovationDB, phase);
 

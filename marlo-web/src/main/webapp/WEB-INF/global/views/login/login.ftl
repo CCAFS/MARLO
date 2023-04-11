@@ -16,7 +16,7 @@
         [#if !config.production]
           <br />
           <div class="note alert alert-warning" role="alert">
-            <p class="text-justify">[@s.text name="login.testersMessage2"/]</p>
+            [#-- <p class="text-justify">[@s.text name="login.testersMessage2"/]</p>--]
             <p class="text-justify">[@s.text name="login.testersMessage3"/]</p>
           </div>
         [/#if]

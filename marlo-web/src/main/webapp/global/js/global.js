@@ -24,6 +24,7 @@ var notyDefaultOptions = {
  * Global javascript must be here.
  */
 $(document).ready(function() {
+  
   showNotificationMessages();
   showHelpText();
 
@@ -603,6 +604,7 @@ function isStatusOnGoing(statusId) {
 
 var placeholderText = 'Search the organization here...'
 var searchInstitutionsOptions = function(includePPA) {
+  
   return searchInstitutionsOptionsData({
       includePPA: includePPA,
       projectPreSetting: projectPreSetting
@@ -610,6 +612,14 @@ var searchInstitutionsOptions = function(includePPA) {
 }
 
 var searchInstitutionsOptionsData = function(optionsData) {
+  
+  var customLanguage = {
+    noResults: function() {
+      var projectID = $('input[type="hidden"][name="projectID"]').val();
+      return "The partner was not found, <a class='popupInstitutions' onclick='window.open(\""+baseUrl+"/clusters/AICCRA/partnerSave.do?projectID="+projectID+"\", \"popup\", \"width=600,height=600\")'>request to be added to this list.</a>";
+    }
+  };
+  
   return {
       ajax: {
           url: baseURL + '/searchInstitutions.do',
@@ -632,12 +642,14 @@ var searchInstitutionsOptionsData = function(optionsData) {
       escapeMarkup: function(markup) {
         return markup;
       }, // let our custom formatter work
+      language: customLanguage,
       minimumInputLength: 0,
       templateResult: formatRepo,
       templateSelection: formatRepoSelection,
       placeholder: placeholderText,
       width: '100%'
   };
+  
 }
 
 function formatRepo(repo) {

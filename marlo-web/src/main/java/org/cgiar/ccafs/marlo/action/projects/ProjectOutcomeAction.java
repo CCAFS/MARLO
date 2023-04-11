@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCommunicationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectNextuserManager;
@@ -46,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
+import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -105,6 +107,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private DeliverableParticipantManager deliverableParticipantManager;
   private FeedbackQACommentManager feedbackQACommentManager;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+  private ProjectDeliverableSharedManager projectDeliverableSharedManager;
 
   // Front-end
   private long projectID;
@@ -124,7 +127,9 @@ public class ProjectOutcomeAction extends BaseAction {
   private boolean editOutcomeExpectedValue;
   private boolean editMilestoneExpectedValue;
   private List<DeliverableParticipant> deliverableParticipants;
+  private List<Deliverable> deliverableJournals;
   private List<FeedbackQACommentableFields> feedbackComments;
+  private int journalDeliverables;
   private Long userID;
 
   // capdev component
@@ -151,7 +156,8 @@ public class ProjectOutcomeAction extends BaseAction {
     ProjectOutcomeValidator projectOutcomeValidator, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager,
     PhaseManager phaseManager, DeliverableParticipantManager deliverableParticipantManager,
     FeedbackQACommentManager feedbackQACommentManager,
-    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager) {
+    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
+    ProjectDeliverableSharedManager projectDeliverableSharedManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -169,6 +175,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.deliverableParticipantManager = deliverableParticipantManager;
     this.feedbackQACommentManager = feedbackQACommentManager;
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
+    this.projectDeliverableSharedManager = projectDeliverableSharedManager;
   }
 
   public void addAllCrpMilestones() {
@@ -272,6 +279,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
+
   @Override
   public String cancel() {
 
@@ -364,6 +372,68 @@ public class ProjectOutcomeAction extends BaseAction {
     return orderIndex;
   }
 
+  /**
+   * Check deliverables mapped to this indicator and add the journal articles to deliverablejournals list 1.2
+   **/
+  private void deliverableJournalInformation() {
+    deliverableJournals = new ArrayList<>();
+    List<Deliverable> currentDeliverables = new ArrayList<>();
+    currentDeliverables = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
+    try {
+      // Exclude deliverables cancelled
+      if (currentDeliverables != null) {
+        currentDeliverables = currentDeliverables.stream()
+          .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 5L)
+          .collect(Collectors.toList());
+      }
+    } catch (Exception e) {
+      LOG.error(e + "error to filter canceled deliverable");
+    }
+    if (this.isReportingActive()) {
+      try {
+        // Exclude deliverables extended in AR
+        currentDeliverables = currentDeliverables.stream()
+          .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 4L)
+          .collect(Collectors.toList());
+      } catch (Exception e) {
+        LOG.error(e + "error to filter deliverable for AR");
+      }
+    }
+    if (currentDeliverables != null) {
+      currentDeliverables = currentDeliverables.stream()
+        .filter(d -> d != null && d.getDeliverableInfo(this.getActualPhase()) != null
+          && d.getDeliverableInfo(this.getActualPhase()).getDeliverableType() != null
+          && d.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId().equals(63L))
+        .collect(Collectors.toList());
+      if (currentDeliverables != null && !currentDeliverables.isEmpty()) {
+        for (Deliverable deliverable : currentDeliverables) {
+          if (deliverable != null && deliverable.getDeliverableCrpOutcomes() != null) {
+            deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+              .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+          }
+
+          if (deliverable != null && deliverable.getCrpOutcomes() != null && !deliverable.getCrpOutcomes().isEmpty()) {
+
+            for (DeliverableCrpOutcome deliverableCrpOutcome : deliverable.getCrpOutcomes()) {
+              if (deliverableCrpOutcome != null && deliverableCrpOutcome.getCrpProgramOutcome() != null
+                && deliverableCrpOutcome.getCrpProgramOutcome().getId() != null && deliverableCrpOutcome
+                  .getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
+
+                // Add deliverable participant to list
+                deliverableJournals.add(deliverable);
+              }
+            }
+          }
+
+        }
+        journalDeliverables = deliverableJournals.size();
+      }
+    }
+  }
 
   /**
    * Check deliverables mapped to this indicator and add the deliverable participants to deliverableParticipants list
@@ -375,11 +445,13 @@ public class ProjectOutcomeAction extends BaseAction {
     currentDeliverables = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
     try {
       // Exclude deliverables cancelled
-      currentDeliverables = currentDeliverables.stream()
-        .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
-          && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-          && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 5L)
-        .collect(Collectors.toList());
+      if (currentDeliverables != null) {
+        currentDeliverables = currentDeliverables.stream()
+          .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 5L)
+          .collect(Collectors.toList());
+      }
     } catch (Exception e) {
       LOG.error(e + "error to filter canceled deliverable");
     }
@@ -527,6 +599,10 @@ public class ProjectOutcomeAction extends BaseAction {
     return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
   }
 
+  public List<Deliverable> getDeliverableJournals() {
+    return deliverableJournals;
+  }
+
   public List<DeliverableParticipant> getDeliverableParticipants() {
     return deliverableParticipants;
   }
@@ -552,6 +628,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return this.getIndexCommunication(year);
 
   }
+
 
   public int getIndexIndicator(Long indicatorID) {
     if (indicatorID != null) {
@@ -612,7 +689,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return this.getIndexMilestone(milestoneId, year);
   }
 
-
   public ProjectOutcomeIndicator getIndicator(Long indicatorID) {
     if (indicatorID != null && projectOutcome.getIndicators() != null) {
       for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
@@ -626,6 +702,10 @@ public class ProjectOutcomeAction extends BaseAction {
     projectOutcomeIndicator.setCrpProgramOutcomeIndicator(new CrpProgramOutcomeIndicator(indicatorID));
     projectOutcome.getIndicators().add(projectOutcomeIndicator);
     return projectOutcomeIndicator;
+  }
+
+  public int getJournalDeliverables() {
+    return journalDeliverables;
   }
 
   public ProjectMilestone getMilestone(long milestoneId, int year) {
@@ -647,6 +727,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
+
 
   public List<CrpMilestone> getMilestones() {
     return milestones;
@@ -684,7 +765,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectMilestonesElement;
   }
 
-
   /**
    * Get a milestone from an specific year
    * 
@@ -704,7 +784,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectMilestoneElement;
   }
 
-
   public ProjectOutcomeIndicator getPreIndicator(Long indicatorID) {
     if (projectOutcome.getIndicators() != null) {
       for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
@@ -720,6 +799,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectOutcomeIndicator;
 
   }
+
 
   public int getPrevIndexIndicator(Long indicatorID) {
     if (this.getPrevIndicator(indicatorID) == null && this.getPrevIndicator(indicatorID - 1) != null) {
@@ -742,6 +822,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
     return 0;
   }
+
 
   public ProjectOutcomeIndicator getPrevIndicator(Long indicatorID) {
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeLastPhase.getIndicators()) {
@@ -813,7 +894,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipantFormalTraining;
   }
 
-
   public Double getTotalParticipantFormalTrainingLongFemale() {
     return totalParticipantFormalTrainingLongFemale;
   }
@@ -821,6 +901,7 @@ public class ProjectOutcomeAction extends BaseAction {
   public Double getTotalParticipantFormalTrainingLongMale() {
     return totalParticipantFormalTrainingLongMale;
   }
+
 
   public Double getTotalParticipantFormalTrainingPhdFemale() {
     return totalParticipantFormalTrainingPhdFemale;
@@ -834,7 +915,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipantFormalTrainingShortFemale;
   }
 
-
   public Double getTotalParticipantFormalTrainingShortMale() {
     return totalParticipantFormalTrainingShortMale;
   }
@@ -842,6 +922,7 @@ public class ProjectOutcomeAction extends BaseAction {
   public Double getTotalParticipants() {
     return totalParticipants;
   }
+
 
   public Double getTotalYouth() {
     return totalYouth;
@@ -854,7 +935,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public Long getUserID() {
     return userID;
   }
-
 
   public boolean isEditMilestoneExpectedValue() {
     return editMilestoneExpectedValue;
@@ -896,6 +976,58 @@ public class ProjectOutcomeAction extends BaseAction {
     return editable;
   }
 
+  public void loadDeliverablesShared() {
+
+    List<ProjectDeliverableShared> deliverablesShared = new ArrayList<>();
+    try {
+      for (Deliverable deliverableTemp : deliverableJournals) {
+        if (deliverableTemp != null && deliverableTemp.getId() != null) {
+          deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
+          if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+            deliverablesShared = deliverablesShared.stream().filter(ds -> ds.isActive() && ds.getDeliverable() != null
+              && ds.getDeliverable().getProject().getId().equals(projectID)).collect(Collectors.toList());
+          }
+
+          // Owner
+          if (deliverableTemp.getProject() != null && !deliverableTemp.getProject().getId().equals(projectID)) {
+            deliverableTemp
+              .setOwner(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+            deliverableTemp
+              .setSharedWithMe(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+          } else {
+            deliverableTemp.setOwner("This Cluster");
+            deliverableTemp.setSharedWithMe("Not Applicable");
+          }
+
+          // Shared with others
+          for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+            // String projectsSharedText = null;
+            if (deliverableShared.getDeliverable().getSharedWithProjects() == null) {
+              deliverableShared.getDeliverable().setSharedWithProjects(
+                "" + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+            } else {
+              if (deliverableShared.getDeliverable() != null
+                && deliverableShared.getDeliverable().getSharedWithProjects() != null
+                && deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
+                && !deliverableShared.getDeliverable().getSharedWithProjects()
+                  .contains(deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
+                deliverableShared.getDeliverable()
+                  .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; "
+                    + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+              }
+            }
+            // deliverableShared.getDeliverable().setSharedWithProjects(projectsSharedText);
+          }
+          // deliverableTemp.setSharedWithProjects(projectsSharedText);
+          // deliverableTemp.setSharedDeliverables(deliverablesShared);
+        }
+      }
+    } catch (Exception e) {
+      LOG.error("unable to get shared deliverables", e);
+    }
+  }
+
+
   public ProjectCommunication loadProjectCommunication(int year) {
 
     List<ProjectCommunication> projectCommunications =
@@ -916,7 +1048,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectOutcome.getMilestones().stream().filter(c -> c.getYear() == year).collect(Collectors.toList());
 
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -1137,6 +1268,13 @@ public class ProjectOutcomeAction extends BaseAction {
     if (projectOutcome.getCrpProgramOutcome() != null && projectOutcome.getCrpProgramOutcome().getDescription() != null
       && projectOutcome.getCrpProgramOutcome().getDescription().contains("2.3")) {
       this.deliverableParticipantsInformation();
+    }
+
+    if (projectOutcome.getCrpProgramOutcome() != null && projectOutcome.getCrpProgramOutcome().getDescription() != null
+      && projectOutcome.getCrpProgramOutcome().getDescription().contains("1.2")
+      && this.hasSpecificities(APConstants.JOURNAL_ARTICLES_INDICATOR_POPUP_ACTIVE)) {
+      this.deliverableJournalInformation();
+      this.loadDeliverablesShared();
     }
 
     /*
@@ -1366,6 +1504,7 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
   }
+
 
   public void saveIndicators(ProjectOutcome projectOutcomeDB) {
 
@@ -1648,6 +1787,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+  public void setDeliverableJournals(List<Deliverable> deliverableJournals) {
+    this.deliverableJournals = deliverableJournals;
+  }
+
   public void setDeliverableParticipants(List<DeliverableParticipant> deliverableParticipants) {
     this.deliverableParticipants = deliverableParticipants;
   }
@@ -1662,6 +1805,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public void setFeedbackComments(List<FeedbackQACommentableFields> feedbackComments) {
     this.feedbackComments = feedbackComments;
+  }
+
+  public void setJournalDeliverables(int journalDeliverables) {
+    this.journalDeliverables = journalDeliverables;
   }
 
   public void setMilestones(List<CrpMilestone> milestones) {
