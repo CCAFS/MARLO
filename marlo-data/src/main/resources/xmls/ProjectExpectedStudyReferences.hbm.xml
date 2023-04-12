@@ -31,5 +31,8 @@
             optimistic-lock="true" type="string" unique="false">
             <column length="65535" name="link" />
         </property>
+        <property name="externalAuthor" type="java.lang.Boolean">
+            <column name="is_external_author" />
+        </property>
     </class>
 </hibernate-mapping>

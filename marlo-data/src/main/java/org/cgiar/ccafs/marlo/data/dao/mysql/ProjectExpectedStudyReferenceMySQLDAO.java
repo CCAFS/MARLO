@@ -24,12 +24,12 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
 public class ProjectExpectedStudyReferenceMySQLDAO extends AbstractMarloDAO<ProjectExpectedStudyReference, Long>
   implements ProjectExpectedStudyReferenceDAO {
-
 
   @Inject
   public ProjectExpectedStudyReferenceMySQLDAO(SessionFactory sessionFactory) {
@@ -39,34 +39,68 @@ public class ProjectExpectedStudyReferenceMySQLDAO extends AbstractMarloDAO<Proj
   @Override
   public void deleteProjectExpectedStudyReference(long projectExpectedStudyReferenceId) {
     ProjectExpectedStudyReference projectExpectedStudyReference = this.find(projectExpectedStudyReferenceId);
+
     this.delete(projectExpectedStudyReference);
   }
 
   @Override
   public boolean existProjectExpectedStudyReference(long projectExpectedStudyReferenceID) {
     ProjectExpectedStudyReference projectExpectedStudyReference = this.find(projectExpectedStudyReferenceID);
+
     if (projectExpectedStudyReference == null) {
       return false;
     }
-    return true;
 
+    return true;
   }
 
   @Override
   public ProjectExpectedStudyReference find(long id) {
     return super.find(ProjectExpectedStudyReference.class, id);
-
   }
 
   @Override
   public List<ProjectExpectedStudyReference> findAll() {
-    String query = "from " + ProjectExpectedStudyReference.class.getName() + " where is_active=1";
+    String query = "from " + ProjectExpectedStudyReference.class.getName();
     List<ProjectExpectedStudyReference> list = super.findAll(query);
+
     if (list.size() > 0) {
       return list;
     }
-    return null;
 
+    return null;
+  }
+
+  @Override
+  public List<ProjectExpectedStudyReference> getAllStudyReferencesByStudy(long studyId) {
+    String query =
+      "select peslink from ProjectExpectedStudyReference peslink where peslink.projectExpectedStudy.id = :studyId "
+        + "order by peslink.phase.id";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+
+    createQuery.setParameter("studyId", studyId);
+
+    List<ProjectExpectedStudyReference> result = super.findAll(createQuery);
+
+    return result;
+  }
+
+  @Override
+  public ProjectExpectedStudyReference getProjectExpectedStudyReferenceByPhase(long expectedID, String link,
+    long phaseID) {
+    String query = "select distinct du from ProjectExpectedStudyReference du "
+      + "where phase.id = :phaseId and projectExpectedStudy.id= :expectedId " + "and du.link = :duLink";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+
+    createQuery.setParameter("phaseId", phaseID);
+    createQuery.setParameter("expectedId", expectedID);
+    createQuery.setParameter("duLink", link);
+
+    Object findSingleResult = super.findSingleResult(ProjectExpectedStudyReference.class, createQuery);
+    ProjectExpectedStudyReference projectExpectedStudyReferenceResult =
+      (ProjectExpectedStudyReference) findSingleResult;
+
+    return projectExpectedStudyReferenceResult;
   }
 
   @Override
@@ -77,9 +111,6 @@ public class ProjectExpectedStudyReferenceMySQLDAO extends AbstractMarloDAO<Proj
       projectExpectedStudyReference = super.update(projectExpectedStudyReference);
     }
 
-
     return projectExpectedStudyReference;
   }
-
-
 }

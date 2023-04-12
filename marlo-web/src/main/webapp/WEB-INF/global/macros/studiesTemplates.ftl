@@ -466,10 +466,57 @@
       [/#if]
       
       [#-- 9. References cited  --]
-      [#if isOutcomeCaseStudy]
+      [#if isOutcomeCaseStudy && phaseID <= 420]
       <div class="form-group stageProcessOne">
         <div class="form-group">
           [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesEvidenceCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable && !action.isPOWB() /]
+        </div>
+        <p class="note"> <small>[@s.text name="message.shortenURLsDisclaimer"][@s.param value="93" /][/@s.text]</small> </p>
+        [#-- 
+        <div class="form-group" style="position:relative" listname="">
+          [@customForm.fileUploadAjax 
+            fileDB=(element.projectExpectedStudyInfo.referencesFile)!{} 
+            name="${customName}.projectExpectedStudyInfo.referencesFile.id" 
+            label="study.referencesCitedAttach" 
+            dataUrl="${baseUrl}/uploadStudies.do" 
+            path="${(action.getPath())!}"
+            isEditable=editable
+            labelClass="label-min-width"
+            required=false
+          /]          
+        </div>
+         --]
+         
+      </div>
+      [/#if]
+      
+      [#-- 9. References cited  new--]
+      [#if isOutcomeCaseStudy && phaseID > 420]
+      <div class="form-group stageProcessOne">
+        <div class="form-group">
+          
+            <label style="margin-top: 5px;">[@s.text name="${customName}.multireferences"][/@s.text]</label>
+            <div class="referenceBlock ">
+              <div class="referenceList">
+                <div class="row">
+                  <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Reference[@customForm.req required=editable  /]</div>
+                  <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=editable  /]</div>
+                  <div class="col-sm-2 colTitleCenter" style="font-weight: 600; text-align: center;">External Author[@customForm.req required=false  /]</div>
+                </div>
+                [#list (element.references)![{}] as link ]
+                  [@customForm.references name="${customName}.references" element=link index=link_index class="references" /]
+                [/#list]
+              </div>
+              [#if editable]
+              <div class="addButtonReference button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Reference </div>
+              <div class="clearfix"></div>
+              [/#if]
+            </div>
+            [#-- Element item Template --]
+            <div style="display:none">
+              [@customForm.references name="${customName}.references" element={} index=-1 template=true class="references" /]
+            </div>
+
         </div>
         <p class="note"> <small>[@s.text name="message.shortenURLsDisclaimer"][@s.param value="93" /][/@s.text]</small> </p>
         [#-- 

@@ -54,12 +54,33 @@ public interface ProjectExpectedStudyReferenceDAO {
    */
   public List<ProjectExpectedStudyReference> findAll();
 
+  /**
+   * This method gets a list of projectExpectedStudyReference by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyReference objects.
+   */
+  public List<ProjectExpectedStudyReference> getAllStudyReferencesByStudy(long studyId);
+
+  /**
+   * This method gets a projectExpectedStudyReference object by a given projectExpectedStudy, phase identifier and link
+   * 
+   * @param expectedID is the projectExpectedStudy identifier.
+   * @param link is the url link
+   * @param phaseID is the phase identifier
+   * @return a ProjectExpectedStudyReference object.
+   */
+  public ProjectExpectedStudyReference getProjectExpectedStudyReferenceByPhase(long expectedID, String link,
+    long phaseID);
 
   /**
    * This method saves the information of the given projectExpectedStudyReference
    * 
-   * @param projectExpectedStudyReference - is the projectExpectedStudyReference object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyReference was
+   * @param projectExpectedStudyReference - is the projectExpectedStudyReference object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyReference
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */

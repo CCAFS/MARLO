@@ -2458,6 +2458,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           studyReferenceSave.setPhase(phase);
           studyReferenceSave.setReference(studyReference.getReference());
           studyReferenceSave.setLink(studyReference.getLink());
+          boolean externalAutor = false;
+          if (studyReference.getExternalAuthor() != null) {
+            externalAutor = true;
+          }
+          studyReferenceSave.setExternalAuthor(externalAutor);
 
           this.projectExpectedStudyReferenceManager.saveProjectExpectedStudyReference(studyReferenceSave);
           // This is to add studyReferenceSave to generate correct
@@ -2470,6 +2475,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           studyReferenceSave.setPhase(phase);
           studyReferenceSave.setReference(studyReference.getReference());
           studyReferenceSave.setLink(studyReference.getLink());
+          studyReferenceSave.setExternalAuthor(studyReference.getExternalAuthor());
 
           try {
             this.projectExpectedStudyReferenceManager.saveProjectExpectedStudyReference(studyReferenceSave);

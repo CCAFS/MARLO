@@ -25,7 +25,6 @@ import java.util.List;
 
 public interface ProjectExpectedStudyReferenceManager {
 
-
   /**
    * This method removes a specific projectExpectedStudyReference value from the database.
    * 
@@ -33,7 +32,6 @@ public interface ProjectExpectedStudyReferenceManager {
    * @return true if the projectExpectedStudyReference was successfully deleted, false otherwise.
    */
   public void deleteProjectExpectedStudyReference(long projectExpectedStudyReferenceId);
-
 
   /**
    * This method validate if the projectExpectedStudyReference identify with the given id exists in the system.
@@ -43,7 +41,6 @@ public interface ProjectExpectedStudyReferenceManager {
    */
   public boolean existProjectExpectedStudyReference(long projectExpectedStudyReferenceID);
 
-
   /**
    * This method gets a list of projectExpectedStudyReference that are active
    * 
@@ -51,6 +48,13 @@ public interface ProjectExpectedStudyReferenceManager {
    */
   public List<ProjectExpectedStudyReference> findAll();
 
+  /**
+   * This method gets a list of projectExpectedStudyReference by a given projectExpectedStudy identifier.
+   * 
+   * @param studyId is the projectExpectedStudy identifier.
+   * @return a list of projectExpectedStudyReference objects.
+   */
+  public List<ProjectExpectedStudyReference> getAllStudyReferencesByStudy(Long studyId);
 
   /**
    * This method gets a projectExpectedStudyReference object by a given projectExpectedStudyReference identifier.
@@ -61,14 +65,27 @@ public interface ProjectExpectedStudyReferenceManager {
   public ProjectExpectedStudyReference getProjectExpectedStudyReferenceById(long projectExpectedStudyReferenceID);
 
   /**
+   * This method gets a projectExpectedStudyReference object by a given projectExpectedStudy, phase identifier and link
+   * 
+   * @param expectedID is the projectExpectedStudy identifier.
+   * @param link is the url link
+   * @param phaseID is the phase identifier
+   * @return a ProjectExpectedStudyReference object.
+   */
+  public ProjectExpectedStudyReference getProjectExpectedStudyReferenceByPhase(Long expectedID, String link,
+    Long phaseID);
+
+  /**
    * This method saves the information of the given projectExpectedStudyReference
    * 
-   * @param projectExpectedStudyReference - is the projectExpectedStudyReference object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyReference was
+   * @param projectExpectedStudyReference - is the projectExpectedStudyReference object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyReference
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectExpectedStudyReference saveProjectExpectedStudyReference(ProjectExpectedStudyReference projectExpectedStudyReference);
-
-
+  public ProjectExpectedStudyReference
+    saveProjectExpectedStudyReference(ProjectExpectedStudyReference projectExpectedStudyReference);
 }

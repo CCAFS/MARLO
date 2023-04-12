@@ -908,6 +908,30 @@
   </div>
 [/#macro]
 
+[#macro multiInput name element index=-1 template=false class="" placeholder="" field="link"]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div id="multiInput${class?has_content?string('-${class}', '')}-${(template?string('template', ''))}" class="multiInput form-group grayBox ${class}">
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <span class="pull-left" style="width:4%"><strong><span class="indexTag">${index + 1}</span>.</strong></span>
+    <span class="pull-left" style="width:90%">[@customForm.input name="${customName}.${field}" placeholder="${placeholder}" showTitle=false i18nkey="" className="" editable=editable value="${element.link!}" /]</span>
+    [#if editable]<div class="removeElement sm removeIcon removeLink ${class}" title="Remove"></div>[/#if]
+    <div class="clearfix"></div>
+  </div>
+[/#macro]
+
+[#macro references name element index=-1 template=false class=""]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div id="multiInput${class?has_content?string('-${class}', '')}-${(template?string('template', ''))}" class="multiInput form-group grayBox ${class}">
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <span class="pull-left" style="width:4%"><strong><span class="indexTag">${index + 1}</span>.</strong></span>
+    <span class="pull-left" style="width:42%">[@customForm.input name="${customName}.reference" placeholder="expectedStudy.reference.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:42%; margin-left: 10px">[@customForm.input name="${customName}.link" placeholder="global.webSiteLink.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:9%; margin-left: 2%">[@customForm.checkBoxFlat id="${customName}.externalAuthor" name="${customName}.externalAuthor" value="true" editable=editable /]</span>
+    [#if editable]<div class="removeElement sm removeIcon removeLink ${class}" title="Remove"></div>[/#if]
+    <div class="clearfix"></div>
+  </div>
+[/#macro]
+
 [#macro qaPopUpMultiple fields="" name="" index=-1 canLeaveComments=false template=false]
   [#local customName = "${template?string('TEMPLATE', '')}${name}[${index}]"]
   <div id="qaPopup-${customName}" class="qaPopup">

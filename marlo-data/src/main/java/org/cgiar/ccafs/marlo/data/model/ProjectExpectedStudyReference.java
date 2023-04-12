@@ -18,6 +18,8 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
   private String reference;
   @Expose
   private String link;
+  @Expose
+  private Boolean externalAuthor;
 
   public ProjectExpectedStudyReference() {
   }
@@ -49,10 +51,13 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
     return true;
   }
 
+  public Boolean getExternalAuthor() {
+    return externalAuthor;
+  }
+
   public String getLink() {
     return link;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -60,7 +65,6 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -74,9 +78,11 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
     return u;
   }
 
+
   public Phase getPhase() {
     return phase;
   }
+
 
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
@@ -100,10 +106,13 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
     return hashBuilder.hashCode();
   }
 
-
   @Override
   public boolean isActive() {
     return true;
+  }
+
+  public void setExternalAuthor(Boolean externalAuthor) {
+    this.externalAuthor = externalAuthor;
   }
 
   public void setLink(String link) {
@@ -126,5 +135,4 @@ public class ProjectExpectedStudyReference extends MarloBaseEntity implements ja
   public void setReference(String link) {
     this.reference = link;
   }
-
 }
