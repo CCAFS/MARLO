@@ -37,13 +37,23 @@
       </div>
       <br />
       <div class="form-group row">
-        <div class="col-md-4">
+        <div class="col-md-3">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable && !isOutcomeCaseStudy /]
         </div>
-        <div class="col-md-4">
+        [#if isOutcomeCaseStudy && action.hasSpecificities('oicr_score_field_active')]
+          <div class="col-md-3">
+            [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.score" helpIcon=false required=false editable=editable /]
+          </div>
+        [/#if]
+        [#if !isOutcomeCaseStudy && action.hasSpecificities('melia_score_field_active')]
+          <div class="col-md-3">
+            [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.score" helpIcon=false required=false editable=editable /]
+          </div>
+        [/#if]
+        <div class="col-md-3">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.status.id" className="setSelect2 statusSelect" i18nkey="study.status" listName="statuses" keyFieldName="id"  displayFieldName="name" header=false required=true editable=editable /]
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           [#assign dbExpectedYear = ((element.projectExpectedStudyInfo.year)!currentCycleYear)  ]
           
            [#--
