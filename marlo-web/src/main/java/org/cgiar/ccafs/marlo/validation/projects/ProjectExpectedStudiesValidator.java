@@ -431,7 +431,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           }
 
           // Validate References Cited
-          if (action.getActualPhase() != null && action.getActualPhase().getYear() == 2021) {
+          if (action.getActualPhase() != null) {
             if (projectExpectedStudy.getReferences() != null) {
               boolean validReferences = true;
               for (int i = 0; i < projectExpectedStudy.getReferences().size(); i++) {
