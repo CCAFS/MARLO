@@ -164,5 +164,8 @@
     <property name="hasCovidAnalysis" type="boolean">
         <column name="has_covid_analysis" not-null="true" />
     </property>
+    <property name="score" type="string">
+        <column name="score" sql-type="TEXT" />
+    </property>
 	</class>
 </hibernate-mapping>

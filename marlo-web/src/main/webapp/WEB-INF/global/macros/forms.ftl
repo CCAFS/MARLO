@@ -908,6 +908,52 @@
   </div>
 [/#macro]
 
+[#macro multiInput name element index=-1 template=false class="" placeholder="" field="link"]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div id="multiInput${class?has_content?string('-${class}', '')}-${(template?string('template', ''))}" class="multiInput form-group grayBox ${class}">
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <span class="pull-left" style="width:4%"><strong><span class="indexTag">${index + 1}</span>.</strong></span>
+    <span class="pull-left" style="width:90%">[@customForm.input name="${customName}.${field}" placeholder="${placeholder}" showTitle=false i18nkey="" className="" editable=editable value="${element.link!}" /]</span>
+    [#if editable]<div class="removeElement sm removeIcon removeLink ${class}" title="Remove"></div>[/#if]
+    <div class="clearfix"></div>
+  </div>
+[/#macro]
+
+[#macro references name element index=-1 template=false class=""]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div id="multiInput${class?has_content?string('-${class}', '')}-${(template?string('template', ''))}" class="multiInput form-group grayBox ${class}">
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <span class="pull-left" style="width:4%"><strong><span class="indexTag">${index + 1}</span>.</strong></span>
+    <span class="pull-left" style="width:42%">[@customForm.input name="${customName}.reference" placeholder="expectedStudy.reference.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:42%; margin-left: 10px">[@customForm.input name="${customName}.link" placeholder="global.webSiteLink.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:9%; margin-left: 2%">[@customForm.checkBoxFlat id="${customName}.externalAuthor" name="${customName}.externalAuthor" value="true" editable=editable /]</span>
+    [#if editable]<div class="removeElement sm removeIcon removeLink ${class}" title="Remove"></div>[/#if]
+    <div class="clearfix"></div>
+  </div>
+[/#macro]
+
+[#macro textAreaReferences name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false]
+  <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
+    [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
+    [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
+    [#-- Get Custom Value --]
+    [#assign customValue][#if value=="-NULL"][@s.property value="${name?string}"/][#else]${value}[/#if][/#assign]
+    [#if showTitle]
+      <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass} [#if powbInclude]powb-label[/#if]"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
+        [#--  Help Text --]
+        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+        [#if powbInclude]
+          <span class="powb-doc badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
+        [/#if]
+      </label>
+    [/#if]
+    [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
+    [#if editable]
+      <textarea rows="4" name="${name}" id="${name}" [#if readOnly] readonly="readonly"[/#if] [#if disabled]disabled="disabled"[/#if]  class="[#if className != "-NULL"]${className}[/#if] form-control input-sm ${required?string('required','optional')} [#if allowTextEditor]allowTextEditor[/#if]" placeholder="[@s.text name=placeholder /]" />${customValue}</textarea>
+    [/#if] 
+  </div>
+[/#macro]
+
 [#macro qaPopUpMultiple fields="" name="" index=-1 canLeaveComments=false template=false]
   [#local customName = "${template?string('TEMPLATE', '')}${name}[${index}]"]
   <div id="qaPopup-${customName}" class="qaPopup">

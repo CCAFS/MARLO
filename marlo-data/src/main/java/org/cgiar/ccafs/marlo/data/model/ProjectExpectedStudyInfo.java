@@ -155,6 +155,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   @Expose
   private Boolean hasCovidAnalysis;
 
+  @Expose
+  public String score;
+
   public ProjectExpectedStudyInfo() {
   }
 
@@ -383,6 +386,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   }
 
 
+  public String getScore() {
+    return score;
+  }
+
+
   public GeneralStatus getStatus() {
     return status;
   }
@@ -436,10 +444,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.cgiarInnovation = cgiarInnovation;
   }
 
-
   public void setClimateChangeLevel(RepIndGenderYouthFocusLevel climateChangeLevel) {
     this.climateChangeLevel = climateChangeLevel;
   }
+
 
   public void setCommissioningStudy(String commissioningStudy) {
     this.commissioningStudy = commissioningStudy;
@@ -449,7 +457,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public void setComunicationsMaterial(String comunicationsMaterial) {
     this.comunicationsMaterial = comunicationsMaterial;
   }
-
 
   public void setContacts(String contacts) {
     this.contacts = contacts;
@@ -499,14 +506,15 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.isPublic = isPublic;
   }
 
+
   public void setIsSrfTarget(String isSrfTarget) {
     this.isSrfTarget = isSrfTarget;
   }
 
-
   public void setMELIAPublications(String mELIAPublications) {
     MELIAPublications = mELIAPublications;
   }
+
 
   @Override
   public void setModifiedBy(User modifiedBy) {
@@ -522,7 +530,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public void setOtherCrossCuttingSelection(String otherCrossCuttingSelection) {
     this.otherCrossCuttingSelection = otherCrossCuttingSelection;
   }
-
 
   public void setOtherStudyType(String otherStudyType) {
     this.otherStudyType = otherStudyType;
@@ -548,10 +555,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.policyAmount = policyAmount;
   }
 
+
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
   }
-
 
   public void setQuantification(String quantification) {
     this.quantification = quantification;
@@ -585,6 +592,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.repIndStageProcess = repIndStageProcess;
   }
 
+
   public void setRepIndStageStudy(RepIndStageStudy repIndStageStudy) {
     this.repIndStageStudy = repIndStageStudy;
   }
@@ -595,10 +603,13 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   }
 
 
+  public void setScore(String score) {
+    this.score = score;
+  }
+
   public void setStatus(GeneralStatus status) {
     this.status = status;
   }
-
 
   public void setStudyType(StudyType studyType) {
     this.studyType = studyType;
@@ -611,6 +622,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public void setTopLevelComments(String topLevelComments) {
     this.topLevelComments = topLevelComments;
   }
+
 
   public void setYear(Integer year) {
     this.year = year;
@@ -677,6 +689,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.setOtherStudyType(projectExpectedStudyInfoUpdate.getOtherStudyType());
     this.setHasCovidAnalysis(projectExpectedStudyInfoUpdate.getHasCovidAnalysis());
     this.setHasMilestones(projectExpectedStudyInfoUpdate.getHasMilestones());
+    this.setScore(projectExpectedStudyInfoUpdate.getScore());
   }
 
 }
