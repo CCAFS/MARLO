@@ -90,6 +90,11 @@ function attachEvents() {
     }
   });
 
+
+    $('textarea[name="expectedStudy.projectExpectedStudyInfo.referencesText"]').before('<label style="margin-top: 5px;">References reported in previous years:</label>');
+    $('textarea[name="expectedStudy.projectExpectedStudyInfo.referencesText"]').attr('disabled', true);
+
+
   // On change studyType
   $('select.studyType').on('change', function() {
 

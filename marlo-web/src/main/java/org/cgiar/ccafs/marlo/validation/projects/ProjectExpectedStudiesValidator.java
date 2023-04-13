@@ -22,9 +22,11 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
+import org.cgiar.ccafs.marlo.utils.Patterns;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -429,14 +431,39 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           }
 
           // Validate References Cited
-          if (!this.isValidString(
-            projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getReferencesText())) {
-            action.addMessage(action.getText("References Cited"));
-            action.addMissingField("study.referencesCited");
-            action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.referencesText",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
+          if (action.getActualPhase() != null && action.getActualPhase().getYear() == 2021) {
+            if (projectExpectedStudy.getReferences() != null) {
+              boolean validReferences = true;
+              for (int i = 0; i < projectExpectedStudy.getReferences().size(); i++) {
+                ProjectExpectedStudyReference reference = projectExpectedStudy.getReferences().get(i);
+                if (reference == null || !this.isValidString(reference.getReference()) || reference.getLink() == null
+                  || !Patterns.WEB_URL.matcher(reference.getLink()).find()) {
+                  validReferences = false;
+                }
+              }
 
+              if (!validReferences) {
+                action.addMessage(action.getText("References Cited"));
+                action.addMissingField("study.referencesCited");
+                action.getInvalidFields().put("expectedStudy.projectExpectedStudyInfo.referencesText",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+            } else {
+              action.addMessage(action.getText("References Cited"));
+              action.addMissingField("study.referencesCited");
+              action.getInvalidFields().put("expectedStudy.projectExpectedStudyInfo.referencesText",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+          /*
+           * if (!this.isValidString(
+           * projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getReferencesText())) {
+           * action.addMessage(action.getText("References Cited"));
+           * action.addMissingField("study.referencesCited");
+           * action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.referencesText",
+           * InvalidFieldsMessages.EMPTYFIELD);
+           * }
+           */
           // Validate Describe Gender
           if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getGenderLevel() != null
             && (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getGenderLevel()
