@@ -156,6 +156,31 @@ public class DeliverableValidator extends BaseValidator {
       validate = deliverable.getDeliverableInfo().isRequiredToComplete()
         || deliverable.getDeliverableInfo().isStatusCompleteInNextPhases();
     }
+
+    // Validate extended justification
+    if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+      && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatusDescription() == null
+        || (deliverable.getDeliverableInfo(action.getActualPhase()).getStatusDescription() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getStatusDescription().isEmpty())) {
+        action.addMessage(action.getText("deliverable.deliverableInfo.statusDescription"));
+        action.getInvalidFields().put("input-deliverable.deliverableInfo.statusDescription",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatusDescription() != null
+        && !deliverable.getDeliverableInfo(action.getActualPhase()).getStatusDescription().isEmpty()
+        && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getStatusDescription()) > 150) {
+        action.addMessage(action.getText("deliverable.deliverableInfo.statusDescription"));
+        action.getInvalidFields().put("input-deliverable.deliverableInfo.statusDescription",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+
+    }
+
     if (validate) {
       Project project = projectManager.getProjectById(deliverable.getProject().getId());
 
@@ -542,6 +567,7 @@ public class DeliverableValidator extends BaseValidator {
       action.getInvalidFields().put("input-deliverable.deliverableInfo.newExpectedYear",
         InvalidFieldsMessages.EMPTYFIELD);
     }
+
 
     /*
      * if (deliverable.getDeliverableInfo(action.getActualPhase()) != null
