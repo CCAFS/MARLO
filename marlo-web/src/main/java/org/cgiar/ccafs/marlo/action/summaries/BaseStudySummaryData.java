@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
@@ -39,6 +40,7 @@ import org.cgiar.ccafs.marlo.utils.HTMLParser;
 import org.cgiar.ccafs.marlo.utils.URLShortener;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -483,14 +485,57 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             htmlParser.plainTextToHtml(projectExpectedStudyInfo.getElaborationOutcomeImpactStatement());
         }
         // References cited
-        if (projectExpectedStudyInfo.getReferencesText() != null
-          && !projectExpectedStudyInfo.getReferencesText().trim().isEmpty()) {
-          studiesReference = htmlParser.plainTextToHtml(projectExpectedStudyInfo.getReferencesText());
 
-          /*
-           * Get short url calling tinyURL service
-           */
-          referenceText = urlShortener.detectAndShortenLinks(studiesReference);
+        /*
+         * if (projectExpectedStudyInfo.getReferencesText() != null
+         * && !projectExpectedStudyInfo.getReferencesText().trim().isEmpty()) {
+         * studiesReference = htmlParser.plainTextToHtml(projectExpectedStudyInfo.getReferencesText());
+         * referenceText = urlShortener.detectAndShortenLinks(studiesReference);
+         * }
+         */
+
+
+        // New references
+        // Expected Study Reference List
+        try {
+          if (projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyReferences() != null) {
+            projectExpectedStudyInfo.getProjectExpectedStudy()
+              .setReferences(new ArrayList<>(
+                projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyReferences().stream()
+                  .filter(
+                    o -> o != null && o.getId() != null && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+                  .sorted((o1, o2) -> Comparator.comparing(ProjectExpectedStudyReference::getId).compare(o1, o2))
+                  .collect(Collectors.toList())));
+          }
+
+          if (projectExpectedStudyInfo.getProjectExpectedStudy().getReferences() != null) {
+            for (ProjectExpectedStudyReference reference : projectExpectedStudyInfo.getProjectExpectedStudy()
+              .getReferences()) {
+              if (reference != null) {
+                if (studiesReference == null) {
+                  studiesReference = "&nbsp;&nbsp;&nbsp;&nbsp;● ";
+                } else {
+                  studiesReference += "<br>&nbsp;&nbsp;&nbsp;&nbsp;● ";
+                }
+                if (reference.getReference() != null) {
+                  studiesReference += reference.getReference() + " | ";
+                }
+                if (reference.getLink() != null) {
+                  studiesReference += reference.getLink();
+                }
+
+                if (reference.getExternalAuthor() != null && reference.getExternalAuthor()) {
+                  studiesReference += " (External Author)";
+                }
+
+              }
+            }
+            /*
+             * Get short url calling tinyURL service
+             */
+            referenceText = urlShortener.detectAndShortenLinks(studiesReference);
+          }
+        } catch (Exception e) {
 
         }
 

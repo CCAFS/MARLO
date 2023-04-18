@@ -273,6 +273,8 @@ function attachEvents() {
       linksList.find('.multiInput').each(function (i, element) {
         $(element).find('.indexTag').text(i + 1);
         $(element).setNameIndexes(1, i);
+        $(element).find('label').removeAttr('for');
+        $(element).find('label').attr('for', 'expectedStudy.references['+i+'].externalAuthor');
       });
       
       if ((linksList.children().length - 1) != 0) {
