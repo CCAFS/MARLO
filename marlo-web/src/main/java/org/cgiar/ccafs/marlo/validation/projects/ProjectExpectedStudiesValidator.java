@@ -436,8 +436,16 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
               boolean validReferences = true;
               for (int i = 0; i < projectExpectedStudy.getReferences().size(); i++) {
                 ProjectExpectedStudyReference reference = projectExpectedStudy.getReferences().get(i);
-                if (reference == null || !this.isValidString(reference.getReference()) || reference.getLink() == null
-                  || !Patterns.WEB_URL.matcher(reference.getLink()).find()) {
+                if (reference == null || !this.isValidString(reference.getReference())) {
+                  validReferences = false;
+                  action.addMessage(action.getText("References Cited"));
+                  action.addMissingField("expectedStudy.references[" + i + "].reference");
+                  action.getInvalidFields().put("input-expectedStudy.references[" + i + "].reference",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                }
+
+
+                if (reference.getLink() == null || !Patterns.WEB_URL.matcher(reference.getLink()).find()) {
                   validReferences = false;
                 }
               }
