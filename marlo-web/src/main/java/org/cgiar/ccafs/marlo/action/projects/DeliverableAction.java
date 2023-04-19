@@ -2878,6 +2878,10 @@ public class DeliverableAction extends BaseAction {
         dissemination.setConfidential(null);
         dissemination.setConfidentialUrl(null);
       }
+      
+      if (deliverable.getDissemination().getAlreadyDisseminated() != null && deliverable.getDissemination().getAlreadyDisseminated() == true) {
+        dissemination.setConfidential(null);
+      }
 
       boolean hasDOI =
         deliverable.getDissemination().getHasDOI() != null && deliverable.getDissemination().getHasDOI() == true;
