@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableClusterParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpOutcomeManager;
@@ -82,6 +83,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
+import org.cgiar.ccafs.marlo.data.model.DeliverableClusterParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome;
@@ -214,6 +216,7 @@ public class DeliverableAction extends BaseAction {
   private RepositoryChannelManager repositoryChannelManager;
   private DeliverableIntellectualAssetManager deliverableIntellectualAssetManager;
   private DeliverableParticipantManager deliverableParticipantManager;
+  private DeliverableClusterParticipantManager deliverableClusterParticipantManager;
   private RepIndTypeActivityManager repIndTypeActivityManager;
   private RepIndTypeParticipantManager repIndTypeParticipantManager;
   private RepIndGeographicScopeManager repIndGeographicScopeManager;
@@ -331,7 +334,8 @@ public class DeliverableAction extends BaseAction {
     ProjectOutcomeManager projectOutcomeManager, DeliverableProjectOutcomeManager deliverableProjectOutcomeManager,
     DeliverableCrpOutcomeManager deliverableCrpOutcomeManager,
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
-    FeedbackQACommentManager feedbackQACommentManager) {
+    FeedbackQACommentManager feedbackQACommentManager,
+    DeliverableClusterParticipantManager deliverableClusterParticipantManager) {
     super(config);
     this.activityManager = activityManager;
     this.deliverableManager = deliverableManager;
@@ -364,6 +368,7 @@ public class DeliverableAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
     this.deliverableIntellectualAssetManager = deliverableIntellectualAssetManager;
     this.deliverableParticipantManager = deliverableParticipantManager;
+    this.deliverableClusterParticipantManager = deliverableClusterParticipantManager;
     this.repIndTypeActivityManager = repIndTypeActivityManager;
     this.repIndTypeParticipantManager = repIndTypeParticipantManager;
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
@@ -1202,6 +1207,13 @@ public class DeliverableAction extends BaseAction {
             .collect(Collectors.toList())));
         }
 
+        // Deliverable Cluster participants
+        if (deliverable.getDeliverableClusterParticipants() != null) {
+          deliverable.setClusterParticipant(new ArrayList<>(deliverable.getDeliverableClusterParticipants().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .collect(Collectors.toList())));
+        }
+
         // Deliverable Countries List
         if (deliverable.getDeliverableLocations() == null) {
           deliverable.setCountries(new ArrayList<>());
@@ -1340,7 +1352,7 @@ public class DeliverableAction extends BaseAction {
             List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
-            if (deliverableParticipants.size() > 0) {
+            if (!deliverableParticipants.isEmpty()) {
               deliverable.setDeliverableParticipant(
                 deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipants.get(0).getId()));
 
@@ -1918,6 +1930,10 @@ public class DeliverableAction extends BaseAction {
           deliverable.setDeliverableParticipant(null);
         }
 
+        if (deliverable.getClusterParticipant() != null) {
+          deliverable.getClusterParticipant().clear();
+        }
+
         if (deliverable.getCountries() != null) {
           deliverable.getCountries().clear();
         }
@@ -2434,6 +2450,48 @@ public class DeliverableAction extends BaseAction {
           deliverableActivityManager.saveDeliverableActivity(deliverableActivity);
           // This add projectFocus to generate correct auditlog.
           deliverablePrew.getDeliverableActivities().add(deliverableActivity);
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Deliverable Cluster Participants Information
+   *
+   * @param deliverable
+   * @param phase
+   */
+  public void saveDeliverableClusterParticipant(Deliverable deliverable, Phase phase) {
+
+    // Search and deleted form Information
+    if (deliverable.getDeliverableClusterParticipants() != null
+      && !deliverable.getDeliverableClusterParticipants().isEmpty()) {
+
+      List<DeliverableClusterParticipant> clusterParticipant =
+        new ArrayList<>(deliverable.getDeliverableClusterParticipants().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (DeliverableClusterParticipant participant : clusterParticipant) {
+        if (this.deliverable.getClusterParticipant() == null
+          || !this.deliverable.getClusterParticipant().contains(participant)) {
+          deliverableClusterParticipantManager.deleteDeliverableClusterParticipant(participant.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.deliverable.getClusterParticipant() != null) {
+      for (DeliverableClusterParticipant deliverableParticipant : this.deliverable.getClusterParticipant()) {
+        if (deliverableParticipant != null) {
+          if (deliverableParticipant.getId() == null) {
+            DeliverableClusterParticipant deliverableClusterParticipantSave = new DeliverableClusterParticipant();
+            deliverableClusterParticipantSave.setDeliverable(deliverable);
+            deliverableClusterParticipantSave.setPhase(phase);
+
+            deliverableClusterParticipantManager.saveDeliverableClusterParticipant(deliverableClusterParticipantSave);
+            // This is to add innovationCrpSave to generate correct auditlog.
+            this.deliverable.getDeliverableClusterParticipants().add(deliverableClusterParticipantSave);
+          }
         }
       }
     }

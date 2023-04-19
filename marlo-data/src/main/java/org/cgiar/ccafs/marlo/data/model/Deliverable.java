@@ -92,6 +92,9 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   private Set<DeliverableIntellectualAsset> deliverableIntellectualAssets =
     new HashSet<DeliverableIntellectualAsset>(0);
   private Set<DeliverableParticipant> deliverableParticipants = new HashSet<DeliverableParticipant>(0);
+  private Set<DeliverableClusterParticipant> deliverableClusterParticipants =
+    new HashSet<DeliverableClusterParticipant>(0);
+  private List<DeliverableClusterParticipant> clusterParticipant;
   private DeliverableParticipant deliverableParticipant;
   private Set<DeliverableGeographicRegion> deliverableGeographicRegions = new HashSet<DeliverableGeographicRegion>(0);
   private List<DeliverableGeographicRegion> deliverableRegions;
@@ -179,10 +182,13 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     return altmetricInfos;
   }
 
+  public List<DeliverableClusterParticipant> getClusterParticipant() {
+    return clusterParticipant;
+  }
+
   public String getCommentStatus() {
     return commentStatus;
   }
-
 
   public String getComposedName() {
     String status = "";
@@ -348,11 +354,13 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     return deliverableAltmetricInfos;
   }
 
+  public Set<DeliverableClusterParticipant> getDeliverableClusterParticipants() {
+    return deliverableClusterParticipants;
+  }
 
   public Set<DeliverableCrossCuttingMarker> getDeliverableCrossCuttingMarkers() {
     return deliverableCrossCuttingMarkers;
   }
-
 
   public Set<DeliverableCrpOutcome> getDeliverableCrpOutcomes() {
     return deliverableCrpOutcomes;
@@ -365,7 +373,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   public Set<DeliverableDataSharingFile> getDeliverableDataSharingFiles() {
     return deliverableDataSharingFiles;
   }
-
 
   public Set<DeliverableDataSharing> getDeliverableDataSharings() {
     return deliverableDataSharings;
@@ -851,10 +858,13 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   }
 
 
+  public void setClusterParticipant(List<DeliverableClusterParticipant> clusterParticipant) {
+    this.clusterParticipant = clusterParticipant;
+  }
+
   public void setCommentStatus(String commentStatus) {
     this.commentStatus = commentStatus;
   }
-
 
   public void setContribution(Boolean contribution) {
     this.contribution = contribution;
@@ -872,7 +882,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   public void setCountriesIdsText(String countriesIdsText) {
     this.countriesIdsText = countriesIdsText;
   }
-
 
   public void setCreateDate(Date createDate) {
     this.createDate = createDate;
@@ -892,7 +901,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   public void setCrpOutcomes(List<DeliverableCrpOutcome> crpOutcomes) {
     this.crpOutcomes = crpOutcomes;
   }
-
 
   public void setCrps(List<DeliverableCrp> crps) {
     this.crps = crps;
@@ -918,6 +926,10 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     this.deliverableAltmetricInfos = deliverableAltmetricInfos;
   }
 
+  public void setDeliverableClusterParticipants(Set<DeliverableClusterParticipant> deliverableClusterParticipants) {
+    this.deliverableClusterParticipants = deliverableClusterParticipants;
+  }
+
   public void setDeliverableCrossCuttingMarkers(Set<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers) {
     this.deliverableCrossCuttingMarkers = deliverableCrossCuttingMarkers;
   }
@@ -930,11 +942,9 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     this.deliverableCrps = deliverableCrps;
   }
 
-
   public void setDeliverableDataSharingFiles(Set<DeliverableDataSharingFile> deliverableDataSharingFiles) {
     this.deliverableDataSharingFiles = deliverableDataSharingFiles;
   }
-
 
   public void setDeliverableDataSharings(Set<DeliverableDataSharing> deliverableDataSharings) {
     this.deliverableDataSharings = deliverableDataSharings;
@@ -994,11 +1004,9 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     this.deliverableMetadataExternalSources = deliverableMetadataExternalSources;
   }
 
-
   public void setDeliverableParticipant(DeliverableParticipant deliverableParticipant) {
     this.deliverableParticipant = deliverableParticipant;
   }
-
 
   public void setDeliverableParticipants(Set<DeliverableParticipant> deliverableParticipants) {
     this.deliverableParticipants = deliverableParticipants;
@@ -1112,7 +1120,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     this.otherPartnerships = otherPartnerships;
   }
 
-
   public void setOwner(String owner) {
     this.owner = owner;
   }
@@ -1126,7 +1133,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   public void setPrograms(List<DeliverableProgram> programs) {
     this.programs = programs;
   }
-
 
   public void setProject(Project project) {
     this.project = project;
