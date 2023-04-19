@@ -45,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyQuantificationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyReferenceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
@@ -90,6 +91,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
@@ -124,6 +126,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -136,6 +139,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.exception.LockAcquisitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -204,6 +208,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudyCrpOutcomeManager projectExpectedStudyCrpOutcomeManager;
   private FeedbackQACommentManager feedbackQACommentManager;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+
+  // AR 2022 Managers
+  private ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager;
 
   // Variables
   private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
@@ -281,6 +288,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     FeedbackQACommentManager feedbackQACommentManager,
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager,
+    ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager,
     ProjectExpectedStudyCrpOutcomeManager projectExpectedStudyCrpOutcomeManager) {
     super(config);
     this.projectManager = projectManager;
@@ -334,6 +342,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.projectExpectedStudyCrpOutcomeManager = projectExpectedStudyCrpOutcomeManager;
+    this.projectExpectedStudyReferenceManager = projectExpectedStudyReferenceManager;
   }
 
   /**
@@ -977,6 +986,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
+        // Expected Study Reference List
+        if (this.expectedStudy.getProjectExpectedStudyReferences() != null) {
+          this.expectedStudy
+            .setReferences(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyReferences().stream()
+              .filter(o -> o != null && o.getId() != null && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+              .sorted((o1, o2) -> Comparator.comparing(ProjectExpectedStudyReference::getId).compare(o1, o2))
+              .collect(Collectors.toList())));
+        }
+
         // Expected Study Innovations List
         if (this.expectedStudy.getProjectExpectedStudyInnovations() != null) {
           this.expectedStudy
@@ -1395,6 +1413,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.expectedStudy.getCrpOutcomes().clear();
       }
 
+      if (this.expectedStudy.getReferences() != null) {
+        this.expectedStudy.getReferences().clear();
+      }
+
       // HTTP Post info Values
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndOrganizationType(null);
@@ -1450,6 +1472,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveCenters(this.expectedStudyDB, phase);
       // this.saveMilestones(this.expectedStudyDB, phase);
       // this.saveProjectOutcomes(this.expectedStudyDB, phase);
+
+      // AR2022 Save
+      this.saveReferences(this.expectedStudyDB, phase);
+
+      // try fixing a particular issue
+      if (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null) {
+        this.expectedStudy.getProjectExpectedStudyInfo(phase)
+          .setReferencesText(this.expectedStudyDB.getProjectExpectedStudyInfo(phase).getReferencesText());
+      }
+
       this.saveCrpOutcomes(this.expectedStudyDB, phase);
 
       // Save Geographic Scope Data
@@ -1734,7 +1766,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save study Crp Program Outcome Information
    * 
@@ -1804,6 +1835,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * Save Expected Studies Crps Information
@@ -2391,6 +2423,68 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           // This is to add studyQuantificationSave to generate
           // correct auditlog.
           this.expectedStudy.getProjectExpectedStudyQuantifications().add(studyQuantificationSave);
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Expected Studies References Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  private void saveReferences(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudyReferences() != null) {
+      List<ProjectExpectedStudyReference> referencesPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyReferences().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyReference studyReference : referencesPrev) {
+        if (this.expectedStudy.getReferences() == null
+          || !this.expectedStudy.getReferences().contains(studyReference)) {
+          this.projectExpectedStudyReferenceManager.deleteProjectExpectedStudyReference(studyReference.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.expectedStudy.getReferences() != null) {
+      for (ProjectExpectedStudyReference studyReference : this.expectedStudy.getReferences()) {
+        if (studyReference.getId() == null) {
+          ProjectExpectedStudyReference studyReferenceSave = new ProjectExpectedStudyReference();
+          studyReferenceSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyReferenceSave.setPhase(phase);
+          studyReferenceSave.setReference(studyReference.getReference());
+          studyReferenceSave.setLink(studyReference.getLink());
+          boolean externalAutor = false;
+          if (studyReference.getExternalAuthor() != null) {
+            externalAutor = true;
+          }
+          studyReferenceSave.setExternalAuthor(externalAutor);
+
+          this.projectExpectedStudyReferenceManager.saveProjectExpectedStudyReference(studyReferenceSave);
+          // This is to add studyReferenceSave to generate correct
+          // auditlog.
+          this.expectedStudy.getProjectExpectedStudyReferences().add(studyReferenceSave);
+        } else {
+          ProjectExpectedStudyReference studyReferenceSave =
+            this.projectExpectedStudyReferenceManager.getProjectExpectedStudyReferenceById(studyReference.getId());
+          studyReferenceSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyReferenceSave.setPhase(phase);
+          studyReferenceSave.setReference(studyReference.getReference());
+          studyReferenceSave.setLink(studyReference.getLink());
+          studyReferenceSave.setExternalAuthor(studyReference.getExternalAuthor());
+
+          try {
+            this.projectExpectedStudyReferenceManager.saveProjectExpectedStudyReference(studyReferenceSave);
+            // This is to add studyReferenceSave to generate correct
+            // auditlog.
+            this.expectedStudy.getProjectExpectedStudyReferences().add(studyReferenceSave);
+          } catch (LockAcquisitionException lae) {
+            // i am tired of this exception
+          }
         }
       }
     }

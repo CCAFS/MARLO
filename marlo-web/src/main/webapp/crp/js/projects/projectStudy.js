@@ -1,4 +1,4 @@
-var caseStudiesName;
+var caseStudiesName, multiInputStudies;
 var $elementsBlock;
 
 $(document).ready(init);
@@ -44,10 +44,36 @@ function init() {
 
   bottonPading();
   
+  multiInputStudies = $('.multiInput').find('span input[name*="link"]');
+  checkHyperlinks();
 }
 
 function bottonPading(){
   $("[name='expectedStudy.projectExpectedStudyInfo.topLevelComments']").parent().css("padding-bottom", " 10px")  
+}
+
+function checkHyperlinks() {
+  multiInputStudies.each((index, item) => {
+    validateURL(item);
+  });
+}
+
+function validateURL(item) {
+  var url = item.value;
+  var expression = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/i;
+  var regex = new RegExp(expression);
+  var res = "";
+  if (url) {
+    if (url.match(regex)) {
+      res = "Valid URL";
+      $(item).css('border', 'none');
+    } else {
+      res = "Invalid URL";
+      $(item).css('border', '1px solid red');
+    }
+  } else {
+    $(item).css('border', '1px solid red');
+  }
 }
 
 function attachEvents() {
@@ -63,6 +89,11 @@ function attachEvents() {
       $('.block-year').slideDown();
     }
   });
+
+
+    $('textarea[name="expectedStudy.projectExpectedStudyInfo.referencesText"]').before('<label style="margin-top: 5px;">References reported in previous years:</label>');
+    $('textarea[name="expectedStudy.projectExpectedStudyInfo.referencesText"]').attr('disabled', true);
+
 
   // On change studyType
   $('select.studyType').on('change', function() {
@@ -175,6 +206,91 @@ function attachEvents() {
       $('.linksList').find('.studyLink').each(function(i,element) {
         $(element).find('.indexTag').text(i + 1);
         $(element).setNameIndexes(1, i);
+      });
+    }
+
+  })();
+  
+  
+  validateEmptyLinks();
+  $('.addButtonLink').on('click', validateEmptyLinks);
+  $('.removeLink.links').on('click', validateEmptyLinks);
+
+  function validateEmptyLinks() {
+    var linksList = $('.linksList').children('div').length;
+
+    if ($(this).hasClass('removeElement')) {
+      linksList -= 1;
+    } else {
+      linksList = linksList;
+    }
+    if (linksList > 0) {
+      $('#warningEmptyLinksTag').hide();
+    } else {
+      $('#warningEmptyLinksTag').show();
+    }
+  }
+  
+   /**
+   * References Component
+   */
+  (function () {
+    // Events
+    $('.addButtonReference').on('click', addItem);
+    $('.removeLink.references').on('click', removeItem);
+    validateEmptyLinks();
+
+    // Functions
+    function addItem() {
+      var $list = $(this).parent('.referenceBlock').find('.referenceList');
+      var $element = $('#multiInput-references-template').clone(true).removeAttr("id");
+      var $listLength = $list.children().length;
+
+      if ($listLength <= 10) {
+        // Remove template tag
+        $element.find('input, textarea').each(function (i, e) {
+          e.name = (e.name).replace("_TEMPLATE_", "");
+          e.id = (e.id).replace("_TEMPLATE_", "");
+        });
+        // Show the element
+        $element.appendTo($list).hide().show(350);
+        // Update indexes
+        updateIndexes(this);
+      }
+    }
+    function removeItem() {
+      var $parent = $(this).parent('.multiInput.references');
+      var $addBtn = $(this).parent().parent().parent().find('.addButtonReference');
+      $parent.hide(500, function () {
+        // Remove DOM element
+        $parent.remove();
+        // Update indexes
+        updateIndexes($addBtn);
+      });
+    }
+    function updateIndexes(list) {
+      var linksList = $(list).parent('.referenceBlock').find('.referenceList');
+      linksList.find('.multiInput').each(function (i, element) {
+        $(element).find('.indexTag').text(i + 1);
+        $(element).setNameIndexes(1, i);
+        $(element).find('label').removeAttr('for');
+        $(element).find('label').attr('for', 'expectedStudy.references['+i+'].externalAuthor');
+      });
+      
+      if ((linksList.children().length - 1) != 0) {
+        $('#warningEmptyReferencesTag').hide();
+        validateEmptyLinks();
+      } else {
+        $('#warningEmptyReferencesTag').show();
+      }
+    }
+    function validateEmptyLinks() {
+      $('.referenceList').find('.multiInput span input').map((index, item) => {
+        if (item.value != '') {
+          $('#warningEmptyReferencesTag').hide();
+        } else {
+          $('#warningEmptyReferencesTag').show();
+        }
       });
     }
 

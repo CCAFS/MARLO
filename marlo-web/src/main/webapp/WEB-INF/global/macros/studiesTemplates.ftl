@@ -37,13 +37,25 @@
       </div>
       <br />
       <div class="form-group row">
-        <div class="col-md-4">
+        <div class="col-md-3">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable && !isOutcomeCaseStudy /]
         </div>
-        <div class="col-md-4">
+        [#if action.canAccessSuperAdmin() || action.isPMU()]
+          [#if isOutcomeCaseStudy && action.hasSpecificities('oicr_score_field_active')]
+            <div class="col-md-3">
+              [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.score" helpIcon=false required=false editable=editable /]
+            </div>
+        [/#if]
+          [#if !isOutcomeCaseStudy && action.hasSpecificities('melia_score_field_active')]
+            <div class="col-md-3">
+              [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.score" helpIcon=false required=false editable=editable /]
+            </div>
+          [/#if]
+        [/#if]
+        <div class="col-md-3">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.status.id" className="setSelect2 statusSelect" i18nkey="study.status" listName="statuses" keyFieldName="id"  displayFieldName="name" header=false required=true editable=editable /]
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           [#assign dbExpectedYear = ((element.projectExpectedStudyInfo.year)!currentCycleYear)  ]
           
            [#--
@@ -466,10 +478,49 @@
       [/#if]
       
       [#-- 9. References cited  --]
+      [#--  
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         <div class="form-group">
-          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesEvidenceCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable && !action.isPOWB() /]
+          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesEvidenceCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=true  /]
+        </div>
+        <p class="note"> <small>[@s.text name="message.shortenURLsDisclaimer"][@s.param value="93" /][/@s.text]</small> </p>
+   
+      </div>
+      [/#if]
+      --]
+      
+      
+      [#-- 9. References cited  new--]
+      [#if isOutcomeCaseStudy]
+      <div class="form-group stageProcessOne">
+        <div class="form-group">
+                    
+          <span id="warningEmptyReferencesTag" class="errorTag glyphicon glyphicon-info-sign" style="position: relative; left: 750px;" title="" aria-describedby="ui-id-5"> </span>
+          [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesEvidenceCited" help="study.referencesCited.help2" helpIcon=false className="" required=false editable=editable /]
+
+            <label style="margin-top: 5px;">[@s.text name="${customName}.multireferences"][/@s.text]</label>
+            <div class="referenceBlock ">
+              <div class="referenceList">
+                <div class="row">
+                  <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Reference[@customForm.req required=editable  /]</div>
+                  <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=editable  /]</div>
+                  <div class="col-sm-2 colTitleCenter" style="font-weight: 600; text-align: center;">External Author[@customForm.req required=false  /]</div>
+                </div>
+                [#list (element.references)![{}] as link ]
+                  [@customForm.references name="${customName}.references" element=link index=link_index class="references" /]
+                [/#list]
+              </div>
+              [#if editable]
+              <div class="addButtonReference button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Reference </div>
+              <div class="clearfix"></div>
+              [/#if]
+            </div>
+            [#-- Element item Template --]
+            <div style="display:none">
+              [@customForm.references name="${customName}.references" element={} index=-1 template=true class="references" /]
+            </div>
+
         </div>
         <p class="note"> <small>[@s.text name="message.shortenURLsDisclaimer"][@s.param value="93" /][/@s.text]</small> </p>
         [#-- 

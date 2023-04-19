@@ -1,0 +1,1 @@
+ALTER TABLE project_expected_study_references ADD is_external_author TINYINT(1) NULL;

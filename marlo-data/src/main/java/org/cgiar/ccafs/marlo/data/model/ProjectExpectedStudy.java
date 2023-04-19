@@ -145,6 +145,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   private Set<ProjectExpectedStudyCrpOutcome> projectExpectedStudyCrpOutcomes =
     new HashSet<ProjectExpectedStudyCrpOutcome>(0);
 
+  // AR 2021
+  private Set<ProjectExpectedStudyReference> projectExpectedStudyReferences = new HashSet<>(0);
+  private List<ProjectExpectedStudyReference> references;
+
   // clarisa field
   private String pdfLink;
 
@@ -386,6 +390,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return projectExpectedStudyQuantifications;
   }
 
+  public Set<ProjectExpectedStudyReference> getProjectExpectedStudyReferences() {
+    return projectExpectedStudyReferences;
+  }
+
   public Set<ProjectExpectedStudyRegion> getProjectExpectedStudyRegions() {
     return projectExpectedStudyRegions;
   }
@@ -408,6 +416,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   public List<ProjectExpectedStudyQuantification> getQuantifications() {
     return quantifications;
+  }
+
+  public List<ProjectExpectedStudyReference> getReferences() {
+    return references;
   }
 
   public List<ProjectExpectedStudyFlagship> getRegions() {
@@ -572,6 +584,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.pdfLink = pdfLink;
   }
 
+
   public void setPhase(Long phase) {
     this.phase = phase;
   }
@@ -579,7 +592,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public void setPolicies(List<ProjectExpectedStudyPolicy> policies) {
     this.policies = policies;
   }
-
 
   public void setProject(Project project) {
     this.project = project;
@@ -649,6 +661,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.projectExpectedStudyQuantifications = projectExpectedStudyQuantifications;
   }
 
+  public void setProjectExpectedStudyReferences(Set<ProjectExpectedStudyReference> projectExpectedStudyReferences) {
+    this.projectExpectedStudyReferences = projectExpectedStudyReferences;
+  }
+
   public void setProjectExpectedStudyRegions(Set<ProjectExpectedStudyRegion> projectExpectedStudyRegions) {
     this.projectExpectedStudyRegions = projectExpectedStudyRegions;
   }
@@ -671,6 +687,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   public void setQuantifications(List<ProjectExpectedStudyQuantification> quantifications) {
     this.quantifications = quantifications;
+  }
+
+  public void setReferences(List<ProjectExpectedStudyReference> references) {
+    this.references = references;
   }
 
   public void setRegions(List<ProjectExpectedStudyFlagship> regions) {

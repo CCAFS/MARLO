@@ -252,6 +252,7 @@ function init() {
  
   deliverablePartnersModule.init();
   feedbackAutoImplementation();
+  justificationByStatus($statuses.val())
 }
 
 function activeByNoDOIProvidedCheckbox(){
