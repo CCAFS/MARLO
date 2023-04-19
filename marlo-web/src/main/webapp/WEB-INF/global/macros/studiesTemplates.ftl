@@ -505,7 +505,7 @@
                 <div class="row">
                   <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Reference[@customForm.req required=editable  /]</div>
                   <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=editable  /]</div>
-                  <div class="col-sm-2 colTitleCenter" style="font-weight: 600; text-align: center;">External Author[@customForm.req required=editable  /]</div>
+                  <div class="col-sm-2 colTitleCenter" style="font-weight: 600; text-align: center;">External Author[@customForm.req required=false  /]</div>
                 </div>
                 [#list (element.references)![{}] as link ]
                   [@customForm.references name="${customName}.references" element=link index=link_index class="references" /]
