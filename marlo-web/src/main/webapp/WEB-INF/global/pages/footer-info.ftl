@@ -50,7 +50,7 @@
         </div>
         <!--Modal: Name-->
 
-        <li><a data-toggle="modal" data-target="#modal2">AICCRA Roadmap</a></li>
+        <!--<li><a data-toggle="modal" data-target="#modal2">AICCRA Roadmap</a></li>-->
 
           <!--Modal: Name-->
         <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -93,7 +93,7 @@
 
 [#-- MARLO Blog --]
 <div class="newsButton">
-  <a href="https://marlo-aiccra-news.blogspot.com" target="__blank">
+  <a href="https://www.notion.so/cgiar-prms/AICCRA-Knowledge-and-Data-Sharing-team-achievements-3a83ae1ef2804fa8b9220bdba2f5d1f7?pvs=4" target="__blank">
      <b> [@s.text name="footer.checkBlog" /] </b> <span class="fa fa-external-link-square"></span>
   </a>
 </div>
