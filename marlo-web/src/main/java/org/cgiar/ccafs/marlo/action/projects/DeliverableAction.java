@@ -541,18 +541,33 @@ public class DeliverableAction extends BaseAction {
         participant.setPhase(this.getActualPhase());
 
         boolean projectExists = false;
+        boolean actualProjectExists = false;
         if (deliverable.getClusterParticipant() != null && !deliverable.getClusterParticipant().isEmpty()) {
           for (DeliverableClusterParticipant clusterParticipant : deliverable.getClusterParticipant()) {
             if (clusterParticipant.getProject() != null && clusterParticipant.getProject().getId() != null
               && clusterParticipant.getProject().getId().equals(projectDeliverable.getProject().getId())) {
               projectExists = true;
-              break;
+            }
+
+            if (clusterParticipant.getProject() != null && clusterParticipant.getProject().getId() != null
+              && clusterParticipant.getProject().getId().equals(project.getId())) {
+              actualProjectExists = true;
             }
           }
         }
         if (!projectExists) {
           participant = deliverableClusterParticipantManager.saveDeliverableClusterParticipant(participant);
           deliverable.getClusterParticipant().add(participant);
+        }
+
+        if (!actualProjectExists) {
+          DeliverableClusterParticipant thisClusterParticipant = new DeliverableClusterParticipant();
+          thisClusterParticipant.setProject(project);
+          thisClusterParticipant.setDeliverable(deliverable);
+          thisClusterParticipant.setPhase(this.getActualPhase());
+          thisClusterParticipant =
+            deliverableClusterParticipantManager.saveDeliverableClusterParticipant(thisClusterParticipant);
+          deliverable.getClusterParticipant().add(thisClusterParticipant);
         }
       }
     }
