@@ -53,6 +53,28 @@ public interface DeliverableClusterParticipantManager {
 
 
   /**
+   * This method gets a deliverableClusterParticipant object by a given deliverableID identifier and phase identifier.
+   * 
+   * @param deliverableID is the deliverable identifier.
+   * @param phaseID is the phase identifier.
+   * @return a List of DeliverableClusterParticipant object.
+   */
+  public List<DeliverableClusterParticipant> getDeliverableClusterParticipantByDeliverableAndPhase(long deliverableID,
+    long phaseID);
+
+  /**
+   * This method gets a deliverableClusterParticipant object by a given deliverableID identifier, phase identifier and
+   * project identifier.
+   * 
+   * @param deliverableID is the deliverable identifier.
+   * @param phaseID is the phase identifier.
+   * @param projectID is the phase identifier.
+   * @return a List of DeliverableClusterParticipant object.
+   */
+  public List<DeliverableClusterParticipant>
+    getDeliverableClusterParticipantByDeliverableProjectPhase(long deliverableID, long projectID, long phaseID);
+
+  /**
    * This method gets a deliverableClusterParticipant object by a given deliverableClusterParticipant identifier.
    * 
    * @param deliverableClusterParticipantID is the deliverableClusterParticipant identifier.
@@ -63,12 +85,15 @@ public interface DeliverableClusterParticipantManager {
   /**
    * This method saves the information of the given deliverableClusterParticipant
    * 
-   * @param deliverableClusterParticipant - is the deliverableClusterParticipant object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableClusterParticipant was
+   * @param deliverableClusterParticipant - is the deliverableClusterParticipant object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         deliverableClusterParticipant was
    *         updated
    *         or -1 is some error occurred.
    */
-  public DeliverableClusterParticipant saveDeliverableClusterParticipant(DeliverableClusterParticipant deliverableClusterParticipant);
+  public DeliverableClusterParticipant
+    saveDeliverableClusterParticipant(DeliverableClusterParticipant deliverableClusterParticipant);
 
 
 }

@@ -62,13 +62,30 @@ public class DeliverableClusterParticipantManagerImpl implements DeliverableClus
   }
 
   @Override
+  public List<DeliverableClusterParticipant> getDeliverableClusterParticipantByDeliverableAndPhase(long deliverableID,
+    long phaseID) {
+
+    return deliverableClusterParticipantDAO.getDeliverableClusterParticipantByDeliverableAndPhase(deliverableID,
+      phaseID);
+  }
+
+  @Override
+  public List<DeliverableClusterParticipant>
+    getDeliverableClusterParticipantByDeliverableProjectPhase(long deliverableID, long projectID, long phaseID) {
+
+    return deliverableClusterParticipantDAO.getDeliverableClusterParticipantByDeliverableProjectPhase(deliverableID,
+      projectID, phaseID);
+  }
+
+  @Override
   public DeliverableClusterParticipant getDeliverableClusterParticipantById(long deliverableClusterParticipantID) {
 
     return deliverableClusterParticipantDAO.find(deliverableClusterParticipantID);
   }
 
   @Override
-  public DeliverableClusterParticipant saveDeliverableClusterParticipant(DeliverableClusterParticipant deliverableClusterParticipant) {
+  public DeliverableClusterParticipant
+    saveDeliverableClusterParticipant(DeliverableClusterParticipant deliverableClusterParticipant) {
 
     return deliverableClusterParticipantDAO.save(deliverableClusterParticipant);
   }

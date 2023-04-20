@@ -24,10 +24,12 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
-public class DeliverableClusterParticipantMySQLDAO extends AbstractMarloDAO<DeliverableClusterParticipant, Long> implements DeliverableClusterParticipantDAO {
+public class DeliverableClusterParticipantMySQLDAO extends AbstractMarloDAO<DeliverableClusterParticipant, Long>
+  implements DeliverableClusterParticipantDAO {
 
 
   @Inject
@@ -62,11 +64,42 @@ public class DeliverableClusterParticipantMySQLDAO extends AbstractMarloDAO<Deli
   public List<DeliverableClusterParticipant> findAll() {
     String query = "from " + DeliverableClusterParticipant.class.getName() + " where is_active=1";
     List<DeliverableClusterParticipant> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
 
+  }
+
+  @Override
+  public List<DeliverableClusterParticipant> getDeliverableClusterParticipantByDeliverableAndPhase(long deliverableID,
+    long phaseID) {
+
+    String query = "select dp from DeliverableClusterParticipant dp "
+      + "where phase.id = :phaseId and deliverable.id= :deliverableId ";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phaseID);
+    createQuery.setParameter("deliverableId", deliverableID);
+
+    Object findSingleResult = super.findAll(createQuery);
+    List<DeliverableClusterParticipant> deliverableUserResult = (List<DeliverableClusterParticipant>) findSingleResult;
+    return deliverableUserResult;
+  }
+
+  @Override
+  public List<DeliverableClusterParticipant>
+    getDeliverableClusterParticipantByDeliverableProjectPhase(long deliverableID, long projectID, long phaseID) {
+
+    String query = "select dp from DeliverableClusterParticipant dp "
+      + "where phase.id = :phaseId and deliverable.id= :deliverableId and project.id= :projectId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phaseID);
+    createQuery.setParameter("deliverableId", deliverableID);
+    createQuery.setParameter("projectId", projectID);
+
+    Object findSingleResult = super.findAll(createQuery);
+    List<DeliverableClusterParticipant> deliverableUserResult = (List<DeliverableClusterParticipant>) findSingleResult;
+    return deliverableUserResult;
   }
 
   @Override
