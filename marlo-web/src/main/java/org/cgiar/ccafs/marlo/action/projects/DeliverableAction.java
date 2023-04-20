@@ -522,6 +522,42 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  /*
+   * Fill the cluster participants list if the deliverable has shared clusters
+   */
+  public void fillClusterParticipantsList() {
+    if (deliverable.getSharedDeliverables() != null && !deliverable.getSharedDeliverables().isEmpty()) {
+      for (ProjectDeliverableShared projectDeliverable : deliverable.getSharedDeliverables()) {
+
+        if (projectDeliverable.getProject().getId() != null) {
+          Project project = projectManager.getProjectById(projectDeliverable.getProject().getId());
+          if (project != null) {
+            projectDeliverable.setProject(project);
+          }
+        }
+        DeliverableClusterParticipant participant = new DeliverableClusterParticipant();
+        participant.setProject(projectDeliverable.getProject());
+        participant.setDeliverable(deliverable);
+        participant.setPhase(this.getActualPhase());
+
+        boolean projectExists = false;
+        if (deliverable.getClusterParticipant() != null && !deliverable.getClusterParticipant().isEmpty()) {
+          for (DeliverableClusterParticipant clusterParticipant : deliverable.getClusterParticipant()) {
+            if (clusterParticipant.getProject() != null && clusterParticipant.getProject().getId() != null
+              && clusterParticipant.getProject().getId().equals(projectDeliverable.getProject().getId())) {
+              projectExists = true;
+              break;
+            }
+          }
+        }
+        if (!projectExists) {
+          participant = deliverableClusterParticipantManager.saveDeliverableClusterParticipant(participant);
+          deliverable.getClusterParticipant().add(participant);
+        }
+      }
+    }
+  }
+
   public Integer getAcceptationPercentage() {
     return acceptationPercentage;
   }
@@ -534,10 +570,10 @@ public class DeliverableAction extends BaseAction {
     return answers;
   }
 
+
   public List<DeliverableQualityAnswer> getAnswersDataDic() {
     return answersDataDic;
   }
-
 
   private Path getAutoSaveFilePath() {
 
@@ -1822,6 +1858,8 @@ public class DeliverableAction extends BaseAction {
           .sorted((t1, t2) -> t1.getId().compareTo(t2.getId())).collect(Collectors.toList()));
       }
 
+      this.fillClusterParticipantsList();
+
       /*
        * get feedback comments
        */
@@ -2066,6 +2104,7 @@ public class DeliverableAction extends BaseAction {
         this.saveDataSharing();
         this.saveUsers();
         this.saveParticipant();
+        this.saveDeliverableClusterParticipant();
       }
 
       /*
@@ -2461,37 +2500,42 @@ public class DeliverableAction extends BaseAction {
    * @param deliverable
    * @param phase
    */
-  public void saveDeliverableClusterParticipant(Deliverable deliverable, Phase phase) {
+  public void saveDeliverableClusterParticipant() {
 
     // Search and deleted form Information
-    if (deliverable.getDeliverableClusterParticipants() != null
-      && !deliverable.getDeliverableClusterParticipants().isEmpty()) {
-
-      List<DeliverableClusterParticipant> clusterParticipant =
-        new ArrayList<>(deliverable.getDeliverableClusterParticipants().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-
-      for (DeliverableClusterParticipant participant : clusterParticipant) {
-        if (this.deliverable.getClusterParticipant() == null
-          || !this.deliverable.getClusterParticipant().contains(participant)) {
-          deliverableClusterParticipantManager.deleteDeliverableClusterParticipant(participant.getId());
-        }
-      }
-    }
-
+    /*
+     * if (deliverable.getDeliverableClusterParticipants() != null
+     * && !deliverable.getDeliverableClusterParticipants().isEmpty()) {
+     * List<DeliverableClusterParticipant> clusterParticipant =
+     * new ArrayList<>(deliverable.getDeliverableClusterParticipants().stream()
+     * .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(this.getActualPhase().getId()))
+     * .collect(Collectors.toList()));
+     * for (DeliverableClusterParticipant participant : clusterParticipant) {
+     * if (this.deliverable.getClusterParticipant() == null
+     * || !this.deliverable.getClusterParticipant().contains(participant)) {
+     * deliverableClusterParticipantManager.deleteDeliverableClusterParticipant(participant.getId());
+     * }
+     * }
+     * }
+     */
     // Save form Information
     if (this.deliverable.getClusterParticipant() != null) {
-      for (DeliverableClusterParticipant deliverableParticipant : this.deliverable.getClusterParticipant()) {
+      DeliverableClusterParticipant participantSave;
+      for (DeliverableClusterParticipant deliverableParticipant : deliverable.getClusterParticipant()) {
         if (deliverableParticipant != null) {
-          if (deliverableParticipant.getId() == null) {
-            DeliverableClusterParticipant deliverableClusterParticipantSave = new DeliverableClusterParticipant();
-            deliverableClusterParticipantSave.setDeliverable(deliverable);
-            deliverableClusterParticipantSave.setPhase(phase);
-
-            deliverableClusterParticipantManager.saveDeliverableClusterParticipant(deliverableClusterParticipantSave);
-            // This is to add innovationCrpSave to generate correct auditlog.
-            this.deliverable.getDeliverableClusterParticipants().add(deliverableClusterParticipantSave);
+          participantSave = new DeliverableClusterParticipant();
+          if (deliverableParticipant.getId() != null) {
+            participantSave =
+              deliverableClusterParticipantManager.getDeliverableClusterParticipantById(deliverableParticipant.getId());
           }
+          participantSave.setParticipants(deliverableParticipant.getParticipants());
+          participantSave.setFemales(deliverableParticipant.getFemales());
+          participantSave.setAfrican(deliverableParticipant.getAfrican());
+          participantSave.setYouth(deliverableParticipant.getYouth());
+          participantSave.setDeliverable(deliverable);
+          participantSave.setPhase(this.getActualPhase());
+          deliverableClusterParticipantManager.saveDeliverableClusterParticipant(participantSave);
+
         }
       }
     }

@@ -338,9 +338,105 @@
       [@customForm.textArea name="${customName}.likelyOutcomes" i18nkey="involveParticipants.likelyOutcomes" className="" required=editable editable=editable /]
     </div>
     
+    [@deliverableMacros.deliverableClusterParticipantsMacro /]
+    
   </div>
 </div>
 [/#macro]
+
+
+
+[#-- deliverable cluster participants --]
+[#macro deliverableClusterParticipantsMacro list=(deliverable.clusterParticipant)![]]
+[#local customName = "deliverable.clusterParticipant" /]
+[#if list?has_content]
+<br>
+<span class="">
+  <label class="yesNoLabel" for="">[@s.text name="involveParticipants.sharedClusters" /] </label>
+  <p><small>[@s.text name="involveParticipants.sharedClusters.help" /] </small></p>
+</span>
+  
+<div class="simpleBox">
+
+  <div class="block-involveParticipants">
+    
+        <div class="form-group row">
+          <div class="col-md-2">
+            <div class="text-area-container">
+             [@customForm.text name="involveParticipants.sharedClusters.project" /]
+            </div>
+            <br>
+          </div>
+          <div class="col-md-2">
+            <div class="text-area-container">
+             [@customForm.text name="involveParticipants.sharedClusters.participants" /][@customForm.req required=reportingActive /]
+            </div>
+            <br>
+          </div>
+          <div class="col-md-2 femaleNumbers">
+            <div class="text-area-container">
+             [@customForm.text name="involveParticipants.sharedClusters.females" /][@customForm.req required=reportingActive /]
+            </div>
+            <br>
+          </div>
+          <div class="col-md-2">
+            <div class="text-area-container">
+             [@customForm.text name="involveParticipants.sharedClusters.africans" /][@customForm.req required=reportingActive /]
+            </div>
+            <br>
+          </div>
+          <div class="col-md-2 femaleNumbers">
+            <div class="text-area-container">
+             [@customForm.text name="involveParticipants.sharedClusters.youth" /][@customForm.req required=reportingActive /]
+            </div>
+            <br>
+          </div>
+        </div>
+       [#assign index = 0]
+       [#list list as cluster]
+        <input type="hidden" name="${customName}[${index}].id" value="${cluster.id}" />
+
+        <div class="form-group row">
+          <div class="col-md-2">
+            <div class="text-area-container">
+             [@customForm.text name=list[index].project.acronym /]
+            </div>
+            <br>
+          </div>
+          <div class="col-md-2">
+            <div class="text-area-container">
+             [@customForm.input name="${customName}[${index}].participants" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+            </div>
+            <br>
+          </div>
+          <div class="col-md-2 femaleNumbers">
+            <div class="text-area-container">
+              [@customForm.input name="${customName}[${index}].females" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+            </div>
+            <br>
+          </div>
+          <div class="col-md-2">
+            <div class="text-area-container">
+              [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+            </div>
+            <br>
+          </div>
+          <div class="col-md-2 femaleNumbers">
+            <div class="text-area-container">
+              [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+            </div>
+            <br>
+          </div>
+        </div>
+       [#assign index = index + 1]
+       [/#list]
+            
+       <hr />
+  </div>
+</div>
+[/#if]  
+[/#macro]
+
 
 
 [#macro alreadyDisseminatedMacro ]
