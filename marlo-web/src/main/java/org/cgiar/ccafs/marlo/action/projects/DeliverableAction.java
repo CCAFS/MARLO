@@ -1873,7 +1873,9 @@ public class DeliverableAction extends BaseAction {
           .sorted((t1, t2) -> t1.getId().compareTo(t2.getId())).collect(Collectors.toList()));
       }
 
-      this.fillClusterParticipantsList();
+      if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+        this.fillClusterParticipantsList();
+      }
 
       /*
        * get feedback comments
@@ -2119,7 +2121,9 @@ public class DeliverableAction extends BaseAction {
         this.saveDataSharing();
         this.saveUsers();
         this.saveParticipant();
-        this.saveDeliverableClusterParticipant();
+        if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+          this.saveDeliverableClusterParticipant();
+        }
       }
 
       /*
@@ -2995,8 +2999,9 @@ public class DeliverableAction extends BaseAction {
         dissemination.setConfidential(null);
         dissemination.setConfidentialUrl(null);
       }
-      
-      if (deliverable.getDissemination().getAlreadyDisseminated() != null && deliverable.getDissemination().getAlreadyDisseminated() == true) {
+
+      if (deliverable.getDissemination().getAlreadyDisseminated() != null
+        && deliverable.getDissemination().getAlreadyDisseminated() == true) {
         dissemination.setConfidential(null);
       }
 
