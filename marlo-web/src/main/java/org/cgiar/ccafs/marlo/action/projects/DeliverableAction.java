@@ -166,6 +166,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -2546,6 +2547,14 @@ public class DeliverableAction extends BaseAction {
           if (deliverableParticipant.getId() != null) {
             participantSave =
               deliverableClusterParticipantManager.getDeliverableClusterParticipantById(deliverableParticipant.getId());
+          } else {
+            try {
+              participantSave =
+                deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(
+                  deliverable.getId(), project.getId(), this.getActualPhase().getId()).get(0);
+            } catch (Exception e) {
+              Log.error(e + "error getting cluster participant id");
+            }
           }
           participantSave.setParticipants(deliverableParticipant.getParticipants());
           participantSave.setFemales(deliverableParticipant.getFemales());

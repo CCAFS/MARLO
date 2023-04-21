@@ -1236,19 +1236,19 @@
           
           [#-- Own participants --]
           <td class="text-center">
-              ${(item.totalOwnTrainess?number?string(",##0"))!0}
+              ${(item.ownTrainess?number?string(",##0"))!0}
           </td>
           [#-- Own Females --]
           <td class="text-center">
-              ${(item.totalOwnFemales?number?string(",##0"))!0}
+              ${(item.ownFemales?number?string(",##0"))!0}
           </td>
           [#-- Own African --]
           <td class="text-center">
-              ${(item.totalOwnAfricans?number?string(",##0"))!0}
+              ${(item.ownAfricans?number?string(",##0"))!0}
           </td>
           [#-- Own Youth --]
           <td class="text-center">          
-              ${(item.totalOwnYouth?number?string(",##0"))!0}
+              ${(item.ownYouth?number?string(",##0"))!0}
           </td>
           
           [#assign knowFemale = (item.dontKnowFemale)!false]
@@ -1303,6 +1303,17 @@
           </td>
         </tr>
       [/#list]
+        <tr class="">
+          <th id="tb-footer" class="">[@utils.tableText "Total Reported" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalOwnParticipants)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalOwnFemales)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalOwnAfricans)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalOwnYouth)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalParticipants)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalAfricans)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalFemales)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalYouth)!"" /]</th>
+        </tr>
     [#else]
       <tr>
         <td class="text-center" colspan="5">

@@ -148,6 +148,10 @@ public class ProjectOutcomeAction extends BaseAction {
   private Double totalFemales = new Double(0);
   private Double totalAfricans = new Double(0);
   private Double totalYouth = new Double(0);
+  private Double totalOwnParticipants = new Double(0);
+  private Double totalOwnFemales = new Double(0);
+  private Double totalOwnAfricans = new Double(0);
+  private Double totalOwnYouth = new Double(0);
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -603,16 +607,20 @@ public class ProjectOutcomeAction extends BaseAction {
             deliverable.getId(), projectID, this.getActualPhase().getId()).get(0);
         if (clusterParticipant != null) {
           if (clusterParticipant.getParticipants() != null) {
-            deliverable.getDeliverableParticipant().setTotalOwnTrainess(clusterParticipant.getParticipants());
+            deliverable.getDeliverableParticipant().setOwnTrainess(clusterParticipant.getParticipants());
+            totalOwnParticipants += clusterParticipant.getParticipants();
           }
           if (clusterParticipant.getFemales() != null) {
-            deliverable.getDeliverableParticipant().setTotalOwnFemales(clusterParticipant.getFemales());
+            deliverable.getDeliverableParticipant().setOwnFemales(clusterParticipant.getFemales());
+            totalOwnFemales += clusterParticipant.getFemales();
           }
           if (clusterParticipant.getAfrican() != null) {
-            deliverable.getDeliverableParticipant().setTotalOwnAfricans(clusterParticipant.getAfrican());
+            deliverable.getDeliverableParticipant().setOwnAfricans(clusterParticipant.getAfrican());
+            totalOwnAfricans += clusterParticipant.getAfrican();
           }
           if (clusterParticipant.getYouth() != null) {
-            deliverable.getDeliverableParticipant().setTotalOwnYouth(clusterParticipant.getYouth());
+            deliverable.getDeliverableParticipant().setOwnYouth(clusterParticipant.getYouth());
+            totalOwnYouth += clusterParticipant.getYouth();
           }
         }
       } catch (Exception e) {
@@ -931,6 +939,23 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalFemales;
   }
 
+  public Double getTotalOwnAfricans() {
+    return totalOwnAfricans;
+  }
+
+  public Double getTotalOwnFemales() {
+    return totalOwnFemales;
+  }
+
+  public Double getTotalOwnParticipants() {
+    return totalOwnParticipants;
+  }
+
+
+  public Double getTotalOwnYouth() {
+    return totalOwnYouth;
+  }
+
   public Double getTotalParticipantFormalTraining() {
     return totalParticipantFormalTraining;
   }
@@ -943,10 +968,10 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipantFormalTrainingLongMale;
   }
 
-
   public Double getTotalParticipantFormalTrainingPhdFemale() {
     return totalParticipantFormalTrainingPhdFemale;
   }
+
 
   public Double getTotalParticipantFormalTrainingPhdMale() {
     return totalParticipantFormalTrainingPhdMale;
@@ -956,6 +981,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipantFormalTrainingShortFemale;
   }
 
+
   public Double getTotalParticipantFormalTrainingShortMale() {
     return totalParticipantFormalTrainingShortMale;
   }
@@ -964,10 +990,10 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipants;
   }
 
-
   public Double getTotalYouth() {
     return totalYouth;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -978,6 +1004,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return userID;
   }
 
+
   public boolean isEditMilestoneExpectedValue() {
     return editMilestoneExpectedValue;
   }
@@ -985,7 +1012,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public boolean isEditOutcomeExpectedValue() {
     return editOutcomeExpectedValue;
   }
-
 
   public boolean isExpectedValueEditable(Long milestoneId) {
     boolean editable = false;
@@ -1017,7 +1043,6 @@ public class ProjectOutcomeAction extends BaseAction {
     }
     return editable;
   }
-
 
   public void loadDeliverablesShared() {
 
@@ -1069,7 +1094,6 @@ public class ProjectOutcomeAction extends BaseAction {
       LOG.error("unable to get shared deliverables", e);
     }
   }
-
 
   public ProjectCommunication loadProjectCommunication(int year) {
 
@@ -1893,6 +1917,22 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public void setTotalFemales(Double totalFemales) {
     this.totalFemales = totalFemales;
+  }
+
+  public void setTotalOwnAfricans(Double totalOwnAfricans) {
+    this.totalOwnAfricans = totalOwnAfricans;
+  }
+
+  public void setTotalOwnFemales(Double totalOwnFemales) {
+    this.totalOwnFemales = totalOwnFemales;
+  }
+
+  public void setTotalOwnParticipants(Double totalOwnParticipants) {
+    this.totalOwnParticipants = totalOwnParticipants;
+  }
+
+  public void setTotalOwnYouth(Double totalOwnYouth) {
+    this.totalOwnYouth = totalOwnYouth;
   }
 
   public void setTotalParticipantFormalTraining(Double totalParticipantFormalTraining) {
