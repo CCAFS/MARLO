@@ -166,3 +166,10 @@ a#opener {
 #guide-button{
     display: block;
 }
+
+.dark-bg_table_values {
+  background-color: #f0eded !important;
+}
+.dark-bg_table_text {
+  background-color: #f5f2f2 !important;
+}

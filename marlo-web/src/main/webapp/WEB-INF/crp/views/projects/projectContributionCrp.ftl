@@ -14,7 +14,7 @@
   ] 
 /] 
 [#assign customCSS = [ 
-  "${baseUrlMedia}/css/projects/projectContributionCrp.css?20230309",
+  "${baseUrlMedia}/css/projects/projectContributionCrp.css?20230421",
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20221104A",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
@@ -1198,19 +1198,22 @@
   <table id="tableParticipantsTrainingsMacro" class="annual-report-table table-border">
     <thead>
       <tr class="subHeader">
+        <th colspan="5" id="tb-type-1">[@s.text name="involveParticipants.sharedClusters.popup.subtitle1" /]</th>
+        <th colspan="6" id="tb-type-2" class="dark-bg_table_values">[@s.text name="involveParticipants.sharedClusters.popup.subtitle2" /]</th>
+      </tr>
+      <tr class="subHeader">
         <th id="tb-type">[@s.text name="involveParticipants.sharedClusters.popup.activity" /]</th>
         <th id="tb-type">[@s.text name="involveParticipants.sharedClusters.popup.participants" /]</th>        
         <th id="tb-type">[@s.text name="involveParticipants.sharedClusters.popup.females" /]</th>
         <th id="tb-type">[@s.text name="involveParticipants.sharedClusters.popup.africans" /]</th>
         <th id="tb-type">[@s.text name="involveParticipants.sharedClusters.popup.youth" /]</th>       
         
-        <th id="tb-type">[@s.text name="Total Trainees" /]</th>
-        <th id="tb-type">[@s.text name="Males" /]</th>
-        <th id="tb-type">[@s.text name="Females" /]</th>
-        <th id="tb-type">[@s.text name="Africans" /]</th>
-        <th id="tb-type">[@s.text name="Youth" /]</th>
-        <th id="tb-title">[@s.text name="Activity Type" /]</th>        
-        <th id="tb-organization-type">[@s.text name="Trainees Type" /]</th>
+        <th id="tb-type" class="dark-bg_table_values">[@s.text name="Total Trainees" /]</th>
+        <th id="tb-type" class="dark-bg_table_values">[@s.text name="Females" /]</th>
+        <th id="tb-type" class="dark-bg_table_values">[@s.text name="Africans" /]</th>
+        <th id="tb-type" class="dark-bg_table_values">[@s.text name="Youth" /]</th>
+        <th id="tb-title" class="dark-bg_table_text">[@s.text name="Activity Type" /]</th>        
+        <th id="tb-organization-type" class="dark-bg_table_text">[@s.text name="Trainees Type" /]</th>
         [#--  
         <th id="tb-training-period">[@s.text name="Event Focus" /]</th>
         <th id="tb-training-period">[@s.text name="Likely Outcomes" /]</th>
@@ -1255,22 +1258,14 @@
           [#assign isEstimateAfricans = (item.estimateAfrican?has_content)!false]
           [#assign isEstimateYouth = (item.estimateYouth?has_content)!false]
           [#-- Total Participants --]
-          <td class="text-center">
+          <td class="text-center dark-bg_table_values">
             ${(item.participants?number?string(",##0"))!0}
             [#if isEstimateTotalParticipants ]
               <i><small> (Estimated value)</small></i>
             [/#if]
           </td>
-          [#-- Number of males --]
-          <td class="text-center">
-            [#if knowFemale && !hasFemale ]
-              <i><small>Not specified</small></i>
-              [#else]
-              ${(item.males?number?string(",##0"))!0}
-            [/#if]
-          </td>
           [#-- Number of females --]
-          <td class="text-center">
+          <td class="text-center dark-bg_table_values">
           [#if knowFemale && !hasFemale ]
             <i><small>Not specified</small></i>
             [#else]
@@ -1281,7 +1276,7 @@
           [/#if]
           </td>
           [#-- Number of african --]
-          <td class="text-center">
+          <td class="text-center dark-bg_table_values">
             ${(item.african?number?string(",##0"))!0}
             [#--<p><i><small>(${(item.africanPercentage?number?string(",##0"))!0}% )</small></i><p>--]
             [#if isEstimateAfricans ]
@@ -1289,7 +1284,7 @@
             [/#if]
           </td>
           [#-- Number of youth --]
-          <td class="text-center">
+          <td class="text-center dark-bg_table_values">
             ${(item.youth?number?string(",##0"))!0}
             [#--<p><i><small>(${(item.youthPercentage?number?string(",##0"))!0}% )</small></i></p>--]
             [#if isEstimateYouth ]
@@ -1297,11 +1292,11 @@
             [/#if]
           </td>
           [#-- Activity Type --]
-          <td class="">
+          <td class="dark-bg_table_text">
             <small>[@utils.tableText value=(item.repIndTypeActivity.name)!"" /]</small>
           </td>          
           [#-- Type of participants --]
-          <td class="text-center">
+          <td class="text-center dark-bg_table_text">
             [@utils.tableText value=(item.repIndTypeParticipant.name)!"" /]
           </td>          
                   
