@@ -173,3 +173,7 @@ a#opener {
 .dark-bg_table_text {
   background-color: #f5f2f2 !important;
 }
+.color-bg_top_table {
+  background-color: #2BA6CB !important;
+  color: #ffffff;
+}

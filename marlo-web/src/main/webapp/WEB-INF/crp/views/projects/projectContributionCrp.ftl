@@ -587,12 +587,12 @@
                               <br>
                               <table id="trainees" class="annual-report-table table-border">
                               <thead>
-                                <tr class="subHeader">                                                                                                 
-                                  <th id="tb-type">[@s.text name="involveParticipants.sharedClusters.project" /]</th>
-                                  <th id="tb-type">[@s.text name="involveParticipants.sharedClusters.participants" /]</th>        
-                                  <th id="tb-type">[@s.text name="involveParticipants.sharedClusters.females" /]</th>
-                                  <th id="tb-type">[@s.text name="involveParticipants.sharedClusters.africans" /]</th>
-                                  <th id="tb-type">[@s.text name="involveParticipants.sharedClusters.youth" /]</th>
+                                <tr>                                                                                                 
+                                  <th id="tb-type" class="color-bg_top_table text-center">[@s.text name="involveParticipants.sharedClusters.project" /]</th>
+                                  <th id="tb-type" class="color-bg_top_table text-center">[@s.text name="involveParticipants.sharedClusters.participants" /]</th>        
+                                  <th id="tb-type" class="color-bg_top_table text-center">[@s.text name="involveParticipants.sharedClusters.females" /]</th>
+                                  <th id="tb-type" class="color-bg_top_table text-center">[@s.text name="involveParticipants.sharedClusters.africans" /]</th>
+                                  <th id="tb-type" class="color-bg_top_table text-center">[@s.text name="involveParticipants.sharedClusters.youth" /]</th>
                                 </tr>
                               </thead>
                               <tbody>
