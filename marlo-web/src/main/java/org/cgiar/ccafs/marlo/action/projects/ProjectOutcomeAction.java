@@ -417,7 +417,12 @@ public class ProjectOutcomeAction extends BaseAction {
             (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
               && d.getDeliverableInfo(this.getActualPhase()).getYear() == this.getActualPhase().getYear()) ||
-            // Extended
+            // Complete
+              (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Complete.getStatusId())
+                && d.getDeliverableInfo(this.getActualPhase()).getYear() == this.getActualPhase().getYear())
+              ||
+              // Extended
               (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Extended.getStatusId())
                 && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() == this.getActualPhase()
