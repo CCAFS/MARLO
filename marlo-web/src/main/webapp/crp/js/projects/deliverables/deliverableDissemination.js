@@ -52,6 +52,142 @@ function init() {
   }
 
   validateEmptyAuthors();
+
+  // Validate if the IPI 2.3 indicator is related to the deliverable
+  searchIndicator();
+
+  
+  // Validate which indicator is sectioned in select2
+$('.listindicators .setSelect2').select2().on('change', function() {
+  searchIndicator();
+});
+
+// Validate indicator removed in select2
+$(".listindicators .removeElement").on("click", function () {
+
+  // detects when an element is removed and checks if the IPI 2.3 flag is still in the list
+  $(this).closest("li").remove();
+  searchIndicator();
+});
+
+  // Validate which cluster is sectioned in select2
+$('.listClusters .setSelect2').select2().on('change', function() {
+  searchcluster($('.listClusters .setSelect2').val());
+  console.log('el valor del cluster es: '+ $('.listClusters .setSelect2').val())
+  });
+
+}
+
+function searchIndicator(){
+  
+
+  var text = $('.elementName').text();
+  // Makes the trainee question mandatory
+  if (text.indexOf('IPI 2.3') !== -1) {
+    $('.yesNoTrainees .yes-button-label').addClass('radio-checked');
+    $('.yesNoTrainees .yes-button-label').click();
+    $('.yesNoTrainees .no-button-label').css("background-color", "#d6d6d6");
+    $('.yesNoTrainees .no-button-label').removeClass("no-button-label").addClass("no-button-label-disabled");
+  } 
+  // Enable the option not in trainees
+  else { 
+    $('.yesNoTrainees .no-button-label-disabled').css("background-color", "#efefef");
+    $('.yesNoTrainees .no-button-label-disabled').removeClass("no-button-label-disabled").addClass("no-button-label");
+  }
+}
+
+function searchcluster(idCluster){
+
+  var lastValueId = parseInt($('.listClusterDM .valueId').last().val())+1;
+
+  var hiddenInputId = $('<input>').attr({
+    type: 'hidden',
+    name: 'deliverable.clusterParticipant['+lastValueId+'].id',
+    value: ''
+  });
+
+  var hiddenInputProjectId = $('<input>').attr({
+    type: 'hidden',
+    name: 'deliverable.clusterParticipant['+lastValueId+'].project.id',
+    value: idCluster
+  });
+
+  // Crear el elemento div con sus hijos
+  var div = $('<div>').addClass('form-group row');
+  var col1 = $('<div>').addClass('col-md-2');
+  var textArea1 = $('<div>').addClass('text-area-container').text('new clusrer');
+  col1.append(textArea1);
+  div.append(col1);
+  div.css('margin-bottom', '30px');
+  var col2 = $('<div>').addClass('col-md-2');
+  var textArea2 = $('<div>').addClass('text-area-container');
+  var input2 = $('<input>').attr({
+    type: 'text',
+    id: 'deliverable.clusterParticipant['+lastValueId+'].participants',
+    name: 'deliverable.clusterParticipant['+lastValueId+'].participants',
+    value: '0',
+    class: 'form-control input-sm numericInput optional',
+    placeholder: 'Number'
+  });
+  textArea2.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input2));
+  col2.append(textArea2);
+  div.append(col2);
+
+  var col3 = $('<div>').addClass('col-md-2 femaleNumbers');
+  var textArea3 = $('<div>').addClass('text-area-container');
+  var input3 = $('<input>').attr({
+    type: 'text',
+    id: 'deliverable.clusterParticipant['+lastValueId+'].females',
+    name: 'deliverable.clusterParticipant['+lastValueId+'].females',
+    value: '0',
+    class: 'form-control input-sm numericInput optional',
+    placeholder: 'Number'
+  });
+  textArea3.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input3));
+  col3.append(textArea3);
+  div.append(col3);
+
+  var col4 = $('<div>').addClass('col-md-2');
+  var textArea4 = $('<div>').addClass('text-area-container');
+  var input4 = $('<input>').attr({
+    type: 'text',
+    id: 'deliverable.clusterParticipant['+lastValueId+'].african',
+    name: 'deliverable.clusterParticipant['+lastValueId+'].african',
+    value: '0',
+    class: 'form-control input-sm numericInput optional',
+    placeholder: 'Number'
+  });
+  textArea4.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input4));
+  col4.append(textArea4);
+  div.append(col4);
+
+  var col5 = $('<div>').addClass('col-md-2 femaleNumbers');
+  var textArea5 = $('<div>').addClass('text-area-container');
+  var input5 = $('<input>').attr({
+    type: 'text',
+    id: 'deliverable.clusterParticipant['+lastValueId+'].youth',
+    name: 'deliverable.clusterParticipant['+lastValueId+'].youth',
+    value: '0',
+    class: 'form-control input-sm numericInput optional',
+    placeholder: 'Number'
+  });
+  textArea5.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input5));
+  col5.append(textArea5);
+  div.append(col5);
+
+  // Agregar los elementos creados al contenedor deseado
+  // $('#mi-contenedor').append(hiddenInput, div);
+
+
+  // Creamos los elementos que queremos agregar
+  var divNuevo = $('<div>', {class: 'nuevoDiv'});
+  var spanNuevo = $('<span>', {text: 'Nuevo span'});
+
+  // Agregamos los elementos al contenedor adecuado
+  $('.block-involveParticipants .listClusterDM').append(hiddenInputId);
+  $('.block-involveParticipants .listClusterDM').append(hiddenInputProjectId);
+  $('.block-involveParticipants .listClusterDM').append(div);
+
 }
 
 function validateRequiredTagToCategory() {

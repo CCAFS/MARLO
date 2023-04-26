@@ -206,7 +206,7 @@
  [/#if]
   
 <div class="simpleBox">
-  <div class="form-group row yesNoInputDeliverable">
+  <div class="form-group row yesNoInputDeliverable yesNoTrainees">
   <span class="col-md-9">
     <label class="yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=(reportingActive) /]</label>
     <p><small>[@s.text name="project.deliverable.dissemination.involveParticipantsSub" /] </small></p>
@@ -355,7 +355,6 @@
   <label class="yesNoLabel" for="">[@s.text name="involveParticipants.sharedClusters" /] </label>
   <p><small>[@s.text name="involveParticipants.sharedClusters.help" /] </small></p>
 </span>
-  
 <div class="simpleBox">
 
   <div class="block-involveParticipants">
@@ -392,14 +391,15 @@
             <br>
           </div>
         </div>
+        <div class="listClusterDM">
        [#assign index = 0]
        [#list list as cluster]
-        <input type="hidden" name="${customName}[${index}].id" value="${cluster.id}" />
-
+        <input type="hidden" name="${customName}[${index}].id" class="valueId" value="${(cluster.id)!0}" />
+        <input type="hidden" name="${customName}[${index}].project.id" value="${(cluster.project.id)!0}" />
         <div class="form-group row">
           <div class="col-md-2">
             <div class="text-area-container">
-             [@customForm.text name=list[index].project.acronym /]
+             [@customForm.text name=(list[index].project.acronym)!"" /]
             </div>
             <br>
           </div>
@@ -430,8 +430,97 @@
         </div>
        [#assign index = index + 1]
        [/#list]
-            
+        </div>
        <hr />
+              <div class="form-group row">
+  <div class="col-md-2">
+    <div class="text-area-container">
+      Total report</div>
+    <br>
+  </div>
+  <div class="col-md-2">
+    <div class="text-area-container">
+      <div class="input fieldReference " style="display:block;">
+        <div>10</div>
+      </div>
+    </div>
+    <br>
+  </div>
+  <div class=" col-md-2 femaleNumbers">
+    <div class="text-area-container">
+      <div class="input fieldReference " style="display:block;">
+        <div>10</div>
+      </div>
+    </div>
+    <br>
+  </div>
+  <div class=" col-md-2">
+    <div class="text-area-container">
+      <div class="input fieldReference " style="display:block;">
+        <div>10</div>
+      </div>
+    </div>
+    <br>
+  </div>
+  <div class=" col-md-2 femaleNumbers">
+    <div class="text-area-container">
+      <div class="input fieldReference " style="display:block;">
+        <div>10</div>
+      </div>
+    </div>
+    <br>
+  </div>
+</div>
+<div class="form-group row" style="
+    color: #FFC300;
+">
+  <div class="col-md-2">
+    <div class="text-area-container" style="
+    color: #FFC300;
+    font-weight: 600;
+">
+      Remaining </div>
+    <br>
+  </div>
+  <div class="col-md-2">
+    <div class="text-area-container">
+      <div class="input fieldReference " style="display:block;">
+        <div>80</div>
+      </div>
+    </div>
+    <br>
+  </div>
+  <div class=" col-md-2 femaleNumbers">
+    <div class="text-area-container">
+      <div class="input fieldReference " style="display:block;">
+        <div>80</div>
+      </div>
+    </div>
+    <br>
+  </div>
+  <div class=" col-md-2">
+    <div class="text-area-container">
+      <div class="input fieldReference " style="display:block;">
+        <div>80</div>
+      </div>
+    </div>
+    <br>
+  </div>
+  <div class=" col-md-2 femaleNumbers">
+    <div class="text-area-container">
+      <div class="input fieldReference " style="display:block;">
+        <div>80</div>
+      </div>
+    </div>
+    <br>
+  </div>
+</div>
+<div style="
+    display: flex;
+"><div class="noteAlert" style="
+    font-weight: 700;
+    color: #ffc800;
+">Alert:  </div><div class="textNote">  The remaining fields must be 0, please distribute the trainees in the shared clusters</div></div>
   </div>
 </div>
 [/#if]  
