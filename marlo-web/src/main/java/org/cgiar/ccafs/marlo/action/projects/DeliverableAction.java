@@ -2549,12 +2549,16 @@ public class DeliverableAction extends BaseAction {
               deliverableClusterParticipantManager.getDeliverableClusterParticipantById(deliverableParticipant.getId());
           } else {
             try {
-              participantSave =
-                deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(
-                  deliverable.getId(), project.getId(), this.getActualPhase().getId()).get(0);
+              if (deliverableParticipant.getProject() != null && deliverableParticipant.getProject().getId() != null) {
+                participantSave = deliverableClusterParticipantManager
+                  .getDeliverableClusterParticipantByDeliverableProjectPhase(deliverable.getId(),
+                    deliverableParticipant.getProject().getId(), this.getActualPhase().getId())
+                  .get(0);
+              }
             } catch (Exception e) {
               Log.error(e + "error getting cluster participant id");
             }
+
           }
           participantSave.setParticipants(deliverableParticipant.getParticipants());
           participantSave.setFemales(deliverableParticipant.getFemales());
