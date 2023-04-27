@@ -52,6 +52,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -402,6 +403,35 @@ public class ProjectOutcomeAction extends BaseAction {
       } catch (Exception e) {
         LOG.error(e + "error to filter deliverable for AR");
       }
+    }
+
+    // Rules- Deliverables with same phase delivery year
+    try {
+      if (currentDeliverables != null && !currentDeliverables.isEmpty()) {
+        currentDeliverables = currentDeliverables.stream()
+          .filter(d -> d != null && d.getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null && d.getProject() != null
+            && d.getProject().getId().equals(project.getId()) && (
+            // Validation for ar
+
+            // On-going
+            (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              && d.getDeliverableInfo(this.getActualPhase()).getYear() == this.getActualPhase().getYear()) ||
+            // Complete
+              (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Complete.getStatusId())
+                && d.getDeliverableInfo(this.getActualPhase()).getYear() == this.getActualPhase().getYear())
+              ||
+              // Extended
+              (d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())
+                && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() == this.getActualPhase()
+                  .getYear())))
+          .collect(Collectors.toList());
+      }
+    } catch (Exception e) {
+
     }
     if (currentDeliverables != null) {
       currentDeliverables = currentDeliverables.stream()
