@@ -416,9 +416,10 @@ public class ProjectOutcomeAction extends BaseAction {
     // Rules- Deliverables with same phase delivery year
     try {
       if (currentDeliverables != null && !currentDeliverables.isEmpty()) {
-        currentDeliverables =
-          currentDeliverables.stream().filter(d -> d != null && d.getDeliverableInfo(this.getActualPhase()) != null
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null && (
+        currentDeliverables = currentDeliverables.stream()
+          .filter(d -> d != null && d.getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null && d.getProject() != null
+            && d.getProject().getId().equals(project.getId()) && (
             // Validation for ar
 
             // On-going
@@ -435,7 +436,7 @@ public class ProjectOutcomeAction extends BaseAction {
                 .parseInt(ProjectStatusEnum.Extended.getStatusId())
                 && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() == this.getActualPhase()
                   .getYear())))
-            .collect(Collectors.toList());
+          .collect(Collectors.toList());
       }
     } catch (Exception e) {
 
