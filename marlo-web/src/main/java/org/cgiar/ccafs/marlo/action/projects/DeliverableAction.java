@@ -1875,7 +1875,7 @@ public class DeliverableAction extends BaseAction {
       }
 
       if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
-        this.fillClusterParticipantsList();
+        // this.fillClusterParticipantsList();
       }
 
       /*
