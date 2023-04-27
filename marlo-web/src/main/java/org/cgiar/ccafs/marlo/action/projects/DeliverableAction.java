@@ -2566,6 +2566,10 @@ public class DeliverableAction extends BaseAction {
           participantSave.setYouth(deliverableParticipant.getYouth());
           participantSave.setDeliverable(deliverable);
           participantSave.setPhase(this.getActualPhase());
+          if (deliverableParticipant.getProject() != null && deliverableParticipant.getProject().getId() != null) {
+            participantSave.setProject(deliverableParticipant.getProject());
+
+          }
           deliverableClusterParticipantManager.saveDeliverableClusterParticipant(participantSave);
 
         }
