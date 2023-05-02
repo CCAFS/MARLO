@@ -73,9 +73,154 @@ $(".listindicators .removeElement").on("click", function () {
   // Validate which cluster is sectioned in select2
 $('.listClusters .setSelect2').select2().on('change', function() {
   searchcluster($('.listClusters .setSelect2').val());
-  console.log('el valor del cluster es: '+ $('.listClusters .setSelect2').val())
   });
 
+  initialTotals();
+  initialRemaining();
+  
+  
+  
+
+}
+
+//Updates the values of the total fields in real time
+function initialTotals(){
+  const initialValueParticipants  = $('#deliverable\\.deliverableParticipant\\.participants').val();
+  $('.totalTrainees').text(initialValueParticipants);
+  const initialValueFemales = $('#deliverable\\.deliverableParticipant\\.females').val();
+  $('.totalFemales').text(initialValueFemales);
+  const initialValueAfrican = $('#deliverable\\.deliverableParticipant\\.african').val();
+  $('.totalAfrican').text(initialValueAfrican);
+  const initialValuYouth = $('#deliverable\\.deliverableParticipant\\.youth').val();
+  $('.totalYouth').text(initialValuYouth);
+
+  const inputsParticipants = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".participants"]');
+  const inputsFemales = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".females"]');
+  const inputsAfrican = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".african"]');
+  const inputsYouth = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".youth"]');
+  
+
+// Get <div> tag with class "listClusterDM"
+const divElement = document.querySelector('.listClusterDM');
+
+  
+  $('#deliverable\\.deliverableParticipant\\.participants').on('input', function() {
+    const newValue = $(this).val();
+    $('.totalTrainees').text(newValue);
+    initialRemaining()
+  });
+  $('#deliverable\\.deliverableParticipant\\.females').on('input', function() {
+    const newValue = $(this).val();
+    $('.totalFemales').text(newValue);
+    initialRemaining()
+  });
+  $('#deliverable\\.deliverableParticipant\\.african').on('input', function() {
+    const newValue = $(this).val();
+    $('.totalAfrican').text(newValue);
+    initialRemaining()
+  });
+  $('#deliverable\\.deliverableParticipant\\.youth').on('input', function() {
+    const newValue = $(this).val();
+    $('.totalYouth').text(newValue);
+    initialRemaining()
+  });
+  
+  inputsParticipants.forEach(function(input) {
+    input.addEventListener('input', function() {
+      initialRemaining()
+    });
+  });
+  
+  inputsFemales.forEach(function(input) {
+    input.addEventListener('input', function() {
+      initialRemaining()
+    });
+  });
+
+  inputsAfrican.forEach(function(input) {
+    input.addEventListener('input', function() {
+      initialRemaining()
+    });
+  });
+
+  inputsYouth.forEach(function(input) {
+    input.addEventListener('input', function() {
+      initialRemaining()
+    });
+  });
+
+}
+
+//This function is to update the values of the Total and Remaining fields in real time.
+function initialRemaining(){
+
+  const inputsParticipants = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".participants"]');
+  const inputsFemales = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".females"]');
+  const inputsAfrican = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".african"]');
+  const inputsYouth = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".youth"]');
+  
+  const valuesParticipants = [];
+  const valuesFemales = [];
+  const valuesAfrican = [];
+  const valuesYouth = [];
+
+  inputsParticipants.forEach(input => {
+    valuesParticipants.push(parseInt(input.value));
+  });
+
+  inputsFemales.forEach(input => {
+    valuesFemales.push(parseInt(input.value));
+  });
+  
+  inputsAfrican.forEach(input => {
+    valuesAfrican.push(parseInt(input.value));
+  });
+
+  inputsYouth.forEach(input => {
+    valuesYouth.push(parseInt(input.value));
+  });
+
+  const sumaParticipants = valuesParticipants.reduce((acumulador, valorActual) => {
+    return acumulador + valorActual;
+  }, 0);
+
+  const sumaFemales = valuesFemales.reduce((acumulador, valorActual) => {
+    return acumulador + valorActual;
+  }, 0);
+
+  const sumaAfrican = valuesAfrican.reduce((acumulador, valorActual) => {
+    return acumulador + valorActual;
+  }, 0);
+
+  const sumaYouth = valuesYouth.reduce((acumulador, valorActual) => {
+    return acumulador + valorActual;
+  }, 0);
+
+  // console.log('totalTrainees: '+ $('.totalTrainees').text());
+  let remainingTrainees = parseInt($('.totalTrainees').text())-parseInt(sumaParticipants);
+  let remainingFemales = parseInt($('.totalFemales').text())-parseInt(sumaFemales);
+  let remainingAfrican = parseInt($('.totalAfrican').text())-parseInt(sumaAfrican);
+  let  remainingYouth = parseInt($('.totalYouth').text())-parseInt(sumaYouth);
+  
+  $('.remainingTrainees').text(remainingTrainees);
+  $('.remainingFemales').text(remainingFemales);
+  $('.remainingAfrican').text(remainingAfrican);
+  $('.remainingYouth').text(remainingYouth);
+
+  //Change the colors and messages of the Total and Remaining fields in real time
+if(remainingYouth == 0 && remainingAfrican == 0 && remainingFemales == 0 && remainingTrainees == 0){
+  $('.remaining-container').css('color', '#8ea786');
+  $('.alertParticipant').css('display', 'none');
+  $('.doneParticipant').css('display', 'flex');
+}
+else{
+  $('.remaining-container').css('color', '#FFC300');
+  $('.doneParticipant').css('display', 'none');
+  $('.alertParticipant').css('display', 'flex');
+  
+}
+
+  
 }
 
 function searchIndicator(){
@@ -96,14 +241,22 @@ function searchIndicator(){
   }
 }
 
+//Query the cluster endpoint
 function searchcluster(idCluster){
+  getCluster(idCluster);
+}
 
-  var lastValueId = parseInt($('.listClusterDM .valueId').last().val())+1;
+//Add a new cluster to the list of shared clusters in the metadata section with the information brought from the cluster endpoint
+function addcluster(infoCluster){
+
+  var idCluster =infoCluster.id
+  var lastValueId = parseInt($('.listClusterDM .valueId').last().attr('valueindex'))+1;
 
   var hiddenInputId = $('<input>').attr({
     type: 'hidden',
+    class: 'valueId',
     name: 'deliverable.clusterParticipant['+lastValueId+'].id',
-    value: ''
+    valueIndex: lastValueId,
   });
 
   var hiddenInputProjectId = $('<input>').attr({
@@ -115,7 +268,7 @@ function searchcluster(idCluster){
   // Crear el elemento div con sus hijos
   var div = $('<div>').addClass('form-group row');
   var col1 = $('<div>').addClass('col-md-2');
-  var textArea1 = $('<div>').addClass('text-area-container').text('new clusrer');
+  var textArea1 = $('<div>').addClass('text-area-container').text(infoCluster.acronym);
   col1.append(textArea1);
   div.append(col1);
   div.css('margin-bottom', '30px');
@@ -175,19 +328,12 @@ function searchcluster(idCluster){
   col5.append(textArea5);
   div.append(col5);
 
-  // Agregar los elementos creados al contenedor deseado
-  // $('#mi-contenedor').append(hiddenInput, div);
-
-
-  // Creamos los elementos que queremos agregar
-  var divNuevo = $('<div>', {class: 'nuevoDiv'});
-  var spanNuevo = $('<span>', {text: 'Nuevo span'});
 
   // Agregamos los elementos al contenedor adecuado
   $('.block-involveParticipants .listClusterDM').append(hiddenInputId);
   $('.block-involveParticipants .listClusterDM').append(hiddenInputProjectId);
   $('.block-involveParticipants .listClusterDM').append(div);
-
+  initialTotals()
 }
 
 function validateRequiredTagToCategory() {
@@ -195,22 +341,8 @@ function validateRequiredTagToCategory() {
   if (statusID != '7' && statusID != '5') {
     if ($('.subTypeSelect ').val() == 63 || $('.subTypeSelectSupplementary').val() == 63) {
       console.log('%cThere is Articles and Books and Journal Article (peer reviewed)', 'background: #222; color: #37ff73');
-                                  
-                       
-                         
-                                 
-      
-                                 
-   
 
       hideOrShowCheckBoxIsOtherUrl(true);
-                                                              
-                                 
-                    
-                 
-                  
-                         
-                      
 
       if ($('.isOtherUrlFiel').val() == 'true') {
         $('.conditionalRequire').find('.requiredTag').hide('slow');
@@ -300,7 +432,6 @@ function getWOSInfo() {
 
         },
         success: function (data) {
-          console.log("data", data);
           if (data.jsonStringResponse != undefined && data.jsonStringResponse != "null") {
             // console.log('%cUpdate','background: #222; color: #37ff73');
             // console.log("data.jsonStringResponse",data.jsonStringResponse);
@@ -1465,12 +1596,29 @@ function validateSubCategorySelector() {
       $('.isIsiJournal .requiredTag').slideUp();
       displayExtraFieldUrl(false, false);
     }
-      
-                               
-                            
-                             
-                             
-                        
-                     
   }
 };
+
+//Check the acronym of the cluster and if it is summited
+function getCluster(idCluster) {
+  var data = {
+    projectID: idCluster
+  }
+  $.ajax({
+    'url': baseURL + '/projectById.do',
+    'type': "GET",
+    'data': data,
+    'dataType': "json",
+    success: function (metadata) {
+      console.log('success');
+      addcluster(metadata.projectMap);
+    },
+    complete: function () {
+      console.log('complete');
+    },
+    error: function () {
+      console.log("error");
+    }
+  });
+
+}

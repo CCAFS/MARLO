@@ -394,7 +394,7 @@
         <div class="listClusterDM">
        [#assign index = 0]
        [#list list as cluster]
-        <input type="hidden" name="${customName}[${index}].id" class="valueId" value="${(cluster.id)!0}" />
+        <input type="hidden" name="${customName}[${index}].id" class="valueId" value="${(cluster.id)!0}" valueIndex="${(cluster.id)!0}"/>
         <input type="hidden" name="${customName}[${index}].project.id" value="${(cluster.project.id)!0}" />
         <div class="form-group row">
           <div class="col-md-2">
@@ -403,7 +403,7 @@
             </div>
             <br>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-2 participantsNumbers">
             <div class="text-area-container">
              [@customForm.input name="${customName}[${index}].participants" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
             </div>
@@ -415,13 +415,13 @@
             </div>
             <br>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-2 africanNumbers">
             <div class="text-area-container">
               [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
             </div>
             <br>
           </div>
-          <div class="col-md-2 femaleNumbers">
+          <div class="col-md-2 youthNumbers">
             <div class="text-area-container">
               [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
             </div>
@@ -441,7 +441,7 @@
   <div class="col-md-2">
     <div class="text-area-container">
       <div class="input fieldReference " style="display:block;">
-        <div>10</div>
+        <div class="totalTrainees">0</div>
       </div>
     </div>
     <br>
@@ -449,7 +449,7 @@
   <div class=" col-md-2 femaleNumbers">
     <div class="text-area-container">
       <div class="input fieldReference " style="display:block;">
-        <div>10</div>
+        <div class="totalFemales">0</div>
       </div>
     </div>
     <br>
@@ -457,7 +457,7 @@
   <div class=" col-md-2">
     <div class="text-area-container">
       <div class="input fieldReference " style="display:block;">
-        <div>10</div>
+        <div class="totalAfrican">0</div>
       </div>
     </div>
     <br>
@@ -465,27 +465,24 @@
   <div class=" col-md-2 femaleNumbers">
     <div class="text-area-container">
       <div class="input fieldReference " style="display:block;">
-        <div>10</div>
+        <div  class="totalYouth">0</div>
       </div>
     </div>
     <br>
   </div>
 </div>
-<div class="form-group row" style="
+<div class="form-group row remaining-container" style="
     color: #FFC300;
 ">
   <div class="col-md-2">
-    <div class="text-area-container" style="
-    color: #FFC300;
-    font-weight: 600;
-">
+    <div class="text-area-container " style="font-weight: 600;">
       Remaining </div>
     <br>
   </div>
   <div class="col-md-2">
     <div class="text-area-container">
       <div class="input fieldReference " style="display:block;">
-        <div>80</div>
+        <div class="remainingTrainees">0</div>
       </div>
     </div>
     <br>
@@ -493,7 +490,7 @@
   <div class=" col-md-2 femaleNumbers">
     <div class="text-area-container">
       <div class="input fieldReference " style="display:block;">
-        <div>80</div>
+        <div class="remainingFemales">0</div>
       </div>
     </div>
     <br>
@@ -501,7 +498,7 @@
   <div class=" col-md-2">
     <div class="text-area-container">
       <div class="input fieldReference " style="display:block;">
-        <div>80</div>
+        <div class="remainingAfrican">0</div>
       </div>
     </div>
     <br>
@@ -509,18 +506,20 @@
   <div class=" col-md-2 femaleNumbers">
     <div class="text-area-container">
       <div class="input fieldReference " style="display:block;">
-        <div>80</div>
+        <div class="remainingYouth">0</div>
       </div>
     </div>
     <br>
   </div>
 </div>
-<div style="
-    display: flex;
-"><div class="noteAlert" style="
-    font-weight: 700;
-    color: #ffc800;
-">Alert:  </div><div class="textNote">  The remaining fields must be 0, please distribute the trainees in the shared clusters</div></div>
+    <div style="display: flex;" class="alertParticipant">
+      <div class="noteAlert" style="font-weight: 700;color: #ffc800;">Alert:&nbsp;</div>
+      <div class="textNote">  The remaining fields must be 0, please distribute the trainees in the shared clusters</div>
+    </div>
+    <div style="display: none" class="doneParticipant">
+      <div class="noteAlert" style="font-weight: 700;color: #8ea786;">Great:&nbsp;</div>
+      <div class="textNote" style="color: #333;">  The sum of the Participants/Trainees are equal to the total reported</div>
+    </div>
   </div>
 </div>
 [/#if]  
