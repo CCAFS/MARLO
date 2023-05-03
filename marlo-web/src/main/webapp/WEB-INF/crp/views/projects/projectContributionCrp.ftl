@@ -600,23 +600,23 @@
                                   <tr>          
                                     [#-- Cluster --]
                                     <td class="text-center">
-                                       <span>${(totalParticipants?number?string(",##0"))!0}</span>
+                                       <span>${(project.acronym)!''}</span>
                                     </td>
                                     [#-- Total Participants --]
                                     <td class="text-center">
-                                       <span>${(totalParticipants?number?string(",##0"))!0}</span>
+                                       <span>${(totalOwnParticipants?number?string(",##0"))!0}</span>
                                     </td>                              
                                     [#-- Total Females --]
                                     <td class="text-center">
-                                       <span>${(totalFemales?number?string(",##0"))!0}</span>
+                                       <span>${(totalOwnFemales?number?string(",##0"))!0}</span>
                                     </td>                                      
                                     [#-- Total Africans --]
                                     <td class="text-center">
-                                       <span>${(totalAfricans?number?string(",##0"))!0}</span>
+                                       <span>${(totalOwnAfricans?number?string(",##0"))!0}</span>
                                     </td>
                                     [#-- Total Youth --]
                                     <td class="text-center">                                 
-                                       <span>${(totalYouth?number?string(",##0"))!0}</span>
+                                       <span>${(totalOwnYouth?number?string(",##0"))!0}</span>
                                     </td>
                                    
                                     </td>
