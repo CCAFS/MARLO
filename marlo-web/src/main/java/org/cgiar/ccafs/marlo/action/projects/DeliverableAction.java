@@ -297,6 +297,7 @@ public class DeliverableAction extends BaseAction {
   private List<User> responsibleUsers;
   private Integer acceptationPercentage;
   private List<ProjectOutcome> projectOutcomes;
+  private boolean existCurrentCluster;
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -523,6 +524,25 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  /**
+   * @return true if the current cluster exist in cluster participant table
+   */
+  public boolean existCurrentClusterDB() {
+    DeliverableClusterParticipant clusterParticipant = null;
+    try {
+      clusterParticipant =
+        deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(deliverableID,
+          projectID, this.getActualPhase().getId()).get(0);
+    } catch (Exception e) {
+      Log.error(e + " error getting actual cluster participant ID");
+    }
+    if (clusterParticipant != null && clusterParticipant.getId() != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /*
    * Fill the cluster participants list if the deliverable has shared clusters
    */
@@ -580,6 +600,27 @@ public class DeliverableAction extends BaseAction {
 
   public List<Activity> getActivities() {
     return activities;
+  }
+
+  /**
+   * Get the ID of the clusterParticipantObject for this cluster in actual phase
+   * 
+   * @return clusterParticipantID or 0 if the response is empty
+   */
+  public long getActualClusterParticipantID() {
+    DeliverableClusterParticipant clusterParticipant = null;
+    try {
+      clusterParticipant =
+        deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(deliverableID,
+          projectID, this.getActualPhase().getId()).get(0);
+    } catch (Exception e) {
+      Log.error(e + " error getting actual cluster participant ID");
+    }
+    if (clusterParticipant != null && clusterParticipant.getId() != null) {
+      return clusterParticipant.getId();
+    } else {
+      return 0;
+    }
   }
 
   public List<DeliverableQualityAnswer> getAnswers() {
@@ -935,6 +976,10 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  public boolean isExistCurrentCluster() {
+    return existCurrentCluster;
+  }
+
   @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
@@ -958,7 +1003,7 @@ public class DeliverableAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
+    existCurrentCluster = false;
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
@@ -1875,7 +1920,7 @@ public class DeliverableAction extends BaseAction {
       }
 
       if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
-        // this.fillClusterParticipantsList();
+        this.fillClusterParticipantsList();
       }
 
       /*
@@ -3220,6 +3265,33 @@ public class DeliverableAction extends BaseAction {
         }
 
         participant.setActive(true);
+
+        if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+
+          // save participant information in cluster participant table for actual cluster
+          if (deliverable.getSharedDeliverables() == null || deliverable.getSharedDeliverables().isEmpty()) {
+            long clusterParticipantID = this.getActualClusterParticipantID();
+            if (clusterParticipantID != 0) {
+              DeliverableClusterParticipant clusterParticipant = new DeliverableClusterParticipant();
+              try {
+                clusterParticipant =
+                  deliverableClusterParticipantManager.getDeliverableClusterParticipantById(clusterParticipantID);
+              } catch (Exception e) {
+                Log.error(e + " error getting cluster participant by ID");
+              }
+              if (clusterParticipant != null) {
+                clusterParticipant.setDeliverable(deliverable);
+                clusterParticipant.setPhase(this.getActualPhase());
+                clusterParticipant.setProject(project);
+                clusterParticipant.setFemales(deliverable.getDeliverableParticipant().getFemales());
+                clusterParticipant.setAfrican(deliverable.getDeliverableParticipant().getAfrican());
+                clusterParticipant.setYouth(deliverable.getDeliverableParticipant().getYouth());
+                clusterParticipant.setParticipants(deliverable.getDeliverableParticipant().getParticipants());
+                deliverableClusterParticipantManager.saveDeliverableClusterParticipant(clusterParticipant);
+              }
+            }
+          }
+        }
       } else {
         participant.setEventActivityName(null);
         participant.setRepIndTypeActivity(null);
@@ -3301,6 +3373,7 @@ public class DeliverableAction extends BaseAction {
 
   public void saveProjects(Deliverable deliverableDB) {
     try {
+      DeliverableClusterParticipant deliverableClusterParticipantDelete = new DeliverableClusterParticipant();
       // Search and deleted form Information
       if (deliverableDB.getProjectDeliverableShareds() != null
         && !deliverableDB.getProjectDeliverableShareds().isEmpty()) {
@@ -3313,9 +3386,31 @@ public class DeliverableAction extends BaseAction {
           if (this.deliverable.getSharedDeliverables() == null
             || !this.deliverable.getSharedDeliverables().contains(deliverableProject)) {
             projectDeliverableSharedManager.deleteProjectDeliverableShared(deliverableProject.getId());
+
+            try {
+              // try to delete cluster participants summary
+              if (deliverableProject != null && deliverableProject.getProject() != null
+                && deliverableProject.getProject().getId() != null
+                && this.deliverable.getClusterParticipant() != null) {
+
+                deliverableClusterParticipantDelete =
+                  deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(
+                    deliverableProject.getDeliverable().getId(), deliverableProject.getProject().getId(),
+                    this.getActualPhase().getId()).get(0);
+                if (deliverableClusterParticipantDelete != null
+                  && deliverableClusterParticipantDelete.getId() != null) {
+
+                  deliverableClusterParticipantManager
+                    .deleteDeliverableClusterParticipant(deliverableClusterParticipantDelete.getId());
+                }
+              }
+            } catch (Exception e) {
+              logger.error(e + "error deleting cluster participant");
+            }
           }
         }
       }
+
     } catch (Exception e) {
       logger.error("unable to get cluster shared", e);
     }
@@ -3557,6 +3652,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setDivisions(List<PartnerDivision> divisions) {
     this.divisions = divisions;
+  }
+
+  public void setExistCurrentCluster(boolean existCurrentCluster) {
+    this.existCurrentCluster = existCurrentCluster;
   }
 
   public void setFeedbackComments(List<FeedbackQACommentableFields> feedbackComments) {
