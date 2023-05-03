@@ -177,3 +177,11 @@ a#opener {
   background-color: #2BA6CB !important;
   color: #ffffff;
 }
+
+.tb-footer{
+    font-size: 15px !important;
+}
+
+.ui-dialog{
+    width: 90% !important;
+}

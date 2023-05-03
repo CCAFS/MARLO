@@ -72,15 +72,97 @@ $(".listindicators .removeElement").on("click", function () {
 
   // Validate which cluster is sectioned in select2
 $('.listClusters .setSelect2').select2().on('change', function() {
-  searchcluster($('.listClusters .setSelect2').val());
+  reviewSharedclusters();
+  
+    if($('.listClusters ul.list li').length > 1){
+    searchcluster($('.listClusters .setSelect2').val());
+  }else{
+    var projectID = $('input[name="projectID"]').val();
+    searchcluster(projectID);
+    searchcluster($('.listClusters .setSelect2').val());
+  }
+  initialRemaining();
   });
+
+
+  $('.listClusters .setSelect2').select2().on('select2:select', function (e) {
+    // obtener la opción seleccionada
+    var data = e.params.data;
+    
+    // realizar acciones adicionales con la opción seleccionada
+    console.log(data.text + ' seleccionado');
+  });
+  
+
+
+  $('.listClusters .setSelect2').select2().on('select2:unselect', function (e) {
+    // obtener la opción eliminada
+    var data = e.params.data;
+    
+    // realizar acciones adicionales con la opción eliminada
+    console.log(data.text + ' eliminado');
+  });
+  
+
+  $('.listClusters .setSelect2').select2().on('select2:open', function () {
+    console.log('La lista desplegable se ha abierto');
+  });
+
+  $('.listClusters .setSelect2').select2().on('select2:close', function () {
+    console.log('La lista desplegable se ha cerrado');
+  });
+  
+  
+
+
+// Validate indicator removed in select2
+$(".listClusters .removeElement").on("click", function () {
+  
+
+  var idCluster = $(this).siblings('.elementRelationID').val();
+
+  var clusterID = idCluster;
+
+  // Obtener todos los elementos de entrada
+const inputs = document.querySelectorAll("div.form-group.row[clusteridparticipant='" + clusterID + "'] input");
+
+// Crear un array vacío para almacenar los valores
+const values = [];
+
+// Iterar sobre los elementos de entrada y obtener sus valores
+inputs.forEach(input => {
+  values.push(parseInt(input.value));
+});
+
+// Mostrar los valores en la consola
+// console.log(values);
+
+// console.log(element)
+  
+  
+  removeCluster(idCluster);
+
+  
+  
+});
 
   initialTotals();
   initialRemaining();
-  
+  reviewSharedclusters();
   
   
 
+}
+
+function reviewSharedclusters(){
+  if ($('.listClusters ul.list li').length > 0) {
+    $('.sharedClustersList').show()
+    //El elemento tiene elementos <li> dentro del elemento <ul> con clase "list"
+  } else {
+    $('.sharedClustersList').hide()
+    //El elemento no tiene elementos <li> dentro del elemento <ul> con clase "list"
+  }
+  
 }
 
 //Updates the values of the total fields in real time
@@ -251,22 +333,30 @@ function addcluster(infoCluster){
 
   var idCluster =infoCluster.id
   var lastValueId = parseInt($('.listClusterDM .valueId').last().attr('valueindex'))+1;
+  if (!lastValueId) {
+    lastValueId = 0;
+  }
 
   var hiddenInputId = $('<input>').attr({
     type: 'hidden',
     class: 'valueId',
     name: 'deliverable.clusterParticipant['+lastValueId+'].id',
     valueIndex: lastValueId,
+    clusteridparticipant: idCluster
   });
 
   var hiddenInputProjectId = $('<input>').attr({
     type: 'hidden',
     name: 'deliverable.clusterParticipant['+lastValueId+'].project.id',
-    value: idCluster
+    value: idCluster,
+    clusteridparticipant: idCluster
   });
 
-  // Crear el elemento div con sus hijos
-  var div = $('<div>').addClass('form-group row');
+  // Create the div element with its children
+  var div = $('<div>').attr({
+    class: 'form-group row',
+    clusteridparticipant: idCluster
+  });
   var col1 = $('<div>').addClass('col-md-2');
   var textArea1 = $('<div>').addClass('text-area-container').text(infoCluster.acronym);
   col1.append(textArea1);
@@ -334,6 +424,22 @@ function addcluster(infoCluster){
   $('.block-involveParticipants .listClusterDM').append(hiddenInputProjectId);
   $('.block-involveParticipants .listClusterDM').append(div);
   initialTotals()
+}
+
+function removeCluster(idCluster){
+  
+  if($('.listClusters ul.list li').length == 1){
+    var projectID = $('input[name="projectID"]').val();
+    $('.listClusterDM [clusteridparticipant="' + idCluster + '"]').remove();
+    $('.listClusterDM [clusteridparticipant="' + projectID + '"]').remove();
+    initialRemaining();
+    $('.sharedClustersList').hide();
+  }else{
+    $('.listClusterDM [clusteridparticipant="' + idCluster + '"]').remove();
+    initialRemaining();
+  }
+  
+  
 }
 
 function validateRequiredTagToCategory() {
@@ -1610,14 +1716,11 @@ function getCluster(idCluster) {
     'data': data,
     'dataType': "json",
     success: function (metadata) {
-      console.log('success');
       addcluster(metadata.projectMap);
     },
     complete: function () {
-      console.log('complete');
     },
     error: function () {
-      console.log("error");
     }
   });
 
