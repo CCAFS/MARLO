@@ -1921,13 +1921,12 @@ public class DeliverableAction extends BaseAction {
 
       if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
         this.fillClusterParticipantsList();
+        existCurrentCluster = this.existCurrentClusterDB();
       }
-      this.existCurrentClusterDB();
 
       /*
        * get feedback comments
        */
-
       try {
         if (this.hasSpecificities(this.feedbackModule())) {
 
