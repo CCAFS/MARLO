@@ -14,7 +14,7 @@
   ] 
 /] 
 [#assign customCSS = [ 
-  "${baseUrlMedia}/css/projects/projectContributionCrp.css?20230309",
+  "${baseUrlMedia}/css/projects/projectContributionCrp.css?20230502",
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20221104A",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
@@ -252,8 +252,7 @@
                               [#-- progress targets --]
                               <br>
                               [#if year == currentCycleYear && projectOutcome.crpProgramOutcome.indicators?size != 0]
-                                <h5 class="sectionSubTitle">Additional questions to Key Performance Indicator
-</h5>
+                                <h5 class="sectionSubTitle">[@s.text name="projectOutcome.additionalQuestions" /]</h5>
                                 [#--  <h4 class="headTitle">Progress to Targets</h4>--]
 
                                 [#if reportingActive]
@@ -575,8 +574,135 @@
     
         </div>
         <br>
-        [#-- capdev --]
-        [#if totalParticipants?number > 0 && year == currentCycleYear]
+        [#-- capdev with shared cluster specificity --]
+        [#if totalParticipants?number > 0 && year == currentCycleYear && action.hasSpecificities('deliverable_shared_clusters_trainees_active')]
+          <div class="form-group deliverableTypeMessage">
+            <div id="dialog" title="Capacity development" style="display: none">
+                                
+                <div class="borderBox">
+                      [#-- CapDevCharts--]
+                        <div class="form-group row">
+                          <div class="col-md-12" display="flex">                    
+                              <br>
+                              <table id="trainees" class="annual-report-table table-border">
+                              <thead>
+                                <tr>                                                                                                 
+                                  <th id="tb-type" class="color-bg_top_table text-center">[@s.text name="involveParticipants.sharedClusters.project" /]</th>
+                                  <th id="tb-type" class="color-bg_top_table text-center">[@s.text name="involveParticipants.sharedClusters.participants" /]</th>        
+                                  <th id="tb-type" class="color-bg_top_table text-center">[@s.text name="involveParticipants.sharedClusters.females" /]</th>
+                                  <th id="tb-type" class="color-bg_top_table text-center">[@s.text name="involveParticipants.sharedClusters.africans" /]</th>
+                                  <th id="tb-type" class="color-bg_top_table text-center">[@s.text name="involveParticipants.sharedClusters.youth" /]</th>
+                                </tr>
+                              </thead>
+                              <tbody style="font-size: 24px;">
+                              [#-- Loading --]
+                                  <tr>          
+                                    [#-- Cluster --]
+                                    <td class="text-center">
+                                       <span>${(project.acronym)!''}</span>
+                                    </td>
+                                    [#-- Total Participants --]
+                                    <td class="text-center">
+                                       <span>${(totalOwnParticipants?number?string(",##0"))!0}</span>
+                                    </td>                              
+                                    [#-- Total Females --]
+                                    <td class="text-center">
+                                       <span>${(totalOwnFemales?number?string(",##0"))!0}</span>
+                                    </td>                                      
+                                    [#-- Total Africans --]
+                                    <td class="text-center">
+                                       <span>${(totalOwnAfricans?number?string(",##0"))!0}</span>
+                                    </td>
+                                    [#-- Total Youth --]
+                                    <td class="text-center">                                 
+                                       <span>${(totalOwnYouth?number?string(",##0"))!0}</span>
+                                    </td>
+                                   
+                                    </td>
+                                  </tr>
+                      
+                              </tbody>
+                              </table>                    
+                                                                                  
+                          </div>
+                          <!--<div class="col-md-8">
+                            [#-- Trainees in Short-Term --]
+                            [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
+                            <div id="chart12" class="chartBox simpleBox">
+                              [#assign chartData = [
+                                {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
+                                {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
+                              ] /] 
+                              <ul class="chartData" style="display:none">
+                                <li>
+                                  <span>[@s.text name="{customLabel}" /]</span>
+                                  <span>[@s.text name="Short-Term" /]</span>
+                                  <span class="json">{"role":"annotation"}</span>
+                                </li>
+                                [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
+                                  [#list chartData as data]
+                                    <li>
+                                      <span>${data.name}</span>
+                                      <span class="number">${data.value}</span>
+                                      <span>${data.value}</span>
+                                    </li>
+                                  [/#list]
+                                [/#if]
+                              </ul>
+                            </div>
+                            [/#if]
+                            <br />
+                            [#-- Trainees in Long-Term --]
+                            [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
+                            <div id="chart13" class="chartBox simpleBox">
+                              [#assign chartData = [
+                                {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
+                                {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
+                              ] /] 
+                              <ul class="chartData" style="display:none">
+                                <li>
+                                  <span>[@s.text name="chart13" /]</span>
+                                  <span>[@s.text name="Long-Term" /]</span>
+                                  <span class="json">{"role":"annotation"}</span>
+                                  <span>[@s.text name="PhD" /]</span>
+                                  <span class="json">{"role":"annotation"}</span>
+                                </li>
+                                [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
+                                  [#list chartData as data]
+                                    <li><span>${data.name}</span>
+                                    <span class="number">${data.value}</span>
+                                    <span>${data.value}</span>
+                                    <span class="number">${data.valuePhD}</span>
+                                    <span>${data.valuePhD}</span></li>
+                                  [/#list]
+                                [/#if]
+                              </ul>
+                            </div>
+                            [/#if]
+                          </div>-->
+                        </div>
+                        
+                        [#-- Deliverables Participants & Trainees --]
+                        <div class="form-group">
+                          <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Deliverables Trainees" /]</h4>
+                          <div class="viewMoreSyntesis-block">                    
+                            <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
+                              [@tableParticipantsTrainingsMacroSharedCluster list=(deliverableParticipants)![] /]
+                            </div>
+                          </div>
+                        </div> 
+                </div>  
+              
+            
+            </div> <!-- End dialog-->
+
+            
+            <div class="clearfix"></div>
+          </div>
+        [/#if]
+        
+        [#-- capdev without shared cluster specificity --]
+        [#if totalParticipants?number > 0 && year == currentCycleYear && action.hasSpecificities('deliverable_shared_clusters_trainees_active')]
           <div class="form-group deliverableTypeMessage">
             <div id="dialog" title="Capacity development" style="display: none">
                 
@@ -1056,6 +1182,137 @@
           </td>
         </tr>
       [/#list]
+    [#else]
+      <tr>
+        <td class="text-center" colspan="5">
+          <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+        </td>
+      </tr>
+    [/#if]
+    </tbody>
+  </table>
+[/#macro]
+
+[#macro tableParticipantsTrainingsMacroSharedCluster list]
+  <table id="tableParticipantsTrainingsMacro" class="annual-report-table table-border">
+    <thead>
+      <tr class="subHeader">
+        <th colspan="5" id="tb-type-1">[@s.text name="involveParticipants.sharedClusters.popup.subtitle1" /]</th>
+        <th colspan="6" id="tb-type-2" class="dark-bg_table_values">[@s.text name="involveParticipants.sharedClusters.popup.subtitle2" /]</th>
+      </tr>
+      <tr class="subHeader">
+        <th id="tb-type">[@s.text name="involveParticipants.sharedClusters.popup.activity" /]</th>
+        <th id="tb-type">[@s.text name="involveParticipants.sharedClusters.popup.participants" /]</th>        
+        <th id="tb-type">[@s.text name="involveParticipants.sharedClusters.popup.females" /]</th>
+        <th id="tb-type">[@s.text name="involveParticipants.sharedClusters.popup.africans" /]</th>
+        <th id="tb-type">[@s.text name="involveParticipants.sharedClusters.popup.youth" /]</th>       
+        
+        <th id="tb-type" class="dark-bg_table_values">[@s.text name="Total Trainees" /]</th>
+        <th id="tb-type" class="dark-bg_table_values">[@s.text name="Females" /]</th>
+        <th id="tb-type" class="dark-bg_table_values">[@s.text name="Africans" /]</th>
+        <th id="tb-type" class="dark-bg_table_values">[@s.text name="Youth" /]</th>
+        <th id="tb-title" class="dark-bg_table_text">[@s.text name="Activity Type" /]</th>        
+        <th id="tb-organization-type" class="dark-bg_table_text">[@s.text name="Trainees Type" /]</th>
+        [#--  
+        <th id="tb-training-period">[@s.text name="Event Focus" /]</th>
+        <th id="tb-training-period">[@s.text name="Likely Outcomes" /]</th>
+        --]
+      </tr>
+    </thead>
+    <tbody>
+    [#-- Loading --]
+    [#if list?has_content]
+      [#list list as item]
+        [#local URL][@s.url namespace="/clusters" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${(item.deliverable.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        <tr>
+          [#-- Title of Innovation --]
+          <td class="">
+            [@utils.tableText value=(item.eventActivityName)!"" /] 
+            [#-- Deliverable ID --]
+            <br /><i style="opacity:0.5"><small>(From D${(item.deliverable.id)!''})</small></i>
+            <a href="${URL}" target="_blank" class="pull-right"> <span class="glyphicon glyphicon-new-window"></span> </a>
+          </td>
+          
+          [#-- Own participants --]
+          <td class="text-center">
+              ${(item.ownTrainess?number?string(",##0"))!0}
+          </td>
+          [#-- Own Females --]
+          <td class="text-center">
+              ${(item.ownFemales?number?string(",##0"))!0}
+          </td>
+          [#-- Own African --]
+          <td class="text-center">
+              ${(item.ownAfricans?number?string(",##0"))!0}
+          </td>
+          [#-- Own Youth --]
+          <td class="text-center">          
+              ${(item.ownYouth?number?string(",##0"))!0}
+          </td>
+          
+          [#assign knowFemale = (item.dontKnowFemale)!false]
+          [#assign hasFemale = (item.females?has_content)!false]
+          [#assign isEstimateTotalParticipants = (item.estimateParticipants?has_content)!false]
+          [#assign isEstimateFemales = (item.estimateFemales?has_content)!false]
+          [#assign isEstimateAfricans = (item.estimateAfrican?has_content)!false]
+          [#assign isEstimateYouth = (item.estimateYouth?has_content)!false]
+          [#-- Total Participants --]
+          <td class="text-center dark-bg_table_values">
+            ${(item.participants?number?string(",##0"))!0}
+            [#if isEstimateTotalParticipants ]
+              <i><small> (Estimated value)</small></i>
+            [/#if]
+          </td>
+          [#-- Number of females --]
+          <td class="text-center dark-bg_table_values">
+          [#if knowFemale && !hasFemale ]
+            <i><small>Not specified</small></i>
+            [#else]
+            ${(item.females?number?string(",##0"))!0}
+            [#if isEstimateFemales ]
+              <i><small> (Estimated value)</small></i>
+            [/#if]
+          [/#if]
+          </td>
+          [#-- Number of african --]
+          <td class="text-center dark-bg_table_values">
+            ${(item.african?number?string(",##0"))!0}
+            [#--<p><i><small>(${(item.africanPercentage?number?string(",##0"))!0}% )</small></i><p>--]
+            [#if isEstimateAfricans ]
+              <i><small> (Estimated value)</small></i>
+            [/#if]
+          </td>
+          [#-- Number of youth --]
+          <td class="text-center dark-bg_table_values">
+            ${(item.youth?number?string(",##0"))!0}
+            [#--<p><i><small>(${(item.youthPercentage?number?string(",##0"))!0}% )</small></i></p>--]
+            [#if isEstimateYouth ]
+              <i><small> (Estimated value)</small></i>
+            [/#if]
+          </td>
+          [#-- Activity Type --]
+          <td class="dark-bg_table_text">
+            <small>[@utils.tableText value=(item.repIndTypeActivity.name)!"" /]</small>
+          </td>          
+          [#-- Type of participants --]
+          <td class="text-center dark-bg_table_text">
+            [@utils.tableText value=(item.repIndTypeParticipant.name)!"" /]
+          </td>          
+                  
+          </td>
+        </tr>
+      [/#list]
+        <tr class="">
+          <th id="tb-footer" class="">[@utils.tableText "Total Reported" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalOwnParticipants)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalOwnFemales)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalOwnAfricans)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalOwnYouth)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalParticipants)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalAfricans)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalFemales)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalYouth)!"" /]</th>
+        </tr>
     [#else]
       <tr>
         <td class="text-center" colspan="5">

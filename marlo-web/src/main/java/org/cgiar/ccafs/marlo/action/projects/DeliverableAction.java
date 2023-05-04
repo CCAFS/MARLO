@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableClusterParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpOutcomeManager;
@@ -82,6 +83,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
+import org.cgiar.ccafs.marlo.data.model.DeliverableClusterParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome;
@@ -164,6 +166,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -214,6 +217,7 @@ public class DeliverableAction extends BaseAction {
   private RepositoryChannelManager repositoryChannelManager;
   private DeliverableIntellectualAssetManager deliverableIntellectualAssetManager;
   private DeliverableParticipantManager deliverableParticipantManager;
+  private DeliverableClusterParticipantManager deliverableClusterParticipantManager;
   private RepIndTypeActivityManager repIndTypeActivityManager;
   private RepIndTypeParticipantManager repIndTypeParticipantManager;
   private RepIndGeographicScopeManager repIndGeographicScopeManager;
@@ -293,6 +297,7 @@ public class DeliverableAction extends BaseAction {
   private List<User> responsibleUsers;
   private Integer acceptationPercentage;
   private List<ProjectOutcome> projectOutcomes;
+  private boolean existCurrentCluster;
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -331,7 +336,8 @@ public class DeliverableAction extends BaseAction {
     ProjectOutcomeManager projectOutcomeManager, DeliverableProjectOutcomeManager deliverableProjectOutcomeManager,
     DeliverableCrpOutcomeManager deliverableCrpOutcomeManager,
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
-    FeedbackQACommentManager feedbackQACommentManager) {
+    FeedbackQACommentManager feedbackQACommentManager,
+    DeliverableClusterParticipantManager deliverableClusterParticipantManager) {
     super(config);
     this.activityManager = activityManager;
     this.deliverableManager = deliverableManager;
@@ -364,6 +370,7 @@ public class DeliverableAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
     this.deliverableIntellectualAssetManager = deliverableIntellectualAssetManager;
     this.deliverableParticipantManager = deliverableParticipantManager;
+    this.deliverableClusterParticipantManager = deliverableClusterParticipantManager;
     this.repIndTypeActivityManager = repIndTypeActivityManager;
     this.repIndTypeParticipantManager = repIndTypeParticipantManager;
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
@@ -517,6 +524,76 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  /**
+   * @return true if the current cluster exist in cluster participant table
+   */
+  public boolean existCurrentClusterDB() {
+    DeliverableClusterParticipant clusterParticipant = null;
+    try {
+      clusterParticipant =
+        deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(deliverableID,
+          projectID, this.getActualPhase().getId()).get(0);
+    } catch (Exception e) {
+      Log.error(e + " error getting actual cluster participant ID");
+    }
+    if (clusterParticipant != null && clusterParticipant.getId() != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /*
+   * Fill the cluster participants list if the deliverable has shared clusters
+   */
+  public void fillClusterParticipantsList() {
+    if (deliverable.getSharedDeliverables() != null && !deliverable.getSharedDeliverables().isEmpty()) {
+      for (ProjectDeliverableShared projectDeliverable : deliverable.getSharedDeliverables()) {
+
+        if (projectDeliverable.getProject().getId() != null) {
+          Project project = projectManager.getProjectById(projectDeliverable.getProject().getId());
+          if (project != null) {
+            projectDeliverable.setProject(project);
+          }
+        }
+        DeliverableClusterParticipant participant = new DeliverableClusterParticipant();
+        participant.setProject(projectDeliverable.getProject());
+        participant.setDeliverable(deliverable);
+        participant.setPhase(this.getActualPhase());
+
+        boolean projectExists = false;
+        boolean actualProjectExists = false;
+        if (deliverable.getClusterParticipant() != null && !deliverable.getClusterParticipant().isEmpty()) {
+          for (DeliverableClusterParticipant clusterParticipant : deliverable.getClusterParticipant()) {
+            if (clusterParticipant.getProject() != null && clusterParticipant.getProject().getId() != null
+              && clusterParticipant.getProject().getId().equals(projectDeliverable.getProject().getId())) {
+              projectExists = true;
+            }
+
+            if (clusterParticipant.getProject() != null && clusterParticipant.getProject().getId() != null
+              && clusterParticipant.getProject().getId().equals(project.getId())) {
+              actualProjectExists = true;
+            }
+          }
+        }
+        if (!projectExists) {
+          participant = deliverableClusterParticipantManager.saveDeliverableClusterParticipant(participant);
+          deliverable.getClusterParticipant().add(participant);
+        }
+
+        if (!actualProjectExists) {
+          DeliverableClusterParticipant thisClusterParticipant = new DeliverableClusterParticipant();
+          thisClusterParticipant.setProject(project);
+          thisClusterParticipant.setDeliverable(deliverable);
+          thisClusterParticipant.setPhase(this.getActualPhase());
+          thisClusterParticipant =
+            deliverableClusterParticipantManager.saveDeliverableClusterParticipant(thisClusterParticipant);
+          deliverable.getClusterParticipant().add(thisClusterParticipant);
+        }
+      }
+    }
+  }
+
   public Integer getAcceptationPercentage() {
     return acceptationPercentage;
   }
@@ -525,14 +602,35 @@ public class DeliverableAction extends BaseAction {
     return activities;
   }
 
+  /**
+   * Get the ID of the clusterParticipantObject for this cluster in actual phase
+   * 
+   * @return clusterParticipantID or 0 if the response is empty
+   */
+  public long getActualClusterParticipantID() {
+    DeliverableClusterParticipant clusterParticipant = null;
+    try {
+      clusterParticipant =
+        deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(deliverableID,
+          projectID, this.getActualPhase().getId()).get(0);
+    } catch (Exception e) {
+      Log.error(e + " error getting actual cluster participant ID");
+    }
+    if (clusterParticipant != null && clusterParticipant.getId() != null) {
+      return clusterParticipant.getId();
+    } else {
+      return 0;
+    }
+  }
+
   public List<DeliverableQualityAnswer> getAnswers() {
     return answers;
   }
 
+
   public List<DeliverableQualityAnswer> getAnswersDataDic() {
     return answersDataDic;
   }
-
 
   private Path getAutoSaveFilePath() {
 
@@ -878,6 +976,10 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  public boolean isExistCurrentCluster() {
+    return existCurrentCluster;
+  }
+
   @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
@@ -901,7 +1003,7 @@ public class DeliverableAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
+    existCurrentCluster = false;
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
@@ -1202,6 +1304,13 @@ public class DeliverableAction extends BaseAction {
             .collect(Collectors.toList())));
         }
 
+        // Deliverable Cluster participants
+        if (deliverable.getDeliverableClusterParticipants() != null) {
+          deliverable.setClusterParticipant(new ArrayList<>(deliverable.getDeliverableClusterParticipants().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .collect(Collectors.toList())));
+        }
+
         // Deliverable Countries List
         if (deliverable.getDeliverableLocations() == null) {
           deliverable.setCountries(new ArrayList<>());
@@ -1340,7 +1449,7 @@ public class DeliverableAction extends BaseAction {
             List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
-            if (deliverableParticipants.size() > 0) {
+            if (!deliverableParticipants.isEmpty()) {
               deliverable.setDeliverableParticipant(
                 deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipants.get(0).getId()));
 
@@ -1810,10 +1919,14 @@ public class DeliverableAction extends BaseAction {
           .sorted((t1, t2) -> t1.getId().compareTo(t2.getId())).collect(Collectors.toList()));
       }
 
+      if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+        this.fillClusterParticipantsList();
+        existCurrentCluster = this.existCurrentClusterDB();
+      }
+
       /*
        * get feedback comments
        */
-
       try {
         if (this.hasSpecificities(this.feedbackModule())) {
 
@@ -1916,6 +2029,10 @@ public class DeliverableAction extends BaseAction {
           deliverable.getDeliverableParticipant().setRepIndTypeParticipant(null);
           deliverable.getDeliverableParticipant().setRepIndTrainingTerm(null);
           deliverable.setDeliverableParticipant(null);
+        }
+
+        if (deliverable.getClusterParticipant() != null) {
+          deliverable.getClusterParticipant().clear();
         }
 
         if (deliverable.getCountries() != null) {
@@ -2050,6 +2167,9 @@ public class DeliverableAction extends BaseAction {
         this.saveDataSharing();
         this.saveUsers();
         this.saveParticipant();
+        if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+          this.saveDeliverableClusterParticipant();
+        }
       }
 
       /*
@@ -2434,6 +2554,69 @@ public class DeliverableAction extends BaseAction {
           deliverableActivityManager.saveDeliverableActivity(deliverableActivity);
           // This add projectFocus to generate correct auditlog.
           deliverablePrew.getDeliverableActivities().add(deliverableActivity);
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Deliverable Cluster Participants Information
+   *
+   * @param deliverable
+   * @param phase
+   */
+  public void saveDeliverableClusterParticipant() {
+
+    // Search and deleted form Information
+    /*
+     * if (deliverable.getDeliverableClusterParticipants() != null
+     * && !deliverable.getDeliverableClusterParticipants().isEmpty()) {
+     * List<DeliverableClusterParticipant> clusterParticipant =
+     * new ArrayList<>(deliverable.getDeliverableClusterParticipants().stream()
+     * .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(this.getActualPhase().getId()))
+     * .collect(Collectors.toList()));
+     * for (DeliverableClusterParticipant participant : clusterParticipant) {
+     * if (this.deliverable.getClusterParticipant() == null
+     * || !this.deliverable.getClusterParticipant().contains(participant)) {
+     * deliverableClusterParticipantManager.deleteDeliverableClusterParticipant(participant.getId());
+     * }
+     * }
+     * }
+     */
+    // Save form Information
+    if (this.deliverable.getClusterParticipant() != null) {
+      DeliverableClusterParticipant participantSave;
+      for (DeliverableClusterParticipant deliverableParticipant : deliverable.getClusterParticipant()) {
+        if (deliverableParticipant != null) {
+          participantSave = new DeliverableClusterParticipant();
+          if (deliverableParticipant.getId() != null) {
+            participantSave =
+              deliverableClusterParticipantManager.getDeliverableClusterParticipantById(deliverableParticipant.getId());
+          } else {
+            try {
+              if (deliverableParticipant.getProject() != null && deliverableParticipant.getProject().getId() != null) {
+                participantSave = deliverableClusterParticipantManager
+                  .getDeliverableClusterParticipantByDeliverableProjectPhase(deliverable.getId(),
+                    deliverableParticipant.getProject().getId(), this.getActualPhase().getId())
+                  .get(0);
+              }
+            } catch (Exception e) {
+              Log.error(e + "error getting cluster participant id");
+            }
+
+          }
+          participantSave.setParticipants(deliverableParticipant.getParticipants());
+          participantSave.setFemales(deliverableParticipant.getFemales());
+          participantSave.setAfrican(deliverableParticipant.getAfrican());
+          participantSave.setYouth(deliverableParticipant.getYouth());
+          participantSave.setDeliverable(deliverable);
+          participantSave.setPhase(this.getActualPhase());
+          if (deliverableParticipant.getProject() != null && deliverableParticipant.getProject().getId() != null) {
+            participantSave.setProject(deliverableParticipant.getProject());
+
+          }
+          deliverableClusterParticipantManager.saveDeliverableClusterParticipant(participantSave);
+
         }
       }
     }
@@ -2878,8 +3061,9 @@ public class DeliverableAction extends BaseAction {
         dissemination.setConfidential(null);
         dissemination.setConfidentialUrl(null);
       }
-      
-      if (deliverable.getDissemination().getAlreadyDisseminated() != null && deliverable.getDissemination().getAlreadyDisseminated() == true) {
+
+      if (deliverable.getDissemination().getAlreadyDisseminated() != null
+        && deliverable.getDissemination().getAlreadyDisseminated() == true) {
         dissemination.setConfidential(null);
       }
 
@@ -3081,6 +3265,33 @@ public class DeliverableAction extends BaseAction {
         }
 
         participant.setActive(true);
+
+        if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+
+          // save participant information in cluster participant table for actual cluster
+          if (deliverable.getSharedDeliverables() == null || deliverable.getSharedDeliverables().isEmpty()) {
+            long clusterParticipantID = this.getActualClusterParticipantID();
+            if (clusterParticipantID != 0) {
+              DeliverableClusterParticipant clusterParticipant = new DeliverableClusterParticipant();
+              try {
+                clusterParticipant =
+                  deliverableClusterParticipantManager.getDeliverableClusterParticipantById(clusterParticipantID);
+              } catch (Exception e) {
+                Log.error(e + " error getting cluster participant by ID");
+              }
+              if (clusterParticipant != null) {
+                clusterParticipant.setDeliverable(deliverable);
+                clusterParticipant.setPhase(this.getActualPhase());
+                clusterParticipant.setProject(project);
+                clusterParticipant.setFemales(deliverable.getDeliverableParticipant().getFemales());
+                clusterParticipant.setAfrican(deliverable.getDeliverableParticipant().getAfrican());
+                clusterParticipant.setYouth(deliverable.getDeliverableParticipant().getYouth());
+                clusterParticipant.setParticipants(deliverable.getDeliverableParticipant().getParticipants());
+                deliverableClusterParticipantManager.saveDeliverableClusterParticipant(clusterParticipant);
+              }
+            }
+          }
+        }
       } else {
         participant.setEventActivityName(null);
         participant.setRepIndTypeActivity(null);
@@ -3162,6 +3373,7 @@ public class DeliverableAction extends BaseAction {
 
   public void saveProjects(Deliverable deliverableDB) {
     try {
+      DeliverableClusterParticipant deliverableClusterParticipantDelete = new DeliverableClusterParticipant();
       // Search and deleted form Information
       if (deliverableDB.getProjectDeliverableShareds() != null
         && !deliverableDB.getProjectDeliverableShareds().isEmpty()) {
@@ -3174,9 +3386,31 @@ public class DeliverableAction extends BaseAction {
           if (this.deliverable.getSharedDeliverables() == null
             || !this.deliverable.getSharedDeliverables().contains(deliverableProject)) {
             projectDeliverableSharedManager.deleteProjectDeliverableShared(deliverableProject.getId());
+
+            try {
+              // try to delete cluster participants summary
+              if (deliverableProject != null && deliverableProject.getProject() != null
+                && deliverableProject.getProject().getId() != null
+                && this.deliverable.getClusterParticipant() != null) {
+
+                deliverableClusterParticipantDelete =
+                  deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(
+                    deliverableProject.getDeliverable().getId(), deliverableProject.getProject().getId(),
+                    this.getActualPhase().getId()).get(0);
+                if (deliverableClusterParticipantDelete != null
+                  && deliverableClusterParticipantDelete.getId() != null) {
+
+                  deliverableClusterParticipantManager
+                    .deleteDeliverableClusterParticipant(deliverableClusterParticipantDelete.getId());
+                }
+              }
+            } catch (Exception e) {
+              logger.error(e + "error deleting cluster participant");
+            }
           }
         }
       }
+
     } catch (Exception e) {
       logger.error("unable to get cluster shared", e);
     }
@@ -3418,6 +3652,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setDivisions(List<PartnerDivision> divisions) {
     this.divisions = divisions;
+  }
+
+  public void setExistCurrentCluster(boolean existCurrentCluster) {
+    this.existCurrentCluster = existCurrentCluster;
   }
 
   public void setFeedbackComments(List<FeedbackQACommentableFields> feedbackComments) {

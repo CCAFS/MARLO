@@ -206,7 +206,7 @@
  [/#if]
   
 <div class="simpleBox">
-  <div class="form-group row yesNoInputDeliverable">
+  <div class="form-group row yesNoInputDeliverable yesNoTrainees">
   <span class="col-md-9">
     <label class="yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=(reportingActive) /]</label>
     <p><small>[@s.text name="project.deliverable.dissemination.involveParticipantsSub" /] </small></p>
@@ -338,9 +338,195 @@
       [@customForm.textArea name="${customName}.likelyOutcomes" i18nkey="involveParticipants.likelyOutcomes" className="" required=editable editable=editable /]
     </div>
     
+    [@deliverableMacros.deliverableClusterParticipantsMacro /]
+    
   </div>
 </div>
 [/#macro]
+
+
+
+[#-- deliverable cluster participants --]
+[#macro deliverableClusterParticipantsMacro list=(deliverable.clusterParticipant)![]]
+[#local customName = "deliverable.clusterParticipant" /]
+[#-- [#if list?has_content] --]
+<div class="sharedClustersList">
+  <br>
+  <span class="">
+    <label class="yesNoLabel" for="">[@s.text name="involveParticipants.sharedClusters" /] </label>
+    <p><small>[@s.text name="involveParticipants.sharedClusters.help" /] </small></p>
+  </span>
+  <div class="simpleBox">
+
+    <div class="block-involveParticipants">
+      
+          <div class="form-group row">
+            <div class="col-md-2">
+              <div class="text-area-container">
+              [@customForm.text name="involveParticipants.sharedClusters.project" /]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2">
+              <div class="text-area-container">
+              [@customForm.text name="involveParticipants.sharedClusters.participants" /][@customForm.req required=reportingActive /]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2 femaleNumbers">
+              <div class="text-area-container">
+              [@customForm.text name="involveParticipants.sharedClusters.females" /][@customForm.req required=reportingActive /]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2">
+              <div class="text-area-container">
+              [@customForm.text name="involveParticipants.sharedClusters.africans" /][@customForm.req required=reportingActive /]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2 femaleNumbers">
+              <div class="text-area-container">
+              [@customForm.text name="involveParticipants.sharedClusters.youth" /][@customForm.req required=reportingActive /]
+              </div>
+              <br>
+            </div>
+          </div>
+          <div class="listClusterDM">
+        [#assign index = 0]
+        [#list list as cluster]
+          <input type="hidden" name="${customName}[${index}].id" class="valueId" value="${(cluster.id)!0}" valueIndex="${(cluster.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}" />
+          <input type="hidden" name="${customName}[${index}].project.id" value="${(cluster.project.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}"/>
+          <div class="form-group row" clusterIdParticipant="${(cluster.project.id)!0}">
+            <div class="col-md-2">
+              <div class="text-area-container">
+              [@customForm.text name=(list[index].project.acronym)!"" /]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2 participantsNumbers">
+              <div class="text-area-container">
+              [@customForm.input name="${customName}[${index}].participants" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2 femaleNumbers">
+              <div class="text-area-container">
+                [@customForm.input name="${customName}[${index}].females" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2 africanNumbers">
+              <div class="text-area-container">
+                [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2 youthNumbers">
+              <div class="text-area-container">
+                [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+              </div>
+              <br>
+            </div>
+          </div>
+        [#assign index = index + 1]
+        [/#list]
+          </div>
+        <hr />
+                <div class="form-group row">
+    <div class="col-md-2">
+      <div class="text-area-container">
+        Total report</div>
+      <br>
+    </div>
+    <div class="col-md-2">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div class="totalTrainees">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+    <div class=" col-md-2 femaleNumbers">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div class="totalFemales">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+    <div class=" col-md-2">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div class="totalAfrican">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+    <div class=" col-md-2 femaleNumbers">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div  class="totalYouth">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+  </div>
+  <div class="form-group row remaining-container" style="
+      color: #FFC300;
+  ">
+    <div class="col-md-2">
+      <div class="text-area-container " style="font-weight: 600;">
+        Remaining </div>
+      <br>
+    </div>
+    <div class="col-md-2">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div class="remainingTrainees">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+    <div class=" col-md-2 femaleNumbers">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div class="remainingFemales">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+    <div class=" col-md-2">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div class="remainingAfrican">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+    <div class=" col-md-2 femaleNumbers">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div class="remainingYouth">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+  </div>
+      <div style="display: flex;" class="alertParticipant">
+        <div class="noteAlert" style="font-weight: 700;color: #ffc800;">Alert:&nbsp;</div>
+        <div class="textNote">  The remaining fields must be 0, please distribute the trainees in the shared clusters</div>
+      </div>
+      <div style="display: none" class="doneParticipant">
+        <div class="noteAlert" style="font-weight: 700;color: #8ea786;">Great:&nbsp;</div>
+        <div class="textNote" style="color: #333;">  The sum of the Participants/Trainees are equal to the total reported</div>
+      </div>
+    </div>
+  </div>
+</div>
+[#--[/#if] --]
+[/#macro]
+
 
 
 [#macro alreadyDisseminatedMacro ]

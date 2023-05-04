@@ -166,3 +166,22 @@ a#opener {
 #guide-button{
     display: block;
 }
+
+.dark-bg_table_values {
+  background-color: #f0eded !important;
+}
+.dark-bg_table_text {
+  background-color: #f5f2f2 !important;
+}
+.color-bg_top_table {
+  background-color: #2BA6CB !important;
+  color: #ffffff;
+}
+
+.tb-footer{
+    font-size: 15px !important;
+}
+
+.ui-dialog{
+    width: 90% !important;
+}

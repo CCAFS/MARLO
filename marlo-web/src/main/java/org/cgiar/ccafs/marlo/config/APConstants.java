@@ -83,6 +83,9 @@ public final class APConstants {
 
   public static final String CRP_FS_W1W2_COFINANCING = "crp_fs_w1w2_cofinancing";
   public static final String FINANCE_CODE = "financeCode";
+  public static final String DISSEMINATION_URL = "dissemination_url";
+  public static final String HANDLE = "handle";
+  public static final String DOI = "doi";
   public static final String CRP_PL_ROLE = "crp_pl_rol";
   public static final String CRP_PLANNING_ACTIVE = "crp_planning_active";
   public static final String CRP_PLANNING_YEAR = "crp_planning_year";
@@ -142,6 +145,8 @@ public final class APConstants {
   public static final String JOURNAL_ARTICLES_INDICATOR_POPUP_ACTIVE = "journal_articles_indicator_popup_active";
   public static final String OICR_SCORE_FIELD_ACTIVE = "oicr_score_field_active";
   public static final String MELIA_SCORE_FIELD_ACTIVE = "melia_score_field_active";
+  public static final String DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE =
+    "deliverable_shared_clusters_trainees_active";
 
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =

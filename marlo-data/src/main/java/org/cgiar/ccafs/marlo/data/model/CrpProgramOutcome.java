@@ -136,7 +136,11 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
 
 
   public String getComposedName() {
-    return this.getCrpProgram().getAcronym() + " Outcome: " + description;
+    if (this.getCrpProgram() != null && this.getCrpProgram().getAcronym() != null && description != null) {
+      return this.getCrpProgram().getAcronym() + " Outcome: " + description;
+    } else {
+      return "-";
+    }
   }
 
 
