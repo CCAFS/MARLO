@@ -843,7 +843,7 @@ function onSelectElement() {
   }
 }
 
-function onClickRemoveElement() {
+async function onClickRemoveElement() {
   var removeElementType = $(this).classParam('removeElementType');
   var $parent = $(this).parent();
   var $select = $(this).parents(".panel-body").find('select');
@@ -854,6 +854,8 @@ function onClickRemoveElement() {
   var maxLimit = $select.classParam('maxLimit');
   var id = $parent.find(".elementRelationID").val();
   var name = $parent.find(".elementName").text();
+  var $parentCluster = $(this).parent().parents().eq(3);
+  var hasListClusters = $parentCluster.hasClass('listClusters');
   var $primaryDisplay = $(this).parents(".elementsListComponent").find('div.primarySelectorDisplayBox');
   var eventData = [
       id, name
@@ -864,6 +866,28 @@ function onClickRemoveElement() {
   if(eventRemove.isDefaultPrevented()) {
     return;
   }
+
+    
+    if(hasListClusters){
+      const inputs = document.querySelectorAll("div.form-group.row[clusteridparticipant='" + id + "'] input");
+      const values = [];
+      inputs.forEach(input => {
+        values.push(parseInt(input.value));
+      })
+      var sumData = values.reduce((a, b) => a + b, 0);
+      if(sumData > 0){       
+        try {
+          // Wait for the user to click on the modal
+          await alertRemoveCluster();
+        } catch (error) {
+          // User clicked on the close button instead of the remove button
+          return;
+        }
+        
+      }     
+      removeCluster(id);
+      
+    }
 
   $parent.slideUp(300, function() {
     $parent.remove();
@@ -901,6 +925,116 @@ function onClickRemoveElement() {
     }
   });
 }
+
+function alertRemoveCluster() {
+  return new Promise(function(resolve, reject) {
+    let modal = $('.modal-evidences');
+    modal.show();
+
+    $('.close-modal-evidences').on('click', function() {
+      modal.hide();
+      if ($(this).hasClass('remove-cluster-alert')) {
+        resolve(false);
+      } else {
+        reject(true);
+      }
+    });
+  });
+}
+
+function removeCluster(idCluster){
+  var spanText = $("#existCurrentCluster").text();
+  if($('.listClusters ul.list li').length == 1 && spanText =="false"){ //existCurrentCluster
+    var projectID = $('input[name="projectID"]').val();
+    $('.listClusterDM [clusteridparticipant="' + idCluster + '"]').remove();
+    $('.listClusterDM [clusteridparticipant="' + projectID + '"]').remove();
+    initialRemaining();
+    $('.sharedClustersList').hide();
+  }
+  if($('.listClusters ul.list li').length == 1 && spanText =="true"){ 
+    $('.listClusterDM [clusteridparticipant="' + idCluster + '"]').remove();
+    initialRemaining();
+    $('.sharedClustersList').hide();
+  }else{
+    $('.listClusterDM [clusteridparticipant="' + idCluster + '"]').remove();
+    initialRemaining();
+  }
+  
+  
+}
+
+function initialRemaining(){
+
+  const inputsParticipants = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".participants"]');
+  const inputsFemales = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".females"]');
+  const inputsAfrican = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".african"]');
+  const inputsYouth = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".youth"]');
+  
+  const valuesParticipants = [];
+  const valuesFemales = [];
+  const valuesAfrican = [];
+  const valuesYouth = [];
+
+  inputsParticipants.forEach(input => {
+    valuesParticipants.push(parseInt(input.value));
+  });
+
+  inputsFemales.forEach(input => {
+    valuesFemales.push(parseInt(input.value));
+  });
+  
+  inputsAfrican.forEach(input => {
+    valuesAfrican.push(parseInt(input.value));
+  });
+
+  inputsYouth.forEach(input => {
+    valuesYouth.push(parseInt(input.value));
+  });
+
+  const sumaParticipants = valuesParticipants.reduce((acumulador, valorActual) => {
+    return acumulador + valorActual;
+  }, 0);
+
+  const sumaFemales = valuesFemales.reduce((acumulador, valorActual) => {
+    return acumulador + valorActual;
+  }, 0);
+
+  const sumaAfrican = valuesAfrican.reduce((acumulador, valorActual) => {
+    return acumulador + valorActual;
+  }, 0);
+
+  const sumaYouth = valuesYouth.reduce((acumulador, valorActual) => {
+    return acumulador + valorActual;
+  }, 0);
+
+  // console.log('totalTrainees: '+ $('.totalTrainees').text());
+  let remainingTrainees = parseInt($('.totalTrainees').text())-parseInt(sumaParticipants);
+  let remainingFemales = parseInt($('.totalFemales').text())-parseInt(sumaFemales);
+  let remainingAfrican = parseInt($('.totalAfrican').text())-parseInt(sumaAfrican);
+  let  remainingYouth = parseInt($('.totalYouth').text())-parseInt(sumaYouth);
+  
+  $('.remainingTrainees').text(remainingTrainees);
+  $('.remainingFemales').text(remainingFemales);
+  $('.remainingAfrican').text(remainingAfrican);
+  $('.remainingYouth').text(remainingYouth);
+
+  //Change the colors and messages of the Total and Remaining fields in real time
+if(remainingYouth == 0 && remainingAfrican == 0 && remainingFemales == 0 && remainingTrainees == 0){
+  $('.remaining-container').css('color', '#8ea786');
+  $('.alertParticipant').css('display', 'none');
+  $('.doneParticipant').css('display', 'flex');
+}
+else{
+  $('.remaining-container').css('color', '#FFC300');
+  $('.doneParticipant').css('display', 'none');
+  $('.alertParticipant').css('display', 'flex');
+  
+}
+
+  
+}
+
+
 
 function onSelectElementPrimary() {
   var $select = $(this);

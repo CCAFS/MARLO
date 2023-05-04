@@ -62,94 +62,41 @@ $('.listindicators .setSelect2').select2().on('change', function() {
   searchIndicator();
 });
 
-// Validate indicator removed in select2
-$(".listindicators .removeElement").on("click", function () {
+  // Validate indicator removed in select2
+  $(".listindicators .removeElement").on("click", function () {
 
-  // detects when an element is removed and checks if the IPI 2.3 flag is still in the list
-  $(this).closest("li").remove();
-  searchIndicator();
-});
+    // detects when an element is removed and checks if the IPI 2.3 flag is still in the list
+    $(this).closest("li").remove();
+    searchIndicator();
+  });
 
   // Validate which cluster is sectioned in select2
-$('.listClusters .setSelect2').select2().on('change', function() {
+  $('.listClusters .setSelect2').select2().on('change', function() {
   reviewSharedclusters();
-  
-    if($('.listClusters ul.list li').length > 1){
+  var spanText = $("#existCurrentCluster").text();
+
+  if($('.listClusters ul.list li').length == 1 && spanText == 'true'){
     searchcluster($('.listClusters .setSelect2').val());
-  }else{
+  }
+  if($('.listClusters ul.list li').length == 1 && spanText == 'false'){
     var projectID = $('input[name="projectID"]').val();
     searchcluster(projectID);
+    searchcluster($('.listClusters .setSelect2').val());
+  }
+  if($('.listClusters ul.list li').length > 1){
     searchcluster($('.listClusters .setSelect2').val());
   }
   initialRemaining();
   });
 
 
-  $('.listClusters .setSelect2').select2().on('select2:select', function (e) {
-    // obtener la opción seleccionada
-    var data = e.params.data;
-    
-    // realizar acciones adicionales con la opción seleccionada
-    console.log(data.text + ' seleccionado');
-  });
-  
 
-
-  $('.listClusters .setSelect2').select2().on('select2:unselect', function (e) {
-    // obtener la opción eliminada
-    var data = e.params.data;
-    
-    // realizar acciones adicionales con la opción eliminada
-    console.log(data.text + ' eliminado');
-  });
-  
-
-  $('.listClusters .setSelect2').select2().on('select2:open', function () {
-    console.log('La lista desplegable se ha abierto');
-  });
-
-  $('.listClusters .setSelect2').select2().on('select2:close', function () {
-    console.log('La lista desplegable se ha cerrado');
-  });
-  
-  
-
-
-// Validate indicator removed in select2
-$(".listClusters .removeElement").on("click", function () {
-  
-
-  var idCluster = $(this).siblings('.elementRelationID').val();
-
-  var clusterID = idCluster;
-
-  // Obtener todos los elementos de entrada
-const inputs = document.querySelectorAll("div.form-group.row[clusteridparticipant='" + clusterID + "'] input");
-
-// Crear un array vacío para almacenar los valores
-const values = [];
-
-// Iterar sobre los elementos de entrada y obtener sus valores
-inputs.forEach(input => {
-  values.push(parseInt(input.value));
-});
-
-// Mostrar los valores en la consola
-// console.log(values);
-
-// console.log(element)
-  
-  
-  removeCluster(idCluster);
-
-  
-  
-});
+  // close modal evidences
+  $('.close-modal-evidences').on('click', closeModalEvidences);
 
   initialTotals();
   initialRemaining();
   reviewSharedclusters();
-  
   
 
 }
@@ -426,20 +373,11 @@ function addcluster(infoCluster){
   initialTotals()
 }
 
-function removeCluster(idCluster){
-  
-  if($('.listClusters ul.list li').length == 1){
-    var projectID = $('input[name="projectID"]').val();
-    $('.listClusterDM [clusteridparticipant="' + idCluster + '"]').remove();
-    $('.listClusterDM [clusteridparticipant="' + projectID + '"]').remove();
-    initialRemaining();
-    $('.sharedClustersList').hide();
-  }else{
-    $('.listClusterDM [clusteridparticipant="' + idCluster + '"]').remove();
-    initialRemaining();
-  }
-  
-  
+
+
+function closeModalEvidences(){
+  let modal = $('.modal-evidences');
+  modal.hide();
 }
 
 function validateRequiredTagToCategory() {

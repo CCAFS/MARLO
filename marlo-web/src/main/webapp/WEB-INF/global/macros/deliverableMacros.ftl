@@ -395,7 +395,7 @@
           <div class="listClusterDM">
         [#assign index = 0]
         [#list list as cluster]
-          <input type="hidden" name="${customName}[${index}].id" class="valueId" value="${(cluster.id)!0}" valueIndex="${(cluster.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}"/>
+          <input type="hidden" name="${customName}[${index}].id" class="valueId" value="${(cluster.id)!0}" valueIndex="${(cluster.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}" />
           <input type="hidden" name="${customName}[${index}].project.id" value="${(cluster.project.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}"/>
           <div class="form-group row" clusterIdParticipant="${(cluster.project.id)!0}">
             <div class="col-md-2">
