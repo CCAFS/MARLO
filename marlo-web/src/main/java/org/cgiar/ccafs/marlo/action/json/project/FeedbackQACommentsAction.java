@@ -232,6 +232,24 @@ public class FeedbackQACommentsAction extends BaseAction {
         } else {
           fieldsMap.put("editionDate", "");
         }
+        // Is tracking
+        if (comment.getStartTrackDate() != null) {
+          fieldsMap.put("isTracking", comment.getTracking());
+        } else {
+          fieldsMap.put("isTracking", false);
+        }
+        // Start track date
+        if (comment.getStartTrackDate() != null) {
+          fieldsMap.put("startTrackDate", comment.getStartTrackDate());
+        } else {
+          fieldsMap.put("startTrackDate", "");
+        }
+        // End track date
+        if (comment.getEndTrackDate() != null) {
+          fieldsMap.put("endTrackDate", comment.getEndTrackDate());
+        } else {
+          fieldsMap.put("endTrackDate", "");
+        }
         // draft message
         if (comment.getDraftActionDate() != null && comment.getDraftActionDate().toString() != null) {
           String dateString = comment.getDraftActionDate().toString();

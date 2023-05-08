@@ -85,6 +85,15 @@
         <property name="draftActionDate" type="timestamp">
             <column name="draft_action_date" />
         </property>
+        <property name="tracking" type="boolean">
+            <column name="is_tracking" not-null="true" />
+        </property>
+        <property name="startTrackDate" type="timestamp">
+            <column name="start_track_date" />
+        </property>
+        <property name="endTrackDate" type="timestamp">
+            <column name="end_track_date" />
+        </property>
         <many-to-one name="draftActionUser"
             class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="draft_action_user_id">
