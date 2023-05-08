@@ -548,7 +548,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nOutcomeCrossCutting", this.getText("outcome.crossCutting"));
     masterReport.getParameterValues().put("i8nOutcomeMilestones", this.getText("outcome.milestone"));
     masterReport.getParameterValues().put("i8nOutcomeNextUsers", this.getText("outcome.nextUsers"));
-    masterReport.getParameterValues().put("i8nOutcomeQuestions", this.getText("outcome.nextUsers"));
+    masterReport.getParameterValues().put("i8nOutcomeQuestions", this.getText("projectOutcome.additionalQuestions"));
     masterReport.getParameterValues().put("i8nOutcomeLesssonsStatement",
       this.getText("projectOutcome.lessons.planning"));
     masterReport.getParameterValues().put("i8nOutcomeYear", this.getText("outcome.inputTargetYear.placeholder"));
@@ -3438,7 +3438,18 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           && projectOutcome.getProjectComponentLesson().getLessons() != null) {
           lessonsOutcome = projectOutcome.getProjectComponentLesson().getLessons();
         }
+        question += "<b>" + projectOutcome.getCrpProgramOutcome().getPhase().getDescription()
+          + projectOutcome.getCrpProgramOutcome().getYear() + "<b><br>";
 
+        // Project outcome - Additional questions
+        try {
+          projectOutcome.getCrpProgramOutcome().setIndicators(
+            projectOutcome.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream().filter(c -> c.isActive())
+              .sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator()))).collect(Collectors.toList()));
+
+        } catch (Exception e) {
+          LOG.error("Error setting indicators");
+        }
         if (projectOutcome.getCrpProgramOutcome() != null
           && projectOutcome.getCrpProgramOutcome().getIndicators() != null) {
           for (CrpProgramOutcomeIndicator indicator : projectOutcome.getCrpProgramOutcome().getIndicators()) {
@@ -3497,16 +3508,19 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   }
 
   public ProjectOutcomeIndicator getIndicator(Long indicatorID, ProjectOutcome projectOutcome) {
-    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
-      if (projectOutcomeIndicator != null && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
-        && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId() != null
-        && projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
-        return projectOutcomeIndicator;
-      }
-    }
     ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
-    projectOutcomeIndicator.setCrpProgramOutcomeIndicator(new CrpProgramOutcomeIndicator(indicatorID));
-    projectOutcome.getIndicators().add(projectOutcomeIndicator);
+
+    if (projectOutcome != null && projectOutcome.getIndicators() != null && !projectOutcome.getIndicators().isEmpty()) {
+      for (ProjectOutcomeIndicator projectOutcomeIndicatorObj : projectOutcome.getIndicators()) {
+        if (projectOutcomeIndicatorObj != null && projectOutcomeIndicatorObj.getCrpProgramOutcomeIndicator() != null
+          && projectOutcomeIndicatorObj.getCrpProgramOutcomeIndicator().getId() != null
+          && projectOutcomeIndicatorObj.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+          return projectOutcomeIndicatorObj;
+        }
+      }
+      projectOutcomeIndicator.setCrpProgramOutcomeIndicator(new CrpProgramOutcomeIndicator(indicatorID));
+      projectOutcome.getIndicators().add(projectOutcomeIndicator);
+    }
     return projectOutcomeIndicator;
 
   }
@@ -4152,10 +4166,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                     || ((text != null || !text.isEmpty()) && !text.contains(milestone.getNarrativeTarget())))) {
 
                   milestones += "● Intermediate Target for " + milestone.getYear() + "\n <br>"
-                    + milestone.getCrpMilestone().getComposedName() + "\n <br>";
+                    + milestone.getCrpMilestone().getComposedName() + "\n <br><br>";
 
                   if (milestone.getNarrativeTarget() != null) {
-                    milestones += "Narrative target: " + milestone.getNarrativeTarget() + "\n <br><br>";
+                    milestones += "<b>Narrative target: </b>" + milestone.getNarrativeTarget() + "\n <br><br>";
+                  }
+                  if (milestone.getExpectedValue() != null) {
+                    milestones +=
+                      "<b>Expected value: </b>" + (int) Math.round(milestone.getExpectedValue()) + "\n <br><br>";
                   }
                 } else {
                   ids.add(milestone.getCrpMilestone().getId());
