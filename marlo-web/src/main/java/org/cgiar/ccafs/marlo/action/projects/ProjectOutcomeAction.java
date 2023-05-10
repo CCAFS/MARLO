@@ -72,6 +72,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -400,18 +401,18 @@ public class ProjectOutcomeAction extends BaseAction {
     } catch (Exception e) {
       LOG.error(e + "error to filter canceled deliverable");
     }
-    // if (this.isReportingActive()) {
-    try {
-      // Exclude deliverables extended in AR
-      currentDeliverables = currentDeliverables.stream()
-        .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
-          && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-          && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 4L)
-        .collect(Collectors.toList());
-    } catch (Exception e) {
-      LOG.error(e + "error to filter deliverable for AR");
+    if (this.isReportingActive()) {
+      try {
+        // Exclude deliverables extended in AR
+        currentDeliverables = currentDeliverables.stream()
+          .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 4L)
+          .collect(Collectors.toList());
+      } catch (Exception e) {
+        LOG.error(e + "error to filter deliverable for AR");
+      }
     }
-    // }
 
     // Rules- Deliverables with same phase delivery year
     try {
@@ -632,9 +633,17 @@ public class ProjectOutcomeAction extends BaseAction {
       DeliverableClusterParticipant clusterParticipant = new DeliverableClusterParticipant();
 
       try {
-        clusterParticipant =
+        List<DeliverableClusterParticipant> resultList =
           deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(
-            deliverable.getId(), projectID, this.getActualPhase().getId()).get(0);
+            deliverable.getId(), projectID, this.getActualPhase().getId());
+
+        Optional<DeliverableClusterParticipant> optionalParticipant = resultList.stream().findFirst();
+
+        if (optionalParticipant.isPresent()) {
+          DeliverableClusterParticipant firstParticipant = optionalParticipant.get();
+          clusterParticipant = firstParticipant;
+        }
+
         if (clusterParticipant != null) {
           if (clusterParticipant.getParticipants() != null) {
             deliverable.getDeliverableParticipant().setOwnTrainess(clusterParticipant.getParticipants());

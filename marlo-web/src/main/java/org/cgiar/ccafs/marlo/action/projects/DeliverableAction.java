@@ -3170,7 +3170,7 @@ public class DeliverableAction extends BaseAction {
   }
 
   private void saveParticipant() {
-
+    long clusterParticipantID = this.getActualClusterParticipantID();
     // If deliverable is mapped to IPI 2.3 the hasTrainees question is selected as YES
     if (this.isDeliverableMappedToTrainessIndicator()) {
       this.setYesHasTraineesQuestion();
@@ -3270,7 +3270,7 @@ public class DeliverableAction extends BaseAction {
 
           // save participant information in cluster participant table for actual cluster
           if (deliverable.getSharedDeliverables() == null || deliverable.getSharedDeliverables().isEmpty()) {
-            long clusterParticipantID = this.getActualClusterParticipantID();
+
             if (clusterParticipantID != 0) {
               DeliverableClusterParticipant clusterParticipant = new DeliverableClusterParticipant();
               try {
@@ -3309,6 +3309,15 @@ public class DeliverableAction extends BaseAction {
         participant.setEstimateYouth(null);
         participant.setFocus(null);
         participant.setLikelyOutcomes(null);
+
+        // Delete cluster participants
+        if (deliverable.getClusterParticipant() != null) {
+          for (DeliverableClusterParticipant clusterParticipant : deliverable.getClusterParticipant()) {
+            if (clusterParticipant.getId() != null) {
+              deliverableClusterParticipantManager.deleteDeliverableClusterParticipant(clusterParticipant.getId());
+            }
+          }
+        }
       }
       deliverableParticipantManager.saveDeliverableParticipant(participant);
     }
