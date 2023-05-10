@@ -72,6 +72,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -632,9 +633,17 @@ public class ProjectOutcomeAction extends BaseAction {
       DeliverableClusterParticipant clusterParticipant = new DeliverableClusterParticipant();
 
       try {
-        clusterParticipant =
+        List<DeliverableClusterParticipant> resultList =
           deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(
-            deliverable.getId(), projectID, this.getActualPhase().getId()).get(0);
+            deliverable.getId(), projectID, this.getActualPhase().getId());
+
+        Optional<DeliverableClusterParticipant> optionalParticipant = resultList.stream().findFirst();
+
+        if (optionalParticipant.isPresent()) {
+          DeliverableClusterParticipant firstParticipant = optionalParticipant.get();
+          clusterParticipant = firstParticipant;
+        }
+
         if (clusterParticipant != null) {
           if (clusterParticipant.getParticipants() != null) {
             deliverable.getDeliverableParticipant().setOwnTrainess(clusterParticipant.getParticipants());
