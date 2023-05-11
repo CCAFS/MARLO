@@ -194,19 +194,23 @@ function initialRemaining(){
   const valuesYouth = [];
 
   inputsParticipants.forEach(input => {
-    valuesParticipants.push(parseInt(input.value));
+    var inputValidator = input.value === "" || isNaN(input.value) ? 0 : input.value;
+    valuesParticipants.push(parseInt(inputValidator));
   });
 
   inputsFemales.forEach(input => {
-    valuesFemales.push(parseInt(input.value));
+    var inputValidator = input.value === "" || isNaN(input.value) ? 0 : input.value;
+    valuesFemales.push(parseInt(inputValidator));
   });
   
   inputsAfrican.forEach(input => {
-    valuesAfrican.push(parseInt(input.value));
+    var inputValidator = input.value === "" || isNaN(input.value) ? 0 : input.value;
+    valuesAfrican.push(parseInt(inputValidator));
   });
 
   inputsYouth.forEach(input => {
-    valuesYouth.push(parseInt(input.value));
+    var inputValidator = input.value === "" || isNaN(input.value) ? 0 : input.value;
+    valuesYouth.push(parseInt(inputValidator));
   });
 
   const sumaParticipants = valuesParticipants.reduce((acumulador, valorActual) => {

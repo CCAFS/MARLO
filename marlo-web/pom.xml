@@ -464,7 +464,7 @@
 				</configuration>
 			</plugin>
 
-			<!-- MINIFYING CSS AND JS - TEST -->
+			<!-- MINIFYING CSS AND JS - TEST 
 			<plugin>
 				<groupId>com.samaxes.maven</groupId>
 				<artifactId>minify-maven-plugin</artifactId>
@@ -477,19 +477,14 @@
 							<nosuffix>true</nosuffix>
 							<skipMerge>true</skipMerge>
 							<verbose>true</verbose>
-							<!-- CSS -->
+
 							<cssSourceDir>global</cssSourceDir>
 							<cssSourceIncludes>
-								<!--<cssSourceInclude>crp/css/**/*.css</cssSourceInclude> -->
-								<!--<cssSourceInclude>center/css/**/*.css</cssSourceInclude> -->
 								<cssSourceInclude>css/**/*.css</cssSourceInclude>
 							</cssSourceIncludes>
 
-							<!-- Javascript -->
 							<jsSourceDir>global</jsSourceDir>
 							<jsSourceIncludes>
-								<!-- <jsSourceInclude>crp/js/**/*.js</jsSourceInclude> -->
-								<!-- <jsSourceInclude>center/js/**/*.js</jsSourceInclude> -->
 								<jsSourceInclude>js/**/*.js</jsSourceInclude>
 							</jsSourceIncludes>
 
@@ -500,7 +495,67 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- END -->
+			END -->
+
+            <plugin>
+			  <groupId>com.github.blutorange</groupId>
+			  <artifactId>closure-compiler-maven-plugin</artifactId>	
+			  <version>2.20.0</version>
+			  <configuration>
+		        <!-- Base configuration for all executions (bundles) -->
+		        <baseSourceDir>${project.basedir}/src/main/webapp</baseSourceDir>
+		        <baseTargetDir>${project.build.directory}/generated-resources</baseTargetDir>
+		      </configuration>
+			  <executions>
+			   <execution>
+			    <id>global-minify</id>
+			     <configuration>	
+			        <sourceDir>/global</sourceDir>
+			        <encoding>UTF-8</encoding>
+			        <skipMerge>true</skipMerge>
+			        <closureLanguageOut>ECMASCRIPT_2017</closureLanguageOut>			        
+			        <includes>
+		              <include>**/*.js</include>
+		            </includes>			        
+		            <!-- Exclude already minified files. -->
+		            <excludes>
+		              <exclude>**/*.min.*</exclude>
+		            </excludes>
+		            <excludes>
+		              <exclude>**/bower_components/**</exclude>
+		            </excludes>
+		            <closureCreateSourceMap>true</closureCreateSourceMap>
+		            <closureStrictModeInput>false</closureStrictModeInput>		            
+			      </configuration>			     
+			      <goals>
+                    <goal>minify</goal>
+                  </goals>
+               </execution>
+                 
+				<execution>
+				    <id>crp-minify</id>
+				    <configuration>	
+				        <sourceDir>/crp</sourceDir>
+				        <encoding>UTF-8</encoding>
+				        <skipMerge>true</skipMerge>
+				        <closureLanguageOut>ECMASCRIPT_2017</closureLanguageOut>			        
+				        <includes>
+			              <include>**/*.js</include>
+			            </includes>
+			            <!-- Exclude already minified files. -->
+			            <excludes>
+			              <exclude>**/*.min.*</exclude>
+			            </excludes>
+			            <closureCreateSourceMap>true</closureCreateSourceMap>
+			            
+				      </configuration>
+				     
+					  <goals>
+		                 <goal>minify</goal>
+		              </goals>
+                </execution>
+               </executions>
+			</plugin>
 
 		</plugins>
 	</build>

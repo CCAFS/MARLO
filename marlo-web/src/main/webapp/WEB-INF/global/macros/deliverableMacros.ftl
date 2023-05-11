@@ -349,6 +349,7 @@
 [#-- deliverable cluster participants --]
 [#macro deliverableClusterParticipantsMacro list=(deliverable.clusterParticipant)![]]
 [#local customName = "deliverable.clusterParticipant" /]
+[#if action.hasSpecificities("deliverable_shared_clusters_trainees_active")]
 [#-- [#if list?has_content] --]
 <div class="sharedClustersList">
   <br>
@@ -524,7 +525,7 @@
     </div>
   </div>
 </div>
-[#--[/#if] --]
+[/#if]
 [/#macro]
 
 
