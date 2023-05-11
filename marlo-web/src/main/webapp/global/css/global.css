@@ -7310,6 +7310,7 @@ img.qaCommentStatus {
   box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%), 0 0 8px rgb(0 0 0 / 30%);
   overflow-y: scroll;
   z-index: 1000;
+  min-width: 435px;
 }
 
 .qaPopup::-webkit-scrollbar {
@@ -7363,6 +7364,10 @@ img.qaCommentStatus {
   bottom: 0; */
 }
 
+.commentContainer{
+  position: relative;
+}
+
 .commentContainer, .replyTextContainer {
   display: none;
   width: 100%;
@@ -7374,6 +7379,10 @@ img.qaCommentStatus {
 .replyContainer {
   padding-left: 10px;
   padding-right: 40px;
+}
+
+.commentTitle{
+  padding-right: 37px !important;
 }
 
 .commentTitle, .replyTitle {
@@ -7437,6 +7446,15 @@ width: 15px;
 margin-left: 3px;
 cursor: pointer;
 }
+
+.track_icon {
+  width: 15px;
+  position: absolute;
+  top: 0px;
+  right: 10px;
+  cursor: pointer;
+}
+  
 
 .containerSentCommentBtn {
   position: absolute; 
