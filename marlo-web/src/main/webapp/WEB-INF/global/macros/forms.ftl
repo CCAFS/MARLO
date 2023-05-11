@@ -991,6 +991,7 @@
       <div class="commentContainer">
         <div class="commentTitle"></div>
         <p class="commentReadonly"></p> 
+        <img src="${baseUrlCdn}/global/images/tracking.png" class="track_icon" title="Track your comment">
         <textarea class="editCommentReadonly form-control" rows="2" cols="50" style="display:none"></textarea>
         <div class="containerReactionComment" style="display:none">
           <p class="reactionComment"></p>

@@ -30,6 +30,29 @@ function attachEventsFeedback() {
     loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
   }
 
+
+  $('.track_icon').click(function() {
+    var currentSrc = $(this).attr('src');
+    let commentID = $(this).attr('commentId');
+    let name = $(this).attr('name');
+  
+    // Verificar el valor actual del atributo src y cambiarlo en consecuencia
+    if (currentSrc === `${baseURL}/global/images/tracking.png`) {
+      $(this).fadeToggle(500, function() {
+        $(this).attr('src', `${baseURL}/global/images/yellow_tracking.png`);
+        $(this).fadeToggle(500);
+      });
+      saveTrackComment(1, commentID, name);
+    } else if (currentSrc === `${baseURL}/global/images/yellow_tracking.png`) {
+      $(this).fadeToggle(500, function() {
+        $(this).attr('src', `${baseURL}/global/images/tracking.png`);
+        $(this).fadeToggle(500);
+      });
+      saveTrackComment(0, commentID, name);
+    }
+  });
+
+
   // Multiple comments-replies
   $('img.qaComment').on('click', function (event) {
     let name = this.name;
@@ -455,6 +478,25 @@ function hideShowOptionButtons(block, status) {
                     block.find('.editCommentBtn').attr('commentId', qaComments[i][j].commentId);
                     block.find('.commentCheckContainer').attr('commentId', qaComments[i][j].commentId);              
                     block.attr('commentId', qaComments[i][j].commentId);
+                    block.find('.track_icon').attr('commentId', qaComments[i][j].commentId);
+
+                    
+                    if (qaComments[i][j].userID != userID || userCanLeaveComments =='false' ||qaComments[i][j].status =='' ||qaComments[i][j].status =='6') {
+                      block.find('.track_icon').hide();
+                    }else{
+                      block.find('.track_icon').show();
+                    }
+
+                    if(qaComments[i][j].isTracking == true){
+                      block.find('.track_icon').attr('src', `${baseURL}/global/images/yellow_tracking.png`);
+                    } else{
+                      block.find('.track_icon').attr('src', `${baseURL}/global/images/tracking.png`);
+                    }
+
+                    
+
+
+
 
                     if(qaComments[i][j].status) {               
                         block.find('.containerReactionComment').show();
@@ -662,6 +704,7 @@ function hideShowOptionButtons(block, status) {
         $(item).find('.replyCommentBtn').attr('name', `${field[1]}[${index}]`);
         $(item).find('.sendReplyContainer').attr('name', `${field[1]}[${index}]`);
         $(item).find('div.addCommentContainer').attr('name', field[1]);
+        $(item).find('.track_icon').attr('name',`${field[1]}[${index}]`);
         
       });
 
@@ -955,5 +998,19 @@ function hideShowOptionButtons(block, status) {
       case "6":
           return 'Dismissed by ';
     }
+  }
+
+  function saveTrackComment(status, commentID, name) {
+
+    var finalAjaxURL = `/saveTrackingStatus.do?status=${status}&commentID=${commentID}`;
+    $.ajax({
+      url: baseURL + finalAjaxURL,
+      async: false,
+      success: function (data) {
+        getQAComments();
+        loadCommentsByUser(name);
+        // loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+      }
+    });
   }
 
