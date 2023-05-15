@@ -58,6 +58,12 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   private Date draftActionDate;
   @Expose
   private User responsibleUser;
+  @Expose
+  private Boolean tracking;
+  @Expose
+  private Date startTrackDate;
+  @Expose
+  private Date endTrackDate;
 
   public FeedbackQAComment() {
   }
@@ -91,6 +97,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
 
   public Date getEditionDate() {
     return editionDate;
+  }
+
+  public Date getEndTrackDate() {
+    return endTrackDate;
   }
 
   public FeedbackStatus getFeedbackStatus() {
@@ -156,6 +166,14 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     return responsibleUser;
   }
 
+  public Date getStartTrackDate() {
+    return startTrackDate;
+  }
+
+  public Boolean getTracking() {
+    return tracking;
+  }
+
   public User getUser() {
     return user;
   }
@@ -195,6 +213,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
 
   public void setEditionDate(Date editionDate) {
     this.editionDate = editionDate;
+  }
+
+  public void setEndTrackDate(Date endTrackDate) {
+    this.endTrackDate = endTrackDate;
   }
 
   public void setFeedbackStatus(FeedbackStatus feedbackStatus) {
@@ -246,6 +268,14 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     this.responsibleUser = responsibleUser;
   }
 
+  public void setStartTrackDate(Date startTrackDate) {
+    this.startTrackDate = startTrackDate;
+  }
+
+  public void setTracking(Boolean tracking) {
+    this.tracking = tracking;
+  }
+
   public void setUser(User user) {
     this.user = user;
   }
@@ -257,5 +287,4 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   public void setUserEditor(User userEditor) {
     this.userEditor = userEditor;
   }
-
 }

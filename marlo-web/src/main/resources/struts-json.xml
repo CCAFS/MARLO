@@ -681,6 +681,14 @@
 	      </result>
 	    </action>
 	    
+		<action name="saveTrackingStatus"
+	      class="org.cgiar.ccafs.marlo.action.json.project.SaveTrackingStatusAction">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
+	    
 		<action name="removeSafeguardFile"
 	      class="org.cgiar.ccafs.marlo.action.json.project.RemoveSafeguardFileAction">
 	      <result type="json">

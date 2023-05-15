@@ -252,8 +252,7 @@
                               [#-- progress targets --]
                               <br>
                               [#if year == currentCycleYear && projectOutcome.crpProgramOutcome.indicators?size != 0]
-                                <h5 class="sectionSubTitle">Additional questions to Key Performance Indicator
-</h5>
+                                <h5 class="sectionSubTitle">[@s.text name="projectOutcome.additionalQuestions" /]</h5>
                                 [#--  <h4 class="headTitle">Progress to Targets</h4>--]
 
                                 [#if reportingActive]
