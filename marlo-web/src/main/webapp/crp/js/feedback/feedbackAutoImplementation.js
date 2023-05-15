@@ -15,6 +15,9 @@ function feedbackAutoImplementation (){
   userCanManageFeedback = $('#userCanManageFeedback').html();
   userCanLeaveComments = $('#userCanLeaveComments').html();
   userCanApproveFeedback = $('#userCanApproveFeedback').html();
+  console.log('userCanManageFeedback', userCanManageFeedback)
+  console.log('userCanLeaveComments', userCanLeaveComments)
+  console.log('userCanApproveFeedback', userCanApproveFeedback)
   // userCanManageFeedback = 'true';
   // userCanLeaveComments = 'true';
   // userCanApproveFeedback = 'false';
