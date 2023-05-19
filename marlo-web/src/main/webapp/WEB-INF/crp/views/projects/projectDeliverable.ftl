@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Deliverable information" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate"] /]
+[#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate", "vue"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20230417",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20220721",

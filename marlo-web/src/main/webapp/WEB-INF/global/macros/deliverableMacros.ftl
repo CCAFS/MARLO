@@ -452,10 +452,10 @@
 
     <div class="form-group row ifIsReadOnly" style="margin-top: 10px;">
       <div class="col-md-6 conditionalRequire handle-bridge text-area-container">
-        [@customForm.input name="handle-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable/]
+        [@customForm.input name="handle-bridge" required=require value="" className="metadataValue handleField"  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable id="handleField"/]
       </div>
       <div class="col-md-6 conditionalRequire doi-bridge text-area-container" style="position: relative;">
-        [@customForm.input name="doi-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable/]
+        [@customForm.input name="doi-bridge" required=require value="" className="metadataValue doiField" type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable id="doiField"/]
         <p class="invalidDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(207, 40, 40); font-weight: 600; font-size: 0.8em; display: none;">Invalid DOI identifier.<br>Please use the correct format <strong>(e.g. 10.1109/5.771073)</strong></p>
         <p class="validDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(50, 206, 45); font-weight: 600; font-size: 0.8em; display: none;">Valid DOI identifier</p>
       </div>
@@ -608,6 +608,75 @@
       </div>
 
 
+[#-- test develop 
+    <div id="vueApp" class="resultList simpleBox" v-if="allDeliverables.length" style="display:none">
+      <p>Equivalent deliverables:</p>
+      <div v-for="item in crpList" v-if="item.deliverables.length">
+        <strong>D{{ item.deliverableID }}</strong> 
+        <p v-for="fs in item.deliverables">
+          <span class="pull-right label label-info">Duplicated: {{ fs.duplicatedField }}</span>
+          <a target="_blank" v-bind:href="'${baseUrl}/clusters/${crpSession}/deliverable.do?deliverableID='+ fs.deliverableID +'&edit=true&phaseID=${(actualPhase.id)!}'">
+           <small><strong> </strong> Dissemination URL: {{ fs.disseminationURL }} | DOI: {{ fs.doi }} | Handle: {{ fs.handle }}</small>
+          </a>
+          
+          <small v-else><strong> D{{ fs.id }}</strong> - {{ fs.disseminationURL }} | {{ fs.doi }}</small>
+        </p>
+      </div>
+    </div>
+    --]
+    
+  <div id="vueApp" class="fieldFocus-deliverable resultList simpleBox form-group" v-if="allDeliverables.length" style="display:none">
+    <label for=""><strong>[@s.text name="Equivalent Deliverables:" /]</strong></label>    
+    <p>This evidence has been reported by the following cluster(s). We recommend reaching out to the cluster leader who reported the deliverable and request them to share it with your cluster.
+      Deliverable with duplicate information (DXXXX) could be removed if it was created in the same reporting cycle. Otherwise, it can be marked as cancelled.
+    </p>
+    [#--  <button type="button" v-bind:class="{ active: showTable }" v-on:click="showTable = !showTable">{{ showTable ? 'Less Details' : 'See Details' }}</button>
+    --]
+    
+    <button class="button-effect" type="button" v-bind:class="{ active: showTable }" v-on:click="showTable = !showTable" >
+      <span v-if="!showTable" class="glyphicon glyphicon-warning-sign"></span>
+      {{ showTable ? 'Less Details' : 'See Details' }}
+    </button>
+    
+    <transition name="slide-transition">
+     <div class="table-container" v-show="showTable">
+      <table style="border-collapse: collapse;" class="table" >
+        <thead>
+          <tr>
+            <th>Deliverable ID</th>
+            <th>Cluster</th>
+            <th>Title</th>
+            <th>Sub-Category</th>
+            <th>Responsible</th>
+            <th>Cluster Leader</th>
+            <th>Shared Clusters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-for="item in crpList">
+            <template v-for="fs in item.deliverables">
+              <tr>
+                <td>
+                  <a target="_blank" v-bind:href="'${baseUrl}/clusters/${crpSession}/deliverable.do?deliverableID='+ fs.deliverableID +'&edit=true&phaseID=${(actualPhase.id)!}'">
+                    <strong>D{{ item.deliverableID }}</strong>
+                  </a>
+                  <span class="label label-warning">Duplicated: {{ fs.duplicatedField }}</span>
+                </td>
+                <td>{{ fs.clusterAcronym }}</td>
+                <td>{{ fs.title }}</td>
+                <td>{{ fs.subCategory }}</td>
+                <td>{{ fs.responsible }}</td>
+                <td>{{ fs.clusterLeader }}</td>
+                <td>{{ fs.sharedClusters }}</td>
+              </tr>
+            </template>
+          </template>
+        </tbody>
+      </table>
+      </div>
+      </transition>
+  </div>
+    
 [/#macro]
 
 [#macro channelExampleMacro name="" url="" ]
