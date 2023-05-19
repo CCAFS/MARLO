@@ -132,6 +132,11 @@ public final class APConstants {
   public static final String PREVIOUS_PROJECT_ID_ACTIVE = "previous_project_id_field_active";
   public static final String HOMEPAGE_TIMELINE_ACTIVE = "homepage_timeline_active";
   public static final String BUTTON_GUIDE_ACTIVE = "button_guide_active";
+  public static final String HANDLE_WOS_SERVICE_ACTIVE = "handle_wos_service_active";
+  public static final String JOURNAL_ARTICLES_INDICATOR_POPUP_ACTIVE = "journal_articles_indicator_popup_active";
+  public static final String OICR_SCORE_FIELD_ACTIVE = "oicr_score_field_active";
+  public static final String DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE =
+    "duplicated_deliverables_functionality_active";
 
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
