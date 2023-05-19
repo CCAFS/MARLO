@@ -57,6 +57,9 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
   private PhaseManager phaseManager;
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
 
+  public DeliverablesByDisseminationURLHandleDOIAction() {
+  }
+
   @Inject
   public DeliverablesByDisseminationURLHandleDOIAction(APConfig config, PhaseManager phaseManager,
     DeliverableManager deliverableManager, ProjectDeliverableSharedManager projectDeliverableSharedManager) {
@@ -251,12 +254,18 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
             // Set duplicated field info
             deliverableDTO.setDuplicatedField("");
             if (isDOIDuplicated) {
-              deliverableDTO.setDuplicatedField("DOI | ");
+              deliverableDTO.setDuplicatedField("DOI ");
             }
             if (isHandleDuplicated) {
-              deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("Handle | "));
+              if (deliverableDTO.getDuplicatedField().isEmpty()) {
+                deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("| "));
+              }
+              deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("Handle "));
             }
             if (isDisseminationURLDuplicated) {
+              if (deliverableDTO.getDuplicatedField().isEmpty()) {
+                deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("| "));
+              }
               deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("Dissemination URL "));
             }
 
