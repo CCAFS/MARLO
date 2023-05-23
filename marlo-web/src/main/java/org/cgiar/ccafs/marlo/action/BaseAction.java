@@ -3143,6 +3143,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             try {
               if (deliverableDOI != null && !deliverableDOI.isEmpty() && DOI != null && !DOI.isEmpty()
                 && deliverableDOI.equals(DOI)) {
+                System.out
+                  .println("deliverable " + deliverableID + " / deliverableDOI: " + deliverableDOI + " / DOI: " + DOI);
                 isDOIDuplicated = true;
               }
             } catch (Exception e) {

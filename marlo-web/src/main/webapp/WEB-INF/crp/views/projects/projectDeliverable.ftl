@@ -121,7 +121,7 @@
                   [@s.text name="project.deliverable.duplicatedHelp" /] 
                 </p>
               </div>
-              <div  class="viewMoreCollapse closed"></div>
+              [#--  <div class="viewMoreCollapse closed"></div>--]
             </div>
           </div>
         [/#if]
@@ -135,7 +135,7 @@
               </a>
             </small>
 
-                        [#--  Feedback Status --]
+          [#--  Feedback Status --]
           [#if action.hasSpecificities('feedback_active') ]
             <div class="form-group col-md-12 legendContent-global">
               <div class="colors-global">

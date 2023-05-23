@@ -1296,7 +1296,8 @@ public class DeliverableAction extends BaseAction {
           try {
             DOI = deliverable.getDeliverableMetadataElements().stream()
               .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-                && me.getMetadataElement().getId().longValue() == 36L && !StringUtils.isBlank(me.getElementValue()))
+                && me.getMetadataElement().getId().longValue() == 36L && me.getPhase().equals(this.getActualPhase())
+                && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
               .findFirst().orElse(null).getElementValue();
           } catch (Exception e) {
             Log.info(e);
@@ -1305,7 +1306,8 @@ public class DeliverableAction extends BaseAction {
           try {
             handle = deliverable.getDeliverableMetadataElements().stream()
               .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-                && me.getMetadataElement().getId().longValue() == 35L && !StringUtils.isBlank(me.getElementValue()))
+                && me.getMetadataElement().getId().longValue() == 35L && me.getPhase().equals(this.getActualPhase())
+                && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
               .findFirst().orElse(null).getElementValue();
           } catch (Exception e) {
             Log.info(e);
@@ -1787,10 +1789,18 @@ public class DeliverableAction extends BaseAction {
 
 
       List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
-      deliverableDTOs = this.getDuplicatedDeliverableInformation(DOI, handle, disseminationURL, deliverableID);
-      if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
-        // Set is duplicated field in true
-        isDuplicated = true;
+      if (this.hasSpecificities(APConstants.DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE)) {
+        deliverableDTOs = this.getDuplicatedDeliverableInformation(DOI, handle, disseminationURL, deliverableID);
+        if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+          // Set is duplicated field in true
+          isDuplicated = true;
+
+          DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo();
+          if (deliverableInfo != null) {
+            deliverableInfo.setDuplicated(true);
+            deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+          }
+        }
       }
 
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
