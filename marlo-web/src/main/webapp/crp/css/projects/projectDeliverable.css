@@ -792,3 +792,75 @@ div#ccDimension-capacity {
 #guide-button{
   display: block;
 }
+
+/* Layout tweaks for keywords and being able to hide and show columns */
+.keywords{
+  -webkit-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  margin-bottom: 8px;
+  text-align-last: center;
+  display: inline-block;
+  padding: 5px 10px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.containerLastSearches{
+  display: flex;
+}
+
+.LastSearches{
+  padding-top: 5px;
+}
+
+.containerKeywords{
+  display: block;
+  width: 260px;
+}
+
+.containerCurrentDeliverables{
+  -webkit-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+  padding: 0 10px 0 10px;
+  border-radius: 5px;
+  display: inline-block;
+  padding-top: 20px;
+  width: 100%;
+}
+
+.containerpreviousDeliverables{
+  -webkit-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+  padding: 0 10px 0 10px;
+  border-radius: 5px;
+  display: inline-block;
+  padding-top: 20px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.containerShowHide{
+  width: 520px;
+  left: 435px;
+  position: absolute;
+  z-index: 1;
+}
+
+.buttonAddColumn{
+  -webkit-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  margin-bottom: 8px;
+  text-align-last: center;
+  display: inline-block;
+  padding: 5px 10px;
+  margin-left: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.titleShowHideColumns{
+  margin-bottom: 10px;
+  padding-left: 10px;
+}
+
+.containerCurrentDeliverables .active{
+  background: #d9edf7;
+}
