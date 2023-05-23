@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.action.deliverable.dto.DeliverableSearchSummary;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -39,21 +40,17 @@ import org.jfree.util.Log;
 
 public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
 
-
   private static final long serialVersionUID = 6304226585314276677L;
-
 
   List<Map<String, Object>> sources;
 
   private long phaseID;
+  private long deliverableID;
   private String disseminationURL;
   private String handle;
   private String DOI;
-  // GlobalUnit Manager
   private DeliverableManager deliverableManager;
   private PhaseManager phaseManager;
-  private Map<String, Object> deliverableDataMap;
-  private Map<String, Object> deliverableMap;
 
   @Inject
   public DeliverablesByDisseminationURLHandleDOIAction(APConfig config, PhaseManager phaseManager,
@@ -63,71 +60,148 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
     this.deliverableManager = deliverableManager;
   }
 
-
   @Override
   public String execute() throws Exception {
     sources = new ArrayList<>();
 
-    DeliverableDissemination deliverableDissemination = new DeliverableDissemination();
     Phase phase = phaseManager.getPhaseById(phaseID);
-
     List<Deliverable> deliverables = null;
 
-    if ((disseminationURL != null || handle != null || DOI != null) && phaseID != 0) {
+    if ((disseminationURL != null || handle != null || DOI != null) && phaseID != 0 && deliverableID != 0) {
       deliverables = deliverableManager.getDeliverablesByPhase(phaseID);
     }
 
     if (deliverables != null && !deliverables.isEmpty() && phase != null) {
-      deliverableMap = null;
-      for (Deliverable deliverable : deliverables) {
-        deliverableMap.put("id", deliverable.getId());
+      deliverables = deliverables.stream().filter(d -> d != null && d.isActive() && d.getId() != null
+        && d.getId() != deliverableID && d.getDeliverableInfo(phase).isActive()).collect(Collectors.toList());
+      if (deliverables != null && !deliverables.isEmpty()) {
 
-        deliverableDataMap = null;
+        for (Deliverable deliverable : deliverables) {
+          DeliverableDissemination deliverableDissemination = new DeliverableDissemination();
+          boolean isDOIDuplicated = false;
+          boolean isDisseminationURLDuplicated = false;
+          boolean isHandleDuplicated = false;
+          String deliverableDOI = null;
+          String deliverableHandle = null;
+          String deliverableDisseminationURL = null;
 
-
-        // Deliverable dissemination
-        try {
-          deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
-            .filter(ds -> ds.isActive() && ds.getPhase() != null && ds.getPhase().equals(phase))
-            .collect(Collectors.toList()).get(0);
-        } catch (Exception e) {
-
-        }
-        if (deliverableDissemination != null && deliverableDissemination.getDisseminationUrl() != null
-          && deliverableDissemination.getDisseminationUrl().equals(disseminationURL)) {
-          deliverableDataMap.put("disseminationURL", disseminationURL);
-        }
-
-        // Set Metadata Elements
-        if (deliverable.getDeliverableMetadataElements() != null) {
-          deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
-        }
-
-
-        for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getDeliverableMetadataElements()) {
-
-          // DOI
-          if (DOI != null && deliverableMetadataElement.getMetadataElement().getId() == 36L
-            && deliverableMetadataElement.getElementValue() != null
-            && !deliverableMetadataElement.getElementValue().equals(DOI)) {
-            deliverableDataMap.put("DOI", DOI);
+          // Deliverable dissemination
+          try {
+            deliverableDissemination = deliverable.getDissemination(phase);
+          } catch (Exception e) {
+            Log.info(e);
           }
-          // Handle
-          if (handle != null && deliverableMetadataElement.getMetadataElement().getId() == 36L
-            && deliverableMetadataElement.getElementValue() != null
-            && !deliverableMetadataElement.getElementValue().equals(handle)) {
-            deliverableDataMap.put("handle", handle);
+          // Dissemination URL
+          if (disseminationURL != null && !disseminationURL.isEmpty() && deliverableDissemination != null
+            && deliverableDissemination.getDisseminationUrl() != null
+            && !deliverableDissemination.getDisseminationUrl().isEmpty()
+            && deliverableDissemination.getDisseminationUrl().equals(disseminationURL)) {
+            isDisseminationURLDuplicated = true;
           }
 
-        }
-        deliverableMap.put("data", deliverableDataMap);
+          // Set Metadata Elements
+          if (deliverable.getDeliverableMetadataElements() != null) {
+            deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+          }
+
+          List<DeliverableMetadataElement> deliverableMetadataElements;
+          deliverableMetadataElements = deliverable.getMetadataElements(phase);
+
+          if (deliverableMetadataElements != null) {
+
+            try {
+              deliverableDOI = deliverableMetadataElements.stream()
+                .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+                  && me.getMetadataElement().getId().longValue() == 36L && !StringUtils.isBlank(me.getElementValue()))
+                .findFirst().orElse(null).getElementValue();
+            } catch (Exception e) {
+              Log.info(e);
+            }
+
+            try {
+              deliverableHandle = deliverableMetadataElements.stream()
+                .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+                  && me.getMetadataElement().getId().longValue() == 35L && !StringUtils.isBlank(me.getElementValue()))
+                .findFirst().orElse(null).getElementValue();
+            } catch (Exception e) {
+              Log.info(e);
+            }
+
+            try {
+              if (deliverableDOI != null && !deliverableDOI.isEmpty() && DOI != null && !DOI.isEmpty()
+                && deliverableDOI.equals(DOI)) {
+                isDOIDuplicated = true;
+              }
+            } catch (Exception e) {
+              Log.info(e);
+            }
+
+            try {
+              if (deliverableHandle != null && !deliverableHandle.isEmpty() && handle != null && !handle.isEmpty()
+                && deliverableHandle.equals(handle)) {
+                isHandleDuplicated = true;
+              }
+            } catch (Exception e) {
+              Log.info(e);
+            }
+          }
+
+          DeliverableSearchSummary deliverableDTO = new DeliverableSearchSummary();
+          // fill object list
+          if (isDOIDuplicated || isHandleDuplicated || isDisseminationURLDuplicated) {
+
+            if (deliverableDissemination != null && deliverableDissemination.getDisseminationUrl() != null) {
+              deliverableDisseminationURL = deliverableDissemination.getDisseminationUrl();
+            }
+
+            if (deliverableDOI != null) {
+              deliverableDTO.setDOI(deliverableDOI);
+            } else {
+              deliverableDTO.setDOI("");
+            }
+
+            if (deliverableHandle != null) {
+              deliverableDTO.setHandle(deliverableHandle);
+            } else {
+              deliverableDTO.setHandle("");
+            }
+
+            if (deliverableDisseminationURL != null) {
+              deliverableDTO.setDisseminationURL(deliverableDisseminationURL);
+            } else {
+              deliverableDTO.setDisseminationURL("");
+            }
+
+            deliverableDTO.setDeliverableID(deliverable.getId());
+
+            if (deliverable.getProject() != null && deliverable.getProject().getAcronym() != null) {
+              deliverableDTO.setClusterAcronym(deliverable.getProject().getAcronym());
+            } else {
+              deliverableDTO.setClusterAcronym("");
+            }
+
+            // Set duplicated field info
+            deliverableDTO.setDuplicatedField("");
+            if (isDOIDuplicated) {
+              deliverableDTO.setDuplicatedField("DOI; ");
+            }
+            if (isHandleDuplicated) {
+              deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("Handle; "));
+            }
+            if (isDisseminationURLDuplicated) {
+              deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("Dissemination URL; "));
+            }
+
+            deliverableDTO.setPhaseID(phaseID);
+            sources.add(deliverableDTO.convertToMap());
+          }
+        } // End deliverables for
       }
-      sources.add(deliverableMap);
     }
+
     return SUCCESS;
   }
-
 
   public List<Map<String, Object>> getSources() {
     return sources;
@@ -160,7 +234,13 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
       phaseID = 0;
       Log.info(e);
     }
-
+    try {
+      deliverableID = Long
+        .valueOf(StringUtils.trim(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
+    } catch (Exception e) {
+      deliverableID = 0;
+      Log.info(e);
+    }
   }
 
   public void setSources(List<Map<String, Object>> sources) {
