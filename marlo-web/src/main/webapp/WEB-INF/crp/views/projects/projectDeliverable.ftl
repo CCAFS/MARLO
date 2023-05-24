@@ -3,8 +3,8 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate", "vue"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20230417",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20220721",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20230420",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20230510",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20221117",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
@@ -82,6 +82,8 @@
 <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID)?c)!}</span>
 <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
 <input type="hidden" id="sectionNameToFeedback" value="deliverable" />
+<span id="existCurrentCluster" style="display: none;">${(existCurrentCluster?c)!}</span>
+
 
 [#if action.hasSpecificities('feedback_active') ]
   [#list feedbackComments as feedback]
@@ -95,6 +97,28 @@
 
 
 <section class="container">
+
+  <div class="modal-evidences" style="display: none">
+    <div class="content-modal">
+      <div class="button-exit close-modal-evidences">
+        <div class="x-close-modal" ></div>
+      </div>
+      <p class="title-modal-evidences">Are you sure you want to remove this cluster?</p>
+      <div class="text-modal-evidences">
+        <p>When you remove the selected cluster, the information shared in the Dissemination and Metadata tab of the Trainee-related contribution will also be deleted. 
+        If you are certain you want to proceed, you will need to redistribute all of the Trainees among the remaining clusters that are contributing to this deliverable.</p>          
+      </div>                
+      <div class="container-buttons-evidences"> 
+        <div class="button-close-modal close-modal-evidences remove-cluster-alert">
+          <p>Remove cluster</p>
+        </div>
+        <div class="button-close-modal close-modal-evidences">
+          <p>Close</p>
+        </div>
+      </div> 
+    </div>              
+  </div>
+
     <div class="row">
       [#-- Project Menu --]
       <div class="col-md-3">

@@ -379,7 +379,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
         if (!action.isReportingActive()) {
           if (!(this.isValidString(projectMilestone.getNarrativeTarget())
-            && this.wordCount(projectMilestone.getNarrativeTarget()) <= 100)) {
+            && this.wordCount(projectMilestone.getNarrativeTarget()) <= 200)) {
             action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedNarrative", params));
             action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeTarget",
               InvalidFieldsMessages.EMPTYFIELD);
@@ -548,27 +548,27 @@ public class ProjectOutcomeValidator extends BaseValidator {
           }
         }
       }
-      if (project.getProjecInfoPhase(action.getActualPhase()).getEndDate() != null) {
-        Calendar calendarEnd = Calendar.getInstance();
-        calendarEnd.setTime(project.getProjecInfoPhase(action.getActualPhase()).getEndDate());
-
-        if (action.getCurrentCycleYear() == calendarEnd.get(Calendar.YEAR)) {
-          if (!(projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() == null
-            || projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1)) {
-
-            if (projectOutcome.getAchievedValue() == null || projectOutcome.getAchievedValue().longValue() < 0) {
-              action.addMessage(action.getText("projectOutcome.achievedValue"));
-              action.getInvalidFields().put("input-projectOutcome.achievedValue", InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-
-          if (!(this.isValidString(projectOutcome.getNarrativeAchieved())
-            && this.wordCount(projectOutcome.getNarrativeAchieved()) <= 100)) {
-            action.addMessage(action.getText("projectOutcome.narrativeAchieved"));
-            action.getInvalidFields().put("input-projectOutcome.narrativeAchieved", InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
-      }
+      /*
+       * Disable for AICCRA -2023/05/08
+       * if (project.getProjecInfoPhase(action.getActualPhase()).getEndDate() != null) {
+       * Calendar calendarEnd = Calendar.getInstance();
+       * calendarEnd.setTime(project.getProjecInfoPhase(action.getActualPhase()).getEndDate());
+       * if (action.getCurrentCycleYear() == calendarEnd.get(Calendar.YEAR)) {
+       * if (!(projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() == null
+       * || projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1)) {
+       * if (projectOutcome.getAchievedValue() == null || projectOutcome.getAchievedValue().longValue() < 0) {
+       * action.addMessage(action.getText("projectOutcome.achievedValue"));
+       * action.getInvalidFields().put("input-projectOutcome.achievedValue", InvalidFieldsMessages.EMPTYFIELD);
+       * }
+       * }
+       * if (!(this.isValidString(projectOutcome.getNarrativeAchieved())
+       * && this.wordCount(projectOutcome.getNarrativeAchieved()) <= 100)) {
+       * action.addMessage(action.getText("projectOutcome.narrativeAchieved"));
+       * action.getInvalidFields().put("input-projectOutcome.narrativeAchieved", InvalidFieldsMessages.EMPTYFIELD);
+       * }
+       * }
+       * }
+       */
 
       if (action.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS)) {
         if (projectOutcome.getCommunications() != null && projectOutcome.getCommunications().size() > 0) {

@@ -657,6 +657,14 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared" />
     </set>
+    <set name="deliverableClusterParticipants" table="deliverable_cluster_participants" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.DeliverableClusterParticipant" />
+    </set>
     <set name="deliverableUserPartnerships" table="deliverable_user_partnerships" inverse="true"
       order-by="id" lazy="true" fetch="select">
       <key>

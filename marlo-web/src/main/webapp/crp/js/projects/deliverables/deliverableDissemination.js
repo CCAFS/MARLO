@@ -80,6 +80,337 @@ function init() {
   
   // Check duplicated deliverables
   findDuplicatedDeliverables();
+
+  // Validate if the IPI 2.3 indicator is related to the deliverable
+  searchIndicator();
+
+  
+  // Validate which indicator is sectioned in select2
+$('.listindicators .setSelect2').select2().on('change', function() {
+  searchIndicator();
+});
+
+  // Validate indicator removed in select2
+  $(".listindicators .removeElement").on("click", function () {
+
+    // detects when an element is removed and checks if the IPI 2.3 flag is still in the list
+    $(this).closest("li").remove();
+    searchIndicator();
+  });
+
+  // Validate which cluster is sectioned in select2
+  $('.listClusters .setSelect2').select2().on('change', function() {
+  reviewSharedclusters();
+  var spanText = $("#existCurrentCluster").text();
+
+  if($('.listClusters ul.list li').length == 1 && spanText == 'true'){
+    searchcluster($('.listClusters .setSelect2').val());
+  }
+  if($('.listClusters ul.list li').length == 1 && spanText == 'false'){
+    var projectID = $('input[name="projectID"]').val();
+    searchcluster(projectID);
+    searchcluster($('.listClusters .setSelect2').val());
+  }
+  if($('.listClusters ul.list li').length > 1){
+    searchcluster($('.listClusters .setSelect2').val());
+  }
+  initialRemaining();
+  });
+
+
+
+  // close modal evidences
+  $('.close-modal-evidences').on('click', closeModalEvidences);
+
+  initialTotals();
+  initialRemaining();
+  reviewSharedclusters();
+  
+
+}
+
+function reviewSharedclusters(){
+  if ($('.listClusters ul.list li').length > 0) {
+    $('.sharedClustersList').show()
+    //El elemento tiene elementos <li> dentro del elemento <ul> con clase "list"
+  } else {
+    $('.sharedClustersList').hide()
+    //El elemento no tiene elementos <li> dentro del elemento <ul> con clase "list"
+  }
+  
+}
+
+//Updates the values of the total fields in real time
+function initialTotals(){
+  const initialValueParticipants  = $('#deliverable\\.deliverableParticipant\\.participants').val();
+  $('.totalTrainees').text(initialValueParticipants);
+  const initialValueFemales = $('#deliverable\\.deliverableParticipant\\.females').val();
+  $('.totalFemales').text(initialValueFemales);
+  const initialValueAfrican = $('#deliverable\\.deliverableParticipant\\.african').val();
+  $('.totalAfrican').text(initialValueAfrican);
+  const initialValuYouth = $('#deliverable\\.deliverableParticipant\\.youth').val();
+  $('.totalYouth').text(initialValuYouth);
+
+  const inputsParticipants = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".participants"]');
+  const inputsFemales = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".females"]');
+  const inputsAfrican = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".african"]');
+  const inputsYouth = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".youth"]');
+  
+
+// Get <div> tag with class "listClusterDM"
+const divElement = document.querySelector('.listClusterDM');
+
+  
+  $('#deliverable\\.deliverableParticipant\\.participants').on('input', function() {
+    const newValue = $(this).val();
+    $('.totalTrainees').text(newValue);
+    initialRemaining()
+  });
+  $('#deliverable\\.deliverableParticipant\\.females').on('input', function() {
+    const newValue = $(this).val();
+    $('.totalFemales').text(newValue);
+    initialRemaining()
+  });
+  $('#deliverable\\.deliverableParticipant\\.african').on('input', function() {
+    const newValue = $(this).val();
+    $('.totalAfrican').text(newValue);
+    initialRemaining()
+  });
+  $('#deliverable\\.deliverableParticipant\\.youth').on('input', function() {
+    const newValue = $(this).val();
+    $('.totalYouth').text(newValue);
+    initialRemaining()
+  });
+  
+  inputsParticipants.forEach(function(input) {
+    input.addEventListener('input', function() {
+      initialRemaining()
+    });
+  });
+  
+  inputsFemales.forEach(function(input) {
+    input.addEventListener('input', function() {
+      initialRemaining()
+    });
+  });
+
+  inputsAfrican.forEach(function(input) {
+    input.addEventListener('input', function() {
+      initialRemaining()
+    });
+  });
+
+  inputsYouth.forEach(function(input) {
+    input.addEventListener('input', function() {
+      initialRemaining()
+    });
+  });
+
+}
+
+//This function is to update the values of the Total and Remaining fields in real time.
+function initialRemaining(){
+
+  const inputsParticipants = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".participants"]');
+  const inputsFemales = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".females"]');
+  const inputsAfrican = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".african"]');
+  const inputsYouth = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".youth"]');
+  
+  const valuesParticipants = [];
+  const valuesFemales = [];
+  const valuesAfrican = [];
+  const valuesYouth = [];
+
+  inputsParticipants.forEach(input => {
+    var inputValidator = input.value === "" || isNaN(input.value) ? 0 : input.value;
+    valuesParticipants.push(parseInt(inputValidator));
+  });
+
+  inputsFemales.forEach(input => {
+    var inputValidator = input.value === "" || isNaN(input.value) ? 0 : input.value;
+    valuesFemales.push(parseInt(inputValidator));
+  });
+  
+  inputsAfrican.forEach(input => {
+    var inputValidator = input.value === "" || isNaN(input.value) ? 0 : input.value;
+    valuesAfrican.push(parseInt(inputValidator));
+  });
+
+  inputsYouth.forEach(input => {
+    var inputValidator = input.value === "" || isNaN(input.value) ? 0 : input.value;
+    valuesYouth.push(parseInt(inputValidator));
+  });
+
+  const sumaParticipants = valuesParticipants.reduce((acumulador, valorActual) => {
+    return acumulador + valorActual;
+  }, 0);
+
+  const sumaFemales = valuesFemales.reduce((acumulador, valorActual) => {
+    return acumulador + valorActual;
+  }, 0);
+
+  const sumaAfrican = valuesAfrican.reduce((acumulador, valorActual) => {
+    return acumulador + valorActual;
+  }, 0);
+
+  const sumaYouth = valuesYouth.reduce((acumulador, valorActual) => {
+    return acumulador + valorActual;
+  }, 0);
+
+  // console.log('totalTrainees: '+ $('.totalTrainees').text());
+  let remainingTrainees = parseInt($('.totalTrainees').text())-parseInt(sumaParticipants);
+  let remainingFemales = parseInt($('.totalFemales').text())-parseInt(sumaFemales);
+  let remainingAfrican = parseInt($('.totalAfrican').text())-parseInt(sumaAfrican);
+  let  remainingYouth = parseInt($('.totalYouth').text())-parseInt(sumaYouth);
+  
+  $('.remainingTrainees').text(remainingTrainees);
+  $('.remainingFemales').text(remainingFemales);
+  $('.remainingAfrican').text(remainingAfrican);
+  $('.remainingYouth').text(remainingYouth);
+
+  //Change the colors and messages of the Total and Remaining fields in real time
+if(remainingYouth == 0 && remainingAfrican == 0 && remainingFemales == 0 && remainingTrainees == 0){
+  $('.remaining-container').css('color', '#8ea786');
+  $('.alertParticipant').css('display', 'none');
+  $('.doneParticipant').css('display', 'flex');
+}
+else{
+  $('.remaining-container').css('color', '#FFC300');
+  $('.doneParticipant').css('display', 'none');
+  $('.alertParticipant').css('display', 'flex');
+  
+}
+
+  
+}
+
+function searchIndicator(){
+  
+
+  var text = $('.elementName').text();
+  // Makes the trainee question mandatory
+  if (text.indexOf('IPI 2.3') !== -1) {
+    $('.yesNoTrainees .yes-button-label').addClass('radio-checked');
+    $('.yesNoTrainees .yes-button-label').click();
+    $('.yesNoTrainees .no-button-label').css("background-color", "#d6d6d6");
+    $('.yesNoTrainees .no-button-label').removeClass("no-button-label").addClass("no-button-label-disabled");
+  } 
+  // Enable the option not in trainees
+  else { 
+    $('.yesNoTrainees .no-button-label-disabled').css("background-color", "#efefef");
+    $('.yesNoTrainees .no-button-label-disabled').removeClass("no-button-label-disabled").addClass("no-button-label");
+  }
+}
+
+//Query the cluster endpoint
+function searchcluster(idCluster){
+  getCluster(idCluster);
+}
+
+//Add a new cluster to the list of shared clusters in the metadata section with the information brought from the cluster endpoint
+function addcluster(infoCluster){
+
+  var idCluster =infoCluster.id
+  var lastValueId = parseInt($('.listClusterDM .valueId').last().attr('valueindex'))+1;
+  if (!lastValueId) {
+    lastValueId = 0;
+  }
+
+  var hiddenInputId = $('<input>').attr({
+    type: 'hidden',
+    class: 'valueId',
+    name: 'deliverable.clusterParticipant['+lastValueId+'].id',
+    valueIndex: lastValueId,
+    clusteridparticipant: idCluster
+  });
+
+  var hiddenInputProjectId = $('<input>').attr({
+    type: 'hidden',
+    name: 'deliverable.clusterParticipant['+lastValueId+'].project.id',
+    value: idCluster,
+    clusteridparticipant: idCluster
+  });
+
+  // Create the div element with its children
+  var div = $('<div>').attr({
+    class: 'form-group row',
+    clusteridparticipant: idCluster
+  });
+  var col1 = $('<div>').addClass('col-md-2');
+  var textArea1 = $('<div>').addClass('text-area-container').text(infoCluster.acronym);
+  col1.append(textArea1);
+  div.append(col1);
+  div.css('margin-bottom', '30px');
+  var col2 = $('<div>').addClass('col-md-2');
+  var textArea2 = $('<div>').addClass('text-area-container');
+  var input2 = $('<input>').attr({
+    type: 'text',
+    id: 'deliverable.clusterParticipant['+lastValueId+'].participants',
+    name: 'deliverable.clusterParticipant['+lastValueId+'].participants',
+    value: '0',
+    class: 'form-control input-sm numericInput optional',
+    placeholder: 'Number'
+  });
+  textArea2.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input2));
+  col2.append(textArea2);
+  div.append(col2);
+
+  var col3 = $('<div>').addClass('col-md-2 femaleNumbers');
+  var textArea3 = $('<div>').addClass('text-area-container');
+  var input3 = $('<input>').attr({
+    type: 'text',
+    id: 'deliverable.clusterParticipant['+lastValueId+'].females',
+    name: 'deliverable.clusterParticipant['+lastValueId+'].females',
+    value: '0',
+    class: 'form-control input-sm numericInput optional',
+    placeholder: 'Number'
+  });
+  textArea3.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input3));
+  col3.append(textArea3);
+  div.append(col3);
+
+  var col4 = $('<div>').addClass('col-md-2');
+  var textArea4 = $('<div>').addClass('text-area-container');
+  var input4 = $('<input>').attr({
+    type: 'text',
+    id: 'deliverable.clusterParticipant['+lastValueId+'].african',
+    name: 'deliverable.clusterParticipant['+lastValueId+'].african',
+    value: '0',
+    class: 'form-control input-sm numericInput optional',
+    placeholder: 'Number'
+  });
+  textArea4.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input4));
+  col4.append(textArea4);
+  div.append(col4);
+
+  var col5 = $('<div>').addClass('col-md-2 femaleNumbers');
+  var textArea5 = $('<div>').addClass('text-area-container');
+  var input5 = $('<input>').attr({
+    type: 'text',
+    id: 'deliverable.clusterParticipant['+lastValueId+'].youth',
+    name: 'deliverable.clusterParticipant['+lastValueId+'].youth',
+    value: '0',
+    class: 'form-control input-sm numericInput optional',
+    placeholder: 'Number'
+  });
+  textArea5.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input5));
+  col5.append(textArea5);
+  div.append(col5);
+
+
+  // Agregamos los elementos al contenedor adecuado
+  $('.block-involveParticipants .listClusterDM').append(hiddenInputId);
+  $('.block-involveParticipants .listClusterDM').append(hiddenInputProjectId);
+  $('.block-involveParticipants .listClusterDM').append(div);
+  initialTotals()
+}
+
+
+
+function closeModalEvidences(){
+  let modal = $('.modal-evidences');
+  modal.hide();
+>>>>>>> aiccra-improvements-2.3-indicator
 }
 
 function validateRequiredTagToCategory() {
@@ -87,22 +418,8 @@ function validateRequiredTagToCategory() {
   if (statusID != '7' && statusID != '5') {
     if ($('.subTypeSelect ').val() == 63 || $('.subTypeSelectSupplementary').val() == 63) {
       console.log('%cThere is Articles and Books and Journal Article (peer reviewed)', 'background: #222; color: #37ff73');
-                                  
-                       
-                         
-                                 
-      
-                                 
-   
 
       hideOrShowCheckBoxIsOtherUrl(true);
-                                                              
-                                 
-                    
-                 
-                  
-                         
-                      
 
       if ($('.isOtherUrlFiel').val() == 'true') {
         $('.conditionalRequire').find('.requiredTag').hide('slow');
@@ -192,7 +509,6 @@ function getWOSInfo() {
 
         },
         success: function (data) {
-          console.log("data", data);
           if (data.jsonStringResponse != undefined && data.jsonStringResponse != "null") {
             // console.log('%cUpdate','background: #222; color: #37ff73');
             // console.log("data.jsonStringResponse",data.jsonStringResponse);
@@ -1427,12 +1743,26 @@ function validateSubCategorySelector() {
       $('.isIsiJournal .requiredTag').slideUp();
       displayExtraFieldUrl(false, false);
     }
-      
-                               
-                            
-                             
-                             
-                        
-                     
   }
 };
+
+//Check the acronym of the cluster and if it is summited
+function getCluster(idCluster) {
+  var data = {
+    projectID: idCluster
+  }
+  $.ajax({
+    'url': baseURL + '/projectById.do',
+    'type': "GET",
+    'data': data,
+    'dataType': "json",
+    success: function (metadata) {
+      addcluster(metadata.projectMap);
+    },
+    complete: function () {
+    },
+    error: function () {
+    }
+  });
+
+}
