@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -278,21 +279,60 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
 
 
             // Shared deliverables
-            if (deliverable.getSharedWithProjects() == null) {
-              deliverable.setSharedWithProjects(
-                "" + deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-            } else {
-              if (deliverable != null && deliverable.getSharedWithProjects() != null
-                && deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
-                && !deliverable.getSharedWithProjects()
-                  .contains(deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
-                deliverable.setSharedWithProjects(deliverable.getSharedWithProjects() + "; "
-                  + deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+            List<ProjectDeliverableShared> deliverablesShared = new ArrayList<>();
+            try {
+              if (deliverable != null && deliverable.getId() != null && deliverable.getProject() != null) {
+                long projectID = deliverable.getProject().getId();
+                deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
+                if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+                  deliverablesShared =
+                    deliverablesShared.stream().filter(ds -> ds.isActive() && ds.getDeliverable() != null
+                      && ds.getDeliverable().getProject().getId().equals(projectID)).collect(Collectors.toList());
+                }
+
+                // Owner
+                if (deliverable.getProject() != null && !deliverable.getProject().getId().equals(projectID)) {
+                  deliverable.setOwner(deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                  deliverable
+                    .setSharedWithMe(deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                } else {
+                  deliverable.setOwner("This Cluster");
+                  deliverable.setSharedWithMe("Not Applicable");
+                }
+
+                // Shared with others
+                for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+                  // String projectsSharedText = null;
+                  if (deliverableShared.getDeliverable().getSharedWithProjects() == null) {
+                    deliverableShared.getDeliverable().setSharedWithProjects(
+                      "" + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                  } else {
+                    if (deliverableShared.getDeliverable() != null
+                      && deliverableShared.getDeliverable().getSharedWithProjects() != null
+                      && deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
+                      && !deliverableShared.getDeliverable().getSharedWithProjects().contains(
+                        deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
+                      deliverableShared.getDeliverable()
+                        .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; "
+                          + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                    }
+                  }
+                  // deliverableShared.getDeliverable().setSharedWithProjects(projectsSharedText);
+                }
+                // deliverableTemp.setSharedWithProjects(projectsSharedText);
+                // deliverableTemp.setSharedDeliverables(deliverablesShared);
               }
+
+            } catch (Exception e) {
+              Log.error("unable to get shared deliverables", e);
             }
 
             if (deliverable.getSharedWithProjects() != null) {
               deliverableDTO.setSharedClusters(deliverable.getSharedWithProjects());
+              if (deliverableDTO.getSharedClusters() == null
+                || (deliverableDTO.getSharedClusters() != null && deliverableDTO.getSharedClusters().isEmpty())) {
+                deliverableDTO.setSharedClusters("-");
+              }
             }
             deliverableDTOs.add(deliverableDTO);
             // sources.add(deliverableDTO.convertToMap());
