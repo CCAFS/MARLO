@@ -831,11 +831,9 @@ div.fieldFocus-deliverable {
 }
 
 .button-effect {
-  /* Estilos por defecto del botón */
-  transition: background-color 0.3s ease; /* Transición suave del color de fondo */
+  transition: background-color 0.3s ease; 
 }
 
 .button-effect:hover {
-  background-color: #2592b3; /* Color de fondo cuando el cursor está encima del botón */
-  /* Otros estilos adicionales si los deseas */
+  background-color: #2592b3;
 }
