@@ -618,7 +618,7 @@
       
       <button class="button-effect" type="button" v-bind:class="{ active: showTable }" v-on:click="showTable = !showTable" >
         <span v-if="!showTable" class="glyphicon glyphicon-warning-sign"></span>
-        {{ showTable ? 'Less Details' : 'See Details' }}
+        {{ showTable ? 'Hide Details' : 'See Details' }}
       </button>
       
       <transition name="slide-transition">

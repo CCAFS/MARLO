@@ -1376,7 +1376,7 @@ public class DeliverableAction extends BaseAction {
             List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
-            if (deliverableParticipants.size() > 0) {
+            if (!deliverableParticipants.isEmpty()) {
               deliverable.setDeliverableParticipant(
                 deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipants.get(0).getId()));
 
@@ -1794,12 +1794,13 @@ public class DeliverableAction extends BaseAction {
         if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
           // Set is duplicated field in true
           isDuplicated = true;
-
-          DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo();
-          if (deliverableInfo != null) {
-            deliverableInfo.setDuplicated(true);
-            deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
-          }
+        } else {
+          isDuplicated = false;
+        }
+        DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo();
+        if (deliverableInfo != null) {
+          deliverableInfo.setDuplicated(isDuplicated);
+          deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
         }
       }
 
@@ -2102,6 +2103,7 @@ public class DeliverableAction extends BaseAction {
         this.saveDataSharing();
         this.saveUsers();
         this.saveParticipant();
+        this.saveDuplicated();
       }
 
       /*
@@ -2950,6 +2952,61 @@ public class DeliverableAction extends BaseAction {
       dissemination.setPhase(this.getActualPhase());
       deliverableDisseminationManager.saveDeliverableDissemination(dissemination);
 
+    }
+  }
+
+  /**
+   * Check Deliverable duplicated status
+   */
+  public void saveDuplicated() {
+    if (this.hasSpecificities(APConstants.DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE)) {
+      Deliverable deliverableBase = deliverableManager.getDeliverableById(deliverableID);
+      DeliverableInfo deliverableInfoDb = deliverableBase.getDeliverableInfo(this.getActualPhase());
+      String doi = null;
+      String handle = null;
+      String disseminationURL = null;
+
+      if (deliverable.getMetadataElements() != null) {
+        try {
+          doi = deliverable.getMetadataElements().stream()
+            .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+              && me.getMetadataElement().getId().longValue() == 36L && !StringUtils.isBlank(me.getElementValue()))
+            .findFirst().orElse(null).getElementValue();
+        } catch (Exception e) {
+          Log.info(e);
+        }
+
+        try {
+          handle = deliverable.getMetadataElements().stream()
+            .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+              && me.getMetadataElement().getId().longValue() == 35L && !StringUtils.isBlank(me.getElementValue()))
+            .findFirst().orElse(null).getElementValue();
+        } catch (Exception e) {
+          Log.info(e);
+        }
+      }
+
+      if (deliverable.getDissemination() != null && deliverable.getDissemination().getDisseminationUrl() != null
+        && !deliverable.getDissemination().getDisseminationUrl().isEmpty()) {
+        disseminationURL = deliverable.getDissemination().getDisseminationUrl();
+      }
+
+
+      List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
+
+      deliverableDTOs = this.getDuplicatedDeliverableInformation(doi, handle, disseminationURL, deliverableID);
+      if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+        // Set is duplicated field in true
+        isDuplicated = true;
+      } else {
+        isDuplicated = false;
+      }
+
+      if (deliverableInfoDb != null) {
+        deliverableInfoDb.setDuplicated(isDuplicated);
+        deliverableBase.setDeliverableInfo(deliverableInfoDb);
+        deliverableInfoManager.saveDeliverableInfo(deliverableBase.getDeliverableInfo());
+      }
     }
   }
 

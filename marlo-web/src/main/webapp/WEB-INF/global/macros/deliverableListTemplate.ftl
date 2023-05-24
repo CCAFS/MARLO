@@ -17,10 +17,12 @@
         [#if action.hasSpecificities('feedback_active') ]
           <th id="feedbackStatus" width="0%">[@s.text name="Feedback Status" /]</th>
         [/#if]
-        [#if action.hasSpecificities('duplicated_deliverables_functionality_active') ]
-          <th id="deliverableDuplicated" width="0%">[@s.text name="project.deliverable.isDuplicated" /]</th>
-        [/#if]
+
         <th id="deliverableStatus">[@s.text name="project.deliverableList.status" /]</th>
+        
+        [#if action.hasSpecificities('duplicated_deliverables_functionality_active') ]
+          <th id="deliverableDuplicated">[@s.text name="project.deliverable.isDuplicated" /]</th>
+        [/#if]
         [#if currentTable]
         <th id="deliverableRF"></th>
         <th id="deliverableRemove"></th>
@@ -124,19 +126,7 @@
               ${(deliverable.commentStatus)!}
             </td>
           [/#if]
-          [#-- Deliverable Duplicated --]
-          [#if action.hasSpecificities('duplicated_deliverables_functionality_active') ]
-          
-            <td class="text-center">
-            <p> ${(deliverable.deliverableInfo.isDuplicated())!'empty'}</p>
-              [#if (deliverable.deliverableInfo.isDuplicated())!false]
-                <p>[@s.text name="project.deliverable.duplicated" /]</p>
-                <span class="icon-duplicated" title="Duplicated"></span>
-              [#else]
-                <p>[@s.text name="project.deliverable.notDuplicated" /]</p>
-              [/#if]
-            </td>
-          [/#if]
+   
           [#-- Deliverable Status --]
           <td class="text-center">
             [#attempt]
@@ -148,6 +138,19 @@
               None
             [/#attempt]
           </td>
+          
+          [#-- Deliverable Duplicated --]
+          [#if action.hasSpecificities('duplicated_deliverables_functionality_active') ]
+          
+           <td class="text-center">
+            [#if (deliverable.deliverableInfo.duplicated)?has_content ]
+              [#if (deliverable.deliverableInfo.duplicated)]
+                <span class="icon-20 icon-duplicated" title="Duplicated"></span>
+              [/#if]
+            [/#if]
+           </td>
+          [/#if]
+          
           [#-- Deliverable required fields --]
           [#if currentTable]
             <td class="text-center">
