@@ -464,7 +464,7 @@
 				</configuration>
 			</plugin>
 
-			<!-- MINIFYING CSS AND JS - TEST 
+			<!-- MINIFYING CSS AND JS - TEST -->
 			<plugin>
 				<groupId>com.samaxes.maven</groupId>
 				<artifactId>minify-maven-plugin</artifactId>
@@ -482,12 +482,36 @@
 							<cssSourceIncludes>
 								<cssSourceInclude>css/**/*.css</cssSourceInclude>
 							</cssSourceIncludes>
-
+<!--  
 							<jsSourceDir>global</jsSourceDir>
 							<jsSourceIncludes>
 								<jsSourceInclude>js/**/*.js</jsSourceInclude>
 							</jsSourceIncludes>
+-->
+						</configuration>
+						<goals>
+							<goal>minify</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>crp-minify</id>
+						<phase>package</phase>
+						<configuration>
+							<charset>UTF-8</charset>
+							<nosuffix>true</nosuffix>
+							<skipMerge>true</skipMerge>
+							<verbose>true</verbose>
 
+							<cssSourceDir>crp</cssSourceDir>
+							<cssSourceIncludes>
+								<cssSourceInclude>css/**/*.css</cssSourceInclude>
+							</cssSourceIncludes>
+<!--  
+							<jsSourceDir>global</jsSourceDir>
+							<jsSourceIncludes>
+								<jsSourceInclude>js/**/*.js</jsSourceInclude>
+							</jsSourceIncludes>
+-->
 						</configuration>
 						<goals>
 							<goal>minify</goal>
@@ -495,7 +519,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			END -->
+			<!-- END -->
 
             <plugin>
 			  <groupId>com.github.blutorange</groupId>

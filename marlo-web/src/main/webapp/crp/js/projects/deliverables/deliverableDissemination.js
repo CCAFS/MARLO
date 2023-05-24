@@ -336,6 +336,7 @@ function addcluster(infoCluster){
     name: 'deliverable.clusterParticipant['+lastValueId+'].participants',
     value: '0',
     class: 'form-control input-sm numericInput optional',
+    oninput: "validateInput(event)",
     placeholder: 'Number'
   });
   textArea2.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input2));
@@ -437,6 +438,13 @@ function validateRequiredTagToCategory() {
       hideOrShowCheckBoxIsOtherUrl(false);
     }
   }
+}
+
+function validateInput(event) {
+  const input = event.target;
+      const inputValue = input.value;
+      const integerValue = inputValue.replace(/\D/g, ''); // Filtra caracteres no numéricos
+      input.value = integerValue; // Actualiza el valor del campo con el contenido filtrado
 }
 
 function validateEmptyAuthors() {
