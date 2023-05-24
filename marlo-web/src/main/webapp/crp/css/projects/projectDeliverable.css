@@ -859,6 +859,7 @@ div#ccDimension-capacity {
 .titleShowHideColumns{
   margin-bottom: 10px;
   padding-left: 10px;
+  font-weight: 600;
 }
 
 .containerCurrentDeliverables .active{

@@ -410,7 +410,7 @@ function addcluster(infoCluster){
 function closeModalEvidences(){
   let modal = $('.modal-evidences');
   modal.hide();
->>>>>>> aiccra-improvements-2.3-indicator
+
 }
 
 function validateRequiredTagToCategory() {

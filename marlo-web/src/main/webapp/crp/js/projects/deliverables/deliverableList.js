@@ -50,6 +50,28 @@ $(document).ready(function() {
       ]
   });
 
+//hide colums when inizializate table  
+var columnaNames = ['Duplicated']; 
+
+for (var i = 0; i < columnaNames.length; i++) {
+  var columnaName = columnaNames[i];
+  var columns = table.columns().indexes();
+  var columnIndex = -1; 
+
+  columns.each(function(index) {
+    var name = table.column(index).header().textContent.trim();
+    if (name === columnaName) {
+      columnIndex = index;
+      return false;
+    }
+  });
+
+  var column = table.column(columnIndex);
+  if (columnIndex !== -1) {
+    column.visible(false);
+  }
+}
+
 
 
   $('.buttonAddColumn').on('click', function() {

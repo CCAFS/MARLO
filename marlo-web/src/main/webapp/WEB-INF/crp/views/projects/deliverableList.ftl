@@ -162,6 +162,7 @@
           </div>
           <div id="diagramPopup" style="display:none; text-align:center;">
             <img src="${baseUrlCdn}/global/images/FAIR_Principles_in_MARLO_20170919.png" alt="" width="100%" />
+          </div>-->
           </div>
 
           [#-- Current table --]
@@ -173,10 +174,7 @@
             [/#if]
             <div class="containerShowHide">
               <div class="titleShowHideColumns">Add columns</div>
-              <div class="buttonAddColumn active">Deliverable title</div>
-              <div class="buttonAddColumn active">Sub Category</div>
-              <div class="buttonAddColumn active">Delivery year</div>
-              <div class="buttonAddColumn active">Owner</div>
+              <div class="buttonAddColumn">Duplicated</div>
             </div>
             <div class="currentDeliverables">
               [@deliverableList.deliverablesList deliverables=(currentDeliverableList)![] canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" projectID=projectID/]
