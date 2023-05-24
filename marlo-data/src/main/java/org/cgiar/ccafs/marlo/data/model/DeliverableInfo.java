@@ -43,6 +43,8 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   private RepIndGeographicScope geographicScope;
   @Expose
   private RepIndRegion region;
+  @Expose
+  private Boolean duplicated;
 
   public DeliverableInfo() {
   }
@@ -74,14 +76,19 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public Boolean getDuplicated() {
+    return duplicated;
+  }
+
+
   public RepIndGeographicScope getGeographicScope() {
     return geographicScope;
   }
 
-
   public Boolean getIsLocationGlobal() {
     return isLocationGlobal;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -105,10 +112,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return region;
   }
 
-
   public Integer getStatus() {
     return status;
   }
+
 
   public String getStatusDescription() {
     return statusDescription;
@@ -146,7 +153,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public String getTypeOther() {
     return typeOther;
   }
-
 
   public int getYear() {
     return year;
@@ -338,6 +344,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return false;
   }
 
+
   public boolean requeriedFair() {
     try {
       if (this.getDeliverableType().getFair()) {
@@ -383,10 +390,14 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public void setDuplicated(Boolean duplicated) {
+    this.duplicated = duplicated;
+  }
+
+
   public void setGeographicScope(RepIndGeographicScope geographicScope) {
     this.geographicScope = geographicScope;
   }
-
 
   public void setIsLocationGlobal(Boolean isLocationGlobal) {
     this.isLocationGlobal = isLocationGlobal;
@@ -396,7 +407,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public void setNewExpectedYear(Integer newExpectedYear) {
     this.newExpectedYear = newExpectedYear;
   }
-
 
   public void setPhase(Phase phase) {
     this.phase = phase;
@@ -411,16 +421,13 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.status = status;
   }
 
-
   public void setStatusDescription(String statusDescription) {
     this.statusDescription = statusDescription;
   }
 
-
   public void setTitle(String title) {
     this.title = title;
   }
-
 
   public void setTypeOther(String typeOther) {
     this.typeOther = typeOther;

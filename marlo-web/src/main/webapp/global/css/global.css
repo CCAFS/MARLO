@@ -4512,6 +4512,12 @@ li.fileUploaded span {
   background: url('../../global/images/sprite-icons-activities.png') 0 -150px;
 }
 
+.icon-duplicated {
+  background: url('../../global/images/deliverable-duplicated-small.png');
+  background-repeat: no-repeat;
+  border: none;
+}
+
 .mf-icon {
   font-size: 20px;
 }

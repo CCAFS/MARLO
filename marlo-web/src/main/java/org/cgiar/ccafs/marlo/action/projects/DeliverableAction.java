@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.action.deliverable.dto.DeliverableSearchSummary;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
@@ -288,6 +289,10 @@ public class DeliverableAction extends BaseAction {
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
   private List<Project> myProjects;
   private List<FeedbackQACommentableFields> feedbackComments;
+  private boolean isDuplicated;
+  private String DOI;
+  private String handle;
+  private String disseminationURL;
 
 
   private List<RepIndGenderYouthFocusLevel> focusLevels;
@@ -777,6 +782,7 @@ public class DeliverableAction extends BaseAction {
     return partnerPersons;
   }
 
+
   public List<ProjectPartner> getPartners() {
     return partners;
   }
@@ -803,7 +809,6 @@ public class DeliverableAction extends BaseAction {
 
     return EMPTY_ARRAY;
   }
-
 
   public List<CrpProgramOutcome> getProgramOutcomes() {
     return programOutcomes;
@@ -980,6 +985,10 @@ public class DeliverableAction extends BaseAction {
     return existCurrentCluster;
   }
 
+  public boolean isDuplicated() {
+    return isDuplicated;
+  }
+
   @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
@@ -1008,6 +1017,7 @@ public class DeliverableAction extends BaseAction {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     this.acceptationPercentage = APConstants.ACCEPTATION_PERCENTAGE;
+    isDuplicated = false;
 
     try {
       deliverableID =
@@ -1391,14 +1401,39 @@ public class DeliverableAction extends BaseAction {
               .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
           }
 
+          try {
+            DOI = deliverable.getDeliverableMetadataElements().stream()
+              .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+                && me.getMetadataElement().getId().longValue() == 36L && me.getPhase().equals(this.getActualPhase())
+                && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
+              .findFirst().orElse(null).getElementValue();
+          } catch (Exception e) {
+            Log.info(e);
+          }
+
+          try {
+            handle = deliverable.getDeliverableMetadataElements().stream()
+              .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+                && me.getMetadataElement().getId().longValue() == 35L && me.getPhase().equals(this.getActualPhase())
+                && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
+              .findFirst().orElse(null).getElementValue();
+          } catch (Exception e) {
+            Log.info(e);
+          }
+
           if (deliverable.getDeliverableDisseminations() != null) {
             deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
-            if (deliverable.getDisseminations().size() > 0) {
+            if (!deliverable.getDisseminations().isEmpty()) {
               deliverable.setDissemination(deliverable.getDisseminations().get(0));
             } else {
               deliverable.setDissemination(new DeliverableDissemination());
             }
+          }
+
+          if (deliverable.getDissemination() != null && deliverable.getDissemination().getDisseminationUrl() != null
+            && !deliverable.getDissemination().getDisseminationUrl().isEmpty()) {
+            disseminationURL = deliverable.getDissemination().getDisseminationUrl();
           }
 
           if (deliverable.getDeliverableDataSharingFiles() != null) {
@@ -1860,6 +1895,23 @@ public class DeliverableAction extends BaseAction {
           .collect(Collectors.toList());
       }
 
+
+      List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
+      if (this.hasSpecificities(APConstants.DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE)) {
+        deliverableDTOs = this.getDuplicatedDeliverableInformation(DOI, handle, disseminationURL, deliverableID);
+        if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+          // Set is duplicated field in true
+          isDuplicated = true;
+        } else {
+          isDuplicated = false;
+        }
+        DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo();
+        if (deliverableInfo != null) {
+          deliverableInfo.setDuplicated(isDuplicated);
+          deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+        }
+      }
+
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
 
@@ -2167,9 +2219,13 @@ public class DeliverableAction extends BaseAction {
         this.saveDataSharing();
         this.saveUsers();
         this.saveParticipant();
+
         if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
           this.saveDeliverableClusterParticipant();
         }
+
+        this.saveDuplicated();
+
       }
 
       /*
@@ -3085,6 +3141,61 @@ public class DeliverableAction extends BaseAction {
   }
 
   /**
+   * Check Deliverable duplicated status
+   */
+  public void saveDuplicated() {
+    if (this.hasSpecificities(APConstants.DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE)) {
+      Deliverable deliverableBase = deliverableManager.getDeliverableById(deliverableID);
+      DeliverableInfo deliverableInfoDb = deliverableBase.getDeliverableInfo(this.getActualPhase());
+      String doi = null;
+      String handle = null;
+      String disseminationURL = null;
+
+      if (deliverable.getMetadataElements() != null) {
+        try {
+          doi = deliverable.getMetadataElements().stream()
+            .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+              && me.getMetadataElement().getId().longValue() == 36L && !StringUtils.isBlank(me.getElementValue()))
+            .findFirst().orElse(null).getElementValue();
+        } catch (Exception e) {
+          Log.info(e);
+        }
+
+        try {
+          handle = deliverable.getMetadataElements().stream()
+            .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+              && me.getMetadataElement().getId().longValue() == 35L && !StringUtils.isBlank(me.getElementValue()))
+            .findFirst().orElse(null).getElementValue();
+        } catch (Exception e) {
+          Log.info(e);
+        }
+      }
+
+      if (deliverable.getDissemination() != null && deliverable.getDissemination().getDisseminationUrl() != null
+        && !deliverable.getDissemination().getDisseminationUrl().isEmpty()) {
+        disseminationURL = deliverable.getDissemination().getDisseminationUrl();
+      }
+
+
+      List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
+
+      deliverableDTOs = this.getDuplicatedDeliverableInformation(doi, handle, disseminationURL, deliverableID);
+      if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+        // Set is duplicated field in true
+        isDuplicated = true;
+      } else {
+        isDuplicated = false;
+      }
+
+      if (deliverableInfoDb != null) {
+        deliverableInfoDb.setDuplicated(isDuplicated);
+        deliverableBase.setDeliverableInfo(deliverableInfoDb);
+        deliverableInfoManager.saveDeliverableInfo(deliverableBase.getDeliverableInfo());
+      }
+    }
+  }
+
+  /**
    * Save Deliverable Geographic Scope Information
    *
    * @param deliverable
@@ -3419,7 +3530,6 @@ public class DeliverableAction extends BaseAction {
           }
         }
       }
-
     } catch (Exception e) {
       logger.error("unable to get cluster shared", e);
     }
@@ -3665,6 +3775,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setExistCurrentCluster(boolean existCurrentCluster) {
     this.existCurrentCluster = existCurrentCluster;
+  }
+  
+  public void setDuplicated(boolean isDuplicated) {
+    this.isDuplicated = isDuplicated;
   }
 
   public void setFeedbackComments(List<FeedbackQACommentableFields> feedbackComments) {

@@ -155,6 +155,7 @@
               <div class="col-md-12 form-group"><b>[@s.text name="project.deliverableList.requiredStatus" /]:</b></div>
               <div class="form-group col-md-12"><span class="icon-check required-fields"></span>[@s.text name="project.deliverableList.requiredStatus.complete" /]</div>
               <div class="form-group col-md-12"><span class="icon-uncheck required-fields"></span>[@s.text name="project.deliverableList.requiredStatus.incomplete" /]</div>
+              <div class="form-group col-md-12"><span class="icon-duplicated required-fields"></span>[@s.text name="project.deliverable.duplicated.legend" /]</div>
             </div>
           </div>
           <div id="diagramPopup" style="display:none; text-align:center;">

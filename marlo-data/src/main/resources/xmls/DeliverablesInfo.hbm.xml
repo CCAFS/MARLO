@@ -62,6 +62,9 @@
 		<property name="adoptedLicense" type="java.lang.Boolean">
 			<column name="adopted_license" />
 		</property>
+		<property name="duplicated" type="java.lang.Boolean">
+            <column name="is_duplicated" not-null="true" />
+        </property>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select" update="false">
 			<column name="created_by" not-null="true" />

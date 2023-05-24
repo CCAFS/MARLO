@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Deliverable information" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate"] /]
+[#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate", "vue"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20230420",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20230510",
@@ -129,7 +129,26 @@
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-deliverables.ftl" /]
 
-        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]       
+        
+        [#if action.hasSpecificities('duplicated_deliverables_functionality_active') && duplicated]
+          <div class="animated flipInX container viewMore-block containerAlertMargin">
+            <div class=" containerAlert  alert-leftovers alertColorBackgroundWarning"  id="containerAlert">
+              <div class="containerLine alertColorWarning"></div>
+              <div class="containerIcon">
+                <div class="containerIcon alertColorWarning">
+                  <img src="${baseUrlCdn}/global/images/icon-alert.png" />      
+                </div>
+              </div>
+              <div class="containerText col-md-12">
+                <p class="alertText"> 
+                  [@s.text name="project.deliverable.duplicatedHelp" /] 
+                </p>
+              </div>
+              [#--  <div class="viewMoreCollapse closed"></div>--]
+            </div>
+          </div>
+        [/#if]
 
           <div class="form-group">
             <br />
@@ -140,7 +159,7 @@
               </a>
             </small>
 
-                        [#--  Feedback Status --]
+          [#--  Feedback Status --]
           [#if action.hasSpecificities('feedback_active') ]
             <div class="form-group col-md-12 legendContent-global">
               <div class="colors-global">
