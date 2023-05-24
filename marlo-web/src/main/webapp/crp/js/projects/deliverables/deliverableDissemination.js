@@ -351,6 +351,7 @@ function addcluster(infoCluster){
     name: 'deliverable.clusterParticipant['+lastValueId+'].females',
     value: '0',
     class: 'form-control input-sm numericInput optional',
+    oninput: "validateInput(event)",
     placeholder: 'Number'
   });
   textArea3.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input3));
@@ -365,6 +366,7 @@ function addcluster(infoCluster){
     name: 'deliverable.clusterParticipant['+lastValueId+'].african',
     value: '0',
     class: 'form-control input-sm numericInput optional',
+    oninput: "validateInput(event)",
     placeholder: 'Number'
   });
   textArea4.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input4));
@@ -379,6 +381,7 @@ function addcluster(infoCluster){
     name: 'deliverable.clusterParticipant['+lastValueId+'].youth',
     value: '0',
     class: 'form-control input-sm numericInput optional',
+    oninput: "validateInput(event)",
     placeholder: 'Number'
   });
   textArea5.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input5));
