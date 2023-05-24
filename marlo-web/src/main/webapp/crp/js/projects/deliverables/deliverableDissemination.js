@@ -67,7 +67,6 @@ function init() {
   }
 
   validateEmptyAuthors();
-<<<<<<< HEAD
 
   // Validate if the IPI 2.3 indicator is related to the deliverable
   searchIndicator();
@@ -398,7 +397,6 @@ function addcluster(infoCluster){
 function closeModalEvidences(){
   let modal = $('.modal-evidences');
   modal.hide();
-=======
   
   // Duplicated deliverables
   $deliverableDisseminationUrl = $('input.deliverableDisseminationUrl');
@@ -412,7 +410,6 @@ function closeModalEvidences(){
   
   // Check duplicated deliverables
   findDuplicatedDeliverables();
->>>>>>> aiccra-deliverables-duplicated
 }
 
 function validateRequiredTagToCategory() {

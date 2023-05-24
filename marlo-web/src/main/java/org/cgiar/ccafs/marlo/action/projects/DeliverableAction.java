@@ -2225,7 +2225,6 @@ public class DeliverableAction extends BaseAction {
         }
 
         this.saveDuplicated();
-
       }
 
       /*

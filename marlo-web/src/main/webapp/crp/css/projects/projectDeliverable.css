@@ -793,7 +793,6 @@ div#ccDimension-capacity {
   display: block;
 }
 
-
 /*********8 Styles pop-up **************/
 
 .container-evidences{
@@ -1013,8 +1012,9 @@ div.fieldFocus-deliverable {
 }
 
 .button-effect {
+
   /* Estilos por defecto del botón */
-  transition: background-color 0.3s ease; /* Transición suave del color de fondo */
+  transition: background-color 0.3s ease; 
 }
 
 .button-effect:hover {
