@@ -581,6 +581,28 @@ public class DeliverableListAction extends BaseAction {
                 && ds.getDeliverable().getProject().getId().equals(projectID)).collect(Collectors.toList());
             }
 
+            // Is duplicated
+            /*
+             * if (this.hasSpecificities(APConstants.DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE)) {
+             * String DOI = null;
+             * String handle = null;
+             * String disseminationURL = null;
+             * Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+             * List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
+             * deliverableDTOs = this.getDuplicatedDeliverableInformation(DOI, handle, disseminationURL, deliverableID);
+             * boolean isDuplicated = false;
+             * if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+             * isDuplicated = true;
+             * } else {
+             * isDuplicated = false;
+             * }
+             * DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo();
+             * if (deliverableInfo != null) {
+             * deliverableInfo.setDuplicated(isDuplicated);
+             * deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+             * }
+             * }
+             */
             // Owner
             if (deliverableTemp.getProject() != null && !deliverableTemp.getProject().getId().equals(projectID)) {
               deliverableTemp
