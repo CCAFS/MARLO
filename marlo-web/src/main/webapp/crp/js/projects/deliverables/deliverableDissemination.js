@@ -113,7 +113,18 @@ $('.listindicators .setSelect2').select2().on('change', function() {
   initialRemaining();
   reviewSharedclusters();
   
-
+    // Duplicated deliverables
+  $deliverableDisseminationUrl = $('input.deliverableDisseminationUrl');
+  $handleField = $('input.handleField');
+  $doiField = $('input.doiField');
+  
+  
+  $deliverableDisseminationUrl.on("keyup change", findDuplicatedDeliverables);
+  $handleField.on("keyup change", findDuplicatedDeliverables);
+  $doiField.on("keyup change", findDuplicatedDeliverables);
+  
+  // Check duplicated deliverables
+  findDuplicatedDeliverables();
 }
 
 function reviewSharedclusters(){
@@ -401,19 +412,6 @@ function addcluster(infoCluster){
 function closeModalEvidences(){
   let modal = $('.modal-evidences');
   modal.hide();
-  
-  // Duplicated deliverables
-  $deliverableDisseminationUrl = $('input.deliverableDisseminationUrl');
-  $handleField = $('input.handleField');
-  $doiField = $('input.doiField');
-  
-  
-  $deliverableDisseminationUrl.on("keyup change", findDuplicatedDeliverables);
-  $handleField.on("keyup change", findDuplicatedDeliverables);
-  $doiField.on("keyup change", findDuplicatedDeliverables);
-  
-  // Check duplicated deliverables
-  findDuplicatedDeliverables();
 }
 
 function validateRequiredTagToCategory() {
