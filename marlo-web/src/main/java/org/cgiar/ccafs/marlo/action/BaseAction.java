@@ -110,6 +110,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -3080,9 +3081,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
     if (deliverables != null && !deliverables.isEmpty() && this.getActualPhase() != null) {
-      deliverables =
-        deliverables.stream().filter(d -> d != null && d.isActive() && d.getId() != null && d.getId() != deliverableID
-          && d.getDeliverableInfo(this.getActualPhase()).isActive()).collect(Collectors.toList());
+      deliverables = deliverables.stream()
+        .filter(d -> d != null && d.isActive() && d.getId() != null && d.getId() != deliverableID
+          && d.getDeliverableInfo(this.getActualPhase()).isActive())
+        .sorted(Comparator.comparing(Deliverable::getId)).collect(Collectors.toList());
+
       if (deliverables != null && !deliverables.isEmpty()) {
 
         for (Deliverable deliverable : deliverables) {
@@ -3143,8 +3146,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             try {
               if (deliverableDOI != null && !deliverableDOI.isEmpty() && DOI != null && !DOI.isEmpty()
                 && deliverableDOI.equals(DOI)) {
-                System.out
-                  .println("deliverable " + deliverableID + " / deliverableDOI: " + deliverableDOI + " / DOI: " + DOI);
                 isDOIDuplicated = true;
               }
             } catch (Exception e) {
@@ -3296,6 +3297,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             deliverableDTOs.add(deliverableDTO);
           }
         } // End deliverables for
+
+        if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+          deliverableDTOs = deliverableDTOs.stream()
+            .sorted(Comparator.comparing(DeliverableSearchSummary::getDeliverableID)).collect(Collectors.toList());
+          if (deliverableDTOs.size() > 1) {
+            if (deliverableDTOs.get(0).getDeliverableID() != null
+              && deliverableDTOs.get(0).getDeliverableID() > deliverableID) {
+              deliverableDTOs.clear();
+              return deliverableDTOs;
+            } else {
+              deliverableDTOs.remove(0);
+            }
+          }
+        }
       }
     }
     return deliverableDTOs;

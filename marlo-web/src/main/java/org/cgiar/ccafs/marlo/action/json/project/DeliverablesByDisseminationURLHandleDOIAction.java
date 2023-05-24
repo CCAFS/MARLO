@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -81,10 +82,14 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
     }
 
     if (deliverables != null && !deliverables.isEmpty() && phase != null) {
-      deliverables = deliverables.stream().filter(d -> d != null && d.isActive() && d.getId() != null
-        && d.getId() != deliverableID && d.getDeliverableInfo(phase).isActive()).collect(Collectors.toList());
+      deliverables = deliverables.stream()
+        .filter(d -> d != null && d.isActive() && d.getId() != null && d.getId() != deliverableID
+          && d.getDeliverableInfo(phase).isActive())
+        .sorted(Comparator.comparing(Deliverable::getId)).collect(Collectors.toList());
+
       if (deliverables != null && !deliverables.isEmpty()) {
 
+        List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
         for (Deliverable deliverable : deliverables) {
           if (deliverable != null && deliverable.getId() != null) {
             deliverable = deliverableManager.getDeliverableById(deliverable.getId());
@@ -257,13 +262,13 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
               deliverableDTO.setDuplicatedField("DOI ");
             }
             if (isHandleDuplicated) {
-              if (deliverableDTO.getDuplicatedField().isEmpty()) {
+              if (!deliverableDTO.getDuplicatedField().isEmpty()) {
                 deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("| "));
               }
               deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("Handle "));
             }
             if (isDisseminationURLDuplicated) {
-              if (deliverableDTO.getDuplicatedField().isEmpty()) {
+              if (!deliverableDTO.getDuplicatedField().isEmpty()) {
                 deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("| "));
               }
               deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("Dissemination URL "));
@@ -289,10 +294,31 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
             if (deliverable.getSharedWithProjects() != null) {
               deliverableDTO.setSharedClusters(deliverable.getSharedWithProjects());
             }
-
-            sources.add(deliverableDTO.convertToMap());
+            deliverableDTOs.add(deliverableDTO);
+            // sources.add(deliverableDTO.convertToMap());
           }
         } // End deliverables for
+
+        if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+          deliverableDTOs = deliverableDTOs.stream()
+            .sorted(Comparator.comparing(DeliverableSearchSummary::getDeliverableID)).collect(Collectors.toList());
+
+          if (deliverableDTOs.size() > 1) {
+            if (deliverableDTOs.get(0).getDeliverableID() != null
+              && deliverableDTOs.get(0).getDeliverableID() > (deliverableID)) {
+              deliverableDTOs.clear();
+              return SUCCESS;
+            } else {
+              deliverableDTOs.remove(0);
+            }
+          }
+
+          if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+            for (DeliverableSearchSummary dto : deliverableDTOs) {
+              sources.add(dto.convertToMap());
+            }
+          }
+        }
       }
     }
 
