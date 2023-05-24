@@ -3277,22 +3277,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
             // Shared deliverables
-            if (deliverable.getSharedWithProjects() == null) {
-              deliverable.setSharedWithProjects(
-                "" + deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-            } else {
-              if (deliverable != null && deliverable.getSharedWithProjects() != null
-                && deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
-                && !deliverable.getSharedWithProjects()
-                  .contains(deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
-                deliverable.setSharedWithProjects(deliverable.getSharedWithProjects() + "; "
-                  + deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-              }
-            }
-
-            if (deliverable.getSharedWithProjects() != null) {
-              deliverableDTO.setSharedClusters(deliverable.getSharedWithProjects());
-            }
+            /*
+             * if (deliverable.getSharedWithProjects() == null) {
+             * deliverable.setSharedWithProjects(
+             * "" + deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+             * } else {
+             * if (deliverable != null && deliverable.getSharedWithProjects() != null
+             * && deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
+             * && !deliverable.getSharedWithProjects()
+             * .contains(deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
+             * deliverable.setSharedWithProjects(deliverable.getSharedWithProjects() + "; "
+             * + deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+             * }
+             * }
+             * if (deliverable.getSharedWithProjects() != null) {
+             * deliverableDTO.setSharedClusters(deliverable.getSharedWithProjects());
+             * }
+             */
 
             deliverableDTOs.add(deliverableDTO);
           }
@@ -3301,15 +3302,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
           deliverableDTOs = deliverableDTOs.stream()
             .sorted(Comparator.comparing(DeliverableSearchSummary::getDeliverableID)).collect(Collectors.toList());
-          if (deliverableDTOs.size() > 1) {
-            if (deliverableDTOs.get(0).getDeliverableID() != null
-              && deliverableDTOs.get(0).getDeliverableID() > deliverableID) {
-              deliverableDTOs.clear();
-              return deliverableDTOs;
-            } else {
-              deliverableDTOs.remove(0);
-            }
+          if (deliverableDTOs.get(0).getDeliverableID() != null) {
+
           }
+          if (deliverableDTOs.get(0).getDeliverableID() == deliverableID) {
+            deliverableDTOs.clear();
+            return deliverableDTOs;
+          }
+          if (deliverableDTOs.get(0).getDeliverableID() > deliverableID) {
+            deliverableDTOs.clear();
+            return deliverableDTOs;
+          }
+
         }
       }
     }

@@ -343,16 +343,27 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
           deliverableDTOs = deliverableDTOs.stream()
             .sorted(Comparator.comparing(DeliverableSearchSummary::getDeliverableID)).collect(Collectors.toList());
 
-          if (deliverableDTOs.size() > 1) {
-            if (deliverableDTOs.get(0).getDeliverableID() != null
-              && deliverableDTOs.get(0).getDeliverableID() > (deliverableID)) {
-              deliverableDTOs.clear();
-              return SUCCESS;
-            } else {
-              deliverableDTOs.remove(0);
-            }
+
+          if (deliverableDTOs.get(0).getDeliverableID() == deliverableID) {
+            deliverableDTOs.clear();
+            return SUCCESS;
+          }
+          if (deliverableDTOs.get(0).getDeliverableID() > deliverableID) {
+            deliverableDTOs.clear();
+            return SUCCESS;
           }
 
+          /*
+           * if (deliverableDTOs.size() >= 1) {
+           * if (deliverableDTOs.get(0).getDeliverableID() != null
+           * && deliverableDTOs.get(0).getDeliverableID() > (deliverableID)) {
+           * deliverableDTOs.clear();
+           * return SUCCESS;
+           * } else {
+           * deliverableDTOs.remove(0);
+           * }
+           * }
+           */
           if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
             for (DeliverableSearchSummary dto : deliverableDTOs) {
               sources.add(dto.convertToMap());
