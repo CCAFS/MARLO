@@ -20,13 +20,18 @@ import org.cgiar.ccafs.marlo.action.deliverable.dto.DeliverableSearchSummary;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -51,13 +56,18 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
   private String DOI;
   private DeliverableManager deliverableManager;
   private PhaseManager phaseManager;
+  private ProjectDeliverableSharedManager projectDeliverableSharedManager;
+
+  public DeliverablesByDisseminationURLHandleDOIAction() {
+  }
 
   @Inject
   public DeliverablesByDisseminationURLHandleDOIAction(APConfig config, PhaseManager phaseManager,
-    DeliverableManager deliverableManager) {
+    DeliverableManager deliverableManager, ProjectDeliverableSharedManager projectDeliverableSharedManager) {
     super(config);
     this.phaseManager = phaseManager;
     this.deliverableManager = deliverableManager;
+    this.projectDeliverableSharedManager = projectDeliverableSharedManager;
   }
 
   @Override
@@ -72,11 +82,18 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
     }
 
     if (deliverables != null && !deliverables.isEmpty() && phase != null) {
-      deliverables = deliverables.stream().filter(d -> d != null && d.isActive() && d.getId() != null
-        && d.getId() != deliverableID && d.getDeliverableInfo(phase).isActive()).collect(Collectors.toList());
+      deliverables = deliverables.stream()
+        .filter(d -> d != null && d.isActive() && d.getId() != null && d.getId() != deliverableID
+          && d.getDeliverableInfo(phase).isActive())
+        .sorted(Comparator.comparing(Deliverable::getId)).collect(Collectors.toList());
+
       if (deliverables != null && !deliverables.isEmpty()) {
 
+        List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
         for (Deliverable deliverable : deliverables) {
+          if (deliverable != null && deliverable.getId() != null) {
+            deliverable = deliverableManager.getDeliverableById(deliverable.getId());
+          }
           DeliverableDissemination deliverableDissemination = new DeliverableDissemination();
           boolean isDOIDuplicated = false;
           boolean isDisseminationURLDuplicated = false;
@@ -181,22 +198,127 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
               deliverableDTO.setClusterAcronym("");
             }
 
+            // deliverable responsible
+            String leader = null;
+            List<DeliverableUserPartnership> deliverablePartnershipResponsibles = deliverable
+              .getDeliverableUserPartnerships().stream()
+              .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+                && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+              .collect(Collectors.toList());
+            if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
+              if (deliverablePartnershipResponsibles.size() > 1) {
+                Log.warn("There are more than 1 deliverable responsibles for D" + deliverable.getId() + " "
+                  + phase.toString());
+              }
+              DeliverableUserPartnership responisble = deliverablePartnershipResponsibles.get(0);
+
+              if (responisble != null) {
+                if (responisble.getDeliverableUserPartnershipPersons() != null) {
+
+                  DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
+                  List<DeliverableUserPartnershipPerson> persons = responisble.getDeliverableUserPartnershipPersons()
+                    .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
+                  if (!persons.isEmpty()) {
+                    responsibleppp = persons.get(0);
+                  }
+
+                  if (responsibleppp != null && responsibleppp.getUser() != null
+                    && responsibleppp.getUser().getComposedName() != null) {
+                    leader = responsibleppp.getUser().getComposedName();
+                  }
+                }
+              }
+            }
+
+            // Set deliverable responsible
+            if (leader != null) {
+              deliverableDTO.setResponsible(leader);
+            }
+
+            // Set cluster leader
+            String projectLeaderName = null;
+            if (deliverable.getProject() != null) {
+              ProjectPartnerPerson projectLeader = deliverable.getProject().getLeaderPersonDB(phase);
+              if (projectLeader != null) {
+                projectLeaderName = projectLeader.getComposedName();
+              }
+            }
+            deliverableDTO.setClusterLeader(projectLeaderName);
+
+            // Set subCategory
+            if (deliverable.getDeliverableInfo(phase).getDeliverableType() != null
+              && deliverable.getDeliverableInfo(phase).getDeliverableType().getName() != null) {
+              deliverableDTO.setSubCategory(deliverable.getDeliverableInfo(phase).getDeliverableType().getName());
+            }
+
+            // Set title
+            if (deliverable.getDeliverableInfo(phase).getTitle() != null) {
+              deliverableDTO.setTitle(deliverable.getDeliverableInfo(phase).getTitle());
+            }
+
             // Set duplicated field info
             deliverableDTO.setDuplicatedField("");
             if (isDOIDuplicated) {
-              deliverableDTO.setDuplicatedField("DOI; ");
+              deliverableDTO.setDuplicatedField("DOI ");
             }
             if (isHandleDuplicated) {
-              deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("Handle; "));
+              if (!deliverableDTO.getDuplicatedField().isEmpty()) {
+                deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("| "));
+              }
+              deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("Handle "));
             }
             if (isDisseminationURLDuplicated) {
-              deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("Dissemination URL; "));
+              if (!deliverableDTO.getDuplicatedField().isEmpty()) {
+                deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("| "));
+              }
+              deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("Dissemination URL "));
             }
 
             deliverableDTO.setPhaseID(phaseID);
-            sources.add(deliverableDTO.convertToMap());
+
+
+            // Shared deliverables
+            if (deliverable.getSharedWithProjects() == null) {
+              deliverable.setSharedWithProjects(
+                "" + deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+            } else {
+              if (deliverable != null && deliverable.getSharedWithProjects() != null
+                && deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
+                && !deliverable.getSharedWithProjects()
+                  .contains(deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
+                deliverable.setSharedWithProjects(deliverable.getSharedWithProjects() + "; "
+                  + deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+              }
+            }
+
+            if (deliverable.getSharedWithProjects() != null) {
+              deliverableDTO.setSharedClusters(deliverable.getSharedWithProjects());
+            }
+            deliverableDTOs.add(deliverableDTO);
+            // sources.add(deliverableDTO.convertToMap());
           }
         } // End deliverables for
+
+        if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+          deliverableDTOs = deliverableDTOs.stream()
+            .sorted(Comparator.comparing(DeliverableSearchSummary::getDeliverableID)).collect(Collectors.toList());
+
+          if (deliverableDTOs.size() > 1) {
+            if (deliverableDTOs.get(0).getDeliverableID() != null
+              && deliverableDTOs.get(0).getDeliverableID() > (deliverableID)) {
+              deliverableDTOs.clear();
+              return SUCCESS;
+            } else {
+              deliverableDTOs.remove(0);
+            }
+          }
+
+          if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+            for (DeliverableSearchSummary dto : deliverableDTOs) {
+              sources.add(dto.convertToMap());
+            }
+          }
+        }
       }
     }
 

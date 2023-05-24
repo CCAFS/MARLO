@@ -1,7 +1,22 @@
+var $deliverableDisseminationUrl, $handleField, $doiField;
+
 let WOSInstitutions = '';
 $(document).ready(init);
 $(document).ready(function () {
   validateSubCategorySelector();
+});
+
+$('#vueApp').show();
+var app = new Vue({
+    el: '#vueApp',
+    data: {
+        crpList: [],
+        allDeliverables: [],
+        showTable: false
+    },
+    methods: {
+
+    }
 });
 
 function init() {
@@ -52,6 +67,19 @@ function init() {
   }
 
   validateEmptyAuthors();
+  
+  // Duplicated deliverables
+  $deliverableDisseminationUrl = $('input.deliverableDisseminationUrl');
+  $handleField = $('input.handleField');
+  $doiField = $('input.doiField');
+  
+  
+  $deliverableDisseminationUrl.on("keyup change", findDuplicatedDeliverables);
+  $handleField.on("keyup change", findDuplicatedDeliverables);
+  $doiField.on("keyup change", findDuplicatedDeliverables);
+  
+  // Check duplicated deliverables
+  findDuplicatedDeliverables();
 }
 
 function validateRequiredTagToCategory() {
@@ -1298,6 +1326,76 @@ function formatStateCountries(state) {
   }
   return $state;
 };
+
+function findDuplicatedDeliverables() {
+    var deliverableDisseminationUrl = $.trim($deliverableDisseminationUrl.val());
+    var handleField = $('input[name="handle-bridge"]').val();
+    var doiField = $('input[name="doi-bridge"]').val();
+    var $resultList = $('ul.resultList');
+    var deliverableID = $('input[name="deliverableID"]').val();
+
+
+  $.ajax({
+      url: baseURL + '/deliverablesByDisseminationURLHandleDOI.do',
+      data: {
+          phaseID: phaseID,
+          deliverableID: deliverableID,
+          handle: handleField,
+          doi: doiField,
+          dissemination_url: deliverableDisseminationUrl
+          
+      },
+      beforeSend: function() {
+        app.crpList = [];
+        app.allDeliverables = [];
+        $deliverableDisseminationUrl.addClass('input-loading')
+        $handleField.addClass('input-loading')
+        $doiField.addClass('input-loading')
+      },
+      success: function(r) {
+        // Get funding sources by Global Unit
+        var crpList = [];
+        var allDeliverables = [];
+        $.each(r.sources, function(i,fs) {
+          var includeFs = fs.deliverableID != deliverableID;
+          var obj = $.grep(crpList, function(obj) {
+            return obj.deliverableID === fs.deliverableID;
+          })[0];
+          if(obj == null) {
+            obj = {
+                deliverableID: fs.deliverableID,
+                deliverables: []
+            };
+            if(includeFs) {
+              obj.deliverables.push(fs);
+            }
+              crpList.push(obj);
+          } else {
+            var fsList = obj.deliverables;
+            if(includeFs) {
+              fsList.push(fs);
+            }
+            obj.deliverables = fsList;
+          }
+          if(includeFs) {
+            allDeliverables.push(fs);
+          }
+        });
+
+        app.allDeliverables = allDeliverables;
+        app.crpList = crpList;
+      },
+      error: function(e) {
+      },
+      complete: function() {
+        $deliverableDisseminationUrl.removeClass('input-loading');
+        $handleField.removeClass('input-loading');
+        $doiField.removeClass('input-loading');
+      }
+  });
+
+}
+
 
 /**
  * Search sub category deliverable and display extra url field

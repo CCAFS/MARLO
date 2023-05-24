@@ -863,4 +863,48 @@ div#ccDimension-capacity {
 
 .containerCurrentDeliverables .active{
   background: #d9edf7;
+
+ /*
+button.active {
+  background-color:green; 
+}
+*/
+.fieldFocus-deliverable {
+   border: 1px solid rgb(255, 170, 170)!important;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 1px rgb(255, 94, 94);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 1px rgb(255, 94, 94);
+}
+
+div.fieldFocus-deliverable {
+  padding: 10px 15px !important;
+  margin: 10px 0 !important;
+  background-color: rgba(230, 230, 230, 0.1);
+}
+
+
+.slide-transition {
+  transition: transform 0.5s ease;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.5s ease;
+}
+
+.slide-enter,
+.slide-leave-to {
+  transform: translateY(1%);
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.button-effect {
+  transition: background-color 0.3s ease; 
+}
+
+.button-effect:hover {
+  background-color: #2592b3;
 }
