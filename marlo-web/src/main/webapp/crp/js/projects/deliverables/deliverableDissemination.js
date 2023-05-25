@@ -67,6 +67,19 @@ function init() {
   }
 
   validateEmptyAuthors();
+  
+  // Duplicated deliverables
+  $deliverableDisseminationUrl = $('input.deliverableDisseminationUrl');
+  $handleField = $('input.handleField');
+  $doiField = $('input.doiField');
+  
+  
+  $deliverableDisseminationUrl.on("keyup change", findDuplicatedDeliverables);
+  $handleField.on("keyup change", findDuplicatedDeliverables);
+  $doiField.on("keyup change", findDuplicatedDeliverables);
+  
+  // Check duplicated deliverables
+  findDuplicatedDeliverables();
 
   // Validate if the IPI 2.3 indicator is related to the deliverable
   searchIndicator();
@@ -113,18 +126,7 @@ $('.listindicators .setSelect2').select2().on('change', function() {
   initialRemaining();
   reviewSharedclusters();
   
-    // Duplicated deliverables
-  $deliverableDisseminationUrl = $('input.deliverableDisseminationUrl');
-  $handleField = $('input.handleField');
-  $doiField = $('input.doiField');
-  
-  
-  $deliverableDisseminationUrl.on("keyup change", findDuplicatedDeliverables);
-  $handleField.on("keyup change", findDuplicatedDeliverables);
-  $doiField.on("keyup change", findDuplicatedDeliverables);
-  
-  // Check duplicated deliverables
-  findDuplicatedDeliverables();
+
 }
 
 function reviewSharedclusters(){

@@ -2219,12 +2219,13 @@ public class DeliverableAction extends BaseAction {
         this.saveDataSharing();
         this.saveUsers();
         this.saveParticipant();
-
         if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
           this.saveDeliverableClusterParticipant();
         }
-
         this.saveDuplicated();
+        if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+          this.saveDeliverableClusterParticipant();
+        }
       }
 
       /*
