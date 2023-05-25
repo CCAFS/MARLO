@@ -201,9 +201,12 @@ function openDialog() {
 
 function fillInput() {
 
+  // $(".keywords").removeClass('active');
+
   if ($(this).hasClass('active')) {
-    $(this).removeClass('active');
+    $(".keywords").removeClass('active');
   } else {
+    $(".keywords").removeClass('active');
     $(this).addClass('active');
   }
 
