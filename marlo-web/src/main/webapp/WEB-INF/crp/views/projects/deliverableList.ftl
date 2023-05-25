@@ -174,7 +174,10 @@
             [/#if]
             <div class="containerShowHide">
               <div class="titleShowHideColumns">Add columns</div>
-              <div class="buttonAddColumn">Duplicated</div>
+                [#if action.hasSpecificities('duplicated_deliverables_functionality_active') ]
+                  <div class="buttonAddColumn">Duplicated</div>
+                [/#if]
+                  <div class="buttonAddColumn">Responsible person</div>
             </div>
             <div class="currentDeliverables">
               [@deliverableList.deliverablesList deliverables=(currentDeliverableList)![] canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" projectID=projectID/]

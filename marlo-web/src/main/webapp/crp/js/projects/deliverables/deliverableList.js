@@ -51,7 +51,7 @@ $(document).ready(function() {
   });
 
 //hide colums when inizializate table  
-var columnaNames = ['Duplicated']; 
+var columnaNames = ['Duplicated','Responsible person']; 
 
 for (var i = 0; i < columnaNames.length; i++) {
   var columnaName = columnaNames[i];

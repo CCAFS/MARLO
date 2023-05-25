@@ -23,6 +23,9 @@
         [#if action.hasSpecificities('duplicated_deliverables_functionality_active') ]
           <th id="deliverableDuplicated">[@s.text name="project.deliverable.isDuplicated" /]</th>
         [/#if]
+        
+        <th id="deliverableResponsible">[@s.text name="project.deliverable.responsible.person" /]</th>
+        
         [#if currentTable]
         <th id="deliverableRF"></th>
         <th id="deliverableRemove"></th>
@@ -150,6 +153,11 @@
             [/#if]
            </td>
           [/#if]
+
+          [#-- Deliverable Responsible --]
+          <td class="responsible text-center">
+            ${deliverable.responsible!''}
+          </td>
           
           [#-- Deliverable required fields --]
           [#if currentTable]
