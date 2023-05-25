@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
@@ -56,6 +57,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -575,6 +577,7 @@ public class DeliverableListAction extends BaseAction {
       try {
         for (Deliverable deliverableTemp : currentDeliverableList) {
           if (deliverableTemp != null && deliverableTemp.getId() != null) {
+            deliverableTemp = deliverableManager.getDeliverableById(deliverableTemp.getId());
             deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
             if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
               deliverablesShared = deliverablesShared.stream().filter(ds -> ds.isActive() && ds.getDeliverable() != null
@@ -612,6 +615,43 @@ public class DeliverableListAction extends BaseAction {
             } else {
               deliverableTemp.setOwner("This Cluster");
               deliverableTemp.setSharedWithMe("Not Applicable");
+            }
+
+            // Responsible
+            String leader = null;
+            List<DeliverableUserPartnership> deliverablePartnershipResponsibles = deliverableTemp
+              .getDeliverableUserPartnerships().stream()
+              .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+                && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+              .collect(Collectors.toList());
+            if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
+              if (deliverablePartnershipResponsibles.size() > 1) {
+                Log.warn("There are more than 1 deliverable responsibles for D" + deliverableTemp.getId() + " "
+                  + this.getActualPhase().toString());
+              }
+              DeliverableUserPartnership responisble = deliverablePartnershipResponsibles.get(0);
+
+              if (responisble != null) {
+                if (responisble.getDeliverableUserPartnershipPersons() != null) {
+
+                  DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
+                  List<DeliverableUserPartnershipPerson> persons = responisble.getDeliverableUserPartnershipPersons()
+                    .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
+                  if (!persons.isEmpty()) {
+                    responsibleppp = persons.get(0);
+                  }
+
+                  if (responsibleppp != null && responsibleppp.getUser() != null
+                    && responsibleppp.getUser().getComposedName() != null) {
+                    leader = responsibleppp.getUser().getComposedName();
+                  }
+                }
+              }
+            }
+
+            // Set deliverable responsible
+            if (leader != null) {
+              deliverableTemp.setResponsible(leader);
             }
 
             // Shared with others
