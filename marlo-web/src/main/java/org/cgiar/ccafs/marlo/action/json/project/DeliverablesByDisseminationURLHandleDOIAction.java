@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -257,6 +258,22 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
               deliverableDTO.setTitle(deliverable.getDeliverableInfo(phase).getTitle());
             }
 
+            // Set status
+            String year = "-";
+            if (deliverable.getDeliverableInfo(phase).getStatus() != null) {
+              deliverableDTO.setStatus(
+                ProjectStatusEnum.getValue(deliverable.getDeliverableInfo(phase).getStatus().intValue()).getStatus());
+              if (deliverable.getDeliverableInfo(phase).getNewExpectedYear() != null
+                && deliverable.getDeliverableInfo(phase).getNewExpectedYear() != -1) {
+                year = deliverable.getDeliverableInfo(phase).getNewExpectedYear() + " extended from "
+                  + deliverable.getDeliverableInfo(phase).getYear();
+              } else {
+                year = deliverable.getDeliverableInfo(phase).getYear() + "";
+              }
+            }
+
+            // Set Year
+            deliverableDTO.setYear(year + "");
             // Set duplicated field info
             deliverableDTO.setDuplicatedField("");
             if (isDOIDuplicated) {

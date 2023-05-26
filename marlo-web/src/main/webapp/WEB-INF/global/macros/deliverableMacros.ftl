@@ -820,6 +820,8 @@
               <th>Responsible</th>
               <th>Cluster Leader</th>
               <th>Shared Clusters</th>
+              <th>Status</th>
+              <th>Year</th>
             </tr>
           </thead>
           <tbody>
@@ -838,6 +840,8 @@
                   <td>{{ fs.responsible }}</td>
                   <td>{{ fs.clusterLeader }}</td>
                   <td>{{ fs.sharedClusters }}</td>
+                  <td>{{ fs.status }}</td>
+                  <td>{{ fs.year }}</td>
                 </tr>
               </template>
             </template>
