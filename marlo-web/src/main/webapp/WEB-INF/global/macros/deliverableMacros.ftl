@@ -799,7 +799,7 @@
    [#if action.hasSpecificities('duplicated_deliverables_functionality_active')]
     <div id="vueApp" class="fieldFocus-deliverable resultList simpleBox form-group" v-if="allDeliverables.length" style="display:none">
       <label for=""><strong>[@s.text name="project.deliverable.duplicated.table.title" /]:</strong></label>    
-      [@s.text name="project.deliverable.duplicated.table.title2" /]
+      <i>[@s.text name="project.deliverable.duplicated.table.title2" /]</i>
       [#--  <button type="button" v-bind:class="{ active: showTable }" v-on:click="showTable = !showTable">{{ showTable ? 'Less Details' : 'See Details' }}</button>
       --]
       
@@ -813,15 +813,15 @@
         <table style="border-collapse: collapse;" class="table" >
           <thead>
             <tr>
-              <th>Deliverable ID</th>
-              <th>Cluster</th>
-              <th>Title</th>
-              <th>Sub-Category</th>
-              <th>Responsible</th>
-              <th>Cluster Leader</th>
-              <th>Shared Clusters</th>
-              <th>Status</th>
-              <th>Year</th>
+              <th style="text-align: left;">Deliverable ID</th>
+              <th style="text-align: center;">Cluster</th>
+              <th style="text-align: center;">Title</th>
+              <th style="text-align: center;">Sub-Category</th>
+              <th style="text-align: center;">Responsible</th>
+              <th style="text-align: center;">Cluster Leader</th>
+              <th style="text-align: center;">Shared Clusters</th>
+              <th style="text-align: center;">Status</th>
+              <th style="text-align: center;">Year</th>
             </tr>
           </thead>
           <tbody>
