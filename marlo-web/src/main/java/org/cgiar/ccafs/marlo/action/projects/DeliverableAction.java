@@ -985,7 +985,7 @@ public class DeliverableAction extends BaseAction {
   public boolean isDuplicated() {
     return isDuplicated;
   }
-  
+
   public boolean isExistCurrentCluster() {
     return existCurrentCluster;
   }
@@ -1910,6 +1910,7 @@ public class DeliverableAction extends BaseAction {
         if (deliverableInfo != null) {
           deliverableInfo.setDuplicated(isDuplicated);
           deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+          deliverable.setDeliverableInfo(deliverableInfo);
         }
       }
 
@@ -3776,7 +3777,7 @@ public class DeliverableAction extends BaseAction {
   public void setDuplicated(boolean isDuplicated) {
     this.isDuplicated = isDuplicated;
   }
-  
+
   public void setExistCurrentCluster(boolean existCurrentCluster) {
     this.existCurrentCluster = existCurrentCluster;
   }
