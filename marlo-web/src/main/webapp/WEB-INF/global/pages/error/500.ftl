@@ -30,7 +30,7 @@
 
           Please report this problem at the online <br />
           technical chat or by sending an email to <br />
-          MARLO Support < marlosupport@cgiar.org >. <br /><br />
+          MARLO Support < Alliance-AICCRA-KDS@cgiar.org >. <br /><br />
 
           Thank you for helping us improve the platform!</p>
           
