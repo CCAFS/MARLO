@@ -542,6 +542,41 @@ public class DeliverableListAction extends BaseAction {
                 prevShared.getDeliverable().setSharedWithMe(prevShared.getProject().getId() + "");
               }
 
+              // Responsible
+              String leader = null;
+              List<DeliverableUserPartnership> deliverablePartnershipResponsibles =
+                prevShared.getDeliverable().getDeliverableUserPartnerships().stream()
+                  .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId()) && dp
+                    .getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+                  .collect(Collectors.toList());
+              if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
+                if (deliverablePartnershipResponsibles.size() > 1) {
+                  Log.warn("There are more than 1 deliverable responsibles for D" + prevShared.getDeliverable().getId()
+                    + " " + this.getActualPhase().toString());
+                }
+                DeliverableUserPartnership responsible = deliverablePartnershipResponsibles.get(0);
+
+                if (responsible != null && responsible.getDeliverableUserPartnershipPersons() != null) {
+
+                  DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
+                  List<DeliverableUserPartnershipPerson> persons = responsible.getDeliverableUserPartnershipPersons()
+                    .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
+                  if (!persons.isEmpty()) {
+                    responsibleppp = persons.get(0);
+                  }
+
+                  if (responsibleppp != null && responsibleppp.getUser() != null
+                    && responsibleppp.getUser().getComposedName() != null) {
+                    leader = responsibleppp.getUser().getComposedName();
+                  }
+                }
+              }
+
+              // Set deliverable responsible
+              if (leader != null) {
+                prevShared.getDeliverable().setResponsible(leader);
+              }
+
 
               previousSharedDeliverableList.add(prevShared.getDeliverable());
             }

@@ -33,6 +33,8 @@ public class DeliverableSearchSummary {
   private String responsible;
   private String clusterLeader;
   private String sharedClusters;
+  private String year;
+  private String status;
 
   public DeliverableSearchSummary() {
 
@@ -86,12 +88,20 @@ public class DeliverableSearchSummary {
     return sharedClusters;
   }
 
+  public String getStatus() {
+    return status;
+  }
+
   public String getSubCategory() {
     return subCategory;
   }
 
   public String getTitle() {
     return title;
+  }
+
+  public String getYear() {
+    return year;
   }
 
   public void setClusterAcronym(String clusterAcronym) {
@@ -134,11 +144,19 @@ public class DeliverableSearchSummary {
     this.sharedClusters = sharedClusters;
   }
 
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
   public void setSubCategory(String subCategory) {
     this.subCategory = subCategory;
   }
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  public void setYear(String year) {
+    this.year = year;
   }
 }
