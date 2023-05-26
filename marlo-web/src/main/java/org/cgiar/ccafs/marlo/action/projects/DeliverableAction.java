@@ -981,12 +981,12 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-  public boolean isExistCurrentCluster() {
-    return existCurrentCluster;
-  }
-
   public boolean isDuplicated() {
     return isDuplicated;
+  }
+  
+  public boolean isExistCurrentCluster() {
+    return existCurrentCluster;
   }
 
   @Override
@@ -1909,6 +1909,7 @@ public class DeliverableAction extends BaseAction {
         if (deliverableInfo != null) {
           deliverableInfo.setDuplicated(isDuplicated);
           deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+          deliverable.setDeliverableInfo(deliverableInfo);
         }
       }
 
@@ -3773,12 +3774,12 @@ public class DeliverableAction extends BaseAction {
     this.divisions = divisions;
   }
 
-  public void setExistCurrentCluster(boolean existCurrentCluster) {
-    this.existCurrentCluster = existCurrentCluster;
-  }
-  
   public void setDuplicated(boolean isDuplicated) {
     this.isDuplicated = isDuplicated;
+  }
+  
+  public void setExistCurrentCluster(boolean existCurrentCluster) {
+    this.existCurrentCluster = existCurrentCluster;
   }
 
   public void setFeedbackComments(List<FeedbackQACommentableFields> feedbackComments) {
