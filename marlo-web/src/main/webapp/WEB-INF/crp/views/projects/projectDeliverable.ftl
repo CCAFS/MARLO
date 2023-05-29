@@ -6,7 +6,7 @@
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20230420",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20230523",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20230511",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20230529",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"

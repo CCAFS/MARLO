@@ -484,7 +484,7 @@ function hideShowOptionButtons(block, status) {
                     block.find('.track_icon').attr('commentId', qaComments[i][j].commentId);
 
                     
-                    if (qaComments[i][j].userID != userID || userCanLeaveComments =='false' ||qaComments[i][j].status =='' ||qaComments[i][j].status =='6') {
+                    if (qaComments[i][j].userID != userID || userCanLeaveComments =='false' ||qaComments[i][j].status =='6') {
                       block.find('.track_icon').hide();
                     }else{
                       block.find('.track_icon').show();
