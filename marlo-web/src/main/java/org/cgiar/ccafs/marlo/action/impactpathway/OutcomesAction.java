@@ -803,9 +803,11 @@ public class OutcomesAction extends BaseAction {
       // this.getActualPhase().getId(), this.getSelectedProgram().getId());
       CrpProgramOutcome crpProgramOutcome = null;
       CrpProgramOutcome crpProgramOutcomeTemp = null;
-      crpProgramOutcomeTemp = crpProgramOutcomeManager.getCrpProgramOutcomeById(programOutcomeIncoming.getId());
+      if (programOutcomeIncoming != null && programOutcomeIncoming.getId() != null) {
+        crpProgramOutcomeTemp = crpProgramOutcomeManager.getCrpProgramOutcomeById(programOutcomeIncoming.getId());
+      }
 
-      if (programOutcomeIncoming.getId() == null) {
+      if (programOutcomeIncoming != null && programOutcomeIncoming.getId() == null) {
         crpProgramOutcome = new CrpProgramOutcome();
         crpProgramOutcome.setPhase(this.getActualPhase());
       } else {
