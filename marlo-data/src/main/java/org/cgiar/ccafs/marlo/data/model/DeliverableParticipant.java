@@ -54,6 +54,11 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
   @Expose
   private Double males;
 
+  // Deliverable own Trainees contribution
+  private Double ownTrainess = new Double(0);
+  private Double ownFemales = new Double(0);
+  private Double ownAfricans = new Double(0);
+  private Double ownYouth = new Double(0);
 
   public DeliverableParticipant() {
   }
@@ -165,10 +170,27 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
   }
 
 
+  public Double getOwnAfricans() {
+    return ownAfricans;
+  }
+
+
+  public Double getOwnFemales() {
+    return ownFemales;
+  }
+
+  public Double getOwnTrainess() {
+    return ownTrainess;
+  }
+
+  public Double getOwnYouth() {
+    return ownYouth;
+  }
+
+
   public Double getParticipants() {
     return participants;
   }
-
 
   public Phase getPhase() {
     return phase;
@@ -178,10 +200,10 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
     return repIndTrainingTerm;
   }
 
+
   public RepIndTypeActivity getRepIndTypeActivity() {
     return repIndTypeActivity;
   }
-
 
   public RepIndTypeParticipant getRepIndTypeParticipant() {
     return repIndTypeParticipant;
@@ -208,7 +230,6 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
     this.academicDegree = academicDegree;
   }
 
-
   public void setAfrican(Double african) {
     this.african = african;
   }
@@ -217,7 +238,6 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
     this.africanPercentage = africanPercentage;
   }
 
-
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
@@ -225,7 +245,6 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
   public void setDontKnowFemale(Boolean dontKnowFemale) {
     this.dontKnowFemale = dontKnowFemale;
   }
-
 
   public void setEstimateAfrican(Boolean estimateAfrican) {
     this.estimateAfrican = estimateAfrican;
@@ -267,6 +286,22 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
     this.males = males;
   }
 
+  public void setOwnAfricans(Double ownAfricans) {
+    this.ownAfricans = ownAfricans;
+  }
+
+  public void setOwnFemales(Double ownFemales) {
+    this.ownFemales = ownFemales;
+  }
+
+  public void setOwnTrainess(Double ownTrainess) {
+    this.ownTrainess = ownTrainess;
+  }
+
+  public void setOwnYouth(Double ownYouth) {
+    this.ownYouth = ownYouth;
+  }
+
   public void setParticipants(Double participants) {
     this.participants = participants;
   }
@@ -301,7 +336,4 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
       + ", hasParticipants=" + hasParticipants + ", eventActivityName=" + eventActivityName + ", active="
       + this.isActive() + "]";
   }
-
-
 }
-

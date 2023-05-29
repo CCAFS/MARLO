@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableClusterParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
@@ -38,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableClusterParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
@@ -70,6 +72,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -109,6 +112,8 @@ public class ProjectOutcomeAction extends BaseAction {
   private FeedbackQACommentManager feedbackQACommentManager;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
+  private DeliverableClusterParticipantManager deliverableClusterParticipantManager;
+
 
   // Front-end
   private long projectID;
@@ -145,8 +150,10 @@ public class ProjectOutcomeAction extends BaseAction {
   private Double totalFemales = new Double(0);
   private Double totalAfricans = new Double(0);
   private Double totalYouth = new Double(0);
-
-  private List<ProjectOutcome> list;
+  private Double totalOwnParticipants = new Double(0);
+  private Double totalOwnFemales = new Double(0);
+  private Double totalOwnAfricans = new Double(0);
+  private Double totalOwnYouth = new Double(0);
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -158,7 +165,8 @@ public class ProjectOutcomeAction extends BaseAction {
     PhaseManager phaseManager, DeliverableParticipantManager deliverableParticipantManager,
     FeedbackQACommentManager feedbackQACommentManager,
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
-    ProjectDeliverableSharedManager projectDeliverableSharedManager) {
+    ProjectDeliverableSharedManager projectDeliverableSharedManager,
+    DeliverableClusterParticipantManager deliverableClusterParticipantManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -177,6 +185,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.feedbackQACommentManager = feedbackQACommentManager;
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
+    this.deliverableClusterParticipantManager = deliverableClusterParticipantManager;
   }
 
   public void addAllCrpMilestones() {
@@ -561,6 +570,10 @@ public class ProjectOutcomeAction extends BaseAction {
                       deliverable.getDeliverableParticipant().setYouthPercentage(youthPercentaje);
                     }
                   }
+                  if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+                    deliverable = this.fillOwnTraineesContribution(deliverable);
+                  }
+
                   /*
                    * if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()
                    * .equals(APConstants.REP_IND_TRAINING_TERMS_SHORT)) {
@@ -611,6 +624,52 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
+  /*
+   * Get information for own trainees contribution
+   */
+  public Deliverable fillOwnTraineesContribution(Deliverable deliverable) {
+
+    if (deliverable.getId() != 0) {
+      DeliverableClusterParticipant clusterParticipant = new DeliverableClusterParticipant();
+
+      try {
+        List<DeliverableClusterParticipant> resultList =
+          deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(
+            deliverable.getId(), projectID, this.getActualPhase().getId());
+
+        Optional<DeliverableClusterParticipant> optionalParticipant = resultList.stream().findFirst();
+
+        if (optionalParticipant.isPresent()) {
+          DeliverableClusterParticipant firstParticipant = optionalParticipant.get();
+          clusterParticipant = firstParticipant;
+        }
+
+        if (clusterParticipant != null) {
+          if (clusterParticipant.getParticipants() != null) {
+            deliverable.getDeliverableParticipant().setOwnTrainess(clusterParticipant.getParticipants());
+            totalOwnParticipants += clusterParticipant.getParticipants();
+          }
+          if (clusterParticipant.getFemales() != null) {
+            deliverable.getDeliverableParticipant().setOwnFemales(clusterParticipant.getFemales());
+            totalOwnFemales += clusterParticipant.getFemales();
+          }
+          if (clusterParticipant.getAfrican() != null) {
+            deliverable.getDeliverableParticipant().setOwnAfricans(clusterParticipant.getAfrican());
+            totalOwnAfricans += clusterParticipant.getAfrican();
+          }
+          if (clusterParticipant.getYouth() != null) {
+            deliverable.getDeliverableParticipant().setOwnYouth(clusterParticipant.getYouth());
+            totalOwnYouth += clusterParticipant.getYouth();
+          }
+        }
+      } catch (Exception e) {
+        LOG.error(e + "error to get own trainees contribution");
+      }
+    }
+    return deliverable;
+  }
+
+
   private Path getAutoSaveFilePath() {
     String composedClassName = projectOutcome.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -619,7 +678,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public String getBaseLineFileURL(String outcomeID) {
     return config.getDownloadURL() + "/file.do?" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
@@ -641,6 +699,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return feedbackComments;
   }
 
+
   public int getIndexCommunication(int year) {
 
     int i = 0;
@@ -658,7 +717,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return this.getIndexCommunication(year);
 
   }
-
 
   public int getIndexIndicator(Long indicatorID) {
     if (indicatorID != null) {
@@ -738,6 +796,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return journalDeliverables;
   }
 
+
   public ProjectMilestone getMilestone(long milestoneId, int year) {
     ProjectMilestone projectMilestone = new ProjectMilestone();
     if (projectOutcome.getMilestones() != null) {
@@ -757,7 +816,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
-
 
   public List<CrpMilestone> getMilestones() {
     return milestones;
@@ -814,6 +872,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectMilestoneElement;
   }
 
+
   public ProjectOutcomeIndicator getPreIndicator(Long indicatorID) {
     if (projectOutcome.getIndicators() != null) {
       for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
@@ -852,7 +911,6 @@ public class ProjectOutcomeAction extends BaseAction {
     }
     return 0;
   }
-
 
   public ProjectOutcomeIndicator getPrevIndicator(Long indicatorID) {
     for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeLastPhase.getIndicators()) {
@@ -920,6 +978,23 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalFemales;
   }
 
+  public Double getTotalOwnAfricans() {
+    return totalOwnAfricans;
+  }
+
+  public Double getTotalOwnFemales() {
+    return totalOwnFemales;
+  }
+
+  public Double getTotalOwnParticipants() {
+    return totalOwnParticipants;
+  }
+
+
+  public Double getTotalOwnYouth() {
+    return totalOwnYouth;
+  }
+
   public Double getTotalParticipantFormalTraining() {
     return totalParticipantFormalTraining;
   }
@@ -932,10 +1007,10 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipantFormalTrainingLongMale;
   }
 
-
   public Double getTotalParticipantFormalTrainingPhdFemale() {
     return totalParticipantFormalTrainingPhdFemale;
   }
+
 
   public Double getTotalParticipantFormalTrainingPhdMale() {
     return totalParticipantFormalTrainingPhdMale;
@@ -945,6 +1020,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipantFormalTrainingShortFemale;
   }
 
+
   public Double getTotalParticipantFormalTrainingShortMale() {
     return totalParticipantFormalTrainingShortMale;
   }
@@ -953,18 +1029,20 @@ public class ProjectOutcomeAction extends BaseAction {
     return totalParticipants;
   }
 
-
   public Double getTotalYouth() {
     return totalYouth;
   }
+
 
   public String getTransaction() {
     return transaction;
   }
 
+
   public Long getUserID() {
     return userID;
   }
+
 
   public boolean isEditMilestoneExpectedValue() {
     return editMilestoneExpectedValue;
@@ -973,7 +1051,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public boolean isEditOutcomeExpectedValue() {
     return editOutcomeExpectedValue;
   }
-
 
   public boolean isExpectedValueEditable(Long milestoneId) {
     boolean editable = false;
@@ -1056,7 +1133,6 @@ public class ProjectOutcomeAction extends BaseAction {
       LOG.error("unable to get shared deliverables", e);
     }
   }
-
 
   public ProjectCommunication loadProjectCommunication(int year) {
 
@@ -1395,7 +1471,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
 
@@ -1465,7 +1540,6 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
-
   public void saveCommunications(ProjectOutcome projectOutcomeDB) {
 
     for (ProjectCommunication projectCommunication : projectOutcomeDB.getProjectCommunications().stream()
@@ -1534,7 +1608,6 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
   }
-
 
   public void saveIndicators(ProjectOutcome projectOutcomeDB) {
 
@@ -1885,6 +1958,22 @@ public class ProjectOutcomeAction extends BaseAction {
     this.totalFemales = totalFemales;
   }
 
+  public void setTotalOwnAfricans(Double totalOwnAfricans) {
+    this.totalOwnAfricans = totalOwnAfricans;
+  }
+
+  public void setTotalOwnFemales(Double totalOwnFemales) {
+    this.totalOwnFemales = totalOwnFemales;
+  }
+
+  public void setTotalOwnParticipants(Double totalOwnParticipants) {
+    this.totalOwnParticipants = totalOwnParticipants;
+  }
+
+  public void setTotalOwnYouth(Double totalOwnYouth) {
+    this.totalOwnYouth = totalOwnYouth;
+  }
+
   public void setTotalParticipantFormalTraining(Double totalParticipantFormalTraining) {
     this.totalParticipantFormalTraining = totalParticipantFormalTraining;
   }
@@ -1937,4 +2026,3 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 }
-

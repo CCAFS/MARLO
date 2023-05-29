@@ -261,6 +261,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="deliverablesByDisseminationURLHandleDOI"
+			class="org.cgiar.ccafs.marlo.action.json.project.DeliverablesByDisseminationURLHandleDOIAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="CrpContactPoint"
 			class="org.cgiar.ccafs.marlo.action.json.project.CrpContactPoint">
@@ -579,6 +587,13 @@
 		
 		<action name="institutionById"
 	      class="org.cgiar.ccafs.marlo.action.json.project.InstitutionById">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
+		<action name="projectById"
+	      class="org.cgiar.ccafs.marlo.action.json.project.ProjectById">
 	      <result type="json">
 	        <param name="noCache">true</param>
 	        <param name="excludeNullProperties">true</param>
@@ -1194,14 +1209,6 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-				
-		<action name="deliverablesByDisseminationURLHandleDOI"
-			class="org.cgiar.ccafs.marlo.action.json.project.DeliverablesByDisseminationURLHandleDOIAction">
-			<result type="json">
-				<param name="noCache">true</param>
-				<param name="excludeNullProperties">true</param>
-			</result>
-		</action>
-
+						
 	</package>
 </struts>

@@ -17,7 +17,15 @@
         [#if action.hasSpecificities('feedback_active') ]
           <th id="feedbackStatus" width="0%">[@s.text name="Feedback Status" /]</th>
         [/#if]
+
         <th id="deliverableStatus">[@s.text name="project.deliverableList.status" /]</th>
+        
+        [#if action.hasSpecificities('duplicated_deliverables_functionality_active') ]
+          <th id="deliverableDuplicated">[@s.text name="project.deliverable.isDuplicated" /]</th>
+        [/#if]
+        
+        <th id="deliverableResponsible">[@s.text name="project.deliverable.responsible.person" /]</th>
+        
         [#if currentTable]
         <th id="deliverableRF"></th>
         <th id="deliverableRemove"></th>
@@ -121,6 +129,7 @@
               ${(deliverable.commentStatus)!}
             </td>
           [/#if]
+   
           [#-- Deliverable Status --]
           <td class="text-center">
             [#attempt]
@@ -132,6 +141,24 @@
               None
             [/#attempt]
           </td>
+          
+          [#-- Deliverable Duplicated --]
+          [#if action.hasSpecificities('duplicated_deliverables_functionality_active') ]
+          
+           <td class="text-center">
+            [#if (deliverable.deliverableInfo.duplicated)?has_content ]
+              [#if (deliverable.deliverableInfo.duplicated)]
+                <span class="icon-20 icon-duplicated" title="Duplicated"></span>
+              [/#if]
+            [/#if]
+           </td>
+          [/#if]
+
+          [#-- Deliverable Responsible --]
+          <td class="responsible text-center">
+            ${deliverable.responsible!''}
+          </td>
+          
           [#-- Deliverable required fields --]
           [#if currentTable]
             <td class="text-center">

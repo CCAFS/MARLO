@@ -16,16 +16,24 @@
 package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.action.deliverable.dto.DeliverableSearchSummary;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,95 +47,351 @@ import org.jfree.util.Log;
 
 public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
 
-
   private static final long serialVersionUID = 6304226585314276677L;
-
 
   List<Map<String, Object>> sources;
 
   private long phaseID;
+  private long deliverableID;
   private String disseminationURL;
   private String handle;
   private String DOI;
-  // GlobalUnit Manager
   private DeliverableManager deliverableManager;
   private PhaseManager phaseManager;
-  private Map<String, Object> deliverableDataMap;
-  private Map<String, Object> deliverableMap;
+  private ProjectDeliverableSharedManager projectDeliverableSharedManager;
+
+  public DeliverablesByDisseminationURLHandleDOIAction() {
+  }
 
   @Inject
   public DeliverablesByDisseminationURLHandleDOIAction(APConfig config, PhaseManager phaseManager,
-    DeliverableManager deliverableManager) {
+    DeliverableManager deliverableManager, ProjectDeliverableSharedManager projectDeliverableSharedManager) {
     super(config);
     this.phaseManager = phaseManager;
     this.deliverableManager = deliverableManager;
+    this.projectDeliverableSharedManager = projectDeliverableSharedManager;
   }
-
 
   @Override
   public String execute() throws Exception {
     sources = new ArrayList<>();
 
-    DeliverableDissemination deliverableDissemination = new DeliverableDissemination();
     Phase phase = phaseManager.getPhaseById(phaseID);
-
     List<Deliverable> deliverables = null;
 
-    if ((disseminationURL != null || handle != null || DOI != null) && phaseID != 0) {
+    if ((disseminationURL != null || handle != null || DOI != null) && phaseID != 0 && deliverableID != 0) {
       deliverables = deliverableManager.getDeliverablesByPhase(phaseID);
     }
 
     if (deliverables != null && !deliverables.isEmpty() && phase != null) {
-      deliverableMap = null;
-      for (Deliverable deliverable : deliverables) {
-        deliverableMap.put("id", deliverable.getId());
+      deliverables = deliverables.stream()
+        .filter(d -> d != null && d.isActive() && d.getId() != null && d.getId() != deliverableID
+          && d.getDeliverableInfo(phase).isActive())
+        .sorted(Comparator.comparing(Deliverable::getId)).collect(Collectors.toList());
 
-        deliverableDataMap = null;
+      if (deliverables != null && !deliverables.isEmpty()) {
 
-
-        // Deliverable dissemination
-        try {
-          deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
-            .filter(ds -> ds.isActive() && ds.getPhase() != null && ds.getPhase().equals(phase))
-            .collect(Collectors.toList()).get(0);
-        } catch (Exception e) {
-
-        }
-        if (deliverableDissemination != null && deliverableDissemination.getDisseminationUrl() != null
-          && deliverableDissemination.getDisseminationUrl().equals(disseminationURL)) {
-          deliverableDataMap.put("disseminationURL", disseminationURL);
-        }
-
-        // Set Metadata Elements
-        if (deliverable.getDeliverableMetadataElements() != null) {
-          deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
-        }
-
-
-        for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getDeliverableMetadataElements()) {
-
-          // DOI
-          if (DOI != null && deliverableMetadataElement.getMetadataElement().getId() == 36L
-            && deliverableMetadataElement.getElementValue() != null
-            && !deliverableMetadataElement.getElementValue().equals(DOI)) {
-            deliverableDataMap.put("DOI", DOI);
+        List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
+        for (Deliverable deliverable : deliverables) {
+          if (deliverable != null && deliverable.getId() != null) {
+            deliverable = deliverableManager.getDeliverableById(deliverable.getId());
           }
-          // Handle
-          if (handle != null && deliverableMetadataElement.getMetadataElement().getId() == 36L
-            && deliverableMetadataElement.getElementValue() != null
-            && !deliverableMetadataElement.getElementValue().equals(handle)) {
-            deliverableDataMap.put("handle", handle);
+          DeliverableDissemination deliverableDissemination = new DeliverableDissemination();
+          boolean isDOIDuplicated = false;
+          boolean isDisseminationURLDuplicated = false;
+          boolean isHandleDuplicated = false;
+          String deliverableDOI = null;
+          String deliverableHandle = null;
+          String deliverableDisseminationURL = null;
+
+          // Deliverable dissemination
+          try {
+            deliverableDissemination = deliverable.getDissemination(phase);
+          } catch (Exception e) {
+            Log.info(e);
+          }
+          // Dissemination URL
+          if (disseminationURL != null && !disseminationURL.isEmpty() && deliverableDissemination != null
+            && deliverableDissemination.getDisseminationUrl() != null
+            && !deliverableDissemination.getDisseminationUrl().isEmpty()
+            && deliverableDissemination.getDisseminationUrl().equals(disseminationURL)) {
+            isDisseminationURLDuplicated = true;
           }
 
+          // Set Metadata Elements
+          if (deliverable.getDeliverableMetadataElements() != null) {
+            deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+          }
+
+          List<DeliverableMetadataElement> deliverableMetadataElements;
+          deliverableMetadataElements = deliverable.getMetadataElements(phase);
+
+          if (deliverableMetadataElements != null) {
+
+            try {
+              deliverableDOI = deliverableMetadataElements.stream()
+                .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+                  && me.getMetadataElement().getId().longValue() == 36L && !StringUtils.isBlank(me.getElementValue()))
+                .findFirst().orElse(null).getElementValue();
+            } catch (Exception e) {
+              Log.info(e);
+            }
+
+            try {
+              deliverableHandle = deliverableMetadataElements.stream()
+                .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+                  && me.getMetadataElement().getId().longValue() == 35L && !StringUtils.isBlank(me.getElementValue()))
+                .findFirst().orElse(null).getElementValue();
+            } catch (Exception e) {
+              Log.info(e);
+            }
+
+            try {
+              if (deliverableDOI != null && !deliverableDOI.isEmpty() && DOI != null && !DOI.isEmpty()
+                && deliverableDOI.equals(DOI)) {
+                isDOIDuplicated = true;
+              }
+            } catch (Exception e) {
+              Log.info(e);
+            }
+
+            try {
+              if (deliverableHandle != null && !deliverableHandle.isEmpty() && handle != null && !handle.isEmpty()
+                && deliverableHandle.equals(handle)) {
+                isHandleDuplicated = true;
+              }
+            } catch (Exception e) {
+              Log.info(e);
+            }
+          }
+
+          DeliverableSearchSummary deliverableDTO = new DeliverableSearchSummary();
+          // fill object list
+          if (isDOIDuplicated || isHandleDuplicated || isDisseminationURLDuplicated) {
+
+            if (deliverableDissemination != null && deliverableDissemination.getDisseminationUrl() != null) {
+              deliverableDisseminationURL = deliverableDissemination.getDisseminationUrl();
+            }
+
+            if (deliverableDOI != null) {
+              deliverableDTO.setDOI(deliverableDOI);
+            } else {
+              deliverableDTO.setDOI("");
+            }
+
+            if (deliverableHandle != null) {
+              deliverableDTO.setHandle(deliverableHandle);
+            } else {
+              deliverableDTO.setHandle("");
+            }
+
+            if (deliverableDisseminationURL != null) {
+              deliverableDTO.setDisseminationURL(deliverableDisseminationURL);
+            } else {
+              deliverableDTO.setDisseminationURL("");
+            }
+
+            deliverableDTO.setDeliverableID(deliverable.getId());
+
+            if (deliverable.getProject() != null && deliverable.getProject().getAcronym() != null) {
+              deliverableDTO.setClusterAcronym(deliverable.getProject().getAcronym());
+            } else {
+              deliverableDTO.setClusterAcronym("");
+            }
+
+            // deliverable responsible
+            String leader = null;
+            List<DeliverableUserPartnership> deliverablePartnershipResponsibles = deliverable
+              .getDeliverableUserPartnerships().stream()
+              .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+                && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+              .collect(Collectors.toList());
+            if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
+              if (deliverablePartnershipResponsibles.size() > 1) {
+                Log.warn("There are more than 1 deliverable responsibles for D" + deliverable.getId() + " "
+                  + phase.toString());
+              }
+              DeliverableUserPartnership responisble = deliverablePartnershipResponsibles.get(0);
+
+              if (responisble != null) {
+                if (responisble.getDeliverableUserPartnershipPersons() != null) {
+
+                  DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
+                  List<DeliverableUserPartnershipPerson> persons = responisble.getDeliverableUserPartnershipPersons()
+                    .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
+                  if (!persons.isEmpty()) {
+                    responsibleppp = persons.get(0);
+                  }
+
+                  if (responsibleppp != null && responsibleppp.getUser() != null
+                    && responsibleppp.getUser().getComposedName() != null) {
+                    leader = responsibleppp.getUser().getComposedName();
+                  }
+                }
+              }
+            }
+
+            // Set deliverable responsible
+            if (leader != null) {
+              deliverableDTO.setResponsible(leader);
+            }
+
+            // Set cluster leader
+            String projectLeaderName = null;
+            if (deliverable.getProject() != null) {
+              ProjectPartnerPerson projectLeader = deliverable.getProject().getLeaderPersonDB(phase);
+              if (projectLeader != null) {
+                projectLeaderName = projectLeader.getComposedName();
+              }
+            }
+            deliverableDTO.setClusterLeader(projectLeaderName);
+
+            // Set subCategory
+            if (deliverable.getDeliverableInfo(phase).getDeliverableType() != null
+              && deliverable.getDeliverableInfo(phase).getDeliverableType().getName() != null) {
+              deliverableDTO.setSubCategory(deliverable.getDeliverableInfo(phase).getDeliverableType().getName());
+            }
+
+            // Set title
+            if (deliverable.getDeliverableInfo(phase).getTitle() != null) {
+              deliverableDTO.setTitle(deliverable.getDeliverableInfo(phase).getTitle());
+            }
+
+            // Set status
+            String year = "-";
+            if (deliverable.getDeliverableInfo(phase).getStatus() != null) {
+              deliverableDTO.setStatus(
+                ProjectStatusEnum.getValue(deliverable.getDeliverableInfo(phase).getStatus().intValue()).getStatus());
+              if (deliverable.getDeliverableInfo(phase).getNewExpectedYear() != null
+                && deliverable.getDeliverableInfo(phase).getNewExpectedYear() != -1) {
+                year = deliverable.getDeliverableInfo(phase).getNewExpectedYear() + " extended from "
+                  + deliverable.getDeliverableInfo(phase).getYear();
+              } else {
+                year = deliverable.getDeliverableInfo(phase).getYear() + "";
+              }
+            }
+
+            // Set Year
+            deliverableDTO.setYear(year + "");
+            // Set duplicated field info
+            deliverableDTO.setDuplicatedField("");
+            if (isDOIDuplicated) {
+              deliverableDTO.setDuplicatedField("DOI ");
+            }
+            if (isHandleDuplicated) {
+              if (!deliverableDTO.getDuplicatedField().isEmpty()) {
+                deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("| "));
+              }
+              deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("Handle "));
+            }
+            if (isDisseminationURLDuplicated) {
+              if (!deliverableDTO.getDuplicatedField().isEmpty()) {
+                deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("| "));
+              }
+              deliverableDTO.setDuplicatedField(deliverableDTO.getDuplicatedField().concat("Dissemination URL "));
+            }
+
+            deliverableDTO.setPhaseID(phaseID);
+
+
+            // Shared deliverables
+            List<ProjectDeliverableShared> deliverablesShared = new ArrayList<>();
+            try {
+              if (deliverable != null && deliverable.getId() != null && deliverable.getProject() != null) {
+                long projectID = deliverable.getProject().getId();
+                deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
+                if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+                  deliverablesShared =
+                    deliverablesShared.stream().filter(ds -> ds.isActive() && ds.getDeliverable() != null
+                      && ds.getDeliverable().getProject().getId().equals(projectID)).collect(Collectors.toList());
+                }
+
+                // Owner
+                if (deliverable.getProject() != null && !deliverable.getProject().getId().equals(projectID)) {
+                  deliverable.setOwner(deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                  deliverable
+                    .setSharedWithMe(deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                } else {
+                  deliverable.setOwner("This Cluster");
+                  deliverable.setSharedWithMe("Not Applicable");
+                }
+
+                // Shared with others
+                for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+                  // String projectsSharedText = null;
+                  if (deliverableShared.getDeliverable().getSharedWithProjects() == null) {
+                    deliverableShared.getDeliverable().setSharedWithProjects(
+                      "" + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                  } else {
+                    if (deliverableShared.getDeliverable() != null
+                      && deliverableShared.getDeliverable().getSharedWithProjects() != null
+                      && deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
+                      && !deliverableShared.getDeliverable().getSharedWithProjects().contains(
+                        deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
+                      deliverableShared.getDeliverable()
+                        .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; "
+                          + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                    }
+                  }
+                  // deliverableShared.getDeliverable().setSharedWithProjects(projectsSharedText);
+                }
+                // deliverableTemp.setSharedWithProjects(projectsSharedText);
+                // deliverableTemp.setSharedDeliverables(deliverablesShared);
+              }
+
+            } catch (Exception e) {
+              Log.error("unable to get shared deliverables", e);
+            }
+
+            if (deliverable.getSharedWithProjects() != null) {
+              deliverableDTO.setSharedClusters(deliverable.getSharedWithProjects());
+              if (deliverableDTO.getSharedClusters() == null
+                || (deliverableDTO.getSharedClusters() != null && deliverableDTO.getSharedClusters().isEmpty())) {
+                deliverableDTO.setSharedClusters("-");
+              }
+            }
+            deliverableDTOs.add(deliverableDTO);
+            // sources.add(deliverableDTO.convertToMap());
+          }
+        } // End deliverables for
+
+        if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+          deliverableDTOs = deliverableDTOs.stream()
+            .sorted(Comparator.comparing(DeliverableSearchSummary::getDeliverableID)).collect(Collectors.toList());
+
+
+          if (deliverableDTOs.get(0).getDeliverableID() == deliverableID) {
+            deliverableDTOs.clear();
+            return SUCCESS;
+          }
+          if (deliverableDTOs.get(0).getDeliverableID() > deliverableID) {
+            deliverableDTOs.clear();
+            return SUCCESS;
+          }
+
+          /*
+           * if (deliverableDTOs.size() >= 1) {
+           * if (deliverableDTOs.get(0).getDeliverableID() != null
+           * && deliverableDTOs.get(0).getDeliverableID() > (deliverableID)) {
+           * deliverableDTOs.clear();
+           * return SUCCESS;
+           * } else {
+           * deliverableDTOs.remove(0);
+           * }
+           * }
+           */
+          if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+            for (DeliverableSearchSummary dto : deliverableDTOs) {
+              sources.add(dto.convertToMap());
+            }
+          }
         }
-        deliverableMap.put("data", deliverableDataMap);
       }
-      sources.add(deliverableMap);
     }
+
     return SUCCESS;
   }
-
 
   public List<Map<String, Object>> getSources() {
     return sources;
@@ -160,7 +424,13 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
       phaseID = 0;
       Log.info(e);
     }
-
+    try {
+      deliverableID = Long
+        .valueOf(StringUtils.trim(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
+    } catch (Exception e) {
+      deliverableID = 0;
+      Log.info(e);
+    }
   }
 
   public void setSources(List<Map<String, Object>> sources) {
