@@ -7,7 +7,7 @@
   "${baseUrlCdn}/global/js/usersManagement.js",
   "${baseUrlMedia}/js/monitoring/deliverable/projectDeliverable.js",
   "${baseUrlCdn}/global/js/autoSave.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/deliverable/projectDeliverable.css?20230523"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/deliverable/projectDeliverable.css?20230529"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverables" /]
 
