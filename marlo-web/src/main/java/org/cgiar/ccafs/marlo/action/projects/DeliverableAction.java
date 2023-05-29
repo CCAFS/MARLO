@@ -1906,11 +1906,9 @@ public class DeliverableAction extends BaseAction {
         } else {
           isDuplicated = false;
         }
-        DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo();
-        if (deliverableInfo != null) {
-          deliverableInfo.setDuplicated(isDuplicated);
-          deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
-          deliverable.setDeliverableInfo(deliverableInfo);
+        if (deliverable.getDeliverableInfo(this.getActualPhase()) != null) {
+          deliverable.getDeliverableInfo(this.getActualPhase()).setDuplicated(isDuplicated);
+          deliverableManager.saveDeliverable(deliverable);
         }
       }
 
