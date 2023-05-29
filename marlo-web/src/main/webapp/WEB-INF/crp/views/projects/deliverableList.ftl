@@ -3,14 +3,14 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableList.js?20230523",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableList.js?20230529",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   [#-- "${baseUrlCdn}/global/js/autoSave.js" --]
   ]
 /]
 [#assign customCSS = [
   "${baseUrlCdn}/global/css/customDataTable.css",
-  "${baseUrlMedia}/css/projects/projectDeliverable.css?20230523"] /]
+  "${baseUrlMedia}/css/projects/projectDeliverable.css?20230529"] /]
 
 [#assign currentStage = "deliverableList" /]
 [#assign isListSection = true /]

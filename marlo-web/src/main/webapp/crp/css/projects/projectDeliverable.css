@@ -838,8 +838,8 @@ div#ccDimension-capacity {
 }
 
 .containerShowHide{
-  width: 520px;
-  left: 435px;
+  width: auto;
+  left: 500px;
   position: absolute;
   z-index: 1;
 }

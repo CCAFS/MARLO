@@ -237,7 +237,7 @@ function saveSearch() {
   }
 
   // Add new keyword to array
-  if(firstInput.val() != null && firstInput.val() != "" && firstInput.val() != " "){
+  if(firstInput.val() != null && firstInput.val() != "" && firstInput.val() != " " && storedKeywords.map(keyword => keyword.toLowerCase()).indexOf(firstInput.val().toLowerCase()) === -1){
     storedKeywords.push(firstInput.val());
   }
 
