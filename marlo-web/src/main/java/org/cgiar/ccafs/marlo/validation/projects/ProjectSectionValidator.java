@@ -1249,10 +1249,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
             List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
 
-            if (deliverableParticipants.size() > 0) {
+            if (!deliverableParticipants.isEmpty()) {
               deliverable.setDeliverableParticipant(
                 deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipants.get(0).getId()));
-
 
             } else {
               deliverable.setDeliverableParticipant(new DeliverableParticipant());

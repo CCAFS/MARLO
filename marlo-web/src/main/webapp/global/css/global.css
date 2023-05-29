@@ -4512,6 +4512,12 @@ li.fileUploaded span {
   background: url('../../global/images/sprite-icons-activities.png') 0 -150px;
 }
 
+.icon-duplicated {
+  background: url('../../global/images/deliverable-duplicated-small.png');
+  background-repeat: no-repeat;
+  border: none;
+}
+
 .mf-icon {
   font-size: 20px;
 }
@@ -7949,4 +7955,11 @@ img.qaOptionsComment {
 .text-modal-evidences h3 {
   margin-top: 10px;
   font-size: 18px;
+}
+
+#AICCRA_deliverable .containerAlertMargin {
+  width:100% !important;
+  padding: 5px;
+  margin-top: 5px;
+  margin-bottom: -15px;
 }

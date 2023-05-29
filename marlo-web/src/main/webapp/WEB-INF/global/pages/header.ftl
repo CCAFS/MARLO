@@ -36,7 +36,11 @@
     <![endif]-->
     
     [#-- Second, import global javascripts and templates. --]
+<<<<<<< HEAD
     <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20230510" />
+=======
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20230525" />
+>>>>>>> aiccra-list-deliverables
     <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/jquery-ui.custom.css" />
     [#if centerGlobalUnit]
       <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global-center.css" />

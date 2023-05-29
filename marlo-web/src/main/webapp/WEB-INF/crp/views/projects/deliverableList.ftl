@@ -3,14 +3,14 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableList.js?20230302",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableList.js?20230529",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   [#-- "${baseUrlCdn}/global/js/autoSave.js" --]
   ]
 /]
 [#assign customCSS = [
   "${baseUrlCdn}/global/css/customDataTable.css",
-  "${baseUrlMedia}/css/projects/projectDeliverable.css?20230106"] /]
+  "${baseUrlMedia}/css/projects/projectDeliverable.css?20230529"] /]
 
 [#assign currentStage = "deliverableList" /]
 [#assign isListSection = true /]
@@ -123,7 +123,8 @@
             [#--  FAIR LEGEND --]
             <div class="form-group col-md-12 legendContent">
               <div class="col-md-12 fairDiagram" >[@s.text name="project.deliverableList.fairExplanation" /] </div>
-              <div class="col-md-6 explanation">
+              <img class="col-md-2" src="${baseUrlCdn}/global/images/fair_status.png" style="width:100%; padding: 0;" />
+              <!--  <div class="col-md-6 explanation">
                 <div class="col-md-12 form-group "><b>[@s.text name="project.deliverableList.fairExplanation.fair" /]:</b></div>
                 <div class="form-group col-md-6 "><span>F</span>[@s.text name="project.deliverableList.fairExplanation.findable" /]</div>
                 <div class="form-group col-md-6 "><span>A</span> [@s.text name="project.deliverableList.fairExplanation.accessible" /]</div>
@@ -135,7 +136,7 @@
                 <div class="form-group col-md-6 fair"><span id="achieved" class="legend-color"></span> [@s.text name="project.deliverableList.fairExplanation.achieved" /] </div>
                 <div class="form-group col-md-6 fair"><span id="notAchieved" class="legend-color"></span>[@s.text name="project.deliverableList.fairExplanation.notAchieved" /]</div>
                 <div class="form-group col-md-6 fair"><span id="notDefined" class="legend-color"></span>[@s.text name="project.deliverableList.fairExplanation.notDefined" /]</div>
-              </div>
+              </div>  -->
             </div>
             <div id="diagramPopup" style="display:none; text-align:center;">
               <img src="${baseUrlCdn}/global/images/FAIR_Principles_in_MARLO_20170919.png" alt="" width="100%" />
@@ -143,7 +144,8 @@
           [/#if]
           [#--  Status LEGEND --]
           <div class="form-group col-md-12 legendContent">
-            <div class="col-md-6 colors">
+            <img class="col-md-2" src="${baseUrlCdn}/global/images/deliverable_status.png" style="width:100%; padding: 0;" />
+            <!--  <div class="col-md-6 colors">
               <div class="col-md-12 form-group "><b>[@s.text name="project.deliverableList.deliverableStatus" /]:</b></div>
               <div class="form-group col-md-6 fair"><span id="" class="legend-color status-indicator Complete"></span>[@s.text name="project.deliverableList.deliverableStatus.complete" /]</div>
               <div class="form-group col-md-6 fair"><span id="" class="legend-color status-indicator On-going"></span>[@s.text name="project.deliverableList.deliverableStatus.onGoing" /]</div>
@@ -155,20 +157,31 @@
               <div class="col-md-12 form-group"><b>[@s.text name="project.deliverableList.requiredStatus" /]:</b></div>
               <div class="form-group col-md-12"><span class="icon-check required-fields"></span>[@s.text name="project.deliverableList.requiredStatus.complete" /]</div>
               <div class="form-group col-md-12"><span class="icon-uncheck required-fields"></span>[@s.text name="project.deliverableList.requiredStatus.incomplete" /]</div>
+              <div class="form-group col-md-12"><span class="icon-duplicated required-fields"></span>[@s.text name="project.deliverable.duplicated.legend" /]</div>
             </div>
           </div>
           <div id="diagramPopup" style="display:none; text-align:center;">
             <img src="${baseUrlCdn}/global/images/FAIR_Principles_in_MARLO_20170919.png" alt="" width="100%" />
+          </div>-->
           </div>
 
           [#-- Current table --]
-          <div class="">
-            <h3 class="subTitle headTitle">Deliverables</h3>
+          <div class="containerCurrentDeliverables">
+            <!--  <h3 class="subTitle headTitle">Deliverables</h3>  -->
             [#if reportingActive]
              <p class="note">[@s.text name="project.deliverableList.focusDeliverablesMessage"][@s.param]${currentCycleYear}[/@s.param][@s.param]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/@s.param][/@s.text]</p>
-            [/#if]
             <hr />
+            [/#if]
+            <div class="containerShowHide">
+              <div class="titleShowHideColumns">Add columns</div>
+                [#if action.hasSpecificities('duplicated_deliverables_functionality_active') ]
+                  <div class="buttonAddColumn">Duplicated</div>
+                [/#if]
+                  <div class="buttonAddColumn">Responsible person</div>
+            </div>
+            <div class="currentDeliverables">
               [@deliverableList.deliverablesList deliverables=(currentDeliverableList)![] canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" projectID=projectID/]
+            </div>
               [#--  
                 [@deliverableList.deliverablesList deliverables=(project.getCurrentDeliverables(actualPhase))![] canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" projectID=projectID/]
              --]
@@ -188,10 +201,12 @@
           [/#if]
 
           [#-- Previous Extended table (Modal) --]
-          <div class="">
+          <div class="containerpreviousDeliverables">
             <h3 class="subTitle headTitle">Previous deliverables</h3>
             <hr />
-            [@deliverableList.deliverablesList deliverables=(project.getPreviousDeliverables(actualPhase) + previousSharedDeliverableList)![] canValidate=true canEdit=candit isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false projectID=projectID/]
+            <div class="previousDeliverables">
+              [@deliverableList.deliverablesList deliverables=(project.getPreviousDeliverables(actualPhase) + previousSharedDeliverableList)![] canValidate=true canEdit=candit isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false projectID=projectID/]
+            </div>
           </div>
 
           <input type="hidden" name="projectID" value="${projectID}" />

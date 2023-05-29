@@ -475,6 +475,14 @@ public class DeliverableValidator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
+      if (action.hasSpecificities(APConstants.DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE)) {
+        if (dInfo != null && dInfo.getDuplicated()) {
+          action.addMessage(action.getText("deliverable.status.duplicated"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.status.duplicated",
+            action.getText("deliverable.status.duplicated"));
+        }
+      }
+
     }
     this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);

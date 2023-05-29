@@ -136,7 +136,7 @@
 
   [#-- Key Outputs select --]
   [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]
-    <div class="form-group">
+    <div class="form-group listindicators" >
   
 
         [@customForm.elementsListComponent name="deliverable.crpOutcomes" elementType="crpProgramOutcome" elementList=(deliverable.crpOutcomes)![] label="project.deliverable.generalInformation.keyOutput" listName="programOutcomes" keyFieldName="id" displayFieldName="composedName" required=true maxLimit=3/]
@@ -326,7 +326,7 @@
   
    [#-- Projects shared --]
      <h3 class="headTitle">[@s.text name="deliverable.sharedProjects.title" /]</h3>
-     <div class="borderBox">
+     <div class="borderBox listClusters">
       [@customForm.elementsListComponent name="deliverable.sharedDeliverables" elementType="project" elementList=(deliverable.sharedDeliverables)![] label="deliverable.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
      </div>
   
