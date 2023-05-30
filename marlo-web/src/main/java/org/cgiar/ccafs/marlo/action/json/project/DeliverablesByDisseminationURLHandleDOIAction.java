@@ -111,13 +111,20 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
             Log.info(e);
           }
           // Dissemination URL
-          if (disseminationURL != null && !disseminationURL.isEmpty() && deliverableDissemination != null
-            && deliverableDissemination.getDisseminationUrl() != null
-            && !deliverableDissemination.getDisseminationUrl().isEmpty()
-            && (deliverableDissemination.getDisseminationUrl().equals(disseminationURL)
-              || deliverableDissemination.getDisseminationUrl().equals(handle)
-              || deliverableDissemination.getDisseminationUrl().equals(DOI))) {
-            isDisseminationURLDuplicated = true;
+          if (deliverableDissemination != null && deliverableDissemination.getDisseminationUrl() != null
+            && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
+
+            if (disseminationURL != null && deliverableDissemination.getDisseminationUrl().equals(disseminationURL)) {
+              isDisseminationURLDuplicated = true;
+            }
+
+            if (DOI != null && deliverableDissemination.getDisseminationUrl().equals(DOI)) {
+              isDisseminationURLDuplicated = true;
+            }
+
+            if (handle != null && deliverableDissemination.getDisseminationUrl().equals(handle)) {
+              isDisseminationURLDuplicated = true;
+            }
           }
 
           // Set Metadata Elements
@@ -150,21 +157,39 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
             }
 
             try {
-              if (deliverableDOI != null && !deliverableDOI.isEmpty() && DOI != null && !DOI.isEmpty()
-                && (deliverableDOI.equals(DOI) || deliverableDOI.equals(handle)
-                  || deliverableDOI.equals(disseminationURL))) {
-                isDOIDuplicated = true;
+              if (deliverableDOI != null && !deliverableDOI.isEmpty()) {
+
+                if (disseminationURL != null && deliverableDOI.equals(disseminationURL)) {
+                  isDOIDuplicated = true;
+                }
+                if (DOI != null && deliverableDOI.equals(DOI)) {
+                  isDOIDuplicated = true;
+                }
+                if (handle != null && deliverableDOI.equals(handle)) {
+                  isDOIDuplicated = true;
+                }
               }
+
             } catch (Exception e) {
               Log.info(e);
             }
 
             try {
-              if (deliverableHandle != null && !deliverableHandle.isEmpty() && handle != null && !handle.isEmpty()
-                && (deliverableHandle.equals(handle) || deliverableHandle.equals(DOI)
-                  || deliverableHandle.equals(disseminationURL))) {
-                isHandleDuplicated = true;
+              if (deliverableHandle != null && !deliverableHandle.isEmpty()) {
+
+                if (disseminationURL != null && deliverableHandle.equals(disseminationURL)) {
+                  isHandleDuplicated = true;
+                }
+
+                if (DOI != null && deliverableHandle.equals(DOI)) {
+                  isHandleDuplicated = true;
+                }
+
+                if (handle != null && deliverableHandle.equals(handle)) {
+                  isHandleDuplicated = true;
+                }
               }
+
             } catch (Exception e) {
               Log.info(e);
             }
@@ -395,6 +420,7 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
     }
 
     return SUCCESS;
+
   }
 
   public List<Map<String, Object>> getSources() {
