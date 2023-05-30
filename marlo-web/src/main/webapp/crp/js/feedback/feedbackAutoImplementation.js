@@ -15,12 +15,7 @@ function feedbackAutoImplementation (){
   userCanManageFeedback = $('#userCanManageFeedback').html();
   userCanLeaveComments = $('#userCanLeaveComments').html();
   userCanApproveFeedback = $('#userCanApproveFeedback').html();
-  console.log('userCanManageFeedback', userCanManageFeedback)
-  console.log('userCanLeaveComments', userCanLeaveComments)
-  console.log('userCanApproveFeedback', userCanApproveFeedback)
-  // userCanManageFeedback = 'true';
-  // userCanLeaveComments = 'true';
-  // userCanApproveFeedback = 'false';
+  usercanTrackComments = $('#canTrackComments').html();
   isFeedbackActive = $('#isFeedbackActive').html();
   attachEventsFeedback();
 }
@@ -484,7 +479,7 @@ function hideShowOptionButtons(block, status) {
                     block.find('.track_icon').attr('commentId', qaComments[i][j].commentId);
 
                     
-                    if (qaComments[i][j].userID != userID || userCanLeaveComments =='false' ||qaComments[i][j].status =='6') {
+                    if (qaComments[i][j].userID != userID || usercanTrackComments =='false' ||qaComments[i][j].status =='6') {
                       block.find('.track_icon').hide();
                     }else{
                       block.find('.track_icon').show();

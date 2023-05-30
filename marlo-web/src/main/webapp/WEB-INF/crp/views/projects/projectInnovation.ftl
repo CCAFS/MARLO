@@ -6,7 +6,7 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectInnovations.js?20220707B",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20230529"
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20230530"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20230106"] /]
 [#assign currentSection = "projects" /]
@@ -31,6 +31,7 @@
 <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
 <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
 <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID)?c)!}</span>
+<span id="canTrackComments" style="display: none;">${(action.canTrackComments()?c)!}</span>
 <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
 <input type="hidden" id="sectionNameToFeedback" value="innovation" />
 
