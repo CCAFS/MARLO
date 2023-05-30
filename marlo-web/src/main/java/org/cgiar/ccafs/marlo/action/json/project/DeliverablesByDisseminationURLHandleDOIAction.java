@@ -114,7 +114,9 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
           if (disseminationURL != null && !disseminationURL.isEmpty() && deliverableDissemination != null
             && deliverableDissemination.getDisseminationUrl() != null
             && !deliverableDissemination.getDisseminationUrl().isEmpty()
-            && deliverableDissemination.getDisseminationUrl().equals(disseminationURL)) {
+            && (deliverableDissemination.getDisseminationUrl().equals(disseminationURL)
+              || deliverableDissemination.getDisseminationUrl().equals(handle)
+              || deliverableDissemination.getDisseminationUrl().equals(DOI))) {
             isDisseminationURLDuplicated = true;
           }
 
@@ -149,7 +151,8 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
 
             try {
               if (deliverableDOI != null && !deliverableDOI.isEmpty() && DOI != null && !DOI.isEmpty()
-                && deliverableDOI.equals(DOI)) {
+                && (deliverableDOI.equals(DOI) || deliverableDOI.equals(handle)
+                  || deliverableDOI.equals(disseminationURL))) {
                 isDOIDuplicated = true;
               }
             } catch (Exception e) {
@@ -158,7 +161,8 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
 
             try {
               if (deliverableHandle != null && !deliverableHandle.isEmpty() && handle != null && !handle.isEmpty()
-                && deliverableHandle.equals(handle)) {
+                && (deliverableHandle.equals(handle) || deliverableHandle.equals(DOI)
+                  || deliverableHandle.equals(disseminationURL))) {
                 isHandleDuplicated = true;
               }
             } catch (Exception e) {
