@@ -80,6 +80,7 @@
 <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
 <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
 <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID)?c)!}</span>
+<span id="canTrackComments" style="display: none;">${(action.canTrackComments()?c)!}</span>
 <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
 <input type="hidden" id="sectionNameToFeedback" value="deliverable" />
 <span id="existCurrentCluster" style="display: none;">${(existCurrentCluster?c)!}</span>
