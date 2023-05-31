@@ -495,6 +495,14 @@ public class DeliverableValidator extends BaseValidator {
         }
       }
 
+      if (action.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+        if (dInfo != null && dInfo.getIsRemainingPending() != null && dInfo.getIsRemainingPending()) {
+          action.addMessage(action.getText("deliverable.status.duplicated"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.remaining",
+            action.getText("deliverable.status.remaining"));
+        }
+      }
+
     }
     this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
