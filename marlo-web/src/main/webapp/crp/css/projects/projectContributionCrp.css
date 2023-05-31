@@ -184,4 +184,5 @@ a#opener {
 
 .ui-dialog{
     width: 90% !important;
+    max-width: 1300px !important;
 }
