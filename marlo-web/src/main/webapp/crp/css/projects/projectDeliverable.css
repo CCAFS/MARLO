@@ -1152,3 +1152,8 @@ div.fieldFocus-deliverable {
   background-color: #2592b3;
 }
 
+@media (max-width:1520px){
+  .containerShowHide{
+    left: 610px;
+  }
+}
