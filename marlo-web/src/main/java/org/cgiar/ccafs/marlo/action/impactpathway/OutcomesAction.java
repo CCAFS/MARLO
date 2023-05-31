@@ -345,6 +345,13 @@ public class OutcomesAction extends BaseAction {
       targetYears.add(2021);
       targetYears.add(2022);
       targetYears.add(2023);
+      targetYears.add(2024);
+      targetYears.add(2025);
+      targetYears.add(2026);
+      targetYears.add(2027);
+      targetYears.add(2028);
+      targetYears.add(2029);
+      targetYears.add(2030);
 
     } else {
       while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
@@ -803,9 +810,11 @@ public class OutcomesAction extends BaseAction {
       // this.getActualPhase().getId(), this.getSelectedProgram().getId());
       CrpProgramOutcome crpProgramOutcome = null;
       CrpProgramOutcome crpProgramOutcomeTemp = null;
-      crpProgramOutcomeTemp = crpProgramOutcomeManager.getCrpProgramOutcomeById(programOutcomeIncoming.getId());
+      if (programOutcomeIncoming != null && programOutcomeIncoming.getId() != null) {
+        crpProgramOutcomeTemp = crpProgramOutcomeManager.getCrpProgramOutcomeById(programOutcomeIncoming.getId());
+      }
 
-      if (programOutcomeIncoming.getId() == null) {
+      if (programOutcomeIncoming != null && programOutcomeIncoming.getId() == null) {
         crpProgramOutcome = new CrpProgramOutcome();
         crpProgramOutcome.setPhase(this.getActualPhase());
       } else {
