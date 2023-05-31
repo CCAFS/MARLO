@@ -143,6 +143,18 @@ public class DeliverableValidator extends BaseValidator {
         validate = deliverable.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear();
       }
       if (deliverable.getDeliverableInfo().getStatus() != null
+        && deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        if (deliverable.getDeliverableInfo().getNewExpectedYear() != null) {
+          if (deliverable.getDeliverableInfo().getNewExpectedYear() >= action.getActualPhase().getYear()) {
+            validate = true;
+          }
+        } else {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear()) {
+            validate = true;
+          }
+        }
+      }
+      if (deliverable.getDeliverableInfo().getStatus() != null
         && deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
         if (deliverable.getDeliverableInfo().getNewExpectedYear() != null) {
           if (deliverable.getDeliverableInfo().getNewExpectedYear() >= action.getActualPhase().getYear()) {
