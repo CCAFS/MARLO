@@ -144,7 +144,8 @@ public class DeliverableValidator extends BaseValidator {
       }
       if (deliverable.getDeliverableInfo().getStatus() != null
         && deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-        if (deliverable.getDeliverableInfo().getNewExpectedYear() != null) {
+        if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+          && deliverable.getDeliverableInfo().getNewExpectedYear() != -1) {
           if (deliverable.getDeliverableInfo().getNewExpectedYear() >= action.getActualPhase().getYear()) {
             validate = true;
           }
@@ -492,6 +493,14 @@ public class DeliverableValidator extends BaseValidator {
           action.addMessage(action.getText("deliverable.status.duplicated"));
           action.getInvalidFields().put("input-deliverable.deliverableInfo.status.duplicated",
             action.getText("deliverable.status.duplicated"));
+        }
+      }
+
+      if (action.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+        if (dInfo != null && dInfo.getIsRemainingPending() != null && dInfo.getIsRemainingPending()) {
+          action.addMessage(action.getText("deliverable.status.duplicated"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.remaining",
+            action.getText("deliverable.status.remaining"));
         }
       }
 
