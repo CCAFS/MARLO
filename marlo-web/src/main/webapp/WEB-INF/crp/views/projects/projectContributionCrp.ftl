@@ -1313,8 +1313,8 @@
           <th id="tb-footer" class="text-center">[@utils.tableText value=(totalOwnAfricans)!"" /]</th>
           <th id="tb-footer" class="text-center">[@utils.tableText value=(totalOwnYouth)!"" /]</th>
           <th id="tb-footer" class="text-center">[@utils.tableText value=(totalParticipants)!"" /]</th>
-          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalAfricans)!"" /]</th>
           <th id="tb-footer" class="text-center">[@utils.tableText value=(totalFemales)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalAfricans)!"" /]</th>
           <th id="tb-footer" class="text-center">[@utils.tableText value=(totalYouth)!"" /]</th>
         </tr>
     [#else]
