@@ -206,7 +206,7 @@
  [/#if]
   
 <div class="simpleBox">
-  <div class="form-group row yesNoInputDeliverable">
+  <div class="form-group row yesNoInputDeliverable yesNoTrainees">
   <span class="col-md-9">
     <label class="yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=(reportingActive) /]</label>
     <p><small>[@s.text name="project.deliverable.dissemination.involveParticipantsSub" /] </small></p>
@@ -338,9 +338,196 @@
       [@customForm.textArea name="${customName}.likelyOutcomes" i18nkey="involveParticipants.likelyOutcomes" className="" required=editable editable=editable /]
     </div>
     
+    [@deliverableMacros.deliverableClusterParticipantsMacro /]
+    
   </div>
 </div>
 [/#macro]
+
+
+
+[#-- deliverable cluster participants --]
+[#macro deliverableClusterParticipantsMacro list=(deliverable.clusterParticipant)![]]
+[#local customName = "deliverable.clusterParticipant" /]
+[#if action.hasSpecificities("deliverable_shared_clusters_trainees_active")]
+[#-- [#if list?has_content] --]
+<div class="sharedClustersList">
+  <br>
+  <span class="">
+    <label class="yesNoLabel" for="">[@s.text name="involveParticipants.sharedClusters" /] </label>
+    <p><small>[@s.text name="involveParticipants.sharedClusters.help" /] </small></p>
+  </span>
+  <div class="simpleBox">
+
+    <div class="block-involveParticipants">
+      
+          <div class="form-group row">
+            <div class="col-md-2">
+              <div class="text-area-container">
+              [@customForm.text name="involveParticipants.sharedClusters.project" /]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2">
+              <div class="text-area-container">
+              [@customForm.text name="involveParticipants.sharedClusters.participants" /][@customForm.req required=reportingActive /]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2 femaleNumbers">
+              <div class="text-area-container">
+              [@customForm.text name="involveParticipants.sharedClusters.females" /][@customForm.req required=reportingActive /]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2">
+              <div class="text-area-container">
+              [@customForm.text name="involveParticipants.sharedClusters.africans" /][@customForm.req required=reportingActive /]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2 femaleNumbers">
+              <div class="text-area-container">
+              [@customForm.text name="involveParticipants.sharedClusters.youth" /][@customForm.req required=reportingActive /]
+              </div>
+              <br>
+            </div>
+          </div>
+          <div class="listClusterDM">
+        [#assign index = 0]
+        [#list list as cluster]
+          <input type="hidden" name="${customName}[${index}].id" class="valueId" value="${(cluster.id)!0}" valueIndex="${(cluster.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}" />
+          <input type="hidden" name="${customName}[${index}].project.id" value="${(cluster.project.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}"/>
+          <div class="form-group row" clusterIdParticipant="${(cluster.project.id)!0}">
+            <div class="col-md-2">
+              <div class="text-area-container">
+              [@customForm.text name=(list[index].project.acronym)!"" /]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2 participantsNumbers">
+              <div class="text-area-container">
+              [@customForm.input name="${customName}[${index}].participants" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2 femaleNumbers">
+              <div class="text-area-container">
+                [@customForm.input name="${customName}[${index}].females" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2 africanNumbers">
+              <div class="text-area-container">
+                [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2 youthNumbers">
+              <div class="text-area-container">
+                [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+              </div>
+              <br>
+            </div>
+          </div>
+        [#assign index = index + 1]
+        [/#list]
+          </div>
+        <hr />
+                <div class="form-group row">
+    <div class="col-md-2">
+      <div class="text-area-container">
+        Total report</div>
+      <br>
+    </div>
+    <div class="col-md-2">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div class="totalTrainees">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+    <div class=" col-md-2 femaleNumbers">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div class="totalFemales">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+    <div class=" col-md-2">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div class="totalAfrican">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+    <div class=" col-md-2 femaleNumbers">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div  class="totalYouth">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+  </div>
+  <div class="form-group row remaining-container" style="
+      color: #FFC300;
+  ">
+    <div class="col-md-2">
+      <div class="text-area-container " style="font-weight: 600;">
+        Remaining </div>
+      <br>
+    </div>
+    <div class="col-md-2">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div class="remainingTrainees">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+    <div class=" col-md-2 femaleNumbers">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div class="remainingFemales">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+    <div class=" col-md-2">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div class="remainingAfrican">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+    <div class=" col-md-2 femaleNumbers">
+      <div class="text-area-container">
+        <div class="input fieldReference " style="display:block;">
+          <div class="remainingYouth">0</div>
+        </div>
+      </div>
+      <br>
+    </div>
+  </div>
+      <div style="display: flex;" class="alertParticipant">
+        <div class="noteAlert" style="font-weight: 700;color: #ffc800;">Alert:&nbsp;</div>
+        <div class="textNote">  The remaining fields must be 0, please distribute the trainees in the shared clusters</div>
+      </div>
+      <div style="display: none" class="doneParticipant">
+        <div class="noteAlert" style="font-weight: 700;color: #8ea786;">Great:&nbsp;</div>
+        <div class="textNote" style="color: #333;">  The sum of the Participants/Trainees are equal to the total reported</div>
+      </div>
+    </div>
+  </div>
+</div>
+[/#if]
+[/#macro]
+
 
 
 [#macro alreadyDisseminatedMacro ]
@@ -452,10 +639,10 @@
 
     <div class="form-group row ifIsReadOnly" style="margin-top: 10px;">
       <div class="col-md-6 conditionalRequire handle-bridge text-area-container">
-        [@customForm.input name="handle-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable/]
+        [@customForm.input name="handle-bridge" required=require value="" className="metadataValue handleField"  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable id="handleField"/]
       </div>
       <div class="col-md-6 conditionalRequire doi-bridge text-area-container" style="position: relative;">
-        [@customForm.input name="doi-bridge" required=require value="" className="metadataValue "  type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable/]
+        [@customForm.input name="doi-bridge" required=require value="" className="metadataValue doiField" type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable id="doiField"/]
         <p class="invalidDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(207, 40, 40); font-weight: 600; font-size: 0.8em; display: none;">Invalid DOI identifier.<br>Please use the correct format <strong>(e.g. 10.1109/5.771073)</strong></p>
         <p class="validDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(50, 206, 45); font-weight: 600; font-size: 0.8em; display: none;">Valid DOI identifier</p>
       </div>
@@ -602,13 +789,70 @@
             </div>
           </div>
         </div>
-
-
-
       </div>
 
-
+     [@duplicatedDeliverablesMacro /]
+    
 [/#macro]
+
+[#macro duplicatedDeliverablesMacro ]
+   [#if action.hasSpecificities('duplicated_deliverables_functionality_active')]
+    <div id="vueApp" class="fieldFocus-deliverable resultList simpleBox form-group" v-if="allDeliverables.length" style="display:none">
+      <label for=""><strong>[@s.text name="project.deliverable.duplicated.table.title" /]:</strong></label>    
+      <i>[@s.text name="project.deliverable.duplicated.table.title2" /]</i>
+      [#--  <button type="button" v-bind:class="{ active: showTable }" v-on:click="showTable = !showTable">{{ showTable ? 'Less Details' : 'See Details' }}</button>
+      --]
+      
+      <button class="button-effect" type="button" v-bind:class="{ active: showTable }" v-on:click="showTable = !showTable" >
+        <span v-if="!showTable" class="glyphicon glyphicon-warning-sign"></span>
+        {{ showTable ? 'Hide Details' : 'See Details' }}
+      </button>
+      
+      <transition name="slide-transition">
+       <div class="table-container" v-show="showTable">
+        <table style="border-collapse: collapse;" class="table" >
+          <thead>
+            <tr>
+              <th style="text-align: left;">Deliverable ID</th>
+              <th style="text-align: center;">Cluster</th>
+              <th style="text-align: center;">Title</th>
+              <th style="text-align: center;">Sub-Category</th>
+              <th style="text-align: center;">Responsible</th>
+              <th style="text-align: center;">Cluster Leader</th>
+              <th style="text-align: center;">Shared Clusters</th>
+              <th style="text-align: center;">Status</th>
+              <th style="text-align: center;">Year</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template v-for="item in crpList">
+              <template v-for="fs in item.deliverables">
+                <tr>
+                  <td>
+                    <a target="_blank" v-bind:href="'${baseUrl}/clusters/${crpSession}/deliverable.do?deliverableID='+ fs.deliverableID +'&edit=true&phaseID=${(actualPhase.id)!}'">
+                      <strong>D{{ item.deliverableID }}</strong>
+                    </a>
+                    <span class="label label-warning">Duplicated: {{ fs.duplicatedField }}</span>
+                  </td>
+                  <td>{{ fs.clusterAcronym }}</td>
+                  <td>{{ fs.title }}</td>
+                  <td>{{ fs.subCategory }}</td>
+                  <td>{{ fs.responsible }}</td>
+                  <td>{{ fs.clusterLeader }}</td>
+                  <td>{{ fs.sharedClusters }}</td>
+                  <td>{{ fs.status }}</td>
+                  <td>{{ fs.year }}</td>
+                </tr>
+              </template>
+            </template>
+          </tbody>
+        </table>
+        </div>
+        </transition>
+      </div>
+    [/#if]
+[/#macro]
+
 
 [#macro channelExampleMacro name="" url="" ]
   <div class="exampleUrl-block channel-${name}" style="display:[#if (deliverable.dissemination.disseminationChannel==name)!false]block[#else]none[/#if];">

@@ -1,0 +1,1 @@
+ALTER TABLE deliverables_info ADD is_duplicated tinyint(1) NULL;

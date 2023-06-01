@@ -143,6 +143,19 @@ public class DeliverableValidator extends BaseValidator {
         validate = deliverable.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear();
       }
       if (deliverable.getDeliverableInfo().getStatus() != null
+        && deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+          && deliverable.getDeliverableInfo().getNewExpectedYear() != -1) {
+          if (deliverable.getDeliverableInfo().getNewExpectedYear() >= action.getActualPhase().getYear()) {
+            validate = true;
+          }
+        } else {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear()) {
+            validate = true;
+          }
+        }
+      }
+      if (deliverable.getDeliverableInfo().getStatus() != null
         && deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
         if (deliverable.getDeliverableInfo().getNewExpectedYear() != null) {
           if (deliverable.getDeliverableInfo().getNewExpectedYear() >= action.getActualPhase().getYear()) {
@@ -473,6 +486,22 @@ public class DeliverableValidator extends BaseValidator {
       } else if (action.getValidationMessage().length() > 0) {
         action.addActionMessage(
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+      }
+
+      if (action.hasSpecificities(APConstants.DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE)) {
+        if (dInfo != null && dInfo.getDuplicated()) {
+          action.addMessage(action.getText("deliverable.status.duplicated"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.status.duplicated",
+            action.getText("deliverable.status.duplicated"));
+        }
+      }
+
+      if (action.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+        if (dInfo != null && dInfo.getIsRemainingPending() != null && dInfo.getIsRemainingPending()) {
+          action.addMessage(action.getText("deliverable.status.duplicated"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.remaining",
+            action.getText("deliverable.status.remaining"));
+        }
       }
 
     }

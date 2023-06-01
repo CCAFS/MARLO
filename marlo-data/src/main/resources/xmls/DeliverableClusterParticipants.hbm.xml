@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class
+		name="org.cgiar.ccafs.marlo.data.model.DeliverableClusterParticipant"
+		table="deliverable_cluster_participants" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="deliverable"
+			class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
+			<column name="deliverable_id" not-null="true" />
+		</many-to-one>
+		<many-to-one name="phase"
+			class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+			<column name="id_phase" not-null="true" />
+		</many-to-one>
+		<many-to-one name="project"
+			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
+			<column name="project_id" not-null="true" />
+		</many-to-one>
+		<property name="participants" type="java.lang.Double">
+			<column name="participants" precision="30" scale="0" />
+		</property>
+		<property name="females" type="java.lang.Double">
+			<column name="females" precision="30" scale="0" />
+		</property>
+		<property name="african" type="java.lang.Double">
+			<column name="african" precision="10" scale="0" />
+		</property>
+		<property name="youth" type="java.lang.Double">
+			<column name="youth" precision="10" scale="0" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp" update="false">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<many-to-one name="createdBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select"
+			update="false">
+			<column name="created_by">
+				<comment>foreign key to the table users</comment>
+			</column>
+		</many-to-one>
+		<many-to-one name="modifiedBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" sql-type="TEXT"
+				not-null="true" />
+		</property>
+	</class>
+</hibernate-mapping>

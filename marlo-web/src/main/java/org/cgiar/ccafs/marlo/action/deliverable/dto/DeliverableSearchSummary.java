@@ -22,23 +22,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class DeliverableSearchSummary {
 
   private String disseminationURL;
-
   private String handle;
-
   private String DOI;
-
   private Long phaseID;
-
   private Long deliverableID;
-
   private String clusterAcronym;
-
   private String duplicatedField;
+  private String title;
+  private String subCategory;
+  private String responsible;
+  private String clusterLeader;
+  private String sharedClusters;
+  private String year;
+  private String status;
 
   public DeliverableSearchSummary() {
 
   }
-
 
   public Map<String, Object> convertToMap() {
     ObjectMapper oMapper = new ObjectMapper();
@@ -50,6 +50,10 @@ public class DeliverableSearchSummary {
 
   public String getClusterAcronym() {
     return clusterAcronym;
+  }
+
+  public String getClusterLeader() {
+    return clusterLeader;
   }
 
   public Long getDeliverableID() {
@@ -76,8 +80,36 @@ public class DeliverableSearchSummary {
     return phaseID;
   }
 
+  public String getResponsible() {
+    return responsible;
+  }
+
+  public String getSharedClusters() {
+    return sharedClusters;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public String getSubCategory() {
+    return subCategory;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public String getYear() {
+    return year;
+  }
+
   public void setClusterAcronym(String clusterAcronym) {
     this.clusterAcronym = clusterAcronym;
+  }
+
+  public void setClusterLeader(String clusterLeader) {
+    this.clusterLeader = clusterLeader;
   }
 
   public void setDeliverableID(Long deliverableID) {
@@ -104,4 +136,27 @@ public class DeliverableSearchSummary {
     this.phaseID = phaseID;
   }
 
+  public void setResponsible(String responsible) {
+    this.responsible = responsible;
+  }
+
+  public void setSharedClusters(String sharedClusters) {
+    this.sharedClusters = sharedClusters;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public void setSubCategory(String subCategory) {
+    this.subCategory = subCategory;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public void setYear(String year) {
+    this.year = year;
+  }
 }

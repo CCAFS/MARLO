@@ -43,6 +43,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   private RepIndGeographicScope geographicScope;
   @Expose
   private RepIndRegion region;
+  @Expose
+  private Boolean duplicated;
+
+  private Boolean isRemainingPending;
 
   public DeliverableInfo() {
   }
@@ -74,14 +78,24 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public Boolean getDuplicated() {
+    return duplicated;
+  }
+
+
   public RepIndGeographicScope getGeographicScope() {
     return geographicScope;
   }
 
-
   public Boolean getIsLocationGlobal() {
     return isLocationGlobal;
   }
+
+
+  public Boolean getIsRemainingPending() {
+    return isRemainingPending;
+  }
+
 
   @Override
   public String getLogDeatil() {
@@ -100,7 +114,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return phase;
   }
 
-
   public RepIndRegion getRegion() {
     return region;
   }
@@ -109,6 +122,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public Integer getStatus() {
     return status;
   }
+
 
   public String getStatusDescription() {
     return statusDescription;
@@ -142,11 +156,9 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return title;
   }
 
-
   public String getTypeOther() {
     return typeOther;
   }
-
 
   public int getYear() {
     return year;
@@ -311,6 +323,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return false;
   }
 
+
   /**
    * Check if the deliverable has complete status for the current cycle with the expected year >= phase.year
    * Used in BaseAction.isDeliverableComplete to know if the Deliverable is Complete
@@ -337,6 +350,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
     return false;
   }
+
 
   public boolean requeriedFair() {
     try {
@@ -383,6 +397,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public void setDuplicated(Boolean duplicated) {
+    this.duplicated = duplicated;
+  }
+
   public void setGeographicScope(RepIndGeographicScope geographicScope) {
     this.geographicScope = geographicScope;
   }
@@ -392,16 +410,18 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.isLocationGlobal = isLocationGlobal;
   }
 
+  public void setIsRemainingPending(Boolean isRemainingPending) {
+    this.isRemainingPending = isRemainingPending;
+  }
+
 
   public void setNewExpectedYear(Integer newExpectedYear) {
     this.newExpectedYear = newExpectedYear;
   }
 
-
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
-
 
   public void setRegion(RepIndRegion region) {
     this.region = region;
@@ -411,16 +431,13 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.status = status;
   }
 
-
   public void setStatusDescription(String statusDescription) {
     this.statusDescription = statusDescription;
   }
 
-
   public void setTitle(String title) {
     this.title = title;
   }
-
 
   public void setTypeOther(String typeOther) {
     this.typeOther = typeOther;
@@ -446,7 +463,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.setGeographicScope(update.getGeographicScope());
     this.setRegion(update.getRegion());
   }
-
 
 }
 

@@ -1,17 +1,17 @@
 [#ftl]
 [#assign title = "Deliverable information" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate"] /]
+[#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate", "vue"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20230417",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20220721",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20230420",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20230510",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20221117",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
 ] /]
-[#assign customCSS = ["${baseUrl}/crp/css/projects/projectDeliverable.css?20230106"] /]
+[#assign customCSS = ["${baseUrl}/crp/css/projects/projectDeliverable.css?20230529"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]
 [#assign hideJustification = true /]
@@ -82,6 +82,8 @@
 <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID)?c)!}</span>
 <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
 <input type="hidden" id="sectionNameToFeedback" value="deliverable" />
+<span id="existCurrentCluster" style="display: none;">${(existCurrentCluster?c)!}</span>
+
 
 [#if action.hasSpecificities('feedback_active') ]
   [#list feedbackComments as feedback]
@@ -95,6 +97,28 @@
 
 
 <section class="container">
+
+  <div class="modal-evidences" style="display: none">
+    <div class="content-modal">
+      <div class="button-exit close-modal-evidences">
+        <div class="x-close-modal" ></div>
+      </div>
+      <p class="title-modal-evidences">Are you sure you want to remove this cluster?</p>
+      <div class="text-modal-evidences">
+        <p>When you remove the selected cluster, the information shared in the Dissemination and Metadata tab of the Trainee-related contribution will also be deleted. 
+        If you are certain you want to proceed, you will need to redistribute all of the Trainees among the remaining clusters that are contributing to this deliverable.</p>          
+      </div>                
+      <div class="container-buttons-evidences"> 
+        <div class="button-close-modal close-modal-evidences remove-cluster-alert">
+          <p>Remove cluster</p>
+        </div>
+        <div class="button-close-modal close-modal-evidences">
+          <p>Close</p>
+        </div>
+      </div> 
+    </div>              
+  </div>
+
     <div class="row">
       [#-- Project Menu --]
       <div class="col-md-3">
@@ -105,7 +129,26 @@
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-deliverables.ftl" /]
 
-        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]       
+        
+        [#if action.hasSpecificities('duplicated_deliverables_functionality_active') && duplicated]
+          <div class="animated flipInX container viewMore-block containerAlertMargin">
+            <div class=" containerAlert  alert-leftovers alertColorBackgroundWarning"  id="containerAlert">
+              <div class="containerLine alertColorWarning"></div>
+              <div class="containerIcon">
+                <div class="containerIcon alertColorWarning">
+                  <img src="${baseUrlCdn}/global/images/icon-alert.png" />      
+                </div>
+              </div>
+              <div class="containerText col-md-12">
+                <p class="alertText"> 
+                  [@s.text name="project.deliverable.duplicatedHelp" /] 
+                </p>
+              </div>
+              [#--  <div class="viewMoreCollapse closed"></div>--]
+            </div>
+          </div>
+        [/#if]
 
           <div class="form-group">
             <br />
@@ -116,7 +159,7 @@
               </a>
             </small>
 
-                        [#--  Feedback Status --]
+          [#--  Feedback Status --]
           [#if action.hasSpecificities('feedback_active') ]
             <div class="form-group col-md-12 legendContent-global">
               <div class="colors-global">

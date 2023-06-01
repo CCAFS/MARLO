@@ -1,12 +1,12 @@
 [#ftl]
 [#assign title = "MARLO Publication" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-${(deliverable.id)!}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2","font-awesome","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate"] /]
+[#assign pageLibs = ["select2","font-awesome","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate", "vue"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/publications/publication.js?20190228",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20190228", 
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20230417",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20220713",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20230504",
   [#-- "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
 ] /]

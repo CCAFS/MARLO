@@ -427,6 +427,7 @@
   <mapping resource="xmls/ButtonGuideContents.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationCrpOutcomes.hbm.xml"/>
   <mapping resource="xmls/ProjectExpectedStudyReferences.hbm.xml"/>
+  <mapping resource="xmls/DeliverableClusterParticipants.hbm.xml"/>
 
  </session-factory>
 </hibernate-configuration>
