@@ -1,4 +1,6 @@
 [#ftl]
+
+              <input type="hidden" name="deliverable.deliverableInfo.isRemainingPending" value="${(deliverable.deliverableInfo.isRemainingPending)!}"/>
 <div class="simpleBox">
   [#-- Title input --]
   <div class="form-group">

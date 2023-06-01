@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20230420",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20230523",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20230630",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20221117",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
@@ -82,6 +82,7 @@
 <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID)?c)!}</span>
 <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
 <input type="hidden" id="sectionNameToFeedback" value="deliverable" />
+
 <span id="existCurrentCluster" style="display: none;">${(existCurrentCluster?c)!}</span>
 
 

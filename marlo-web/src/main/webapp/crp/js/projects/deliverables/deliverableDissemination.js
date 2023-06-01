@@ -245,11 +245,13 @@ if(remainingYouth == 0 && remainingAfrican == 0 && remainingFemales == 0 && rema
   $('.remaining-container').css('color', '#8ea786');
   $('.alertParticipant').css('display', 'none');
   $('.doneParticipant').css('display', 'flex');
+  $('input[name="deliverable.deliverableInfo.isRemainingPending"]').val('false');
 }
 else{
   $('.remaining-container').css('color', '#FFC300');
   $('.doneParticipant').css('display', 'none');
   $('.alertParticipant').css('display', 'flex');
+  $('input[name="deliverable.deliverableInfo.isRemainingPending"]').val('true');
   
 }
 
