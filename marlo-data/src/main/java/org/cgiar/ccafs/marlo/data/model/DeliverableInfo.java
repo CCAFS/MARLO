@@ -45,8 +45,8 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   private RepIndRegion region;
   @Expose
   private Boolean duplicated;
-
-  private Boolean isRemainingPending;
+  @Expose
+  private Boolean remainingPending;
 
   public DeliverableInfo() {
   }
@@ -92,11 +92,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
-  public Boolean getIsRemainingPending() {
-    return isRemainingPending;
-  }
-
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -116,6 +111,11 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
   public RepIndRegion getRegion() {
     return region;
+  }
+
+
+  public Boolean getRemainingPending() {
+    return remainingPending;
   }
 
 
@@ -150,7 +150,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
       return "";
     }
   }
-
 
   public String getTitle() {
     return title;
@@ -272,6 +271,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
     return false;
   }
+
 
   /**
    * Check if the deliverable is required for the current cycle
@@ -396,24 +396,18 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.description = description;
   }
 
-
   public void setDuplicated(Boolean duplicated) {
     this.duplicated = duplicated;
   }
+
 
   public void setGeographicScope(RepIndGeographicScope geographicScope) {
     this.geographicScope = geographicScope;
   }
 
-
   public void setIsLocationGlobal(Boolean isLocationGlobal) {
     this.isLocationGlobal = isLocationGlobal;
   }
-
-  public void setIsRemainingPending(Boolean isRemainingPending) {
-    this.isRemainingPending = isRemainingPending;
-  }
-
 
   public void setNewExpectedYear(Integer newExpectedYear) {
     this.newExpectedYear = newExpectedYear;
@@ -425,6 +419,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
   public void setRegion(RepIndRegion region) {
     this.region = region;
+  }
+
+  public void setRemainingPending(Boolean remainingPending) {
+    this.remainingPending = remainingPending;
   }
 
   public void setStatus(Integer status) {

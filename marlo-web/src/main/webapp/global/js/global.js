@@ -1027,8 +1027,7 @@ if(remainingYouth == 0 && remainingAfrican == 0 && remainingFemales == 0 && rema
 else{
   $('.remaining-container').css('color', '#FFC300');
   $('.doneParticipant').css('display', 'none');
-  $('.alertParticipant').css('display', 'flex');
-  
+  $('.alertParticipant').css('display', 'flex');  
 }
 
   

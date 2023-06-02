@@ -497,10 +497,35 @@ public class DeliverableValidator extends BaseValidator {
       }
 
       if (action.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
-        if (dInfo != null && dInfo.getIsRemainingPending() != null && dInfo.getIsRemainingPending()) {
-          action.addMessage(action.getText("deliverable.status.duplicated"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.remaining",
-            action.getText("deliverable.status.remaining"));
+        if (dInfo != null && dInfo.getRemainingPending() != null && dInfo.getRemainingPending() == true) {
+          int participantsSize = 0;
+          if (deliverable.getClusterParticipant() != null && !deliverable.getClusterParticipant().isEmpty()) {
+            participantsSize = deliverable.getClusterParticipant().size();
+          }
+
+          if (participantsSize > 0) {
+
+            for (int i = 0; i < participantsSize; i++) {
+              action.addMessage(action.getText("input-deliverable.clusterParticipant[\" + i + \"].participants"));
+              action.getInvalidFields().put("input-deliverable.clusterParticipant[" + i + "].participants",
+                action.getText("deliverable.status.remaining"));
+              action.addMessage(action.getText("input-deliverable.clusterParticipant[\" + i + \"].females"));
+              action.getInvalidFields().put("input-deliverable.clusterParticipant[" + i + "].females",
+                action.getText("deliverable.status.remaining"));
+              action.addMessage(action.getText("input-deliverable.clusterParticipant[\" + i + \"].african"));
+              action.getInvalidFields().put("input-deliverable.clusterParticipant[" + i + "].african",
+                action.getText("deliverable.status.remaining"));
+              action.addMessage(action.getText("input-deliverable.clusterParticipant[\" + i + \"].youth"));
+              action.getInvalidFields().put("input-deliverable.clusterParticipant[" + i + "].youth",
+                action.getText("deliverable.status.remaining"));
+            }
+
+          } else {
+
+            action.addMessage(action.getText("deliverable.status.duplicated"));
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.remaining",
+              action.getText("deliverable.status.remaining"));
+          }
         }
       }
 
