@@ -2003,6 +2003,11 @@ public class DeliverableAction extends BaseAction {
       } catch (Exception e) {
       }
 
+      // Deliverable remaining value
+      if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getRemainingPending() == null) {
+        deliverable.getDeliverableInfo().setRemainingPending(false);
+      }
+
       if (this.isHttpPost()) {
 
         if (deliverable.getOtherPartnerships() != null) {
