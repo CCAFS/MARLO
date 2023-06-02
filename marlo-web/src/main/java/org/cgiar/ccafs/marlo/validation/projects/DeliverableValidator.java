@@ -520,11 +520,6 @@ public class DeliverableValidator extends BaseValidator {
                 action.getText("deliverable.status.remaining"));
             }
 
-          } else {
-
-            action.addMessage(action.getText("deliverable.status.duplicated"));
-            action.getInvalidFields().put("input-deliverable.deliverableInfo.remaining",
-              action.getText("deliverable.status.remaining"));
           }
         }
       }
