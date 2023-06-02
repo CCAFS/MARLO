@@ -514,7 +514,7 @@
                   [#--  IPI 2.3 --]   
                     <div class="note left textAchived">
                       <div id="popup" class="helpMessage3">
-                        <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]<b>${totalParticipants}</b>[/@s.param][/@s.text]</a></p>
+                        <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalOwnParticipants}"][@s.param]<b>${totalOwnParticipants}</b>[/@s.param][/@s.text]</a></p>
                       </div>
                     </div> 
                    [/#if]    
@@ -537,7 +537,7 @@
                 [#--  IPI 2.3 --]   
                   <div class="note left textAchived">
                     <div id="popup" class="helpMessage3">
-                      <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]<b>${totalParticipants}</b>[/@s.param][/@s.text]</a></p>
+                      <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalOwnParticipants}"][@s.param]<b>${totalOwnParticipants}</b>[/@s.param][/@s.text]</a></p>
                     </div>
                   </div> 
                  [/#if]    
