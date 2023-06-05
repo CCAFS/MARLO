@@ -140,6 +140,7 @@ public final class APConstants {
   public static final String MELIA_SCORE_FIELD_ACTIVE = "melia_score_field_active";
   public static final String DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE =
     "deliverable_shared_clusters_trainees_active";
+  public static final String HIGHLIGHT_COMMENTS_ACTIVE = "highlight_comments_active";
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
     "is_expected_deliverable_report_all_years_visible";
