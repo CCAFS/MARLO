@@ -149,6 +149,7 @@ public final class APConstants {
     "duplicated_deliverables_functionality_active";
   public static final String DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE =
     "deliverable_shared_clusters_trainees_active";
+  public static final String HIGHLIGHT_COMMENTS_ACTIVE = "highlight_comments_active";
 
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =

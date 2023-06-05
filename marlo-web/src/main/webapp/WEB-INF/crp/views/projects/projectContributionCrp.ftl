@@ -14,7 +14,7 @@
   ] 
 /] 
 [#assign customCSS = [ 
-  "${baseUrlMedia}/css/projects/projectContributionCrp.css?20230502",
+  "${baseUrlMedia}/css/projects/projectContributionCrp.css?20230530",
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20221104A",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
@@ -515,7 +515,7 @@
                   [#--  IPI 2.3 --]   
                     <div class="note left textAchived">
                       <div id="popup" class="helpMessage3">
-                        <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]<b>${totalParticipants}</b>[/@s.param][/@s.text]</a></p>
+                        <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalOwnParticipants}"][@s.param]<b>${totalOwnParticipants}</b>[/@s.param][/@s.text]</a></p>
                       </div>
                     </div> 
                    [/#if]    
@@ -538,7 +538,7 @@
                 [#--  IPI 2.3 --]   
                   <div class="note left textAchived">
                     <div id="popup" class="helpMessage3">
-                      <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalParticipants}"][@s.param]<b>${totalParticipants}</b>[/@s.param][/@s.text]</a></p>
+                      <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalOwnParticipants}"][@s.param]<b>${totalOwnParticipants}</b>[/@s.param][/@s.text]</a></p>
                     </div>
                   </div> 
                  [/#if]    
@@ -1314,8 +1314,8 @@
           <th id="tb-footer" class="text-center">[@utils.tableText value=(totalOwnAfricans)!"" /]</th>
           <th id="tb-footer" class="text-center">[@utils.tableText value=(totalOwnYouth)!"" /]</th>
           <th id="tb-footer" class="text-center">[@utils.tableText value=(totalParticipants)!"" /]</th>
-          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalAfricans)!"" /]</th>
           <th id="tb-footer" class="text-center">[@utils.tableText value=(totalFemales)!"" /]</th>
+          <th id="tb-footer" class="text-center">[@utils.tableText value=(totalAfricans)!"" /]</th>
           <th id="tb-footer" class="text-center">[@utils.tableText value=(totalYouth)!"" /]</th>
         </tr>
     [#else]

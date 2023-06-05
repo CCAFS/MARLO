@@ -815,7 +815,7 @@ div#ccDimension-capacity {
 
 .containerKeywords{
   display: block;
-  width: 260px;
+  width: 500px;
 }
 
 .containerCurrentDeliverables{
@@ -839,30 +839,45 @@ div#ccDimension-capacity {
 
 .containerShowHide{
   width: auto;
-  left: 500px;
+  left: 700px;
   position: absolute;
   z-index: 1;
 }
 
-.buttonAddColumn{
-  -webkit-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
-  margin-bottom: 8px;
-  text-align-last: center;
-  display: inline-block;
-  padding: 5px 10px;
-  margin-left: 10px;
-  cursor: pointer;
-  user-select: none;
+.buttonAddColumn {
+  display: flex;
+  align-items: center;
 }
 
+.buttonAddColumn label{
+  font-weight: 200;
+  cursor: default;
+}
+
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  margin-right: 8px;
+  cursor: pointer;
+  margin-bottom: 3px;
+  margin-left: 20px;
+}
+
+
+
 .titleShowHideColumns{
-  margin-bottom: 10px;
+  margin-bottom: 4px;
   padding-left: 10px;
   font-weight: 600;
 }
 
 .containerCurrentDeliverables .active{
+  background: #d9edf7;
+}
+
+.containerpreviousDeliverables .active{
   background: #d9edf7;
 }
  /*
@@ -1088,5 +1103,11 @@ div.fieldFocus-deliverable {
 @media (max-width:1580px){
   .textAchived{
     font-size: 10px;
+  }
+}
+
+@media (max-width:1520px){
+  .containerShowHide{
+    left: 610px;
   }
 }

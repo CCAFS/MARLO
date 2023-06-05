@@ -3,14 +3,14 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableList.js?20230529",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableList.js?20230530",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   [#-- "${baseUrlCdn}/global/js/autoSave.js" --]
   ]
 /]
 [#assign customCSS = [
   "${baseUrlCdn}/global/css/customDataTable.css",
-  "${baseUrlMedia}/css/projects/projectDeliverable.css?20230529"] /]
+  "${baseUrlMedia}/css/projects/projectDeliverable.css?20230530"] /]
 
 [#assign currentStage = "deliverableList" /]
 [#assign isListSection = true /]
@@ -173,12 +173,18 @@
             <hr />
             [/#if]
             <div class="containerShowHide">
-              <div class="titleShowHideColumns">Add columns</div>
+              <div class="titleShowHideColumns">Display columns:</div>
                 [#if action.hasSpecificities('duplicated_deliverables_functionality_active') ]
-                  <div class="buttonAddColumn">Duplicated</div>
+                  <div class="buttonAddColumn">
+                    <input type="checkbox" id="checkbox" />
+                    <label for="checkbox">Duplicated</label>
+                  </div>
                 [/#if]
-                  <div class="buttonAddColumn">Responsible person</div>
-            </div>
+                <div class="buttonAddColumn">
+                  <input type="checkbox" id="checkbox" />
+                  <label for="checkbox">Responsible person</label>
+                </div>
+              </div>
             <div class="currentDeliverables">
               [@deliverableList.deliverablesList deliverables=(currentDeliverableList)![] canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" projectID=projectID/]
             </div>
@@ -204,6 +210,19 @@
           <div class="containerpreviousDeliverables">
             <h3 class="subTitle headTitle">Previous deliverables</h3>
             <hr />
+            <div class="containerShowHide">
+              <div class="titleShowHideColumns">Display columns:</div>
+                [#if action.hasSpecificities('duplicated_deliverables_functionality_active') ]
+                  <div class="buttonAddColumn">
+                    <input type="checkbox" id="checkbox" />
+                    <label for="checkbox">Duplicated</label>
+                  </div>
+                [/#if]
+                <div class="buttonAddColumn">
+                  <input type="checkbox" id="checkbox" />
+                  <label for="checkbox">Responsible person</label>
+                </div>
+              </div>            
             <div class="previousDeliverables">
               [@deliverableList.deliverablesList deliverables=(project.getPreviousDeliverables(actualPhase) + previousSharedDeliverableList)![] canValidate=true canEdit=candit isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false projectID=projectID/]
             </div>

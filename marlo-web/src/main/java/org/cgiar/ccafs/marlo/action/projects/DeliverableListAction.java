@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
@@ -613,9 +614,11 @@ public class DeliverableListAction extends BaseAction {
                   .stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()))
                   .collect(Collectors.toList())));
               }
+              List<DeliverableMetadataElement> deliverableMetadataElements;
+              deliverableMetadataElements = deliverableTemp.getMetadataElements(this.getActualPhase());
 
               try {
-                DOI = deliverableTemp.getDeliverableMetadataElements().stream()
+                DOI = deliverableMetadataElements.stream()
                   .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
                     && me.getMetadataElement().getId().longValue() == 36L && me.getPhase().equals(this.getActualPhase())
                     && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
@@ -625,7 +628,7 @@ public class DeliverableListAction extends BaseAction {
               }
 
               try {
-                handle = deliverableTemp.getDeliverableMetadataElements().stream()
+                handle = deliverableMetadataElements.stream()
                   .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
                     && me.getMetadataElement().getId().longValue() == 35L && me.getPhase().equals(this.getActualPhase())
                     && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
@@ -634,29 +637,33 @@ public class DeliverableListAction extends BaseAction {
                 Log.info(e);
               }
 
-              if (deliverableTemp.getDeliverableDisseminations() != null) {
-                deliverableTemp.setDisseminations(new ArrayList<>(deliverableTemp.getDeliverableDisseminations()
-                  .stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()))
-                  .collect(Collectors.toList())));
-                if (!deliverableTemp.getDisseminations().isEmpty()) {
-                  deliverableTemp.setDissemination(deliverableTemp.getDisseminations().get(0));
-                } else {
-                  deliverableTemp.setDissemination(new DeliverableDissemination());
-                }
+              // Deliverable dissemination
+              DeliverableDissemination deliverableDissemination = new DeliverableDissemination();
+
+              try {
+                deliverableDissemination = deliverableTemp.getDissemination(this.getActualPhase());
+              } catch (Exception e) {
+                Log.info(e);
+              }
+
+              if (deliverableDissemination != null && deliverableDissemination.getDisseminationUrl() != null
+                && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
+                disseminationURL = deliverableDissemination.getDisseminationUrl();
               }
 
               List<DeliverableSearchSummary> deliverableDTOs = null;
-              deliverableDTOs = this.getDuplicatedDeliverableInformation(DOI, handle, disseminationURL, deliverableID);
+              deliverableDTOs =
+                this.getDuplicatedDeliverableInformation(DOI, handle, disseminationURL, deliverableTemp.getId());
+
               boolean isDuplicated = false;
               if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
                 isDuplicated = true;
               } else {
                 isDuplicated = false;
               }
-              DeliverableInfo deliverableInfo = deliverableTemp.getDeliverableInfo();
-              if (deliverableInfo != null) {
-                deliverableInfo.setDuplicated(isDuplicated);
-                deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+              if (deliverableTemp.getDeliverableInfo(this.getActualPhase()) != null) {
+                deliverableTemp.getDeliverableInfo(this.getActualPhase()).setDuplicated(isDuplicated);
+                deliverableManager.saveDeliverable(deliverableTemp);
               }
             }
 

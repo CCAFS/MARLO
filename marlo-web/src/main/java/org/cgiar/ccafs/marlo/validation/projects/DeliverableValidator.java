@@ -143,6 +143,19 @@ public class DeliverableValidator extends BaseValidator {
         validate = deliverable.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear();
       }
       if (deliverable.getDeliverableInfo().getStatus() != null
+        && deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+          && deliverable.getDeliverableInfo().getNewExpectedYear() != -1) {
+          if (deliverable.getDeliverableInfo().getNewExpectedYear() >= action.getActualPhase().getYear()) {
+            validate = true;
+          }
+        } else {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear()) {
+            validate = true;
+          }
+        }
+      }
+      if (deliverable.getDeliverableInfo().getStatus() != null
         && deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
         if (deliverable.getDeliverableInfo().getNewExpectedYear() != null) {
           if (deliverable.getDeliverableInfo().getNewExpectedYear() >= action.getActualPhase().getYear()) {
@@ -480,6 +493,34 @@ public class DeliverableValidator extends BaseValidator {
           action.addMessage(action.getText("deliverable.status.duplicated"));
           action.getInvalidFields().put("input-deliverable.deliverableInfo.status.duplicated",
             action.getText("deliverable.status.duplicated"));
+        }
+      }
+
+      if (action.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+        if (dInfo != null && dInfo.getRemainingPending() != null && dInfo.getRemainingPending() == true) {
+          int participantsSize = 0;
+          if (deliverable.getClusterParticipant() != null && !deliverable.getClusterParticipant().isEmpty()) {
+            participantsSize = deliverable.getClusterParticipant().size();
+          }
+
+          if (participantsSize > 0) {
+
+            for (int i = 0; i < participantsSize; i++) {
+              action.addMessage(action.getText("input-deliverable.clusterParticipant[\" + i + \"].participants"));
+              action.getInvalidFields().put("input-deliverable.clusterParticipant[" + i + "].participants",
+                action.getText("deliverable.status.remaining"));
+              action.addMessage(action.getText("input-deliverable.clusterParticipant[\" + i + \"].females"));
+              action.getInvalidFields().put("input-deliverable.clusterParticipant[" + i + "].females",
+                action.getText("deliverable.status.remaining"));
+              action.addMessage(action.getText("input-deliverable.clusterParticipant[\" + i + \"].african"));
+              action.getInvalidFields().put("input-deliverable.clusterParticipant[" + i + "].african",
+                action.getText("deliverable.status.remaining"));
+              action.addMessage(action.getText("input-deliverable.clusterParticipant[\" + i + \"].youth"));
+              action.getInvalidFields().put("input-deliverable.clusterParticipant[" + i + "].youth",
+                action.getText("deliverable.status.remaining"));
+            }
+
+          }
         }
       }
 

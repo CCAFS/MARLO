@@ -273,11 +273,13 @@ if(remainingYouth == 0 && remainingAfrican == 0 && remainingFemales == 0 && rema
   $('.remaining-container').css('color', '#8ea786');
   $('.alertParticipant').css('display', 'none');
   $('.doneParticipant').css('display', 'flex');
+  $('input[name="deliverable.deliverableInfo.remainingPending"]').val('false');
 }
 else{
   $('.remaining-container').css('color', '#FFC300');
   $('.doneParticipant').css('display', 'none');
   $('.alertParticipant').css('display', 'flex');
+  $('input[name="deliverable.deliverableInfo.remainingPending"]').val('true');
   
 }
 
@@ -349,6 +351,7 @@ function addcluster(infoCluster){
     name: 'deliverable.clusterParticipant['+lastValueId+'].participants',
     value: '0',
     class: 'form-control input-sm numericInput optional',
+    oninput: "validateInput(event)",
     placeholder: 'Number'
   });
   textArea2.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input2));
@@ -438,6 +441,13 @@ function validateRequiredTagToCategory() {
       hideOrShowCheckBoxIsOtherUrl(false);
     }
   }
+}
+
+function validateInput(event) {
+  const input = event.target;
+      const inputValue = input.value;
+      const integerValue = inputValue.replace(/\D/g, ''); // Filtra caracteres no numéricos
+      input.value = integerValue; // Actualiza el valor del campo con el contenido filtrado
 }
 
 function validateEmptyAuthors() {
