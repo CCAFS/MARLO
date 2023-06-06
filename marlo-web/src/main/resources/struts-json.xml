@@ -128,6 +128,16 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		
+		<action name="sendNotificationEmail"
+			class="org.cgiar.ccafs.marlo.action.json.global.SendNotificationEmailAction"
+			method="validateEmail">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="searchInstitutions"
 			class="org.cgiar.ccafs.marlo.action.json.global.SearchInstitutionsAction"
