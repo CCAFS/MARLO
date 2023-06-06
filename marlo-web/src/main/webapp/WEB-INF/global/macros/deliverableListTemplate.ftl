@@ -156,7 +156,7 @@
 
           [#-- Deliverable Responsible --]
           <td class="responsible text-center">
-            ${deliverable.responsible!''}
+            ${(deliverable.responsible)!''}
           </td>
           
           [#-- Deliverable required fields --]
