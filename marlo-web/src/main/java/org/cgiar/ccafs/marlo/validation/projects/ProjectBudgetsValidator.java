@@ -95,7 +95,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
         }
       }
 
-      if (!action.getActualPhase().getName().contains("AR")) {
+      if (!action.isAiccra()) {
 
         int totalPartnerBudgetsCurrentYear = 0;
         if (project.getBudgets() != null && project.getBudgets().size() > 0) {
