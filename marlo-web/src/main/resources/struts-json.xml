@@ -138,6 +138,24 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="sendFeedbackActionEmail"
+			class="org.cgiar.ccafs.marlo.action.json.email.EmailTrackingCommentAction"
+			method="validateEmail">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+		
+		<action name="sendFeedbackReactionEmail"
+			class="org.cgiar.ccafs.marlo.action.json.email.EmailTrackingReactionCommentAction"
+			method="validateEmail">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="searchInstitutions"
 			class="org.cgiar.ccafs.marlo.action.json.global.SearchInstitutionsAction"
