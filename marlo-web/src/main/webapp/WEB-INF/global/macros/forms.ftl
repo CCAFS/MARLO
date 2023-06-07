@@ -615,6 +615,12 @@
   [#if editable && helpMore]
     [@helpViewMore name="${name}" /]
   [/#if]
+  <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+  </div>
 [/#macro]
 
 [#function changedField name]
@@ -956,6 +962,12 @@
     [#if editable]
       <textarea rows="4" name="${name}" id="${name}" [#if readOnly] readonly="readonly"[/#if] [#if disabled]disabled="disabled"[/#if]  class="[#if className != "-NULL"]${className}[/#if] form-control input-sm ${required?string('required','optional')} [#if allowTextEditor]allowTextEditor[/#if]" placeholder="[@s.text name=placeholder /]" />${customValue}</textarea>
     [/#if] 
+  </div>
+  <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
   </div>
 [/#macro]
 
