@@ -132,7 +132,7 @@
               </td>
           [/#if]
           <td class="owner text-center">
-            [#if isOwner] <small><nobr>This Cluster</nobr></small>  [#else][#if innovation.project?has_content]${innovation.project.acronym}[#else]Not defined[/#if][/#if]
+            [#if isOwner] <small><nobr>This Cluster</nobr></small>  [#else][#if innovation.project?has_content]${(innovation.project.acronym)!''}[#else]Not defined[/#if][/#if]
           </td>
           [#-- Missing fields --]
           [#if currentTable]
