@@ -2674,10 +2674,34 @@ public class DeliverableAction extends BaseAction {
             participantSave.setProject(deliverableParticipant.getProject());
 
           }
+          isSavedParticipant = true;
           deliverableClusterParticipantManager.saveDeliverableClusterParticipant(participantSave);
 
         }
       }
+    }
+
+    if ((deliverable.getSharedDeliverables() == null
+      || (deliverable.getSharedDeliverables() != null && deliverable.getSharedDeliverables().isEmpty()))) {
+      // for null deliverable cluster participants
+      DeliverableClusterParticipant participantSave;
+      participantSave = new DeliverableClusterParticipant();
+
+      try {
+        participantSave =
+          deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(
+            deliverable.getId(), deliverable.getProject().getId(), this.getActualPhase().getId()).get(0);
+      } catch (Exception e) {
+        Log.info(e);
+      }
+      participantSave.setParticipants(deliverable.getDeliverableParticipant().getParticipants());
+      participantSave.setFemales(deliverable.getDeliverableParticipant().getFemales());
+      participantSave.setAfrican(deliverable.getDeliverableParticipant().getAfrican());
+      participantSave.setYouth(deliverable.getDeliverableParticipant().getYouth());
+      participantSave.setDeliverable(deliverable);
+      participantSave.setPhase(this.getActualPhase());
+      participantSave.setProject(deliverable.getProject());
+      deliverableClusterParticipantManager.saveDeliverableClusterParticipant(participantSave);
     }
   }
 
