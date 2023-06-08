@@ -2674,9 +2674,7 @@ public class DeliverableAction extends BaseAction {
             participantSave.setProject(deliverableParticipant.getProject());
 
           }
-          isSavedParticipant = true;
           deliverableClusterParticipantManager.saveDeliverableClusterParticipant(participantSave);
-
         }
       }
     }
