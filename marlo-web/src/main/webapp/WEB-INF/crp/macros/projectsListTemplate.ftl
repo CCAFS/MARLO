@@ -5,7 +5,7 @@
     <thead>
       <tr class="header">
         <th colspan="5">General Information</th>
-        [#if !reportingActive && !centerGlobalUnit]
+        [#if !reportingActive && !planningActive && !centerGlobalUnit]
           <th colspan="1">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th>
         [/#if]
         <th colspan="3">Actions</th>
@@ -26,7 +26,7 @@
             [/#if]
           [/#if]
         </th>
-        [#if !reportingActive && !centerGlobalUnit]
+        [#if !reportingActive && !planningActive && !centerGlobalUnit]
           <th id="projectBudget">[@s.text name="projectsList.W1W2projectBudget" /]</th>
           [#-- <th id="projectBudget">[@s.text name="projectsList.W3projectBudget" /]</th>
           <th id="projectBudget">[@s.text name="projectsList.BILATERALprojectBudget" /]</th> --]
@@ -128,7 +128,7 @@
               [@s.text name="projectsList.none" /]
             [/#if]
           </td>
-          [#if !reportingActive && !centerGlobalUnit]
+          [#if !reportingActive && !planningActive && !centerGlobalUnit]
           [#-- Budget W1/W2 --]
           <td class="">
             [#if project.getCoreBudget(currentCycleYear,action.getActualPhase())?has_content]
