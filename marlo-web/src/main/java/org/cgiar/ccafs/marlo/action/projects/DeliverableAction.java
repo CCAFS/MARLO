@@ -3449,7 +3449,7 @@ public class DeliverableAction extends BaseAction {
         // Delete cluster participants
         if (deliverable.getClusterParticipant() != null) {
           for (DeliverableClusterParticipant clusterParticipant : deliverable.getClusterParticipant()) {
-            if (clusterParticipant.getId() != null) {
+            if (clusterParticipant != null && clusterParticipant.getId() != null) {
               deliverableClusterParticipantManager.deleteDeliverableClusterParticipant(clusterParticipant.getId());
             }
           }
