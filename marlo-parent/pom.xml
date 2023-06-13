@@ -34,7 +34,7 @@
 		<apache-shiro-version>1.7.1</apache-shiro-version>
 		<groovy-version>2.4.6</groovy-version>
 		<jasperreports-fonts-version>6.0.0</jasperreports-fonts-version>
-		<jasper-reports-version>6.2.2</jasper-reports-version>
+		<jasper-reports-version>6.20.0</jasper-reports-version>
 		<com.google.code.gson-version>2.6.2</com.google.code.gson-version>
 		<pusher-http-java>1.0.0</pusher-http-java>
 		<pentaho-report.version>6.1.0.1-196</pentaho-report.version>
