@@ -52,7 +52,7 @@
 		<easyrules-core.version>2.4.0</easyrules-core.version>
 		<commons-discovery.version>0.4</commons-discovery.version>
 		<wsdl4j.version>1.6.2</wsdl4j.version>
-		<tomcat-catalina.version>8.0.53</tomcat-catalina.version>
+		<tomcat-catalina.version>8.5.9</tomcat-catalina.version>
 		<jackson.version>2.9.9</jackson.version>
 		<jackson.version.databind>2.9.9.2</jackson.version.databind>
 		<org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
