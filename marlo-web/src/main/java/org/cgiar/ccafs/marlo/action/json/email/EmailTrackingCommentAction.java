@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -42,9 +43,12 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EmailTrackingCommentAction extends BaseAction {
 
+  private static Logger LOG = LoggerFactory.getLogger(EmailTrackingCommentAction.class);
 
   private static final long serialVersionUID = 6328194359119346721L;
   private final ProjectManager projectManager;
@@ -55,7 +59,6 @@ public class EmailTrackingCommentAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
 
   private long projectID;
-  private String justification;
   private String assesorName;
   private String assesorEmail;
   private String assesorInput;
@@ -102,7 +105,6 @@ public class EmailTrackingCommentAction extends BaseAction {
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
     projectID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0]));
-    justification = StringUtils.trim(parameters.get(APConstants.JUSTIFICATION_REQUEST).getMultipleValues()[0]);
     assesorName = StringUtils.trim(parameters.get(APConstants.FEEDBACK_ASSESOR_NAME).getMultipleValues()[0]);
     assesorInput = StringUtils.trim(parameters.get(APConstants.FEEDBACK_ASSESOR_INPUT).getMultipleValues()[0]);
     assesorEmail = StringUtils.trim(parameters.get(APConstants.FEEDBACK_ASSESOR_EMAIL).getMultipleValues()[0]);
@@ -113,6 +115,7 @@ public class EmailTrackingCommentAction extends BaseAction {
   }
 
   private void sendNotficationEmail(Project project) {
+    Phase currentPhase = this.getActualPhase();
 
     // Get The Crp/Center/Platform where the project was created
     GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
@@ -129,8 +132,9 @@ public class EmailTrackingCommentAction extends BaseAction {
     }
     if (assesorEmail != null && this.isValidEmail(assesorEmail)) {
       toEmail = assesorEmail;
+    } else {
+      toEmail = null;
     }
-    toEmail = null;
 
     // CC Emails
     String ccEmail = "";

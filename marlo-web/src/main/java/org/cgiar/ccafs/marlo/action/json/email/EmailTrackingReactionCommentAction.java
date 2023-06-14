@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -42,9 +43,12 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EmailTrackingReactionCommentAction extends BaseAction {
 
+  private static Logger LOG = LoggerFactory.getLogger(EmailTrackingReactionCommentAction.class);
 
   private static final long serialVersionUID = 6328194359119346721L;
   private final ProjectManager projectManager;
@@ -55,7 +59,6 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
 
   private long projectID;
-  private String justification;
   private String assesorName;
   private String assesorEmail;
   private String assesorInput;
@@ -103,7 +106,6 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
     projectID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0]));
-    justification = StringUtils.trim(parameters.get(APConstants.JUSTIFICATION_REQUEST).getMultipleValues()[0]);
     assesorName = StringUtils.trim(parameters.get(APConstants.FEEDBACK_ASSESOR_NAME).getMultipleValues()[0]);
     assesorInput = StringUtils.trim(parameters.get(APConstants.FEEDBACK_ASSESOR_INPUT).getMultipleValues()[0]);
     assesorEmail = StringUtils.trim(parameters.get(APConstants.FEEDBACK_ASSESOR_EMAIL).getMultipleValues()[0]);
@@ -117,6 +119,7 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
   }
 
   private void sendNotficationEmail(Project project) {
+    Phase currentPhase = this.getActualPhase();
 
     // Get The Crp/Center/Platform where the project was created
     GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
@@ -133,8 +136,9 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
     }
     if (assesorEmail != null && this.isValidEmail(assesorEmail)) {
       toEmail = assesorEmail;
+    } else {
+      toEmail = null;
     }
-    toEmail = null;
 
     // CC Emails
     String ccEmail = "";
@@ -144,7 +148,7 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
     try {
       projectOutcome = projectOutcomeManager.getProjectOutcomeById(sectionID);
     } catch (Exception e) {
-
+      LOG.error("error getting project outcome " + projectOutcome);
     }
 
     if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
@@ -177,6 +181,29 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
     }
     if (sectionName != null) {
       sectionName = "[" + sectionName + "]";
+    }
+
+    if (sectionName != null && !sectionName.isEmpty()) {
+
+      switch (sectionName) {
+        case "projectContributionCrp":
+          sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/contributionCrp.do?"
+            + "projectOutcomeID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true";
+          break;
+        case "deliverable":
+          sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
+            + "deliverableID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true";
+          break;
+        case "study":
+          sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/study.do?"
+            + "expectedID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true";
+          break;
+        case "innovation":
+          sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?"
+            + "innovationID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true";
+          break;
+      }
+
     }
 
     String subject = this.getText("email.tracking.comment.reaction.subject", new String[] {acronym, sectionName});
