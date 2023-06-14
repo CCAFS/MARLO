@@ -221,8 +221,8 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
     values[7] = feedbackResponse;
     values[8] = sectionLink;
 
-    message.append(this.getText("email.tracking.comment.body", values));
-    message.append(this.getText("email.support.noCrpAdmin"));
+    message.append(this.getText("email.tracking.comment.reaction.body", values));
+    message.append(this.getText("email.support.noCrpAdmins"));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
