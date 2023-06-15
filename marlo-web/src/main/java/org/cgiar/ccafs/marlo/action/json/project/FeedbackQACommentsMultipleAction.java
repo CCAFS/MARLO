@@ -194,6 +194,11 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                   } else {
                     fieldsMap.put("userName", "");
                   }
+                  if (comment.getUser() != null && comment.getUser().getEmail() != null) {
+                    fieldsMap.put("email", comment.getUser().getEmail());
+                  } else {
+                    fieldsMap.put("email", "");
+                  }
                   if (comment.getUser() != null && comment.getUser().getId() != null) {
                     fieldsMap.put("userID", comment.getUser().getId());
                   } else {

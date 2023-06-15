@@ -823,7 +823,7 @@
                         <div class="form-group row center">
                           <div class="col-md-12 center" display="flex">
                             <div id="" class="simpleBox center numberBox col-md-3" >
-                                <label for="">Total of Journal Articles</label><br />
+                                <label for="">Total of peer-review research papers</label><br />
                                 <span>${(journalDeliverables?number?string(",##0"))!0}</span>
                             </div>
                             
@@ -893,7 +893,7 @@
                         
                         [#-- Deliverables Participants & Trainees --]
                         <div class="form-group">
-                          <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Peer-reviewed articles owned by this cluster" /]</h4>
+                          <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Peer-reviewed research papers owned by this cluster" /]</h4>
                           <div class="viewMoreSyntesis-block">                    
                             <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
                               [@tableJournalsMacro list=(deliverableJournals)![] /]
