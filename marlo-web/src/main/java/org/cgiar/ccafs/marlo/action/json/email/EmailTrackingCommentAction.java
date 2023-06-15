@@ -174,7 +174,7 @@ public class EmailTrackingCommentAction extends BaseAction {
 
     String acronym = null;
     if (project.getAcronym() != null) {
-      acronym = "[" + project.getAcronym() + "]";
+      acronym = project.getAcronym();
     }
     if (sectionName != null) {
       sectionName = "[" + sectionName + "]";
@@ -184,13 +184,12 @@ public class EmailTrackingCommentAction extends BaseAction {
       this.getText("email.tracking.comment.subject", new String[] {acronym, sectionName, feedbackCommentReaction});
     // Building the email message
     StringBuilder message = new StringBuilder();
-    String[] values = new String[5];
+    String[] values = new String[3];
 
     values[0] = assesorName;
     values[1] = sectionName;
-    values[2] = projectID + "";
-    values[3] = acronym;
-    values[4] = feedbackCommentReaction;
+    values[2] = acronym;
+    values[3] = feedbackCommentReaction;
 
     message.append(this.getText("email.tracking.comment.body", values));
     message.append(this.getText("email.support.noCrpAdmins"));

@@ -181,7 +181,7 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
 
     String acronym = null;
     if (project.getAcronym() != null) {
-      acronym = "[" + project.getAcronym() + "]";
+      acronym = project.getAcronym();
     }
     if (sectionName != null) {
       sectionName = "[" + sectionName + "]";
