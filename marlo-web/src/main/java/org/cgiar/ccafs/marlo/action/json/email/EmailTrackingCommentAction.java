@@ -184,7 +184,7 @@ public class EmailTrackingCommentAction extends BaseAction {
       this.getText("email.tracking.comment.subject", new String[] {acronym, sectionName, feedbackCommentReaction});
     // Building the email message
     StringBuilder message = new StringBuilder();
-    String[] values = new String[8];
+    String[] values = new String[5];
 
     values[0] = assesorName;
     values[1] = sectionName;
