@@ -115,7 +115,11 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
     sectionID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.SECTION_ID).getMultipleValues()[0]));
     feedbackReplayUsername =
       StringUtils.trim(parameters.get(APConstants.FEEDBACK_REPLAY_USERNAME).getMultipleValues()[0]);
-    feedbackResponse = StringUtils.trim(parameters.get(APConstants.FEEDBACK_RESPONSE).getMultipleValues()[0]);
+    try {
+      feedbackResponse = StringUtils.trim(parameters.get(APConstants.FEEDBACK_RESPONSE).getMultipleValues()[0]);
+    } catch (Exception e) {
+      LOG.error("error getting feedback response " + e);
+    }
   }
 
   private void sendNotficationEmail(Project project) {
@@ -148,7 +152,7 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
     try {
       projectOutcome = projectOutcomeManager.getProjectOutcomeById(sectionID);
     } catch (Exception e) {
-      LOG.error("error getting project outcome " + projectOutcome);
+      LOG.error("error getting project outcome " + e);
     }
 
     if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
@@ -209,7 +213,7 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
     String subject = this.getText("email.tracking.comment.reaction.subject", new String[] {acronym, sectionName});
     // Building the email message
     StringBuilder message = new StringBuilder();
-    String[] values = new String[8];
+    String[] values = new String[9];
 
     values[0] = assesorName;
     values[1] = sectionName;
