@@ -446,7 +446,10 @@ public class ProjectOutcomeAction extends BaseAction {
       currentDeliverables = currentDeliverables.stream()
         .filter(d -> d != null && d.getDeliverableInfo(this.getActualPhase()) != null
           && d.getDeliverableInfo(this.getActualPhase()).getDeliverableType() != null
-          && d.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId().equals(63L))
+          && d.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableCategory() != null
+          && d.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableCategory().getId() != null
+          && d.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableCategory().getId()
+            .equals(49L))
         .collect(Collectors.toList());
       if (currentDeliverables != null && !currentDeliverables.isEmpty()) {
         for (Deliverable deliverable : currentDeliverables) {
