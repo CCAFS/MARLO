@@ -2676,9 +2676,31 @@ public class DeliverableAction extends BaseAction {
 
           }
           deliverableClusterParticipantManager.saveDeliverableClusterParticipant(participantSave);
-
         }
       }
+    }
+
+    if ((deliverable.getSharedDeliverables() == null
+      || (deliverable.getSharedDeliverables() != null && deliverable.getSharedDeliverables().isEmpty()))) {
+      // for null deliverable cluster participants
+      DeliverableClusterParticipant participantSave;
+      participantSave = new DeliverableClusterParticipant();
+
+      try {
+        participantSave =
+          deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(
+            deliverable.getId(), deliverable.getProject().getId(), this.getActualPhase().getId()).get(0);
+      } catch (Exception e) {
+        Log.info(e);
+      }
+      participantSave.setParticipants(deliverable.getDeliverableParticipant().getParticipants());
+      participantSave.setFemales(deliverable.getDeliverableParticipant().getFemales());
+      participantSave.setAfrican(deliverable.getDeliverableParticipant().getAfrican());
+      participantSave.setYouth(deliverable.getDeliverableParticipant().getYouth());
+      participantSave.setDeliverable(deliverable);
+      participantSave.setPhase(this.getActualPhase());
+      participantSave.setProject(deliverable.getProject());
+      deliverableClusterParticipantManager.saveDeliverableClusterParticipant(participantSave);
     }
   }
 
@@ -3428,7 +3450,7 @@ public class DeliverableAction extends BaseAction {
         // Delete cluster participants
         if (deliverable.getClusterParticipant() != null) {
           for (DeliverableClusterParticipant clusterParticipant : deliverable.getClusterParticipant()) {
-            if (clusterParticipant.getId() != null) {
+            if (clusterParticipant != null && clusterParticipant.getId() != null) {
               deliverableClusterParticipantManager.deleteDeliverableClusterParticipant(clusterParticipant.getId());
             }
           }

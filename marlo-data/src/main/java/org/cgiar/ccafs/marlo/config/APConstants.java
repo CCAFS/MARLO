@@ -129,6 +129,13 @@ public final class APConstants {
   public static final String FEEDBACK_ACTIVE = "feedback_active";
   public static final String FEEDBACK_CLARIFICATION_NEEDED_ACTIVE = "feedback_clarification_needed_active";
   public static final String FEEDBACK_DRAFT_ACTIVE = "feedback_draft_active";
+  public static final String FEEDBACK_ASSESOR_INPUT = "feedback_assesor_input";
+  public static final String FEEDBACK_ASSESOR_NAME = "feedback_assesor_name";
+  public static final String FEEDBACK_ASSESOR_EMAIL = "feedback_assesor_email";
+  public static final String FEEDBACK_REPLAY_USERNAME = "feedback_replay_username";
+  public static final String FEEDBACK_COMMENT_REACTION = "feedback_comment_reaction";
+  public static final String FEEDBACK_RESPONSE = "feedback_response";
+  public static final String SECTION_ID = "section_id";
   public static final String PREVIOUS_PROJECT_ID_ACTIVE = "previous_project_id_field_active";
   public static final String HOMEPAGE_TIMELINE_ACTIVE = "homepage_timeline_active";
   public static final String BUTTON_GUIDE_ACTIVE = "button_guide_active";

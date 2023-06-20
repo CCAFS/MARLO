@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -49,6 +50,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -257,6 +259,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager;
   private final ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager;
   private ProjectMilestoneManager projectMilestoneManager;
+  private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
 
   @Inject
@@ -281,7 +284,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectPolicySubIdoManager projectPolicySubIdoManager,
     ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager,
     ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
-    ProjectMilestoneManager projectMilestoneManager) {
+    ProjectMilestoneManager projectMilestoneManager, CrpProgramOutcomeManager crpProgramOutcomeManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
@@ -311,6 +314,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.projectExpectedStudyGeographicScopeManager = projectExpectedStudyGeographicScopeManager;
     this.projectExpectedStudyQuantificationManager = projectExpectedStudyQuantificationManager;
     this.projectMilestoneManager = projectMilestoneManager;
+    this.crpProgramOutcomeManager = crpProgramOutcomeManager;
   }
 
   /**
@@ -3438,30 +3442,51 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           && projectOutcome.getProjectComponentLesson().getLessons() != null) {
           lessonsOutcome = projectOutcome.getProjectComponentLesson().getLessons();
         }
-        question += "<b>" + projectOutcome.getCrpProgramOutcome().getPhase().getDescription()
-          + projectOutcome.getCrpProgramOutcome().getYear() + "<b><br>";
+
 
         // Project outcome - Additional questions
         try {
           projectOutcome.getCrpProgramOutcome().setIndicators(
             projectOutcome.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream().filter(c -> c.isActive())
               .sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator()))).collect(Collectors.toList()));
-
-        } catch (Exception e) {
-          LOG.error("Error setting indicators");
-        }
-        if (projectOutcome.getCrpProgramOutcome() != null
-          && projectOutcome.getCrpProgramOutcome().getIndicators() != null) {
-          for (CrpProgramOutcomeIndicator indicator : projectOutcome.getCrpProgramOutcome().getIndicators()) {
-            if (indicator.getIndicator() != null) {
-              question += indicator.getIndicator();
-              ProjectOutcomeIndicator outcomeIndicator = this.getIndicator(indicator.getId(), projectOutcome);
-              if (outcomeIndicator.getNarrative() != null && !outcomeIndicator.getNarrative().isEmpty()) {
-                question += outcomeIndicator.getNarrative();
+          if (projectOutcome.getCrpProgramOutcome() != null
+            && projectOutcome.getCrpProgramOutcome().getIndicators() != null) {
+            for (CrpProgramOutcomeIndicator indicator : projectOutcome.getCrpProgramOutcome().getIndicators()) {
+              if (indicator.getIndicator() != null) {
+                question += indicator.getIndicator();
+                ProjectOutcomeIndicator outcomeIndicator = this.getIndicator(indicator.getId(), projectOutcome);
+                if (outcomeIndicator.getNarrative() != null && !outcomeIndicator.getNarrative().isEmpty()) {
+                  question += outcomeIndicator.getNarrative();
+                }
               }
             }
           }
+          CrpProgramOutcome crpProgramOutcome =
+            crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId());
+          projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
+
+          if (projectOutcome.getCrpProgramOutcome() != null) {
+            projectOutcome.getCrpProgramOutcome()
+              .setIndicators(projectOutcome.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream()
+                .filter(c -> c.isActive()).sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator())))
+                .collect(Collectors.toList()));
+          }
+
+          if (projectOutcome.getCrpProgramOutcome().getIndicators() != null) {
+            for (CrpProgramOutcomeIndicator indicator : projectOutcome.getCrpProgramOutcome().getIndicators()) {
+              if (indicator.getIndicator() != null) {
+                question += indicator.getIndicator();
+                ProjectOutcomeIndicator outcomeIndicator = this.getIndicator(indicator.getId(), projectOutcome);
+                if (outcomeIndicator.getNarrative() != null && !outcomeIndicator.getNarrative().isEmpty()) {
+                  question += outcomeIndicator.getNarrative();
+                }
+              }
+            }
+          }
+        } catch (Exception e) {
+          LOG.error("Error setting indicators");
         }
+
 
         model.addRow(new Object[] {expValue, projectOutcome.getNarrativeTarget(), projectOutcome.getId(), outFl,
           outYear, outValue, outStatement, outUnit, crossCutting, expUnit, ach_unit, ach_value, ach_narrative,
@@ -4067,9 +4092,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private TypedTableModel getOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"exp_value", "narrative", "outcome_id", "out_fl", "out_year", "out_value", "out_statement",
-        "out_unit", "cross_cutting", "exp_unit", "milestones"},
+        "out_unit", "cross_cutting", "exp_unit", "milestones", "question"},
       new Class[] {Long.class, String.class, Long.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class},
       0);
     if (!project.getProjectOutcomes().isEmpty()) {
       for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
@@ -4085,6 +4110,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String outUnit = null;
         String crossCutting = "";
         String milestones = "";
+        String question = "";
         if (projectOutcome.getCrpProgramOutcome() != null) {
           outYear = "" + projectOutcome.getCrpProgramOutcome().getYear();
           if (projectOutcome.getCrpProgramOutcome().getValue() != null) {
@@ -4185,8 +4211,31 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
 
         }
+
+        CrpProgramOutcome crpProgramOutcome =
+          crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId());
+
+        projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
+
+        if (projectOutcome.getCrpProgramOutcome() != null) {
+          projectOutcome.getCrpProgramOutcome().setIndicators(
+            projectOutcome.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream().filter(c -> c.isActive())
+              .sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator()))).collect(Collectors.toList()));
+        }
+
+        if (projectOutcome.getCrpProgramOutcome().getIndicators() != null) {
+          for (CrpProgramOutcomeIndicator indicator : projectOutcome.getCrpProgramOutcome().getIndicators()) {
+            if (indicator.getIndicator() != null) {
+              question += indicator.getIndicator();
+              ProjectOutcomeIndicator outcomeIndicator = this.getIndicator(indicator.getId(), projectOutcome);
+              if (outcomeIndicator.getNarrative() != null && !outcomeIndicator.getNarrative().isEmpty()) {
+                question += outcomeIndicator.getNarrative();
+              }
+            }
+          }
+        }
         model.addRow(new Object[] {expValue, projectOutcome.getNarrativeTarget(), projectOutcome.getId(), outFl,
-          outYear, outValue, outStatement, outUnit, crossCutting, expUnit, milestones});
+          outYear, outValue, outStatement, outUnit, crossCutting, expUnit, milestones, question});
       }
     }
     return model;
