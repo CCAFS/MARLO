@@ -183,9 +183,7 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
     if (project.getAcronym() != null) {
       acronym = project.getAcronym();
     }
-    if (sectionName != null) {
-      sectionName = "[" + sectionName + "]";
-    }
+
 
     if (sectionName != null && !sectionName.isEmpty()) {
 
@@ -209,7 +207,12 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
       }
 
     }
-
+    if (sectionName != null) {
+      if (sectionName.contains("projectContributionCrp")) {
+        sectionName = "ContributionToPerformanceIndicador";
+      }
+      sectionName = "[" + sectionName + "]";
+    }
     String subject = this.getText("email.tracking.comment.reaction.subject", new String[] {acronym, sectionName});
     // Building the email message
     StringBuilder message = new StringBuilder();
