@@ -505,11 +505,12 @@
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         <div class="form-group">
-                    
-          <span id="warningEmptyReferencesTag" class="errorTag glyphicon glyphicon-info-sign" style="position: relative; left: 750px;" title="" aria-describedby="ui-id-5"> </span>
-          <div class="feedback-flex-items">
-            [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesEvidenceCited" help="study.referencesCited.help2" helpIcon=false className="" required=false editable=editable /]
-          </div>
+              
+        [#if (element.projectExpectedStudyInfo.referencesText)?has_content]     
+          <span id="warningEmptyReferencesTag" class="errorTag glyphicon glyphicon-info-sign" style="position: relative; left: 750px;" title="" aria-describedby="ui-id-5"> </span>          
+            [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesEvidenceCited" help="study.referencesCited.help2" helpIcon=false className="" required=false editable=editable /]        
+        [/#if]      
+          
             <label style="margin-top: 5px;">[@s.text name="${customName}.multireferences"][/@s.text]</label>
             <div class="referenceBlock ">
               <div class="referenceList">
