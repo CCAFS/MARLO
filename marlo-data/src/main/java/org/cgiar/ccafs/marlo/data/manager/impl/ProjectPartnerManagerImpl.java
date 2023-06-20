@@ -124,10 +124,12 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
         LocElement locElement = locElementDAO.findISOCode(institutioLocation.getLocElement().getIsoAlpha2());
         InstitutionLocation institutionLocationDB =
           institutionDAO.findByLocation(locElement.getId(), projectPartner.getInstitution().getId());
-        ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
-        partnerLocation.setInstitutionLocation(institutionLocationDB);
-        partnerLocation.setProjectPartner(projectPartnerAdd);
-        projectPartnerLocationDAO.save(partnerLocation);
+        if (institutionLocationDB != null) {
+          ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
+          partnerLocation.setInstitutionLocation(institutionLocationDB);
+          partnerLocation.setProjectPartner(projectPartnerAdd);
+          projectPartnerLocationDAO.save(partnerLocation);
+        }
       }
     }
   }
