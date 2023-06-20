@@ -127,6 +127,7 @@ function attachEventsFeedback() {
 
     hideShowOptionButtons(block, '1');
     saveCommentStatus(1, commentID, name);
+    block.find('img.replyCommentBtn').click();
   });
 
   $('div.deleteCommentBtn').on('click', function () {
@@ -180,7 +181,15 @@ function attachEventsFeedback() {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(this).parent().parent().parent();
-    
+    let feedback_assesor_input = block.find('.commentContainer').attr('comment');
+    let feedback_assesor_name = block.find('.commentContainer').attr('username');
+    let feedback_assesor_email = block.find('.commentContainer').attr('email');
+    let isTracking = block.find('.commentContainer').attr('isTracking');
+    let feedback_comment_reaction = 'Admitted';
+
+    if(isTracking == 'true'){
+      sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction);
+    }
     hideShowOptionButtons(block, 1);
     saveCommentStatus(4, commentID, name);
   });
@@ -188,8 +197,17 @@ function attachEventsFeedback() {
   $('img.dismissCommentBtn').on('click', function () {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
-    let block = $(this).parent().parent().parent();
-    
+    let block = $(this).parent().parent().parent().parent();
+    let feedback_assesor_input = block.find('.commentContainer').attr('comment');
+    let feedback_assesor_name = block.find('.commentContainer').attr('username');
+    let feedback_assesor_email = block.find('.commentContainer').attr('email');
+    let isTracking = block.find('.commentContainer').attr('isTracking');
+    let feedback_comment_reaction = 'Dismissed';
+  
+    if(isTracking == 'true'){
+      sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction);
+    }
+    saveTrackComment(0, commentID, name);
     hideShowOptionButtons(block, '6');
     saveCommentStatus(6, commentID, name);
   });
@@ -218,6 +236,23 @@ function attachEventsFeedback() {
     let value = textarea.val();
     let comment = textarea.next().html();
     let cleanComment;
+    let feedback_assesor_input = block.find('.commentContainer').attr('comment');
+    let feedback_assesor_name = block.find('.commentContainer').attr('username');
+    let feedback_assesor_email = block.find('.commentContainer').attr('email');
+    let isTracking = block.find('.commentContainer').attr('isTracking');
+    let feedback_comment_reaction = block.find('.commentContainer').attr('status');
+    
+    const statusMapping = {
+      '0': 'Disagreed',
+      '1': 'Accepted',
+      '2': 'Required clarification'
+    };
+    
+    feedback_comment_reaction = statusMapping[feedback_comment_reaction] || feedback_comment_reaction;
+  
+    if(isTracking == 'true'){
+      sendFeedbackReactionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, currentUserName, value)
+    }
 
     if (value && value != '') {
       cleanComment = value.replaceAll('.<br>.', '');
@@ -461,6 +496,7 @@ function hideShowOptionButtons(block, status) {
                     if (userCanApproveFeedback == 'false' && userCanManageFeedback =='true' &&  userCanLeaveComments =='true' && qaComments[i][j].userID != userID) block.find('.editCommentBtn').remove();
                     if (userCanManageFeedback =='false'){
                     }                    
+                    block.find('.commentContainer').attr('userName', qaComments[i][j].userName).attr('email', qaComments[i][j].email).attr('comment', qaComments[i][j].comment).attr('isTracking', qaComments[i][j].isTracking).attr('status', qaComments[i][j].status);
                     block.find('.deleteCommentBtn').attr('commentId', qaComments[i][j].commentId);
                     block.find('.containerSentCommentBtn').attr('commentId', qaComments[i][j].commentId);
                     block.find('.deleteReplyBtn').attr('replyId', qaComments[i][j].reply.id);
@@ -587,9 +623,9 @@ function hideShowOptionButtons(block, status) {
                 if (qaComments[i][j].status && qaComments[i][j].status != '') {
                   if (qaComments[i][j].status == '1') {
                     block.find('textarea[id="Reply"]').parent().show();
-                    block.find('.replyContainer').hide();
+                    block.find('.replyContainer').css('display', 'flex');
                     block.find('.replyTextContainer').hide();
-                    block.find('.replyCommentBtn').show();
+                    block.find('.replyCommentBtn').hide();
                     block.find('.sendReplyContainer').show();
                   }if (qaComments[i][j].status == '4') {
                     block.find('textarea[id="Reply"]').parent().hide();
@@ -1008,6 +1044,28 @@ function hideShowOptionButtons(block, status) {
         getQAComments();
         loadCommentsByUser(name);
         // loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+      }
+    });
+  }
+
+  function sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction) {
+    var finalAjaxURL = `/sendFeedbackActionEmail.do?projectID=${projectID}&feedback_assesor_name=${feedback_assesor_name}&feedback_assesor_input=${feedback_assesor_input}&feedback_assesor_email=${feedback_assesor_email}&sectionName=${sectionName}&feedback_comment_reaction=${feedback_comment_reaction}&section_id=${parentID}`;
+    $.ajax({
+      url: baseURL + finalAjaxURL,
+      async: false,
+      success: function (data) {        
+      }
+    });
+  }
+
+
+  function sendFeedbackReactionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, feedback_replay_username, feedback_response) {
+    var finalAjaxURL = `/sendFeedbackReactionEmail.do?projectID=${projectID}&feedback_assesor_name=${feedback_assesor_name}&feedback_assesor_input=${feedback_assesor_input}&feedback_assesor_email=${feedback_assesor_email}&sectionName=${sectionName}&feedback_comment_reaction=${feedback_comment_reaction}&feedback_replay_username=${feedback_replay_username}&feedback_response=${feedback_response}&section_id=${parentID}`;
+    console.log(finalAjaxURL)
+    $.ajax({
+      url: baseURL + finalAjaxURL,
+      async: false,
+      success: function (data) {
       }
     });
   }

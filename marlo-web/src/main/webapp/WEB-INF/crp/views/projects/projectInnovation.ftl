@@ -6,7 +6,7 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectInnovations.js?20220707B",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20230530"
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20230606"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20230106"] /]
 [#assign currentSection = "projects" /]
@@ -237,12 +237,16 @@
           </div>
           
          [#-- Milestones Contribution --]
-        <div class="form-group">          
-          <label for="">[@s.text name="innovation.outcomes" /]:[@customForm.req required=editable /][@customForm.helpLabel name="innovation.outcomes.help" showIcon=false editable=editable/]</label>
-          [#assign innovationMilestoneLink = "innovationMilestoneLink"]
-          [#assign showMilestoneIndicator = (innovation.projectInnovationInfo.hasMilestones?string)!"" /]
-          [@customForm.radioFlat id="${innovationMilestoneLink}-yes" name="innovation.projectInnovationInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
-          [@customForm.radioFlat id="${innovationMilestoneLink}-no" name="innovation.projectInnovationInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
+        <div class="form-group">    
+            <label for="">[@s.text name="innovation.outcomes" /]:[@customForm.req required=editable /]
+              <div class="feedback-flex-items">
+                [@customForm.helpLabel name="innovation.outcomes.help" showIcon=false editable=editable/]
+              </div> 
+            </label>
+            [#assign innovationMilestoneLink = "innovationMilestoneLink"]
+            [#assign showMilestoneIndicator = (innovation.projectInnovationInfo.hasMilestones?string)!"" /]
+            [@customForm.radioFlat id="${innovationMilestoneLink}-yes" name="innovation.projectInnovationInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
+            [@customForm.radioFlat id="${innovationMilestoneLink}-no" name="innovation.projectInnovationInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
         </div> 
          
         [#--    
