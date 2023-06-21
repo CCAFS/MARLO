@@ -176,20 +176,35 @@ public class EmailTrackingCommentAction extends BaseAction {
     if (project.getAcronym() != null) {
       acronym = project.getAcronym();
     }
-    if (sectionName != null) {
-      sectionName = "[" + sectionName + "]";
+    if (sectionName != null && !sectionName.isEmpty()) {
+
+      switch (sectionName) {
+        case "projectContributionCrp":
+          sectionName = "Contribution To Performance Indicadors";
+          break;
+        case "deliverable":
+          sectionName = "Deliverables";
+          break;
+        case "study":
+          sectionName = "OICRs";
+          break;
+        case "innovation":
+          sectionName = "Innovations";
+          break;
+      }
     }
 
     String subject =
       this.getText("email.tracking.comment.subject", new String[] {acronym, sectionName, feedbackCommentReaction});
     // Building the email message
     StringBuilder message = new StringBuilder();
-    String[] values = new String[4];
+    String[] values = new String[5];
 
     values[0] = assesorName;
     values[1] = sectionName;
     values[2] = acronym;
     values[3] = feedbackCommentReaction;
+    values[4] = feedbackCommentReaction;
 
     message.append(this.getText("email.tracking.comment.body", values));
     message.append(this.getText("email.support.noCrpAdmins"));
