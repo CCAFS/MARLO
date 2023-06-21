@@ -34,11 +34,56 @@ function attachEventsFeedback() {
     let commentID = $(this).attr('commentId');
     let name = $(this).attr('name');
   
-    // Verificar el valor actual del atributo src y cambiarlo en consecuencia
     if (currentSrc === `${baseURL}/global/images/tracking.png`) {
       $(this).fadeToggle(500, function() {
         $(this).attr('src', `${baseURL}/global/images/yellow_tracking.png`);
         $(this).fadeToggle(500);
+        var $newDiv = $("<div>").addClass("customDiv");
+        $newDiv.css({
+          position: "absolute",
+          top: $(this).parent().parent().parent().parent().offset().top-80,
+          left: $(this).parent().parent().parent().parent().offset().left,
+          width: $(this).parent().parent().parent().parent().outerWidth(),
+          "z-index": 10000
+        });
+    
+        
+        var $containerAlert = $("<div>").addClass("animated flipInX  viewMore-block containerAlertMarginTracking");
+        $containerAlert.html(`
+          <div class="containerAlert alert-leftovers alertColorBackgroundInfo" id="containerAlert" >
+            <div class="containerLine alertColorInfo"></div>
+            <div class="closeAlertTracking">X</div>
+            <div class="containerIcon">
+              <div class="containerIcon">
+                <img class="trackingImg" src="${baseURL}/global/images/icon-info2.png" />         
+              </div>
+            </div>
+            <div class="containerText col-md-12 alertCollapse">
+              <p class="alertText">
+              You will receive an email once the comment has a reaction.
+              </p>
+            </div>
+          </div>
+        `);
+    
+        $containerAlert.css({
+          width: "100% !important"
+        });
+    
+        $newDiv.append($containerAlert);
+        $("body").prepend($newDiv);
+    
+        $(".closeAlertTracking").click(function() {
+          $newDiv.fadeOut(1000, function() {
+            $(this).remove();
+          });
+        });
+        
+        setTimeout(function() {
+          $newDiv.fadeOut(1000, function() {
+            $(this).remove();
+          });
+        }, 4000);
       });
       saveTrackComment(1, commentID, name);
     } else if (currentSrc === `${baseURL}/global/images/yellow_tracking.png`) {
