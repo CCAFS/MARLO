@@ -191,28 +191,26 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
         case "projectContributionCrp":
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/contributionCrp.do?"
             + "projectOutcomeID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true";
+          sectionName = "Contribution To Performance Indicadors";
           break;
         case "deliverable":
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
             + "deliverableID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true";
+          sectionName = "Deliverable";
           break;
         case "study":
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/study.do?"
             + "expectedID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true";
+          sectionName = "OICRs";
           break;
         case "innovation":
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?"
             + "innovationID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true";
+          sectionName = "Innovations";
           break;
       }
+    }
 
-    }
-    if (sectionName != null) {
-      if (sectionName.contains("projectContributionCrp")) {
-        sectionName = "ContributionToPerformanceIndicador";
-      }
-      sectionName = "[" + sectionName + "]";
-    }
     String subject = this.getText("email.tracking.comment.reaction.subject", new String[] {acronym, sectionName});
     // Building the email message
     StringBuilder message = new StringBuilder();
@@ -220,7 +218,7 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
 
     values[0] = assesorName;
     values[1] = sectionName;
-    values[2] = projectID + "";
+    values[2] = "";
     values[3] = acronym;
     values[4] = assesorInput;
     values[5] = feedbackReplayUsername;
