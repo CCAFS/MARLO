@@ -7605,6 +7605,20 @@ img.qaOptionsComment {
   width: 25px;
 }
 
+.containerIcon .trackingImg{
+  width: 35px;
+}
+
+.closeAlertTracking{
+  position: absolute;
+  top: 3px;
+  right: 15px;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
 .containerText{
   display: table;
 }
@@ -7780,6 +7794,11 @@ img.qaOptionsComment {
 
 .containerAlertMargin {
   margin-bottom: 10px;
+}
+
+.containerAlertMarginTracking {
+  margin-bottom: 10px;
+  width: 100% !important;
 }
 
 .displayNone {
