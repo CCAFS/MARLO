@@ -6,7 +6,7 @@
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20230420",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20230630",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20221117",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20230623",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
@@ -80,6 +80,7 @@
 <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
 <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
 <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID)?c)!}</span>
+<span id="canTrackComments" style="display: none;">${(action.canTrackComments()?c)!}</span>
 <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
 <input type="hidden" id="sectionNameToFeedback" value="deliverable" />
 

@@ -615,6 +615,12 @@
   [#if editable && helpMore]
     [@helpViewMore name="${name}" /]
   [/#if]
+  <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+  </div>
 [/#macro]
 
 [#function changedField name]
@@ -957,6 +963,12 @@
       <textarea rows="4" name="${name}" id="${name}" [#if readOnly] readonly="readonly"[/#if] [#if disabled]disabled="disabled"[/#if]  class="[#if className != "-NULL"]${className}[/#if] form-control input-sm ${required?string('required','optional')} [#if allowTextEditor]allowTextEditor[/#if]" placeholder="[@s.text name=placeholder /]" />${customValue}</textarea>
     [/#if] 
   </div>
+  <div class="commentNumberContainer">
+    <div class="numberOfCommentsBubble">
+      <p></p>
+    </div>
+    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+  </div>
 [/#macro]
 
 [#macro qaPopUpMultiple fields="" name="" index=-1 canLeaveComments=false template=false]
@@ -991,6 +1003,9 @@
       <div class="commentContainer">
         <div class="commentTitle"></div>
         <p class="commentReadonly"></p> 
+        [#if action.hasSpecificities('highlight_comments_active') ]
+          <img src="${baseUrlCdn}/global/images/tracking.png" class="track_icon" title="Track your comment">
+        [/#if]
         <textarea class="editCommentReadonly form-control" rows="2" cols="50" style="display:none"></textarea>
         <div class="containerReactionComment" style="display:none">
           <p class="reactionComment"></p>
