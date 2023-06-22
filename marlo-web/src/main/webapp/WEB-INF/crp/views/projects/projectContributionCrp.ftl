@@ -1046,7 +1046,7 @@
     --]
     
       <div class="form-group ">
-        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && AREditable/]
+        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-150" editable=editable && AREditable/]
         [#-- && !reportingActive  --]
       </div>
       [#--  
