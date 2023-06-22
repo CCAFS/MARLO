@@ -37,6 +37,7 @@ function attachEventsFeedback() {
     if (currentSrc === `${baseURL}/global/images/tracking.png`) {
       $(this).fadeToggle(500, function() {
         $(this).attr('src', `${baseURL}/global/images/yellow_tracking.png`);
+        $(this).attr('title', `Stop tracking comment`);
         $(this).fadeToggle(500);
         var $newDiv = $("<div>").addClass("customDiv");
         $newDiv.css({
@@ -89,6 +90,7 @@ function attachEventsFeedback() {
     } else if (currentSrc === `${baseURL}/global/images/yellow_tracking.png`) {
       $(this).fadeToggle(500, function() {
         $(this).attr('src', `${baseURL}/global/images/tracking.png`);
+        $(this).attr('title', `Track your comment`);
         $(this).fadeToggle(500);
       });
       saveTrackComment(0, commentID, name);
