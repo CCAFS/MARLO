@@ -1336,6 +1336,34 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
+   * Validate if the user has a role that allows tracking comments
+   * 
+   * @return true if the user can leave draft comments
+   */
+  public boolean canTrackComments() {
+    boolean response = false;
+
+    // TODO: Update the permissions for track feedback comments
+    if (this.canAccessSuperAdmin()) {
+      response = true;
+    }
+
+    if (this.getRolesList() != null && !this.getRolesList().isEmpty()) {
+      for (Role role : this.getRolesList()) {
+        if (role != null && role.getAcronym() != null) {
+          // FPL & FPM roles can comment
+
+          if (role.getAcronym().equals("FPL") || role.getAcronym().equals("FPM") || role.getAcronym().equals("RPL")
+            || role.getAcronym().equals("RPM")) {
+            response = true;
+          }
+        }
+      }
+    }
+    return response;
+  }
+
+  /**
    ************************ CENTER METHOD ********************* return true
    * if the user can view the impactPathway
    * ********************************************************* Verify if the

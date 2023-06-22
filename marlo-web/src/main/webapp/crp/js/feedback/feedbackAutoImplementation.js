@@ -15,9 +15,7 @@ function feedbackAutoImplementation (){
   userCanManageFeedback = $('#userCanManageFeedback').html();
   userCanLeaveComments = $('#userCanLeaveComments').html();
   userCanApproveFeedback = $('#userCanApproveFeedback').html();
-  // userCanManageFeedback = 'true';
-  // userCanLeaveComments = 'true';
-  // userCanApproveFeedback = 'false';
+  usercanTrackComments = $('#canTrackComments').html();
   isFeedbackActive = $('#isFeedbackActive').html();
   attachEventsFeedback();
 }
@@ -29,6 +27,76 @@ function attachEventsFeedback() {
     getQAComments();
     loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
   }
+
+
+  $('.track_icon').click(function() {
+    var currentSrc = $(this).attr('src');
+    let commentID = $(this).attr('commentId');
+    let name = $(this).attr('name');
+  
+    if (currentSrc === `${baseURL}/global/images/tracking.png`) {
+      $(this).fadeToggle(500, function() {
+        $(this).attr('src', `${baseURL}/global/images/yellow_tracking.png`);
+        $(this).attr('title', `Stop tracking comment`);
+        $(this).fadeToggle(500);
+        var $newDiv = $("<div>").addClass("customDiv");
+        $newDiv.css({
+          position: "absolute",
+          top: $(this).parent().parent().parent().parent().offset().top-80,
+          left: $(this).parent().parent().parent().parent().offset().left,
+          width: $(this).parent().parent().parent().parent().outerWidth(),
+          "z-index": 10000
+        });
+    
+        
+        var $containerAlert = $("<div>").addClass("animated flipInX  viewMore-block containerAlertMarginTracking");
+        $containerAlert.html(`
+          <div class="containerAlert alert-leftovers alertColorBackgroundInfo" id="containerAlert" >
+            <div class="containerLine alertColorInfo"></div>
+            <div class="closeAlertTracking">X</div>
+            <div class="containerIcon">
+              <div class="containerIcon">
+                <img class="trackingImg" src="${baseURL}/global/images/icon-info2.png" />         
+              </div>
+            </div>
+            <div class="containerText col-md-12 alertCollapse">
+              <p class="alertText">
+              You will receive an email once the comment has a reaction.
+              </p>
+            </div>
+          </div>
+        `);
+    
+        $containerAlert.css({
+          width: "100% !important"
+        });
+    
+        $newDiv.append($containerAlert);
+        $("body").prepend($newDiv);
+    
+        $(".closeAlertTracking").click(function() {
+          $newDiv.fadeOut(1000, function() {
+            $(this).remove();
+          });
+        });
+        
+        setTimeout(function() {
+          $newDiv.fadeOut(1000, function() {
+            $(this).remove();
+          });
+        }, 4000);
+      });
+      saveTrackComment(1, commentID, name);
+    } else if (currentSrc === `${baseURL}/global/images/yellow_tracking.png`) {
+      $(this).fadeToggle(500, function() {
+        $(this).attr('src', `${baseURL}/global/images/tracking.png`);
+        $(this).attr('title', `Track your comment`);
+        $(this).fadeToggle(500);
+      });
+      saveTrackComment(0, commentID, name);
+    }
+  });
+
 
   // Multiple comments-replies
   $('img.qaComment').on('click', function (event) {
@@ -106,6 +174,7 @@ function attachEventsFeedback() {
 
     hideShowOptionButtons(block, '1');
     saveCommentStatus(1, commentID, name);
+    block.find('img.replyCommentBtn').click();
   });
 
   $('div.deleteCommentBtn').on('click', function () {
@@ -159,7 +228,15 @@ function attachEventsFeedback() {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(this).parent().parent().parent();
-    
+    let feedback_assesor_input = block.find('.commentContainer').attr('comment');
+    let feedback_assesor_name = block.find('.commentContainer').attr('username');
+    let feedback_assesor_email = block.find('.commentContainer').attr('email');
+    let isTracking = block.find('.commentContainer').attr('isTracking');
+    let feedback_comment_reaction = 'Admitted';
+
+    if(isTracking == 'true'){
+      sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction);
+    }
     hideShowOptionButtons(block, 1);
     saveCommentStatus(4, commentID, name);
   });
@@ -167,8 +244,17 @@ function attachEventsFeedback() {
   $('img.dismissCommentBtn').on('click', function () {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
-    let block = $(this).parent().parent().parent();
-    
+    let block = $(this).parent().parent().parent().parent();
+    let feedback_assesor_input = block.find('.commentContainer').attr('comment');
+    let feedback_assesor_name = block.find('.commentContainer').attr('username');
+    let feedback_assesor_email = block.find('.commentContainer').attr('email');
+    let isTracking = block.find('.commentContainer').attr('isTracking');
+    let feedback_comment_reaction = 'Dismissed';
+  
+    if(isTracking == 'true'){
+      sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction);
+    }
+    saveTrackComment(0, commentID, name);
     hideShowOptionButtons(block, '6');
     saveCommentStatus(6, commentID, name);
   });
@@ -197,6 +283,23 @@ function attachEventsFeedback() {
     let value = textarea.val();
     let comment = textarea.next().html();
     let cleanComment;
+    let feedback_assesor_input = block.find('.commentContainer').attr('comment');
+    let feedback_assesor_name = block.find('.commentContainer').attr('username');
+    let feedback_assesor_email = block.find('.commentContainer').attr('email');
+    let isTracking = block.find('.commentContainer').attr('isTracking');
+    let feedback_comment_reaction = block.find('.commentContainer').attr('status');
+    
+    const statusMapping = {
+      '0': 'Disagreed',
+      '1': 'Accepted',
+      '2': 'Required clarification'
+    };
+    
+    feedback_comment_reaction = statusMapping[feedback_comment_reaction] || feedback_comment_reaction;
+  
+    if(isTracking == 'true'){
+      sendFeedbackReactionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, currentUserName, value)
+    }
 
     if (value && value != '') {
       cleanComment = value.replaceAll('.<br>.', '');
@@ -440,6 +543,7 @@ function hideShowOptionButtons(block, status) {
                     if (userCanApproveFeedback == 'false' && userCanManageFeedback =='true' &&  userCanLeaveComments =='true' && qaComments[i][j].userID != userID) block.find('.editCommentBtn').remove();
                     if (userCanManageFeedback =='false'){
                     }                    
+                    block.find('.commentContainer').attr('userName', qaComments[i][j].userName).attr('email', qaComments[i][j].email).attr('comment', qaComments[i][j].comment).attr('isTracking', qaComments[i][j].isTracking).attr('status', qaComments[i][j].status);
                     block.find('.deleteCommentBtn').attr('commentId', qaComments[i][j].commentId);
                     block.find('.containerSentCommentBtn').attr('commentId', qaComments[i][j].commentId);
                     block.find('.deleteReplyBtn').attr('replyId', qaComments[i][j].reply.id);
@@ -455,6 +559,25 @@ function hideShowOptionButtons(block, status) {
                     block.find('.editCommentBtn').attr('commentId', qaComments[i][j].commentId);
                     block.find('.commentCheckContainer').attr('commentId', qaComments[i][j].commentId);              
                     block.attr('commentId', qaComments[i][j].commentId);
+                    block.find('.track_icon').attr('commentId', qaComments[i][j].commentId);
+
+                    
+                    if (qaComments[i][j].userID != userID || usercanTrackComments =='false' ||qaComments[i][j].status =='6') {
+                      block.find('.track_icon').hide();
+                    }else{
+                      block.find('.track_icon').show();
+                    }
+
+                    if(qaComments[i][j].isTracking == true){
+                      block.find('.track_icon').attr('src', `${baseURL}/global/images/yellow_tracking.png`);
+                    } else{
+                      block.find('.track_icon').attr('src', `${baseURL}/global/images/tracking.png`);
+                    }
+
+                    
+
+
+
 
                     if(qaComments[i][j].status) {               
                         block.find('.containerReactionComment').show();
@@ -547,9 +670,9 @@ function hideShowOptionButtons(block, status) {
                 if (qaComments[i][j].status && qaComments[i][j].status != '') {
                   if (qaComments[i][j].status == '1') {
                     block.find('textarea[id="Reply"]').parent().show();
-                    block.find('.replyContainer').hide();
+                    block.find('.replyContainer').css('display', 'flex');
                     block.find('.replyTextContainer').hide();
-                    block.find('.replyCommentBtn').show();
+                    block.find('.replyCommentBtn').hide();
                     block.find('.sendReplyContainer').show();
                   }if (qaComments[i][j].status == '4') {
                     block.find('textarea[id="Reply"]').parent().hide();
@@ -662,6 +785,7 @@ function hideShowOptionButtons(block, status) {
         $(item).find('.replyCommentBtn').attr('name', `${field[1]}[${index}]`);
         $(item).find('.sendReplyContainer').attr('name', `${field[1]}[${index}]`);
         $(item).find('div.addCommentContainer').attr('name', field[1]);
+        $(item).find('.track_icon').attr('name',`${field[1]}[${index}]`);
         
       });
 
@@ -955,5 +1079,41 @@ function hideShowOptionButtons(block, status) {
       case "6":
           return 'Dismissed by ';
     }
+  }
+
+  function saveTrackComment(status, commentID, name) {
+
+    var finalAjaxURL = `/saveTrackingStatus.do?status=${status}&commentID=${commentID}`;
+    $.ajax({
+      url: baseURL + finalAjaxURL,
+      async: false,
+      success: function (data) {
+        getQAComments();
+        loadCommentsByUser(name);
+        // loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+      }
+    });
+  }
+
+  function sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction) {
+    var finalAjaxURL = `/sendFeedbackActionEmail.do?projectID=${projectID}&feedback_assesor_name=${feedback_assesor_name}&feedback_assesor_input=${feedback_assesor_input}&feedback_assesor_email=${feedback_assesor_email}&sectionName=${sectionName}&feedback_comment_reaction=${feedback_comment_reaction}&section_id=${parentID}`;
+    $.ajax({
+      url: baseURL + finalAjaxURL,
+      async: false,
+      success: function (data) {        
+      }
+    });
+  }
+
+
+  function sendFeedbackReactionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, feedback_replay_username, feedback_response) {
+    var finalAjaxURL = `/sendFeedbackReactionEmail.do?projectID=${projectID}&feedback_assesor_name=${feedback_assesor_name}&feedback_assesor_input=${feedback_assesor_input}&feedback_assesor_email=${feedback_assesor_email}&sectionName=${sectionName}&feedback_comment_reaction=${feedback_comment_reaction}&feedback_replay_username=${feedback_replay_username}&feedback_response=${feedback_response}&section_id=${parentID}`;
+    console.log(finalAjaxURL)
+    $.ajax({
+      url: baseURL + finalAjaxURL,
+      async: false,
+      success: function (data) {
+      }
+    });
   }
 

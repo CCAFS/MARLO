@@ -301,7 +301,9 @@
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         <label for="">[@s.text name="study.maturityChange" /]:[@customForm.req required=editable && !action.isPOWB() && !(isPolicy && stageProcessOne) /]
-          [@customForm.helpLabel name="study.maturityChange.help" showIcon=false editable=editable/][@customForm.helpLabel name="study.maturityChange.help2" showIcon=true editable=editable/]
+          <div class="feedback-flex-items">
+            [@customForm.helpLabel name="study.maturityChange.help" showIcon=false editable=editable/][@customForm.helpLabel name="study.maturityChange.help2" showIcon=true editable=editable/]
+          </div>
         </label>
         <div class="form-group">
           [#list stageStudies as stage]
@@ -335,7 +337,11 @@
         
         [#-- SRF Targets (maxLimit=2)  --]
         <div class="form-group simpleBox stageProcessOne">
-          <label for="">[@s.text name="study.targetsOption" /]:[@customForm.req required=editable && !action.isPOWB() /][@customForm.helpLabel name="study.targetsOption.help" showIcon=false editable=editable/]</label><br />
+            <label for="">[@s.text name="study.targetsOption" /]:[@customForm.req required=editable && !action.isPOWB() /]
+            <div class="feedback-flex-items">
+              [@customForm.helpLabel name="study.targetsOption.help" showIcon=false editable=editable/]
+            </div>            
+            </label><br />
           [#local targetsOption = (element.projectExpectedStudyInfo.isSrfTarget)!""]
           [#list ["targetsOptionYes", "targetsOptionNo", "targetsOptionTooEarlyToSay"] as option]
             [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.isSrfTarget" i18nkey="study.${option}" value="${option}" checked=(option == targetsOption) cssClass="radioType-targetsOption" cssClassLabel="font-normal" editable=editable /] 
@@ -357,7 +363,11 @@
       [#-- Milestones --]
         [#--[#if isOutcomeCaseStudy]  --]
         <div class="form-group">          
-          <label for="">[@s.text name="study.outcomes" /]:[@customForm.req required=editable && !action.isPOWB() /][@customForm.helpLabel name="study.outcomes.help" showIcon=false editable=editable/]</label>
+          <label for="">[@s.text name="study.outcomes" /]:[@customForm.req required=editable && !action.isPOWB() /]
+            <div class="feedback-flex-items">
+              [@customForm.helpLabel name="study.outcomes.help" showIcon=false editable=editable/]
+            </div>
+          </label>
           [#assign studyMilestoneLink = "studyMilestoneLink"]
           [#assign showMilestoneIndicator = (expectedStudy.projectExpectedStudyInfo.hasMilestones?string)!"" /]
           [@customForm.radioFlat id="${studyMilestoneLink}-yes" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
@@ -497,10 +507,12 @@
         <div class="form-group">
               
         [#if (element.projectExpectedStudyInfo.referencesText)?has_content]     
-          <span id="warningEmptyReferencesTag" class="errorTag glyphicon glyphicon-info-sign" style="position: relative; left: 750px;" title="" aria-describedby="ui-id-5"> </span>
-          [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesEvidenceCited" help="study.referencesCited.help2" helpIcon=false className="" required=false editable=editable /]
-        [/#if]
-        
+          <span id="warningEmptyReferencesTag" class="errorTag glyphicon glyphicon-info-sign" style="position: relative; left: 750px;" title="" aria-describedby="ui-id-5"> </span>          
+            <div class="feedback-flex-items">
+            [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesEvidenceCited" help="study.referencesCited.help2" helpIcon=false className="" required=false editable=editable /]        
+            </div>
+        [/#if]      
+          
             <label style="margin-top: 5px;">[@s.text name="${customName}.multireferences"][/@s.text]</label>
             <div class="referenceBlock ">
               <div class="referenceList">
@@ -647,7 +659,9 @@
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         <label for="">[@s.text name="study.otherCrossCutting" /]:</label> 
-        [@customForm.helpLabel name="study.otherCrossCuttingOptions" showIcon=false editable=editable/]<br />
+         <div class="feedback-flex-items">
+          [@customForm.helpLabel name="study.otherCrossCuttingOptions" showIcon=false editable=editable/]<br />
+        </div>
         [#local otherCrossCuttingSelection = (element.projectExpectedStudyInfo.otherCrossCuttingSelection)!"" ]
         [#list ["Yes", "No", "NA"] as option]
           [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.otherCrossCuttingSelection" i18nkey="study.otherCrossCutting${option}" value="${option}" checked=(otherCrossCuttingSelection == option) cssClass="radioType-otherCrossCuttingOption" cssClassLabel="font-normal" editable=editable /] 
