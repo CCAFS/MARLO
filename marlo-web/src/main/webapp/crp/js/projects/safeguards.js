@@ -23,6 +23,8 @@ function init() {
     $('[data-toggle="popover"]').popover();   
 });
 
+feedbackAutoImplementation();
+
 }
 
 function attachEvents() {

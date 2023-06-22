@@ -7316,6 +7316,7 @@ img.qaCommentStatus {
   box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%), 0 0 8px rgb(0 0 0 / 30%);
   overflow-y: scroll;
   z-index: 1000;
+  min-width: 435px;
 }
 
 .qaPopup::-webkit-scrollbar {
@@ -7369,6 +7370,10 @@ img.qaCommentStatus {
   bottom: 0; */
 }
 
+.commentContainer{
+  position: relative;
+}
+
 .commentContainer, .replyTextContainer {
   display: none;
   width: 100%;
@@ -7380,6 +7385,10 @@ img.qaCommentStatus {
 .replyContainer {
   padding-left: 10px;
   padding-right: 40px;
+}
+
+.commentTitle{
+  padding-right: 37px !important;
 }
 
 .commentTitle, .replyTitle {
@@ -7443,6 +7452,15 @@ width: 15px;
 margin-left: 3px;
 cursor: pointer;
 }
+
+.track_icon {
+  width: 15px;
+  position: absolute;
+  top: 0px;
+  right: 10px;
+  cursor: pointer;
+}
+  
 
 .containerSentCommentBtn {
   position: absolute; 
@@ -7585,6 +7603,20 @@ img.qaOptionsComment {
 
 .containerIcon img{
   width: 25px;
+}
+
+.containerIcon .trackingImg{
+  width: 35px;
+}
+
+.closeAlertTracking{
+  position: absolute;
+  top: 3px;
+  right: 15px;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 .containerText{
@@ -7762,6 +7794,11 @@ img.qaOptionsComment {
 
 .containerAlertMargin {
   margin-bottom: 10px;
+}
+
+.containerAlertMarginTracking {
+  margin-bottom: 10px;
+  width: 100% !important;
 }
 
 .displayNone {

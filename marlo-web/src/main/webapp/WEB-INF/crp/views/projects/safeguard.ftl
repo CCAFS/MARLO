@@ -3,10 +3,11 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/safeguards.js?20220824a",
+  "${baseUrlMedia}/js/projects/safeguards.js?20230620",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
-  "${baseUrlCdn}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/fieldsValidation.js",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20230623"
   ]
 /]
 [#assign customCSS = [
@@ -36,7 +37,23 @@
 [#if (!availabePhase)!false]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
+
+[@customForm.qaPopUp /]
+
+[#if action.hasSpecificities('feedback_active') ]
+
+[/#if]
+
 <section class="container">
+  <input type="hidden"  name="safeguardsID" value="${(project.projectInfo.id)!}" />
+  <input type="hidden" id="sectionNameToFeedback" value="safeguard" />
+  <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
+  <span id="phaseID" style="display: none;">${phaseID!}</span>
+  <span id="parentID" style="display: none;">${projectID!}</span>
+  <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
+  <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
+  <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID)?c)!}</span>
+  <span id="canTrackComments" style="display: none;">${(action.canTrackComments()?c)!}</span>
     <div class="row">
       [#-- Project Menu --]
       <div class="col-md-3">
@@ -57,7 +74,10 @@
               [@s.text name="project.safeguards.title"  /]
               </br>
               </br>
-              [@s.text name="project.safeguards.description"  /]
+              <!--  [@s.text name="project.safeguards.description"  /]  -->
+              <div class="feedback-flex-items">
+                [@customForm.helpLabel name="project.safeguards.description" showIcon=false editable=editable/]
+              </div>
               <br>
               <br>
               <!--  <div class="helpMessage infoText2">
