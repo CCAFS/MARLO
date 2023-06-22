@@ -207,7 +207,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
         if (projectOutcomeIndicator.getNarrative() != null) {
           if (i != 0) {
             if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-              && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+              && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 150)) {
               action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
               action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
                 InvalidFieldsMessages.EMPTYFIELD);
