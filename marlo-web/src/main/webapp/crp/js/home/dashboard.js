@@ -184,13 +184,16 @@ function createTimeline() {
     var newPTimeLine= document.createElement("p") 
     newPTimeLine.className='dateTimeline';
     newDiv.appendChild(newPTimeLine)
+    var options = {timeZone: 'Africa/Nairobi', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'};
+    var africaOpciones = { timeZone: 'Africa/Nairobi', day: 'numeric' };
+    var africanDate = new Date(new Date().toLocaleString('en-US', options));
 
     var description = document.createTextNode(data.description);
     var dateMonthStart = new Date(data.startDate).toLocaleString("en-US", { month: "short" });
     var dateDayStart = new Date(data.startDate).getDate()+1;    
     var dateMonthYear =new Date(data.endDate).getFullYear();
     var dateMonthEnd =new Date(data.endDate).toLocaleString("en-US", { month: "short" });
-    var dateDayEnd = new Date(data.endDate).getDate()+1;
+    var dateDayEnd = new Date(data.endDate).toLocaleString('en-US', africaOpciones);
     var date =document.createTextNode(dateMonthEnd+' '+ dateDayEnd+' - '+dateMonthYear)
     newDivTitle.appendChild(description);
     newPTimeLine.appendChild(date);
@@ -200,10 +203,10 @@ function createTimeline() {
     if(description.length > 120)newDivTitle.style["width"] = '120px';
 
     //hide alert the days left to finalize activity 
-    if(((lastPosition - 1) == index) && endDate < new Date() )$('.timelineAlert').hide();
+    if(((lastPosition - 1) == index) && endDate < africanDate )$('.timelineAlert').hide();
     
     // Define the color of elements
-    if(endDate < new Date()){
+    if(endDate < africanDate){
 
       var newImgTimeLine= document.createElement("img");
       newImgTimeLine.className='imgTimeline';
@@ -217,10 +220,10 @@ function createTimeline() {
 
     }
     // Define the color and percentage of the bar
-    if(counter == 0 && (endDate > new Date())){
+    if(counter == 0 && (endDate > africanDate)){
 
       let dateDiff = endDate.getTime() - new Date(previusDate).getTime();
-      let daysFinalizeActivity = ((endDate.getTime() - new Date().getTime())/(1000*60*60*24));
+      let daysFinalizeActivity = ((endDate.getTime() - africanDate.getTime())/(1000*60*60*24));
       newPorcentTimeLine.className='porcentTimeLine';
       newDivTitle.classList.add('timelineColorAlert');
       newDivPoint.classList.add('timelineBackAlert');
