@@ -236,7 +236,7 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
     String subject = this.getText("email.tracking.comment.reaction.subject", new String[] {acronym, sectionName});
     // Building the email message
     StringBuilder message = new StringBuilder();
-    String[] values = new String[9];
+    String[] values = new String[10];
 
     values[0] = assesorName;
     values[1] = sectionName;
