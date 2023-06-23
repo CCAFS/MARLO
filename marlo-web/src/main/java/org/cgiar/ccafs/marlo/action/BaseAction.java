@@ -3413,21 +3413,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (expectedStudyProject != null && !expectedStudyProject.isEmpty()) {
         for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
           ProjectExpectedStudy projectExpectedStudy = expectedStudy.getProjectExpectedStudy();
+          projectExpectedStudy
+            .setProjectExpectedStudyInfo(projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()));
           if (projectExpectedStudy != null && projectExpectedStudy.getProjectExpectedStudyCrpOutcomes() != null) {
             List<ProjectExpectedStudyCrpOutcome> filteredCrpOutcomes =
               projectExpectedStudy.getProjectExpectedStudyCrpOutcomes().stream()
-                .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList());
-            projectExpectedStudy.setCrpOutcomes(new ArrayList<>(filteredCrpOutcomes));
-          }
-
-          boolean isExpectedStudyAlreadyAdded = expectedStudies.stream()
-            .anyMatch(es -> es.getCrpOutcomes() != null && es.getCrpOutcomes().stream()
-              .anyMatch(crp -> crp.getCrpOutcome() != null && crp.getCrpOutcome().getId() != null
-                && projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
-                && crp.getCrpOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0));
-
-          if (!isExpectedStudyAlreadyAdded) {
-            expectedStudies.add(projectExpectedStudy);
+                .filter(o -> o.getCrpOutcome() != null && o.getCrpOutcome().getId() != null
+                  && o.getCrpOutcome().getId().equals(projectOutcome.getCrpProgramOutcome().getId())
+                  && o.getPhase().getId().equals(this.getActualPhase().getId()))
+                .collect(Collectors.toList());
+            if (filteredCrpOutcomes != null && !filteredCrpOutcomes.isEmpty()) {
+              projectExpectedStudy.setCrpOutcomes(new ArrayList<>(filteredCrpOutcomes));
+              expectedStudies.add(projectExpectedStudy);
+            }
           }
         }
       }

@@ -68,6 +68,8 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
   private long sectionID;
   private String feedbackResponse;
   private String sectionLink;
+  private String parentFieldDescription;
+  private String fieldDescription;
 
   private List<Map<String, Object>> message;
 
@@ -115,6 +117,23 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
     sectionID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.SECTION_ID).getMultipleValues()[0]));
     feedbackReplayUsername =
       StringUtils.trim(parameters.get(APConstants.FEEDBACK_REPLAY_USERNAME).getMultipleValues()[0]);
+    try {
+      if (parameters.get(APConstants.PARENT_FIELD_DESCRIPTION).isDefined()) {
+        parentFieldDescription = StringUtils
+          .trim(StringUtils.trim(parameters.get(APConstants.PARENT_FIELD_DESCRIPTION).getMultipleValues()[0]));
+      }
+    } catch (Exception e) {
+      LOG.error("unable to get deliverable ID value", e);
+    }
+    try {
+      if (parameters.get(APConstants.FIELD_DESCRIPTION).isDefined()) {
+        fieldDescription =
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FIELD_DESCRIPTION).getMultipleValues()[0]));
+      }
+    } catch (Exception e) {
+      LOG.error("unable to get deliverable ID value", e);
+    }
+
     try {
       feedbackResponse = StringUtils.trim(parameters.get(APConstants.FEEDBACK_RESPONSE).getMultipleValues()[0]);
     } catch (Exception e) {
@@ -197,16 +216,19 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
             + "deliverableID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true";
           sectionName = "Deliverable";
+          parentFieldDescription = "Deliverable " + parentFieldDescription;
           break;
         case "study":
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/study.do?"
             + "expectedID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true";
-          sectionName = "OICRs";
+          sectionName = "OICR or MELIA ";
+          parentFieldDescription = "OICR " + parentFieldDescription;
           break;
         case "innovation":
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?"
             + "innovationID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true";
           sectionName = "Innovations";
+          parentFieldDescription = "Innovation " + parentFieldDescription;
           break;
       }
     }
@@ -214,17 +236,18 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
     String subject = this.getText("email.tracking.comment.reaction.subject", new String[] {acronym, sectionName});
     // Building the email message
     StringBuilder message = new StringBuilder();
-    String[] values = new String[9];
+    String[] values = new String[10];
 
     values[0] = assesorName;
     values[1] = sectionName;
-    values[2] = "";
-    values[3] = acronym;
-    values[4] = assesorInput;
-    values[5] = feedbackReplayUsername;
-    values[6] = feedbackCommentReaction;
-    values[7] = feedbackResponse;
-    values[8] = sectionLink;
+    values[2] = parentFieldDescription;
+    values[3] = fieldDescription;
+    values[4] = acronym;
+    values[5] = assesorInput;
+    values[6] = feedbackReplayUsername;
+    values[7] = feedbackCommentReaction;
+    values[8] = feedbackResponse;
+    values[9] = sectionLink;
 
     message.append(this.getText("email.tracking.comment.reaction.body", values));
     message.append(this.getText("email.support.noCrpAdmins"));

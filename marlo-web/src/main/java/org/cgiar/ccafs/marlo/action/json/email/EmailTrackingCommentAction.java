@@ -65,6 +65,8 @@ public class EmailTrackingCommentAction extends BaseAction {
   private String sectionName;
   private String feedbackCommentReaction;
   private long sectionID;
+  private String parentFieldDescription;
+  private String fieldDescription;
 
   private List<Map<String, Object>> message;
 
@@ -112,6 +114,23 @@ public class EmailTrackingCommentAction extends BaseAction {
     feedbackCommentReaction =
       StringUtils.trim(parameters.get(APConstants.FEEDBACK_COMMENT_REACTION).getMultipleValues()[0]);
     sectionID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.SECTION_ID).getMultipleValues()[0]));
+    try {
+      if (parameters.get(APConstants.PARENT_FIELD_DESCRIPTION).isDefined()) {
+        parentFieldDescription = StringUtils
+          .trim(StringUtils.trim(parameters.get(APConstants.PARENT_FIELD_DESCRIPTION).getMultipleValues()[0]));
+      }
+    } catch (Exception e) {
+      LOG.error("unable to get deliverable ID value", e);
+    }
+    try {
+      if (parameters.get(APConstants.FIELD_DESCRIPTION).isDefined()) {
+        fieldDescription =
+          StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FIELD_DESCRIPTION).getMultipleValues()[0]));
+      }
+    } catch (Exception e) {
+      LOG.error("unable to get deliverable ID value", e);
+    }
+
   }
 
   private void sendNotficationEmail(Project project) {
@@ -184,12 +203,15 @@ public class EmailTrackingCommentAction extends BaseAction {
           break;
         case "deliverable":
           sectionName = "Deliverables";
+          parentFieldDescription = "Deliverable " + parentFieldDescription;
           break;
         case "study":
           sectionName = "OICRs";
+          parentFieldDescription = "OICR or MELIA " + parentFieldDescription;
           break;
         case "innovation":
           sectionName = "Innovations";
+          parentFieldDescription = "Innovation " + parentFieldDescription;
           break;
       }
     }
@@ -198,13 +220,14 @@ public class EmailTrackingCommentAction extends BaseAction {
       this.getText("email.tracking.comment.subject", new String[] {acronym, sectionName, feedbackCommentReaction});
     // Building the email message
     StringBuilder message = new StringBuilder();
-    String[] values = new String[5];
+    String[] values = new String[6];
 
     values[0] = assesorName;
     values[1] = sectionName;
-    values[2] = acronym;
-    values[3] = feedbackCommentReaction;
-    values[4] = feedbackCommentReaction;
+    values[2] = parentFieldDescription;
+    values[3] = fieldDescription;
+    values[4] = acronym;
+    values[5] = feedbackCommentReaction;
 
     message.append(this.getText("email.tracking.comment.body", values));
     message.append(this.getText("email.support.noCrpAdmins"));
