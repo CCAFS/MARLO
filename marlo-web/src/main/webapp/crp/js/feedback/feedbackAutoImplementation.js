@@ -5,6 +5,7 @@ var arrayName = 'fieldsMap';
 let fieldID = '';
 let qaComments = '';
 let nameNewComment ='';
+let descriptionComment ='';
 fieldsSections = [];
 
 function feedbackAutoImplementation (){
@@ -105,7 +106,7 @@ function attachEventsFeedback() {
     let popUpTitle = $(this).attr('description');
     let qaPopup = $(`div[id^="qaPopup-${name}"]`);
     let block = $(`div[id^="qaCommentReply-${name}"]`);
-
+    descriptionComment=popUpTitle;
     fieldID = $(this).attr('fieldID');
 
     block.each((index, item) => {
@@ -235,7 +236,7 @@ function attachEventsFeedback() {
     let feedback_comment_reaction = 'Admitted';
 
     if(isTracking == 'true'){
-      sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction);
+      sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, this);
     }
     hideShowOptionButtons(block, 1);
     saveCommentStatus(4, commentID, name);
@@ -252,7 +253,7 @@ function attachEventsFeedback() {
     let feedback_comment_reaction = 'Dismissed';
   
     if(isTracking == 'true'){
-      sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction);
+      sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, this);
     }
     saveTrackComment(0, commentID, name);
     hideShowOptionButtons(block, '6');
@@ -298,7 +299,7 @@ function attachEventsFeedback() {
     feedback_comment_reaction = statusMapping[feedback_comment_reaction] || feedback_comment_reaction;
   
     if(isTracking == 'true'){
-      sendFeedbackReactionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, currentUserName, value)
+      sendFeedbackReactionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, currentUserName, value, this)
     }
 
     if (value && value != '') {
@@ -569,7 +570,8 @@ function hideShowOptionButtons(block, status) {
                     }
 
                     if(qaComments[i][j].isTracking == true){
-                      block.find('.track_icon').attr('src', `${baseURL}/global/images/yellow_tracking.png`);
+                      block.find('.track_icon').attr('src', `${baseURL}/global/images/yellow_tracking.png`); 
+                      block.find('.track_icon').attr('title', `Stop tracking comment`);
                     } else{
                       block.find('.track_icon').attr('src', `${baseURL}/global/images/tracking.png`);
                     }
@@ -1095,8 +1097,12 @@ function hideShowOptionButtons(block, status) {
     });
   }
 
-  function sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction) {
-    var finalAjaxURL = `/sendFeedbackActionEmail.do?projectID=${projectID}&feedback_assesor_name=${feedback_assesor_name}&feedback_assesor_input=${feedback_assesor_input}&feedback_assesor_email=${feedback_assesor_email}&sectionName=${sectionName}&feedback_comment_reaction=${feedback_comment_reaction}&section_id=${parentID}`;
+  function sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, reference) {
+    let indexToCute = $(reference).attr("name").substring(0,$(reference).attr("name").length-3);
+    let objectField = fieldsSections.find(field => field.fieldName == indexToCute)
+    let inputValue = $(`input[name="${objectField.parentFieldDescription}"]`).val();
+    
+    var finalAjaxURL = `/sendFeedbackActionEmail.do?projectID=${projectID}&feedback_assesor_name=${feedback_assesor_name}&feedback_assesor_input=${feedback_assesor_input}&feedback_assesor_email=${feedback_assesor_email}&sectionName=${sectionName}&feedback_comment_reaction=${feedback_comment_reaction}&section_id=${parentID}&parentFieldDescription=${inputValue}&fieldDescription=${descriptionComment}`;
     $.ajax({
       url: baseURL + finalAjaxURL,
       async: false,
@@ -1106,9 +1112,12 @@ function hideShowOptionButtons(block, status) {
   }
 
 
-  function sendFeedbackReactionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, feedback_replay_username, feedback_response) {
-    var finalAjaxURL = `/sendFeedbackReactionEmail.do?projectID=${projectID}&feedback_assesor_name=${feedback_assesor_name}&feedback_assesor_input=${feedback_assesor_input}&feedback_assesor_email=${feedback_assesor_email}&sectionName=${sectionName}&feedback_comment_reaction=${feedback_comment_reaction}&feedback_replay_username=${feedback_replay_username}&feedback_response=${feedback_response}&section_id=${parentID}`;
-    console.log(finalAjaxURL)
+  function sendFeedbackReactionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, feedback_replay_username, feedback_response, reference) {
+    let indexToCute = $(reference).attr("name").substring(0,$(reference).attr("name").length-3);
+    let objectField = fieldsSections.find(field => field.fieldName == indexToCute)
+    let inputValue = $(`input[name="${objectField.parentFieldDescription}"]`).val();
+    
+    var finalAjaxURL = `/sendFeedbackReactionEmail.do?projectID=${projectID}&feedback_assesor_name=${feedback_assesor_name}&feedback_assesor_input=${feedback_assesor_input}&feedback_assesor_email=${feedback_assesor_email}&sectionName=${sectionName}&feedback_comment_reaction=${feedback_comment_reaction}&feedback_replay_username=${feedback_replay_username}&feedback_response=${feedback_response}&section_id=${parentID}&parentFieldDescription=${inputValue}&fieldDescription=${descriptionComment}`;
     $.ajax({
       url: baseURL + finalAjaxURL,
       async: false,
