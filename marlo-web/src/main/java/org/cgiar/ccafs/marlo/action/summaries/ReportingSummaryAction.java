@@ -1289,6 +1289,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           args.clear();
           this.fillSubreport((SubReport) hm.get("outcomes"), "outcomes_list", args);
           this.fillSubreport((SubReport) hm.get("expected_studies"), "expected_studies", args);
+          this.fillSubreport((SubReport) hm.get("studies"), "studies", args);
         } else {
           args.clear();
           // Outcomes Phase Two
