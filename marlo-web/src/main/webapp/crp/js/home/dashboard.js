@@ -197,7 +197,7 @@ function createTimeline() {
     var date =document.createTextNode(dateMonthEnd+' '+ dateDayEnd+' - '+dateMonthYear)
     newDivTitle.appendChild(description);
     newPTimeLine.appendChild(date);
-    var endDate = new Date(data.endDate);
+    var endDate = new Date(new Date(data.endDate).toLocaleString('en-US', options));
     endDate.setDate(endDate.getDate() + 1)
 
     if(description.length > 120)newDivTitle.style["width"] = '120px';
@@ -205,8 +205,9 @@ function createTimeline() {
     //hide alert the days left to finalize activity 
     if(((lastPosition - 1) == index) && endDate < africanDate )$('.timelineAlert').hide();
     
-    // Define the color of elements
-    if(endDate < africanDate){
+    var closingTime = new Date(africanDate.setHours(africanDate.getHours() + 1));
+    
+    if(endDate < closingTime){
 
       var newImgTimeLine= document.createElement("img");
       newImgTimeLine.className='imgTimeline';

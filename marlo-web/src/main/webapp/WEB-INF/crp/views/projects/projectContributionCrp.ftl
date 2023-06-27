@@ -510,32 +510,13 @@
           </div>
           
           <div class="col-md-4 input-container">
-             [#if action.isUpKeepActive() ]
-                [#if totalParticipants?number > 0 && year == currentCycleYear]   
-                  [#--  IPI 2.3 --]   
-                    <div class="note left textAchived">
-                      <div id="popup" class="helpMessage3">
-                        <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalOwnParticipants}"][@s.param]<b>${totalOwnParticipants}</b>[/@s.param][/@s.text]</a></p>
-                      </div>
-                    </div> 
-                   [/#if]    
-                   
-                   [#--  IPI 1.2 --]   
-                   [#if journalDeliverables?number > 0 && year == currentCycleYear]   
-                    <div class="note left textAchived">
-                      <div id="popup" class="helpMessage3">
-                        <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.journal.helpText" paramText="${journalDeliverables}"][@s.param]<b>${journalDeliverables}</b>[/@s.param][/@s.text]</a></p>
-                      </div>
-                    </div> 
-                   [/#if]   
-               [/#if]
             [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
           </div>
           
           [#if (!action.isUpKeepActive() && !isYearRequired(milestoneYear) && action.isPOWB()) || action.isReportingActive()]
               <div class="col-md-4">     
-                [#if totalParticipants?number > 0 && year == currentCycleYear]   
-                [#--  IPI 2.3 --]   
+                 [#if totalParticipants?number > 0 && year == currentCycleYear]   
+                 [#--  IPI 2.3 --]   
                   <div class="note left textAchived">
                     <div id="popup" class="helpMessage3">
                       <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalOwnParticipants}"][@s.param]<b>${totalOwnParticipants}</b>[/@s.param][/@s.text]</a></p>
@@ -555,7 +536,24 @@
               </div>
            [#else]
              [#if action.isUpKeepActive() ]
-              <div class="col-md-4">               
+              <div class="col-md-4">              
+                 [#if totalParticipants?number > 0 && year == currentCycleYear]   
+                   [#--  IPI 2.3 --]   
+                   <div class="note left textAchived">
+                     <div id="popup" class="helpMessage3">
+                       <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalOwnParticipants}"][@s.param]<b>${totalOwnParticipants}</b>[/@s.param][/@s.text]</a></p>
+                     </div>
+                   </div> 
+                 [/#if]    
+                   
+                  [#--  IPI 1.2 --]   
+                 [#if journalDeliverables?number > 0 && year == currentCycleYear]   
+                   <div class="note left textAchived">
+                     <div id="popup" class="helpMessage3">
+                       <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.journal.helpText" paramText="${journalDeliverables}"][@s.param]<b>${journalDeliverables}</b>[/@s.param][/@s.text]</a></p>
+                     </div>
+                   </div> 
+                 [/#if]   
                 [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedSoFar" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')} targetValue" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) && (reportingActive || action.isUpKeepActive()) /]
               </div>
              [/#if]

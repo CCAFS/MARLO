@@ -4,7 +4,7 @@
 [#assign pageLibs = ["powerbi-client"] /]
 [#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20210618a", "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js" ] /]
 [#assign customCSS = [
-  "${baseUrl}/crp/css/bi/biDashboard.css?20230303"
+  "${baseUrl}/crp/css/bi/biDashboard.css?20230627a"
   ] 
 /]
 [#assign currentSection = "bi" /] 
@@ -28,6 +28,7 @@
 [/#attempt]
 
 [#assign crp = "CCAFS" /]
+<span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
 
     <section class="container containerBI">  
       [#if biReports?has_content]

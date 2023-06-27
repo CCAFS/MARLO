@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManag
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInnovationManager;
@@ -260,6 +261,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager;
   private ProjectMilestoneManager projectMilestoneManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager;
 
 
   @Inject
@@ -284,7 +286,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectPolicySubIdoManager projectPolicySubIdoManager,
     ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager,
     ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
-    ProjectMilestoneManager projectMilestoneManager, CrpProgramOutcomeManager crpProgramOutcomeManager) {
+    ProjectMilestoneManager projectMilestoneManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
+    ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
@@ -315,6 +318,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.projectExpectedStudyQuantificationManager = projectExpectedStudyQuantificationManager;
     this.projectMilestoneManager = projectMilestoneManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
   }
 
   /**
@@ -3446,30 +3450,32 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
         // Project outcome - Additional questions
         try {
+          // Indicators
+          projectOutcome.setIndicators(
+            projectOutcomeIndicatorManager.findAll().stream().filter(i -> i.isActive() && i.getProjectOutcome() != null
+              && i.getProjectOutcome().getId().equals(projectOutcome.getId())).collect(Collectors.toList()));
+
+          CrpProgramOutcome crpProgramOutcome =
+            crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId());
+
+          projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
+
           projectOutcome.getCrpProgramOutcome().setIndicators(
             projectOutcome.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream().filter(c -> c.isActive())
               .sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator()))).collect(Collectors.toList()));
+
           if (projectOutcome.getCrpProgramOutcome() != null
             && projectOutcome.getCrpProgramOutcome().getIndicators() != null) {
             for (CrpProgramOutcomeIndicator indicator : projectOutcome.getCrpProgramOutcome().getIndicators()) {
               if (indicator.getIndicator() != null) {
-                question += indicator.getIndicator();
+                question += "<br>&nbsp; ● " + indicator.getIndicator() + ":<br>";
                 ProjectOutcomeIndicator outcomeIndicator = this.getIndicator(indicator.getId(), projectOutcome);
                 if (outcomeIndicator.getNarrative() != null && !outcomeIndicator.getNarrative().isEmpty()) {
-                  question += outcomeIndicator.getNarrative();
+                  question += outcomeIndicator.getNarrative() + "<br>";
+                  question = question.replace("null", "");
                 }
               }
             }
-          }
-          CrpProgramOutcome crpProgramOutcome =
-            crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId());
-          projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
-
-          if (projectOutcome.getCrpProgramOutcome() != null) {
-            projectOutcome.getCrpProgramOutcome()
-              .setIndicators(projectOutcome.getCrpProgramOutcome().getCrpProgramOutcomeIndicators().stream()
-                .filter(c -> c.isActive()).sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator())))
-                .collect(Collectors.toList()));
           }
 
           if (projectOutcome.getCrpProgramOutcome().getIndicators() != null) {
@@ -4211,6 +4217,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
 
         }
+        // Indicators
+        projectOutcome.setIndicators(
+          projectOutcomeIndicatorManager.findAll().stream().filter(i -> i.isActive() && i.getProjectOutcome() != null
+            && i.getProjectOutcome().getId().equals(projectOutcome.getId())).collect(Collectors.toList()));
 
         CrpProgramOutcome crpProgramOutcome =
           crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId());
@@ -4223,13 +4233,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               .sorted((d1, d2) -> d1.getIndicator().compareTo((d2.getIndicator()))).collect(Collectors.toList()));
         }
 
-        if (projectOutcome.getCrpProgramOutcome().getIndicators() != null) {
+        if (projectOutcome.getCrpProgramOutcome() != null
+          && projectOutcome.getCrpProgramOutcome().getIndicators() != null) {
           for (CrpProgramOutcomeIndicator indicator : projectOutcome.getCrpProgramOutcome().getIndicators()) {
             if (indicator.getIndicator() != null) {
-              question += indicator.getIndicator();
+              question += "<br>&nbsp; ● " + indicator.getIndicator() + ":<br>";
               ProjectOutcomeIndicator outcomeIndicator = this.getIndicator(indicator.getId(), projectOutcome);
               if (outcomeIndicator.getNarrative() != null && !outcomeIndicator.getNarrative().isEmpty()) {
-                question += outcomeIndicator.getNarrative();
+                question += outcomeIndicator.getNarrative() + "<br>";
+                question = question.replace("null", "");
               }
             }
           }

@@ -29,6 +29,10 @@ function addEvents() {
     fullScreenDashboard();
   });
 
+  if(userCanLeaveComments = $('#userCanLeaveComments').html() == 'false'){
+    $('[report-title="Feedback including consolidation "]').hide();
+  }
+  
 }
 
 // Toggle width of reports menu
