@@ -30,7 +30,7 @@ function addEvents() {
   });
 
   if(userCanLeaveComments = $('#userCanLeaveComments').html() == 'false'){
-    $('[report-title="Feedback including consolidation "]').hide();
+    $('[has-role-authorization="true"]').hide();
   }
   
 }
