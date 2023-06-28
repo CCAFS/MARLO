@@ -41,5 +41,8 @@
         <property name="hasRlsSecurity" type="boolean">
             <column name="has_rls_security" not-null="true" />
         </property>
+        <property name="hasRoleAuthorization" type="boolean">
+            <column name="has_role_authorization" not-null="true" />
+        </property>
     </class>
 </hibernate-mapping>
