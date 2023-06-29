@@ -29,6 +29,10 @@ function addEvents() {
     fullScreenDashboard();
   });
 
+  if(userCanLeaveComments = $('#userCanLeaveComments').html() == 'false'){
+    $('[has-role-authorization="true"]').hide();
+  }
+  
 }
 
 // Toggle width of reports menu

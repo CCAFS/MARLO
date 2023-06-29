@@ -2,9 +2,9 @@
 [#assign title = "MARLO BI" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["powerbi-client"] /]
-[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20210618a", "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js" ] /]
+[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20230628a", "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js" ] /]
 [#assign customCSS = [
-  "${baseUrl}/crp/css/bi/biDashboard.css?20210618b"
+  "${baseUrl}/crp/css/bi/biDashboard.css?20230627a"
   ] 
 /]
 [#assign currentSection = "bi" /] 
@@ -28,6 +28,7 @@
 [/#attempt]
 
 [#assign crp = "CCAFS" /]
+<span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
 
     <section class="container containerBI">  
       [#if biReports?has_content]
@@ -42,7 +43,7 @@
             <div id="repportsMenu" class="reportsButtons">
               <div class="menuList col-md-12" style="padding:0">
               [#list (biReports)?sort_by("reportOrder")![] as report]
-                  <div id="BIreport-${report.id}" report-title="${report.reportTitle}"  has-filters="${report.hasFilters?c}" class="button-bg reportSection [#if report?index == 0]current[/#if]">
+                  <div id="BIreport-${report.id}" report-title="${report.reportTitle}"  has-filters="${report.hasFilters?c}" has-role-authorization="${report.hasRoleAuthorization?c}" class="button-bg reportSection [#if report?index == 0]current[/#if]">
                   <a index="${report?index+1}" class="BIreport-${report.id}" href="">[@s.text name=report.reportName /]</a>
                   </div>
               [/#list]
