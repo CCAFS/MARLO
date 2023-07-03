@@ -199,7 +199,7 @@ public class EmailTrackingCommentAction extends BaseAction {
 
       switch (sectionName) {
         case "projectContributionCrp":
-          sectionName = "Contribution To Performance Indicadors";
+          sectionName = "Contribution To Performance Indicators";
           break;
         case "deliverable":
           sectionName = "Deliverables";
