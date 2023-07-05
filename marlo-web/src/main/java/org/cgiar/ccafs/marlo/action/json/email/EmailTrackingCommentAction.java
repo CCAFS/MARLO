@@ -22,8 +22,6 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
-import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -165,23 +163,22 @@ public class EmailTrackingCommentAction extends BaseAction {
     } catch (Exception e) {
 
     }
-
-    if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
-      && projectOutcome.getCrpProgramOutcome().getCrpProgram() != null) {
-      long crpProgramID = projectOutcome.getCrpProgramOutcome().getCrpProgram().getId();
-      CrpProgram crpProgram = this.crpProgramManager.getCrpProgramById(crpProgramID);
-      // CC will be also the others FL already assigned to the Flagship
-      for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
-        .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
-        if (ccEmail.isEmpty()) {
-          ccEmail += crpProgramLeader.getUser().getEmail();
-        } else {
-          ccEmail += ", " + crpProgramLeader.getUser().getEmail();
-        }
-      }
-
-    }
-
+    /*
+     * if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
+     * && projectOutcome.getCrpProgramOutcome().getCrpProgram() != null) {
+     * long crpProgramID = projectOutcome.getCrpProgramOutcome().getCrpProgram().getId();
+     * CrpProgram crpProgram = this.crpProgramManager.getCrpProgramById(crpProgramID);
+     * // CC will be also the others FL already assigned to the Flagship
+     * for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
+     * .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
+     * if (ccEmail.isEmpty()) {
+     * ccEmail += crpProgramLeader.getUser().getEmail();
+     * } else {
+     * ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+     * }
+     * }
+     * }
+     */
     ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
     // Detect if a last ; was added to CC and remove it
     if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ',') {
@@ -199,7 +196,7 @@ public class EmailTrackingCommentAction extends BaseAction {
 
       switch (sectionName) {
         case "projectContributionCrp":
-          sectionName = "Contribution To Performance Indicadors";
+          sectionName = "Contribution To Performance Indicators";
           break;
         case "deliverable":
           sectionName = "Deliverables";
@@ -236,7 +233,7 @@ public class EmailTrackingCommentAction extends BaseAction {
 
     GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(globalUnitProject.getGlobalUnit().getId());
     if (this.validateEmailNotification(globalUnit)) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      sendMail.sendTemporalMethod(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }
   }
 

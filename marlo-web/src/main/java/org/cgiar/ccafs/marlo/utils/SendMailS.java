@@ -426,4 +426,191 @@ public class SendMailS extends BaseAction {
     }
   }
 
+  public void sendTemporalMethod(String toEmail, String ccEmail, String bbcEmail, String subject, String messageContent,
+    byte[] attachment, String attachmentMimeType, String fileName, boolean isHtml) {
+    // TODO delete this method and change the feedback email services- this ignore send just to support specificity
+    // Get a Properties object
+    Properties properties = System.getProperties();
+
+    if (ccEmail != null) {
+      Set<String> noRepeatEmails = new HashSet<>();
+      ccEmail = ccEmail.replaceAll(", " + toEmail, "");
+      String[] ccEmails = ccEmail.split(", ");
+      ccEmail = new String();
+      for (String string : ccEmails) {
+        noRepeatEmails.add(string.trim());
+      }
+      for (String string : noRepeatEmails) {
+        if (ccEmail == null || ccEmail.isEmpty()) {
+          ccEmail = string;
+        } else {
+          ccEmail = ccEmail + ", " + string;
+        }
+      }
+    }
+
+    // Properties for backup dperez
+
+    properties.put("mail.smtp.host", config.getEmailHost());
+    properties.put("mail.smtp.port", config.getEmailPort());
+    // changes for smtp secure dperez
+    properties.put("mail.smtp.auth", config.getEmail_auth());
+    properties.put("mail.smtp.starttls.enable", config.getEmail_starttls());
+
+    // Un-comment this line to watch javaMail debug
+    // properties.put("mail.debug", "true");
+
+    Session session = Session.getInstance(properties, new Authenticator() {
+
+      @Override
+      protected PasswordAuthentication getPasswordAuthentication() {
+        return new PasswordAuthentication(config.getEmailUsername(), config.getEmailPassword());
+      }
+    });
+    session.setDebug(false);
+    // Create a new message
+    MimeMessage msg = new MimeMessage(session) {
+
+      @Override
+      protected void updateMessageID() throws MessagingException {
+        if (this.getHeader("Message-ID") == null) {
+          super.updateMessageID();
+        }
+      }
+    };
+
+    try {
+
+      msg.saveChanges();
+    } catch (MessagingException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
+
+    EmailLog emailLog = new EmailLog();
+    emailLog.setBbc(bbcEmail);
+    emailLog.setCc(ccEmail);
+    emailLog.setTo(toEmail);
+    emailLog.setDate(new Date());
+    try {
+      emailLog.setMessageID(msg.getMessageID());
+    } catch (MessagingException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
+    String header = "<div style=\"font-family:Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif; \">";
+    String footer = "</div>";
+    messageContent = header + messageContent + footer;
+    emailLog.setMessage(messageContent);
+    emailLog.setSubject(subject);
+    try {
+      emailLog.setMessageID(msg.getMessageID());
+    } catch (MessagingException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
+
+    // Set the FROM and TO fields
+    try {
+      if (!config.isProduction()) {
+
+        // Adding TEST words.
+        // Set the Test Header to list the emails that will send in
+        // production
+        StringBuilder testingHeader = new StringBuilder();
+        testingHeader.append("To: " + toEmail + "<br>");
+        testingHeader.append("CC: " + ccEmail + "<br>");
+        testingHeader.append("BBC: " + bbcEmail + "<br>");
+        testingHeader.append("----------------------------------------------------<br><br>");
+        subject = "TEST " + subject;
+        messageContent = testingHeader.toString() + messageContent;
+        if (toEmail != null) {
+          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
+        }
+        if (bbcEmail != null) {
+          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(bbcEmail, false));
+        }
+        // msgbackup.setRecipients(Message.RecipientType.TO,
+        // InternetAddress.parse(bbcEmail, false));
+        LOG.info("   - TO: " + bbcEmail);
+        // }
+      } else {
+        if (toEmail != null) {
+          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
+          // msgbackup.setRecipients(Message.RecipientType.TO,
+          // InternetAddress.parse(toEmail, false));
+          LOG.info("   - TO: " + toEmail);
+        }
+        if (ccEmail != null) {
+          msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccEmail, false));
+          // msgbackup.setRecipients(Message.RecipientType.CC,
+          // InternetAddress.parse(ccEmail, false));
+          LOG.info("   - CC: " + ccEmail);
+        }
+      }
+
+      try {
+        msg.setFrom(new InternetAddress(config.getEmailNotification()));
+        // msgbackup.setFrom(new
+        // InternetAddress(config.getEmail_notificaction_backup()));
+      } catch (AddressException e) {
+        msg.setFrom((InternetAddress) null);
+        // msgbackup.setFrom((InternetAddress) null);
+        LOG.error("There was an error setting up the FROM Email when trying to send a message", e.getMessage());
+      }
+
+      if (bbcEmail != null) {
+        msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bbcEmail, false));
+        // msgbackup.setRecipients(Message.RecipientType.BCC,
+        // InternetAddress.parse(bbcEmail, false));
+        LOG.info("   - BBC: " + bbcEmail);
+      }
+
+      msg.setSubject(subject);
+      msg.setSentDate(new Date());
+      // msgbackup.setSubject(subject + "Backup");
+      // msgbackup.setSentDate(new Date());
+
+      MimeMultipart mimeMultipart = new MimeMultipart("alternative");
+
+      // Body content: TEXT
+      MimeBodyPart mimeBodyPart = new MimeBodyPart();
+      if (isHtml) {
+        mimeBodyPart.setContent(messageContent, "text/html; charset=utf-8");
+      } else {
+        mimeBodyPart.setContent(messageContent, "text; charset=utf-8");
+      }
+
+      mimeMultipart.addBodyPart(mimeBodyPart);
+
+      if (attachment != null && attachmentMimeType != null && fileName != null) {
+        // Body content: ATTACHMENT
+        DataSource dataSource = new ByteArrayDataSource(attachment, attachmentMimeType);
+        MimeBodyPart attachmentBodyPart = new MimeBodyPart();
+        attachmentBodyPart.setDataHandler(new DataHandler(dataSource));
+        attachmentBodyPart.setFileName(fileName);
+        mimeMultipart.addBodyPart(attachmentBodyPart);
+        emailLog.setFileName(fileName);
+        emailLog.setFileContent(attachment);
+        try {
+          emailLog.setMessageID(msg.getMessageID());
+        } catch (MessagingException e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+      }
+
+      LOG.info("Message ID: \n" + msg.getMessageID());
+      msg.setContent(mimeMultipart);
+      // msgbackup.setContent(mimeMultipart);
+      ThreadSendMail thread = new ThreadSendMail(msg, subject, emailLogManager, emailLog, sessionFactory, config);
+      thread.start();
+
+    } catch (MessagingException e) {
+      e.printStackTrace();
+      LOG.error("There was an error sending a message", e.getMessage());
+
+    }
+  }
+
 }
