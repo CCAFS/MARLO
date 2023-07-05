@@ -17,10 +17,14 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
+import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
@@ -28,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLinkManager;
@@ -62,12 +67,14 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetPantentTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
-import org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
@@ -88,6 +95,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
+import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
@@ -270,7 +278,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager;
   private final HTMLParser htmlParser;
-
+  private final ActivityManager activityManager;
+  private final DeliverableActivityManager deliverableActivityManager;
+  private final DeliverableLocationManager deliverableLocationManager;
+  private final DeliverableGeographicRegionManager deliverableGeographicRegionManager;
+  private final ProjectDeliverableSharedManager projectDeliverableSharedManager;
 
   @Inject
   public ReportingSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
@@ -295,7 +307,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager,
     ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
     ProjectMilestoneManager projectMilestoneManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
-    ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager, HTMLParser htmlParser) {
+    ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager, HTMLParser htmlParser,
+    ActivityManager activityManager, DeliverableActivityManager deliverableActivityManager,
+    DeliverableLocationManager deliverableLocationManager,
+    DeliverableGeographicRegionManager deliverableGeographicRegionManager,
+    ProjectDeliverableSharedManager projectDeliverableSharedManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
@@ -328,6 +344,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
     this.htmlParser = htmlParser;
+    this.activityManager = activityManager;
+    this.deliverableActivityManager = deliverableActivityManager;
+    this.deliverableLocationManager = deliverableLocationManager;
+    this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
+    this.projectDeliverableSharedManager = projectDeliverableSharedManager;
   }
 
   /**
@@ -642,6 +663,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nDeliverablePartner", this.getText("project.deliverable.partner"));
     masterReport.getParameterValues().put("i8nDeliverableType", this.getText("deliverable.type"));
     masterReport.getParameterValues().put("i8nDeliverableNewExpectedYear", this.getText("deliverable.newExpectedYear"));
+    masterReport.getParameterValues().put("i8nDeliverablesActivities", this.getText("project.activities.title"));
     /*
      * Activities
      */
@@ -2194,7 +2216,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               this.getSelectedPhase().getId())
             .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
             .collect(Collectors.toList());
-          if (studyCountries != null && studyCountries.size() > 0) {
+          if (studyCountries != null && !studyCountries.isEmpty()) {
             Set<String> countriesSet = new HashSet<>();
             for (ProjectExpectedStudyCountry projectExpectedStudyCountry : studyCountries) {
               countriesSet
@@ -2209,7 +2231,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyRegions().stream()
               .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
               .collect(Collectors.toList());
-          if (studyRegions != null && studyRegions.size() > 0) {
+          if (studyRegions != null && !studyRegions.isEmpty()) {
             Set<String> regionsSet = new HashSet<>();
             for (ProjectExpectedStudyRegion projectExpectedStudyRegion : studyRegions) {
               regionsSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + projectExpectedStudyRegion.getLocElement().getName());
@@ -2218,12 +2240,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
         }
         // Centers(s)
-
         List<ProjectExpectedStudyCenter> studyCenters =
           projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyCenters().stream()
             .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList());
-        if (studyCenters != null && studyCenters.size() > 0) {
+        if (studyCenters != null && !studyCenters.isEmpty()) {
           Set<String> centersSet = new HashSet<>();
           for (ProjectExpectedStudyCenter projectExpectedStudyCenter : studyCenters) {
             centersSet
@@ -2620,7 +2641,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         "intellectualAssetPvpStatus", "intellectualAssetPvpCountry", "intellectualAssetPvpApplicationNumber",
         "intellectualAssetPvpBreederCrop", "intellectualAssetDateFilling", "intellectualAssetDateRegistration",
         "intellectualAssetDateExpiry", "intellectualAssetAdditionalInformation", "intellectualAssetLinkPublished",
-        "intellectualAssetCommunication", "otherPartner", "deliv_description"},
+        "intellectualAssetCommunication", "otherPartner", "deliv_description", "activities", "geographicScope",
+        "countries", "regions", "sharedClusters"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -2632,7 +2654,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getDeliverables().isEmpty()) {
@@ -2677,7 +2700,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       deliverables.addAll(deliverablesHL);
       for (Deliverable deliverable : deliverables) {
         String delivType = null, delivSubType = null, delivYear = null, keyOutput = "", leader = null,
-          institution = null, fundingSources = "", deliv_description = null, otherPartner = "";
+          institution = null, fundingSources = "", deliv_description = null, otherPartner = "", activities = "",
+          geographicScope = "", countries = "", regions = "", sharedClusters = "";
         // String delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
         String delivStatus =
           deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getSelectedPhase());
@@ -2715,31 +2739,156 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           delivYear = "" + deliverable.getDeliverableInfo().getYear();
         }
         try {
-          if (deliverable.getDeliverableProjectOutcomes() != null) {
-            deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
+          // Deliverable Crp Outcome list
+          if (deliverable.getDeliverableCrpOutcomes() != null) {
+            deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
               .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
           }
-          if (deliverable.getProjectOutcomes() != null) {
-            for (DeliverableProjectOutcome projectOutcome : deliverable.getProjectOutcomes()) {
+          if (deliverable.getCrpOutcomes() != null) {
+            for (DeliverableCrpOutcome deliverableCrpOutcome : deliverable.getCrpOutcomes()) {
               // Fill projectOutcomes List
-              if (projectOutcome.getProjectOutcome().getCrpProgramOutcome() != null
-                && projectOutcome.getProjectOutcome().getCrpProgramOutcome().getComposedName() != null) {
-                projectOutcome.getProjectOutcome()
-                  .setComposedName(projectOutcome.getProjectOutcome().getCrpProgramOutcome().getComposedName());
+              if (deliverableCrpOutcome.getCrpProgramOutcome() != null
+                && deliverableCrpOutcome.getCrpProgramOutcome().getComposedName() != null) {
+                if (deliverableCrpOutcome.getCrpProgramOutcome().getComposedName() != null) {
+                  keyOutput += "● " + deliverableCrpOutcome.getCrpProgramOutcome().getComposedName() + "\n <br>";
+                }
               } else {
-                projectOutcome.getProjectOutcome().setComposedName(projectOutcome.getId() + "");
+                if (deliverableCrpOutcome.getCrpProgramOutcome().getComposeID() != null) {
+                  keyOutput += "● " + deliverableCrpOutcome.getCrpProgramOutcome().getComposeID() + "\n <br>";
+                }
               }
-              if (projectOutcome.getProjectOutcome().getComposedName() != null) {
-                keyOutput += "● " + projectOutcome.getProjectOutcome().getComposedName() + "\n";
-              }
+
             }
-          }
-          if (keyOutput != null && !keyOutput.isEmpty()) {
-            keyOutput = keyOutput.replace("null", "");
           }
         } catch (Exception e) {
           e.printStackTrace();
         }
+
+        // Deliverable Cluster participants
+        if (deliverable.getDeliverableClusterParticipants() != null) {
+          deliverable.setClusterParticipant(new ArrayList<>(deliverable.getDeliverableClusterParticipants().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .collect(Collectors.toList())));
+        }
+
+        // Setup Geographic Scope
+        if (deliverable.getDeliverableGeographicScopes() != null) {
+          deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .collect(Collectors.toList())));
+        }
+        if (deliverable.getGeographicScopes() != null && !deliverable.getGeographicScopes().isEmpty()) {
+          for (DeliverableGeographicScope deliverableGeographic : deliverable.getGeographicScopes()) {
+            if (deliverableGeographic != null && deliverableGeographic.getRepIndGeographicScope() != null
+              && deliverableGeographic.getRepIndGeographicScope().getName() != null) {
+              geographicScope = "● " + deliverableGeographic.getRepIndGeographicScope().getName() + "\n <br>";
+            }
+          }
+        } else {
+          geographicScope = "<Not defined>";
+        }
+
+        // Deliverable Countries List
+        if (deliverable.getDeliverableLocations() == null) {
+          deliverable.setCountries(new ArrayList<>());
+        } else {
+          List<DeliverableLocation> countriesList = deliverableLocationManager
+            .getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
+          deliverable.setCountries(countriesList);
+        }
+
+        if (deliverable.getCountries() != null) {
+          for (DeliverableLocation country : deliverable.getCountries()) {
+            deliverable.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+          }
+        }
+        if (deliverable.getCountries() != null && !deliverable.getCountries().isEmpty()) {
+          for (DeliverableLocation deliverableCountries : deliverable.getCountries()) {
+            if (deliverableCountries != null && deliverableCountries.getLocElement() != null
+              && deliverableCountries.getLocElement().getName() != null) {
+              countries = "● " + deliverableCountries.getLocElement().getName() + "\n <br>";
+            }
+          }
+        } else {
+          countries = "<Not defined>";
+        }
+
+        // Expected Study Geographic Regions List
+        if (deliverable.getDeliverableGeographicRegions() != null
+          && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
+          deliverable.setDeliverableRegions(new ArrayList<>(deliverableGeographicRegionManager
+            .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getActualPhase().getId()).stream()
+            .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
+            .collect(Collectors.toList())));
+        }
+        if (deliverable.getDeliverableRegions() != null && !deliverable.getDeliverableRegions().isEmpty()) {
+          for (DeliverableGeographicRegion deliverableRegion : deliverable.getDeliverableRegions()) {
+            if (deliverableRegion != null && deliverableRegion.getLocElement() != null
+              && deliverableRegion.getLocElement().getName() != null) {
+              regions = "● " + deliverableRegion.getLocElement().getName() + "\n <br>";
+            }
+          }
+        } else {
+          regions = "<Not defined>";
+        }
+        if (regions.isEmpty()) {
+          regions = "<Not defined>";
+        }
+
+        // Deliverables shared
+        try {
+          List<ProjectDeliverableShared> deliverablesShared = null;
+          deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
+
+          if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+            deliverablesShared = deliverablesShared.stream().filter(ds -> ds.isActive() && ds.getDeliverable() != null
+              && ds.getDeliverable().getId().equals(deliverable.getId())).collect(Collectors.toList());
+          }
+
+          if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+            for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+              if (deliverableShared != null && deliverableShared.getProject() != null
+                && deliverableShared.getProject().getAcronym() != null) {
+                sharedClusters = "● " + deliverableShared.getProject().getAcronym() + "\n <br>";
+              }
+            }
+          } else {
+            sharedClusters = "<Not defined>";
+          }
+        } catch (Exception e) {
+          LOG.error("error getting shared deliverables " + e);
+        }
+
+
+        // Activities
+        List<DeliverableActivity> deliverableActivities = null;
+        deliverableActivities = deliverableActivityManager.getDeliverableActivitiesByDeliverableID(deliverable.getId());
+        if (deliverableActivities != null && !deliverableActivities.isEmpty()) {
+          deliverableActivities = deliverableActivities.stream()
+            .filter(da -> da.isActive() && da.getPhase() != null
+              && da.getPhase().getId().equals(this.getActualPhase().getId()) && da.getActivity() != null
+              && da.getActivity().isActive() && da.getActivity().getProject() != null
+              && da.getActivity().getProject().getId().equals(project.getId()))
+            .collect(Collectors.toList());
+
+          deliverable.setActivities(deliverableActivities);
+        }
+
+        if (deliverable.getActivities() != null && !deliverable.getActivities().isEmpty()) {
+          for (DeliverableActivity deliverableActivity : deliverable.getActivities()) {
+            if (deliverableActivity != null && deliverableActivity.getActivity() != null
+              && deliverableActivity.getActivity().getActivityTitle() != null
+              && deliverableActivity.getActivity().getActivityTitle().getTitle() != null) {
+              activities += "● " + deliverableActivity.getActivity().getActivityTitle().getTitle() + "\n <br>";
+            }
+          }
+        }
+
+        if (activities != null && !activities.isEmpty()) {
+          activities = activities.replace("null", "");
+        }
+
+
         // Get partner responsible and institution
         List<DeliverableUserPartnership> deliverablePartnershipResponsibles =
           deliverable.getDeliverableUserPartnerships().stream()
@@ -3425,7 +3574,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           intellectualAssetPvpStatus, intellectualAssetPvpCountry, intellectualAssetPvpApplicationNumber,
           intellectualAssetPvpBreederCrop, intellectualAssetDateFilling, intellectualAssetDateRegistration,
           intellectualAssetDateExpiry, intellectualAssetAdditionalInformation, intellectualAssetLinkPublished,
-          intellectualAssetCommunication, otherPartner, delivDescription});
+          intellectualAssetCommunication, otherPartner, delivDescription, activities, geographicScope, countries,
+          regions, sharedClusters});
       }
     }
     return model;
@@ -3450,7 +3600,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         "intellectualAssetPvpStatus", "intellectualAssetPvpCountry", "intellectualAssetPvpApplicationNumber",
         "intellectualAssetPvpBreederCrop", "intellectualAssetDateFilling", "intellectualAssetDateRegistration",
         "intellectualAssetDateExpiry", "intellectualAssetAdditionalInformation", "intellectualAssetLinkPublished",
-        "intellectualAssetCommunication", "otherPartner", "deliv_description"},
+        "intellectualAssetCommunication", "otherPartner", "deliv_description", "activities", "geographicScope",
+        "countries", "regions", "sharedClusters"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -3462,7 +3613,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         Boolean.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getDeliverables().isEmpty()) {
@@ -3487,7 +3638,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                   && d.getDeliverableInfo().getYear() == this.getSelectedYear())))))
         .collect(Collectors.toList())) {
         String delivType = null, delivSubType = null, delivYear = null, keyOutput = "", leader = null,
-          institution = null, fundingSources = "", deliv_description = null, otherPartner = "";
+          institution = null, fundingSources = "", deliv_description = null, otherPartner = "", activities = "",
+          geographicScope = "", countries = "", regions = "", sharedClusters = "";
         // String delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
         String delivStatus =
           deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getSelectedPhase());
@@ -3549,6 +3701,129 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         } catch (Exception e) {
           e.printStackTrace();
         }
+
+        // Deliverable Cluster participants
+        if (deliverable.getDeliverableClusterParticipants() != null) {
+          deliverable.setClusterParticipant(new ArrayList<>(deliverable.getDeliverableClusterParticipants().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .collect(Collectors.toList())));
+        }
+
+        // Setup Geographic Scope
+        if (deliverable.getDeliverableGeographicScopes() != null) {
+          deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .collect(Collectors.toList())));
+        }
+        if (deliverable.getGeographicScopes() != null && !deliverable.getGeographicScopes().isEmpty()) {
+          for (DeliverableGeographicScope deliverableGeographic : deliverable.getGeographicScopes()) {
+            if (deliverableGeographic != null && deliverableGeographic.getRepIndGeographicScope() != null
+              && deliverableGeographic.getRepIndGeographicScope().getName() != null) {
+              geographicScope = "● " + deliverableGeographic.getRepIndGeographicScope().getName() + "\n <br>";
+            }
+          }
+        } else {
+          geographicScope = "<Not defined>";
+        }
+
+        // Deliverable Countries List
+        if (deliverable.getDeliverableLocations() == null) {
+          deliverable.setCountries(new ArrayList<>());
+        } else {
+          List<DeliverableLocation> countriesList = deliverableLocationManager
+            .getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
+          deliverable.setCountries(countriesList);
+        }
+
+        if (deliverable.getCountries() != null) {
+          for (DeliverableLocation country : deliverable.getCountries()) {
+            deliverable.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+          }
+        }
+        if (deliverable.getCountries() != null && !deliverable.getCountries().isEmpty()) {
+          for (DeliverableLocation deliverableCountries : deliverable.getCountries()) {
+            if (deliverableCountries != null && deliverableCountries.getLocElement() != null
+              && deliverableCountries.getLocElement().getName() != null) {
+              countries = "● " + deliverableCountries.getLocElement().getName() + "\n <br>";
+            }
+          }
+        } else {
+          countries = "<Not defined>";
+        }
+
+        // Expected Study Geographic Regions List
+        if (deliverable.getDeliverableGeographicRegions() != null
+          && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
+          deliverable.setDeliverableRegions(new ArrayList<>(deliverableGeographicRegionManager
+            .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getActualPhase().getId()).stream()
+            .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
+            .collect(Collectors.toList())));
+        }
+        if (deliverable.getDeliverableRegions() != null && !deliverable.getDeliverableRegions().isEmpty()) {
+          for (DeliverableGeographicRegion deliverableRegion : deliverable.getDeliverableRegions()) {
+            if (deliverableRegion != null && deliverableRegion.getLocElement() != null
+              && deliverableRegion.getLocElement().getName() != null) {
+              regions = "● " + deliverableRegion.getLocElement().getName() + "\n <br>";
+            }
+          }
+        } else {
+          regions = "<Not defined>";
+        }
+        if (regions == null || regions.isEmpty()) {
+          regions = "<Not defined>";
+        }
+
+        List<DeliverableActivity> deliverableActivities = null;
+        deliverableActivities = deliverableActivityManager.getDeliverableActivitiesByDeliverableID(deliverable.getId());
+        if (deliverableActivities != null && !deliverableActivities.isEmpty()) {
+          deliverableActivities = deliverableActivities.stream()
+            .filter(da -> da.isActive() && da.getPhase() != null
+              && da.getPhase().getId().equals(this.getActualPhase().getId()) && da.getActivity() != null
+              && da.getActivity().isActive() && da.getActivity().getProject() != null
+              && da.getActivity().getProject().getId().equals(project.getId()))
+            .collect(Collectors.toList());
+
+          deliverable.setActivities(deliverableActivities);
+        }
+
+        if (deliverable.getActivities() != null && !deliverable.getActivities().isEmpty()) {
+          for (DeliverableActivity deliverableActivity : deliverable.getActivities()) {
+            if (deliverableActivity != null && deliverableActivity.getActivity() != null
+              && deliverableActivity.getActivity().getActivityTitle() != null
+              && deliverableActivity.getActivity().getActivityTitle().getTitle() != null) {
+              activities += "● " + deliverableActivity.getActivity().getActivityTitle().getTitle() + "\n <br>";
+            }
+          }
+        }
+
+        if (activities != null && !activities.isEmpty()) {
+          activities = activities.replace("null", "");
+        }
+
+        // Deliverables shared
+        try {
+          List<ProjectDeliverableShared> deliverablesShared = null;
+          deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
+
+          if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+            deliverablesShared = deliverablesShared.stream().filter(ds -> ds.isActive() && ds.getDeliverable() != null
+              && ds.getDeliverable().getId().equals(deliverable.getId())).collect(Collectors.toList());
+          }
+
+          if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+            for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+              if (deliverableShared != null && deliverableShared.getProject() != null
+                && deliverableShared.getProject().getAcronym() != null) {
+                sharedClusters = "● " + deliverableShared.getProject().getAcronym() + "\n <br>";
+              }
+            }
+          } else {
+            sharedClusters = "<Not defined>";
+          }
+        } catch (Exception e) {
+          LOG.error("error getting shared deliverables " + e);
+        }
+
         // Get partner responsible and institution
         List<DeliverableUserPartnership> deliverablePartnershipResponsibles =
           deliverable.getDeliverableUserPartnerships().stream()
@@ -4234,7 +4509,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           intellectualAssetPvpStatus, intellectualAssetPvpCountry, intellectualAssetPvpApplicationNumber,
           intellectualAssetPvpBreederCrop, intellectualAssetDateFilling, intellectualAssetDateRegistration,
           intellectualAssetDateExpiry, intellectualAssetAdditionalInformation, intellectualAssetLinkPublished,
-          intellectualAssetCommunication, otherPartner, delivDescription});
+          intellectualAssetCommunication, otherPartner, delivDescription, activities, geographicScope, countries,
+          regions, sharedClusters});
       }
     }
     return model;
