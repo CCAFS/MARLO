@@ -1582,6 +1582,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String startDate = null;
         String endDate = null;
         String deliverables = "";
+        String activityTitle = "";
+
+        if (activity.getActivityTitle() != null && activity.getActivityTitle().getTitle() != null) {
+          activityTitle = activity.getActivityTitle().getTitle();
+        }
         if (activity.getStartDate() != null) {
           startDate = formatter.format(activity.getStartDate());
         }
@@ -1608,6 +1613,40 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               } else {
                 deliverableTitle = "&lt;Not Provided&gt;";
               }
+
+              String deliverableStatus = "";
+              if (deliverableActivity.getDeliverable() != null
+                && deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
+                && deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                  .getStatus() != null) {
+
+                if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus()
+                  .equals(Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()))) {
+                  if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                    .getNewExpectedYear() != null) {
+                    deliverableStatus = " (Extended to " + deliverableActivity.getDeliverable()
+                      .getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() + ")";
+                  } else {
+                    deliverableStatus = " (Extended from "
+                      + deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getYear()
+                      + ")";
+                  }
+                }
+
+                if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus()
+                  .equals(Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))) {
+                  if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                    .getNewExpectedYear() != null) {
+                    deliverableStatus = " (Completed " + deliverableActivity.getDeliverable()
+                      .getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() + ")";
+                  } else {
+                    deliverableStatus = " (Completed "
+                      + deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getYear()
+                      + ")";
+                  }
+                }
+              }
+
               if (deliverables.isEmpty()) {
                 deliverables = "● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
               } else {
@@ -1617,7 +1656,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
         }
         status = ProjectStatusEnum.getValue(activity.getActivityStatus().intValue()).getStatus();
-        model.addRow(new Object[] {activity.getId(), activity.getTitle(), activity.getDescription(), startDate, endDate,
+        model.addRow(new Object[] {activity.getId(), activityTitle, activity.getDescription(), startDate, endDate,
           institution, activityLeader, status, deliverables});
       }
     }
@@ -2849,7 +2888,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
               if (deliverableShared != null && deliverableShared.getProject() != null
                 && deliverableShared.getProject().getAcronym() != null) {
-                sharedClusters = "● " + deliverableShared.getProject().getAcronym() + "\n <br>";
+                sharedClusters += " ● " + deliverableShared.getProject().getAcronym() + "\n <br>";
               }
             }
           } else {
@@ -3814,7 +3853,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
               if (deliverableShared != null && deliverableShared.getProject() != null
                 && deliverableShared.getProject().getAcronym() != null) {
-                sharedClusters = "● " + deliverableShared.getProject().getAcronym() + "\n <br>";
+                sharedClusters += " ● " + deliverableShared.getProject().getAcronym() + "\n <br>";
               }
             }
           } else {
