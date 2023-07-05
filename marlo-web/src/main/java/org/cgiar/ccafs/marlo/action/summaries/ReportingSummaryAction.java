@@ -1623,34 +1623,65 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                 if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus()
                   .equals(Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()))) {
                   if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
-                    .getNewExpectedYear() != null) {
+                    .getNewExpectedYear() != null
+                    && deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                      .getNewExpectedYear() != -1) {
                     deliverableStatus = " (Extended to " + deliverableActivity.getDeliverable()
                       .getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() + ")";
                   } else {
-                    deliverableStatus = " (Extended from "
-                      + deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getYear()
-                      + ")";
+                    if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                      .getYear() != -1) {
+                      deliverableStatus = " (Extended from "
+                        + deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getYear()
+                        + ")";
+                    }
                   }
                 }
 
                 if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus()
                   .equals(Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))) {
                   if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
-                    .getNewExpectedYear() != null) {
+                    .getNewExpectedYear() != null
+                    && deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                      .getNewExpectedYear() != -1) {
                     deliverableStatus = " (Completed " + deliverableActivity.getDeliverable()
                       .getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() + ")";
                   } else {
-                    deliverableStatus = " (Completed "
-                      + deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getYear()
-                      + ")";
+                    if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                      .getYear() != -1) {
+                      deliverableStatus = " (Completed "
+                        + deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getYear()
+                        + ")";
+                    }
                   }
                 }
+
+                if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus()
+                  .equals(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+                  if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                    .getNewExpectedYear() != null
+                    && deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                      .getNewExpectedYear() != -1) {
+                    deliverableStatus = " (On-Going " + deliverableActivity.getDeliverable()
+                      .getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() + ")";
+                  } else {
+                    if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                      .getYear() != -1) {
+                      deliverableStatus = " (On-Going "
+                        + deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getYear()
+                        + ")";
+                    }
+                  }
+                }
+
               }
 
               if (deliverables.isEmpty()) {
-                deliverables = "● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
+                deliverables =
+                  "● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle + deliverableStatus;
               } else {
-                deliverables += "<br>● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
+                deliverables += "<br>● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle
+                  + deliverableStatus;
               }
             }
           }
