@@ -3623,7 +3623,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (otherPartners != null) {
             for (DeliverableUserPartnership partner : otherPartners) {
               if (partner.getInstitution() != null) {
-                otherPartner += partner.getInstitution().getComposedName();
+                otherPartner += "● " + partner.getInstitution().getComposedName() + "<br>";
               }
             }
           }
@@ -4558,7 +4558,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (otherPartners != null) {
             for (DeliverableUserPartnership partner : otherPartners) {
               if (partner.getInstitution() != null) {
-                otherPartner += partner.getInstitution().getComposedName();
+                otherPartner += "● " + partner.getInstitution().getComposedName() + "<br>";
               }
             }
           }
