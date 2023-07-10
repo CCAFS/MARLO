@@ -1515,9 +1515,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private TypedTableModel getActivitiesReportingTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"activity_id", "title", "description", "start_date", "end_date", "institution", "activity_leader",
-        "status", "overall"},
+        "status", "overall", "deliverables"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getActivities().isEmpty()) {
@@ -1539,6 +1539,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           String startDate = null;
           String endDate = null;
           String overall = null;
+          String deliverables = "";
+
           if (activity.getStartDate() != null) {
             startDate = formatter.format(activity.getStartDate());
           }
@@ -1555,8 +1557,96 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (activity.getActivityProgress() != null && !activity.getActivityProgress().isEmpty()) {
             overall = activity.getActivityProgress();
           }
+          List<DeliverableActivity> deliverableActivityList = activity.getDeliverableActivities().stream()
+            .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList());
+          if (deliverableActivityList != null && !deliverableActivityList.isEmpty()) {
+            for (DeliverableActivity deliverableActivity : deliverableActivityList) {
+              if (deliverableActivity.getDeliverable().isActive()) {
+                String deliverableTitle = "";
+                if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
+                  && deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                    .getTitle() != null) {
+                  deliverableTitle =
+                    deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle();
+                } else {
+                  deliverableTitle = "&lt;Not Provided&gt;";
+                }
+
+                String deliverableStatus = "";
+                if (deliverableActivity.getDeliverable() != null
+                  && deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
+                  && deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                    .getStatus() != null) {
+
+                  if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus()
+                    .equals(Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()))) {
+                    if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                      .getNewExpectedYear() != null
+                      && deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                        .getNewExpectedYear() != -1) {
+                      deliverableStatus = " (Extended to " + deliverableActivity.getDeliverable()
+                        .getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() + ")";
+                    } else {
+                      if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                        .getYear() != -1) {
+                        deliverableStatus = " (Extended from "
+                          + deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getYear()
+                          + ")";
+                      }
+                    }
+                  }
+
+                  if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus()
+                    .equals(Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))) {
+                    if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                      .getNewExpectedYear() != null
+                      && deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                        .getNewExpectedYear() != -1) {
+                      deliverableStatus = " (Completed " + deliverableActivity.getDeliverable()
+                        .getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() + ")";
+                    } else {
+                      if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                        .getYear() != -1) {
+                        deliverableStatus = " (Completed "
+                          + deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getYear()
+                          + ")";
+                      }
+                    }
+                  }
+
+                  if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getStatus()
+                    .equals(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+                    if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                      .getNewExpectedYear() != null
+                      && deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                        .getNewExpectedYear() != -1) {
+                      deliverableStatus = " (On-Going " + deliverableActivity.getDeliverable()
+                        .getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() + ")";
+                    } else {
+                      if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase())
+                        .getYear() != -1) {
+                        deliverableStatus = " (On-Going "
+                          + deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getYear()
+                          + ")";
+                      }
+                    }
+                  }
+
+                }
+
+                if (deliverables.isEmpty()) {
+                  deliverables =
+                    "● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle + deliverableStatus;
+                } else {
+                  deliverables += "<br>● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle
+                    + deliverableStatus;
+                }
+              }
+            }
+          }
           model.addRow(new Object[] {activity.getId(), activity.getTitle(), activity.getDescription(), startDate,
-            endDate, institution, activityLeader, status, overall});
+            endDate, institution, activityLeader, status, overall, deliverables});
         }
       }
     }
