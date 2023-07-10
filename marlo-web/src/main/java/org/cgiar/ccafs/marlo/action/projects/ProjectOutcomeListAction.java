@@ -298,8 +298,8 @@ public class ProjectOutcomeListAction extends BaseAction {
 
                 if (projectOutcome != null && projectOutcome.getId() != null && commentableField != null
                   && commentableField.getId() != null) {
-                  List<FeedbackQAComment> comments = commentManager.findAll().stream()
-                    .filter(f -> f != null && f.getParentId() == projectOutcome.getId()
+                  List<FeedbackQAComment> comments = commentManager
+                    .getFeedbackQACommentsByParentId(projectOutcome.getId()).stream().filter(f -> f != null
 
                       && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null && (!f
                         .getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))
