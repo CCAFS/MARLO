@@ -6,6 +6,7 @@ var cookieTime, isSecondForm = false, hasAccess = false;
 var username = $("input[name='user.email']");
 var inputPassword = $("input[name='user.password']");
 var crpSession = "";
+var incorrectPasswordCount = 0;
 
 function init() {
   initJreject();
@@ -390,11 +391,25 @@ function checkPassword(email,password) {
                 wrongData("incorrectPassword");
               } else {
                 wrongData("incorrectPassword", data.messageEror);
+                incorrectPasswordCount++;
+                if (incorrectPasswordCount == 3) {
+                  var loginButton = document.getElementById('login_next');
+                  $('#loginFormContainer .loginForm.max-size').css("height", "450px")
+                  grecaptcha.render('recaptcha-container', {
+                    'sitekey': '6Le9QhknAAAAAF2q2DGePkOpJ6kX1dFjt_vvGgC_',
+                    'callback': function() {
+                      loginButton.disabled = false;
+                    }
+                  });
+                  
+                }
               }
 
               // Hide the loading gif
               $("input#login_next").removeClass("login-loadingBlock");
-              $("input#login_next").attr("disabled", false);
+              if (incorrectPasswordCount != 3){
+                $("input#login_next").attr("disabled", false);
+              }
               $("input#login_next").val("Login");
             } else {
               $("input#login_formSubmit").click();

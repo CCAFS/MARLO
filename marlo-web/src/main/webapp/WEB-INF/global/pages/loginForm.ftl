@@ -64,6 +64,7 @@
               <input id="user.password" class="login-input user-password form-control" type="password" name="user.password" tabindex=0 required/>
               <label for="user.password">[@s.text name="login.password"/]</label>
             </div>
+            <div id="recaptcha-container"></div>
             [#-- Error messages --]
             <p class="invalidField invalidEmail hidden">[@s.text name="login.error.invalidField.invalidEmail"/]</p>
             <p class="invalidField emailNotFound hidden">[@s.text name="login.error.invalidField.emailNotFound"/]</p>
