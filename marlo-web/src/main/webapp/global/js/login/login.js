@@ -389,10 +389,12 @@ function checkPassword(email,password) {
             if(!data.userFound.loginSuccess) {
               if(data.messageEror == "Invalid CGIAR email or password, please try again") {
                 wrongData("incorrectPassword");
+                console.log('if 1')
               } else {
                 wrongData("incorrectPassword", data.messageEror);
                 incorrectPasswordCount++;
-                console.log(incorrectPasswordCount)
+                console.log('else')
+                incorrectPasswordCount++;
                 if (incorrectPasswordCount == 3) {
                   var loginButton = document.getElementById('login_next');
                   $('#loginFormContainer .loginForm.max-size').css("height", "450px")
