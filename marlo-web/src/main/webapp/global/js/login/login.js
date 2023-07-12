@@ -392,6 +392,7 @@ function checkPassword(email,password) {
               } else {
                 wrongData("incorrectPassword", data.messageEror);
                 incorrectPasswordCount++;
+                console.log(incorrectPasswordCount)
                 if (incorrectPasswordCount == 3) {
                   var loginButton = document.getElementById('login_next');
                   $('#loginFormContainer .loginForm.max-size').css("height", "450px")
