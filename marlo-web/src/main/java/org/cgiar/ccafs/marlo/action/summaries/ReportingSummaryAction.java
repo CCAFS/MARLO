@@ -54,6 +54,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -283,6 +284,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final DeliverableLocationManager deliverableLocationManager;
   private final DeliverableGeographicRegionManager deliverableGeographicRegionManager;
   private final ProjectDeliverableSharedManager projectDeliverableSharedManager;
+  private final UserManager userManager;
 
   @Inject
   public ReportingSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
@@ -311,7 +313,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ActivityManager activityManager, DeliverableActivityManager deliverableActivityManager,
     DeliverableLocationManager deliverableLocationManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
-    ProjectDeliverableSharedManager projectDeliverableSharedManager) {
+    ProjectDeliverableSharedManager projectDeliverableSharedManager, UserManager userManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
@@ -349,6 +351,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.deliverableLocationManager = deliverableLocationManager;
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
+    this.userManager = userManager;
   }
 
   /**
@@ -3713,7 +3716,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (otherPartners != null) {
             for (DeliverableUserPartnership partner : otherPartners) {
               if (partner.getInstitution() != null) {
-                otherPartner += "● " + partner.getInstitution().getComposedName() + "<br>";
+                otherPartner += "● " + partner.getInstitution().getComposedName() + " ";
+
+                if (partner != null && partner.getPartnershipPersons() != null) {
+                  for (DeliverableUserPartnershipPerson person : partner.getPartnershipPersons()) {
+                    if (person.getUser() != null && person.getUser().getId() != null
+                      && person.getUser().getComposedName() != null) {
+                      otherPartner += person.getUser().getComposedName() + "<br>";
+                    }
+                  }
+                }
               }
             }
           }
@@ -4648,7 +4660,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (otherPartners != null) {
             for (DeliverableUserPartnership partner : otherPartners) {
               if (partner.getInstitution() != null) {
-                otherPartner += "● " + partner.getInstitution().getComposedName() + "<br>";
+                otherPartner += "● " + partner.getInstitution().getComposedName() + " ";
+
+                if (partner != null && partner.getPartnershipPersons() != null) {
+                  for (DeliverableUserPartnershipPerson person : partner.getPartnershipPersons()) {
+                    if (person.getUser() != null && person.getUser().getId() != null
+                      && person.getUser().getComposedName() != null) {
+                      otherPartner += person.getUser().getComposedName() + "<br>";
+                    }
+                  }
+                }
               }
             }
           }

@@ -77,6 +77,17 @@ public interface DeliverableClusterParticipantDAO {
     getDeliverableClusterParticipantByDeliverableProjectPhase(long deliverableID, long projectID, long phaseID);
 
   /**
+   * This method gets a deliverableClusterParticipant object by a given deliverableID identifier, phase identifier and
+   * project identifier.
+   * 
+   * @param phaseID is the phase identifier.
+   * @param projectID is the phase identifier.
+   * @return a List of DeliverableClusterParticipant object.
+   */
+  public List<DeliverableClusterParticipant> getDeliverableClusterParticipantByProjectAndPhase(long projectID,
+    long phaseID);
+
+  /**
    * This method saves the information of the given deliverableClusterParticipant
    * 
    * @param deliverableClusterParticipant - is the deliverableClusterParticipant object with the new information to be

@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableClusterParticipantManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
@@ -72,6 +73,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -113,6 +115,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
   private DeliverableClusterParticipantManager deliverableClusterParticipantManager;
+  private DeliverableManager deliverableManager;
 
 
   // Front-end
@@ -137,6 +140,8 @@ public class ProjectOutcomeAction extends BaseAction {
   private List<FeedbackQACommentableFields> feedbackComments;
   private int journalDeliverables;
   private Long userID;
+  List<Long> deliverableIDs = new ArrayList<>();
+
 
   // capdev component
   private Double totalParticipants = new Double(0);
@@ -166,7 +171,7 @@ public class ProjectOutcomeAction extends BaseAction {
     FeedbackQACommentManager feedbackQACommentManager,
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
     ProjectDeliverableSharedManager projectDeliverableSharedManager,
-    DeliverableClusterParticipantManager deliverableClusterParticipantManager) {
+    DeliverableClusterParticipantManager deliverableClusterParticipantManager, DeliverableManager deliverableManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -186,6 +191,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
     this.deliverableClusterParticipantManager = deliverableClusterParticipantManager;
+    this.deliverableManager = deliverableManager;
   }
 
   public void addAllCrpMilestones() {
@@ -509,6 +515,11 @@ public class ProjectOutcomeAction extends BaseAction {
         LOG.error(e + "error to filter deliverable for AR");
       }
     }
+
+    // Shared deliverables
+    List<Deliverable> deliverablesShared = new ArrayList<>();
+    deliverablesShared = this.loadTraineesDeliverableShared();
+
     if (currentDeliverables != null) {
       for (Deliverable deliverable : currentDeliverables) {
         if (deliverable != null && deliverable.getDeliverableCrpOutcomes() != null) {
@@ -611,6 +622,114 @@ public class ProjectOutcomeAction extends BaseAction {
         }
       }
     }
+
+    // Deliverables shared
+    if (deliverablesShared != null) {
+      for (Deliverable deliverable : deliverablesShared) {
+        long idTemp = deliverable.getId();
+        deliverable = deliverableManager.getDeliverableById(deliverable.getId());
+        // get deliverable cluster participants
+        List<DeliverableClusterParticipant> deliverableClusterParticipants = null;
+        try {
+          deliverableClusterParticipants = deliverableClusterParticipantManager
+            .getDeliverableClusterParticipantByProjectAndPhase(project.getId(), this.getActualPhase().getId());
+
+        } catch (Exception e) {
+          LOG.error(e + " error getting cluster participant list for shared deliverables");
+        }
+
+        if (deliverable != null && deliverable.getDeliverableCrpOutcomes() != null) {
+          deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+        }
+
+        // Set deliverable participants
+        if (deliverable != null && deliverable.getDeliverableParticipants() != null) {
+          List<DeliverableParticipant> deliverableParticipantsList = deliverable.getDeliverableParticipants().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+          if (!deliverableParticipantsList.isEmpty()) {
+            deliverable.setDeliverableParticipant(
+              deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipantsList.get(0).getId()));
+          }
+        }
+
+        if (deliverableClusterParticipants != null && !deliverableClusterParticipants.isEmpty() && deliverable != null
+          && deliverable.getCrpOutcomes() != null && !deliverable.getCrpOutcomes().isEmpty()) {
+
+          try {
+            deliverableClusterParticipants = deliverableClusterParticipants.stream()
+              .filter(d -> d != null && d.getDeliverable() != null && d.getDeliverable().getId().equals(idTemp))
+              .collect(Collectors.toList());
+          } catch (Exception e) {
+            LOG.error(e + " error filter deliverable cluster participants");
+          }
+
+          boolean foundOutcome = deliverable.getCrpOutcomes().stream().filter(Objects::nonNull)
+            .map(DeliverableCrpOutcome::getCrpProgramOutcome).filter(Objects::nonNull).map(CrpProgramOutcome::getId)
+            .filter(Objects::nonNull).anyMatch(id -> id.equals(projectOutcome.getCrpProgramOutcome().getId()));
+
+          if (foundOutcome && deliverableClusterParticipants != null && !deliverableClusterParticipants.isEmpty()
+            && deliverableClusterParticipants.get(0) != null) {
+
+            DeliverableClusterParticipant deliverableClusterParticipant = deliverableClusterParticipants.get(0);
+            boolean hasInformation = false;
+            // Total Participants
+
+            Double numberParticipant = 0.0;
+            if (deliverableClusterParticipant.getParticipants() != null) {
+              numberParticipant = deliverableClusterParticipant.getParticipants();
+            }
+
+            if (deliverableClusterParticipant.getParticipants() != null
+              && deliverableClusterParticipant.getParticipants() > 0) {
+              totalOwnParticipants += numberParticipant;
+              hasInformation = true;
+            }
+
+            // Total Formal Training
+            totalParticipantFormalTraining += numberParticipant;
+
+            // Total Female and Male per terms
+            Double numberFemales = 0.0;
+            if (deliverableClusterParticipant.getFemales() != null) {
+              totalOwnFemales += deliverableClusterParticipant.getFemales();
+              numberFemales = deliverableClusterParticipant.getFemales();
+            }
+            if (deliverableClusterParticipant.getAfrican() != null) {
+              totalOwnAfricans += deliverableClusterParticipant.getAfrican();
+            }
+            if (deliverableClusterParticipant.getYouth() != null) {
+              totalOwnYouth += deliverableClusterParticipant.getYouth();
+            }
+            if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE) && hasInformation) {
+              deliverable = this.fillOwnSharedTraineesContribution(deliverable);
+            }
+
+            totalParticipantFormalTrainingShortFemale += numberFemales;
+            totalParticipantFormalTrainingShortMale += (numberParticipant - numberFemales);
+
+
+            totalParticipantFormalTrainingLongFemale += numberFemales;
+            totalParticipantFormalTrainingLongMale += (numberParticipant - numberFemales);
+
+
+            totalParticipantFormalTrainingPhdFemale += numberFemales;
+            totalParticipantFormalTrainingPhdMale += (numberParticipant - numberFemales);
+
+
+            // Add deliverable participant to list
+            if (hasInformation && !deliverableParticipants.contains(deliverable.getDeliverableParticipant())) {
+              deliverableParticipants.add(deliverable.getDeliverableParticipant());
+            }
+
+          }
+
+
+        }
+
+      }
+    }
   }
 
   /**
@@ -628,13 +747,102 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
   /*
+   * Get information shared deliverables for own trainees contribution
+   */
+  public Deliverable fillOwnSharedTraineesContribution(Deliverable deliverable) {
+    boolean duplicateProcess = false;
+    if (deliverable != null && deliverable.getId() != null) {
+      if (deliverableIDs != null && !deliverableIDs.isEmpty()) {
+        if (!deliverableIDs.contains(deliverable.getId())) {
+          deliverableIDs.add(deliverable.getId());
+        } else {
+          duplicateProcess = true;
+        }
+      } else {
+        deliverableIDs.add(deliverable.getId());
+      }
+    }
+    if (duplicateProcess == false) {
+      DeliverableClusterParticipant clusterParticipant = new DeliverableClusterParticipant();
+
+      try {
+        if (deliverable != null && deliverable.getDeliverableParticipant() != null) {
+          deliverable.getDeliverableParticipant()
+            .setEventActivityName(deliverable.getDeliverableParticipant().getEventActivityName());
+          deliverable.getDeliverableParticipant().setFocus(deliverable.getDeliverableParticipant().getFocus());
+          deliverable.getDeliverableParticipant()
+            .setLikelyOutcomes(deliverable.getDeliverableParticipant().getLikelyOutcomes());
+        }
+        List<DeliverableClusterParticipant> resultList =
+          deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(
+            deliverable.getId(), projectID, this.getActualPhase().getId());
+
+        Optional<DeliverableClusterParticipant> optionalParticipant = resultList.stream().findFirst();
+
+        if (optionalParticipant.isPresent()) {
+          DeliverableClusterParticipant firstParticipant = optionalParticipant.get();
+          clusterParticipant = firstParticipant;
+        }
+
+        if (clusterParticipant != null && clusterParticipant.getDeliverable() != null) {
+          // Set deliverable participants
+          if (clusterParticipant.getDeliverable().getDeliverableParticipants() != null) {
+            List<DeliverableParticipant> deliverableParticipantsList =
+              clusterParticipant.getDeliverable().getDeliverableParticipants().stream()
+                .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+            if (!deliverableParticipantsList.isEmpty()) {
+              clusterParticipant.getDeliverable().setDeliverableParticipant(deliverableParticipantManager
+                .getDeliverableParticipantById(deliverableParticipantsList.get(0).getId()));
+            }
+          }
+
+          if (clusterParticipant.getParticipants() != null) {
+            deliverable.getDeliverableParticipant().setOwnTrainess(clusterParticipant.getParticipants());
+            if (clusterParticipant.getDeliverable().getDeliverableParticipant() != null
+              && clusterParticipant.getDeliverable().getDeliverableParticipant().getParticipants() != null) {
+              totalParticipants += clusterParticipant.getDeliverable().getDeliverableParticipant().getParticipants();
+            }
+          }
+
+          if (clusterParticipant.getFemales() != null) {
+            totalFemales += clusterParticipant.getDeliverable().getDeliverableParticipant().getFemales();
+            if (clusterParticipant.getDeliverable().getDeliverableParticipant() != null
+              && clusterParticipant.getDeliverable().getDeliverableParticipant().getFemales() != null) {
+              deliverable.getDeliverableParticipant().setOwnFemales(clusterParticipant.getFemales());
+            }
+          }
+
+          if (clusterParticipant.getAfrican() != null) {
+            totalAfricans += clusterParticipant.getDeliverable().getDeliverableParticipant().getAfrican();
+            if (clusterParticipant.getDeliverable().getDeliverableParticipant() != null
+              && clusterParticipant.getDeliverable().getDeliverableParticipant().getAfrican() != null) {
+              deliverable.getDeliverableParticipant().setOwnAfricans(clusterParticipant.getAfrican());
+            }
+          }
+
+          if (clusterParticipant.getYouth() != null) {
+            totalYouth += clusterParticipant.getDeliverable().getDeliverableParticipant().getYouth();
+            if (clusterParticipant.getDeliverable().getDeliverableParticipant() != null
+              && clusterParticipant.getDeliverable().getDeliverableParticipant().getYouth() != null) {
+              deliverable.getDeliverableParticipant().setOwnYouth(clusterParticipant.getYouth());
+            }
+          }
+        }
+      } catch (Exception e) {
+        LOG.error(e + "error to get own trainees contribution");
+      }
+    }
+    return deliverable;
+  }
+
+  /*
    * Get information for own trainees contribution
    */
   public Deliverable fillOwnTraineesContribution(Deliverable deliverable) {
 
     if (deliverable.getId() != 0) {
       DeliverableClusterParticipant clusterParticipant = new DeliverableClusterParticipant();
-
       try {
         List<DeliverableClusterParticipant> resultList =
           deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(
@@ -1086,47 +1294,51 @@ public class ProjectOutcomeAction extends BaseAction {
     return editable;
   }
 
-  public void loadDeliverablesShared() {
+  public void loadJournalDeliverablesShared() {
 
     List<ProjectDeliverableShared> deliverablesShared = new ArrayList<>();
     try {
-      for (Deliverable deliverableTemp : deliverableJournals) {
-        if (deliverableTemp != null && deliverableTemp.getId() != null) {
-          deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
-          if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
-            deliverablesShared = deliverablesShared.stream().filter(ds -> ds.isActive() && ds.getDeliverable() != null
-              && ds.getDeliverable().getProject().getId().equals(projectID)).collect(Collectors.toList());
-          }
+      deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
+      if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+        deliverablesShared = deliverablesShared.stream().filter(ds -> ds.isActive() && ds.getDeliverable() != null
+          && ds.getDeliverable().isActive() && ds.getDeliverable().getProject().getId().equals(projectID))
+          .collect(Collectors.toList());
 
-          // Owner
-          if (deliverableTemp.getProject() != null && !deliverableTemp.getProject().getId().equals(projectID)) {
-            deliverableTemp
-              .setOwner(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-            deliverableTemp
-              .setSharedWithMe(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-          } else {
-            deliverableTemp.setOwner("This Cluster");
-            deliverableTemp.setSharedWithMe("Not Applicable");
+        for (Deliverable deliverableTemp : deliverableJournals) {
+          if (deliverableTemp != null && deliverableTemp.getId() != null) {
+
+            // Owner
+            if (deliverableTemp.getProject() != null && !deliverableTemp.getProject().getId().equals(projectID)) {
+              deliverableTemp
+                .setOwner(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+              deliverableTemp
+                .setSharedWithMe(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+            } else {
+              deliverableTemp.setOwner("This Cluster");
+              deliverableTemp.setSharedWithMe("Not Applicable");
+            }
           }
 
           // Shared with others
-          for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
-            // String projectsSharedText = null;
-            if (deliverableShared.getDeliverable().getSharedWithProjects() == null) {
-              deliverableShared.getDeliverable().setSharedWithProjects(
-                "" + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-            } else {
-              if (deliverableShared.getDeliverable() != null
-                && deliverableShared.getDeliverable().getSharedWithProjects() != null
-                && deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
-                && !deliverableShared.getDeliverable().getSharedWithProjects()
-                  .contains(deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
-                deliverableShared.getDeliverable()
-                  .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; "
-                    + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+          if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+            for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+              // String projectsSharedText = null;
+              if (deliverableShared.getDeliverable().getSharedWithProjects() == null) {
+                deliverableShared.getDeliverable().setSharedWithProjects(
+                  "" + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+              } else {
+                if (deliverableShared.getDeliverable() != null
+                  && deliverableShared.getDeliverable().getSharedWithProjects() != null
+                  && deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
+                  && !deliverableShared.getDeliverable().getSharedWithProjects()
+                    .contains(deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
+                  deliverableShared.getDeliverable()
+                    .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; "
+                      + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                }
               }
+              // deliverableShared.getDeliverable().setSharedWithProjects(projectsSharedText);
             }
-            // deliverableShared.getDeliverable().setSharedWithProjects(projectsSharedText);
           }
           // deliverableTemp.setSharedWithProjects(projectsSharedText);
           // deliverableTemp.setSharedDeliverables(deliverablesShared);
@@ -1156,6 +1368,38 @@ public class ProjectOutcomeAction extends BaseAction {
 
     return projectOutcome.getMilestones().stream().filter(c -> c.getYear() == year).collect(Collectors.toList());
 
+  }
+
+
+  /**
+   * Load the list of deliverables active shared with this cluster
+   * 
+   * @return list of deliverables active shared with this cluster
+   **/
+  public List<Deliverable> loadTraineesDeliverableShared() {
+
+    List<ProjectDeliverableShared> deliverablesShared = new ArrayList<>();
+    List<Deliverable> deliverablesLocal = new ArrayList<>();
+
+    try {
+      deliverablesShared =
+        projectDeliverableSharedManager.getByProjectAndPhase(projectID, this.getActualPhase().getId());
+      if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+        deliverablesShared = deliverablesShared.stream()
+          .filter(ds -> ds.isActive() && ds.getDeliverable().isActive()
+            && ds.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+            && ds.getDeliverable().getDeliverableInfo(this.getActualPhase()).isActive())
+          .collect(Collectors.toList());
+      }
+
+      if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+        deliverablesLocal =
+          deliverablesShared.stream().map(ProjectDeliverableShared::getDeliverable).collect(Collectors.toList());
+      }
+    } catch (Exception e) {
+      LOG.error(e + " error getting shared trainees deliverables");
+    }
+    return deliverablesLocal;
   }
 
   @Override
@@ -1383,7 +1627,7 @@ public class ProjectOutcomeAction extends BaseAction {
       && projectOutcome.getCrpProgramOutcome().getDescription().contains("1.2")
       && this.hasSpecificities(APConstants.JOURNAL_ARTICLES_INDICATOR_POPUP_ACTIVE)) {
       this.deliverableJournalInformation();
-      this.loadDeliverablesShared();
+      this.loadJournalDeliverablesShared();
     }
 
     /*
@@ -1398,15 +1642,13 @@ public class ProjectOutcomeAction extends BaseAction {
       if (feedbackComments != null) {
         for (FeedbackQACommentableFields field : feedbackComments) {
           List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
-          comments = feedbackQACommentManager.findAll().stream()
-            .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
-              && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == projectOutcome.getId()
+          comments = feedbackQACommentManager
+            .getFeedbackQACommentsByParentId(projectOutcome.getId()).stream().filter(f -> f != null
               && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
             .collect(Collectors.toList());
           field.setQaComments(comments);
         }
       }
-
     } catch (Exception e) {
       LOG.error(e + " error getting commentable fields");
     }
