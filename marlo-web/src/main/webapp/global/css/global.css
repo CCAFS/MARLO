@@ -7017,10 +7017,8 @@ div.radioFlat {
   }
 }
 
-/* Datatables button*/
-.dt-buttons{
-  display: none;
-height: 33px;
+/* Datatables button*/.dt-buttons{
+  height: 33px;
 }
 
 a.dt-button {

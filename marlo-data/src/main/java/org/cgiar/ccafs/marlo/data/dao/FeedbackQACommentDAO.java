@@ -56,6 +56,14 @@ public interface FeedbackQACommentDAO {
 
 
   /**
+   * This method gets a list of feedbackQAComment that are active by Parent id
+   * 
+   * @param parentID is a feedbackQAComment section identifier.
+   * @return a list from FeedbackQAComment null if no exist records
+   */
+  public List<FeedbackQAComment> getFeedbackQACommentsByParentId(long parentID);
+
+  /**
    * This method saves the information of the given feedbackQAComment
    * 
    * @param feedbackQAComment - is the feedbackQAComment object with the new information to be added/updated.

@@ -298,8 +298,8 @@ public class ProjectOutcomeListAction extends BaseAction {
 
                 if (projectOutcome != null && projectOutcome.getId() != null && commentableField != null
                   && commentableField.getId() != null) {
-                  List<FeedbackQAComment> comments = commentManager.findAll().stream()
-                    .filter(f -> f != null && f.getParentId() == projectOutcome.getId()
+                  List<FeedbackQAComment> comments = commentManager
+                    .getFeedbackQACommentsByParentId(projectOutcome.getId()).stream().filter(f -> f != null
 
                       && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null && (!f
                         .getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))
@@ -429,22 +429,25 @@ public class ProjectOutcomeListAction extends BaseAction {
     String params[] = {gp.getGlobalUnit().getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
 
-    if (this.getActualPhase() != null && projectID != 0) {
+    if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE)) {
 
-      if (projectLp6ContributionManager.findAll() != null) {
-        List<ProjectLp6Contribution> projectLp6Contributions = projectLp6ContributionManager.findAll().stream()
-          .filter(
-            c -> c.isActive() && c.getProject().getId().equals(projectID) && c.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList());
-        if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
-          this.setProjectLp6Contribution(projectLp6Contributions.get(0));
-        } else {
-          if (contributionValue) {
-            ProjectLp6Contribution newContribution = new ProjectLp6Contribution();
-            newContribution.setProject(project);
-            newContribution.setPhase(this.getActualPhase());
-            newContribution.setContribution(contributionValue);
-            projectLp6ContributionManager.saveProjectLp6Contribution(newContribution);
+      if (this.getActualPhase() != null && projectID != 0) {
+
+        if (projectLp6ContributionManager.findAll() != null) {
+          List<ProjectLp6Contribution> projectLp6Contributions = projectLp6ContributionManager.findAll().stream()
+            .filter(c -> c.isActive() && c.getProject().getId().equals(projectID)
+              && c.getPhase().equals(this.getActualPhase()))
+            .collect(Collectors.toList());
+          if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
+            this.setProjectLp6Contribution(projectLp6Contributions.get(0));
+          } else {
+            if (contributionValue) {
+              ProjectLp6Contribution newContribution = new ProjectLp6Contribution();
+              newContribution.setProject(project);
+              newContribution.setPhase(this.getActualPhase());
+              newContribution.setContribution(contributionValue);
+              projectLp6ContributionManager.saveProjectLp6Contribution(newContribution);
+            }
           }
         }
       }

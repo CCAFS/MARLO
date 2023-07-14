@@ -70,6 +70,16 @@ public class FeedbackQACommentMySQLDAO extends AbstractMarloDAO<FeedbackQACommen
   }
 
   @Override
+  public List<FeedbackQAComment> getFeedbackQACommentsByParentId(long parentID) {
+    String query = "from " + FeedbackQAComment.class.getName() + " where parent_id=" + parentID;
+    List<FeedbackQAComment> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return null;
+  }
+
+  @Override
   public FeedbackQAComment save(FeedbackQAComment feedbackQAComment) {
     if (feedbackQAComment.getId() == null) {
       super.saveEntity(feedbackQAComment);

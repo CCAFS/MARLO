@@ -51,14 +51,22 @@ public interface FeedbackQACommentManager {
    */
   public List<FeedbackQAComment> findAll();
 
-
   /**
    * This method gets a feedbackQAComment object by a given feedbackQAComment identifier.
    * 
-   * @param feedbackQACommentID is the feedbackQAComment identifier.
+   * @param feedbackQACommentID is the feedbackQAComment section ID identifier.
    * @return a FeedbackQAComment object.
    */
   public FeedbackQAComment getFeedbackQACommentById(long feedbackQACommentID);
+
+
+  /**
+   * This method gets a list of feedbackQAComment that are active by Parent id
+   * 
+   * @param parentID is a feedbackQAComment section identifier.
+   * @return a list from FeedbackQAComment null if no exist records
+   */
+  public List<FeedbackQAComment> getFeedbackQACommentsByParentId(long parentID);
 
   /**
    * This method saves the information of the given feedbackQAComment
