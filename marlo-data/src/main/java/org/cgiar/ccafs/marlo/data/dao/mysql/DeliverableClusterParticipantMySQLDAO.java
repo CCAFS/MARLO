@@ -76,7 +76,7 @@ public class DeliverableClusterParticipantMySQLDAO extends AbstractMarloDAO<Deli
     long phaseID) {
 
     String query = "select dp from DeliverableClusterParticipant dp "
-      + "where phase.id = :phaseId and deliverable.id= :deliverableId ";
+      + "where phase.id = :phaseId and deliverable.id= :deliverableId and is_active=1";
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phaseID);
     createQuery.setParameter("deliverableId", deliverableID);
@@ -91,10 +91,25 @@ public class DeliverableClusterParticipantMySQLDAO extends AbstractMarloDAO<Deli
     getDeliverableClusterParticipantByDeliverableProjectPhase(long deliverableID, long projectID, long phaseID) {
 
     String query = "select dp from DeliverableClusterParticipant dp "
-      + "where phase.id = :phaseId and deliverable.id= :deliverableId and project.id= :projectId";
+      + "where phase.id = :phaseId and deliverable.id= :deliverableId and project.id= :projectId and is_active=1";
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phaseID);
     createQuery.setParameter("deliverableId", deliverableID);
+    createQuery.setParameter("projectId", projectID);
+
+    Object findSingleResult = super.findAll(createQuery);
+    List<DeliverableClusterParticipant> deliverableUserResult = (List<DeliverableClusterParticipant>) findSingleResult;
+    return deliverableUserResult;
+  }
+
+  @Override
+  public List<DeliverableClusterParticipant> getDeliverableClusterParticipantByProjectAndPhase(long projectID,
+    long phaseID) {
+
+    String query = "select dp from DeliverableClusterParticipant dp "
+      + "where phase.id = :phaseId and project.id= :projectId and is_active=1";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phaseID);
     createQuery.setParameter("projectId", projectID);
 
     Object findSingleResult = super.findAll(createQuery);
