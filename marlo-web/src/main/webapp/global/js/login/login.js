@@ -389,12 +389,15 @@ function checkPassword(email,password) {
             if(!data.userFound.loginSuccess) {
               if(data.messageEror == "Invalid CGIAR email or password, please try again") {
                 wrongData("incorrectPassword");
+                // Code for the recaptcha to appear after 3 password attempts
                 incorrectPasswordCount++;
                 if (incorrectPasswordCount == 3) {
                   var loginButton = document.getElementById('login_next');
-                  $('#loginFormContainer .loginForm.max-size').css("height", "450px")
+                  $('#recaptcha-container').css("margin-top", "40px")
+                  $('.login-form-button').css("margin-top", "-15px")
+                  $('#loginFormContainer .loginForm.max-size').css("height", "500px")
                   grecaptcha.render('recaptcha-container', {
-                    'sitekey': '6Le9QhknAAAAAF2q2DGePkOpJ6kX1dFjt_vvGgC_',
+                    'sitekey': RECAPTCHAT_SITE_KEY,
                     'callback': function() {
                       loginButton.disabled = false;
                     }

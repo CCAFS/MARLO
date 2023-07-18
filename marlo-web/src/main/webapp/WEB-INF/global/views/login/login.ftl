@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Welcome to AICCRA" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrlCdn}/global/js/login/login.js?20230712"] /]
+[#assign customJS = ["${baseUrlCdn}/global/js/login/login.js?20230714"] /]
 [#assign currentSection = "home" /]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
