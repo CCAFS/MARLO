@@ -405,6 +405,25 @@ public class DeliverableAction extends BaseAction {
     this.feedbackQACommentManager = feedbackQACommentManager;
   }
 
+  /**
+   * @return current Deliverable cluster participant for actual deliverable
+   */
+  public DeliverableClusterParticipant actualDeliverableClusterParticipant() {
+    DeliverableClusterParticipant clusterParticipant = null;
+    try {
+      clusterParticipant =
+        deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(deliverableID,
+          projectID, this.getActualPhase().getId()).get(0);
+    } catch (Exception e) {
+      Log.error(e + " error getting actual cluster participant ID");
+    }
+    if (clusterParticipant != null && clusterParticipant.getId() != null) {
+      return clusterParticipant;
+    } else {
+      return null;
+    }
+  }
+
   @Override
   public String cancel() {
 
@@ -2664,11 +2683,21 @@ public class DeliverableAction extends BaseAction {
             }
 
           }
-          participantSave.setParticipants(deliverableParticipant.getParticipants());
-          participantSave.setFemales(deliverableParticipant.getFemales());
-          participantSave.setAfrican(deliverableParticipant.getAfrican());
-          participantSave.setYouth(deliverableParticipant.getYouth());
-          participantSave.setDeliverable(deliverable);
+          if (deliverableParticipant.getParticipants() != null) {
+            participantSave.setParticipants(deliverableParticipant.getParticipants());
+          }
+          if (deliverableParticipant.getFemales() != null) {
+            participantSave.setFemales(deliverableParticipant.getFemales());
+          }
+          if (deliverableParticipant.getAfrican() != null) {
+            participantSave.setAfrican(deliverableParticipant.getAfrican());
+          }
+          if (deliverableParticipant.getYouth() != null) {
+            participantSave.setYouth(deliverableParticipant.getYouth());
+          }
+          if (deliverable != null) {
+            participantSave.setDeliverable(deliverable);
+          }
           participantSave.setPhase(this.getActualPhase());
           if (deliverableParticipant.getProject() != null && deliverableParticipant.getProject().getId() != null) {
             participantSave.setProject(deliverableParticipant.getProject());
@@ -3545,8 +3574,13 @@ public class DeliverableAction extends BaseAction {
                 if (deliverableClusterParticipantDelete != null
                   && deliverableClusterParticipantDelete.getId() != null) {
 
-                  deliverableClusterParticipantManager
-                    .deleteDeliverableClusterParticipant(deliverableClusterParticipantDelete.getId());
+                  DeliverableClusterParticipant actualClusterParticipant = new DeliverableClusterParticipant();
+                  actualClusterParticipant = this.actualDeliverableClusterParticipant();
+                  if (actualClusterParticipant != null && actualClusterParticipant.getId() != null
+                    && (!deliverableClusterParticipantDelete.getId().equals(actualClusterParticipant.getId()))) {
+                    deliverableClusterParticipantManager
+                      .deleteDeliverableClusterParticipant(deliverableClusterParticipantDelete.getId());
+                  }
                 }
               }
             } catch (Exception e) {
