@@ -2948,7 +2948,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             }
           }
         } else {
-          geographicScope = "<Not defined>";
+          geographicScope = "<Not provided>";
         }
 
         // Deliverable Countries List
@@ -2973,7 +2973,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             }
           }
         } else {
-          countries = "<Not defined>";
+          countries = "<Not provided>";
         }
 
         // Expected Study Geographic Regions List
@@ -2992,10 +2992,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             }
           }
         } else {
-          regions = "<Not defined>";
+          regions = "<Not provided>";
         }
         if (regions.isEmpty()) {
-          regions = "<Not defined>";
+          regions = "<Not provided>";
         }
 
         // Deliverables shared
@@ -3016,7 +3016,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               }
             }
           } else {
-            sharedClusters = "<Not defined>";
+            sharedClusters = "<Not provided>";
           }
         } catch (Exception e) {
           LOG.error("error getting shared deliverables " + e);
@@ -3895,7 +3895,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             }
           }
         } else {
-          geographicScope = "<Not defined>";
+          geographicScope = "<Not provided>";
         }
 
         // Deliverable Countries List
@@ -3920,7 +3920,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             }
           }
         } else {
-          countries = "<Not defined>";
+          countries = "<Not provided>";
         }
 
         // Expected Study Geographic Regions List
@@ -3939,10 +3939,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             }
           }
         } else {
-          regions = "<Not defined>";
+          regions = "<Not provided>";
         }
         if (regions == null || regions.isEmpty()) {
-          regions = "<Not defined>";
+          regions = "<Not provided>";
         }
 
         List<DeliverableActivity> deliverableActivities = null;
@@ -3990,7 +3990,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               }
             }
           } else {
-            sharedClusters = "<Not defined>";
+            sharedClusters = "<Not provided>";
           }
         } catch (Exception e) {
           LOG.error("error getting shared deliverables " + e);
