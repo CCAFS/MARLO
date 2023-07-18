@@ -151,6 +151,9 @@ public class APConfig {
   @Value("${clarisa.api.password}")
   private String CLARISA_API_PASSWORD;
 
+  @Value("${recaptcha.site.key}")
+  private String RECAPTCHAT_SITE_KEY;
+
   public APConfig() {
   }
 
@@ -663,6 +666,21 @@ public class APConfig {
     }
 
     return PUSH_SECRETE_KEY;
+  }
+
+  /**
+   * Get recaptcha account key
+   * loaded
+   *
+   * @return a string with the path
+   */
+  public String getRecaptchatSiteKey() {
+    if (RECAPTCHAT_SITE_KEY == null) {
+      LOG.error("there is not a base folder to save the uploaded files configured.");
+      /** Should we just throw an exception? **/
+      return null;
+    }
+    return RECAPTCHAT_SITE_KEY;
   }
 
   /**

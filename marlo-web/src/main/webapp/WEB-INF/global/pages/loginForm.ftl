@@ -64,7 +64,6 @@
               <input id="user.password" class="login-input user-password form-control" type="password" name="user.password" tabindex=0 required/>
               <label for="user.password">[@s.text name="login.password"/]</label>
             </div>
-            <div id="recaptcha-container"></div>
             [#-- Error messages --]
             <p class="invalidField invalidEmail hidden">[@s.text name="login.error.invalidField.invalidEmail"/]</p>
             <p class="invalidField emailNotFound hidden">[@s.text name="login.error.invalidField.emailNotFound"/]</p>
@@ -80,6 +79,10 @@
               <input type="checkbox" name="user.agree" id="terms" class="terms" value="true" required> [@s.text name="login.agree"/] <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">[@s.text name="login.terms"/]</a>
             </div>
           </div>
+        </div>
+        [#-- field recaptcha--]
+        <div class="container-recaptcha">
+          <div id="recaptcha-container"></div>
         </div>
         [#-- Submit button --]
         <div class="row">

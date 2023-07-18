@@ -7,6 +7,7 @@
   var hashScroll = true;
   var forceChange = false;
   
+  var RECAPTCHAT_SITE_KEY="${config.recaptchatSiteKey}"
   var GOOGLE_API_KEY="${config.googleApiKey}";
   var PUSHER_KEY = "${config.pushApiKey}";
   
