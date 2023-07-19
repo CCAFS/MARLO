@@ -80,6 +80,10 @@
             </div>
           </div>
         </div>
+        [#-- field recaptcha--]
+        <div class="container-recaptcha">
+          <div id="recaptcha-container"></div>
+        </div>
         [#-- Submit button --]
         <div class="row">
           <div class="col-sm-12">
