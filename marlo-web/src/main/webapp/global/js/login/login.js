@@ -6,6 +6,7 @@ var cookieTime, isSecondForm = false, hasAccess = false;
 var username = $("input[name='user.email']");
 var inputPassword = $("input[name='user.password']");
 var crpSession = "";
+var incorrectPasswordCount = 0;
 
 function init() {
   initJreject();
@@ -388,13 +389,30 @@ function checkPassword(email,password) {
             if(!data.userFound.loginSuccess) {
               if(data.messageEror == "Invalid CGIAR email or password, please try again") {
                 wrongData("incorrectPassword");
+                // Code for the recaptcha to appear after 3 password attempts
+                incorrectPasswordCount++;
+                if (incorrectPasswordCount == 3) {
+                  var loginButton = document.getElementById('login_next');
+                  $('#recaptcha-container').css("margin-top", "40px")
+                  $('.login-form-button').css("margin-top", "-15px")
+                  $('#loginFormContainer .loginForm.max-size').css("height", "500px")
+                  grecaptcha.render('recaptcha-container', {
+                    'sitekey': RECAPTCHAT_SITE_KEY,
+                    'callback': function() {
+                      loginButton.disabled = false;
+                    }
+                  });
+                  
+                }
               } else {
                 wrongData("incorrectPassword", data.messageEror);
               }
 
               // Hide the loading gif
               $("input#login_next").removeClass("login-loadingBlock");
-              $("input#login_next").attr("disabled", false);
+              if (incorrectPasswordCount != 3){
+                $("input#login_next").attr("disabled", false);
+              }
               $("input#login_next").val("Login");
             } else {
               $("input#login_formSubmit").click();

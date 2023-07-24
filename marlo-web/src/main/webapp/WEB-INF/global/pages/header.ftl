@@ -36,7 +36,7 @@
     <![endif]-->
     
     [#-- Second, import global javascripts and templates. --]
-    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20230525" />
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20230725" />
     <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/jquery-ui.custom.css" />
     [#if centerGlobalUnit]
       <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global-center.css" />
@@ -92,7 +92,7 @@
       [/#if]
       gtag('config', '${googleAnalyticsID}');
     </script>
-    
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   </head>
   <body class="mode-${editable?string('editable', 'readOnly')}">
     [#if !(avoidHeader!false)]
