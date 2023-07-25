@@ -551,3 +551,7 @@ p.login-description{
 .button-pdf-modal{
   display: none;
 }
+
+.container-recaptcha{
+  text-align: -webkit-center !important;
+}
