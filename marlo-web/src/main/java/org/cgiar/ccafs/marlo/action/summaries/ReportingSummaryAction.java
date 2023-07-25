@@ -911,6 +911,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       this.getText("involveParticipants.youth"));
     masterReport.getParameterValues().put("i8nDeliverablesRParticipantType",
       this.getText("involveParticipants.participantsType"));
+    masterReport.getParameterValues().put("i8nFocusEvent", this.getText("involveParticipants.focus"));
+    masterReport.getParameterValues().put("i8nLikelyOutcomes", this.getText("involveParticipants.likelyOutcomes"));
 
     masterReport.getParameterValues().put("i8nDeliverablesRMetadataSubtitle",
       this.getText("project.deliverable.dissemination.metadataSubtitle"));
@@ -2805,7 +2807,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         "intellectualAssetPvpBreederCrop", "intellectualAssetDateFilling", "intellectualAssetDateRegistration",
         "intellectualAssetDateExpiry", "intellectualAssetAdditionalInformation", "intellectualAssetLinkPublished",
         "intellectualAssetCommunication", "otherPartner", "deliv_description", "activities", "geographicScope",
-        "countries", "regions", "sharedClusters"},
+        "countries", "regions", "sharedClusters", "focusEvent", "likelyOutcomes"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -2818,7 +2820,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getDeliverables().isEmpty()) {
@@ -3370,7 +3372,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         Boolean hasParticipants = false, isAcademicDegree = false;
         String hasParticipantsText = null, participantEvent = null, participantActivityType = null,
           participantAcademicDegree = null, participantTotalParticipants = null, participantFemales = null,
-          participantAfricans = null, participantYouth = null, participantType = null;
+          participantAfricans = null, participantYouth = null, participantType = null, focusEvent = "",
+          likelyOutcomes = "";
 
         List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
@@ -3408,6 +3411,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               if (participant.getRepIndTypeParticipant() != null
                 && participant.getRepIndTypeParticipant().getId() != -1) {
                 participantType = participant.getRepIndTypeParticipant().getName();
+              }
+
+              if (participant.getFocus() != null) {
+                focusEvent = participant.getFocus();
+              }
+
+              if (participant.getLikelyOutcomes() != null) {
+                likelyOutcomes = participant.getLikelyOutcomes();
               }
 
             } else {
@@ -3747,7 +3758,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           intellectualAssetPvpBreederCrop, intellectualAssetDateFilling, intellectualAssetDateRegistration,
           intellectualAssetDateExpiry, intellectualAssetAdditionalInformation, intellectualAssetLinkPublished,
           intellectualAssetCommunication, otherPartner, delivDescription, activities, geographicScope, countries,
-          regions, sharedClusters});
+          regions, sharedClusters, focusEvent, likelyOutcomes});
       }
     }
     return model;
