@@ -491,29 +491,18 @@ public class ProjectOutcomeAction extends BaseAction {
     deliverableParticipants = new ArrayList<>();
     List<Deliverable> currentDeliverables = new ArrayList<>();
     currentDeliverables = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
+
     try {
-      // Exclude deliverables cancelled
+      // Include Complete deliverables
       if (currentDeliverables != null) {
         currentDeliverables = currentDeliverables.stream()
           .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
             && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 5L)
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() == 3L)
           .collect(Collectors.toList());
       }
     } catch (Exception e) {
-      LOG.error(e + "error to filter canceled deliverable");
-    }
-    if (this.isReportingActive()) {
-      try {
-        // Exclude deliverables extended in AR
-        currentDeliverables = currentDeliverables.stream()
-          .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 4L)
-          .collect(Collectors.toList());
-      } catch (Exception e) {
-        LOG.error(e + "error to filter deliverable for AR");
-      }
+      LOG.error(e + "error to filter Completed deliverable");
     }
 
     // Shared deliverables
