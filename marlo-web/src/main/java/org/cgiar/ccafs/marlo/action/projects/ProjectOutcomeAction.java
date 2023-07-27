@@ -617,106 +617,109 @@ public class ProjectOutcomeAction extends BaseAction {
       for (Deliverable deliverable : deliverablesShared) {
         long idTemp = deliverable.getId();
         deliverable = deliverableManager.getDeliverableById(deliverable.getId());
-        // get deliverable cluster participants
-        List<DeliverableClusterParticipant> deliverableClusterParticipants = null;
-        try {
-          deliverableClusterParticipants = deliverableClusterParticipantManager
-            .getDeliverableClusterParticipantByProjectAndPhase(project.getId(), this.getActualPhase().getId());
 
-        } catch (Exception e) {
-          LOG.error(e + " error getting cluster participant list for shared deliverables");
-        }
-
-        if (deliverable != null && deliverable.getDeliverableCrpOutcomes() != null) {
-          deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
-            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
-        }
-
-        // Set deliverable participants
-        if (deliverable != null && deliverable.getDeliverableParticipants() != null) {
-          List<DeliverableParticipant> deliverableParticipantsList = deliverable.getDeliverableParticipants().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-
-          if (!deliverableParticipantsList.isEmpty()) {
-            deliverable.setDeliverableParticipant(
-              deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipantsList.get(0).getId()));
-          }
-        }
-
-        if (deliverableClusterParticipants != null && !deliverableClusterParticipants.isEmpty() && deliverable != null
-          && deliverable.getCrpOutcomes() != null && !deliverable.getCrpOutcomes().isEmpty()) {
-
+        if (deliverable != null && deliverable.getDeliverableInfo(this.getActualPhase()) != null
+          && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == 3L) {
+          // get deliverable cluster participants
+          List<DeliverableClusterParticipant> deliverableClusterParticipants = null;
           try {
-            deliverableClusterParticipants = deliverableClusterParticipants.stream()
-              .filter(d -> d != null && d.getDeliverable() != null && d.getDeliverable().getId().equals(idTemp))
-              .collect(Collectors.toList());
+            deliverableClusterParticipants = deliverableClusterParticipantManager
+              .getDeliverableClusterParticipantByProjectAndPhase(project.getId(), this.getActualPhase().getId());
+
           } catch (Exception e) {
-            LOG.error(e + " error filter deliverable cluster participants");
+            LOG.error(e + " error getting cluster participant list for shared deliverables");
           }
 
-          boolean foundOutcome = deliverable.getCrpOutcomes().stream().filter(Objects::nonNull)
-            .map(DeliverableCrpOutcome::getCrpProgramOutcome).filter(Objects::nonNull).map(CrpProgramOutcome::getId)
-            .filter(Objects::nonNull).anyMatch(id -> id.equals(projectOutcome.getCrpProgramOutcome().getId()));
-
-          if (foundOutcome && deliverableClusterParticipants != null && !deliverableClusterParticipants.isEmpty()
-            && deliverableClusterParticipants.get(0) != null) {
-
-            DeliverableClusterParticipant deliverableClusterParticipant = deliverableClusterParticipants.get(0);
-            boolean hasInformation = false;
-            // Total Participants
-
-            Double numberParticipant = 0.0;
-            if (deliverableClusterParticipant.getParticipants() != null) {
-              numberParticipant = deliverableClusterParticipant.getParticipants();
-            }
-
-            if (deliverableClusterParticipant.getParticipants() != null
-              && deliverableClusterParticipant.getParticipants() > 0) {
-              totalOwnParticipants += numberParticipant;
-              hasInformation = true;
-            }
-
-            // Total Formal Training
-            totalParticipantFormalTraining += numberParticipant;
-
-            // Total Female and Male per terms
-            Double numberFemales = 0.0;
-            if (deliverableClusterParticipant.getFemales() != null) {
-              totalOwnFemales += deliverableClusterParticipant.getFemales();
-              numberFemales = deliverableClusterParticipant.getFemales();
-            }
-            if (deliverableClusterParticipant.getAfrican() != null) {
-              totalOwnAfricans += deliverableClusterParticipant.getAfrican();
-            }
-            if (deliverableClusterParticipant.getYouth() != null) {
-              totalOwnYouth += deliverableClusterParticipant.getYouth();
-            }
-            if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE) && hasInformation) {
-              deliverable = this.fillOwnSharedTraineesContribution(deliverable);
-            }
-
-            totalParticipantFormalTrainingShortFemale += numberFemales;
-            totalParticipantFormalTrainingShortMale += (numberParticipant - numberFemales);
-
-
-            totalParticipantFormalTrainingLongFemale += numberFemales;
-            totalParticipantFormalTrainingLongMale += (numberParticipant - numberFemales);
-
-
-            totalParticipantFormalTrainingPhdFemale += numberFemales;
-            totalParticipantFormalTrainingPhdMale += (numberParticipant - numberFemales);
-
-
-            // Add deliverable participant to list
-            if (hasInformation && !deliverableParticipants.contains(deliverable.getDeliverableParticipant())) {
-              deliverableParticipants.add(deliverable.getDeliverableParticipant());
-            }
-
+          if (deliverable != null && deliverable.getDeliverableCrpOutcomes() != null) {
+            deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+              .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
           }
 
+          // Set deliverable participants
+          if (deliverable != null && deliverable.getDeliverableParticipants() != null) {
+            List<DeliverableParticipant> deliverableParticipantsList = deliverable.getDeliverableParticipants().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
+            if (!deliverableParticipantsList.isEmpty()) {
+              deliverable.setDeliverableParticipant(deliverableParticipantManager
+                .getDeliverableParticipantById(deliverableParticipantsList.get(0).getId()));
+            }
+          }
+
+          if (deliverableClusterParticipants != null && !deliverableClusterParticipants.isEmpty() && deliverable != null
+            && deliverable.getCrpOutcomes() != null && !deliverable.getCrpOutcomes().isEmpty()) {
+
+            try {
+              deliverableClusterParticipants = deliverableClusterParticipants.stream()
+                .filter(d -> d != null && d.getDeliverable() != null && d.getDeliverable().getId().equals(idTemp))
+                .collect(Collectors.toList());
+            } catch (Exception e) {
+              LOG.error(e + " error filter deliverable cluster participants");
+            }
+
+            boolean foundOutcome = deliverable.getCrpOutcomes().stream().filter(Objects::nonNull)
+              .map(DeliverableCrpOutcome::getCrpProgramOutcome).filter(Objects::nonNull).map(CrpProgramOutcome::getId)
+              .filter(Objects::nonNull).anyMatch(id -> id.equals(projectOutcome.getCrpProgramOutcome().getId()));
+
+            if (foundOutcome && deliverableClusterParticipants != null && !deliverableClusterParticipants.isEmpty()
+              && deliverableClusterParticipants.get(0) != null) {
+
+              DeliverableClusterParticipant deliverableClusterParticipant = deliverableClusterParticipants.get(0);
+              boolean hasInformation = false;
+              // Total Participants
+
+              Double numberParticipant = 0.0;
+              if (deliverableClusterParticipant.getParticipants() != null) {
+                numberParticipant = deliverableClusterParticipant.getParticipants();
+              }
+
+              if (deliverableClusterParticipant.getParticipants() != null
+                && deliverableClusterParticipant.getParticipants() > 0) {
+                totalOwnParticipants += numberParticipant;
+                hasInformation = true;
+              }
+
+              // Total Formal Training
+              totalParticipantFormalTraining += numberParticipant;
+
+              // Total Female and Male per terms
+              Double numberFemales = 0.0;
+              if (deliverableClusterParticipant.getFemales() != null) {
+                totalOwnFemales += deliverableClusterParticipant.getFemales();
+                numberFemales = deliverableClusterParticipant.getFemales();
+              }
+              if (deliverableClusterParticipant.getAfrican() != null) {
+                totalOwnAfricans += deliverableClusterParticipant.getAfrican();
+              }
+              if (deliverableClusterParticipant.getYouth() != null) {
+                totalOwnYouth += deliverableClusterParticipant.getYouth();
+              }
+              if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE) && hasInformation) {
+                deliverable = this.fillOwnSharedTraineesContribution(deliverable);
+              }
+
+              totalParticipantFormalTrainingShortFemale += numberFemales;
+              totalParticipantFormalTrainingShortMale += (numberParticipant - numberFemales);
+
+
+              totalParticipantFormalTrainingLongFemale += numberFemales;
+              totalParticipantFormalTrainingLongMale += (numberParticipant - numberFemales);
+
+
+              totalParticipantFormalTrainingPhdFemale += numberFemales;
+              totalParticipantFormalTrainingPhdMale += (numberParticipant - numberFemales);
+
+
+              // Add deliverable participant to list
+              if (hasInformation && !deliverableParticipants.contains(deliverable.getDeliverableParticipant())) {
+                deliverableParticipants.add(deliverable.getDeliverableParticipant());
+              }
+
+            }
+
+
+          }
         }
-
       }
     }
   }
