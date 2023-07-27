@@ -1361,9 +1361,9 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   /**
-   * Load the list of deliverables active shared with this cluster
+   * Load the list of completed deliverables active shared with this cluster
    * 
-   * @return list of deliverables active shared with this cluster
+   * @return list of completed deliverables active shared with this cluster
    **/
   public List<Deliverable> loadTraineesDeliverableShared() {
 
@@ -1377,7 +1377,8 @@ public class ProjectOutcomeAction extends BaseAction {
         deliverablesShared = deliverablesShared.stream()
           .filter(ds -> ds.isActive() && ds.getDeliverable().isActive()
             && ds.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
-            && ds.getDeliverable().getDeliverableInfo(this.getActualPhase()).isActive())
+            && ds.getDeliverable().getDeliverableInfo(this.getActualPhase()).isActive()
+            && ds.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() == 3L)
           .collect(Collectors.toList());
       }
 
