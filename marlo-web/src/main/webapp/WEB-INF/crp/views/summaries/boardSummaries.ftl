@@ -242,7 +242,7 @@
       "namespace": "/summaries",
       "action": "${crpSession}/deliverablesParticipantsSummary",
       "formats": [ "Excel" ],
-      "cycles": [ "Reporting", "Upkeep" ],
+      "cycles": [ "Reporting", "Planning" ],
       "components" : [
         { 
           "type" :  "radio",

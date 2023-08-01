@@ -581,40 +581,40 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
 
                 if (participant.getAfrican() != null) {
                   if (africansShared == null) {
-                    africansShared = clusterName + ": " + participant.getAfrican() + "";
+                    africansShared = clusterName + ": " + participant.getAfrican().intValue() + "";
                   } else {
-                    africansShared += "; " + clusterName + ": " + participant.getAfrican() + "";
+                    africansShared += "; " + clusterName + ": " + participant.getAfrican().intValue() + "";
                   }
                 }
 
                 if (participant.getFemales() != null) {
                   if (femalesShared == null) {
-                    femalesShared = clusterName + ": " + participant.getFemales() + "";
+                    femalesShared = clusterName + ": " + participant.getFemales().intValue() + "";
                   } else {
-                    femalesShared += "; " + clusterName + ": " + participant.getFemales() + "";
+                    femalesShared += "; " + clusterName + ": " + participant.getFemales().intValue() + "";
                   }
                 }
 
                 if (participant.getYouth() != null) {
                   if (youthShared == null) {
-                    youthShared = clusterName + ": " + participant.getYouth() + "";
+                    youthShared = clusterName + ": " + participant.getYouth().intValue() + "";
                   } else {
-                    youthShared += "; " + clusterName + ": " + participant.getYouth() + "";
+                    youthShared += "; " + clusterName + ": " + participant.getYouth().intValue() + "";
                   }
                 }
 
                 if (participant.getParticipants() != null) {
                   if (traineesShared == null) {
-                    traineesShared = clusterName + ": " + participant.getParticipants() + "";
+                    traineesShared = clusterName + ": " + participant.getParticipants().intValue() + "";
                   } else {
-                    traineesShared += "; " + clusterName + ": " + participant.getParticipants() + "";
+                    traineesShared += "; " + clusterName + ": " + participant.getParticipants().intValue() + "";
                   }
                 }
 
                 if (clustersShared == null) {
                   clustersShared = clusterName + "";
                 } else {
-                  clustersShared.concat("; " + clusterName);
+                  clustersShared += "; " + clusterName;
                 }
               }
 
