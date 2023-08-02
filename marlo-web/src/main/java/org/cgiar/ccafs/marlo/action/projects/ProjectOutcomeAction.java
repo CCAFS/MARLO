@@ -491,29 +491,18 @@ public class ProjectOutcomeAction extends BaseAction {
     deliverableParticipants = new ArrayList<>();
     List<Deliverable> currentDeliverables = new ArrayList<>();
     currentDeliverables = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
+
     try {
-      // Exclude deliverables cancelled
+      // Include Complete deliverables
       if (currentDeliverables != null) {
         currentDeliverables = currentDeliverables.stream()
           .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
             && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 5L)
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() == 3L)
           .collect(Collectors.toList());
       }
     } catch (Exception e) {
-      LOG.error(e + "error to filter canceled deliverable");
-    }
-    if (this.isReportingActive()) {
-      try {
-        // Exclude deliverables extended in AR
-        currentDeliverables = currentDeliverables.stream()
-          .filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 4L)
-          .collect(Collectors.toList());
-      } catch (Exception e) {
-        LOG.error(e + "error to filter deliverable for AR");
-      }
+      LOG.error(e + "error to filter Completed deliverable");
     }
 
     // Shared deliverables
@@ -1372,9 +1361,9 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   /**
-   * Load the list of deliverables active shared with this cluster
+   * Load the list of completed deliverables active shared with this cluster
    * 
-   * @return list of deliverables active shared with this cluster
+   * @return list of completed deliverables active shared with this cluster
    **/
   public List<Deliverable> loadTraineesDeliverableShared() {
 
@@ -1388,7 +1377,8 @@ public class ProjectOutcomeAction extends BaseAction {
         deliverablesShared = deliverablesShared.stream()
           .filter(ds -> ds.isActive() && ds.getDeliverable().isActive()
             && ds.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
-            && ds.getDeliverable().getDeliverableInfo(this.getActualPhase()).isActive())
+            && ds.getDeliverable().getDeliverableInfo(this.getActualPhase()).isActive()
+            && ds.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() == 3L)
           .collect(Collectors.toList());
       }
 
