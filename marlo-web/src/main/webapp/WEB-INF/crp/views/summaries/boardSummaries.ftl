@@ -8,7 +8,7 @@
   ] 
 /]
 
-[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20230331"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20230801"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [
@@ -353,7 +353,9 @@
         <img src="${baseUrlCdn}/global/images/summaries_icon.png">
         <h3 class="headTitle text-center">Summaries</h3>        
       </div>
-      <p class="descriptionSummaries">Find detailed reports on all the activities reported in AICCRA</p>
+      <div class="containerDescriptionSummaries">
+        <div class="descriptionSummaries">Find detailed reports on all the activities reported in AICCRA. Our report provides unique insights, as it focuses on a specific stage of the reporting cycle, differentiating it from the BI section.</div>
+      </div>
       <div class="menuSummaries"> 
             <div id="projects" class="summariesSection current">
               <img src="${baseUrlCdn}/global/images/cluster_summaries.png"><a href="">Clusters</a>

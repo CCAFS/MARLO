@@ -11,7 +11,7 @@
 /]
 [#assign customCSS = [
   "${baseUrlCdn}/global/css/customDataTable.css",
-  "${baseUrlMedia}/css/projects/projectsList.css?20230303"]
+  "${baseUrlMedia}/css/projects/projectsList.css?20230724"]
 /]
 
 [#if !action.isAiccra()]
