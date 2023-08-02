@@ -20,7 +20,7 @@
   { "slug": "projects", "active": true, "title":"summaries.board.options.projects", "reportsList": [
   
     { "active": true,
-      "available": action.canAccessSuperAdmin(),
+      "available": true,
       "title": "summaries.board.report.projectPortfolio", 
       "description": "summaries.board.report.projectPortfolio.description",
       "namespace": "/projects",
