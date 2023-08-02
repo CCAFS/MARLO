@@ -819,8 +819,13 @@ public class ProjectPartnerAction extends BaseAction {
     String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
       : loggedCrp.getName();
 
-    String subject = this.getText("email.project.assigned.subject",
-      new String[] {projectRole, crp, project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)});
+    String projectAcronym = null;
+    if (project != null && project.getAcronym() != null) {
+      projectAcronym = project.getAcronym();
+    } else {
+      projectAcronym = "C" + project.getId();
+    }
+    String subject = this.getText("email.project.assigned.subject", new String[] {projectRole, crp, projectAcronym});
 
 
     // message
