@@ -4821,6 +4821,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
       String summary = projectInfo.getSummary();
       if (summary != null) {
+        summary = summary.replaceAll("\r", "\n");
         if (summary.equals("")) {
           summary = null;
         }
@@ -5901,12 +5902,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             if (milestone.getExpectedValue() == null) {
               expected2021 = "<Not provided>";
             } else {
-              expected2021 = milestone.getExpectedValue() + "";
+              expected2021 = milestone.getExpectedValue().intValue() + "";
             }
             if (milestone.getAchievedValue() == null) {
               progress2021 = "<Not provided>";
             } else {
-              progress2021 = milestone.getAchievedValue() + "";
+              progress2021 = milestone.getAchievedValue().intValue() + "";
             }
 
             if (milestone.getNarrativeTarget() != null) {
