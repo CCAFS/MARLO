@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230323"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230702"
   ] 
 /]
 
@@ -353,7 +353,9 @@
         <img src="${baseUrlCdn}/global/images/summaries_icon.png">
         <h3 class="headTitle text-center">Summaries</h3>        
       </div>
-      <p class="descriptionSummaries">Find detailed reports on all the activities reported in AICCRA</p>
+      <div class="containerDescriptionSummaries">
+        <div class="descriptionSummaries">Find detailed reports on all the activities reported in AICCRA. Our report provides unique insights, as it focuses on a specific stage of the reporting cycle, differentiating it from the BI section.</div>
+      </div>
       <div class="menuSummaries"> 
             <div id="projects" class="summariesSection current">
               <img src="${baseUrlCdn}/global/images/cluster_summaries.png"><a href="">Clusters</a>
