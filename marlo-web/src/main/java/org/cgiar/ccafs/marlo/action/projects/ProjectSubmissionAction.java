@@ -276,9 +276,15 @@ public class ProjectSubmissionAction extends BaseAction {
     String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
       : loggedCrp.getName();
     // subject
+    String projectAcronym = null;
+    if (project != null && project.getAcronym() != null) {
+      projectAcronym = project.getAcronym();
+    } else {
+      projectAcronym = "C" + project.getId();
+    }
     String subject = null;
     subject = this.getText("submit.email.subject",
-      new String[] {crp, String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
+      new String[] {crp, projectAcronym});
 
 
     // Building the email message

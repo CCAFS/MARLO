@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230323"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230702"
   ] 
 /]
 
@@ -20,7 +20,7 @@
   { "slug": "projects", "active": true, "title":"summaries.board.options.projects", "reportsList": [
   
     { "active": true,
-      "available": action.canAccessSuperAdmin(),
+      "available": true,
       "title": "summaries.board.report.projectPortfolio", 
       "description": "summaries.board.report.projectPortfolio.description",
       "namespace": "/projects",
@@ -242,7 +242,7 @@
       "namespace": "/summaries",
       "action": "${crpSession}/deliverablesParticipantsSummary",
       "formats": [ "Excel" ],
-      "cycles": [ "Reporting", "Upkeep" ],
+      "cycles": [ "Reporting", "Planning" ],
       "components" : [
         { 
           "type" :  "radio",

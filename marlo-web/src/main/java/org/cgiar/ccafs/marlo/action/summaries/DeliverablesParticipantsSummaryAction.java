@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableClusterParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
@@ -23,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableClusterParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
@@ -72,6 +74,7 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
   private final DeliverableManager deliverableManager;
   private final DeliverableGeographicRegionManager deliverableGeographicRegionManager;
   private final DeliverableLocationManager deliverableLocationManager;
+  private final DeliverableClusterParticipantManager deliverableClusterParticipantManager;
 
   // Parameters
   private byte[] bytesXLSX;
@@ -82,12 +85,14 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
   public DeliverablesParticipantsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     ProjectManager projectManager, ResourceManager resourceManager, DeliverableManager deliverableManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
-    DeliverableLocationManager deliverableLocationManager) {
+    DeliverableLocationManager deliverableLocationManager,
+    DeliverableClusterParticipantManager deliverableClusterParticipantManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.resourceManager = resourceManager;
     this.deliverableManager = deliverableManager;
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
     this.deliverableLocationManager = deliverableLocationManager;
+    this.deliverableClusterParticipantManager = deliverableClusterParticipantManager;
   }
 
   /**
@@ -119,6 +124,15 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
     masterReport.getParameterValues().put("i8nColumnS", this.getText("involveParticipants.participantsType"));
     masterReport.getParameterValues().put("i8nColumnT", this.getText("involveParticipants.trainingPeriod"));
     masterReport.getParameterValues().put("i8nColumnU", this.getText("involveParticipants.performanceIndicator"));
+
+    // Clusters participant information
+    masterReport.getParameterValues().put("i8nColumnV", "Clusters");
+    masterReport.getParameterValues().put("i8nColumnW",
+      this.getText("annualReport2018.ccDimensions.table7.numberTrainnees"));
+    masterReport.getParameterValues().put("i8nColumnX", this.getText("involveParticipants.females"));
+    masterReport.getParameterValues().put("i8nColumnY", this.getText("involveParticipants.african"));
+    masterReport.getParameterValues().put("i8nColumnZ", this.getText("involveParticipants.youth"));
+    masterReport.getParameterValues().put("i8nColumnAA", "Clusters contribution to this activity");
 
     masterReport.getParameterValues().put("i8nHeader",
       this.getLoggedCrp().getAcronym() + " " + this.getSelectedPhase().getName() + " " + this.getSelectedYear() + " "
@@ -237,6 +251,11 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
      * paramS - Type of Participant(s)
      * paramT - Training period of time
      * paramU - Performance Indicator
+     * paramV - Clusters shared
+     * paramV - Participants shared
+     * paramX - Females shared
+     * paramY - Africans shared
+     * paramZ - Youth shared
      * deliverableURL
      * NOTE : does not mater the order into the implementation (ex: the paramO will be setup first that the paramA)
      */
@@ -244,13 +263,14 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
       new String[] {"paramA", "paramB", "paramC", "paramD", "paramE", "paramF", "paramG", "paramH", "paramI", "paramJ",
         "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "paramT",
         "deliverableURL", "paramU", "indicatorURL", "africansNumber", "africansEstimate", "youthNumber",
-        "youthEstimate", "eventFocus", "likelyOutcomes"},
+        "youthEstimate", "eventFocus", "likelyOutcomes", "clusters", "numberTraineesShared", "numberFemaleShared",
+        "numberAfricanShared", "numberYouthShared"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class},
       0);
-
 
     List<Deliverable> deliverables = new ArrayList<Deliverable>();
     if (showAllYears.equals("true")) {
@@ -265,7 +285,8 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
           paramH = null, paramI = null, paramJ = null, paramK = null, paramL = null, paramM = null, paramN = null,
           paramO = null, paramP = null, paramQ = null, paramR = null, paramS = null, paramT = null, paramU = null,
           deliverableURL = null, indicatorURL = null, africansNumber = null, africansEstimate = null,
-          youthNumber = null, youthEstimate = null, eventFocus = null, likelyOutcomes = null;
+          youthNumber = null, youthEstimate = null, eventFocus = null, likelyOutcomes = null, clustersShared = null,
+          traineesShared = null, femalesShared = null, africansShared = null, youthShared = null;
 
         // paramA - DeliverableID
         paramA = "D" + deliverable.getId();
@@ -543,10 +564,67 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
               + "/deliverable.do?deliverableID=" + deliverable.getId() + "&phaseID=" + this.getSelectedPhase().getId();
           }
 
+          // Deliverables shared clusters
+          List<DeliverableClusterParticipant> participantList = new ArrayList<>();
+          participantList = deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableAndPhase(
+            deliverable.getId(), this.getSelectedPhase().getId());
+
+          if (participantList != null && !participantList.isEmpty()) {
+            for (DeliverableClusterParticipant participant : participantList) {
+              String clusterName = "";
+              if (participant != null && participant.getProject() != null) {
+                if (participant.getProject().getAcronym() != null && !participant.getProject().getAcronym().isEmpty()) {
+                  clusterName = participant.getProject().getAcronym();
+                } else {
+                  clusterName = participant.getProject().getId() + "";
+                }
+
+                if (participant.getAfrican() != null) {
+                  if (africansShared == null) {
+                    africansShared = clusterName + ": " + participant.getAfrican().intValue() + "";
+                  } else {
+                    africansShared += "; " + clusterName + ": " + participant.getAfrican().intValue() + "";
+                  }
+                }
+
+                if (participant.getFemales() != null) {
+                  if (femalesShared == null) {
+                    femalesShared = clusterName + ": " + participant.getFemales().intValue() + "";
+                  } else {
+                    femalesShared += "; " + clusterName + ": " + participant.getFemales().intValue() + "";
+                  }
+                }
+
+                if (participant.getYouth() != null) {
+                  if (youthShared == null) {
+                    youthShared = clusterName + ": " + participant.getYouth().intValue() + "";
+                  } else {
+                    youthShared += "; " + clusterName + ": " + participant.getYouth().intValue() + "";
+                  }
+                }
+
+                if (participant.getParticipants() != null) {
+                  if (traineesShared == null) {
+                    traineesShared = clusterName + ": " + participant.getParticipants().intValue() + "";
+                  } else {
+                    traineesShared += "; " + clusterName + ": " + participant.getParticipants().intValue() + "";
+                  }
+                }
+
+                if (clustersShared == null) {
+                  clustersShared = clusterName + "";
+                } else {
+                  clustersShared += "; " + clusterName;
+                }
+              }
+
+            }
+          }
 
           model.addRow(new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ,
             paramK, paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, deliverableURL, paramU,
-            indicatorURL, africansNumber, africansEstimate, youthNumber, youthEstimate, eventFocus, likelyOutcomes});
+            indicatorURL, africansNumber, africansEstimate, youthNumber, youthEstimate, eventFocus, likelyOutcomes,
+            clustersShared, traineesShared, femalesShared, africansShared, youthShared});
         }
       }
     }

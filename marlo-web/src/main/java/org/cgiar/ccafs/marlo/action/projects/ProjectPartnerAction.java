@@ -819,8 +819,13 @@ public class ProjectPartnerAction extends BaseAction {
     String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
       : loggedCrp.getName();
 
-    String subject = this.getText("email.project.assigned.subject",
-      new String[] {projectRole, crp, project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)});
+    String projectAcronym = null;
+    if (project != null && project.getAcronym() != null) {
+      projectAcronym = project.getAcronym();
+    } else {
+      projectAcronym = "C" + project.getId();
+    }
+    String subject = this.getText("email.project.assigned.subject", new String[] {projectRole, crp, projectAcronym});
 
 
     // message
@@ -938,6 +943,12 @@ public class ProjectPartnerAction extends BaseAction {
     String bbcEmails = this.config.getEmailNotification();
 
     // subject
+    String projectAcronym = null;
+    if (project != null && project.getAcronym() != null) {
+      projectAcronym = project.getAcronym();
+    } else {
+      projectAcronym = "C" + project.getId();
+    }
     String projectRole = null;
     Project project = projectManager.getProjectById(this.projectID);
     if (role.getId() == plRole.getId()) {
@@ -948,7 +959,7 @@ public class ProjectPartnerAction extends BaseAction {
     String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
       : loggedCrp.getName();
     String subject = this.getText("email.project.unAssigned.subject",
-      new String[] {projectRole, crp, project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)});
+      new String[] {projectRole, crp, projectAcronym});
 
 
     userUnassigned = userManager.getUser(userUnassigned.getId());

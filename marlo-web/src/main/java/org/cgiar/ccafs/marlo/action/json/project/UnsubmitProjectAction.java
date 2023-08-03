@@ -238,8 +238,14 @@ public class UnsubmitProjectAction extends BaseAction {
       && !globalUnitProject.getGlobalUnit().getAcronym().isEmpty() ? globalUnitProject.getGlobalUnit().getAcronym()
         : globalUnitProject.getGlobalUnit().getName();
     // subject
+    String projectAcronym = null;
+    if (project != null && project.getAcronym() != null) {
+      projectAcronym = project.getAcronym();
+    } else {
+      projectAcronym = "C" + project.getId();
+    }
     String subject = this.getText("unsubmit.email.subject",
-      new String[] {crp, String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
+      new String[] {crp, projectAcronym});
 
     // Building the email message
     StringBuilder message = new StringBuilder();
