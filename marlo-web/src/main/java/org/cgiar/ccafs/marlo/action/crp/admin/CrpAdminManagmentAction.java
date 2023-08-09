@@ -253,7 +253,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
 
       message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
-        config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
+        config.getBaseUrl(), user.getEmail(), password, this.getText("email.support.noCrpAdmins")}));
       message.append(this.getText("email.bye"));
 
       // Saving the new user configuration.
@@ -376,7 +376,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.flagship.assigned", new String[] {crpProgram.getAcronym(), crpProgram.getName(),
       crp, this.getText("email.flagship.responsabilities")}));
 
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.support.noCrpAdmins"));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
@@ -477,7 +477,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       this.getText("email.flagshipmanager.assigned", new String[] {crpProgram.getAcronym(), crpProgram.getName(), crp,
         this.getText("email.flagshipmanager.responsabilities"), this.getText("email.flagshipmanager.note")}));
 
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.support.noCrpAdmins"));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
     if (this.validateEmailNotification()) {
@@ -564,7 +564,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       new String[] {crpProgram.getAcronym(), crpProgram.getName(), crp}));
 
 
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.support.noCrpAdmins"));
     message.append(this.getText("email.bye"));
     if (this.validateEmailNotification()) {
       if (role.equals(fplRole)) {
@@ -634,7 +634,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.dear", new String[] {userRemoved.getFirstName()}));
     message.append(this.getText("email.flagship.unassigned", new String[] {
       this.getText("programManagement.flagship.role"), crpProgram.getAcronym(), crpProgram.getName(), crp}));
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.support.noCrpAdmins"));
     message.append(this.getText("email.bye"));
     if (this.validateEmailNotification()) {
       if (role.equals(fplRole)) {
@@ -672,8 +672,9 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
     // CC will be the user who is making the modification.
     String ccEmail = this.getCurrentUser().getEmail();
-    if (!crpAdminsEmail.isEmpty()) {
-      ccEmail += ", " + crpAdminsEmail;
+    if (!crpAdminsEmail.isEmpty() && this.config.getEmail_pmu() != null) {
+      // ccEmail += ", " + crpAdminsEmail;
+      ccEmail += ", " + this.config.getEmail_pmu();
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
@@ -689,7 +690,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.programManagement.assigned",
       new String[] {crp, this.getText("email.programManagement.responsibilities")}));
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.support.noCrpAdmins"));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
@@ -725,8 +726,9 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
     // CC will be the user who is making the modification.
     String ccEmail = this.getCurrentUser().getEmail();
-    if (!crpAdminsEmail.isEmpty()) {
-      ccEmail += ", " + crpAdminsEmail;
+    if (!crpAdminsEmail.isEmpty() && this.config.getEmail_pmu() != null) {
+      // ccEmail += ", " + crpAdminsEmail;
+      ccEmail += ", " + this.config.getEmail_pmu();
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
@@ -741,7 +743,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(
       this.getText("email.programManagement.unassigned", new String[] {this.getText("programManagement.role"), crp}));
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.support.noCrpAdmins"));
     message.append(this.getText("email.bye"));
     if (this.validateEmailNotification()) {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);

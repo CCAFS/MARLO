@@ -68,6 +68,8 @@ public class APConfig {
   private String EMAIL_STARTTLS_BACKUP;
   @Value("$email.authbackup}")
   private String EMAIL_AUTH_BACKUP;
+  @Value("$email.pmu}")
+  private String EMAIL_PMU;
   @Value("${google.api.key}")
   private String GOOGLE_API_KEY;
   @Value("${pusher.api.key}")
@@ -416,6 +418,16 @@ public class APConfig {
     }
 
     return EMAIL_PASSWORD_BACKUP;
+  }
+
+  public String getEmail_pmu() {
+
+    if (EMAIL_PMU == null) {
+      LOG.error("there is not an email password backup configured.");
+      return null;
+    }
+
+    return EMAIL_PMU;
   }
 
   public String getEmail_starttls() {
