@@ -934,21 +934,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (clazz == ProjectOutcome.class) {
         if (this.isAiccra()) {
           boolean canDelete = true;
-          ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
+          ProjectOutcome projectOutcome = null;
+          try {
+            projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
 
-          for (Deliverable deliverable : projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase())) {
-            if (deliverable.getDeliverableProjectOutcomes() != null) {
-              deliverable.setProjectOutcomes(new ArrayList<>(deliverable.getDeliverableProjectOutcomes().stream()
-                .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
-            }
-            if (deliverable != null && deliverable.getProjectOutcomes() != null
-              && !deliverable.getProjectOutcomes().isEmpty()) {
-              if (deliverable != null && deliverable.getProjectOutcomes() != null
-                && !deliverable.getProjectOutcomes().isEmpty()) {
-                for (DeliverableProjectOutcome deliverableProjectOutcome : deliverable.getProjectOutcomes()) {
-                  if (deliverableProjectOutcome != null && deliverableProjectOutcome.getProjectOutcome() != null
-                    && deliverableProjectOutcome.getProjectOutcome().getId() != null
-                    && deliverableProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+            for (Deliverable deliverable : projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase())) {
+              if (deliverable.getDeliverableCrpOutcomes() != null) {
+                deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+                  .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
+                  .collect(Collectors.toList())));
+              }
+
+              if (deliverable != null && deliverable.getCrpOutcomes() != null
+                && !deliverable.getCrpOutcomes().isEmpty()) {
+
+                for (DeliverableCrpOutcome deliverableCrpOutcome : deliverable.getCrpOutcomes()) {
+                  if (deliverableCrpOutcome != null && deliverableCrpOutcome.getCrpProgramOutcome() != null
+                    && deliverableCrpOutcome.getCrpProgramOutcome().getId() != null && deliverableCrpOutcome
+                      .getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
 
                     canDelete = false;
                     break;
@@ -956,26 +959,27 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 }
               }
             }
+          } catch (Exception e) {
+            e.printStackTrace();
           }
-
 
           try {
             for (ProjectExpectedStudy expectedStudy : projectOutcome.getProject().getProjectExpectedStudies().stream()
               .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
                 && ps.getProjectExpectedStudyInfo(this.getActualPhase()).isActive())
               .collect(Collectors.toList())) {
-              if (expectedStudy.getProjectExpectedStudyProjectOutcomes() != null) {
-                expectedStudy.setProjectOutcomes(new ArrayList<>(expectedStudy.getProjectExpectedStudyProjectOutcomes()
-                  .stream().filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
+              if (expectedStudy.getProjectExpectedStudyCrpOutcomes() != null) {
+                expectedStudy.setCrpOutcomes(new ArrayList<>(expectedStudy.getProjectExpectedStudyCrpOutcomes().stream()
+                  .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
                   .collect(Collectors.toList())));
               }
-              if (expectedStudy != null && expectedStudy.getProjectOutcomes() != null
-                && !expectedStudy.getProjectOutcomes().isEmpty()) {
-                for (ProjectExpectedStudyProjectOutcome expectedStudyProjectOutcome : expectedStudy
-                  .getProjectOutcomes()) {
-                  if (expectedStudyProjectOutcome != null && expectedStudyProjectOutcome.getProjectOutcome() != null
-                    && expectedStudyProjectOutcome.getProjectOutcome().getId() != null
-                    && expectedStudyProjectOutcome.getProjectOutcome().getId().compareTo(projectOutcome.getId()) == 0) {
+              if (expectedStudy != null && expectedStudy.getCrpOutcomes() != null
+                && !expectedStudy.getCrpOutcomes().isEmpty()) {
+                for (ProjectExpectedStudyCrpOutcome expectedStudyCrpOutcome : expectedStudy.getCrpOutcomes()) {
+                  if (expectedStudyCrpOutcome != null && expectedStudyCrpOutcome.getCrpOutcome() != null
+                    && expectedStudyCrpOutcome.getCrpOutcome().getId() != null && projectOutcome != null
+                    && projectOutcome.getCrpProgramOutcome() != null && expectedStudyCrpOutcome.getCrpOutcome().getId()
+                      .compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
                     canDelete = false;
                     break;
                   }
@@ -991,18 +995,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(this.getActualPhase()) != null
                 && ps.getProjectInnovationInfo(this.getActualPhase()).isActive())
               .collect(Collectors.toList())) {
-              if (innovation.getProjectInnovationProjectOutcomes() != null) {
-                innovation.setProjectOutcomes(new ArrayList<>(innovation.getProjectInnovationProjectOutcomes().stream()
+              if (innovation.getProjectInnovationCrpOutcomes() != null) {
+                innovation.setCrpOutcomes(new ArrayList<>(innovation.getProjectInnovationCrpOutcomes().stream()
                   .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId()))
                   .collect(Collectors.toList())));
               }
-              if (innovation != null && innovation.getProjectOutcomes() != null
-                && !innovation.getProjectOutcomes().isEmpty()) {
-                for (ProjectInnovationProjectOutcome innovationStudyProjectOutcome : innovation.getProjectOutcomes()) {
-                  if (innovationStudyProjectOutcome != null && innovationStudyProjectOutcome.getProjectOutcome() != null
-                    && innovationStudyProjectOutcome.getProjectOutcome().getId() != null
-                    && innovationStudyProjectOutcome.getProjectOutcome().getId()
-                      .compareTo(projectOutcome.getId()) == 0) {
+              if (innovation != null && innovation.getCrpOutcomes() != null && !innovation.getCrpOutcomes().isEmpty()) {
+                for (ProjectInnovationCrpOutcome innovationStudyCrpOutcome : innovation.getCrpOutcomes()) {
+                  if (innovationStudyCrpOutcome != null && innovationStudyCrpOutcome.getCrpOutcome() != null
+                    && innovationStudyCrpOutcome.getCrpOutcome().getId() != null && innovationStudyCrpOutcome
+                      .getCrpOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
                     canDelete = false;
                     break;
                   }

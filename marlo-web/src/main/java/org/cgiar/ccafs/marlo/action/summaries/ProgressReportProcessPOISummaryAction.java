@@ -802,6 +802,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
         indicatorsList.add("IPI 2.2");
         indicatorsList.add("IPI 2.3");
         indicatorsList.add("IPI 2.4");
+        indicatorsList.add("IPI 2.5");
         indicatorsList.add("IPI 3.1");
         indicatorsList.add("IPI 3.2");
         indicatorsList.add("IPI 3.3");
@@ -917,6 +918,15 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
             .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
               && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
               && c.getCrpProgramOutcome().getComposedName().contains("IPI 2.4"))
+            .collect(Collectors.toList()));
+        } catch (Exception e) {
+        }
+        // IPI 2.5
+        try {
+          projectOutcomes.addAll(project.getProjectOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgramOutcome() != null && c.getCrpProgramOutcome().getComposedName() != null
+              && c.getCrpProgramOutcome().getComposedName().contains("IPI 2.5"))
             .collect(Collectors.toList()));
         } catch (Exception e) {
         }
