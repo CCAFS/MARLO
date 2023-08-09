@@ -280,7 +280,7 @@ public class UnsubmitProjectAction extends BaseAction {
     values[7] = justification;
 
     message.append(this.getText("unsubmit.email.message", values));
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.support.noCrpAdmins"));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
