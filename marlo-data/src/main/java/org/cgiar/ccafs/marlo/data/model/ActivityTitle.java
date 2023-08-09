@@ -31,11 +31,13 @@ public class ActivityTitle extends MarloBaseEntity implements java.io.Serializab
   private String title;
 
   private Set<Activity> activities = new HashSet<Activity>(0);
-  @Expose
-  private int startYear;
-  @Expose
-  private int endYear;
 
+  /*
+   * @Expose
+   * private int startYear;
+   * @Expose
+   * private int endYear;
+   */
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -61,11 +63,6 @@ public class ActivityTitle extends MarloBaseEntity implements java.io.Serializab
     return activities;
   }
 
-  public int getEndYear() {
-    return endYear;
-  }
-
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -85,10 +82,6 @@ public class ActivityTitle extends MarloBaseEntity implements java.io.Serializab
   public User getModifiedBy() {
     // TODO Auto-generated method stub
     return null;
-  }
-
-  public int getStartYear() {
-    return startYear;
   }
 
   public String getTitle() {
@@ -113,17 +106,10 @@ public class ActivityTitle extends MarloBaseEntity implements java.io.Serializab
     this.activities = activities;
   }
 
-  public void setEndYear(int endYear) {
-    this.endYear = endYear;
-  }
 
   @Override
   public void setModifiedBy(User modifiedBy) {
     // TODO Auto-generated method stub
-  }
-
-  public void setStartYear(int startYear) {
-    this.startYear = startYear;
   }
 
   public void setTitle(String title) {
