@@ -5,8 +5,7 @@
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlMedia}/js/fundingSources/fundingSource.js?20201123",
-  "${baseUrlMedia}/js/fundingSources/syncFundingSource.js?20201105",
-  "${baseUrlCdn}/global/js/autoSave.js" 
+  "${baseUrlMedia}/js/fundingSources/syncFundingSource.js?20201105"
   ]
 /]
 [#assign customCSS = ["${baseUrlMedia}/css/fundingSources/fundingSource.css?20201007"] /]
