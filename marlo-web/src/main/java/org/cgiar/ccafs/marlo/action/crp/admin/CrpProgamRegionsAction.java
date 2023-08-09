@@ -363,7 +363,7 @@ public class CrpProgamRegionsAction extends BaseAction {
       }
 
       message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
-        config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
+        config.getBaseUrl(), user.getEmail(), password, this.getText("email.support.noCrpAdmins")}));
       message.append(this.getText("email.bye"));
 
       Map<String, Object> mapUser = new HashMap<>();
@@ -426,12 +426,34 @@ public class CrpProgamRegionsAction extends BaseAction {
     String ccEmail = this.getCurrentUser().getEmail();
     // CC will be also others leaders
     crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
-    for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream().filter(cp -> cp.isActive())
-      .collect(Collectors.toList())) {
-      if (ccEmail.isEmpty()) {
-        ccEmail += crpProgramLeader.getUser().getEmail();
-      } else {
-        ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+
+    // Regional program leader assignation
+    if (role.equals(rplRole)) {
+      for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
+        .filter(cp -> cp.isActive() && cp.isManager()).collect(Collectors.toList())) {
+        if (crpProgramLeader != null && crpProgramLeader.getUser() != null
+          && crpProgramLeader.getUser().getEmail() != null) {
+          if (ccEmail.isEmpty()) {
+            ccEmail += crpProgramLeader.getUser().getEmail();
+          } else {
+            ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+          }
+        }
+      }
+    }
+
+    // Regional program manager assignation
+    if (role.equals(rpmRole)) {
+      for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream().filter(cp -> cp.isActive())
+        .collect(Collectors.toList())) {
+        if (crpProgramLeader != null && crpProgramLeader.getUser() != null
+          && crpProgramLeader.getUser().getEmail() != null) {
+          if (ccEmail.isEmpty()) {
+            ccEmail += crpProgramLeader.getUser().getEmail();
+          } else {
+            ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+          }
+        }
       }
     }
 
@@ -464,15 +486,36 @@ public class CrpProgamRegionsAction extends BaseAction {
     String bbcEmails = this.config.getEmailNotification();
     String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
       : loggedCrp.getName();
-    String subject = this.getText("email.region.assigned.subject", new String[] {crpProgram.getAcronym(), crp});
+
+    String subject = "";
+
+    // Regional program leader assignation
+    if (role.equals(rplRole)) {
+      subject = this.getText("email.region.assigned.subject", new String[] {crpProgram.getAcronym(), crp});
+    }
+    // Regional program manager assignation
+    if (role.equals(rpmRole)) {
+      subject = this.getText("email.regionmanager.assigned.subject", new String[] {crpProgram.getAcronym(), crp});
+    }
 
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message
-      .append(this.getText("email.region.assigned", new String[] {crpProgram.getAcronym(), crpProgram.getName(), crp}));
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
+
+    // Regional program leader assignation
+    if (role.equals(rplRole)) {
+      message.append(
+        this.getText("email.region.assigned", new String[] {crpProgram.getAcronym(), crpProgram.getName(), crp}));
+    }
+
+    // Regional program manager assignation
+    if (role.equals(rpmRole)) {
+      message.append(this.getText("email.regionmanager.assigned",
+        new String[] {crpProgram.getAcronym(), crpProgram.getName(), crp}));
+    }
+
+    message.append(this.getText("email.support.noCrpAdmins"));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
@@ -481,7 +524,46 @@ public class CrpProgamRegionsAction extends BaseAction {
   }
 
   private void notifyRoleUnassigned(User userAssigned, Role role, CrpProgram crpProgram) {
+    userAssigned = userManager.getUser(userAssigned.getId());
+    // TO will be the new user
+    String toEmail = userAssigned.getEmail();
+    // CC will be the user who is making the modification.
+    String ccEmail = this.getCurrentUser().getEmail();
+    // CC will be also others leaders
+    crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
+    if (role.equals(rplRole)) {
+      for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
+        .filter(cp -> cp.isActive() && cp.isManager()).collect(Collectors.toList())) {
+        if (crpProgramLeader != null && crpProgramLeader.getUser() != null
+          && crpProgramLeader.getUser().getEmail() != null) {
+          if (ccEmail.isEmpty()) {
+            ccEmail += crpProgramLeader.getUser().getEmail();
+          } else {
+            ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+          }
+        }
+      }
+    }
+
+    if (role.equals(rpmRole))
+
+    {
+      for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream().filter(cp -> cp.isActive())
+        .collect(Collectors.toList())) {
+        if (crpProgramLeader != null && crpProgramLeader.getUser() != null
+          && crpProgramLeader.getUser().getEmail() != null) {
+          if (ccEmail.isEmpty()) {
+            ccEmail += crpProgramLeader.getUser().getEmail();
+          } else {
+            ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+          }
+        }
+      }
+    }
+
+    // CC will be also the CRP Admins
     String crpAdmins = "";
+    String crpAdminsEmail = "";
     long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
     Role roleAdmin = roleManager.getRoleById(adminRol);
     List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
@@ -489,10 +571,21 @@ public class CrpProgamRegionsAction extends BaseAction {
     for (UserRole userRole : userRoles) {
       if (crpAdmins.isEmpty()) {
         crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += userRole.getUser().getEmail();
+
       } else {
         crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdminsEmail += ", " + userRole.getUser().getEmail();
       }
     }
+    if (!crpAdminsEmail.isEmpty()) {
+      if (ccEmail.isEmpty()) {
+        ccEmail += crpAdminsEmail;
+      } else {
+        ccEmail += ", " + crpAdminsEmail;
+      }
+    }
+
     userAssigned = userManager.getUser(userAssigned.getId());
     String regionRole = role.getDescription();
     String regionRoleAcronym = this.getText("regionalMapping.CrpProgram.leaders.acronym");
@@ -502,19 +595,9 @@ public class CrpProgamRegionsAction extends BaseAction {
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.region.unassigned",
       new String[] {regionRole, crpProgram.getName(), crpProgram.getAcronym()}));
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.support.noCrpAdmins"));
     message.append(this.getText("email.bye"));
-    String toEmail = null;
-    String ccEmail = null;
-    if (config.isProduction()) {
-      // Send email to the new user and the P&R notification email.
-      // TO
-      toEmail = userAssigned.getEmail();
-      // CC will be the user who is making the modification.
-      if (this.getCurrentUser() != null) {
-        ccEmail = this.getCurrentUser().getEmail();
-      }
-    }
+
     String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
       : loggedCrp.getName();
     // BBC will be our gmail notification email.
