@@ -112,9 +112,21 @@ public class UnhandledExceptionAction extends BaseAction {
     if (this.getActualPhase() != null) {
       message.append("<b>Phase: </b>" + this.getActualPhase().getComposedName() + ".</br>");
     }
+    String actionNameSubject = "";
     if (this.getActionName() != null) {
       message.append("<b>ActionName: </b>" + this.getActionName() + ".</br>");
+      if (this.getActionName().contains("AICCRA/")) {
+        actionNameSubject = this.getActionName().replace("AICCRA/", " - ");
+      } else {
+        actionNameSubject = " - " + this.getActionName();
+      }
+
     }
+
+    if (this.getCurrentUser() != null && this.getCurrentUser().getFirstName() != null) {
+      actionNameSubject += " - " + this.getCurrentUser().getFirstName();
+    }
+    subject += actionNameSubject;
 
     message.append("</br></br><b>Exception message: </b></br></br>");
     message.append(writer.toString() + "</br></br></br>");
