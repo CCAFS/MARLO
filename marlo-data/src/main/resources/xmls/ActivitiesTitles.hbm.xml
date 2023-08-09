@@ -11,14 +11,12 @@
     <property name="title" type="string">
       <column name="title" not-null="true" />
     </property>
-    <!--  
     <property name="startYear" type="int">
             <column name="start_year" length="5" />
     </property>
     <property name="endYear" type="int">
             <column name="end_year" length="5" />
     </property>
-    -->
     <set name="activities" order-by="id" table="activities"
       inverse="true" lazy="true" fetch="select">
       <key>
