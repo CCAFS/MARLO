@@ -155,82 +155,96 @@ public class UnsubmitProjectAction extends BaseAction {
       && project.getLeaderPerson(this.getActualPhase()).getUser().getId() != this.getCurrentUser().getId()) {
       toEmail = project.getLeaderPerson(this.getActualPhase()).getUser().getEmail();
     }
-
-    // CC Emails
+    
+    // new method
     String ccEmail = "";
-    StringBuilder ccEmails = new StringBuilder();
+    ccEmail += this.getCurrentUser().getEmail();
+    ProjectPartnerPerson projectLeader = project.getLeaderPersonDB(this.getActualPhase());
+    if (projectLeader != null && projectLeader.getUser() != null && projectLeader.getUser().getEmail() != null) {
 
-    ccEmails.append(this.getCurrentUser().getEmail());
-    ccEmails.append(", ");
-
-    // CC will be also the Management Liaison associated with the flagship(s), if is PMU only the PMU contact
-    Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
-    Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
-    // If Managment liason is PMU
-    if (projectInfo.getLiaisonInstitution() != null && projectInfo.getLiaisonInstitution().getAcronym() != null
-      && roleCrpPmu.getAcronym() != null
-      && projectInfo.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
-      // Deleted managment liason contact person
-    } else if (projectInfo.getLiaisonInstitution() != null
-      && projectInfo.getLiaisonInstitution().getCrpProgram() != null
-      && projectInfo.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
-      // If Managment liason is FL
-      List<CrpProgram> crpPrograms = globalUnitProject
-        .getGlobalUnit().getCrpPrograms().stream().filter(cp -> cp.getId() == project
-          .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
-        .collect(Collectors.toList());
-      if (crpPrograms != null) {
-
-        CrpProgram crpProgram = crpPrograms.get(0);
-        for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
-          .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
-          ccEmails.append(crpProgramLeader.getUser().getEmail());
-          ccEmails.append(", ");
-        }
-
-        if (this.hasSpecificities(APConstants.CRP_EMAIL_CC_FL_FM_CL)) {
-          // CC will be also other Cluster Leaders
-          for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-            .filter(cl -> cl.isActive() && cl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
-            for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
-              .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
-              ccEmails.append(crpClusterActivityLeader.getUser().getEmail());
-              ccEmails.append(", ");
-            }
-          }
-        }
-      }
-    }
-
-    // Add project coordinator(s)
-    for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons(this.getActualPhase())) {
-      if (projectPartnerPerson.getUser().getId() != this.getCurrentUser().getId()) {
-        ccEmails.append(projectPartnerPerson.getUser().getEmail());
-        ccEmails.append(", ");
-      }
-    }
-
-    // CC will be also the CRP Admins
-    String crpAdmins = "";
-    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
-    Role roleAdmin = roleManager.getRoleById(adminRol);
-    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
-      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
-    for (UserRole userRole : userRoles) {
-      ccEmails.append(userRole.getUser().getEmail());
-      ccEmails.append(", ");
-      if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
+      if (ccEmail.isEmpty()) {
+        ccEmail += projectLeader.getUser().getEmail();
       } else {
-        crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
+        ccEmail += ", " + projectLeader.getUser().getEmail();
       }
     }
 
-    ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
-    // Detect if a last ; was added to CC and remove it
-    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ',') {
-      ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
-    }
+    
+//    // Old method CC Emails
+//    String ccEmail = "";
+//    StringBuilder ccEmails = new StringBuilder();
+//
+//    ccEmails.append(this.getCurrentUser().getEmail());
+//    ccEmails.append(", ");
+//
+//    // CC will be also the Management Liaison associated with the flagship(s), if is PMU only the PMU contact
+//    Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
+//    Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
+//    // If Managment liason is PMU
+//    if (projectInfo.getLiaisonInstitution() != null && projectInfo.getLiaisonInstitution().getAcronym() != null
+//      && roleCrpPmu.getAcronym() != null
+//      && projectInfo.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
+//      // Deleted managment liason contact person
+//    } else if (projectInfo.getLiaisonInstitution() != null
+//      && projectInfo.getLiaisonInstitution().getCrpProgram() != null
+//      && projectInfo.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
+//      // If Managment liason is FL
+//      List<CrpProgram> crpPrograms = globalUnitProject
+//        .getGlobalUnit().getCrpPrograms().stream().filter(cp -> cp.getId() == project
+//          .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
+//        .collect(Collectors.toList());
+//      if (crpPrograms != null) {
+//
+//        CrpProgram crpProgram = crpPrograms.get(0);
+//        for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
+//          .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
+//          ccEmails.append(crpProgramLeader.getUser().getEmail());
+//          ccEmails.append(", ");
+//        }
+//
+//        if (this.hasSpecificities(APConstants.CRP_EMAIL_CC_FL_FM_CL)) {
+//          // CC will be also other Cluster Leaders
+//          for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+//            .filter(cl -> cl.isActive() && cl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+//            for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
+//              .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+//              ccEmails.append(crpClusterActivityLeader.getUser().getEmail());
+//              ccEmails.append(", ");
+//            }
+//          }
+//        }
+//      }
+//    }
+//
+//    // Add project coordinator(s)
+//    for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons(this.getActualPhase())) {
+//      if (projectPartnerPerson.getUser().getId() != this.getCurrentUser().getId()) {
+//        ccEmails.append(projectPartnerPerson.getUser().getEmail());
+//        ccEmails.append(", ");
+//      }
+//    }
+//
+//    // CC will be also the CRP Admins
+//    String crpAdmins = "";
+//    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+//    Role roleAdmin = roleManager.getRoleById(adminRol);
+//    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+//      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+//    for (UserRole userRole : userRoles) {
+//      ccEmails.append(userRole.getUser().getEmail());
+//      ccEmails.append(", ");
+//      if (crpAdmins.isEmpty()) {
+//        crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
+//      } else {
+//        crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
+//      }
+//    }
+//
+//    ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
+//    // Detect if a last ; was added to CC and remove it
+//    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ',') {
+//      ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
+//    }
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
