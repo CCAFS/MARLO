@@ -428,6 +428,7 @@
   <mapping resource="xmls/ProjectInnovationCrpOutcomes.hbm.xml"/>
   <mapping resource="xmls/ProjectExpectedStudyReferences.hbm.xml"/>
   <mapping resource="xmls/DeliverableClusterParticipants.hbm.xml"/>
+  <mapping resource="xmls/DeliverableTraineesIndicators.hbm.xml"/>
 
  </session-factory>
 </hibernate-configuration>
