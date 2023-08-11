@@ -148,15 +148,17 @@ public class ValidateProjectSectionAction extends BaseAction {
           break;
         case PARTNERS:
           this.projectSectionValidator.validateProjectParnters(this, this.getProjectID(), this.loggedCrp);
-        case BUDGET:
-          if (this.isPlanningActive() || ((this.isReportingActive() || this.isUpKeepActive())
-            && this.hasSpecificities(this.getCrpEnableBudgetExecution()))) {
-            this.projectSectionValidator.validateProjectBudgets(this, this.getProjectID());
-          }
-          break;
-        case BUDGETBYFLAGSHIP:
-          this.projectSectionValidator.validateProjectBudgetsFlagship(this, this.getProjectID(), true);
-          break;
+          /*
+           * case BUDGET:
+           * if (this.isPlanningActive() || ((this.isReportingActive() || this.isUpKeepActive())
+           * && this.hasSpecificities(this.getCrpEnableBudgetExecution()))) {
+           * this.projectSectionValidator.validateProjectBudgets(this, this.getProjectID());
+           * }
+           * break;
+           * case BUDGETBYFLAGSHIP:
+           * this.projectSectionValidator.validateProjectBudgetsFlagship(this, this.getProjectID(), true);
+           * break;
+           */
         case DELIVERABLES:
           this.projectSectionValidator.validateProjectDeliverables(this, this.getProjectID());
           break;
@@ -459,27 +461,21 @@ public class ValidateProjectSectionAction extends BaseAction {
 
           break;
 
-
-        case BUDGET:
-
-          if (this.isReportingActive() && !this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
-            section = new HashMap<String, Object>();
-
-            section.put("sectionName", ProjectSectionStatusEnum.BUDGET);
-            section.put("missingFields", "");
-
-          } else {
-            sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, cycle,
-              this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);
-            section = new HashMap<String, Object>();
-
-            section.put("sectionName", sectionStatus.getSectionName());
-            section.put("missingFields", sectionStatus.getMissingFields());
-          }
-
-
-          break;
-
+        /*
+         * case BUDGET:
+         * if (this.isReportingActive() && !this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+         * section = new HashMap<String, Object>();
+         * section.put("sectionName", ProjectSectionStatusEnum.BUDGET);
+         * section.put("missingFields", "");
+         * } else {
+         * sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, cycle,
+         * this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);
+         * section = new HashMap<String, Object>();
+         * section.put("sectionName", sectionStatus.getSectionName());
+         * section.put("missingFields", sectionStatus.getMissingFields());
+         * }
+         * break;
+         */
 
         case LEVERAGES:
           sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, cycle,

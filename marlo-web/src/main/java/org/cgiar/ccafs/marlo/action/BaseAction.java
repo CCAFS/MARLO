@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableTraineesIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeRuleManager;
 import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
@@ -454,6 +455,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private ProjectPartnerPersonManager projectPartnerPersonManager;
   @Inject
   private ProjectPartnerManager projectPartnerManager;
+  @Inject
+  private DeliverableTraineesIndicatorManager deliverableTraineesIndicatorManager;
 
   private StringBuilder validationMessage = new StringBuilder();
 
@@ -5106,6 +5109,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     TimeZone timeZone = TimeZone.getDefault();
     String display = timeZone.getDisplayName();
     return display;
+  }
+
+  public String getTraineesIndicatorDB() {
+    DeliverableTraineesIndicator deliverableTraineesIndicator = null;
+    String indicator = "";
+    try {
+      deliverableTraineesIndicator = this.deliverableTraineesIndicatorManager.findAll().stream()
+        .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId().equals(this.getActualPhase().getId()))
+        .collect(Collectors.toList()).get(0);
+    } catch (Exception e) {
+      LOG.error("error getting deliverable trainees indicator DB " + e);
+    }
+
+    if (deliverableTraineesIndicator != null && deliverableTraineesIndicator.getIndicator() != null
+      && !deliverableTraineesIndicator.getIndicator().isEmpty()) {
+      indicator = deliverableTraineesIndicator.getIndicator();
+    }
+    return indicator;
   }
 
   public String getUrl() {

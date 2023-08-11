@@ -123,6 +123,10 @@ public class UnhandledExceptionAction extends BaseAction {
 
     }
 
+    if (this.getActualPhase() != null && this.getActualPhase().getComposedName() != null) {
+      actionNameSubject += " - " + this.getActualPhase().getComposedName();
+    }
+
     if (this.getCurrentUser() != null && this.getCurrentUser().getFirstName() != null) {
       actionNameSubject += " - " + this.getCurrentUser().getFirstName();
     }

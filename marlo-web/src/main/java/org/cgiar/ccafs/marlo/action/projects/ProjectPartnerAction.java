@@ -1602,7 +1602,11 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartnerDB.setSelectedLocations(projectPartnerClient.getSelectedLocations());
             projectPartnerDB.setSubDepartment(projectPartnerClient.getSubDepartment());
             projectPartnerDB.setPartnerContributors(projectPartnerDB.getPartnerContributors());
-            projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerDB);
+            try {
+              projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerDB);
+            } catch (Exception e) {
+              LOG.warn("Error saving projectPartnerManager.saveProjectPartner " + e);
+            }
 
             if (!this.isCenterGlobalUnit()) {
               // Shared project if the partner is a Center

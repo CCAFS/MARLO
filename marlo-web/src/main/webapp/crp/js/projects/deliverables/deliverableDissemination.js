@@ -291,7 +291,9 @@ function searchIndicator(){
 
   var text = $('.elementName').text();
   // Makes the trainee question mandatory
-  if (text.indexOf('IPI 2.3') !== -1) {
+  var traineesIndicator = document.getElementById('traineesIndicator').value;
+  console.log("Trainees indicator: " + traineesIndicator);
+  if (text.indexOf(traineesIndicator) !== -1) {
     $('.yesNoTrainees .yes-button-label').addClass('radio-checked');
     $('.yesNoTrainees .yes-button-label').click();
     $('.yesNoTrainees .no-button-label').css("background-color", "#d6d6d6");
