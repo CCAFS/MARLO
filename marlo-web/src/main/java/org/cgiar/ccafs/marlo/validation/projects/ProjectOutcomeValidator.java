@@ -149,7 +149,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
       String programOutcome = projectOutcome.getCrpProgramOutcome().getDescription();
 
       // PDO 1 and 3
-      if (programOutcome.contains("PDO Indicator 1") || programOutcome.contains("PDO Indicator 3")) {
+      if (programOutcome.contains("PDO Indicator 1") || programOutcome.contains("PDO Indicator 3")
+        || programOutcome.contains("PDO Indicator 4")) {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
         // if (action.isPlanningActive()) {
@@ -303,7 +304,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
       if (programOutcome.contains("IPI 2.1") || programOutcome.contains("IPI 2.3") || programOutcome.contains("IPI 3.1")
         || programOutcome.contains("IPI 3.2") || programOutcome.contains("IPI 3.4")
         || programOutcome.contains("IPI 2.4") || programOutcome.contains("IPI 2.5")
-        || programOutcome.contains("IPI 3.5")) {
+        || programOutcome.contains("IPI 3.5") || programOutcome.contains("IPI 2.6")) {
         List<String> params = new ArrayList<>();
         params.add(String.valueOf(i + 1));
         // if (action.isPlanningActive()) {
