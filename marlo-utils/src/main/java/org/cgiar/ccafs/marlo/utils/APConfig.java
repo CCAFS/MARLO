@@ -68,7 +68,7 @@ public class APConfig {
   private String EMAIL_STARTTLS_BACKUP;
   @Value("$email.authbackup}")
   private String EMAIL_AUTH_BACKUP;
-  @Value("$email.pmu}")
+  @Value("${email.pmu}")
   private String EMAIL_PMU;
   @Value("${google.api.key}")
   private String GOOGLE_API_KEY;
