@@ -51,6 +51,14 @@ public interface ActivityTitleManager {
    */
   public List<ActivityTitle> findAll();
 
+  /**
+   * This method gets a list of activityTitle that are active
+   * 
+   * @param year is a int object.
+   * @return a list from ActivityTitle null if no exist records
+   */
+  public List<ActivityTitle> findByCurrentYear(int year);
+
 
   /**
    * This method gets a activityTitle object by a given activityTitle identifier.

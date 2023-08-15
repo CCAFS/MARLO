@@ -407,8 +407,10 @@ public class ProjectOutcomeListAction extends BaseAction {
         && c.getCrpProgram().getCrp().getId().equals(gp.getGlobalUnit().getId()))
       .collect(Collectors.toList())) {
 
-      List<CrpProgramOutcome> outcomesT = new ArrayList<>(projectFocuses.getCrpProgram().getCrpProgramOutcomes()
-        .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
+      List<CrpProgramOutcome> outcomesT =
+        new ArrayList<>(projectFocuses.getCrpProgram().getCrpProgramOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(phase) && c.getYear() >= this.getActualPhase().getYear())
+          .collect(Collectors.toList()));
 
       outcomes.addAll(outcomesT);
     }

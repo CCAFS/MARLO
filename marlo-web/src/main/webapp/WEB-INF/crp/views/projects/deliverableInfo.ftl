@@ -1,5 +1,5 @@
 [#ftl]
-
+<input type="hidden" id="traineesIndicator" name="traineesIndicator" value="${(action.getTraineesIndicatorDB())!''}"/>
 <input type="hidden" name="deliverable.deliverableInfo.remainingPending" value="${(deliverable.deliverableInfo.remainingPending!'')?c}"/>
 <div class="simpleBox">
   [#-- Title input --]

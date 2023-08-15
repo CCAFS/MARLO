@@ -54,6 +54,14 @@ public interface ActivityTitleDAO {
    */
   public List<ActivityTitle> findAll();
 
+  /**
+   * This method gets a list of activityTitle that are active
+   * 
+   * @param year is a int object.
+   * @return a list from ActivityTitle null if no exist records
+   */
+  public List<ActivityTitle> findByCurrentYear(int year);
+
 
   /**
    * This method saves the information of the given activityTitle

@@ -62,6 +62,11 @@ public class ActivityTitleManagerImpl implements ActivityTitleManager {
   }
 
   @Override
+  public List<ActivityTitle> findByCurrentYear(int year) {
+    return activityTitleDAO.findByCurrentYear(year);
+  }
+
+  @Override
   public ActivityTitle getActivityTitleById(long activityTitleID) {
 
     return activityTitleDAO.find(activityTitleID);

@@ -17,62 +17,27 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.google.gson.annotations.Expose;
 
-public class ActivityTitle extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
+public class DeliverableTraineesIndicator extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = -963914989396761020L;
 
   @Expose
-  private String title;
-
-  private Set<Activity> activities = new HashSet<Activity>(0);
+  private String indicator;
   @Expose
-  private int startYear;
-  @Expose
-  private int endYear;
+  private Phase phase;
 
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-
-    ActivityTitle other = (ActivityTitle) obj;
-    if (this.getId() == null) {
-      if (other.getId() != null) {
-        return false;
-      }
-    } else if (!this.getId().equals(other.getId())) {
-      return false;
-    }
-    return true;
+  public String getIndicator() {
+    return indicator;
   }
-
-
-  public Set<Activity> getActivities() {
-    return activities;
-  }
-
-  public int getEndYear() {
-    return endYear;
-  }
-
 
   @Override
   public String getLogDeatil() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("Id : ").append(this.getId());
-    return sb.toString();
+    // TODO Auto-generated method stub
+    return null;
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -80,41 +45,24 @@ public class ActivityTitle extends MarloBaseEntity implements java.io.Serializab
     return null;
   }
 
-
   @Override
   public User getModifiedBy() {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public int getStartYear() {
-    return startYear;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
-    return result;
+  public Phase getPhase() {
+    return phase;
   }
 
   @Override
   public boolean isActive() {
     // TODO Auto-generated method stub
-    return true;
+    return false;
   }
 
-  public void setActivities(Set<Activity> activities) {
-    this.activities = activities;
-  }
-
-  public void setEndYear(int endYear) {
-    this.endYear = endYear;
+  public void setIndicator(String indicator) {
+    this.indicator = indicator;
   }
 
   @Override
@@ -122,13 +70,8 @@ public class ActivityTitle extends MarloBaseEntity implements java.io.Serializab
     // TODO Auto-generated method stub
   }
 
-  public void setStartYear(int startYear) {
-    this.startYear = startYear;
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
 }
 

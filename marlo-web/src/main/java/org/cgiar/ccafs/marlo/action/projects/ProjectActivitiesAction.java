@@ -451,7 +451,33 @@ public class ProjectActivitiesAction extends BaseAction {
 
       if (this.isAiccra()) {
         if (activityTitleManager.findAll() != null && !activityTitleManager.findAll().isEmpty()) {
-          activityTitles = activityTitleManager.findAll();
+
+
+          try {
+            activityTitles = activityTitleManager.findByCurrentYear(this.getActualPhase().getYear());
+          } catch (Exception e) {
+            logger.error("unable to get activity title by date", e);
+          }
+
+          if (activityTitles == null || (activityTitles != null && activityTitles.isEmpty())) {
+            activityTitles = activityTitleManager.findAll();
+          }
+          /*
+           * List<ActivityTitle> tempActivityTitles = new ArrayList<>();
+           * for (ActivityTitle activityTitle : activityTitles) {
+           * if (activityTitle != null && activityTitle.getStartDate() != null && activityTitle.getEndDate() != null) {
+           * if (activityTitle.getStartDate().before(this.getActualPhase().getStartDate())
+           * && activityTitle.getEndDate().after(this.getActualPhase().getEndDate())) {
+           * tempActivityTitles.add(activityTitle);
+           * }
+           * }
+           * }
+           */
+          /*
+           * if (activityTitles != null && !activityTitles.isEmpty()) {
+           * activityTitles = tempActivityTitles;
+           * }
+           */
           if (activityTitles != null && activityTitles.isEmpty()) {
             activityTitles.sort((a1, a2) -> a1.getTitle().compareTo(a2.getTitle()));
           }

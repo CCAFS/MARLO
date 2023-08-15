@@ -510,7 +510,7 @@
     </div>
     
     <div class="form-group">
-      [@customForm.textArea name="${customName}.rationale"  value="${(element.rationale)!}" i18nkey="mapFunding.justification" help="mapFunding.justification.help" helpIcon=true className="" required=true editable=editable && (isYearEditable(selectedYear) || isTemplate) /]
+      [@customForm.textArea name="${customName}.rationale"  value="${(element.rationale)!}" i18nkey="mapFunding.justification" help="mapFunding.justification.help" helpIcon=true className="" required=false editable=editable && (isYearEditable(selectedYear) || isTemplate) /]
     </div>
     
     <div class="">

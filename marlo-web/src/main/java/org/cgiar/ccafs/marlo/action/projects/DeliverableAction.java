@@ -47,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityAnswerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableTraineesIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipManager;
@@ -103,6 +104,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnerType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
+import org.cgiar.ccafs.marlo.data.model.DeliverableTraineesIndicator;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
@@ -245,6 +247,7 @@ public class DeliverableAction extends BaseAction {
   private DeliverableCrpOutcomeManager deliverableCrpOutcomeManager;
   private FeedbackQACommentManager feedbackQACommentManager;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+  private DeliverableTraineesIndicatorManager deliverableTraineesIndicatorManager;
 
 
   // Variables
@@ -342,7 +345,8 @@ public class DeliverableAction extends BaseAction {
     DeliverableCrpOutcomeManager deliverableCrpOutcomeManager,
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
     FeedbackQACommentManager feedbackQACommentManager,
-    DeliverableClusterParticipantManager deliverableClusterParticipantManager) {
+    DeliverableClusterParticipantManager deliverableClusterParticipantManager,
+    DeliverableTraineesIndicatorManager deliverableTraineesIndicatorManager) {
     super(config);
     this.activityManager = activityManager;
     this.deliverableManager = deliverableManager;
@@ -403,6 +407,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverableCrpOutcomeManager = deliverableCrpOutcomeManager;
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.feedbackQACommentManager = feedbackQACommentManager;
+    this.deliverableTraineesIndicatorManager = deliverableTraineesIndicatorManager;
   }
 
   /**
@@ -908,6 +913,40 @@ public class DeliverableAction extends BaseAction {
    * @return CrpProgramOutcome IPI 2.3 object
    */
   public CrpProgramOutcome getTraineesIndicator() {
+    CrpProgramOutcome crpProgramOutcomeIPI = new CrpProgramOutcome();
+
+    try {
+      DeliverableTraineesIndicator deliverableTraineesIndicator = null;
+      if (programOutcomes != null && !programOutcomes.isEmpty()) {
+
+        deliverableTraineesIndicator = deliverableTraineesIndicatorManager.findAll().stream()
+          .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId().equals(this.getActualPhase().getId()))
+          .collect(Collectors.toList()).get(0);
+
+        if (deliverableTraineesIndicator != null && deliverableTraineesIndicator.getIndicator() != null
+          && !deliverableTraineesIndicator.getIndicator().isEmpty()) {
+          String indicator = deliverableTraineesIndicator.getIndicator();
+          crpProgramOutcomeIPI =
+            programOutcomes.stream().filter(o -> o.getAcronym() != null && o.getAcronym().equals(indicator))
+              .collect(Collectors.toList()).get(0);
+        }
+      }
+
+
+    } catch (Exception e) {
+      logger.error("unable to get IPI 2.3", e);
+      return null;
+    }
+    return crpProgramOutcomeIPI;
+
+  }
+
+  /**
+   * Get Trainees indicator BK old method - IPI 2.3
+   * 
+   * @return CrpProgramOutcome IPI 2.3 object
+   */
+  public CrpProgramOutcome getTraineesIndicatorBackup() {
     CrpProgramOutcome crpProgramOutcomeIPI = new CrpProgramOutcome();
 
     try {

@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -66,6 +67,18 @@ public class ActivityTitleMySQLDAO extends AbstractMarloDAO<ActivityTitle, Long>
     }
     return null;
 
+  }
+
+  @Override
+  public List<ActivityTitle> findByCurrentYear(int year) {
+    String query = "select pat from ActivityTitle pat where pat.endYear >= :year and pat.startYear < :year";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("year", year);
+    List<ActivityTitle> list = super.findAll(createQuery);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return null;
   }
 
   @Override
