@@ -784,7 +784,7 @@ public class ProjectPartnerAction extends BaseAction {
     if (role.getId() == pcRole.getId().longValue()) {
       ProjectPartnerPerson projectLeader = project.getLeaderPersonDB(this.getActualPhase());
       if (projectLeader != null && projectLeader.getUser() != null && projectLeader.getUser().getEmail() != null) {
-        ccEmail += projectLeader.getUser().getEmail();
+        ccEmail +=", " +  projectLeader.getUser().getEmail();
       }
     }
 
@@ -900,7 +900,7 @@ public class ProjectPartnerAction extends BaseAction {
     if (role.getId() == pcRole.getId().longValue()) {
       ProjectPartnerPerson projectLeader = project.getLeaderPersonDB(this.getActualPhase());
       if (projectLeader != null && projectLeader.getUser() != null && projectLeader.getUser().getEmail() != null) {
-        ccEmail += projectLeader.getUser().getEmail();
+        ccEmail +=", " +  projectLeader.getUser().getEmail();
       }
     }
 
