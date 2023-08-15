@@ -672,7 +672,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
     // CC will be the user who is making the modification.
     String ccEmail = this.getCurrentUser().getEmail();
-    if (!crpAdminsEmail.isEmpty() && this.config.getEmail_pmu() != null) {
+    if (this.config.getEmail_pmu() != null) {
       // ccEmail += ", " + crpAdminsEmail;
       ccEmail += ", " + this.config.getEmail_pmu();
     }
@@ -726,7 +726,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
     // CC will be the user who is making the modification.
     String ccEmail = this.getCurrentUser().getEmail();
-    if (!crpAdminsEmail.isEmpty() && this.config.getEmail_pmu() != null) {
+    if (this.config.getEmail_pmu() != null) {
       // ccEmail += ", " + crpAdminsEmail;
       ccEmail += ", " + this.config.getEmail_pmu();
     }
