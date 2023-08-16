@@ -363,7 +363,7 @@
       [#-- Milestones --]
         [#--[#if isOutcomeCaseStudy]  --]
         <div class="form-group">          
-          <label for="">[@s.text name="study.outcomes" /]:[@customForm.req required=editable && !action.isPOWB() /]
+          <label for="">[@s.text name="study.outcomes" /]:[@customForm.req required=editable /]
             <div class="feedback-flex-items">
               [@customForm.helpLabel name="study.outcomes.help" showIcon=false editable=editable/]
             </div>
@@ -389,7 +389,7 @@
        --]
        
        <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
-          [@customForm.elementsListComponent name="${customName}.crpOutcomes" elementType="crpOutcome" elementList=(element.crpOutcomes)![] label="study.outcomes"  listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=!action.isPOWB()/]
+          [@customForm.elementsListComponent name="${customName}.crpOutcomes" elementType="crpOutcome" elementList=(element.crpOutcomes)![] label="study.outcomes"  listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=editable/]
           <div class="note left">
             <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="_blank">
               <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.keyOutputNotice" /]

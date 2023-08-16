@@ -925,9 +925,11 @@ public class DeliverableAction extends BaseAction {
         if (deliverableTraineesIndicator != null && deliverableTraineesIndicator.getIndicator() != null
           && !deliverableTraineesIndicator.getIndicator().isEmpty()) {
           String indicator = deliverableTraineesIndicator.getIndicator();
-          crpProgramOutcomeIPI =
-            programOutcomes.stream().filter(o -> o.getAcronym() != null && o.getAcronym().equals(indicator))
-              .collect(Collectors.toList()).get(0);
+          List<CrpProgramOutcome> filteredOutcomes = programOutcomes.stream()
+            .filter(o -> o.getAcronym() != null && o.getAcronym().equals(indicator)).collect(Collectors.toList());
+          if (filteredOutcomes != null && !filteredOutcomes.isEmpty()) {
+            crpProgramOutcomeIPI = filteredOutcomes.get(0);
+          }
         }
       }
 
