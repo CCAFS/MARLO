@@ -132,6 +132,30 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    // validate Milestones
+    if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
+      && baseAction.getActualPhase().getName() != null
+      && projectExpectedStudy.getProjectExpectedStudyInfo().getStudyType() != null
+      && projectExpectedStudy.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1) {
+      if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
+        && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == null) {
+        action.addMessage(action.getText("hasMilestones"));
+        action.addMissingField("expectedStudy.projectExpectedStudyInfo.hasMilestones");
+        action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.hasMilestones",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
+    if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
+      && (projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() != null
+        && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == true
+        && (projectExpectedStudy.getCrpOutcomes() == null || projectExpectedStudy.getCrpOutcomes().isEmpty()))
+      || projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == null) {
+      action.addMessage(action.getText("crpOutcomes"));
+      action.addMissingField("expectedStudy.crpOutcomes");
+      action.getInvalidFields().put("list-expectedStudy.crpOutcomes",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"crpOutcomes"}));
+    }
 
     if (!action.isPOWB()) {
 
@@ -162,19 +186,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         }
       }
 
-      // validate Milestones
-      if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
-        && baseAction.getActualPhase().getName() != null
-        && projectExpectedStudy.getProjectExpectedStudyInfo().getStudyType() != null
-        && projectExpectedStudy.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1) {
-        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
-          && projectExpectedStudy.getProjectExpectedStudyInfo().getHasMilestones() == null) {
-          action.addMessage(action.getText("hasMilestones"));
-          action.addMissingField("expectedStudy.projectExpectedStudyInfo.hasMilestones");
-          action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.hasMilestones",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-      }
       /*
        * if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
        * && baseAction.getActualPhase().getName() != null

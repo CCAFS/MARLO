@@ -66,7 +66,7 @@
     { 'title': 'Budget', 'show': true,
       'items': [
       { 'slug': 'budgetByPartners',  'name': 'projects.menu.budgetByPartners',  'action': 'budgetByPartners',  'active': true, 'show':true, "showCheck": isGlobalUnitProject },      
-      { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': true, 'show': action.getCountProjectFlagships(project.id) && !reportingActive && isCrpProject, "showCheck": isGlobalUnitProject},
+      [#--  { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': true, 'show': action.getCountProjectFlagships(project.id) && !reportingActive && isCrpProject, "showCheck": isGlobalUnitProject},--]
       { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingActive && action.hasSpecificities("crp_leverages_module") && isCrpProject, "showCheck": isGlobalUnitProject}
       ]
     },
