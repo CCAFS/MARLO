@@ -1608,9 +1608,14 @@ public class ProjectOutcomeAction extends BaseAction {
     if (this.isAiccra()) {
       // this.addAllCrpMilestones();
     }
-    if (projectOutcome.getCrpProgramOutcome() != null && projectOutcome.getCrpProgramOutcome().getDescription() != null
-      && projectOutcome.getCrpProgramOutcome().getDescription().contains("2.3")) {
-      this.deliverableParticipantsInformation();
+
+    String traineesIndicatorLabel = this.getTraineesIndicatorDB();
+    if (traineesIndicatorLabel != null) {
+      if (projectOutcome.getCrpProgramOutcome() != null
+        && projectOutcome.getCrpProgramOutcome().getDescription() != null
+        && projectOutcome.getCrpProgramOutcome().getDescription().contains(traineesIndicatorLabel)) {
+        this.deliverableParticipantsInformation();
+      }
     }
 
     if (projectOutcome.getCrpProgramOutcome() != null && projectOutcome.getCrpProgramOutcome().getDescription() != null

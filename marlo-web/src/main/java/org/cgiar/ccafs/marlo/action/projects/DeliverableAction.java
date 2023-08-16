@@ -907,9 +907,9 @@ public class DeliverableAction extends BaseAction {
   }
 
   /**
-   * Get Trainees indicator - IPI 2.3
+   * Get Trainees indicator - IPI 2.x
    * 
-   * @return CrpProgramOutcome IPI 2.3 object
+   * @return CrpProgramOutcome IPI 2.x object
    */
   public CrpProgramOutcome getTraineesIndicator() {
     CrpProgramOutcome crpProgramOutcomeIPI = new CrpProgramOutcome();
@@ -935,7 +935,7 @@ public class DeliverableAction extends BaseAction {
 
 
     } catch (Exception e) {
-      logger.error("unable to get IPI 2.3", e);
+      logger.error("unable to get IPI 2.x", e);
       return null;
     }
     return crpProgramOutcomeIPI;
