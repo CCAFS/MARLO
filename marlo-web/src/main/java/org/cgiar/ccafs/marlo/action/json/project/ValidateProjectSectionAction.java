@@ -362,13 +362,13 @@ public class ValidateProjectSectionAction extends BaseAction {
           List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
             .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null)
             .collect(Collectors.toList());
-          if (studies != null && studies.size() > 0) {
+          if (studies != null && !studies.isEmpty()) {
             allProjectStudies.addAll(studies);
           }
 
           List<ProjectExpectedStudy> projectStudies = new ArrayList<ProjectExpectedStudy>();
 
-          if (allProjectStudies != null && allProjectStudies.size() > 0) {
+          if (allProjectStudies != null && !allProjectStudies.isEmpty()) {
             // Editable project studies: Current cycle year-1 will be editable except Complete and Cancelled.
             // Every study of the current cycle year will be editable
             projectStudies = allProjectStudies.stream()
