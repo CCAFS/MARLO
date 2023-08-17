@@ -69,6 +69,9 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
   private String parentFieldDescription;
   private String fieldDescription;
 
+  // Used to identify the field in the URL when is clicked
+  private String fieldID;
+
   private List<Map<String, Object>> message;
 
   @Inject
@@ -115,6 +118,7 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
     sectionID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.SECTION_ID).getMultipleValues()[0]));
     feedbackReplayUsername =
       StringUtils.trim(parameters.get(APConstants.FEEDBACK_REPLAY_USERNAME).getMultipleValues()[0]);
+    fieldID = StringUtils.trim(parameters.get(APConstants.FIELD_ID).getMultipleValues()[0]);
     try {
       if (parameters.get(APConstants.PARENT_FIELD_DESCRIPTION).isDefined()) {
         parentFieldDescription = StringUtils
@@ -207,24 +211,24 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
       switch (sectionName) {
         case "projectContributionCrp":
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/contributionCrp.do?"
-            + "projectOutcomeID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true";
+            + "projectOutcomeID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "/" + fieldID;
           sectionName = "Contribution To Performance Indicadors";
           break;
         case "deliverable":
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
-            + "deliverableID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true";
+            + "deliverableID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "/" + fieldID;
           sectionName = "Deliverable";
           parentFieldDescription = "Deliverable " + parentFieldDescription;
           break;
         case "study":
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/study.do?"
-            + "expectedID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true";
+            + "expectedID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "/" + fieldID;
           sectionName = "OICR or MELIA ";
           parentFieldDescription = "OICR " + parentFieldDescription;
           break;
         case "innovation":
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?"
-            + "innovationID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true";
+            + "innovationID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "/" + fieldID;
           sectionName = "Innovations";
           parentFieldDescription = "Innovation " + parentFieldDescription;
           break;
