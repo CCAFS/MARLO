@@ -115,7 +115,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1350,15 +1349,13 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
     List<ProjectExpectedStudy> projectStudies = new ArrayList<ProjectExpectedStudy>();
 
-    if (allProjectStudies != null && allProjectStudies.size() > 0) {
+    if (allProjectStudies != null && !allProjectStudies.isEmpty()) {
       // Editable project studies: Current cycle year-1 will be editable except Complete and Cancelled.
       // Every study of the current cycle year will be editable
       projectStudies = allProjectStudies.stream()
         .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
           && ps.getProjectExpectedStudyInfo().getStatus() != null
-          && ((StringUtils.equalsIgnoreCase(phase.getDescription(), APConstants.REPORTING)
-            ? action.getCurrentCycleYear() == ps.getProjectExpectedStudyInfo().getYear().intValue()
-            : action.getCurrentCycleYear() >= ps.getProjectExpectedStudyInfo().getYear().intValue())))
+          && ps.getProjectExpectedStudyInfo().getYear() >= action.getCurrentCycleYear())
         .collect(Collectors.toList());
     }
 

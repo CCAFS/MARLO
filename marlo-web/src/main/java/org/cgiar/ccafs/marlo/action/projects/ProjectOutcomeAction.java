@@ -1608,9 +1608,14 @@ public class ProjectOutcomeAction extends BaseAction {
     if (this.isAiccra()) {
       // this.addAllCrpMilestones();
     }
-    if (projectOutcome.getCrpProgramOutcome() != null && projectOutcome.getCrpProgramOutcome().getDescription() != null
-      && projectOutcome.getCrpProgramOutcome().getDescription().contains("2.3")) {
-      this.deliverableParticipantsInformation();
+
+    String traineesIndicatorLabel = this.getTraineesIndicatorDB();
+    if (traineesIndicatorLabel != null) {
+      if (projectOutcome.getCrpProgramOutcome() != null
+        && projectOutcome.getCrpProgramOutcome().getDescription() != null
+        && projectOutcome.getCrpProgramOutcome().getDescription().contains(traineesIndicatorLabel)) {
+        this.deliverableParticipantsInformation();
+      }
     }
 
     if (projectOutcome.getCrpProgramOutcome() != null && projectOutcome.getCrpProgramOutcome().getDescription() != null
@@ -1624,19 +1629,20 @@ public class ProjectOutcomeAction extends BaseAction {
      * get feedback comments
      */
     try {
-
-      feedbackComments = new ArrayList<>();
-      feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
-        .filter(f -> f.getSectionName() != null && f.getSectionName().equals("projectContributionCrp"))
-        .collect(Collectors.toList());
-      if (feedbackComments != null) {
-        for (FeedbackQACommentableFields field : feedbackComments) {
-          List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
-          comments = feedbackQACommentManager
-            .getFeedbackQACommentsByParentId(projectOutcome.getId()).stream().filter(f -> f != null
-              && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
-            .collect(Collectors.toList());
-          field.setQaComments(comments);
+      if (this.hasSpecificities(this.feedbackModule())) {
+        feedbackComments = new ArrayList<>();
+        feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
+          .filter(f -> f.getSectionName() != null && f.getSectionName().equals("projectContributionCrp"))
+          .collect(Collectors.toList());
+        if (feedbackComments != null) {
+          for (FeedbackQACommentableFields field : feedbackComments) {
+            List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
+            comments = feedbackQACommentManager
+              .getFeedbackQACommentsByParentId(projectOutcome.getId()).stream().filter(f -> f != null
+                && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
+              .collect(Collectors.toList());
+            field.setQaComments(comments);
+          }
         }
       }
     } catch (Exception e) {
