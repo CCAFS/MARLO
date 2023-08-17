@@ -336,7 +336,13 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     if (startDate != null && endDate != null) {
 
       Calendar calendarEnd = Calendar.getInstance();
-      calendarEnd.set(Calendar.YEAR, 2023);
+
+      if (year > 2023) {
+        // Add to the year 2029
+        calendarEnd.set(Calendar.YEAR, 2029);
+      } else {
+        calendarEnd.set(Calendar.YEAR, 2023);
+      }
 
       while (year <= calendarEnd.get(Calendar.YEAR)) {
 
