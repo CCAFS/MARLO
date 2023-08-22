@@ -79,6 +79,17 @@
 				<param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
+		
+		<action name="marloMessages"
+			class="org.cgiar.ccafs.marlo.action.superadmin.MarloMessagesAction">
+			<interceptor-ref name="superAdminStack" />
+			<result name="input">/WEB-INF/global/views/superadmin/marloMessages.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">marloMessages</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
 
 		<action name="emails"
 			class="org.cgiar.ccafs.marlo.action.superadmin.EmailsOnTrackAction">
@@ -252,5 +263,19 @@
 				<param name="edit">true</param>
 			</result>
 		</action>
+		
+	    <action name="deleteMarloMessage"
+			method="deleteMessage"
+			class="org.cgiar.ccafs.marlo.action.superadmin.MarloMessagesAction">
+			<interceptor-ref name="superAdminStack" />
+			<result name="input">/WEB-INF/crp/views/projects/marloMessages.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">marloMessages</param>
+				<param name="edit">true</param>
+			</result>
+
+		</action>
+		
 	</package>
 </struts>
