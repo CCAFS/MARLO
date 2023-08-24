@@ -192,7 +192,7 @@ function createTimeline() {
     var dateMonthStart = new Date(data.startDate).toLocaleString("en-US", { month: "short" });
     var dateDayStart = new Date(data.startDate).getDate()+1;    
     var dateMonthYear =new Date(data.endDate).getFullYear();
-    var dateMonthEnd =new Date(data.endDate).toLocaleString("en-US", { month: "short" });
+    var dateMonthEnd = new Date(new Date(data.endDate).toLocaleString('en-US', options)).toLocaleString("en-US", { month: "short" });
     var dateDayEnd = new Date(data.endDate).toLocaleString('en-US', africaOpciones);
     var date =document.createTextNode(dateMonthEnd+' '+ dateDayEnd+' - '+dateMonthYear)
     newDivTitle.appendChild(description);
