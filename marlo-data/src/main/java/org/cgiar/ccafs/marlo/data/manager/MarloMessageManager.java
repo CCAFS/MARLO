@@ -53,6 +53,20 @@ public interface MarloMessageManager {
 
 
   /**
+   * This method gets a list of marloMessage that are active
+   * 
+   * @return a list from MarloMessage null if no exist records
+   */
+  public List<MarloMessage> findAllHistory();
+
+  /**
+   * This method gets a marloMessage object with max ID.
+   * 
+   * @return a MarloMessage object.
+   */
+  public MarloMessage getLastMessage();
+
+  /**
    * This method gets a marloMessage object by a given marloMessage identifier.
    * 
    * @param marloMessageID is the marloMessage identifier.

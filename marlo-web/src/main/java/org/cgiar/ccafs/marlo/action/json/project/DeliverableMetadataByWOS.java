@@ -351,19 +351,21 @@ public class DeliverableMetadataByWOS extends BaseAction {
           Institution incomingInstitution = (incomingAffiliation.getClarisaId() != null)
             ? this.institutionManager.getInstitutionById(incomingAffiliation.getClarisaId()) : null;
 
-          newDeliverableAffiliation.setInstitution(incomingInstitution);
-          newDeliverableAffiliation.setInstitutionMatchConfidence(incomingAffiliation.getClarisaMatchConfidence());
-          newDeliverableAffiliation.setDeliverableMetadataExternalSources(externalSource);
-          newDeliverableAffiliation.setInstitutionNameWebOfScience(incomingAffiliation.getFullName());
-          newDeliverableAffiliation.setInstitutionMatchConfidence(incomingAffiliation.getClarisaMatchConfidence());
-          newDeliverableAffiliation.setActive(true);
+          if (incomingInstitution != null) {
+            newDeliverableAffiliation.setInstitution(incomingInstitution);
+            newDeliverableAffiliation.setInstitutionMatchConfidence(incomingAffiliation.getClarisaMatchConfidence());
+            newDeliverableAffiliation.setDeliverableMetadataExternalSources(externalSource);
+            newDeliverableAffiliation.setInstitutionNameWebOfScience(incomingAffiliation.getFullName());
+            newDeliverableAffiliation.setInstitutionMatchConfidence(incomingAffiliation.getClarisaMatchConfidence());
+            newDeliverableAffiliation.setActive(true);
 
-          newDeliverableAffiliation =
-            this.deliverableAffiliationManager.saveDeliverableAffiliation(newDeliverableAffiliation);
+            newDeliverableAffiliation =
+              this.deliverableAffiliationManager.saveDeliverableAffiliation(newDeliverableAffiliation);
 
-          if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
-            this.deliverableAffiliationManager.replicate(newDeliverableAffiliation,
-              phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+            if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+              this.deliverableAffiliationManager.replicate(newDeliverableAffiliation,
+                phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+            }
           }
         }
       }
