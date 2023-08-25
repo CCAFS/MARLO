@@ -70,6 +70,29 @@ public class MarloMessageMySQLDAO extends AbstractMarloDAO<MarloMessage, Long> i
   }
 
   @Override
+  public List<MarloMessage> findAllHistory() {
+    String query = "from " + MarloMessage.class.getName();
+    List<MarloMessage> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
+  public MarloMessage getLastMessage() {
+    String query = "from " + MarloMessage.class.getName() + "  where id = (SELECT MAX(id) FROM "
+      + MarloMessage.class.getName() + ")";
+    List<MarloMessage> list = super.findAll(query);
+
+    if (!list.isEmpty() && list.get(0) != null) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public MarloMessage save(MarloMessage marloMessage) {
     if (marloMessage.getId() == null) {
       super.saveEntity(marloMessage);

@@ -62,6 +62,19 @@ public class MarloMessageManagerImpl implements MarloMessageManager {
   }
 
   @Override
+  public List<MarloMessage> findAllHistory() {
+
+    return marloMessageDAO.findAllHistory();
+
+  }
+
+  @Override
+  public MarloMessage getLastMessage() {
+
+    return marloMessageDAO.getLastMessage();
+  }
+
+  @Override
   public MarloMessage getMarloMessageById(long marloMessageID) {
 
     return marloMessageDAO.find(marloMessageID);

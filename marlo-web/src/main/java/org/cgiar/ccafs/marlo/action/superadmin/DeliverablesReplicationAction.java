@@ -350,7 +350,8 @@ public class DeliverablesReplicationAction extends BaseAction {
                 .collect(Collectors.toList());
             if (deliverablePartnershipOthers != null && deliverablePartnershipOthers.size() > 0) {
               for (DeliverableUserPartnership deliverablePartnershipOther : deliverablePartnershipOthers) {
-                if (deliverablePartnershipOther.getDeliverableUserPartnershipPersons() != null) {
+                if (deliverablePartnershipOther != null
+                  && deliverablePartnershipOther.getDeliverableUserPartnershipPersons() != null) {
 
                   if (deliverablePartnershipOther.getDeliverableUserPartnershipPersons() != null) {
 
@@ -388,27 +389,29 @@ public class DeliverablesReplicationAction extends BaseAction {
                       List<User> dUsers = this.getUserList(deliverablePartnershipOther.getInstitution().getId(),
                         deliverablePartnershipOther.getDeliverable().getProject().getId());
 
-                      for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson2 : trueList) {
-                        boolean addUser = false;
-                        for (User user : dUsers) {
+                      if (trueList != null && !trueList.isEmpty()) {
+                        for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson2 : trueList) {
+                          boolean addUser = false;
+                          if (dUsers != null && !dUsers.isEmpty()) {
+                            for (User user : dUsers) {
 
-                          if (user.getId().equals(deliverableUserPartnershipPerson2.getUser().getId())) {
-                            addUser = true;
-                            break;
+                              if (user.getId().equals(deliverableUserPartnershipPerson2.getUser().getId())) {
+                                addUser = true;
+                                break;
+                              }
+
+                            }
+                          }
+                          if (addUser) {
+                            personList.add(deliverableUserPartnershipPerson2);
+                          } else {
+                            deliverableUserPartnershipPersonManager
+                              .deleteDeliverableUserPartnershipPerson(deliverableUserPartnershipPerson2.getId());
                           }
 
                         }
-
-                        if (addUser) {
-                          personList.add(deliverableUserPartnershipPerson2);
-                        } else {
-                          deliverableUserPartnershipPersonManager
-                            .deleteDeliverableUserPartnershipPerson(deliverableUserPartnershipPerson2.getId());
-                        }
-
                       }
                     }
-
 
                     deliverablePartnershipOther.setPartnershipPersons(trueList);
                   }
