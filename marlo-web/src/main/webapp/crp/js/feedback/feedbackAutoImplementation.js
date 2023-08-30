@@ -62,7 +62,7 @@ function feedbackAutoImplementation (){
       containerQaPopup.css('left', popupLeft-480);
     }
 
-    containerQaPopup.css('top', popupTop);
+    containerQaPopup.css('top', popupTop + 25);
     // $('.qaPopup').hide().not(qaPopup);
     containerQaPopup.show();
 
@@ -184,9 +184,9 @@ function attachEventsFeedback() {
     if (event.pageX < 1000) {
       containerQaPopup.css('left', event.pageX);
     } else {
-      containerQaPopup.css('left', event.pageX - 480);
+      containerQaPopup.css('left', event.pageX - 500);
     }
-    containerQaPopup.css('top', event.pageY);
+    containerQaPopup.css('top', event.pageY + 25);
     
     // Ocultar otros popups y luego mostrar el popup deseado con una animación de fadeIn
     $('.containerQaPopup').not(containerQaPopup).fadeOut(400);
@@ -216,7 +216,7 @@ function attachEventsFeedback() {
   $('img.disagreeCommentBtn').on('click', function () {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
-    let block = $(this).parent().parent().parent();
+    let block = $(this).parent().parent().parent();    
 
     hideShowOptionButtons(block, '0');
     saveCommentStatus(0, commentID, name);
@@ -324,17 +324,28 @@ function attachEventsFeedback() {
   });
 
   $('img.replyCommentBtn').on('click', function () {
+    let name = $(this).attr('name');
     let block = $(this).parent().parent().parent();
+    let blockContainer = block.parent().parent().parent()
+    let senNewComment = blockContainer.find('div[class="sendCommentContainer"]');
+    let textarea = blockContainer.find('textarea[id="New comment"]');
 
     block.find('.replyContainer').css('display', 'flex');
     block.find('.buttonsContainer').hide();
     block.find('.optionsContainer').hide();
+
+    textarea.prop('disabled', true);
+    senNewComment.css({
+      'background-color': '#afafaf',
+      'pointer-events': 'none'
+    })
   });
 
   $('div.sendReplyContainer').on('click', function () {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(`div[id^="qaCommentReply-${name}"]`);
+    let blockContainer = block.parent().parent();
     let textarea = block.find('textarea[id="Reply"]');
     let value = textarea.val();
     let comment = textarea.next().html();
@@ -344,6 +355,8 @@ function attachEventsFeedback() {
     let feedback_assesor_email = block.find('.commentContainer').attr('email');
     let isTracking = block.find('.commentContainer').attr('isTracking');
     let feedback_comment_reaction = block.find('.commentContainer').attr('status');
+    let senNewComment =  blockContainer.find('div[class="sendCommentContainer"]');
+    let nweTextarea = blockContainer.find('textarea[id="New comment"]');
     
     const statusMapping = {
       '0': 'Disagreed',
@@ -371,6 +384,13 @@ function attachEventsFeedback() {
     } else {
       textarea.css('border', '2px solid red');
     }
+  
+
+    nweTextarea.prop('disabled', false);
+    senNewComment.css({
+      'background-color': '#0b7ba6',
+      'pointer-events': 'auto'
+    })
   });
 
   $('div.addCommentContainer').on('click', function () {
@@ -442,20 +462,26 @@ function sendNewComment(name){
   let comment = textarea.next().html();
   let cleanComment;
 
-
+  
   if (value && value != '') {
     cleanComment = value.replaceAll('.<br>.', '');
-  } else {
-    cleanComment = comment?.replaceAll('.<br>.', '');
-  }
+  } 
+  // else {
+  //   cleanComment = commnet?.replaceAll('.<br>.', '');
+  //   console.log(cleanComment)
+  // }
 
+  
   cleanComment = cleanComment ? cleanComment.replaceAll('&nbsp;', ' ') : '';
-
   if (cleanComment != '' && cleanComment != ' ') {
     textarea.css('border', '1px solid #ccc');
     saveQAComment(cleanComment, fieldID, name);
     $('textarea[name="New comment"]').val('');
     value='';
+    textarea.val('');
+    cleanComment='';
+    comment='';
+    textarea.focus();
   } else {
     textarea.css('border', '2px solid red');
   }
@@ -637,7 +663,6 @@ function hideShowOptionButtons(block, status) {
                       if (block.last().attr('newComment') != 'true') {
                         newBlock.attr('newComment', 'true');
                         newBlock.insertAfter(lastBlock).hide().show();
-                        console.log(newBlock)
                       }
                       // block = $(`div[id^="qaPopup-${name}["]`).find('.qaCommentReplyBlock');
                       block = newBlock;
