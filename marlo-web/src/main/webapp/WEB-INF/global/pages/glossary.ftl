@@ -13,25 +13,28 @@
 
 
 [#assign glossaryContent= [ 
-  [ "accountability", "achievements", "activities", "adoption", "adoptionStudy", "appraisal", "assumptions", "attribution", "audit"],
-  [ "baseline", "behIndependence", "benchmark", "beneficiaries", "bilateralFunding",  "budget", "CCAFSbudget"],
-  [ "cgiarPlatform", "clients", "clusterEvaluation", "clusterOfActivities", "clusterSample",  "comparativeAdvantage", "comparisonGroup", "conclusions", "confidenceLevel", "contribution", "controlGroup", "costBenefit", "costEffectiveness", "counterfactual", "crossCuttingDimension", "credibility", "CRP"],
-  [ "deliverables", "dependentVariable", "disaggregation", "doubleLoopLearning"],
-  [ "effectiveness", "efficiency","endUsers", "evaluation","evaluationCriteria", "evaluationReference", "evidence", "exanteEvaluation", "expostEvaluation", "externalEvaluation", "formativeEvaluation", "flagshipProject" ],
+  [ "abstract","accountability", "achievements", "activities", "audio", "adoption", "adoptionStudy", "appraisal", "assumptions", "attribution", "audit"],
+  [ "baseline", "behIndependence", "benchmark", "beneficiaries", "bilateralFunding","blog", "blogPost", "book", "budget", "bookChapter", "brief", "brochure", "CCAFSbudget"],
+  [ "caseStudy", "cgiarPlatform", "clients", "clusterEvaluation", "clusterOfActivities", "clusterSample",  "comparativeAdvantage", "comparisonGroup", "conclusions", "conferenceProceedings", "confidenceLevel", "contribution", "controlGroup", "costBenefit", "costEffectiveness", "counterfactual", "crossCuttingDimension", "credibility", "CRP"],
+  [ "dataPaper", "dataset", "deliverables", "dependentVariable", "disaggregation", "doubleLoopLearning"],
+  [ "effectiveness", "efficiency","endUsers", "equation", "evaluation","evaluationCriteria", "evaluationReference", "evidence", "exanteEvaluation", "expostEvaluation", "extensionMaterial", "externalEvaluation", "formativeEvaluation", "flagshipProject" ],
+  [ "factsheet"],
   [ "globalPublicGoods"],
   [ "hypothesis" ],
-  [ "impact", "impactAssessment", "impactEvaluation", "impactPathway", "impartiality", "independence", "independentVariable", "indicator", "innovation", "inputs", "ido", "internalEvaluation", "internationalPublicGoods", "interoperable"],
+  [ "image", "impact", "impactAssessment", "impactEvaluation", "impactPathway", "impartiality", "independence", "independentVariable", "indicator", "infographic", "innovation", "inputs", "ido", "internalEvaluation", "internationalPublicGoods", "interoperable"],
+  [ "journalArticle", "journalIssue", "journalItem" ],
   [ "legitimacy", "lessonsLearned", "logicalFramework" ],
-  [ "metaEvaluation", "midTermEvaluation", "milestone", "mixedMethods", "monitoring","mutualAccountability" ],
-  [ "nextUsers", "nares" ],
-  [ "outcome", "outcomeCaseStudy", "outputs"],
-  [ "participatoryEvaluation", "partners", "peerReview", "performanceManagement", "performanceMeasureement", "ppa", "primaryData", "processEvaluation", "programEvaluation", "programManagementUnit", "projectEvaluation", "projectLeader" ],
-  [ "qualityAssurance", "quasiExperimentalDesign" ],
-  [ "randomAssignment", "rtc", "recommendations", "regressionAnalysis", "relevance", "reliability", "replication", "researchQuality", "results", "resultsBaseManagement", "review", "riskAnalysis"],
-  [ "scaling", "secondaryData", "selectionBias", "sexDisaggregatedData", "singleLoopLearning", "socialLearning", "sphereOfControl", "sphereOfInfluence", "sphereOfInterest", "spilloverEffects", "srf", "stakeholders", "subido", "survey", "surveyInstrument", "sustainability"],
-  [ "targetGroup", "targetUnit", "targetvalue", "termsOfReference", "thematicEvaluation", "theoryBasedImpact", "toc", "transactionCost", "treatmentGroup", "tripleLoopLearning", "triangulation"],
+  [ "magazine", "magazineArticle", "manual", "metaEvaluation", "map", "midTermEvaluation", "milestone", "mixedMethods", "model", "monitoring","mutualAccountability" ],
+  [ "nares", "nextUsers", "newsItem", "newsletter" ],
+  [ "opinionPiece", "outcome", "outcomeCaseStudy", "outputs"],
+  [ "participatoryEvaluation", "partners", "peerReview", "performanceManagement", "performanceMeasureement", "podcast", "poster", "ppa", "presentation", "pressRelease", "primaryData", "processEvaluation", "programEvaluation", "programManagementUnit", "projectEvaluation", "projectLeader", "proposal" ],
+  [ "qualityAssurance", "quasiExperimentalDesign", "questionnaire" ],
+  [ "randomAssignment", "rtc", "recommendations", "regressionAnalysis", "relevance", "reliability", "replication", "report", "researchQuality", "results", "resultsBaseManagement", "review", "riskAnalysis"],
+  [ "scaling", "secondaryData", "selectionBias", "sexDisaggregatedData", "singleLoopLearning", "socialLearning", "socialMediaOutput", "software", "sourceCode", "sphereOfControl", "sphereOfInfluence", "sphereOfInterest", "spilloverEffects", "srf", "stakeholders", "subido", "survey", "surveyInstrument", "sustainability"],
+  [ "targetGroup", "targetUnit", "targetvalue", "template", "termsOfReference", "thematicEvaluation", "theoryBasedImpact", "thesis", "toc", "trainingMaterial", "transactionCost", "treatmentGroup", "tripleLoopLearning", "triangulation"],
   [ "use", "valueForMoney" , "validity"],
-  [ "window1", "window2", "window3", "womenEmpowerment" ]
+  [ "video" ],
+  [ "website", "window1", "window2", "window3", "womenEmpowerment", "workingPaper" ]
 ] /]
 
 [#assign words= [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "W"]/]
