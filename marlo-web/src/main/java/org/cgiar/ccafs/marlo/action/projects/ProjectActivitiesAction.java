@@ -53,6 +53,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -155,28 +158,49 @@ public class ProjectActivitiesAction extends BaseAction {
   public List<Activity> getActivities(boolean open) {
 
     try {
+      List<Activity> openA;
       if (open) {
 
-        List<Activity> openA = project.getProjectActivities().stream()
+        openA = project.getProjectActivities().stream()
           .filter(
             a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
               || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
           .collect(Collectors.toList());
-        return openA;
+          //return openA;
 
       } else {
 
-        List<Activity> openA = project.getProjectActivities().stream()
+        openA = project.getProjectActivities().stream()
           .filter(
             a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
               || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
           .collect(Collectors.toList());
-        return openA;
+          //return openA;
       }
+      //sort activities by title number
+      openA.sort(Comparator.comparing(this::extractActivityNumber));
+      return openA;
     } catch (Exception e) {
       return new ArrayList<>();
     }
   }
+  
+  //Helper function to extract the number from the title
+  private int extractActivityNumber(Activity activity) {
+     Pattern pattern = Pattern.compile("(\\d+(\\.\\d+)*)");
+     Matcher matcher = pattern.matcher(activity.getTitle());
+     if (matcher.find()) {
+         String numberStr = matcher.group(1);
+         String[] numberParts = numberStr.split("\\.");
+         int number = 0;
+         for (String part : numberParts) {
+             number = number * 100 + Integer.parseInt(part);
+         }
+         return number;
+     }
+     return 0; // Default if no number is found
+  }
+
 
   public List<ActivityTitle> getActivityTitles() {
     return activityTitles;
