@@ -329,7 +329,7 @@ function attachEventsFeedback() {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(this).parent().parent().parent();
-    let blockContainer = block.parent().parent().parent();
+    let blockContainer = block.parent().parent();
     let senNewComment = blockContainer.find('div[class="sendCommentContainer"]');
     let textarea = blockContainer.find('textarea[id="New comment"]');
 
