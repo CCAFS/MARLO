@@ -981,7 +981,7 @@
       <div class="closeComment" name="${name}" title="Close comments" ><img src="${baseUrlCdn}/global/images/icon_remove.png"></div>
       
     </div>
-    <div id="qaPopup-${customName}" class="qaPopup">
+    <div id="qaPopup-${customName}" class="qaPopup" style="display:none">
       <div class="closeComment" name="${name}"></div>
       <br>
       [#if fields?has_content]

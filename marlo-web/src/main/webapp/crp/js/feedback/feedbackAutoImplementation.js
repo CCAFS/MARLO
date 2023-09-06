@@ -249,8 +249,11 @@ function attachEventsFeedback() {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(this).parent().parent().parent();
+    let blockContainer = block.parent().parent();
     let editComment = $(`textarea[commentID="${commentID}"].editCommentReadonly`).val();
     let editCommentReadonly = $(`textarea[commentID="${commentID}"].editCommentReadonly`);
+    let senNewComment =  blockContainer.find('div[class="sendCommentContainer"]');
+    let nweTextarea = blockContainer.find('textarea[id="New comment"]');
 
     if (editComment != '' && editComment != ' ') {
       showEditComment(block, commentID, 2);
@@ -259,6 +262,12 @@ function attachEventsFeedback() {
     } else {
       editCommentReadonly.css('border', '2px solid red');
     } 
+
+    nweTextarea.prop('disabled', false);
+    senNewComment.css({
+      'background-color': '#0b7ba6',
+      'pointer-events': 'auto'
+    })
   });
 
   $('div.deleteReplyBtn').on('click', function () {
@@ -313,20 +322,29 @@ function attachEventsFeedback() {
     saveTrackComment(0, commentID, name);
     hideShowOptionButtons(block, '6');
     saveCommentStatus(6, commentID, name);
+    block.find('img.replyCommentBtn').click();
   });
 
   $('.editCommentBtn').on('click', function () {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(this).parent().parent().parent();
+    let blockContainer = block.parent().parent().parent();
+    let senNewComment = blockContainer.find('div[class="sendCommentContainer"]');
+    let textarea = blockContainer.find('textarea[id="New comment"]');
 
     showEditComment(block, commentID, 1);
+    textarea.prop('disabled', true);
+    senNewComment.css({
+      'background-color': '#afafaf',
+      'pointer-events': 'none'
+    })
   });
 
   $('img.replyCommentBtn').on('click', function () {
     let name = $(this).attr('name');
     let block = $(this).parent().parent().parent();
-    let blockContainer = block.parent().parent().parent()
+    let blockContainer = block.parent().parent();
     let senNewComment = blockContainer.find('div[class="sendCommentContainer"]');
     let textarea = blockContainer.find('textarea[id="New comment"]');
 
@@ -585,7 +603,7 @@ function hideShowOptionButtons(block, status) {
           break;
         case '6':          
           block.find('.editCommentBtn').hide();
-          block.find('div.deleteCommentBtn').show();
+          block.find('div.deleteCommentBtn').hide();
           block.find('.correctCommentBtn').hide();
           block.find('.containerSentCommentBtn').hide();
           block.find('img.agreeCommentBtn').hide();
@@ -593,6 +611,7 @@ function hideShowOptionButtons(block, status) {
           block.find('img.clarificationCommentBtn').hide();
           block.find('.dismissCommentBtn').hide();
           block.find('.commentContainer').css('background', '#9b99964a');
+          block.find('.replyTextContainer').css('background', '#9b99964a');
           block.find('.commentTitle').css('font-style', 'oblique');
           block.find('.commentTitle').css('font-weight', '200');
           block.find('.commentReadonly').css('font-style', 'oblique');
@@ -633,8 +652,13 @@ function hideShowOptionButtons(block, status) {
                 }
                 statusArray =commentEmpty.every((el) => el == '6');
               }
-
+              
+              
               if(!statusArray){
+                // These two lines are used to display the body where the comments will be displayed since the body is initialized with a display none.
+                let qaPopup2 = $(`.qaPopup[id^="qaPopup-${name}"]`);
+                qaPopup2.show();
+                
                 for (let j = 0; j < commentsLength; j++) {
                   if (qaComments[i][j] !== undefined) {
                     let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
@@ -650,7 +674,7 @@ function hideShowOptionButtons(block, status) {
                       let commentReplyBlock = qaPopup.siblings('#qaTemplate').find('.qaPopup').children()[2];
                       let lastBlock = $(`div[id^="qaPopup-${name}["]`).find('.qaCommentReplyBlock').last();
                       let newBlock = $(commentReplyBlock).clone(true).attr('id', `qaCommentReply-${name}[${j}]`);
-                      // console.log(newBlock)
+                      
                     
                       newBlock.attr('index', `${j}`);
                       newBlock.find('.sendCommentContainer').attr('name', `${name}[${j}]`);
@@ -668,6 +692,8 @@ function hideShowOptionButtons(block, status) {
                       block = newBlock;
                     }
 
+                    
+
                     block.find('textarea[id="New comment"]').hide();
                     block.find('textarea[id="New comment"]').next().next('p.charCount').hide();
                     block.find('.commentContainer').show();
@@ -676,7 +702,7 @@ function hideShowOptionButtons(block, status) {
                     block.find('.commentContainer textarea.editCommentReadonly').html(`${qaComments[i][j].comment}`);
                     block.find('.sendCommentContainer').hide();              
                     if (qaComments[i][j].userID != userID) block.find('.deleteCommentBtn').remove();
-                    if (qaComments[i][j].reply.userID == userID) block.find('.deleteReplyBtn').show();
+                    if (qaComments[i][j].reply.userID == userID && qaComments[i][j].status != '6') block.find('.deleteReplyBtn').show();
                     if (userCanApproveFeedback == 'false' && userCanManageFeedback =='true' &&  userCanLeaveComments =='true' && qaComments[i][j].userID != userID) block.find('.editCommentBtn').remove();
                     if (userCanManageFeedback =='false'){
                     }                    
@@ -827,8 +853,8 @@ function hideShowOptionButtons(block, status) {
                     block.find('.replyCommentBtn').hide();
                     block.find('.sendReplyContainer').show();
                   }if (qaComments[i][j].status == '6') {
-                    block.find('textarea[id="Reply"]').parent().hide();
-                    block.find('.replyContainer').hide();
+                    block.find('textarea[id="Reply"]').parent().show();
+                    block.find('.replyContainer').css('display', 'flex');
                     block.find('.replyTextContainer').hide();
                     block.find('.replyCommentBtn').hide();
                     block.find('.sendReplyContainer').show();
