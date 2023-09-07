@@ -309,7 +309,7 @@ function attachEventsFeedback() {
   $('img.dismissCommentBtn').on('click', function () {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
-    let block = $(this).parent().parent().parent().parent();
+    let block = $(this).parent().parent().parent();
     let feedback_assesor_input = block.find('.commentContainer').attr('comment');
     let feedback_assesor_name = block.find('.commentContainer').attr('username');
     let feedback_assesor_email = block.find('.commentContainer').attr('email');
@@ -637,6 +637,11 @@ function hideShowOptionButtons(block, status) {
     try {
       // Removes the last index in brackets, i.e: [0]
       name = name.replace(/\[[^\]]*\]$/, '');
+
+      // These two lines are used to hide the body where the comments will be displayed since the body is initialized with a display none.
+      let qaPopup2 = $(`.qaPopup[id^="qaPopup-${name}"]`);
+      qaPopup2.hide();
+
       if (qaComments.length > 0) {
         for (let i = 0; i < qaComments.length; i++) {
           if (qaComments[i].frontName == name) {
@@ -877,6 +882,10 @@ function hideShowOptionButtons(block, status) {
               }
             }
           }
+        }else{
+          // These two lines are used to hide the body where the comments will be displayed since the body is initialized with a display none.
+          let qaPopup2 = $(`.qaPopup[id^="qaPopup-${name}"]`);
+          qaPopup2.hide();
         }
       }
     }
