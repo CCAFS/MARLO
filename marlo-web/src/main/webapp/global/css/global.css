@@ -7303,18 +7303,47 @@ img.qaCommentStatus {
   margin-right: 5px;
 }
 
-#qaPopup, .qaPopup {
+.containerQaPopup{
   display: none;
   position: absolute;
-  width: 25%;
+  width: 480;
+  z-index: 1000;
+  min-width: 480px;
+  max-width: 480px;
+  box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%), 0 0 8px rgb(0 0 0 / 30%);
+  background: #F5F5F5;
+  border-radius: 10px;
+}
+
+.containerLeftComment textarea{  
+  min-height: 2.5em !important;
+  border-radius: 10px;
+}
+
+.headerQaPopup{
+  width: 100%;
+  height: 30px;
+  background: #0b5da6;
+  display: flex;
+  border-radius: 7px 7px 0px 0px;
+}
+
+.headerQaPopup img{
+  width: 36px;
+}
+
+#qaPopup, .qaPopup {
+  /* display: none; */
+  /* position: absolute; */
+  /* width: 25%; */
   max-height: 500px;
   padding: 10px;
-  background: #F5F5F5;
+  /* background: #F5F5F5; */
   border-radius: 5px;
-  box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%), 0 0 8px rgb(0 0 0 / 30%);
+  /* box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%), 0 0 8px rgb(0 0 0 / 30%); */
   overflow-y: scroll;
-  z-index: 1000;
-  min-width: 435px;
+  /* z-index: 1000; */
+  /* min-width: 435px; */
 }
 
 .qaPopup::-webkit-scrollbar {
@@ -7336,9 +7365,24 @@ img.qaCommentStatus {
   background-color: #a8bbbf;
 }
 
+.containerLeftComment{
+  display: flex;
+  background: #E7E7E7;
+  padding: 10px;
+  border-radius: 0px 0px 7px 7px;
+}
+
+.titleQaPopup{
+  color: white;
+  font-weight: 600;  
+  padding-top: 5px;
+  padding-left: 10px;
+}
+
 .commentCheckContainer {
   display: flex;
-  padding-right: 30px;
+  padding-right: 28px;
+  padding-left: 15px;
 }
 
 .deleteReplyBtn{
@@ -7381,8 +7425,8 @@ img.qaCommentStatus {
 }
 
 .replyContainer {
-  padding-left: 10px;
-  padding-right: 40px;
+  padding-left: 25px;
+  padding-right: 20px;
 }
 
 .commentTitle{
@@ -7430,12 +7474,12 @@ img.qaCommentStatus {
 
 .replyContainer {
   display: none;
-  flex-flow: column;
+  /* flex-flow: column; */
 }
 
 .sendCommentContainer {
-  width: 25px;
-  height: 25px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -7443,6 +7487,22 @@ img.qaCommentStatus {
   background-color: #0b7ba6;
   border-radius: 50%;
   float: right;
+  place-self: end;
+  margin-bottom: 19px;  
+  margin-left: 6px;
+}
+
+.sendCommentContainerLoad{
+  display: none;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  margin-left: 3px;
+  float: right;
+  place-self: end;
+  margin-bottom: 19px;  
+  margin-left: 6px;
 }
 
 .sentCommentBtn {
@@ -7463,7 +7523,7 @@ cursor: pointer;
 .containerSentCommentBtn {
   position: absolute; 
   bottom: 5px !important; 
-  right: 0; 
+  right: -35px; 
   background: #0b5da6; 
   border-radius: 50%; 
   text-align: center; 
@@ -7472,15 +7532,15 @@ cursor: pointer;
   }
 
 .sendReplyContainer {
-  width: 25px;
-  height: 25px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 3px;
+  margin-left: 10px;
   background-color: #0b7ba6;
   border-radius: 50%;
-  align-self: flex-end;
+  align-self: center;
 }
 
 .addCommentContainer {
@@ -7498,9 +7558,10 @@ img.addCommentBlock {
 }
 
 img.sendComment {
-  width: 15px;
-  margin-left: 3px;
-  cursor: pointer;
+  width: 17px;
+  margin-left: 4px;
+  cursor: pointer;  
+  margin-bottom: 1px;
 }
 
 .buttonsContainer {
@@ -7508,6 +7569,7 @@ img.sendComment {
   width: 100%;
   height: 20px;
   margin-top: 5px;
+  padding-right: 28px;
 }
 
 .optionsContainer {
@@ -7530,16 +7592,20 @@ img.qaOptionsComment {
 
 .closeComment {
   width: 15px;
-  height: 15px;
-  background: url(../images/close.png);
-  background-size: 15px;
-  float: right;
+  /* height: 15px; */
+  /* background: url(../images/close.png); */
+  /* background-size: 15px; */
+  /* float: right; */
   cursor: pointer;
+  object-fit: contain;
+  position: absolute;
+  right: 30px;
+  top: 4px;
 }
 
 .closeComment:hover {
-  background: url(../images/close_red.png);
-  background-size: 15px;
+  /* background: url(../images/close_red.png); */
+  /* background-size: 15px; */
 }
 
 .legendContent-global {

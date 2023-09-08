@@ -7,7 +7,7 @@
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20230623a"
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20230906"
   ]
 /]
 [#assign customCSS = [

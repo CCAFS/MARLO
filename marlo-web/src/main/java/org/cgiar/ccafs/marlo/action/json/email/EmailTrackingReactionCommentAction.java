@@ -211,24 +211,24 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
       switch (sectionName) {
         case "projectContributionCrp":
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/contributionCrp.do?"
-            + "projectOutcomeID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "/" + fieldID;
+            + "projectOutcomeID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
           sectionName = "Contribution To Performance Indicadors";
           break;
         case "deliverable":
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
-            + "deliverableID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "/" + fieldID;
+            + "deliverableID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
           sectionName = "Deliverable";
           parentFieldDescription = "Deliverable " + parentFieldDescription;
           break;
         case "study":
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/study.do?"
-            + "expectedID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "/" + fieldID;
+            + "expectedID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
           sectionName = "OICR or MELIA ";
           parentFieldDescription = "OICR " + parentFieldDescription;
           break;
         case "innovation":
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?"
-            + "innovationID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "/" + fieldID;
+            + "innovationID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
           sectionName = "Innovations";
           parentFieldDescription = "Innovation " + parentFieldDescription;
           break;
