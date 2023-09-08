@@ -115,16 +115,17 @@
             [/#if]
             </br>
             </br>
-            <div class="container-evidences">
-              <p class="text-evidences">Here you could find information about the evidences that expects to be reported</p>
-              <div class="button-evidences">
-              [#-- animated animate__shakeX --]
-                <p>See details</p>
-                <img class="animate__animated animate__delay-3s animate__rubberBand" src="${baseUrlCdn}/global/images/28-info-outline.png" width="28" />
+            [#if (projectOutcome.crpProgramOutcome.instructions?? && projectOutcome.crpProgramOutcome.instructions != '')]
+              <div class="container-evidences">
+                <p class="text-evidences">Here you could find information about the evidences that expects to be reported</p>
+                <div class="button-evidences">
+                [#-- animated animate__shakeX --]
+                  <p>See details</p>
+                  <img class="animate__animated animate__delay-3s animate__rubberBand" src="${baseUrlCdn}/global/images/28-info-outline.png" width="28" />
+                </div>
               </div>
-            </div>
-            <div class="clearfix"></div>
-
+              <div class="clearfix"></div>
+            [/#if]
            
             <div class="modal-evidences" style="display: none">
              
