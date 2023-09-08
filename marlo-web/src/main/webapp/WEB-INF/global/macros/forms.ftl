@@ -975,16 +975,28 @@
 
 [#macro qaPopUpMultiple fields="" name="" index=-1 canLeaveComments=false template=false]
   [#local customName = "${template?string('TEMPLATE', '')}${name}[${index}]"]
-  <div id="qaPopup-${customName}" class="qaPopup">
-    <div class="closeComment" name="${name}"></div>
-    <br>
-    [#if fields?has_content]
-      [#list fields as field]
-        [@qaCommentReplyBlock name=name index=field_index canLeaveComments=canLeaveComments/]
-      [/#list]
-    [#else]
-      [@qaCommentReplyBlock name=name canLeaveComments=canLeaveComments/]
-    [/#if]
+  <div class="containerQaPopup" id="containerQaPopup-${customName}">  
+    <div class="headerQaPopup">
+      <div id="titleQaPopup" class="titleQaPopup"></div>
+      <div class="closeComment" name="${name}" title="Close comments" ><img src="${baseUrlCdn}/global/images/icon_remove.png"></div>
+      
+    </div>
+    <div id="qaPopup-${customName}" class="qaPopup" style="display:none">
+      <div class="closeComment" name="${name}"></div>
+      <br>
+      [#if fields?has_content]
+        [#list fields as field]
+          [@qaCommentReplyBlock name=name index=field_index canLeaveComments=canLeaveComments/]
+        [/#list]
+      [#else]
+        [@qaCommentReplyBlock name=name canLeaveComments=canLeaveComments/]
+      [/#if]
+    </div>
+    <div class="containerLeftComment">
+      [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle placeholder="Leave new comment"/]
+      <div class="sendCommentContainer" name="${name}"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+      <div class="sendCommentContainerLoad" name="${name}"><img src="${baseUrlCdn}/global/images/cargando.gif" class="sendComment" title="Sending"></div>
+    </div>
   </div>
 [/#macro]
 
@@ -1000,7 +1012,7 @@
   [/#if]
 
   <div id="qaCommentReply-${name}[${index}]" class="qaCommentReplyBlock" index="${index}"  style="position:relative">
-    [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle /]
+    <!--  [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle /]  -->
     <div class="commentCheckContainer">
       <div class="commentContainer">
         <div class="commentTitle"></div>
@@ -1019,15 +1031,15 @@
       <div class="replyTextContainer">
         <div class="replyTitle"></div>
         <p class="replyReadonly"></p>
-        <div style="position: absolute; bottom: 50px !important; right: 0;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
+        <div style="position: absolute; bottom: 50px !important; right: -10px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
       </div>
       <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
     </div>
-    <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+    <!--  <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>  -->
     <div class="buttonsContainer">
       <div class="optionsContainer">
-        <div style="position: absolute; bottom: 60px !important; right: 0;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
-        <div class="editCommentBtn qaOptionsComment" title="Edit" style="cursor:pointer" >✏️</div>
+        <div style="position: absolute; bottom: 60px !important; right: -30px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
+        <img class="editCommentBtn qaOptionsComment" title="Edit comment" src="${baseUrlCdn}/global/images/icon_edit.png">
         <img class="dismissCommentBtn qaOptionsComment" title="Dismiss comment" src="${baseUrlCdn}/global/images/remove.png">
         <img class="correctCommentBtn qaOptionsComment" title="Admit comment" src="${baseUrlCdn}/global/images/correct.png">
         
@@ -1039,7 +1051,7 @@
         [/#if]
         <img class="replyCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/auto-reply.png" title="Reply">
       </div>
-      <div class="addCommentContainer" index="${index}" title="Clarification needed"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>
+      <!--  <div class="addCommentContainer" index="${index}" title="Clarification needed"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>  -->
     </div>
     <br>
   </div>
