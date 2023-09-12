@@ -30,7 +30,7 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
 
-        <h4 class="sectionTitle">[@s.text name="marloMessageTitle.title" /]</h4>
+        <h4 class="sectionTitle">[@s.text name="message.title" /]</h4>
         <div id="systemReset" class="borderBox ">
                                                              
                 <div class="form-group">
@@ -44,7 +44,7 @@
                 <br>
                 <hr> 
                 
-                <a class="addButton" href="[@s.url action='deleteMarloMessage'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="deleteMarloMessage" /]</a>
+                <a class="addButton" href="[@s.url action='deleteMarloMessage'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="message.deleteMarloMessage" /]</a>
                 <div class="clearfix"></div>        
                 <br>                                                                              
         </div>
