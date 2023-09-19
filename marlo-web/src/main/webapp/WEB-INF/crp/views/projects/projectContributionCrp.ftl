@@ -21,6 +21,7 @@
 /]
 [#assign currentSection = "clusters" /]
 [#assign currentStage = "contributionsCrpList" /]
+[#assign afYear = action.getAFIndicatorsEndyear()]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -177,9 +178,19 @@
               <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
                 <div class="col-md-5 input-container">
                   [#if editable]
-                    [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
+                  
+                    [#if (action.isAFPhase(actualPhase.id))!false]
+                      [@customForm.input name="projectOutcome.expectedValueAF" paramText=(afYear)!2023 type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
+                    [#else]
+                      [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
+                    [/#if]
+                    
                   [#else]
-                    <label for="">[@s.text name="projectOutcome.expectedValue" /]: </label>
+                    [#if (action.isAFPhase(actualPhase.id))!false]
+                      <label for="">[@s.text name="projectOutcome.expectedValueAF" /]${afYear}: </label>
+                    [#else]
+                      <label for="">[@s.text name="projectOutcome.expectedValue" /]: </label>
+                    [/#if]
                     <div class="input"><p class="text">${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
                   [/#if]               
                 </div>
