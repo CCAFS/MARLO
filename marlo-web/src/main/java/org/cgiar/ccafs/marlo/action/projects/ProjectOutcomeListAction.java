@@ -279,8 +279,12 @@ public class ProjectOutcomeListAction extends BaseAction {
 
       // get the commentable fields by sectionName
       if (feedbackQACommentableFieldsManager.findAll() != null) {
-        commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(f -> f != null && f.getSectionName().equals("projectContributionCrp")).collect(Collectors.toList());
+        /*
+         * commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
+         * .filter(f -> f != null && f.getSectionName().equals("projectContributionCrp")).collect(Collectors.toList());
+         */
+        commentableFields = feedbackQACommentableFieldsManager.findBySectionName("projectContributionCrp");
+
       }
       if (project.getOutcomes() != null && !project.getOutcomes().isEmpty() && commentableFields != null
         && !commentableFields.isEmpty()) {
