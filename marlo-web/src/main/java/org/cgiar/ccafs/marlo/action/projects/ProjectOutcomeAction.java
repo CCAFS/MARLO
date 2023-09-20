@@ -1631,12 +1631,11 @@ public class ProjectOutcomeAction extends BaseAction {
     try {
       if (this.hasSpecificities(this.feedbackModule())) {
         feedbackComments = new ArrayList<>();
-        feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(f -> f.getSectionName() != null && f.getSectionName().equals("projectContributionCrp"))
-          .collect(Collectors.toList());
+        feedbackComments = feedbackQACommentableFieldsManager.findBySectionName("projectContributionCrp");
+
         if (feedbackComments != null) {
           for (FeedbackQACommentableFields field : feedbackComments) {
-            List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
+            List<FeedbackQAComment> comments = new ArrayList<>();
             comments = feedbackQACommentManager
               .getFeedbackQACommentsByParentId(projectOutcome.getId()).stream().filter(f -> f != null
                 && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))

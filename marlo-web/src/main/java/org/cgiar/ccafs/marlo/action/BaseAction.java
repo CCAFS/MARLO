@@ -520,6 +520,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   /**
    * This method add a synthesis flagship separated by a semicolon (;).
    *
