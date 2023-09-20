@@ -21,6 +21,7 @@
 /]
 [#assign currentSection = "clusters" /]
 [#assign currentStage = "contributionsCrpList" /]
+[#assign afYear = action.getAFIndicatorsEndyear()]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -115,16 +116,17 @@
             [/#if]
             </br>
             </br>
-            <div class="container-evidences">
-              <p class="text-evidences">Here you could find information about the evidences that expects to be reported</p>
-              <div class="button-evidences">
-              [#-- animated animate__shakeX --]
-                <p>See details</p>
-                <img class="animate__animated animate__delay-3s animate__rubberBand" src="${baseUrlCdn}/global/images/28-info-outline.png" width="28" />
+            [#if (projectOutcome.crpProgramOutcome.instructions?? && projectOutcome.crpProgramOutcome.instructions != '')]
+              <div class="container-evidences">
+                <p class="text-evidences">Here you could find information about the evidences that expects to be reported</p>
+                <div class="button-evidences">
+                [#-- animated animate__shakeX --]
+                  <p>See details</p>
+                  <img class="animate__animated animate__delay-3s animate__rubberBand" src="${baseUrlCdn}/global/images/28-info-outline.png" width="28" />
+                </div>
               </div>
-            </div>
-            <div class="clearfix"></div>
-
+              <div class="clearfix"></div>
+            [/#if]
            
             <div class="modal-evidences" style="display: none">
              
@@ -176,9 +178,19 @@
               <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
                 <div class="col-md-5 input-container">
                   [#if editable]
-                    [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
+                  
+                    [#if (action.isAFPhase(actualPhase.id))!false]
+                      [@customForm.input name="projectOutcome.expectedValueAF" paramText=(afYear)!2023 type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
+                    [#else]
+                      [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
+                    [/#if]
+                    
                   [#else]
-                    <label for="">[@s.text name="projectOutcome.expectedValue" /]: </label>
+                    [#if (action.isAFPhase(actualPhase.id))!false]
+                      <label for="">[@s.text name="projectOutcome.expectedValueAF" /]${afYear}: </label>
+                    [#else]
+                      <label for="">[@s.text name="projectOutcome.expectedValue" /]: </label>
+                    [/#if]
                     <div class="input"><p class="text">${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
                   [/#if]               
                 </div>

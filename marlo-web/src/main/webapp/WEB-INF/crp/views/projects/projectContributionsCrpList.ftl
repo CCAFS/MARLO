@@ -99,7 +99,11 @@
               <thead>
                 <tr>
                   <th>[@s.text name="global.flagship" /]</th>
+                  [#if (action.isAFPhase(actualPhase.id))!false]
+                  <th>Performance Indicator ${action.getAFIndicatorsEndyear()}</th>
+                  [#else]
                   <th>Performance Indicator 2023</th>
+                  [/#if]              
                   <th></th>
                   [#-- if  false--]
                   [#if action.hasSpecificities('feedback_active') ]

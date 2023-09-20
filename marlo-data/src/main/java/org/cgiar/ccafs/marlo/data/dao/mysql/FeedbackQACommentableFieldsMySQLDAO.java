@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.FeedbackQACommentableFieldsDAO;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -67,6 +68,17 @@ public class FeedbackQACommentableFieldsMySQLDAO extends AbstractMarloDAO<Feedba
     }
     return null;
 
+  }
+
+  @Override
+  public List<FeedbackQACommentableFields> findBySectionName(String sectionName) {
+    String query = "from " + FeedbackQACommentableFields.class.getName() + " where is_active=1 and section_name='"
+      + sectionName + "'";
+    List<FeedbackQACommentableFields> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
   }
 
   @Override

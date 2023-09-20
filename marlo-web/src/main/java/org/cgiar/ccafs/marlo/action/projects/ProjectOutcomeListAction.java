@@ -278,21 +278,21 @@ public class ProjectOutcomeListAction extends BaseAction {
       List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
 
       // get the commentable fields by sectionName
-      if (feedbackQACommentableFieldsManager.findAll() != null) {
-        commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(f -> f != null && f.getSectionName().equals("projectContributionCrp")).collect(Collectors.toList());
+      if (feedbackQACommentableFieldsManager.findBySectionName("projectContributionCrp") != null) {
+        /*
+         * commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
+         * .filter(f -> f != null && f.getSectionName().equals("projectContributionCrp")).collect(Collectors.toList());
+         */
+        commentableFields = feedbackQACommentableFieldsManager.findBySectionName("projectContributionCrp");
+
       }
       if (project.getOutcomes() != null && !project.getOutcomes().isEmpty() && commentableFields != null
         && !commentableFields.isEmpty()) {
 
-
         // Set the comment status in each project outcome
-
         for (ProjectOutcome projectOutcome : project.getOutcomes()) {
           int answeredComments = 0, totalComments = 0;
           try {
-
-
             for (FeedbackQACommentableFields commentableField : commentableFields) {
               if (commentableField != null && commentableField.getId() != null) {
 
@@ -326,7 +326,6 @@ public class ProjectOutcomeListAction extends BaseAction {
             projectOutcome.setCommentStatus(answeredComments + "/" + totalComments);
           } catch (Exception e) {
             projectOutcome.setCommentStatus(0 + "/" + 0);
-
           }
         }
 
