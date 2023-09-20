@@ -62,13 +62,21 @@ public class FeedbackQACommentableFieldsManagerImpl implements FeedbackQAComment
   }
 
   @Override
+  public List<FeedbackQACommentableFields> findBySectionName(String sectionName) {
+
+    return feedbackQACommentableFieldsDAO.findBySectionName(sectionName);
+
+  }
+
+  @Override
   public FeedbackQACommentableFields getInternalQaCommentableFieldsById(long internalQaCommentableFieldsID) {
 
     return feedbackQACommentableFieldsDAO.find(internalQaCommentableFieldsID);
   }
 
   @Override
-  public FeedbackQACommentableFields saveInternalQaCommentableFields(FeedbackQACommentableFields feedbackQACommentableFields) {
+  public FeedbackQACommentableFields
+    saveInternalQaCommentableFields(FeedbackQACommentableFields feedbackQACommentableFields) {
 
     return feedbackQACommentableFieldsDAO.save(feedbackQACommentableFields);
   }

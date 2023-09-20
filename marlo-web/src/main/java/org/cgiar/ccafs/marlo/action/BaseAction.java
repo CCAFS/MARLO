@@ -520,6 +520,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   /**
    * This method add a synthesis flagship separated by a semicolon (;).
    *
@@ -1900,6 +1901,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return new Phase(null, "", -1);
     }
 
+  }
+
+  /**
+   * This method return the AF indicators endyear
+   *
+   * @return int value with the AF endyear indicators value
+   */
+  public int getAFIndicatorsEndyear() {
+    return 2028;
   }
 
   /**
@@ -5373,7 +5383,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * ************************ CENTER METHOD ********************* validation
    * base method to check the permission in MARLO centers.
@@ -5395,7 +5404,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       this.hasPermissionNoBase(this.generatePermission(Permission.CRP_INDICATORS_PERMISSION, params));
     return permission;
   }
-
 
   public boolean hasPermissionDeliverable(String fieldName, long projectIDl, String currentSection) {
     String projectID = String.valueOf(projectIDl);
@@ -5659,6 +5667,27 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public boolean isAdmin() {
     return this.securityContext.hasRole("Admin");
+  }
+
+  /**
+   * This method return true if the phase belong to an AF AICCRA phase
+   *
+   * @param phaseID is the phase ID to be identified.
+   * @return Boolean object with the value
+   */
+  public boolean isAFPhase(long phaseID) {
+    try {
+      Phase phase;
+      phase = phaseManager.getPhaseById(phaseID);
+      if (phase != null && phase.getYear() > 2023) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (Exception e) {
+      LOG.error("error getting phase " + e);
+      return false;
+    }
   }
 
   public boolean isAiccra() {

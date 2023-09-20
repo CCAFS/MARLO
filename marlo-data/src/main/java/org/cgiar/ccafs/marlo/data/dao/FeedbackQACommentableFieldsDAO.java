@@ -54,12 +54,22 @@ public interface FeedbackQACommentableFieldsDAO {
    */
   public List<FeedbackQACommentableFields> findAll();
 
+  /**
+   * This method gets a list of internalQaCommentableFields that are active
+   * 
+   * @param section name String
+   * @return a list from FeedbackQACommentableFields null if no exist records
+   */
+  public List<FeedbackQACommentableFields> findBySectionName(String sectionName);
+
 
   /**
    * This method saves the information of the given internalQaCommentableFields
    * 
-   * @param feedbackQACommentableFields - is the internalQaCommentableFields object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the internalQaCommentableFields was
+   * @param feedbackQACommentableFields - is the internalQaCommentableFields object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         internalQaCommentableFields was
    *         updated
    *         or -1 is some error occurred.
    */
