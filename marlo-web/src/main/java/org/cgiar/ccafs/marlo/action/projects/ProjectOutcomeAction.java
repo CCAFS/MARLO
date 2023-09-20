@@ -1490,8 +1490,11 @@ public class ProjectOutcomeAction extends BaseAction {
           projectOutcome.setCommunications(
             projectOutcome.getProjectCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         }
-        projectOutcome.setNextUsers(
-          projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+        if (this.hasSpecificities(APConstants.CRP_NEXT_USERS)) {
+          projectOutcome.setNextUsers(
+            projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        }
         /*
          * if (projectOutcome.getProjectOutcomeIndicators().stream()
          * .filter(
@@ -1714,15 +1717,15 @@ public class ProjectOutcomeAction extends BaseAction {
   @Override
   public String save() {
 
-
     if (this.hasPermission("canEdit")) {
-
-
       this.saveMilestones(projectOutcomeDB);
       if (this.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS)) {
         this.saveCommunications(projectOutcomeDB);
       }
-      this.saveNextUsers(projectOutcomeDB);
+
+      if (this.hasSpecificities(APConstants.CRP_NEXT_USERS)) {
+        this.saveNextUsers(projectOutcomeDB);
+      }
       this.saveIndicators(projectOutcomeDB);
       if (this.isLessonsActive()) {
         this.saveLessonsOutcome(loggedCrp, projectOutcomeDB, projectOutcome);
