@@ -127,7 +127,8 @@ $(document)
                       }
                     });
                     // Validate Email
-                    var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+                    var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,6})?$/;
+                    console.log(user.email)
                     if(!emailReg.test(user.email)) {
                       invalidFields.push('valid email');
                       $dialogContent.find(".tickBox-toggle").hide();
