@@ -2,7 +2,7 @@
 [#assign title = "Research Areas" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign customJS = [
-  "${baseUrlCdn}/global/js/usersManagement.js",
+  "${baseUrlCdn}/global/js/usersManagement.js?20230927",
   "${baseUrlMedia}/js/admin/researchManagement.js"
 ] /]
 [#assign currentSection = "admin" /]

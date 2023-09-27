@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
-  "${baseUrlCdn}/global/js/usersManagement.js", 
+  "${baseUrlCdn}/global/js/usersManagement.js?20230927", 
   "${baseUrlMedia}/js/admin/ppaPartners.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js" 
   ] 
