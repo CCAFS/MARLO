@@ -32,10 +32,12 @@
 
         <h4 class="sectionTitle">[@s.text name="message.title" /]</h4>
         <div id="systemReset" class="borderBox ">
-                                                             
+                                           
+                [#--             
                 <div class="form-group">
                   [@customForm.textArea name="lastMessage" i18nkey="message.lastMessage" className="description" required=false disabled=true/]
                 </div>   
+                --] 
                 <div class="clearfix"></div>
                 <div class="form-group">
                   [@customForm.textArea name="message.messageValue" i18nkey="message.messageValue" className="description" required=true allowTextEditor=true/]
@@ -48,7 +50,17 @@
                 <div class="clearfix"></div>        
                 <br>                                                                              
         </div>
-         
+     
+                 
+        [#-- Cross-Cutting Issues --]
+        <h4 class="sectionTitle">[@s.text name="message.messageHistory" /]</h4>
+        <div class="issues-list">
+        [#if messageHistory?has_content]
+          [#list messageHistory as messagePrev]
+            [@messageHistoryMacro element=messagePrev name="messageHistory[${messagePrev_index}]" index=messagePrev_index /]
+          [/#list]
+        [/#if]
+        </div>    
        
         [#-- Section Buttons--]
         <div class="buttons">
@@ -57,6 +69,7 @@
           </div>
         </div>
         [/@s.form]
+
         
       </div>
     </div>
@@ -65,4 +78,14 @@
 
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
+
+[#macro messageHistoryMacro element name index isTemplate=false]
+  <div id="messageHistory-${isTemplate?string('template',index)}" class="messageHistory borderBox" style="display:${isTemplate?string('none','block')}">
+    
+    [#-- Message history --]
+    <div class="blockTitle closed">
+      [@customForm.textArea name="${name}.messageValue" value="${(element.messageValue)!}" i18nkey="${index}. Message - ${element.activeSince}" className="name" disabled=true /]
+    </div>
+  </div>
+[/#macro]
 

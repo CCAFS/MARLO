@@ -35,7 +35,7 @@ public class MarloMessagesAction extends BaseAction {
   private MarloMessageManager marloMessageManager;
   private MarloMessage message;
   private List<String> messageTypes;
-  private List<String> messageHistory;
+  private List<MarloMessage> messageHistory;
   private String lastMessage;
 
   @Inject
@@ -70,7 +70,7 @@ public class MarloMessagesAction extends BaseAction {
     return message;
   }
 
-  public List<String> getMessageHistory() {
+  public List<MarloMessage> getMessageHistory() {
     return messageHistory;
   }
 
@@ -82,7 +82,6 @@ public class MarloMessagesAction extends BaseAction {
   public void prepare() throws Exception {
     messageTypes = new ArrayList<>();
     List<MarloMessage> messages = new ArrayList<>();
-    List<MarloMessage> messageHistory = new ArrayList<>();
 
     try {
       if (marloMessageManager.getLastMessage() != null
@@ -171,7 +170,8 @@ public class MarloMessagesAction extends BaseAction {
     this.message = message;
   }
 
-  public void setMessageHistory(List<String> messageHistory) {
+
+  public void setMessageHistory(List<MarloMessage> messageHistory) {
     this.messageHistory = messageHistory;
   }
 
