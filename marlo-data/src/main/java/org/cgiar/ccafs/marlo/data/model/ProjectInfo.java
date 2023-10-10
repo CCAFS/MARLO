@@ -544,7 +544,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setActivitiesCSV(update.getActivitiesCSV());
     this.setActivitiesCSVFile(update.getActivitiesCSVFile());
     this.setClusterType(update.getClusterType());
-    if (update.getAcronym() != null) {
+    if (update.getAcronym() != null && !update.getAcronym().isEmpty()) {
       this.setAcronym(update.getAcronym());
     }
   }
