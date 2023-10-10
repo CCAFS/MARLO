@@ -276,7 +276,7 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                     fieldsMap.put("draftActionUser", "");
                   }
                   // Is tracking
-                  if (comment.getStartTrackDate() != null) {
+                  if (comment.getTracking() != null) {
                     fieldsMap.put("isTracking", comment.getTracking());
                   } else {
                     fieldsMap.put("isTracking", false);
