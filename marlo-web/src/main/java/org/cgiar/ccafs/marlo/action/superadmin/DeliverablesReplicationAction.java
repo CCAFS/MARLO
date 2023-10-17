@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
@@ -36,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
@@ -98,6 +100,7 @@ public class DeliverablesReplicationAction extends BaseAction {
   private DeliverableGeographicRegionManager deliverableGeographicRegionManager;
   private DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager;
   private ProjectPartnerManager projectPartnerManager;
+  private DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
 
   // Variables
   private String entityByPhaseList;
@@ -121,7 +124,8 @@ public class DeliverablesReplicationAction extends BaseAction {
     DeliverableLocationManager deliverableLocationManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
     DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager,
-    ProjectPartnerManager projectPartnerManager) {
+    ProjectPartnerManager projectPartnerManager,
+    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager) {
     super(config);
     this.phaseManager = phaseManager;
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
@@ -141,6 +145,7 @@ public class DeliverablesReplicationAction extends BaseAction {
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
     this.deliverableUserPartnershipPersonManager = deliverableUserPartnershipPersonManager;
     this.projectPartnerManager = projectPartnerManager;
+    this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
   }
 
 
@@ -424,7 +429,7 @@ public class DeliverablesReplicationAction extends BaseAction {
             // Save Countries list
             List<DeliverableLocation> countries =
               deliverableLocationManager.getDeliverableLocationbyPhase(deliverable.getId(), phase.getId());
-            if (countries != null && countries.size() > 0) {
+            if (countries != null && !countries.isEmpty()) {
               for (DeliverableLocation deliverableLocation : countries) {
                 deliverableLocationManager.saveDeliverableLocation(deliverableLocation);
               }
@@ -433,9 +438,20 @@ public class DeliverablesReplicationAction extends BaseAction {
             // Save Regions list
             List<DeliverableGeographicRegion> regions = deliverableGeographicRegionManager
               .getDeliverableGeographicRegionbyPhase(deliverable.getId(), phase.getId());
-            if (regions != null && regions.size() > 0) {
+            if (regions != null && !regions.isEmpty()) {
               for (DeliverableGeographicRegion deliverableRegion : regions) {
                 deliverableGeographicRegionManager.saveDeliverableGeographicRegion(deliverableRegion);
+              }
+            }
+
+            // Deliverable cross cutting markers
+            List<DeliverableCrossCuttingMarker> crossCuttingMarkers = deliverable.getDeliverableCrossCuttingMarkers()
+              .stream().filter(o -> o.isActive() && o.getPhase().equals(phase)).collect(Collectors.toList());
+            if (crossCuttingMarkers != null && !crossCuttingMarkers.isEmpty()) {
+              for (DeliverableCrossCuttingMarker crossCutting : crossCuttingMarkers) {
+                if (crossCutting != null && crossCutting.getId() != null) {
+                  deliverableCrossCuttingMarkerManager.saveDeliverableCrossCuttingMarker(crossCutting);
+                }
               }
             }
 
