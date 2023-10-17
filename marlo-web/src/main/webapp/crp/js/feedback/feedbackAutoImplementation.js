@@ -884,8 +884,8 @@ function hideShowOptionButtons(block, status) {
           }
         }else{
           // These two lines are used to hide the body where the comments will be displayed since the body is initialized with a display none.
-          let qaPopup2 = $(`.qaPopup[id^="qaPopup-${name}"]`);
-          qaPopup2.hide();
+          //let qaPopup2 = $(`.qaPopup[id^="qaPopup-${name}"]`);
+          //qaPopup2.hide();
         }
       }
     }
