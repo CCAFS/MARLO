@@ -291,6 +291,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   // Variables
   private String crpSession;
+  private String customTextHeader;
 
   protected boolean dataSaved;
 
@@ -2626,6 +2627,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return this.crpSession;
+  }
+  
+  /**
+   * Get the Custom text from parameters table that for the testing banner
+   *
+   * @return the custom text header from parameters table
+   */
+  public String getCustomTextHeader() {
+    try {
+      if (APConstants.CRP_LOGIN_HEADER_TEXT != null) {
+        customTextHeader = (String) this.getSession().get(APConstants.CRP_LOGIN_HEADER_TEXT);
+      }
+    } catch (Exception e) {
+      LOG.error("error getting custom text header " + e);
+    }
+    return customTextHeader;
+  }
+  
+  public void setCustomTextHeader(String customTextHeader) {
+    this.customTextHeader = customTextHeader;
   }
 
   /**
