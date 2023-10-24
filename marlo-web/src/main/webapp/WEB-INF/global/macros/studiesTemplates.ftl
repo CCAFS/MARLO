@@ -530,7 +530,7 @@
                 [/#list]
               </div>
               [#if editable]
-              <div class="addButtonReference button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Reference </div>
+              <div class="addButtonReference bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>
               <div class="clearfix"></div>
               [/#if]
             </div>
