@@ -48,10 +48,15 @@ import java.util.stream.Collectors;
 
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BaseStudySummaryData extends BaseSummariesAction {
 
   private static final long serialVersionUID = -3643067302492726266L;
+
+  private static Logger LOG = LoggerFactory.getLogger(BaseStudySummaryData.class);
+
   private final HTMLParser htmlParser;
   private final ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
 
@@ -484,15 +489,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           elaborationOutcomeImpactStatement =
             htmlParser.plainTextToHtml(projectExpectedStudyInfo.getElaborationOutcomeImpactStatement());
         }
-        // References cited
-
-        /*
-         * if (projectExpectedStudyInfo.getReferencesText() != null
-         * && !projectExpectedStudyInfo.getReferencesText().trim().isEmpty()) {
-         * studiesReference = htmlParser.plainTextToHtml(projectExpectedStudyInfo.getReferencesText());
-         * referenceText = urlShortener.detectAndShortenLinks(studiesReference);
-         * }
-         */
 
 
         // New references
@@ -536,7 +532,20 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             referenceText = urlShortener.detectAndShortenLinks(studiesReference);
           }
         } catch (Exception e) {
+          LOG.error("Failed to get new reference information: " + e.getMessage());
+        }
 
+        // References cited
+        try {
+          if ((referenceText == null) || (referenceText != null && referenceText.isEmpty())) {
+            if (projectExpectedStudyInfo.getReferencesText() != null
+              && !projectExpectedStudyInfo.getReferencesText().trim().isEmpty()) {
+              studiesReference = htmlParser.plainTextToHtml(projectExpectedStudyInfo.getReferencesText());
+              referenceText = urlShortener.detectAndShortenLinks(studiesReference);
+            }
+          }
+        } catch (Exception e) {
+          LOG.error("Failed to get reference text: " + e.getMessage());
         }
 
         // MELIA publications
