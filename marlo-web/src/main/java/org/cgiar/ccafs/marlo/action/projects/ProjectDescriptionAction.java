@@ -1116,6 +1116,9 @@ public class ProjectDescriptionAction extends BaseAction {
       if (projectDB.getProjectInfo().getAcronym() != null) {
         project.getProjectInfo().setAcronym(projectDB.getProjectInfo().getAcronym());
       }
+      if (projectDB.getAcronym() != null) {
+        project.setAcronym(projectDB.getAcronym());
+      }
       project.getProjectInfo().setPhase(this.getActualPhase());
       project.getProjectInfo().setProject(project);
       project.getProjectInfo().setReporting(projectDB.getProjectInfo().getReporting());
@@ -1180,7 +1183,6 @@ public class ProjectDescriptionAction extends BaseAction {
           for (String key : keys) {
             this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
           }
-
         } else {
           this.addActionMessage("message:" + this.getText("saving.saved"));
         }

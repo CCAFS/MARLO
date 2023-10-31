@@ -137,6 +137,7 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -2628,26 +2629,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.crpSession;
   }
-  
-  /**
-   * Get the Custom text from parameters table that for the testing banner
-   *
-   * @return the custom text header from parameters table
-   */
-  public String getCustomTextHeader() {
-    try {
-      if (APConstants.CRP_LOGIN_HEADER_TEXT != null) {
-        customTextHeader = (String) this.getSession().get(APConstants.CRP_LOGIN_HEADER_TEXT);
-      }
-    } catch (Exception e) {
-      LOG.error("error getting custom text header " + e);
-    }
-    return customTextHeader;
-  }
-  
-  public void setCustomTextHeader(String customTextHeader) {
-    this.customTextHeader = customTextHeader;
-  }
 
   /**
    * ************************ CENTER METHOD ******************************
@@ -2766,6 +2747,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return u;
+  }
+
+  /**
+   * Get the Custom text from parameters table that for the testing banner
+   *
+   * @return the custom text header from parameters table
+   */
+  public String getCustomTextHeader() {
+    try {
+      if (APConstants.CRP_LOGIN_HEADER_TEXT != null
+        && this.getSession().get(APConstants.CRP_LOGIN_HEADER_TEXT) != null) {
+        customTextHeader = (String) this.getSession().get(APConstants.CRP_LOGIN_HEADER_TEXT);
+      }
+    } catch (Exception e) {
+      LOG.error("error getting custom text header " + e);
+    }
+    return customTextHeader;
   }
 
   /**
@@ -7900,6 +7898,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setCurrentCenter(GlobalUnit currentCenter) {
     this.currentCenter = currentCenter;
+  }
+
+  public void setCustomTextHeader(String customTextHeader) {
+    this.customTextHeader = customTextHeader;
   }
 
   public void setDataSaved(boolean dataSaved) {
