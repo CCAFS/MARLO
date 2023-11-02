@@ -29,7 +29,7 @@
       <div class="simpleBox">
         <p>This privacy policy describes how <strong>Personal Data</strong> is being collected, stored and used by MARLO through its online resource. &nbsp;<strong>Personal Data</strong> is any information relating to an identified or identifiable natural person; an identifiable natural person is one who can be identified, directly or indirectly, in particular by reference to an identifier such as name, an identification number, location data, an online identifier, or to one or more factors specific to the physical, psychological, genetic, mental, economic, cultural, or social identify of that natural person.</p>
         <p>Please read our privacy policy carefully to get a clear understanding of how we collect, use, protect or otherwise handle your Personally Identifiable Information in our website.</p>
-        <p>The International Center for Tropical Agriculture (CIAT) on behalf of the Alliance of Bioversity International and the International Center for Tropical Agriculture (CIAT) (hereinafter “The Alliance”) is an international organization with headquarters in Colombia, and the legal entity administering MARLO. As such, it accepts and complies with the personal data protection norms contained in Colombian law and laws of other countries or regions such as the General Data Protection Regulation (GDPR) of the European Union by guaranteeing the protection of personal information provided by you and making every reasonable effort to handle collected information appropriately. Further, all information collected will be handled with care in accordance with Alliance&rsquo;s standards for integrity, transparency and equity.</p>
+        <p>The International Center for Tropical Agriculture (CIAT) on behalf of the Alliance of Bioversity International and the International Center for Tropical Agriculture (CIAT) (hereinafter “The Alliance”) is an international organization with headquarters in Km 17, recta Cali-Palmira, Valle del Cauca, Colombia, and the legal entity administering MARLO. As such, it accepts and complies with the personal data protection norms contained in Colombian law and laws of other countries or regions such as the General Data Protection Regulation (GDPR) of the European Union by guaranteeing the protection of personal information provided by you and making every reasonable effort to handle collected information appropriately. Further, all information collected will be handled with care in accordance with Alliance&rsquo;s standards for integrity, transparency and equity.</p>
         
         <p><strong>What personal information do we collect from the people who visit our blog, website or app?</strong></p>
         <p>When registering or logging in on our site, as appropriate, you may be asked to enter your email address or other details, such as your name and institutional affiliation, ORCID number to help you with your experience. If you provide such information, you should do it voluntarily.</p>
@@ -125,12 +125,13 @@
         <p><a href="mailto:MARLOSupport@cgiar.org">MARLOSupport@cgiar.org</a></p>
         <p><br /> <strong>Availability of the privacy policy and updates </strong></p>
          
-        <p>This privacy policy is effective as of 20 June 2018, latest amended on 7 October 2021. It is available to you through our website at the URL <a href="https://aiccra.marlo.cgiar.org/legalInformation.do">https://aiccra.marlo.cgiar.org/legalInformation.do</a> for viewing, printing or downloading.</p>
+        <p>This privacy policy is effective as of 20 June 2018, latest amended on September, 2023. It is available to you through our website at the URL <a href="https://aiccra.marlo.cgiar.org/legalInformation.do">https://aiccra.marlo.cgiar.org/legalInformation.do</a> for viewing, printing or downloading.</p>
         <p>The Alliance reserves the right to amend the terms of this policy at any time. We will post a note informing about any updates or amendments to our policy at our website.</p>
          
         <p>First edition: 2018-02-14</p> 
-        <p>Previous edit 2018-06-20</p>
-        <p>Latest edit on 2021-10-07</p>
+        <p>Second edition: 2018-06-20</p>
+        <p>Previous edit on 2021-10-07</p>
+        <p>Latest edit: 2023-09-15</p>
       </div>
       
       <h3 id="termsConditions">Terms and Conditions</h3>
@@ -163,7 +164,7 @@
             <ol>
               <li>use it for personal, educational, institutional or commercial purposes;</li>
               <li>copy, use, redistribute, modify, and/or sell as long as you use the GNU General Public License as published by the Free Software Foundation; and</li>
-              <li>install it in as many computers as you wish.</li>
+              <li>install it on as many computers as you wish.</li>
             </ol>
              
             <p>In addition, according to this license, you must:</p>
@@ -209,7 +210,7 @@
          
         <ol start="7">
           <li><strong>Links</strong>
-            <p>The Alliance may link MARLO website to material hosted by third parties on independent sites and services on the internet. The Alliance is not responsible or liable for the contents or quality of such material. The Alliance has not reviewed the material on such third party sites, and makes no warranties or representations about the material, information, products, or services offered by third parties. Further, the inclusion of any links does not imply endorsement or sponsorship by The Alliance of the site. Use of any such linked website is at the user's own risk.</p>
+            <p>The Alliance may link MARLO website to material hosted by third parties on independent sites and services on the internet. The Alliance is not responsible or liable for the contents or quality of such material. The Alliance has not reviewed the material on such third party sites, and makes no warranties or representations about the material, information, products, or services offered by third parties. Further, the inclusion of any links does not imply endorsement or sponsorship by the Alliance of the site. Use of any such linked website is at the user's own risk.</p>
           </li>
         </ol>
          

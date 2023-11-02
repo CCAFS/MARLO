@@ -291,6 +291,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   // Variables
   private String crpSession;
+  private String customTextHeader;
 
   protected boolean dataSaved;
 
@@ -2748,6 +2749,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
+   * Get the Custom text from parameters table that for the testing banner
+   *
+   * @return the custom text header from parameters table
+   */
+  public String getCustomTextHeader() {
+    try {
+      if (APConstants.CRP_LOGIN_HEADER_TEXT != null
+        && this.getSession().get(APConstants.CRP_LOGIN_HEADER_TEXT) != null) {
+        customTextHeader = (String) this.getSession().get(APConstants.CRP_LOGIN_HEADER_TEXT);
+      }
+    } catch (Exception e) {
+      LOG.error("error getting custom text header " + e);
+    }
+    return customTextHeader;
+  }
+
+  /**
    * This method return the Date Format from APConstants class
    *
    * @return A dateformat (yyyy-MM-dd)
@@ -5107,6 +5125,27 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.session;
   }
 
+  /**
+   * This method return the first AF AICCRA ID Phase
+   *
+   * @return ID value of first AICCRA AF phase
+   */
+  public long getStartAFPhase() {
+    long startAFPhase = 423;
+
+    if (APConstants.CRP_AICCRA_AF_START_PHASE != null
+      && this.getSession().get(APConstants.CRP_AICCRA_AF_START_PHASE) != null) {
+      try {
+        startAFPhase = Long.parseLong((String) this.getSession().get(APConstants.CRP_AICCRA_AF_START_PHASE));
+      } catch (NumberFormatException e) {
+        LOG.error("Error parsing start AF phase to long: " + e);
+      }
+    } else {
+      LOG.error("CRP_AICCRA_AF_START_PHASE is null or not found in session.");
+    }
+    return startAFPhase;
+  }
+
   public Submission getSubmission() {
     return this.submission;
   }
@@ -5676,16 +5715,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return Boolean object with the value
    */
   public boolean isAFPhase(long phaseID) {
+    long startAFPhase = 423;
+
     try {
-      Phase phase;
-      phase = phaseManager.getPhaseById(phaseID);
-      if (phase != null && phase.getYear() > 2023) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (Exception e) {
-      LOG.error("error getting phase " + e);
+      startAFPhase = this.getStartAFPhase();
+    } catch (NumberFormatException e) {
+      LOG.error("Error parsing start AF phase to long: " + e);
+    }
+
+    if (startAFPhase != 0 && phaseID != 0 && phaseID >= startAFPhase) {
+      return true;
+    } else {
       return false;
     }
   }
@@ -7879,6 +7919,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setCurrentCenter(GlobalUnit currentCenter) {
     this.currentCenter = currentCenter;
+  }
+
+  public void setCustomTextHeader(String customTextHeader) {
+    this.customTextHeader = customTextHeader;
   }
 
   public void setDataSaved(boolean dataSaved) {
