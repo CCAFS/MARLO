@@ -3,3 +3,7 @@
     top: 20px;
     right: 20px;
 }
+
+.timeline-phases {
+  display: none;
+}
