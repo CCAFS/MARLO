@@ -55,6 +55,8 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
 
 
   private String regionsValue;
+
+  @Expose
   private String acronym;
 
   @Expose

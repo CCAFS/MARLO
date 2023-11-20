@@ -562,6 +562,8 @@
 	<include file="struts-studies.xml" />
 	<include file="struts-powb2019.xml" />
 	<include file="struts-qa.xml" />
+	<include file="struts-tip.xml" />
+	
 
 	<include file="struts-center-home.xml" />
 	<include file="struts-center-impactPathway.xml" />
