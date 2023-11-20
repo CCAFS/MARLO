@@ -71,7 +71,9 @@
   [#-- SUMMARIES - ALL --]
   { 'slug': 'summaries', 'name': 'menu.summaries',      'namespace': '/summaries',       'action': '${(crpSession)!}/summaries',    'visible': logged, 'active': true }
   [#-- BI Module --]
-  { 'slug': 'bi', 'name': 'menu.bi',      'namespace': '/bi',       'action': '${(crpSession)!}/bi',    'visible': logged && biModuleActive, 'active': true }
+  { 'slug': 'bi', 'name': 'menu.bi',      'namespace': '/bi',       'action': '${(crpSession)!}/bi',    'visible': logged && biModuleActive, 'active': true },
+  [#-- TIP Module --]
+  { 'slug': 'tip', 'name': 'menu.tip',      'namespace': '/tip',       'action': '${(crpSession)!}/tip',    'visible': logged && action.hasSpecificities('tip_section_active') && (action.canAccessSuperAdmin())!false, 'active': true }
 ]/]
 
 
