@@ -489,7 +489,7 @@ public class DeliverableValidator extends BaseValidator {
       }
 
       if (action.hasSpecificities(APConstants.DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE)) {
-        if (dInfo != null && dInfo.getDuplicated()) {
+        if (dInfo != null && dInfo.getDuplicated() != null && dInfo.getDuplicated()) {
           action.addMessage(action.getText("deliverable.status.duplicated"));
           action.getInvalidFields().put("input-deliverable.deliverableInfo.status.duplicated",
             action.getText("deliverable.status.duplicated"));
