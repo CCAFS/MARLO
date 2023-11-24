@@ -35,8 +35,9 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
   @Expose
   private String tokenValue;
   @Expose
+  private String privateKey;
+  @Expose
   private Date tokenDueDate;
-
 
   @Override
   public String getLogDeatil() {
@@ -56,6 +57,9 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
     return null;
   }
 
+  public String getPrivateKey() {
+    return privateKey;
+  }
 
   public String getTipLoginService() {
     return tipLoginService;
@@ -65,21 +69,17 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
     return tipStatusService;
   }
 
-
   public String getTipTokenService() {
     return tipTokenService;
   }
-
 
   public Date getTokenDueDate() {
     return tokenDueDate;
   }
 
-
   public String getTokenValue() {
     return tokenValue;
   }
-
 
   @Override
   public boolean isActive() {
@@ -87,35 +87,32 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
     return false;
   }
 
-
   @Override
   public void setModifiedBy(User modifiedBy) {
     // TODO Auto-generated method stub
   }
 
+  public void setPrivateKey(String privateKey) {
+    this.privateKey = privateKey;
+  }
 
   public void setTipLoginService(String tipLoginService) {
     this.tipLoginService = tipLoginService;
   }
 
-
   public void setTipStatusService(String tipStatusService) {
     this.tipStatusService = tipStatusService;
   }
-
 
   public void setTipTokenService(String tipTokenService) {
     this.tipTokenService = tipTokenService;
   }
 
-
   public void setTokenDueDate(Date tokenDueDate) {
     this.tokenDueDate = tokenDueDate;
   }
-
 
   public void setTokenValue(String tokenValue) {
     this.tokenValue = tokenValue;
   }
 }
-
