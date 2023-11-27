@@ -23,5 +23,8 @@
     <property name="tokenDueDate" type="timestamp">
       <column name="token_due_date" />
     </property>
+    <property name="privateKey" type="string">
+      <column name="private_key" />
+    </property>
   </class>
 </hibernate-mapping>
