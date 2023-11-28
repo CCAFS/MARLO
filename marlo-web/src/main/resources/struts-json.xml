@@ -698,6 +698,14 @@
 	      </result>
 	    </action>
 	    
+	   <action name="tipTokenService"
+	      class="org.cgiar.ccafs.marlo.action.json.tip.TipGetTokenServiceAction">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
+	    
 		<action name="saveFeedbackComments"
 	      class="org.cgiar.ccafs.marlo.action.json.project.SaveFeedbackCommentsAction">
 	      <result type="json">
@@ -1193,6 +1201,14 @@
     
     <action name="tipUrlAction"
       class="org.cgiar.ccafs.marlo.action.json.tip.TipUrlParameterAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    <action name="tipGenerateUrlAction"
+      class="org.cgiar.ccafs.marlo.action.json.tip.TipDinamicUrlGenerationAction">
       <result type="json">
         <param name="noCache">true</param>
         <param name="excludeNullProperties">true</param>
