@@ -6,15 +6,21 @@ $(document).ready(function() {
     var fullscreenButton = null;
 
     $.ajax({
-        url: baseURL + '/tipUrlAction.do',
+        url: baseURL + '/tipGenerateUrlAction.do',
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            var embeddedPageUrl = response.tipURL;
+            
+            var embeddedPageUrl = response.dinamicTipURL;
+            console.log("embeddedPageUrl " + embeddedPageUrl);
             iframe = document.createElement('iframe');
             iframe.src = embeddedPageUrl;
             iframe.style.width = iframeInitialWidth;
             iframe.style.height = iframeInitialHeight;
+            
+            /****************/
+            iframe.setAttribute('allow', 'autoplay');
+            iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-same-origin allow-top-navigation');
 
             // Add iframe to the element with ID 'embeddedPage'
             document.getElementById('embeddedPage').appendChild(iframe);
