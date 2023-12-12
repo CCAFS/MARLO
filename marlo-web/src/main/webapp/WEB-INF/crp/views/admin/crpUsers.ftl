@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "CRP Users" /]
+[#assign title = "Users" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
