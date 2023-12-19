@@ -648,7 +648,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     Map<String, Parameter> parameters = this.getParameters();
 
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
-    if (loggedCrp.getId() != null && crpManager.getGlobalUnitById(loggedCrp.getId()) != null) {
+    if (loggedCrp != null && loggedCrp.getId() != null && crpManager.getGlobalUnitById(loggedCrp.getId()) != null) {
       loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     }
 
