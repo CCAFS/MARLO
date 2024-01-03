@@ -259,7 +259,7 @@
 			<interceptor-ref name="superAdminStack" />
 			<result name="input">/WEB-INF/global/views/superadmin/tipManagement.ftl</result>
 			<result name="success" type="redirectAction">
-				<param name="actionName">TIPManagement</param>
+				<param name="actionName">tipManagement</param>
 				<param name="edit">true</param>
 			</result>
 		</action>

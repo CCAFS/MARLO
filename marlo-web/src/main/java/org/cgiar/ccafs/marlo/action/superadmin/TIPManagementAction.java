@@ -60,6 +60,9 @@ public class TIPManagementAction extends BaseAction {
       if (tipParameter != null) {
 
         TipParameters tipParameterSave = new TipParameters();
+        if (tipParameter.getId() != null) {
+          tipParameterSave.setId(tipParameter.getId());
+        }
         if (tipParameter.getTipLoginService() != null) {
           tipParameterSave.setTipLoginService(tipParameter.getTipLoginService());
         }
@@ -85,7 +88,7 @@ public class TIPManagementAction extends BaseAction {
 
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
         Collection<String> messages = this.getActionMessages();
-        if (!this.getInvalidFields().isEmpty()) {
+        if (this.getInvalidFields() != null && !this.getInvalidFields().isEmpty()) {
           this.setActionMessages(null);
           // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
           List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
