@@ -254,6 +254,15 @@
 				<param name="edit">true</param>
 			</result>
 		</action>
+    <action name="tipManagement"
+			class="org.cgiar.ccafs.marlo.action.superadmin.TIPManagementAction">
+			<interceptor-ref name="superAdminStack" />
+			<result name="input">/WEB-INF/global/views/superadmin/tipManagement.ftl</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">tipManagement</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
     <action name="buttonGuideManagement"
 			class="org.cgiar.ccafs.marlo.action.superadmin.ButtonGuideManagementAction">
 			<interceptor-ref name="superAdminStack" />
