@@ -134,9 +134,9 @@
       [#-- Type select --]
       <div class="col-md-8">
         [#if (leverage.isPhaseOneLeverage())!false ]
-          [@customForm.select name="${leverageCustomName}.ipProgram.id" label=""  i18nkey="Flagship" listName="flagshipsPhaseOne" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="flagshipSelect form-control input-sm " editable=isEditable/]
+          [@customForm.select name="${leverageCustomName}.ipProgram.id" label=""  i18nkey="global.flagship" listName="flagshipsPhaseOne" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="flagshipSelect form-control input-sm " editable=isEditable/]
         [#else]
-          [@customForm.select name="${leverageCustomName}.crpProgram.id" label=""  i18nkey="Flagship" listName="flagshipsPhaseTwo" keyFieldName="id"  displayFieldName="composedName"   multiple=false required=true  className="flagshipSelect form-control input-sm " editable=isEditable/]
+          [@customForm.select name="${leverageCustomName}.crpProgram.id" label=""  i18nkey="global.flagship" listName="flagshipsPhaseTwo" keyFieldName="id"  displayFieldName="composedName"   multiple=false required=true  className="flagshipSelect form-control input-sm " editable=isEditable/]
         [/#if]
       </div> 
       [#-- Budget select --]
