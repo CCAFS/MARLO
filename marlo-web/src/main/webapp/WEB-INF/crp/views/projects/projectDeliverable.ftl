@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate", "vue"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20230420",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20240123",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20230810",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20231017",
