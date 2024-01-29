@@ -18,6 +18,8 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -25,6 +27,8 @@ import org.cgiar.ccafs.marlo.data.manager.SafeguardsManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
@@ -87,12 +91,16 @@ public class SafeguardAction extends BaseAction {
   private String fileReportingFileName;
   private SafeguardValidator validator;
   private Safeguards safeguard;
+  private List<FeedbackQACommentableFields> feedbackComments;
+  private FeedbackQACommentManager feedbackQACommentManager;
+  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
 
   @Inject
   public SafeguardAction(APConfig config, ProjectManager projectManager, UserManager userManager,
     SectionStatusManager sectionStatusManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
     SafeguardValidator validator, HistoryComparator historyComparator, ProjectInfoManager projectInfoManagerManager,
-    SafeguardsManager safeguardsManager) {
+    SafeguardsManager safeguardsManager, FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
+    FeedbackQACommentManager feedbackQACommentManager) {
     super(config);
     this.projectManager = projectManager;
     this.projectInfoManagerManager = projectInfoManagerManager;
@@ -102,6 +110,8 @@ public class SafeguardAction extends BaseAction {
     this.fileDBManager = fileDBManager;
     this.historyComparator = historyComparator;
     this.safeguardsManager = safeguardsManager;
+    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
+    this.feedbackQACommentManager = feedbackQACommentManager;
   }
 
   /**
@@ -202,6 +212,10 @@ public class SafeguardAction extends BaseAction {
       + "safeguard" + File.separator;
   }
 
+  public List<FeedbackQACommentableFields> getFeedbackComments() {
+    return feedbackComments;
+  }
+
   public File getFile() {
     return file;
   }
@@ -245,6 +259,7 @@ public class SafeguardAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public Project getProject() {
     return project;
   }
@@ -279,7 +294,6 @@ public class SafeguardAction extends BaseAction {
     return safeguardID;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
@@ -290,10 +304,10 @@ public class SafeguardAction extends BaseAction {
       + config.getProjectWorkplanFolder() + File.separator;
   }
 
+
   public String getWorkplanURL() {
     return config.getDownloadURL() + "/" + this.getWorkplanRelativePath().replace('\\', '/');
   }
-
 
   /**
    * Return the absolute path where the work plan is or should be located.
@@ -305,6 +319,7 @@ public class SafeguardAction extends BaseAction {
     return config.getUploadsBaseFolder() + File.separator + this.getWorkplanRelativePath() + File.separator;
   }
 
+
   public void loadFile() {
     if (safeguard.getFile() != null) {
       if (safeguard.getFile().getId() != null) {
@@ -314,7 +329,6 @@ public class SafeguardAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -445,6 +459,30 @@ public class SafeguardAction extends BaseAction {
 
     projectDB = projectManager.getProjectById(projectID);
 
+    /*
+     * get feedback comments
+     */
+    try {
+
+      feedbackComments = new ArrayList<>();
+      feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
+        .filter(f -> f.getSectionName() != null && f.getSectionName().equals("innovation"))
+        .collect(Collectors.toList());
+      if (feedbackComments != null) {
+        for (FeedbackQACommentableFields field : feedbackComments) {
+          List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
+          comments = feedbackQACommentManager.findAll().stream()
+            .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+              && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == safeguard.getId()
+              && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
+            .collect(Collectors.toList());
+          field.setQaComments(comments);
+        }
+      }
+
+    } catch (Exception e) {
+    }
+
     // The base permission is established for the current section
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
@@ -490,6 +528,7 @@ public class SafeguardAction extends BaseAction {
 
   }
 
+
   public void saveSafeguard() {
     Safeguards safeguardDB = new Safeguards();
     if (safeguard != null && safeguard.getId() != null) {
@@ -506,6 +545,10 @@ public class SafeguardAction extends BaseAction {
   }
 
 
+  public void setFeedbackComments(List<FeedbackQACommentableFields> feedbackComments) {
+    this.feedbackComments = feedbackComments;
+  }
+
   public void setFile(File file) {
     this.file = file;
   }
@@ -515,15 +558,14 @@ public class SafeguardAction extends BaseAction {
     this.fileContentType = fileContentType;
   }
 
+
   public void setFileFileName(String fileFileName) {
     this.fileFileName = fileFileName;
   }
 
-
   public void setFileReporting(File fileReporting) {
     this.fileReporting = fileReporting;
   }
-
 
   public void setFileReportingFileName(String fileReportingFileName) {
     this.fileReportingFileName = fileReportingFileName;
@@ -537,6 +579,7 @@ public class SafeguardAction extends BaseAction {
     this.project = project;
   }
 
+
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
@@ -545,7 +588,6 @@ public class SafeguardAction extends BaseAction {
     this.safeguard = safeguard;
   }
 
-
   public void setSafeguardID(long safeguardID) {
     this.safeguardID = safeguardID;
   }
@@ -553,7 +595,6 @@ public class SafeguardAction extends BaseAction {
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
-
 
   @Override
   public void validate() {
