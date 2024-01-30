@@ -77,6 +77,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndTrainingTermManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
+import org.cgiar.ccafs.marlo.data.manager.ShfrmPriorityActionManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
@@ -139,6 +140,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndTrainingTerm;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeParticipant;
 import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
+import org.cgiar.ccafs.marlo.data.model.ShfrmPriorityAction;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -248,6 +250,7 @@ public class DeliverableAction extends BaseAction {
   private FeedbackQACommentManager feedbackQACommentManager;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
   private DeliverableTraineesIndicatorManager deliverableTraineesIndicatorManager;
+  private ShfrmPriorityActionManager shfrmPriorityActionManager;
 
 
   // Variables
@@ -262,6 +265,7 @@ public class DeliverableAction extends BaseAction {
   private Boolean has_specific_management_deliverables;
   private Boolean isManagingPartnerPersonRequerid;
   private List<DeliverableType> deliverableTypeParent;
+  private List<ShfrmPriorityAction> shfrmPriorityActions;
   private DeliverableValidator deliverableValidator;
   private List<FundingSource> fundingSources;
   private List<Activity> activities;
@@ -346,7 +350,8 @@ public class DeliverableAction extends BaseAction {
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
     FeedbackQACommentManager feedbackQACommentManager,
     DeliverableClusterParticipantManager deliverableClusterParticipantManager,
-    DeliverableTraineesIndicatorManager deliverableTraineesIndicatorManager) {
+    DeliverableTraineesIndicatorManager deliverableTraineesIndicatorManager,
+    ShfrmPriorityActionManager shfrmPriorityActionManager) {
     super(config);
     this.activityManager = activityManager;
     this.deliverableManager = deliverableManager;
@@ -408,6 +413,7 @@ public class DeliverableAction extends BaseAction {
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.feedbackQACommentManager = feedbackQACommentManager;
     this.deliverableTraineesIndicatorManager = deliverableTraineesIndicatorManager;
+    this.shfrmPriorityActionManager = shfrmPriorityActionManager;
   }
 
   /**
@@ -897,6 +903,10 @@ public class DeliverableAction extends BaseAction {
 
   public List<User> getResponsibleUsers() {
     return responsibleUsers;
+  }
+
+  public List<ShfrmPriorityAction> getShfrmPriorityActions() {
+    return shfrmPriorityActions;
   }
 
   public Map<String, String> getStatus() {
@@ -1815,6 +1825,8 @@ public class DeliverableAction extends BaseAction {
           .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() != null
             && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && dt.getAdminType().booleanValue())
           .collect(Collectors.toList())));
+
+        shfrmPriorityActions = shfrmPriorityActionManager.findAll();
       }
 
       if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType() != null
@@ -3986,6 +3998,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setResponsibleUsers(List<User> responsibleUsers) {
     this.responsibleUsers = responsibleUsers;
+  }
+
+  public void setShfrmPriorityActions(List<ShfrmPriorityAction> shfrmPriorityActions) {
+    this.shfrmPriorityActions = shfrmPriorityActions;
   }
 
   public void setStatus(Map<String, String> status) {
