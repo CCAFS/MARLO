@@ -3,6 +3,11 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.google.gson.annotations.Expose;
 
 /**
@@ -16,6 +21,9 @@ public class ShfrmPriorityAction extends MarloAuditableEntity implements java.io
   private String name;
   @Expose
   private String description;
+
+  private Set<ShfrmSubAction> shfrmSubAction = new HashSet<ShfrmSubAction>(0);
+  private List<ShfrmSubAction> shfrmSubActions = new ArrayList<ShfrmSubAction>();
 
   public ShfrmPriorityAction() {
   }
@@ -35,6 +43,14 @@ public class ShfrmPriorityAction extends MarloAuditableEntity implements java.io
     return name;
   }
 
+  public Set<ShfrmSubAction> getShfrmSubAction() {
+    return shfrmSubAction;
+  }
+
+  public List<ShfrmSubAction> getShfrmSubActions() {
+    return shfrmSubActions;
+  }
+
   @Override
   public boolean isActive() {
     return true;
@@ -48,10 +64,12 @@ public class ShfrmPriorityAction extends MarloAuditableEntity implements java.io
     this.name = name;
   }
 
-  public void updateProjectInfo(ShfrmPriorityAction update) {
-    this.setName(update.getName());
-    this.setDescription(update.getDescription());
-    this.setActiveSince(update.getActiveSince());
+  public void setShfrmSubAction(Set<ShfrmSubAction> shfrmSubAction) {
+    this.shfrmSubAction = shfrmSubAction;
+  }
+
+  public void setShfrmSubActions(List<ShfrmSubAction> shfrmSubActions) {
+    this.shfrmSubActions = shfrmSubActions;
   }
 
 }
