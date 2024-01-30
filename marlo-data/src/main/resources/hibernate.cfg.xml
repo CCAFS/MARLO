@@ -431,6 +431,7 @@
   <mapping resource="xmls/DeliverableTraineesIndicators.hbm.xml"/>
   <mapping resource="xmls/ShfrmPriorityActions.hbm.xml"/>
   <mapping resource="xmls/ShfrmSubActions.hbm.xml"/>
+  <mapping resource="xmls/DeliverableShfrmPriorityActions.hbm.xml"/>
 
  </session-factory>
 </hibernate-configuration>
