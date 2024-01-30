@@ -430,6 +430,7 @@
   <mapping resource="xmls/DeliverableClusterParticipants.hbm.xml"/>
   <mapping resource="xmls/DeliverableTraineesIndicators.hbm.xml"/>
   <mapping resource="xmls/ShfrmPriorityActions.hbm.xml"/>
+  <mapping resource="xmls/ShfrmSubActions.hbm.xml"/>
 
  </session-factory>
 </hibernate-configuration>
