@@ -432,6 +432,7 @@
   <mapping resource="xmls/ShfrmPriorityActions.hbm.xml"/>
   <mapping resource="xmls/ShfrmSubActions.hbm.xml"/>
   <mapping resource="xmls/DeliverableShfrmPriorityActions.hbm.xml"/>
+  <mapping resource="xmls/DeliverableShfrmSubActions.hbm.xml"/>
 
  </session-factory>
 </hibernate-configuration>

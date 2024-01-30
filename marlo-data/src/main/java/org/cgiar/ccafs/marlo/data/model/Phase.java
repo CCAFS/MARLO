@@ -46,6 +46,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   private Set<ProjectInfo> projectInfos = new HashSet<ProjectInfo>(0);
   private Set<DeliverableShfrmPriorityAction> deliverableShfrmPriorityActions =
     new HashSet<DeliverableShfrmPriorityAction>(0);
+  private Set<DeliverableShfrmSubAction> deliverableShfrmSubActions = new HashSet<DeliverableShfrmSubAction>(0);
 
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
 
@@ -244,6 +245,10 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return deliverableShfrmPriorityActions;
   }
 
+  public Set<DeliverableShfrmSubAction> getDeliverableShfrmSubActions() {
+    return deliverableShfrmSubActions;
+  }
+
   public Set<DeliverableUserPartnership> getDeliverableUserPartnerships() {
     return deliverableUserPartnerships;
   }
@@ -336,6 +341,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return powbSynthesis;
   }
 
+
   public Set<CrpProgramOutcomeIndicator> getProgramOutcomeIndicators() {
     return programOutcomeIndicators;
   }
@@ -349,7 +355,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public Set<ProjectBudgetExecution> getProjectBudgetExecutions() {
     return projectBudgetExecutions;
   }
-
 
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
@@ -483,10 +488,10 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectLeverages;
   }
 
+
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
   }
-
 
   public Set<ProjectLp6ContributionDeliverable> getProjectLp6ContributionDeliverables() {
     return projectLp6ContributionDeliverables;
@@ -576,11 +581,11 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return result;
   }
 
+
   @Override
   public boolean isActive() {
     return true;
   }
-
 
   public Boolean isReporting() {
     return description.equals(APConstants.REPORTING);
@@ -636,6 +641,10 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
   public void setDeliverableShfrmPriorityActions(Set<DeliverableShfrmPriorityAction> deliverableShfrmPriorityActions) {
     this.deliverableShfrmPriorityActions = deliverableShfrmPriorityActions;
+  }
+
+  public void setDeliverableShfrmSubActions(Set<DeliverableShfrmSubAction> deliverableShfrmSubActions) {
+    this.deliverableShfrmSubActions = deliverableShfrmSubActions;
   }
 
   public void setDeliverableUserPartnerships(Set<DeliverableUserPartnership> deliverableUserPartnerships) {
