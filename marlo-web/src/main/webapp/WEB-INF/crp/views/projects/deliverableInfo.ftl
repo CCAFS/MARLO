@@ -1,4 +1,6 @@
 [#ftl]
+[#import "/WEB-INF/global/macros/deliverableMacros.ftl" as deliverableMacros /]
+
 <input type="hidden" id="traineesIndicator" name="traineesIndicator" value="${(action.getTraineesIndicatorDB())!''}"/>
 <input type="hidden" name="deliverable.deliverableInfo.remainingPending" value="${(deliverable.deliverableInfo.remainingPending!'false')?c}"/>
 <div class="simpleBox">
@@ -135,6 +137,12 @@
       <span class="icon-20 icon-uncheck" title=""></span> There are required fields still incompleted
     [/#if]
   </div>
+  
+    [#-- Shfmr Sub Actions Template --]
+    [@deliverableMacros.shfmrSubActionMacro element={} name="feedbackFields[-1]" index=-1 isTemplate=true /]
+  
+    [#-- SHRFM contribution --]
+    [@deliverableMacros.shfmrContributionMacro /]
 
   [#-- Key Outputs select --]
   [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]

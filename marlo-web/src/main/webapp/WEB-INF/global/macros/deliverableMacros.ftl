@@ -572,12 +572,68 @@
   </div>
 [/#macro]
 
+[#macro shfmrContributionMacro ]
+  [#local name = "deliverable.deliverableinfo"  /]
+  <div class="simpleBox form-group">
+    <div class=" row yesNoInputDeliverable">
+      <span class="col-md-9">
+        <label class="yesNoLabel" for="">[@s.text name="deliverable.shfrmContribution.question.reporting" /] [@customForm.req required=reportingActive /]</label>
+        <p><small>[@s.text name="deliverable.shfrmContribution.question.help" /] </small></p>
+      </span>
+      <div class="col-md-3">
+        [@customForm.yesNoInputDeliverable name="${name}.contributingShfrm"  editable=editable inverse=false cssClass="type-findable text-center" /] 
+      </div>  
+    </div>
+    [#local isContributingShfrm = (deliverable.deliverableinfo.contributingShfrm?string)!""]
+    <div class="block-findable findableOptions" style="display:${(isContributingShfrm == "true")?string('block', 'none')}">
+      <hr />
+      
+      [#-- Shfrm Contribution Narrative --]
+      <div class="form-group">
+        [@customForm.textArea name="deliverable.deliverableInfo.shfrmContributionNarrative" value="${(deliverable.deliverableInfo.shfrmContributionNarrative)!}" i18nkey="deliverable.shfrmContribution.narrative"  placeholder="" className="limitWords-200" required=true editable=editable /]
+      </div>
+      
+      [#-- Shfrm Priority Action --]
+      <div class="form-group">
+        [@customForm.select name="deliverable.deliverableInfo.deliverableType.deliverableCategory.id" label="deliverable.shfrmContribution.priorityAction.help"  i18nkey="deliverable.shfrmContribution.priorityAction" listName="shfrmPriorityActions" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect addSlo" editable=editable/]
+      </div>
+      
+    </div>
+  </div>
+[/#macro]
+
+[#macro shfmrSubActionMacro element name index isTemplate=false]
+  <div id="srfSlo-${isTemplate?string('template',index)}" class="srfSlo borderBox" style="display:${isTemplate?string('none','block')}">
+    [#-- Remove Button --]
+    <div class="remove-element removeElement sm" title="Remove"></div>
+    
+    [#-- Sub Action ID --]
+    <div class="blockTitle closed">
+      <strong>shfmr Sub Action ${index+1}: </strong>${(element.sectionDescription)!''} - ${(element.fieldName[0..*200])!'shfmr SubAction Fields'}
+    </div>
+    
+    <div class="blockContent" style="display:none">
+      <hr />
+      [#-- Sub Action ID  --]
+      <input type="hidden" name="${name}.id" value="${(element.id)!}"/>
+      
+      [#-- Shfrm Sub Action --]
+      <div class="form-group">
+        [@customForm.select name="deliverable.deliverableShfmrSubAction.id" label=""  i18nkey="deliverable.shfrmContribution.subAction" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" editable=editable/]
+      </div>
+      <div class="clearfix"></div>
+        
+    </div>
+  </div>
+[/#macro]
+
 [#macro findableOptions ]
   [#local isSynced = (deliverable.dissemination.synced)!false ]
   [#local customName = "deliverable.dissemination" /]
   <div class="disseminationChannelBlock" style="display:${isSynced?string('none','block')};">
-    [#-- Note --]
+    [#-- Note 
     <div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
+    --]
     <div class="form-group row">
       <div class="col-md-4">
         [#if editable]

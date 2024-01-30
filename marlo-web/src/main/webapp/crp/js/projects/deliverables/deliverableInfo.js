@@ -690,6 +690,37 @@ var deliverablePartnersModule = (function() {
     $('.removePartnerItem').on('click', removePartnerItem);
     // On add a new deliverable partner Item
     $('.addPartnerItem').on('click', addPartnerItem);
+    // On add a shrfm sub action
+    $('.addSlo').on('click', addIdo);
+
+  }
+  
+  function addIdo() {
+    console.log("add sub action");
+    var $itemsList = $(this).parent().find('.slos-list');
+    var $item = $("#srfSlo-template").clone(true).removeAttr("id");
+    $item.find('.blockTitle').trigger('click');
+    $itemsList.append($item);
+    $item.slideDown('slow');
+    updateSubActionIndexes();
+    $item.trigger('addComponent');
+  }
+  
+  function updateSubActionIndexes() {
+  $('.slos-list .srfSlo').each(function(i,slo) {
+    // Updating indexes
+    $(slo).setNameIndexes(1, i);
+    $(slo).find('.srfSloIndicator').each(function(subIdoIndex,subIdo) {
+      // Updating indexes
+      $(subIdo).setNameIndexes(2, subIdoIndex);
+    });
+  });
+
+  $('.issues-list .srfCCIssue').each(function(i,crossCutting) {
+    // Updating indexes
+    $(crossCutting).setNameIndexes(1, i);
+
+    });
   }
 
   function addPartnerItem() {
