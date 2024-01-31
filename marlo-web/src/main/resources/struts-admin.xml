@@ -109,6 +109,19 @@
 				<param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
+		
+		<action name="{crp}/shfrmManagement"
+			class="org.cgiar.ccafs.marlo.action.crp.admin.ShfrmManagementAction">
+			<!-- interceptor-ref name="autoLogin" / -->
+			<interceptor-ref name="crpAdminStack" />
+			<result name="input">/WEB-INF/crp/views/admin/shfrmManagement.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/shfrmManagement</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
+			</result>
+		</action>
 
 		<action name="{crp}/crpUsers"
 			class="org.cgiar.ccafs.marlo.action.crp.admin.CrpUsersAction">
