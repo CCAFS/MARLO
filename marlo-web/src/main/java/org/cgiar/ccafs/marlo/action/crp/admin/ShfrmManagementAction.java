@@ -97,6 +97,15 @@ public class ShfrmManagementAction extends BaseAction {
         try {
           priorityActionsDB = shfrmPriorityActionManager.findAll();
           subActionsDB = shfrmSubActionManager.findAll();
+
+          if (priorityActions != null && !priorityActions.isEmpty()) {
+            for (ShfrmPriorityAction priorityAction : priorityActions) {
+              if (!priorityActionsDB.contains(priorityAction)) {
+                shfrmPriorityActionManager.deleteShfrmPriorityAction(priorityAction.getId());
+              }
+            }
+          }
+
         } catch (Exception e) {
           logger.info(e + "no sub actions added yet");
         }
@@ -115,9 +124,7 @@ public class ShfrmManagementAction extends BaseAction {
           }
 
           shfrmPriorityActionManager.saveShfrmPriorityAction(actionSave);
-          if (priorityActionsDB != null && !priorityActionsDB.isEmpty() && !priorityActionsDB.contains(action)) {
-            shfrmPriorityActionManager.deleteShfrmPriorityAction(action.getId());
-          }
+
 
           // Save sub-actions
           if (action.getShfrmSubActions() != null && !action.getShfrmSubActions().isEmpty()) {
@@ -134,10 +141,19 @@ public class ShfrmManagementAction extends BaseAction {
                 subActionSave.setDescription(subAction.getDescription());
               }
               subActionSave.setShfrmPriorityAction(action);
+              try {
+                shfrmSubActionManager.saveShfrmSubAction(subActionSave);
+              } catch (Exception e) {
+                logger.info(e + " error saving sub action");
+              }
 
-              shfrmSubActionManager.saveShfrmSubAction(subActionSave);
-              if (subActionsDB != null && !subActionsDB.isEmpty() && !subActionsDB.contains(subAction)) {
-                shfrmSubActionManager.deleteShfrmSubAction(subAction.getId());
+              try {
+                if (subAction != null && subAction.getId() != null && subActionsDB != null && !subActionsDB.isEmpty()
+                  && !subActionsDB.contains(subAction)) {
+                  shfrmSubActionManager.deleteShfrmSubAction(subAction.getId());
+                }
+              } catch (Exception e) {
+                logger.info(e + " error deleting sub action");
               }
             }
           }

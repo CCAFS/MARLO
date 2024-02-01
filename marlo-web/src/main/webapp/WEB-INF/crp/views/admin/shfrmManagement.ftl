@@ -169,9 +169,9 @@
     <div class="blockContent" style="display:${opened?string('block','none')}">
       <hr />
             
-      [#-- Action name  --
+      [#-- Action name  --]
       <input id="id" class="partnerPersonId" type="hidden" name="${name}.id" value="${(element.id)!}" />
-]
+
       <div class="form-group">
         [@customForm.input name="${name}.name" i18nkey="shfrmManagement.priorityActions.title" className="name limitWords-100" required=true /]
       </div>
