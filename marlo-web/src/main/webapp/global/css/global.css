@@ -8046,3 +8046,17 @@ img.qaOptionsComment {
   margin-top: 5px;
   margin-bottom: -15px;
 }
+
+@media only screen and (max-width:440px){
+	#superadminBlock ul {
+		display: flex;
+		justify-content: space-between;
+	}
+	
+	#superadminBlock a {
+		padding: 5px 10px;
+	}
+	]
+	
+	
+}
