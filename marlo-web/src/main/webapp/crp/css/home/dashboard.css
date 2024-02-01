@@ -882,7 +882,7 @@ span.timelineControl:hover {
 
 @media only screen and (max-width:440px){
 	
-	#dashboardContent{
+	.containerTabletItems #dashboardContent{
 		width: 100%;
     width: -moz-available;         
     width: -webkit-fill-available;  
