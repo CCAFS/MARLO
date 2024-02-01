@@ -3,6 +3,9 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.annotations.Expose;
 
 /**
@@ -18,7 +21,7 @@ public class ShfrmPriorityAction extends MarloAuditableEntity implements java.io
   private String description;
 
   // private Set<ShfrmSubAction> shfrmSubAction = new HashSet<ShfrmSubAction>(0);
-  // private List<ShfrmSubAction> shfrmSubActions = new ArrayList<ShfrmSubAction>();
+  private List<ShfrmSubAction> shfrmSubActions = new ArrayList<ShfrmSubAction>();
 
   public ShfrmPriorityAction() {
   }
@@ -38,6 +41,10 @@ public class ShfrmPriorityAction extends MarloAuditableEntity implements java.io
     return name;
   }
 
+  public List<ShfrmSubAction> getShfrmSubActions() {
+    return shfrmSubActions;
+  }
+
   @Override
   public boolean isActive() {
     return true;
@@ -49,5 +56,9 @@ public class ShfrmPriorityAction extends MarloAuditableEntity implements java.io
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setShfrmSubActions(List<ShfrmSubAction> shfrmSubActions) {
+    this.shfrmSubActions = shfrmSubActions;
   }
 }

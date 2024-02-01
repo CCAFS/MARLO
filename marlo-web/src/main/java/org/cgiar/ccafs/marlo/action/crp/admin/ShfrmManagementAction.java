@@ -17,17 +17,23 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.ShfrmPriorityActionManager;
 import org.cgiar.ccafs.marlo.data.manager.ShfrmSubActionManager;
 import org.cgiar.ccafs.marlo.data.model.ShfrmPriorityAction;
+import org.cgiar.ccafs.marlo.data.model.ShfrmSubAction;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class ShfrmManagementAction extends BaseAction {
 
+  private static Logger logger = LoggerFactory.getLogger(ShfrmManagementAction.class);
   private static final long serialVersionUID = -793652591843623397L;
   private List<ShfrmPriorityAction> priorityActions;
   private final ShfrmPriorityActionManager shfrmPriorityActionManager;
@@ -41,6 +47,33 @@ public class ShfrmManagementAction extends BaseAction {
     this.shfrmSubActionManager = shfrmSubActionManager;
   }
 
+  /**
+   * Fill Priority actions with sub actions list
+   */
+  public void fillSubActions() {
+    if (priorityActions != null && !priorityActions.isEmpty()) {
+      try {
+        List<ShfrmSubAction> subActions = shfrmSubActionManager.findAll();
+
+        if (subActions != null && !subActions.isEmpty()) {
+          priorityActions.forEach(action -> {
+            List<ShfrmSubAction> subActionsAdd = subActions.stream()
+              .filter(subaction -> action != null && action.getId() != null && subaction != null
+                && subaction.getShfrmPriorityAction() != null && subaction.getShfrmPriorityAction().getId() != null
+                && subaction.getShfrmPriorityAction().getId().equals(action.getId()))
+              .collect(Collectors.toList());
+
+            if (!subActionsAdd.isEmpty()) {
+              action.setShfrmSubActions(subActionsAdd);
+            }
+          });
+        }
+      } catch (Exception e) {
+        logger.info(e + "no sub actions added yet");
+      }
+    }
+  }
+
   public List<ShfrmPriorityAction> getPriorityActions() {
     return priorityActions;
   }
@@ -49,7 +82,7 @@ public class ShfrmManagementAction extends BaseAction {
   public void prepare() throws Exception {
     priorityActions = new ArrayList<>();
     priorityActions = shfrmPriorityActionManager.findAll();
-
+    this.fillSubActions();
     if (this.isHttpPost()) {
     }
   }
@@ -57,9 +90,19 @@ public class ShfrmManagementAction extends BaseAction {
   @Override
   public String save() {
     if (this.canAcessCrpAdmin()) {
-      if (priorityActions != null && !priorityActions.isEmpty()) {
+      if (this.priorityActions != null && !this.priorityActions.isEmpty()) {
 
-        for (ShfrmPriorityAction action : priorityActions) {
+        List<ShfrmPriorityAction> priorityActionsDB = null;
+        List<ShfrmSubAction> subActionsDB = null;
+        try {
+          priorityActionsDB = shfrmPriorityActionManager.findAll();
+          subActionsDB = shfrmSubActionManager.findAll();
+        } catch (Exception e) {
+          logger.info(e + "no sub actions added yet");
+        }
+
+
+        for (ShfrmPriorityAction action : this.priorityActions) {
           ShfrmPriorityAction actionSave = new ShfrmPriorityAction();
           if (action.getId() != null) {
             actionSave = shfrmPriorityActionManager.getShfrmPriorityActionById(action.getId());
@@ -70,9 +113,37 @@ public class ShfrmManagementAction extends BaseAction {
           if (action.getDescription() != null) {
             actionSave.setDescription(action.getDescription());
           }
+
           shfrmPriorityActionManager.saveShfrmPriorityAction(actionSave);
+          if (priorityActionsDB != null && !priorityActionsDB.isEmpty() && !priorityActionsDB.contains(action)) {
+            shfrmPriorityActionManager.deleteShfrmPriorityAction(action.getId());
+          }
+
+          // Save sub-actions
+          if (action.getShfrmSubActions() != null && !action.getShfrmSubActions().isEmpty()) {
+            for (ShfrmSubAction subAction : action.getShfrmSubActions()) {
+              ShfrmSubAction subActionSave = new ShfrmSubAction();
+
+              if (subAction.getId() != null) {
+                subActionSave.setId(subAction.getId());
+              }
+              if (subAction.getName() != null) {
+                subActionSave.setName(subAction.getName());
+              }
+              if (subAction.getDescription() != null) {
+                subActionSave.setDescription(subAction.getDescription());
+              }
+              subActionSave.setShfrmPriorityAction(action);
+
+              shfrmSubActionManager.saveShfrmSubAction(subActionSave);
+              if (subActionsDB != null && !subActionsDB.isEmpty() && !subActionsDB.contains(subAction)) {
+                shfrmSubActionManager.deleteShfrmSubAction(subAction.getId());
+              }
+            }
+          }
         }
       }
+
 
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
         Collection<String> messages = this.getActionMessages();
