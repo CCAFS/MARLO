@@ -466,6 +466,18 @@ divDataTables_length.css("bottom", "8px");
 divDataTables_length.css("margin-left", "43%");
 divDataTables_length.css("z-index", "1");
 
+var windowWidth = $(window).width();
+
+if (windowWidth < 440) {
+	divDataTables_length.css({
+		"left": "25%",
+		"bottom": "0",
+		"margin-top": "32px",
+		"margin-left": "0"
+	})
+}
+
+
 $('a#impact[data-toggle="tab"]').on('shown.bs.tab', function(e) {
   e.target // newly activated tab
   e.relatedTarget // previous active tab
