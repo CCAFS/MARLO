@@ -485,6 +485,7 @@ span.timelineControl:hover {
 
   .containerMapsection{
     display: flex;
+    position: relative;
   }
 
   .borderMap{
@@ -851,6 +852,36 @@ span.timelineControl:hover {
   }
  }
 
+@media only screen and (max-width:440px){
+	
+	.containerTabletItems #dashboardContent{
+		width: 100%;
+    width: -moz-available;         
+    width: -webkit-fill-available;  
+    width: fill-available;
+	}
+	
+	.tab-content{
+		width: auto;	
+	}
+	
+	.iconSearch{
+		margin-left: 0;
+    right: 5%;
+	}
+	
+	.containerImgMap{
+		position: absolute;
+		right: 10%;
+		top: 0;
+		width: 100%;
+		text-align: right;
+	}
+	
+	.containerImgMap img{
+		width: 8%;
+	}
+}
  
 /* Add styles to the table */
 .dataTables_wrapper {
@@ -880,21 +911,4 @@ span.timelineControl:hover {
   display: block;
 }
 
-@media only screen and (max-width:440px){
-	
-	.containerTabletItems #dashboardContent{
-		width: 100%;
-    width: -moz-available;         
-    width: -webkit-fill-available;  
-    width: fill-available;
-	}
-	
-	.tab-content{
-		width: auto;	
-	}
-	
-	.iconSearch{
-		margin-left: 0;
-    right: 5%;
-	}
-}
+
