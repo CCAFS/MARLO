@@ -303,9 +303,21 @@ div#tl-adnyds {
 }
 
 @media only screen and (max-width:440px){
+	
+	
 	.example .scrollbar {
  	 	width: 100%;
  	 	overflow: hidden;
+	}
+	
+	.example .frame{
+		width: 80%;
+	}
+	
+	.example button, .example button{
+		display: flex;
+		align-items: center;
+    flex-direction: column;
 	}
 }
 
