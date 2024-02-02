@@ -141,11 +141,6 @@
     [#if action.hasSpecificities('shfrm_contribution_active') ]
       [#-- SHRFM contribution --]
       [@deliverableMacros.shfmrContributionMacro /]
-    
-      [#-- Shfmr Sub Actions Template
-      [@deliverableMacros.shfmrSubActionMacro element={} name="feedbackFields[-1]" index=-1 isTemplate=true /]
-    --]
-
     [/#if]
     
   [#-- Key Outputs select --]

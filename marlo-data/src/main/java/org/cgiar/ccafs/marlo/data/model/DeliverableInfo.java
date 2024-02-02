@@ -50,7 +50,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private Boolean contributingShfrm;
   @Expose
-  private Boolean shfrmContributionNarrative;
+  private String shfrmContributionNarrative;
 
   public DeliverableInfo() {
   }
@@ -121,7 +121,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
-  public Boolean getShfrmContributionNarrative() {
+  public String getShfrmContributionNarrative() {
     return shfrmContributionNarrative;
   }
 
@@ -231,6 +231,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
     return false;
   }
+
 
   public Boolean isRequiredToBeReported() {
     if (this.getStatus() == null) {
@@ -375,24 +376,23 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.adoptedLicense = adoptedLicense;
   }
 
-
   public void setContributingShfrm(Boolean contributingShfrm) {
     this.contributingShfrm = contributingShfrm;
   }
+
 
   public void setCrpClusterKeyOutput(CrpClusterKeyOutput crpClusterKeyOutput) {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
   }
 
-
   public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
     this.crpProgramOutcome = crpProgramOutcome;
   }
 
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
-
 
   public void setDeliverableType(DeliverableType deliverableType) {
     this.deliverableType = deliverableType;
@@ -430,7 +430,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.remainingPending = remainingPending;
   }
 
-  public void setShfrmContributionNarrative(Boolean shfrmContributionNarrative) {
+  public void setShfrmContributionNarrative(String shfrmContributionNarrative) {
     this.shfrmContributionNarrative = shfrmContributionNarrative;
   }
 
@@ -472,6 +472,5 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.setContributingShfrm(update.getContributingShfrm());
     this.setShfrmContributionNarrative(update.getShfrmContributionNarrative());
   }
-
 }
 
