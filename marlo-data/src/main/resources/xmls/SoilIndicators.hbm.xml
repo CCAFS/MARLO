@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<class name="org.cgiar.ccafs.marlo.data.model.SoilIndicator" table="soil_indicators"
+    optimistic-lock="none">
+      <id name="id" type="java.lang.Long">
+      <column name="id" />
+     <generator class="assigned" />
+    </id>
+    <property name="indicatorId" type="java.lang.Long">
+      <column name="indicator_id" not-null="true" />
+    </property>
+    <property name="indicatorName" type="string">
+      <column name="indicator_name" not-null="true" />
+    </property>
+    <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+    </many-to-one>
+  </class>
+</hibernate-mapping>

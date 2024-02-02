@@ -433,6 +433,7 @@
   <mapping resource="xmls/ShfrmSubActions.hbm.xml"/>
   <mapping resource="xmls/DeliverableShfrmPriorityActions.hbm.xml"/>
   <mapping resource="xmls/DeliverableShfrmSubActions.hbm.xml"/>
+  <mapping resource="xmls/SoilIndicators.hbm.xml"/>
 
  </session-factory>
 </hibernate-configuration>
