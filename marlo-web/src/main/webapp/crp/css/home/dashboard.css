@@ -241,7 +241,7 @@ span.timelineControl:hover {
   }
   
   .timeline{
-		position: relative;
+		position: static;
     margin: 30px 0;
     display: flex;
     justify-content: center;
@@ -855,6 +855,14 @@ span.timelineControl:hover {
 
 @media only screen and (max-width:440px){
 	
+	#dashboardContent{
+		display: contents;
+	}
+	
+	.containerTabletItems{
+		height: 100%;
+	}
+	
 	/**************** Content Items Table **************/
 	
 	.sectionItems{
@@ -902,6 +910,10 @@ span.timelineControl:hover {
 	}
 	
 	/*************** timeline ********************/
+	
+	.timeline{
+		position: relative;
+	}
 	
 	.timelineAlert{
 		bottom: 8px;
