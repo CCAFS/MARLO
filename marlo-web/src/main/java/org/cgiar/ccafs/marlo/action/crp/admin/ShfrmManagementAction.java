@@ -23,6 +23,8 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -93,21 +95,55 @@ public class ShfrmManagementAction extends BaseAction {
   @Override
   public String save() {
     if (this.canAcessCrpAdmin()) {
-      if (this.priorityActions != null && !this.priorityActions.isEmpty()) {
+      List<ShfrmSubAction> subActionstoDelete = new ArrayList<>();
 
+      try {
         List<ShfrmPriorityAction> priorityActionsDB = null;
         List<ShfrmSubAction> subActionsDB = null;
-        try {
-          priorityActionsDB = shfrmPriorityActionManager.findAll();
-          subActionsDB = shfrmSubActionManager.findAll();
+        priorityActionsDB = shfrmPriorityActionManager.findAll();
+        subActionsDB = shfrmSubActionManager.findAll();
+        if (this.priorityActions != null && !this.priorityActions.isEmpty()) {
+          for (ShfrmPriorityAction action : this.priorityActions) {
 
-          if (priorityActions != null && !priorityActions.isEmpty()) {
-            for (ShfrmPriorityAction priorityAction : priorityActions) {
-              if (!priorityActionsDB.contains(priorityAction)) {
-                shfrmPriorityActionManager.deleteShfrmPriorityAction(priorityAction.getId());
-              }
+            // Remove Sub actions
+            if (action.getShfrmSubActions() != null && !action.getShfrmSubActions().isEmpty()) {
+              // Obtener los IDs de las subacciones en action.getShfrmSubActions()
+              Set<Long> subActionIdsInFrontend = action.getShfrmSubActions().stream().filter(Objects::nonNull)
+                .map(ShfrmSubAction::getId).collect(Collectors.toSet());
+
+              // Filter subActionsDB to retain only the subactions present in action.getShfrmSubActions()
+              subActionsDB = subActionsDB.stream()
+                .filter(subActionDB -> subActionDB.getShfrmPriorityAction() != null
+                  && subActionDB.getShfrmPriorityAction().getId() != null
+                  && subActionDB.getShfrmPriorityAction().getId().equals(action.getId())
+                  && !subActionIdsInFrontend.contains(subActionDB.getId()))
+                .collect(Collectors.toList());
+
+              // Delete subactions from subActionsDB that are not in action.getShfrmSubActions()
+              subActionsDB.forEach(subActionDB -> {
+                shfrmSubActionManager.deleteShfrmSubAction(subActionDB.getId());
+                action.getShfrmSubActions().removeIf(sa -> sa.getId().equals(subActionDB.getId()));
+                subActionstoDelete.add(subActionDB);
+              });
+
             }
+
+
           }
+        }
+
+      } catch (Exception e) {
+        logger.info(e + " error deleting sub action");
+      }
+
+
+      if (this.priorityActions != null && !this.priorityActions.isEmpty()) {
+
+        // List<ShfrmPriorityAction> priorityActionsDB = null;
+        // List<ShfrmSubAction> subActionsDB = null;
+        try {
+          // priorityActionsDB = shfrmPriorityActionManager.findAll();
+          // subActionsDB = shfrmSubActionManager.findAll();
 
         } catch (Exception e) {
           logger.info(e + "no sub actions added yet");
@@ -119,15 +155,26 @@ public class ShfrmManagementAction extends BaseAction {
           if (action.getId() != null) {
             actionSave = shfrmPriorityActionManager.getShfrmPriorityActionById(action.getId());
           }
+
+          if (subActionstoDelete != null && !subActionstoDelete.isEmpty()) {
+            for (ShfrmSubAction subActiontoDelete : subActionstoDelete) {
+              actionSave.getShfrmSubActions().remove(subActiontoDelete);
+            }
+          }
+
           if (action.getName() != null) {
             actionSave.setName(action.getName());
           }
           if (action.getDescription() != null) {
             actionSave.setDescription(action.getDescription());
           }
+          List<ShfrmSubAction> subActionsTemp = new ArrayList<>();
+          if (action.getShfrmSubActions() != null && !action.getShfrmSubActions().isEmpty()) {
+            subActionsTemp = action.getShfrmSubActions();
+          }
 
-          shfrmPriorityActionManager.saveShfrmPriorityAction(actionSave);
-
+          action = shfrmPriorityActionManager.saveShfrmPriorityAction(actionSave);
+          action.setShfrmSubActions(subActionsTemp);
 
           // Save sub-actions
           if (action.getShfrmSubActions() != null && !action.getShfrmSubActions().isEmpty()) {
@@ -143,20 +190,13 @@ public class ShfrmManagementAction extends BaseAction {
               if (subAction.getDescription() != null) {
                 subActionSave.setDescription(subAction.getDescription());
               }
-              subActionSave.setShfrmPriorityAction(action);
+              if (action.getId() != null) {
+                subActionSave.setShfrmPriorityAction(action);
+              }
               try {
                 shfrmSubActionManager.saveShfrmSubAction(subActionSave);
               } catch (Exception e) {
                 logger.info(e + " error saving sub action");
-              }
-
-              try {
-                if (subAction != null && subAction.getId() != null && subActionsDB != null && !subActionsDB.isEmpty()
-                  && !subActionsDB.contains(subAction)) {
-                  shfrmSubActionManager.deleteShfrmSubAction(subAction.getId());
-                }
-              } catch (Exception e) {
-                logger.info(e + " error deleting sub action");
               }
             }
           }

@@ -75,17 +75,6 @@
 [#-- Contact person TEMPLATE from partnersTemplate.ftl --]
 [@contactPersonMacro element={} name="priorityActions[-1].shfrmSubActions[-1]" isTemplate=true /]
 
-[#-- PPA list Template --]
-<ul style="display:none">
-  <li id="ppaListTemplate" class="clearfix">
-    <input type="hidden"            name="project.partners[-1].partnerContributors[-1].id" />
-    <input type="hidden"            name="project.partners[-1].partnerContributors[-1].projectPartnerContributor.id" />
-    <input class="id" type="hidden" name="project.partners[-1].partnerContributors[-1].projectPartnerContributor.institution.id" value="" />
-    <span class="name"></span> 
-    [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if] 
-  </li>
-</ul>
-
 [#-- Project roles descriptions --]
 <span class="contactPersonRole-PC" style="display:none">[@s.text name="projectPartners.contactPersonRolePC" /]</span>
 <span class="contactPersonRole-PL" style="display:none">[@s.text name="projectPartners.contactPersonRolePL" /]</span>
@@ -168,7 +157,7 @@
         <div class="fullPartBlock" listname="${name}.shfrmSubActions">
           [#if element.shfrmSubActions?has_content]
             [#list element.shfrmSubActions as subAction]
-              [@contactPersonMacro element=subAction name="${name}.subActions[${subAction_index}]" index=subAction_index partnerIndex=index institutionID=(element.institution.id)! /]
+              [@contactPersonMacro element=subAction name="${name}.shfrmSubActions[${subAction_index}]" index=subAction_index partnerIndex=index institutionID=(element.institution.id)! /]
             [/#list]
           [#else]            
               <p class="noContactMessage">[@s.text name="shfrmManagement.subActionsEmpty" /]</p>
