@@ -27,7 +27,7 @@
   "dependencies": {
     "karma": "^0.12.32",
     "karma-effroi": "0.0.0",
-    "minifier": "^0.6.2"
+    "minifier": "^0.8.1"
   },
   "devDependencies": {
     "jasmine-core": "^2.3.4",
