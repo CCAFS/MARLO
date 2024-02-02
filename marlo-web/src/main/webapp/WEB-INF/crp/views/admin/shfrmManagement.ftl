@@ -42,7 +42,7 @@
           </div>
           [#-- Listing Partners  --]
           
-            [#-- Partners list --]
+            [#-- Priority actions list --]
             <div id="projectPartnersBlock" class="simpleBox" listname="priorityActions">
               [#if priorityActions?has_content]
                 [#list priorityActions as priorityAction]
@@ -128,12 +128,8 @@
 [#------------------------------------------------------            ------------------------------------------------------]
 
 [#macro projectPartnerMacro element name index=-1 opened=false defaultPerson=false isTemplate=false]
-  [#local isLeader = (element.leader)!false/]
-  [#local isCoordinator = (element.coordinator)!false/]
-  [#local isPPA = (action.isPPA(element.institution))!false /]
-  [#local allowSubDep = ((element.subDepartment?has_content)!false) || ((element.institution.institutionType.subDepartmentActive)!false) ]
   
-  <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
+  <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox" style="display:${isTemplate?string('none','block')}">
     [#-- Loading --]
     <div class="loading" style="display:none"></div>
     [#-- TODO: Please improve this validation at backend side --]
@@ -146,24 +142,7 @@
     [#-- Partner Title --]
     <div class="blockTitle ${opened?string('opened', 'closed')}">
       [#-- Title --]
-      <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="priorityActionTitle">${(element.shfrmPriorityAction.title)!'Priority Action'}</span> </span>
-      
-      [#-- Tags --]
-      <div class="partnerTags pull-right">
-        <span class="label label-success type-leader" style="display:${(isLeader?string('inline','none'))!'none'}">Leader</span>
-        <span class="label label-default type-coordinator" style="display:${(isCoordinator?string('inline','none'))!'none'}">Coordinator</span>
-        <span class="index ${isPPA?string('ppa','')}">${isPPA?string('Managing Partner','Partner')} </span>
-      </div>
-      
-      [#-- Contacts --]
-      [#if (element.partnerPersons)?? ] <br /> 
-        <small>[#list element.partnerPersons as partnerPerson]
-          [#if partnerPerson.user?? && partnerPerson.user.firstName??]
-            [${(partnerPerson.user.composedCompleteName)!}]
-          [/#if]
-        [/#list]</small> 
-      [/#if]
-      <div class="clearfix"></div>
+      <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="priorityActionTitle">${(element.name)!'Priority Action'}</span> </span>            
     </div>
     
     <div class="blockContent" style="display:${opened?string('block','none')}">
@@ -187,36 +166,22 @@
       <div class="contactsPerson panel tertiary">
         <h5 class="sectionSubTitle">[@s.text name="shfrmManagement.subActions.add" /] <small>[@customForm.req required=true /]</small></h5>
         <div class="fullPartBlock" listname="${name}.shfrmSubActions">
-        [#if element.shfrmSubActions?has_content]
-          [#list element.shfrmSubActions as subAction]
-            [@contactPersonMacro element=subAction name="${name}.subActions[$subAction_index}]" index=subAction_index partnerIndex=index institutionID=(element.institution.id)! /]
-          [/#list]
-        [#else]
-          [#if isPPA || defaultPerson]
-            [@contactPersonMacro element={} name="${name}subActions[0]" index=0 partnerIndex=index institutionID=(element.institution.id)!-1 /]
-          [#else]
-            <p class="noContactMessage">[@s.text name="shfrmManagement.subActionsEmpty" /]</p>
+          [#if element.shfrmSubActions?has_content]
+            [#list element.shfrmSubActions as subAction]
+              [@contactPersonMacro element=subAction name="${name}.subActions[${subAction_index}]" index=subAction_index partnerIndex=index institutionID=(element.institution.id)! /]
+            [/#list]
+          [#else]            
+              <p class="noContactMessage">[@s.text name="shfrmManagement.subActionsEmpty" /]</p>
+          [/#if]  
+          [#if (editable && canEdit)]
+            <div class="addContact bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="shfrmManagement.subActions.add"/]</div>
           [/#if]
-        [/#if]  
-        [#if (editable && canEdit)]
-          <div class="addContact bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="shfrmManagement.subActions.add"/]</div>
-        [/#if]
-        [#--  
-        <br>
-        <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="shfrmManagement.priorityActions.add" /]</div>
---]
+
         </div>
       </div>
       
     </div>
-    
-    [#-- Deliverables --]
-    [#if !isTemplate] 
-    <div class="pull-right">
-      [@popUps.relationsMacro element=element /]
-    </div>
-    [/#if]
-  
+      
   </div>
 [/#macro]
 
@@ -230,7 +195,6 @@
       <span class="index"></span>
     </div>
     <input id="id" class=subActionnId" type="hidden" name="${name}.id" value="${(element.id)!}" />
-    [#local isPPA = (action.isPPA(element.projectPartner.institution))!false /]
     
     [#if customForm.changedField('${name}.id') != '']
       <span class="label label-info pull-right">Added/Updated</span> 
@@ -242,10 +206,8 @@
             [@customForm.input name="${name}.name" className="partnerPersonType" editable=editable i18nkey="shfrmManagement.subActions.title" value="${(element.name)!}" /]
         </div>
         [#-- Sub action description --]
-        <div class="col-md-8 userField" >
-          
+        <div class="col-md-8 userField" >         
           [@customForm.input name="${name}.description" value="${(element.description)!}" type="text" i18nkey="shfrmManagement.subActions.description" required=true editable=editable /]
-          <input class="userId" type="hidden" name="${name}.description" value="${(element.description)!}" />   
         </div>
       </div>
            

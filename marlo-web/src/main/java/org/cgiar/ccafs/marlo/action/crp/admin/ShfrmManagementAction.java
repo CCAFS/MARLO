@@ -84,6 +84,9 @@ public class ShfrmManagementAction extends BaseAction {
     priorityActions = shfrmPriorityActionManager.findAll();
     this.fillSubActions();
     if (this.isHttpPost()) {
+      if (priorityActions != null) {
+        priorityActions.clear();;
+      }
     }
   }
 
