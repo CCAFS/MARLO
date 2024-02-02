@@ -137,13 +137,17 @@
       <span class="icon-20 icon-uncheck" title=""></span> There are required fields still incompleted
     [/#if]
   </div>
-  
-    [#-- Shfmr Sub Actions Template --]
-    [@deliverableMacros.shfmrSubActionMacro element={} name="feedbackFields[-1]" index=-1 isTemplate=true /]
-  
-    [#-- SHRFM contribution --]
-    [@deliverableMacros.shfmrContributionMacro /]
+     
+    [#if action.hasSpecificities('shfrm_contribution_active') ]
+      [#-- SHRFM contribution --]
+      [@deliverableMacros.shfmrContributionMacro /]
+    
+      [#-- Shfmr Sub Actions Template
+      [@deliverableMacros.shfmrSubActionMacro element={} name="feedbackFields[-1]" index=-1 isTemplate=true /]
+    --]
 
+    [/#if]
+    
   [#-- Key Outputs select --]
   [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]
     <div class="form-group listindicators" >

@@ -577,7 +577,11 @@
   <div class="simpleBox form-group">
     <div class=" row yesNoInputDeliverable">
       <span class="col-md-9">
-        <label class="yesNoLabel" for="">[@s.text name="deliverable.shfrmContribution.question.reporting" /] [@customForm.req required=reportingActive /]</label>
+      [#if reportingActive]
+        <label class="yesNoLabel" for="">[@s.text name="deliverable.shfrmContribution.question.reporting" /] [@customForm.req required=true /]</label>
+      [#else]
+        <label class="yesNoLabel" for="">[@s.text name="deliverable.shfrmContribution.question.planning" /] [@customForm.req required=true /]</label>
+      [/#if]
         <p><small>[@s.text name="deliverable.shfrmContribution.question.help" /] </small></p>
       </span>
       <div class="col-md-3">

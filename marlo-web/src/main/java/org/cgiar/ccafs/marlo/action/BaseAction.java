@@ -137,6 +137,7 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -7286,6 +7287,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isSaveable() {
     return this.saveable;
+  }
+
+  public boolean isShfrmSpecificityActive() {
+    try {
+      return Boolean.parseBoolean(this.getSession().get(APConstants.SHFRM_CONTRIBUTION_ACTIVE).toString());
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   public boolean isSubmit(long projectID) {
