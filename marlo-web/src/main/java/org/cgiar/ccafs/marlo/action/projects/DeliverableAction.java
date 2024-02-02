@@ -47,6 +47,8 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityAnswerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmPriorityActionManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmSubActionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTraineesIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
@@ -78,6 +80,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.ShfrmPriorityActionManager;
+import org.cgiar.ccafs.marlo.data.manager.ShfrmSubActionManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
@@ -105,6 +108,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnerType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
+import org.cgiar.ccafs.marlo.data.model.DeliverableShfrmPriorityAction;
 import org.cgiar.ccafs.marlo.data.model.DeliverableTraineesIndicator;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
@@ -251,7 +255,9 @@ public class DeliverableAction extends BaseAction {
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
   private DeliverableTraineesIndicatorManager deliverableTraineesIndicatorManager;
   private ShfrmPriorityActionManager shfrmPriorityActionManager;
-
+  private ShfrmSubActionManager shfrmSubActionManager;
+  private DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
+  private DeliverableShfrmSubActionManager deliverableShfrmSubActionManager;
 
   // Variables
   private List<DeliverableQualityAnswer> answers;
@@ -266,6 +272,7 @@ public class DeliverableAction extends BaseAction {
   private Boolean isManagingPartnerPersonRequerid;
   private List<DeliverableType> deliverableTypeParent;
   private List<ShfrmPriorityAction> shfrmPriorityActions;
+  private List<DeliverableShfrmPriorityAction> deliverableShfrmPriorityActions;
   private DeliverableValidator deliverableValidator;
   private List<FundingSource> fundingSources;
   private List<Activity> activities;
@@ -351,7 +358,9 @@ public class DeliverableAction extends BaseAction {
     FeedbackQACommentManager feedbackQACommentManager,
     DeliverableClusterParticipantManager deliverableClusterParticipantManager,
     DeliverableTraineesIndicatorManager deliverableTraineesIndicatorManager,
-    ShfrmPriorityActionManager shfrmPriorityActionManager) {
+    ShfrmPriorityActionManager shfrmPriorityActionManager, ShfrmSubActionManager shfrmSubActionManager,
+    DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager,
+    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager) {
     super(config);
     this.activityManager = activityManager;
     this.deliverableManager = deliverableManager;
@@ -414,6 +423,9 @@ public class DeliverableAction extends BaseAction {
     this.feedbackQACommentManager = feedbackQACommentManager;
     this.deliverableTraineesIndicatorManager = deliverableTraineesIndicatorManager;
     this.shfrmPriorityActionManager = shfrmPriorityActionManager;
+    this.shfrmSubActionManager = shfrmSubActionManager;
+    this.deliverableShfrmPriorityActionManager = deliverableShfrmPriorityActionManager;
+    this.deliverableShfrmSubActionManager = deliverableShfrmSubActionManager;
   }
 
   /**
@@ -730,6 +742,10 @@ public class DeliverableAction extends BaseAction {
     return deliverableID;
   }
 
+  public List<DeliverableShfrmPriorityAction> getDeliverableShfrmPriorityActions() {
+    return deliverableShfrmPriorityActions;
+  }
+
   public List<Map<String, Object>> getDeliverablesSubTypes(long deliverableTypeID) {
     List<Map<String, Object>> subTypes = new ArrayList<>();
     Map<String, Object> keyOutput;
@@ -809,6 +825,7 @@ public class DeliverableAction extends BaseAction {
     return partnerInstitutions;
   }
 
+
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
@@ -817,7 +834,6 @@ public class DeliverableAction extends BaseAction {
   public List<ProjectPartner> getPartners() {
     return partners;
   }
-
 
   /**
    * @return an array of integers.
@@ -1418,6 +1434,18 @@ public class DeliverableAction extends BaseAction {
             .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
         }
 
+        // SHFRM contribution
+        if (this.hasSpecificities(APConstants.SHFRM_CONTRIBUTION_ACTIVE)) {
+          shfrmPriorityActions = shfrmPriorityActionManager.findAll();
+
+
+          if (deliverable.getDeliverableShfrmPriorityAction() != null) {
+            deliverable.setShfrmPriorityActions(new ArrayList<>(deliverable.getDeliverableShfrmPriorityAction().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+              .collect(Collectors.toList())));
+          }
+        }
+
         // Expected Study Geographic Regions List
         if (deliverable.getDeliverableGeographicRegions() != null
           && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
@@ -1825,8 +1853,6 @@ public class DeliverableAction extends BaseAction {
           .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() != null
             && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && dt.getAdminType().booleanValue())
           .collect(Collectors.toList())));
-
-        shfrmPriorityActions = shfrmPriorityActionManager.findAll();
       }
 
       if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType() != null
@@ -2178,6 +2204,10 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getCrpOutcomes() != null) {
           deliverable.getCrpOutcomes().clear();
         }
+
+        if (deliverable.getShfrmPriorityActions() != null) {
+          deliverable.getShfrmPriorityActions().clear();
+        }
       }
 
       try {
@@ -2244,6 +2274,7 @@ public class DeliverableAction extends BaseAction {
 
       // this.saveProjectOutcomes(deliverableDB, this.getActualPhase());
       this.saveCrpOutcomes(deliverableDB, this.getActualPhase());
+      this.savePriorityActions(deliverableDB, this.getActualPhase());
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -3540,6 +3571,78 @@ public class DeliverableAction extends BaseAction {
   }
 
   /**
+   * Save Deliverable SHFRM priority action Information
+   * 
+   * @param deliverable
+   * @param phase
+   */
+  public void savePriorityActions(Deliverable deliverable, Phase phase) {
+
+    // Search and deleted form Information
+    try {
+      if (deliverable.getDeliverableShfrmPriorityAction() != null
+        && !deliverable.getDeliverableShfrmPriorityAction().isEmpty()) {
+
+        List<DeliverableShfrmPriorityAction> priorityActionPrev =
+          new ArrayList<>(deliverable.getDeliverableShfrmPriorityAction().stream()
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+        for (DeliverableShfrmPriorityAction priorityAction : priorityActionPrev) {
+          if (this.deliverable.getShfrmPriorityActions() == null
+            || !this.deliverable.getShfrmPriorityActions().contains(priorityAction)) {
+            this.deliverableCrpOutcomeManager.deleteDeliverableCrpOutcome(priorityAction.getId(),
+              this.getActualPhase().getId());
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.error("unable to delete priority action", e);
+    }
+
+    // Save form Information
+    if (this.deliverable.getShfrmPriorityActions() != null) {
+
+      for (DeliverableShfrmPriorityAction deliverablePriorityActions : this.deliverable.getShfrmPriorityActions()) {
+        DeliverableShfrmPriorityAction deliverablePriorityActionsSave = new DeliverableShfrmPriorityAction();
+
+        if (deliverablePriorityActions != null) {
+          // For new deliverable Priority Actions
+          if (deliverablePriorityActions.getId() == null) {
+            deliverablePriorityActionsSave.setDeliverable(deliverable);
+            deliverablePriorityActionsSave.setPhase(phase);
+          } else {
+            // For old deliverable Priority Actions
+            try {
+              if (deliverablePriorityActions.getId() != null) {
+                deliverablePriorityActionsSave = deliverableShfrmPriorityActionManager
+                  .getDeliverableShfrmPriorityActionById(deliverablePriorityActions.getId());
+              }
+            } catch (Exception e) {
+              logger.error("unable to get old deliverable Priority Actions", e);
+            }
+          }
+
+          if (deliverablePriorityActions.getShfrmPriorityAction() != null
+            && deliverablePriorityActions.getShfrmPriorityAction().getId() != null) {
+            ShfrmPriorityAction priorityAction = shfrmPriorityActionManager
+              .getShfrmPriorityActionById(deliverablePriorityActions.getShfrmPriorityAction().getId());
+            if (priorityAction != null) {
+              deliverablePriorityActionsSave.setShfrmPriorityAction(priorityAction);
+            }
+
+            this.deliverableShfrmPriorityActionManager
+              .saveDeliverableShfrmPriorityAction(deliverablePriorityActionsSave);
+            // This is to add deliverablePriorityActions to generate correct auditlog.
+            if (!this.deliverable.getDeliverableShfrmPriorityAction().contains(deliverablePriorityActionsSave)) {
+              this.deliverable.getDeliverableShfrmPriorityAction().add(deliverablePriorityActionsSave);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * All we are doing here is setting the modification justification.
    */
   private void saveProjectAuditData() {
@@ -3870,6 +3973,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
+  }
+
+  public void setDeliverableShfrmPriorityActions(List<DeliverableShfrmPriorityAction> deliverableShfrmPriorityActions) {
+    this.deliverableShfrmPriorityActions = deliverableShfrmPriorityActions;
   }
 
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {

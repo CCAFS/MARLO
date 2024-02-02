@@ -573,7 +573,7 @@
 [/#macro]
 
 [#macro shfmrContributionMacro ]
-  [#local name = "deliverable.deliverableinfo"  /]
+  [#local name = "deliverable.deliverableInfo"  /]
   <div class="simpleBox form-group">
     <div class=" row yesNoInputDeliverable">
       <span class="col-md-9">
@@ -588,8 +588,7 @@
         [@customForm.yesNoInputDeliverable name="${name}.contributingShfrm"  editable=editable inverse=false cssClass="type-findable text-center" /] 
       </div>  
     </div>
-    [#local isContributingShfrm = (deliverable.deliverableinfo.contributingShfrm?string)!""]
-    [#--  <p>Contributing: ${isContributingShfrm}</p>--]
+    [#local isContributingShfrm = (deliverable.deliverableInfo.contributingShfrm?string)!""]
     <div class="block-findable findableOptions" style="display:${(isContributingShfrm == "true")?string('block', 'none')}">
       <hr />
       
@@ -597,12 +596,12 @@
       <div class="form-group">
         [@customForm.textArea name="deliverable.deliverableInfo.shfrmContributionNarrative" value="${(deliverable.deliverableInfo.shfrmContributionNarrative)!}" i18nkey="deliverable.shfrmContribution.narrative"  placeholder="" className="limitWords-200" required=true editable=editable /]
       </div>
-      
-      [#-- Shfrm Priority Action 
+      <br>    
+      [#-- Shfrm Priority Action --]
       <div class="form-group">
-        [@customForm.select name="deliverable.shfrmPriorityActions" label="deliverable.shfrmContribution.priorityAction.help"  i18nkey="deliverable.shfrmContribution.priorityAction" listName="shfrmPriorityActions" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect addSlo" editable=editable/]
+        [@customForm.elementsListComponent name="deliverable.shfrmPriorityActions" elementType="shfrmPriorityAction" help="deliverable.shfrmContribution.priorityAction.help" helpIcon=false elementList=(deliverable.shfrmPriorityActions)![] label="deliverable.shfrmContribution.priorityAction" listName="shfrmPriorityActions" keyFieldName="id" displayFieldName="name" required=true /]
       </div>
-      --]
+      
     </div>
   </div>
 [/#macro]
