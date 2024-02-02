@@ -855,8 +855,22 @@ span.timelineControl:hover {
 
 @media only screen and (max-width:440px){
 	
-	/*************** table ********************/
+	/**************** Content Items Table **************/
 	
+	.sectionItems{
+		margin-left: 0%;
+	}
+	
+	.containerItems{
+		margin-left: 0%;
+	}
+	
+	.itemsTablet{
+		width: 140px;
+		min-width: 120px;
+		max-width: 160px;
+	}
+
 	.containerTabletItems #dashboardContent{
 		width: 100%;
     width: -moz-available;         
