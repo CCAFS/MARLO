@@ -9,7 +9,7 @@
      <generator class="assigned" />
     </id>
     <property name="indicatorId" type="java.lang.Long">
-      <column name="indicator_id" not-null="true" />
+      <column name="indicator_id" />
     </property>
     <property name="indicatorName" type="string">
       <column name="indicator_name" not-null="true" />

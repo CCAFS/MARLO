@@ -59,7 +59,7 @@ public class SoilIndicatorMySQLDAO extends AbstractMarloDAO<SoilIndicator, Long>
 
   @Override
   public List<SoilIndicator> findAll() {
-    String query = "from " + SoilIndicator.class.getName() + " where is_active=1";
+    String query = "from " + SoilIndicator.class.getName();
     List<SoilIndicator> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
