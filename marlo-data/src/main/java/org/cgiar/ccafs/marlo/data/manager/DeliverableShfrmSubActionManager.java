@@ -52,6 +52,8 @@ public interface DeliverableShfrmSubActionManager {
   public List<DeliverableShfrmSubAction> findAll();
 
 
+  public List<DeliverableShfrmSubAction> findByPriorityActionAndPhase(long priorityActionId, long phaseId);
+
   /**
    * This method gets a deliverableShfrmSubAction object by a given deliverableShfrmSubAction identifier.
    * 
@@ -63,12 +65,13 @@ public interface DeliverableShfrmSubActionManager {
   /**
    * This method saves the information of the given deliverableShfrmSubAction
    * 
-   * @param deliverableShfrmSubAction - is the deliverableShfrmSubAction object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableShfrmSubAction was
+   * @param deliverableShfrmSubAction - is the deliverableShfrmSubAction object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         deliverableShfrmSubAction was
    *         updated
    *         or -1 is some error occurred.
    */
   public DeliverableShfrmSubAction saveDeliverableShfrmSubAction(DeliverableShfrmSubAction deliverableShfrmSubAction);
-
 
 }

@@ -16,13 +16,18 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableShfrmSubActionDAO;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmSubActionManager;
 import org.cgiar.ccafs.marlo.data.model.DeliverableShfrmSubAction;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author CCAFS
@@ -30,16 +35,17 @@ import javax.inject.Named;
 @Named
 public class DeliverableShfrmSubActionManagerImpl implements DeliverableShfrmSubActionManager {
 
+  private final Logger logger = LoggerFactory.getLogger(DeliverableShfrmSubActionManagerImpl.class);
 
-  private DeliverableShfrmSubActionDAO deliverableShfrmSubActionDAO;
   // Managers
-
+  private DeliverableShfrmSubActionDAO deliverableShfrmSubActionDAO;
+  private PhaseDAO phaseDAO;
 
   @Inject
-  public DeliverableShfrmSubActionManagerImpl(DeliverableShfrmSubActionDAO deliverableShfrmSubActionDAO) {
+  public DeliverableShfrmSubActionManagerImpl(DeliverableShfrmSubActionDAO deliverableShfrmSubActionDAO,
+    PhaseDAO phaseDAO) {
     this.deliverableShfrmSubActionDAO = deliverableShfrmSubActionDAO;
-
-
+    this.phaseDAO = phaseDAO;
   }
 
   @Override
@@ -62,6 +68,13 @@ public class DeliverableShfrmSubActionManagerImpl implements DeliverableShfrmSub
   }
 
   @Override
+  public List<DeliverableShfrmSubAction> findByPriorityActionAndPhase(long priorityActionId, long phaseId) {
+
+    return deliverableShfrmSubActionDAO.findByPriorityActionAndPhase(priorityActionId, phaseId);
+
+  }
+
+  @Override
   public DeliverableShfrmSubAction getDeliverableShfrmSubActionById(long deliverableShfrmSubActionID) {
 
     return deliverableShfrmSubActionDAO.find(deliverableShfrmSubActionID);
@@ -70,7 +83,31 @@ public class DeliverableShfrmSubActionManagerImpl implements DeliverableShfrmSub
   @Override
   public DeliverableShfrmSubAction saveDeliverableShfrmSubAction(DeliverableShfrmSubAction deliverableShfrmSubAction) {
 
-    return deliverableShfrmSubActionDAO.save(deliverableShfrmSubAction);
+    DeliverableShfrmSubAction deliverableShfrmSubActionResult =
+      deliverableShfrmSubActionDAO.save(deliverableShfrmSubAction);
+    Phase currentPhase = phaseDAO.find(deliverableShfrmSubActionResult.getPhase().getId());
+
+    if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+
+      this.saveDeliverableShfrmSubActionPhase(currentPhase.getNext(),
+        deliverableShfrmSubActionResult.getShfrmPriorityAction().getId(), deliverableShfrmSubActionResult);
+    }
+    return deliverableShfrmSubActionResult;
+  }
+
+  public void saveDeliverableShfrmSubActionPhase(Phase next, long priorityActionId,
+    DeliverableShfrmSubAction deliverableShfrmSubAction) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    DeliverableShfrmSubAction deliverableShfrmSubActionAdd = new DeliverableShfrmSubAction();
+    deliverableShfrmSubActionAdd.setPhase(phase);
+    deliverableShfrmSubActionAdd.setShfrmPriorityAction(deliverableShfrmSubAction.getShfrmPriorityAction());
+    deliverableShfrmSubActionDAO.save(deliverableShfrmSubActionAdd);
+
+    if (phase.getNext() != null) {
+      this.saveDeliverableShfrmSubActionPhase(phase.getNext(),
+        deliverableShfrmSubAction.getShfrmPriorityAction().getId(), deliverableShfrmSubAction);
+    }
   }
 
 

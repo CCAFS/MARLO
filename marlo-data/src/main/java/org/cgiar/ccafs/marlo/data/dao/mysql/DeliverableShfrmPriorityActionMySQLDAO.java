@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class DeliverableShfrmPriorityActionMySQLDAO extends AbstractMarloDAO<DeliverableShfrmPriorityAction, Long> implements DeliverableShfrmPriorityActionDAO {
+public class DeliverableShfrmPriorityActionMySQLDAO extends AbstractMarloDAO<DeliverableShfrmPriorityAction, Long>
+  implements DeliverableShfrmPriorityActionDAO {
 
 
   @Inject
@@ -67,6 +68,17 @@ public class DeliverableShfrmPriorityActionMySQLDAO extends AbstractMarloDAO<Del
     }
     return null;
 
+  }
+
+  @Override
+  public List<DeliverableShfrmPriorityAction> findByDeliverableAndPhase(long deliverableId, long phaseId) {
+    String query = "from " + DeliverableShfrmPriorityAction.class.getName() + " where is_active=1 and deliverable_id="
+      + deliverableId + " and id_phase=" + phaseId;
+    List<DeliverableShfrmPriorityAction> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
   }
 
   @Override

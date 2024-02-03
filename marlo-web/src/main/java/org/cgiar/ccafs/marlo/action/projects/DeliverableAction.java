@@ -3588,10 +3588,9 @@ public class DeliverableAction extends BaseAction {
             .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (DeliverableShfrmPriorityAction priorityAction : priorityActionPrev) {
-          if (this.deliverable.getShfrmPriorityActions() == null
+          if (priorityAction != null && this.deliverable.getShfrmPriorityActions() == null
             || !this.deliverable.getShfrmPriorityActions().contains(priorityAction)) {
-            this.deliverableCrpOutcomeManager.deleteDeliverableCrpOutcome(priorityAction.getId(),
-              this.getActualPhase().getId());
+            this.deliverableShfrmPriorityActionManager.deleteDeliverableShfrmPriorityAction(priorityAction.getId());
           }
         }
       }
@@ -3601,9 +3600,9 @@ public class DeliverableAction extends BaseAction {
 
     // Save form Information
     if (this.deliverable.getShfrmPriorityActions() != null) {
-
+      DeliverableShfrmPriorityAction deliverablePriorityActionsSave;
       for (DeliverableShfrmPriorityAction deliverablePriorityActions : this.deliverable.getShfrmPriorityActions()) {
-        DeliverableShfrmPriorityAction deliverablePriorityActionsSave = new DeliverableShfrmPriorityAction();
+        deliverablePriorityActionsSave = new DeliverableShfrmPriorityAction();
 
         if (deliverablePriorityActions != null) {
           // For new deliverable Priority Actions
@@ -3627,7 +3626,9 @@ public class DeliverableAction extends BaseAction {
             ShfrmPriorityAction priorityAction = shfrmPriorityActionManager
               .getShfrmPriorityActionById(deliverablePriorityActions.getShfrmPriorityAction().getId());
             if (priorityAction != null) {
+              deliverablePriorityActionsSave.setDeliverable(deliverable);
               deliverablePriorityActionsSave.setShfrmPriorityAction(priorityAction);
+              deliverablePriorityActionsSave.setPhase(phase);
             }
 
             this.deliverableShfrmPriorityActionManager
