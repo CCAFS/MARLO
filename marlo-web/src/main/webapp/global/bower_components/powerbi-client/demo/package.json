@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "bootstrap": "^4.1.2",
-    "ecstatic": "^3.3.1",
+    "ecstatic": "^4.1.4",
     "es6-promise": "^3.2.2",
     "fetch": "^1.0.0",
     "http-server": "^0.9.0",
