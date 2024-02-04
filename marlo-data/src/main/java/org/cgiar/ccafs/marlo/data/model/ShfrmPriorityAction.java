@@ -20,10 +20,28 @@ public class ShfrmPriorityAction extends MarloAuditableEntity implements java.io
   @Expose
   private String description;
 
+  private String composedName;
+
   // private Set<ShfrmSubAction> shfrmSubAction = new HashSet<ShfrmSubAction>(0);
   private List<ShfrmSubAction> shfrmSubActions = new ArrayList<ShfrmSubAction>();
 
   public ShfrmPriorityAction() {
+  }
+
+  public String getComposedName() {
+    if (composedName == null) {
+      if (this.getName() != null) {
+        composedName = "<b>" + name + ":</b> ";
+      }
+      if (this.getDescription() != null) {
+        composedName = composedName.concat(description);
+      }
+
+      if (composedName != null && !composedName.isEmpty()) {
+        return composedName;
+      }
+    }
+    return composedName;
   }
 
   public String getDescription() {
@@ -50,6 +68,10 @@ public class ShfrmPriorityAction extends MarloAuditableEntity implements java.io
     return true;
   }
 
+  public void setComposedName(String composedName) {
+    this.composedName = composedName;
+  }
+
   public void setDescription(String description) {
     this.description = description;
   }
@@ -61,4 +83,5 @@ public class ShfrmPriorityAction extends MarloAuditableEntity implements java.io
   public void setShfrmSubActions(List<ShfrmSubAction> shfrmSubActions) {
     this.shfrmSubActions = shfrmSubActions;
   }
+
 }

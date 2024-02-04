@@ -19,7 +19,25 @@ public class ShfrmSubAction extends MarloAuditableEntity implements java.io.Seri
   @Expose
   private ShfrmPriorityAction shfrmPriorityAction;
 
+  private String composedName;
+
   public ShfrmSubAction() {
+  }
+
+  public String getComposedName() {
+    if (composedName == null) {
+      if (this.getName() != null) {
+        composedName = "<b>" + name + ":</b> ";
+      }
+      if (this.getDescription() != null) {
+        composedName = composedName.concat(description);
+      }
+
+      if (composedName != null && !composedName.isEmpty()) {
+        return composedName;
+      }
+    }
+    return composedName;
   }
 
   public String getDescription() {
@@ -44,6 +62,10 @@ public class ShfrmSubAction extends MarloAuditableEntity implements java.io.Seri
   @Override
   public boolean isActive() {
     return true;
+  }
+
+  public void setComposedName(String composedName) {
+    this.composedName = composedName;
   }
 
   public void setDescription(String description) {

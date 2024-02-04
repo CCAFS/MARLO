@@ -26,8 +26,8 @@
 	    <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
             <column name="id_phase" />
         </many-to-one>
-        <many-to-one name="shfrmPriorityAction" class="org.cgiar.ccafs.marlo.data.model.ShfrmPriorityAction" fetch="select" update="false">
-          <column name="shfrm_priority_action_id" not-null="true" />
+        <many-to-one name="deliverableShfrmPriorityAction" class="org.cgiar.ccafs.marlo.data.model.DeliverableShfrmPriorityAction" fetch="select" update="false">
+          <column name="deliverable_shfrm_priority_action_id" not-null="true" />
         </many-to-one>
         <many-to-one name="shfrmSubAction" class="org.cgiar.ccafs.marlo.data.model.ShfrmSubAction" fetch="select" update="false">
           <column name="shfrm_sub_action_id" not-null="true" />

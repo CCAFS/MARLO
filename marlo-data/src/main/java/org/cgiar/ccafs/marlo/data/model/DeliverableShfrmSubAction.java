@@ -13,13 +13,17 @@ public class DeliverableShfrmSubAction extends MarloAuditableEntity implements j
   private static final long serialVersionUID = -3820243690705823369L;
 
   @Expose
-  private ShfrmPriorityAction shfrmPriorityAction;
+  private DeliverableShfrmPriorityAction deliverableShfrmPriorityAction;
   @Expose
   private ShfrmSubAction shfrmSubAction;
   @Expose
   private Phase phase;
 
   public DeliverableShfrmSubAction() {
+  }
+
+  public DeliverableShfrmPriorityAction getDeliverableShfrmPriorityAction() {
+    return deliverableShfrmPriorityAction;
   }
 
   @Override
@@ -33,10 +37,6 @@ public class DeliverableShfrmSubAction extends MarloAuditableEntity implements j
     return phase;
   }
 
-  public ShfrmPriorityAction getShfrmPriorityAction() {
-    return shfrmPriorityAction;
-  }
-
   public ShfrmSubAction getShfrmSubAction() {
     return shfrmSubAction;
   }
@@ -46,12 +46,12 @@ public class DeliverableShfrmSubAction extends MarloAuditableEntity implements j
     return true;
   }
 
-  public void setPhase(Phase phase) {
-    this.phase = phase;
+  public void setDeliverableShfrmPriorityAction(DeliverableShfrmPriorityAction deliverableShfrmPriorityAction) {
+    this.deliverableShfrmPriorityAction = deliverableShfrmPriorityAction;
   }
 
-  public void setShfrmPriorityAction(ShfrmPriorityAction shfrmPriorityAction) {
-    this.shfrmPriorityAction = shfrmPriorityAction;
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setShfrmSubAction(ShfrmSubAction shfrmSubAction) {

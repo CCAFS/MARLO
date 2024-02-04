@@ -3,6 +3,8 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.List;
+
 import com.google.gson.annotations.Expose;
 
 /**
@@ -19,11 +21,17 @@ public class DeliverableShfrmPriorityAction extends MarloAuditableEntity impleme
   @Expose
   private Phase phase;
 
+  private List<DeliverableShfrmSubAction> deliverableShfrmSubActions;
+
   public DeliverableShfrmPriorityAction() {
   }
 
   public Deliverable getDeliverable() {
     return deliverable;
+  }
+
+  public List<DeliverableShfrmSubAction> getDeliverableShfrmSubActions() {
+    return deliverableShfrmSubActions;
   }
 
   @Override
@@ -48,6 +56,10 @@ public class DeliverableShfrmPriorityAction extends MarloAuditableEntity impleme
 
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
+  }
+
+  public void setDeliverableShfrmSubActions(List<DeliverableShfrmSubAction> deliverableShfrmSubActions) {
+    this.deliverableShfrmSubActions = deliverableShfrmSubActions;
   }
 
   public void setPhase(Phase phase) {

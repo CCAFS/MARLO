@@ -90,7 +90,7 @@ public class DeliverableShfrmSubActionManagerImpl implements DeliverableShfrmSub
     if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
 
       this.saveDeliverableShfrmSubActionPhase(currentPhase.getNext(),
-        deliverableShfrmSubActionResult.getShfrmPriorityAction().getId(), deliverableShfrmSubActionResult);
+        deliverableShfrmSubActionResult.getDeliverableShfrmPriorityAction().getId(), deliverableShfrmSubActionResult);
     }
     return deliverableShfrmSubActionResult;
   }
@@ -101,12 +101,13 @@ public class DeliverableShfrmSubActionManagerImpl implements DeliverableShfrmSub
 
     DeliverableShfrmSubAction deliverableShfrmSubActionAdd = new DeliverableShfrmSubAction();
     deliverableShfrmSubActionAdd.setPhase(phase);
-    deliverableShfrmSubActionAdd.setShfrmPriorityAction(deliverableShfrmSubAction.getShfrmPriorityAction());
+    deliverableShfrmSubActionAdd
+      .setDeliverableShfrmPriorityAction(deliverableShfrmSubAction.getDeliverableShfrmPriorityAction());
     deliverableShfrmSubActionDAO.save(deliverableShfrmSubActionAdd);
 
     if (phase.getNext() != null) {
       this.saveDeliverableShfrmSubActionPhase(phase.getNext(),
-        deliverableShfrmSubAction.getShfrmPriorityAction().getId(), deliverableShfrmSubAction);
+        deliverableShfrmSubAction.getDeliverableShfrmPriorityAction().getId(), deliverableShfrmSubAction);
     }
   }
 
