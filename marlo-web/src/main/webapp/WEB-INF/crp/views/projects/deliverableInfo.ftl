@@ -143,6 +143,14 @@
       [@deliverableMacros.shfmrContributionMacro /]
     [/#if]
     
+
+    [#-- Single partner TEMPLATE from partnersTemplate.ftl    --]
+    [@deliverableMacros.priorityActionsMacro element={} name="deliverable.shfrmPriorityActions[-1]" isTemplate=true /]
+ 
+    [#-- Contact person TEMPLATE from partnersTemplate.ftl --]
+    [@deliverableMacros.subActionsMacro element={} name="deliverable.shfrmPriorityActions[-1].shfrmDeliverableSubActions[-1]" isTemplate=true /]
+
+    
   [#-- Key Outputs select --]
   [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]
     <div class="form-group listindicators" >
