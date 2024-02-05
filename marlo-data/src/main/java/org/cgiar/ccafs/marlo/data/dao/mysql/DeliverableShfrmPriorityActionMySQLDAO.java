@@ -39,8 +39,12 @@ public class DeliverableShfrmPriorityActionMySQLDAO extends AbstractMarloDAO<Del
   @Override
   public void deleteDeliverableShfrmPriorityAction(long deliverableShfrmPriorityActionId) {
     DeliverableShfrmPriorityAction deliverableShfrmPriorityAction = this.find(deliverableShfrmPriorityActionId);
-    deliverableShfrmPriorityAction.setActive(false);
-    this.update(deliverableShfrmPriorityAction);
+    /*
+     * deliverableShfrmPriorityAction.setActive(false);
+     * this.update(deliverableShfrmPriorityAction);
+     */
+    this.delete(deliverableShfrmPriorityAction);
+
   }
 
   @Override

@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ShfrmPriorityActionMySQLDAO extends AbstractMarloDAO<ShfrmPriorityAction, Long> implements ShfrmPriorityActionDAO {
+public class ShfrmPriorityActionMySQLDAO extends AbstractMarloDAO<ShfrmPriorityAction, Long>
+  implements ShfrmPriorityActionDAO {
 
 
   @Inject
@@ -38,8 +39,11 @@ public class ShfrmPriorityActionMySQLDAO extends AbstractMarloDAO<ShfrmPriorityA
   @Override
   public void deleteShfrmPriorityAction(long shfrmPriorityActionId) {
     ShfrmPriorityAction shfrmPriorityAction = this.find(shfrmPriorityActionId);
-    shfrmPriorityAction.setActive(false);
-    this.update(shfrmPriorityAction);
+    /*
+     * shfrmPriorityAction.setActive(false);
+     * this.update(shfrmPriorityAction);
+     */
+    this.delete(shfrmPriorityAction);
   }
 
   @Override

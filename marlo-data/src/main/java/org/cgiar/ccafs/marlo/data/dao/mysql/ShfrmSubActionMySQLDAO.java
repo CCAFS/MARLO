@@ -38,8 +38,11 @@ public class ShfrmSubActionMySQLDAO extends AbstractMarloDAO<ShfrmSubAction, Lon
   @Override
   public void deleteShfrmSubAction(long shfrmSubActionId) {
     ShfrmSubAction shfrmSubAction = this.find(shfrmSubActionId);
-    shfrmSubAction.setActive(false);
-    this.update(shfrmSubAction);
+    /*
+     * shfrmSubAction.setActive(false);
+     * this.update(shfrmSubAction);
+     */
+    this.delete(shfrmSubAction);
   }
 
   @Override

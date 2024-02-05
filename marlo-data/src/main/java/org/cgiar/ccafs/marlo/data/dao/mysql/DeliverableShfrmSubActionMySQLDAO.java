@@ -39,8 +39,12 @@ public class DeliverableShfrmSubActionMySQLDAO extends AbstractMarloDAO<Delivera
   @Override
   public void deleteDeliverableShfrmSubAction(long deliverableShfrmSubActionId) {
     DeliverableShfrmSubAction deliverableShfrmSubAction = this.find(deliverableShfrmSubActionId);
-    deliverableShfrmSubAction.setActive(false);
-    this.update(deliverableShfrmSubAction);
+    /*
+     * deliverableShfrmSubAction.setActive(false);
+     * this.update(deliverableShfrmSubAction);
+     */
+    this.delete(deliverableShfrmSubAction);
+
   }
 
   @Override
