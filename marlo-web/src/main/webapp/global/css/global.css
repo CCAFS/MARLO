@@ -8244,5 +8244,16 @@ img.qaOptionsComment {
 	#mainMenu .menuContent ul li{
 		font-size: 	0.9em;
 	}
+	
+	/************* BODY ***************/
+	
+	.buttons-content{
+		width: 100%;
+	}
+	
+	button{
+		width: 100%;
+    margin-bottom: 1rem;
+	}
 
 }
