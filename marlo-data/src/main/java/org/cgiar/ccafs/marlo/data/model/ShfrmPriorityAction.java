@@ -31,7 +31,7 @@ public class ShfrmPriorityAction extends MarloAuditableEntity implements java.io
   public String getComposedName() {
     if (composedName == null) {
       if (this.getName() != null) {
-        composedName = "<b>" + name + ":</b> ";
+        composedName = "" + name + ": ";
       }
       if (this.getDescription() != null) {
         composedName = composedName.concat(description);

@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableShfrmPriorityAction;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -52,7 +53,41 @@ public class DeliverableShfrmPriorityActionManagerImpl implements DeliverableShf
   @Override
   public void deleteDeliverableShfrmPriorityAction(long deliverableShfrmPriorityActionId) {
 
+    DeliverableShfrmPriorityAction deliverableShfrmPriorityAction =
+      this.getDeliverableShfrmPriorityActionById(deliverableShfrmPriorityActionId);
+    Phase currentPhase = phaseDAO.find(deliverableShfrmPriorityAction.getPhase().getId());
+
+    if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+
+      this.deleteDeliverableShfrmPriorityActionPhase(currentPhase.getNext(),
+        deliverableShfrmPriorityAction.getDeliverable().getId(), deliverableShfrmPriorityAction);
+    }
+
     deliverableShfrmPriorityActionDAO.deleteDeliverableShfrmPriorityAction(deliverableShfrmPriorityActionId);
+  }
+
+  public void deleteDeliverableShfrmPriorityActionPhase(Phase next, long deliverableId,
+    DeliverableShfrmPriorityAction deliverableShfrmPriorityAction) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    DeliverableShfrmPriorityAction deliverableShfrmPriorityActionDelete = new DeliverableShfrmPriorityAction();
+    deliverableShfrmPriorityActionDelete = deliverableShfrmPriorityActionDAO
+      .findByDeliverableAndPhase(deliverableId, phase.getId()).stream()
+      .filter(
+        d -> deliverableShfrmPriorityAction != null && deliverableShfrmPriorityAction.getShfrmPriorityAction() != null
+          && deliverableShfrmPriorityAction.getShfrmPriorityAction().getId() != null
+          && d.getShfrmPriorityAction() != null && d.getShfrmPriorityAction().getId() != null
+          && d.getShfrmPriorityAction().getId().equals(deliverableShfrmPriorityAction.getShfrmPriorityAction().getId()))
+      .collect(Collectors.toList()).get(0);
+    deliverableShfrmPriorityActionDAO.save(deliverableShfrmPriorityActionDelete);
+
+    if (deliverableShfrmPriorityActionDelete != null) {
+      deliverableShfrmPriorityActionDAO
+        .deleteDeliverableShfrmPriorityAction(deliverableShfrmPriorityActionDelete.getId());
+    }
+    if (phase.getNext() != null) {
+      this.deleteDeliverableShfrmPriorityActionPhase(phase.getNext(), deliverableId, deliverableShfrmPriorityAction);
+    }
   }
 
   @Override

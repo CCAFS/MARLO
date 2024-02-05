@@ -109,6 +109,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableShfrmPriorityAction;
+import org.cgiar.ccafs.marlo.data.model.DeliverableShfrmSubAction;
 import org.cgiar.ccafs.marlo.data.model.DeliverableTraineesIndicator;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
@@ -145,6 +146,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeParticipant;
 import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 import org.cgiar.ccafs.marlo.data.model.ShfrmPriorityAction;
+import org.cgiar.ccafs.marlo.data.model.ShfrmSubAction;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -641,6 +643,44 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  public void fillSubActionsList() {
+    try {
+      if (deliverable.getShfrmPriorityActions() != null && !deliverable.getShfrmPriorityActions().isEmpty()) {
+        List<ShfrmSubAction> subActions;
+        List<ShfrmSubAction> subActionsAdd;
+        for (DeliverableShfrmPriorityAction deliverableShfrmPriorityAction : deliverable.getShfrmPriorityActions()) {
+          subActions = new ArrayList<>();
+
+          // Priority action front
+          if (deliverableShfrmPriorityAction != null && deliverableShfrmPriorityAction.getShfrmPriorityAction() != null
+            && deliverableShfrmPriorityAction.getShfrmPriorityAction().getId() != null) {
+            subActionsAdd = new ArrayList<>();
+            // Sub Actions DB
+            subActions = shfrmSubActionManager.findAll();
+            if (subActions != null) {
+              for (ShfrmSubAction subAction : subActions) {
+
+                if (subAction != null && subAction.getShfrmPriorityAction() != null
+                  && subAction.getShfrmPriorityAction().getId() != null) {
+                  if (subAction.getShfrmPriorityAction().getId()
+                    .equals(deliverableShfrmPriorityAction.getShfrmPriorityAction().getId())) {
+                    subActionsAdd.add(subAction);
+                  }
+                }
+              }
+              if (subActionsAdd != null) {
+                deliverableShfrmPriorityAction.getShfrmPriorityAction().setShfrmSubActions(subActionsAdd);
+              }
+            }
+          }
+        }
+      }
+
+    } catch (Exception e) {
+      logger.error("error getting sub actions: " + e);
+    }
+  }
+
   public Integer getAcceptationPercentage() {
     return acceptationPercentage;
   }
@@ -670,6 +710,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   public List<DeliverableQualityAnswer> getAnswers() {
     return answers;
   }
@@ -678,7 +719,6 @@ public class DeliverableAction extends BaseAction {
   public List<DeliverableQualityAnswer> getAnswersDataDic() {
     return answersDataDic;
   }
-
 
   private Path getAutoSaveFilePath() {
 
@@ -821,6 +861,7 @@ public class DeliverableAction extends BaseAction {
     return myProjects;
   }
 
+
   public List<Institution> getPartnerInstitutions() {
     return partnerInstitutions;
   }
@@ -829,7 +870,6 @@ public class DeliverableAction extends BaseAction {
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
-
 
   public List<ProjectPartner> getPartners() {
     return partners;
@@ -1438,12 +1478,34 @@ public class DeliverableAction extends BaseAction {
         if (this.hasSpecificities(APConstants.SHFRM_CONTRIBUTION_ACTIVE)) {
           shfrmPriorityActions = shfrmPriorityActionManager.findAll();
 
-
           if (deliverable.getDeliverableShfrmPriorityAction() != null) {
             deliverable.setShfrmPriorityActions(new ArrayList<>(deliverable.getDeliverableShfrmPriorityAction().stream()
               .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
               .collect(Collectors.toList())));
           }
+          this.fillSubActionsList();
+
+
+          if (deliverable != null && deliverable.getShfrmPriorityActions() != null
+            && !deliverable.getShfrmPriorityActions().isEmpty()) {
+            for (DeliverableShfrmPriorityAction deliverablePriorityAction : deliverable.getShfrmPriorityActions()) {
+              try {
+
+                if (deliverablePriorityAction.getDeliverableShfrmSubAction() != null) {
+                  deliverablePriorityAction
+                    .setShfrmSubActions(new ArrayList<>(deliverablePriorityAction.getDeliverableShfrmSubAction()
+                      .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+                      .collect(Collectors.toList())));
+                }
+
+              } catch (Exception e) {
+                logger.error("No se pueden obtener deliverableSubActions para deliverablePriorityAction: {}",
+                  deliverablePriorityAction, e);
+              }
+            }
+          }
+
+
         }
 
         // Expected Study Geographic Regions List
@@ -2208,6 +2270,10 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getShfrmPriorityActions() != null) {
           deliverable.getShfrmPriorityActions().clear();
         }
+
+        if (deliverable.getShfrmSubActions() != null) {
+          deliverable.getShfrmSubActions().clear();
+        }
       }
 
       try {
@@ -2274,7 +2340,8 @@ public class DeliverableAction extends BaseAction {
 
       // this.saveProjectOutcomes(deliverableDB, this.getActualPhase());
       this.saveCrpOutcomes(deliverableDB, this.getActualPhase());
-      this.savePriorityActions(deliverableDB, this.getActualPhase());
+      this.savePriorityActions(deliverableManagedState, this.getActualPhase());
+      this.saveSubActions(deliverableManagedState, this.getActualPhase());
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -3580,20 +3647,29 @@ public class DeliverableAction extends BaseAction {
 
     // Search and deleted form Information
     try {
-      if (deliverable.getDeliverableShfrmPriorityAction() != null
-        && !deliverable.getDeliverableShfrmPriorityAction().isEmpty()) {
 
-        List<DeliverableShfrmPriorityAction> priorityActionPrev =
-          new ArrayList<>(deliverable.getDeliverableShfrmPriorityAction().stream()
-            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      List<DeliverableShfrmPriorityAction> subActionPrev =
+        deliverableShfrmPriorityActionManager.findByDeliverableAndPhase(deliverable.getId(), phase.getId());
 
-        for (DeliverableShfrmPriorityAction priorityAction : priorityActionPrev) {
-          if (priorityAction != null && this.deliverable.getShfrmPriorityActions() == null
-            || !this.deliverable.getShfrmPriorityActions().contains(priorityAction)) {
-            this.deliverableShfrmPriorityActionManager.deleteDeliverableShfrmPriorityAction(priorityAction.getId());
+      if (this.deliverable.getShfrmPriorityActions() != null) {
+        List<Long> existingIds = new ArrayList<>();
+
+        for (DeliverableShfrmPriorityAction shfrmDeliverable : this.deliverable.getShfrmPriorityActions()) {
+          if (shfrmDeliverable != null && shfrmDeliverable.getId() != null) {
+            existingIds.add(shfrmDeliverable.getId());
+          }
+        }
+
+        if (subActionPrev != null) {
+          for (DeliverableShfrmPriorityAction priorityAction : subActionPrev) {
+            if (priorityAction != null && priorityAction.getId() != null
+              && !existingIds.contains(priorityAction.getId())) {
+              deliverableShfrmPriorityActionManager.deleteDeliverableShfrmPriorityAction(priorityAction.getId());
+            }
           }
         }
       }
+
     } catch (Exception e) {
       logger.error("unable to delete priority action", e);
     }
@@ -3625,7 +3701,7 @@ public class DeliverableAction extends BaseAction {
             && deliverablePriorityActions.getShfrmPriorityAction().getId() != null) {
             ShfrmPriorityAction priorityAction = shfrmPriorityActionManager
               .getShfrmPriorityActionById(deliverablePriorityActions.getShfrmPriorityAction().getId());
-            if (priorityAction != null) {
+            if (deliverable != null && priorityAction != null && priorityAction.getId() != null) {
               deliverablePriorityActionsSave.setDeliverable(deliverable);
               deliverablePriorityActionsSave.setShfrmPriorityAction(priorityAction);
               deliverablePriorityActionsSave.setPhase(phase);
@@ -3899,6 +3975,87 @@ public class DeliverableAction extends BaseAction {
     qualityCheck.setPhase(this.getActualPhase());
     deliverableQualityCheckManager.saveDeliverableQualityCheck(qualityCheck);
 
+  }
+
+  /**
+   * Save Deliverable SHFRM sub actions Information
+   * 
+   * @param deliverable
+   * @param phase
+   */
+  public void saveSubActions(Deliverable deliverable, Phase phase) {
+
+    // Search and deleted form Information
+    try {
+      if (deliverable.getDeliverableShfrmPriorityAction() != null
+        && !deliverable.getDeliverableShfrmPriorityAction().isEmpty()) {
+        for (DeliverableShfrmPriorityAction priorityAction : deliverable.getDeliverableShfrmPriorityAction()) {
+
+
+          List<DeliverableShfrmSubAction> subActionPrev =
+            new ArrayList<>(priorityAction.getDeliverableShfrmSubAction().stream()
+              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+          for (DeliverableShfrmSubAction subAction : subActionPrev) {
+            if (subAction != null && subAction.getId() != null && (priorityAction.getShfrmSubActions() == null
+              || !priorityAction.getShfrmSubActions().contains(subAction))) {
+              this.deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(subAction.getId());
+            }
+          }
+        }
+
+      }
+    } catch (Exception e) {
+      logger.error("unable to delete priority action", e);
+    }
+
+    // Save form Information
+    if (this.deliverable.getShfrmPriorityActions() != null) {
+      DeliverableShfrmSubAction deliverableSubActionSave;
+      for (DeliverableShfrmPriorityAction deliverablePriorityAction : this.deliverable.getShfrmPriorityActions()) {
+        if (deliverablePriorityAction != null && deliverablePriorityAction.getShfrmSubActions() != null) {
+          for (DeliverableShfrmSubAction deliverableSubAction : deliverablePriorityAction.getShfrmSubActions()) {
+            deliverableSubActionSave = new DeliverableShfrmSubAction();
+
+
+            if (deliverableSubAction != null) {
+              // For new deliverable Priority Actions
+              if (deliverableSubAction.getId() == null) {
+                deliverableSubActionSave.setDeliverableShfrmPriorityAction(deliverablePriorityAction);
+                deliverableSubActionSave.setPhase(phase);
+              } else {
+                // For old deliverable Priority Actions
+                try {
+                  if (deliverableSubAction.getId() != null) {
+                    deliverableSubActionSave =
+                      deliverableShfrmSubActionManager.getDeliverableShfrmSubActionById(deliverableSubAction.getId());
+                  }
+                } catch (Exception e) {
+                  logger.error("unable to get old deliverable sub Actions", e);
+                }
+              }
+
+              if (deliverableSubAction.getShfrmSubAction() != null
+                && deliverableSubAction.getShfrmSubAction().getId() != null) {
+                ShfrmSubAction subAction =
+                  shfrmSubActionManager.getShfrmSubActionById(deliverableSubAction.getShfrmSubAction().getId());
+                if (subAction != null) {
+                  deliverableSubActionSave.setDeliverableShfrmPriorityAction(deliverablePriorityAction);
+                  deliverableSubActionSave.setShfrmSubAction(subAction);
+                  deliverableSubActionSave.setPhase(phase);
+                }
+
+                this.deliverableShfrmSubActionManager.saveDeliverableShfrmSubAction(deliverableSubActionSave);
+                // This is to add deliverablePriorityActions to generate correct auditlog.
+                if (!this.deliverable.getDeliverableShfrmSubAction().contains(deliverableSubActionSave)) {
+                  this.deliverable.getDeliverableShfrmSubAction().add(deliverableSubActionSave);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   public void saveUsers() {

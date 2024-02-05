@@ -171,6 +171,8 @@ public final class APConstants {
   public static final String DELIVERABLE_FILE_LOCALLY_HOSTED_STR = "Locally";
 
   public static final String DELIVERABLE_ID = "deliverableId";
+  public static final String PRIORITY_ACTION_ID = "priority_action_id";
+  public static final String SUB_ACTION_ID = "sub_action_id";
   public static final int DELIVERABLE_QUALITY_ANSWER_NO = 3;
   public static final int DELIVERABLE_QUALITY_ANSWER_YES = 2;
   public static final int DELIVERABLE_QUALITY_ANSWER_YES_BUT_NO = 1;

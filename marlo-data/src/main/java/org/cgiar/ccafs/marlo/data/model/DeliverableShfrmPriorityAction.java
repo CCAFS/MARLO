@@ -3,7 +3,9 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
@@ -21,7 +23,9 @@ public class DeliverableShfrmPriorityAction extends MarloAuditableEntity impleme
   @Expose
   private Phase phase;
 
-  private List<DeliverableShfrmSubAction> deliverableShfrmSubActions;
+  private List<DeliverableShfrmSubAction> shfrmSubActions;
+
+  private Set<DeliverableShfrmSubAction> deliverableShfrmSubAction = new HashSet<DeliverableShfrmSubAction>(0);
 
   public DeliverableShfrmPriorityAction() {
   }
@@ -30,8 +34,8 @@ public class DeliverableShfrmPriorityAction extends MarloAuditableEntity impleme
     return deliverable;
   }
 
-  public List<DeliverableShfrmSubAction> getDeliverableShfrmSubActions() {
-    return deliverableShfrmSubActions;
+  public Set<DeliverableShfrmSubAction> getDeliverableShfrmSubAction() {
+    return deliverableShfrmSubAction;
   }
 
   @Override
@@ -49,6 +53,10 @@ public class DeliverableShfrmPriorityAction extends MarloAuditableEntity impleme
     return shfrmPriorityAction;
   }
 
+  public List<DeliverableShfrmSubAction> getShfrmSubActions() {
+    return shfrmSubActions;
+  }
+
   @Override
   public boolean isActive() {
     return true;
@@ -58,8 +66,8 @@ public class DeliverableShfrmPriorityAction extends MarloAuditableEntity impleme
     this.deliverable = deliverable;
   }
 
-  public void setDeliverableShfrmSubActions(List<DeliverableShfrmSubAction> deliverableShfrmSubActions) {
-    this.deliverableShfrmSubActions = deliverableShfrmSubActions;
+  public void setDeliverableShfrmSubAction(Set<DeliverableShfrmSubAction> deliverableShfrmSubAction) {
+    this.deliverableShfrmSubAction = deliverableShfrmSubAction;
   }
 
   public void setPhase(Phase phase) {
@@ -68,5 +76,9 @@ public class DeliverableShfrmPriorityAction extends MarloAuditableEntity impleme
 
   public void setShfrmPriorityAction(ShfrmPriorityAction shfrmPriorityAction) {
     this.shfrmPriorityAction = shfrmPriorityAction;
+  }
+
+  public void setShfrmSubActions(List<DeliverableShfrmSubAction> shfrmSubActions) {
+    this.shfrmSubActions = shfrmSubActions;
   }
 }

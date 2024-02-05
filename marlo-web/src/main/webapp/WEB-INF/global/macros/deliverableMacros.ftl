@@ -599,35 +599,38 @@
       <br>    
       [#-- Shfrm Priority Action --]
       <div class="form-group">
-        [@customForm.elementsListComponent name="deliverable.shfrmPriorityActions" elementType="shfrmPriorityAction" help="deliverable.shfrmContribution.priorityAction.help" helpIcon=false elementList=(deliverable.shfrmPriorityActions)![] label="deliverable.shfrmContribution.priorityAction" listName="shfrmPriorityActions" keyFieldName="id" displayFieldName="composedName" required=true /]
+      [#--  
+              [@customForm.select name="deliverable.shfrmPriorityActions" label="" showTitle=true    i18nkey="deliverable.shfrmContribution.priorityAction" listName="shfrmPriorityActions"  multiple=true header=true required=true className="activity" editable=editable  keyFieldName="id" displayFieldName="composedName"/]
+
+      --]
+
+        [@customForm.elementsListComponent id="deliverablePriorityActions" name="deliverable.shfrmPriorityActions" elementType="shfrmPriorityAction" help="deliverable.shfrmContribution.priorityAction.help" helpIcon=false elementList=(deliverable.shfrmPriorityActions)![] label="deliverable.shfrmContribution.priorityAction" listName="shfrmPriorityActions" keyFieldName="id" displayFieldName="composedName" required=true /]
+       
       </div>
       
-      
-      [#-- Testing area --]
-      [#if true]
+     
       [#-- Project Section Content --]
       <div>
         [#-- Section Messages --]
-        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
 
           [#-- Listing actions  --]
           
             [#-- Priority actions list --]
-            <div id="projectPartnersBlock" class="simpleBox" listname="priorityActions">
               [#if deliverable.shfrmPriorityActions?has_content]
                 [#list deliverable.shfrmPriorityActions as priorityAction]
-                  [@priorityActionsMacro element=priorityAction!{} name="deliverable.shfrmPriorityActions[${priorityAction_index}].shfrmPriorityAction" index=priorityAction_index opened=(deliverable.shfrmPriorityActions?size = 1)/]
+                  [@priorityActionsMacro element=priorityAction!{} name="deliverable.shfrmPriorityActions[${priorityAction_index}]" index=priorityAction_index opened=(deliverable.shfrmPriorityActions?size = 1)/]
                 [/#list]
               [#else]
+              [#--  
                 [@priorityActionsMacro element={} name="deliverable.shfrmPriorityActions[0].shfrmPriorityAction" index=0 opened=true defaultPerson=true /]
+              --]
+                <p class="noContactMessage">[@s.text name="shfrmManagement.actionsEmpty" /]</p>     
               [/#if] 
+              [#--  
                 <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="shfrmManagement.priorityActions.add" /]</div>
-            </div> 
-                 
-        [/@s.form] 
+                  --]
       </div>
-      [/#if]
-      [#-- end testing area --]
+      
     </div>
   </div>
   <br>
@@ -1569,44 +1572,52 @@
 [/#macro]
 
 [#macro priorityActionsMacro element name index=-1 opened=false defaultPerson=false isTemplate=false]
-  
+  [#assign customName = "${name}" /]
+
   <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox" style="display:${isTemplate?string('none','block')}">
     [#-- Loading --]
     <div class="loading" style="display:none"></div>
     [#-- TODO: Please improve this validation at backend side --]
 
     [#-- Remove link for all partners --]
-    [#if editable ] [#--&& (isTemplate) --]
+    [#if false ] [#--&& (isTemplate) --]
       <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
     [/#if]
     
     [#-- Partner Title --]
     <div class="blockTitle ${opened?string('opened', 'closed')}">
       [#-- Title --]
-      <span class="${customForm.changedField('${name}.id')}"> [#-- <span class="index_number">${index+1}</span>. --] <span class="priorityActionTitle"><b>${(element.shfrmPriorityAction.name)!'Priority Action'}:</b> ${(element.shfrmPriorityAction.description)!''}</span> </span>            
+      <span class="${customForm.changedField('${name}.id')}"> [#-- <span class="index_number">${index+1}</span>. --] <span class="priorityActionTitle">${(element.shfrmPriorityAction.name)!'Priority Action'}: ${(element.shfrmPriorityAction.description)!''}</span> </span>            
     </div>
     
     <div class="blockContent" style="display:${opened?string('block','none')}">
       <hr />
-            
+      
+      
+      [#-- Shfrm Priority Action
+      <div class="form-group">
+        [@customForm.elementsListComponent name="${name}.shfrmPriorityAction" elementType="shfrmPriorityAction" help="deliverable.shfrmContribution.priorityAction.help" helpIcon=false elementList=(deliverable.shfrmPriorityActions)![] label="deliverable.shfrmContribution.priorityAction" listName="shfrmPriorityActions" keyFieldName="id" displayFieldName="composedName" required=true maxLimit=1/]
+      </div>
+            --] 
       [#-- Action name  --]
-      <input id="id" class="partnerPersonId" type="hidden" name="element.id" value="${(element.id)!}" />
-
-      <div class="form-group">
-        [@customForm.input name="${name}.name" i18nkey="shfrmManagement.priorityActions.title" className="name limitWords-100" required=true /]
-      </div>
-      <div class="clearfix"></div>
-      [#-- Action description  --]
-      <div class="form-group">
-        [@customForm.input name="${name}.description" i18nkey="shfrmManagement.priorityActions.description" className="description limitWords-100" required=true /]
-      </div>
-      <div class="clearfix"></div>      
-                 
+      <input id="id" class="partnerPersonId" type="hidden" name="element.id" value="${(element.id)!}" />    
       
       [#-- Sub Actions  --]
       <div class="contactsPerson panel tertiary">
+
+        [#-- Shfrm sub Action list --]
+        <div class="form-group">
+        [#--
+          [@customForm.select name="${name}.shfrmSubActions" label="" help="deliverable.shfrmContribution.subAction.help" helpIcon=false  i18nkey="deliverable.shfrmContribution.subAction" listName="shfrmSubActions"  multiple=true required=true className="subActionSelect" editable=editable  keyFieldName="id" displayFieldName="composedName"/]
+          --]
+          [@customForm.elementsListComponent name="${name}.shfrmSubActions" elementType="shfrmSubAction" help="deliverable.shfrmContribution.subAction.help" helpIcon=false elementList=(element.shfrmSubActions)![] label="deliverable.shfrmContribution.subAction" listName="(${customName}.shfrmPriorityAction.shfrmSubActions)!" keyFieldName="id" displayFieldName="composedName" required=true /]
+        
+        </div>
+      
+      [#--  
         <h5 class="sectionSubTitle">[@s.text name="shfrmManagement.subActions.add" /] <small>[@customForm.req required=true /]</small></h5>
         <div class="fullPartBlock" listname="${name}.shfrmSubActions">
+ 
           [#if element.shfrmSubActions?has_content]
             [#list element.shfrmSubActions as subAction]
               [@subActionsMacro element=subAction name="${name}.shfrmSubActions[${subAction_index}]" index=subAction_index partnerIndex=index institutionID=(element.institution.id)! /]
@@ -1619,6 +1630,7 @@
           [/#if]
 
         </div>
+        --]
       </div>
       
     </div>
