@@ -8198,6 +8198,32 @@ img.qaOptionsComment {
 		height: 60%;
 		top: 0.8rem;
 	}
+	
+	.breadcrumb{
+		width: 70%;
+		position: relative;
+	}
+	
+	.usersInfo{
+		float: none;
+		width: 50%;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    display: flex;
+    flex-wrap: wrap;
+	}
+	
+	.user-badge{
+		font-size: 1.2rem;
+	}
+	
+	span#usersOnline{
+		text-align: left;
+		width: 100%;
+		font-size: 0.9rem;
+		margin-bottom: 0.9rem;
+	}
 
 	/************* 2.1. SUPERADMIN ***************/
 
