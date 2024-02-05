@@ -51,7 +51,30 @@ public class DeliverableShfrmSubActionManagerImpl implements DeliverableShfrmSub
   @Override
   public void deleteDeliverableShfrmSubAction(long deliverableShfrmSubActionId) {
 
+    DeliverableShfrmSubAction deliverableShfrmSubAction =
+      this.getDeliverableShfrmSubActionById(deliverableShfrmSubActionId);
+    Phase currentPhase = phaseDAO.find(deliverableShfrmSubAction.getPhase().getId());
+
+    if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+      this.deleteDeliverableShfrmSubActionPhase(currentPhase.getNext(), deliverableShfrmSubAction);
+    }
+
     deliverableShfrmSubActionDAO.deleteDeliverableShfrmSubAction(deliverableShfrmSubActionId);
+  }
+
+  public void deleteDeliverableShfrmSubActionPhase(Phase next, DeliverableShfrmSubAction deliverableShfrmSubAction) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    DeliverableShfrmSubAction deliverableShfrmSubActionDelete = new DeliverableShfrmSubAction();
+    deliverableShfrmSubActionDelete = deliverableShfrmSubActionDAO.findByPriorityActionAndPhase(
+      deliverableShfrmSubAction.getDeliverableShfrmPriorityAction().getId(), phase.getId()).get(0);
+
+    if (deliverableShfrmSubActionDelete != null) {
+      deliverableShfrmSubActionDAO.deleteDeliverableShfrmSubAction(deliverableShfrmSubActionDelete.getId());
+    }
+    if (phase.getNext() != null) {
+      this.deleteDeliverableShfrmSubActionPhase(phase.getNext(), deliverableShfrmSubAction);
+    }
   }
 
   @Override
@@ -89,27 +112,38 @@ public class DeliverableShfrmSubActionManagerImpl implements DeliverableShfrmSub
 
     if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
 
-      this.saveDeliverableShfrmSubActionPhase(currentPhase.getNext(),
-        deliverableShfrmSubActionResult.getDeliverableShfrmPriorityAction().getId(), deliverableShfrmSubActionResult);
+      this.saveDeliverableShfrmSubActionPhase(currentPhase.getNext(), deliverableShfrmSubActionResult);
     }
     return deliverableShfrmSubActionResult;
   }
 
-  public void saveDeliverableShfrmSubActionPhase(Phase next, long priorityActionId,
-    DeliverableShfrmSubAction deliverableShfrmSubAction) {
+  public void saveDeliverableShfrmSubActionPhase(Phase next, DeliverableShfrmSubAction deliverableShfrmSubAction) {
     Phase phase = phaseDAO.find(next.getId());
+    DeliverableShfrmSubAction deliverableShfrmSubActionPhase = new DeliverableShfrmSubAction();
+    try {
+      deliverableShfrmSubActionPhase = deliverableShfrmSubActionDAO.findByPriorityActionAndPhase(
+        deliverableShfrmSubAction.getDeliverableShfrmPriorityAction().getId(), phase.getId()).get(0);
+    } catch (Exception e) {
+      logger.error("error getting deliverableShfrmSubActionPhase: " + e);
+    }
 
-    DeliverableShfrmSubAction deliverableShfrmSubActionAdd = new DeliverableShfrmSubAction();
-    deliverableShfrmSubActionAdd.setPhase(phase);
-    deliverableShfrmSubActionAdd
-      .setDeliverableShfrmPriorityAction(deliverableShfrmSubAction.getDeliverableShfrmPriorityAction());
-    deliverableShfrmSubActionDAO.save(deliverableShfrmSubActionAdd);
+    if (deliverableShfrmSubActionPhase != null) {
+      DeliverableShfrmSubAction deliverableShfrmSubActionAdd = deliverableShfrmSubActionPhase;
+      deliverableShfrmSubActionAdd.setPhase(phase);
+      deliverableShfrmSubActionAdd
+        .setDeliverableShfrmPriorityAction(deliverableShfrmSubAction.getDeliverableShfrmPriorityAction());
+      deliverableShfrmSubActionDAO.save(deliverableShfrmSubActionAdd);
+    } else {
+      DeliverableShfrmSubAction deliverableShfrmSubActionAdd = new DeliverableShfrmSubAction();
+      deliverableShfrmSubActionAdd.setPhase(phase);
+      deliverableShfrmSubActionAdd
+        .setDeliverableShfrmPriorityAction(deliverableShfrmSubAction.getDeliverableShfrmPriorityAction());
+      deliverableShfrmSubActionDAO.save(deliverableShfrmSubActionAdd);
+    }
 
     if (phase.getNext() != null) {
-      this.saveDeliverableShfrmSubActionPhase(phase.getNext(),
-        deliverableShfrmSubAction.getDeliverableShfrmPriorityAction().getId(), deliverableShfrmSubAction);
+      this.saveDeliverableShfrmSubActionPhase(phase.getNext(), deliverableShfrmSubAction);
     }
   }
-
 
 }
