@@ -96,11 +96,12 @@ public class ShfrmManagementAction extends BaseAction {
   public String save() {
     if (this.canAcessCrpAdmin()) {
       List<ShfrmSubAction> subActionstoDelete = new ArrayList<>();
+      List<ShfrmPriorityAction> priorityActionsDB = null;
+      priorityActionsDB = shfrmPriorityActionManager.findAll();
+
 
       try {
-        List<ShfrmPriorityAction> priorityActionsDB = null;
         List<ShfrmSubAction> subActionsDB = null;
-        priorityActionsDB = shfrmPriorityActionManager.findAll();
         subActionsDB = shfrmSubActionManager.findAll();
         if (this.priorityActions != null && !this.priorityActions.isEmpty()) {
           for (ShfrmPriorityAction action : this.priorityActions) {
@@ -126,8 +127,12 @@ public class ShfrmManagementAction extends BaseAction {
                 subActionstoDelete.add(subActionDB);
               });
 
+            } else {
+              subActionsDB.forEach(subActionDB -> {
+                shfrmSubActionManager.deleteShfrmSubAction(subActionDB.getId());
+                subActionstoDelete.add(subActionDB);
+              });
             }
-
 
           }
         }
@@ -139,16 +144,28 @@ public class ShfrmManagementAction extends BaseAction {
 
       if (this.priorityActions != null && !this.priorityActions.isEmpty()) {
 
-        // List<ShfrmPriorityAction> priorityActionsDB = null;
-        // List<ShfrmSubAction> subActionsDB = null;
-        try {
-          // priorityActionsDB = shfrmPriorityActionManager.findAll();
-          // subActionsDB = shfrmSubActionManager.findAll();
+        if (priorityActionsDB != null) {
+          try {
+            for (ShfrmPriorityAction actionDB : priorityActionsDB) {
+              if (this.priorityActions != null && !this.priorityActions.isEmpty()) {
+                Set<Long> actionIdsInFrontend = this.priorityActions.stream().filter(Objects::nonNull)
+                  .map(ShfrmPriorityAction::getId).collect(Collectors.toSet());
+                if (!actionIdsInFrontend.contains(actionDB.getId())) {
 
-        } catch (Exception e) {
-          logger.info(e + "no sub actions added yet");
+                  // Validate previous sub actions in DB for each priority actions
+                  if (actionDB.getShfrmSubActions() == null
+                    || (actionDB.getShfrmSubActions() != null && actionDB.getShfrmSubActions().isEmpty())) {
+                    shfrmPriorityActionManager.deleteShfrmPriorityAction(actionDB.getId());
+                  }
+
+
+                }
+              }
+            }
+          } catch (Exception e) {
+            logger.info(e + " error deleting actions");
+          }
         }
-
 
         for (ShfrmPriorityAction action : this.priorityActions) {
           ShfrmPriorityAction actionSave = new ShfrmPriorityAction();
@@ -157,8 +174,11 @@ public class ShfrmManagementAction extends BaseAction {
           }
 
           if (subActionstoDelete != null && !subActionstoDelete.isEmpty()) {
+
             for (ShfrmSubAction subActiontoDelete : subActionstoDelete) {
-              actionSave.getShfrmSubActions().remove(subActiontoDelete);
+              if (actionSave.getShfrmSubActions().contains(subActiontoDelete)) {
+                actionSave.getShfrmSubActions().remove(subActiontoDelete);
+              }
             }
           }
 
@@ -200,6 +220,17 @@ public class ShfrmManagementAction extends BaseAction {
               }
             }
           }
+        }
+      } else {
+        // Delete all priority actions DB
+        try {
+          if (priorityActionsDB != null && !priorityActionsDB.isEmpty()) {
+            priorityActionsDB.forEach(priorityAction -> {
+              shfrmPriorityActionManager.deleteShfrmPriorityAction(priorityAction.getId());
+            });
+          }
+        } catch (Exception e) {
+          logger.error("error deleting priority actions: " + e);
         }
       }
 

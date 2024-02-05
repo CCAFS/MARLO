@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
+import org.cgiar.ccafs.marlo.data.model.DeliverableShfrmPriorityAction;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -566,9 +567,30 @@ public class DeliverableValidator extends BaseValidator {
           action.getInvalidFields().put("input-deliverable.deliverableInfo.shfrmContributionNarrative",
             InvalidFieldsMessages.EMPTYFIELD);
         }
-      }
 
+        // Validate priority actions
+        if (deliverable.getShfrmPriorityActions() == null
+          || (deliverable.getShfrmPriorityActions() != null && deliverable.getShfrmPriorityActions().isEmpty())) {
+          action.addMessage(action.getText("deliverable.shfrmPriorityActions"));
+          action.addMissingField("deliverable.shfrmPriorityActions");
+          action.getInvalidFields().put("list-deliverable.shfrmPriorityActions", InvalidFieldsMessages.EMPTYFIELD);
+        } else if (deliverable.getShfrmPriorityActions() != null && !deliverable.getShfrmPriorityActions().isEmpty()) {
+          int index = 0;
+          for (DeliverableShfrmPriorityAction priorityAction : deliverable.getShfrmPriorityActions()) {
+            if (priorityAction != null && priorityAction.getShfrmSubActions() != null
+              && !priorityAction.getShfrmSubActions().isEmpty()) {
+              action.addMessage(action.getText("deliverable.shfrmSubActions[" + index + "]"));
+              action.addMissingField("deliverable.shfrmSubActions[" + index + "]");
+              action.getInvalidFields().put("list-deliverable.shfrmPriorityAction[" + index + "].shfrmSubActions",
+                InvalidFieldsMessages.EMPTYFIELD);
+              index++;
+            }
+          }
+        }
+
+      }
     }
+
     this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
   }
