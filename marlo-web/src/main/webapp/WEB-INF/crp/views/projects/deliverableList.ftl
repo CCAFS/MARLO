@@ -185,7 +185,7 @@
                   <label for="checkbox">Responsible person</label>
                 </div>
               </div>
-            <div class="currentDeliverables">
+            <div class="currentDeliverables table-responsive">
               [@deliverableList.deliverablesList deliverables=(currentDeliverableList)![] canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" projectID=projectID/]
             </div>
               [#--  
@@ -223,7 +223,7 @@
                   <label for="checkbox">Responsible person</label>
                 </div>
               </div>            
-            <div class="previousDeliverables">
+            <div class="previousDeliverables table-responsive">
               [@deliverableList.deliverablesList deliverables=(project.getPreviousDeliverables(actualPhase) + previousSharedDeliverableList)![] canValidate=true canEdit=candit isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false projectID=projectID/]
             </div>
           </div>

@@ -8255,5 +8255,24 @@ img.qaOptionsComment {
 		width: 100%;
     margin-bottom: 1rem;
 	}
+	
+	.DownloadButton {
+    width: 100px;
+    height: 40px;
+    padding: revert;
+	}
+	
+	.DownloadButton .IconDownloadButton{
+		position: static;
+	}
+	
+	.DownloadButton .IconDownloadButton img{
+		height: 22px;
+    width: 22px;
+	}
+	
+	.DownloadButton span{
+		position: static;
+	}
 
 }

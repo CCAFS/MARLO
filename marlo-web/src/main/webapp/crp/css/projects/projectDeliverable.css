@@ -1157,3 +1157,10 @@ div.fieldFocus-deliverable {
     left: 610px;
   }
 }
+
+@media (max-width:440px){
+  .containerShowHide{
+    position: static;
+  }
+}
+
