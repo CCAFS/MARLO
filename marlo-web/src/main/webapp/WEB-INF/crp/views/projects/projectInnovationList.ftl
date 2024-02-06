@@ -38,7 +38,7 @@
 
         [#-- Innovations List --]
         <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3>
-        <div class="simpleBox">
+        <div class="simpleBox table-responsive">
           [@innovationsTableMacro list=(projectInnovations)![] /]
         </div>
         
@@ -57,7 +57,7 @@
         [#-- Previous Innovations List --]
         <br />
         <h3 class="headTitle">Previous [@s.text name="projectInnovations" /]</h3>
-        <div class="simpleBox">
+        <div class="simpleBox table-responsive">
           [@innovationsTableMacro list=(projectOldInnovations)![] currentTable=false/]
         </div>
         
