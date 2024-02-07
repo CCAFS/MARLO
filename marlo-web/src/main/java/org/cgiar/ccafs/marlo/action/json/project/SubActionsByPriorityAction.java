@@ -31,6 +31,8 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SubActionsByPriorityAction extends BaseAction {
 
@@ -38,6 +40,8 @@ public class SubActionsByPriorityAction extends BaseAction {
   private long priorityActionID;
   private ShfrmSubActionManager shfrmSubActionManager;
   private List<Map<String, Object>> subActions;
+  private final Logger logger = LoggerFactory.getLogger(SubActionsByPriorityAction.class);
+
 
   @Inject
   public SubActionsByPriorityAction(APConfig config, ShfrmSubActionManager shfrmSubActionManager) {
@@ -49,10 +53,15 @@ public class SubActionsByPriorityAction extends BaseAction {
   public String execute() throws Exception {
     subActions = new ArrayList<>();
     Map<String, Object> subAction;
-    List<ShfrmSubAction> shfrmSubActions = shfrmSubActionManager
-      .findAll().stream().filter(s -> s != null && s.getShfrmPriorityAction() != null
-        && s.getShfrmPriorityAction().getId() != null && s.getShfrmPriorityAction().getId().equals(priorityActionID))
-      .collect(Collectors.toList());
+    List<ShfrmSubAction> shfrmSubActions = new ArrayList<>();
+    try {
+      shfrmSubActions = shfrmSubActionManager.findAll().stream()
+        .filter(s -> s != null && s.isActive() && s.getShfrmPriorityAction() != null
+          && s.getShfrmPriorityAction().getId() != null && s.getShfrmPriorityAction().getId().equals(priorityActionID))
+        .collect(Collectors.toList());
+    } catch (Exception e) {
+      logger.error("error getting sub actions " + e);
+    }
 
     if (shfrmSubActions != null && !shfrmSubActions.isEmpty()) {
       for (ShfrmSubAction shfrmSubAction : shfrmSubActions) {
@@ -61,6 +70,10 @@ public class SubActionsByPriorityAction extends BaseAction {
         subAction.put("composedName", shfrmSubAction.getComposedName());
         subAction.put("name", shfrmSubAction.getName());
         subAction.put("description", shfrmSubAction.getDescription());
+        if (shfrmSubAction.getShfrmPriorityAction() != null
+          && shfrmSubAction.getShfrmPriorityAction().getId() != null) {
+          subAction.put("priorityActionId", shfrmSubAction.getShfrmPriorityAction().getId());
+        }
         subActions.add(subAction);
       }
     }

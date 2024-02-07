@@ -4008,15 +4008,15 @@ public class DeliverableAction extends BaseAction {
         && !deliverable.getDeliverableShfrmPriorityAction().isEmpty()) {
         for (DeliverableShfrmPriorityAction priorityAction : deliverable.getDeliverableShfrmPriorityAction()) {
 
+          if (priorityAction != null && priorityAction.getId() != null) {
+            List<DeliverableShfrmSubAction> subActionPrev = new ArrayList<>(deliverableShfrmSubActionManager
+              .findByPriorityActionAndPhase(priorityAction.getId(), this.getActualPhase().getId()));
 
-          List<DeliverableShfrmSubAction> subActionPrev =
-            new ArrayList<>(priorityAction.getDeliverableShfrmSubAction().stream()
-              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-
-          for (DeliverableShfrmSubAction subAction : subActionPrev) {
-            if (subAction != null && subAction.getId() != null && (priorityAction.getShfrmSubActions() == null
-              || !priorityAction.getShfrmSubActions().contains(subAction))) {
-              this.deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(subAction.getId());
+            for (DeliverableShfrmSubAction subAction : subActionPrev) {
+              if (subAction != null && subAction.getId() != null && (priorityAction.getShfrmSubActions() == null
+                || !priorityAction.getShfrmSubActions().contains(subAction))) {
+                this.deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(subAction.getId());
+              }
             }
           }
         }
