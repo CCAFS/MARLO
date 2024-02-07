@@ -8247,14 +8247,14 @@ img.qaOptionsComment {
 	
 	/************* BODY ***************/
 	
-	.buttons-content{
-		width: 100%;
-	}
+/*		.buttons-content {*/
+/*			width: 100%;*/
+/*		}*/
 	
-	button{
-		width: 100%;
-    margin-bottom: 1rem;
-	}
+/*		button {*/
+/*			width: 100%;*/
+/*			margin-bottom: 1rem;*/
+/*		}*/
 	
 	.DownloadButton {
     width: 100px;
