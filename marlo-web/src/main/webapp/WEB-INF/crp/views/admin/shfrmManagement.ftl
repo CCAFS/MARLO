@@ -70,10 +70,10 @@
 [/#if]
 
 [#-- Single partner TEMPLATE from partnersTemplate.ftl --]
-[@projectPartnerMacro element={} name="priorityActions[-1]" isTemplate=true /]
+[@projectPartnerMacro element={} name="deliverable.shfrmPriorityActions[-1]" isTemplate=true /]
 
 [#-- Contact person TEMPLATE from partnersTemplate.ftl --]
-[@contactPersonMacro element={} name="priorityActions[-1].shfrmSubActions[-1]" isTemplate=true /]
+[@contactPersonMacro element={} name="deliverable.shfrmPriorityActions[-1].shfrmSubActions[-1]" isTemplate=true /]
 
 [#-- Project roles descriptions --]
 <span class="contactPersonRole-PC" style="display:none">[@s.text name="projectPartners.contactPersonRolePC" /]</span>
@@ -124,7 +124,7 @@
     [#-- TODO: Please improve this validation at backend side --]
 
     [#-- Remove link for all partners --]
-    [#if editable ] [#--&& (isTemplate) --]
+    [#if isTemplate || action.canBeDeleted((element.id)!-1,(element.class.name)!)]
       <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
     [/#if]
     
@@ -134,6 +134,12 @@
       <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="priorityActionTitle">${(element.name)!'Priority Action'}</span> </span>            
     </div>
     
+    [#if !isTemplate] 
+    <div class="pull-right">
+      [@popUps.relationsMacro element=element labelText=true tag="shfrm" /]
+    </div>
+    
+    [/#if]
     <div class="blockContent" style="display:${opened?string('block','none')}">
       <hr />
             
@@ -170,14 +176,15 @@
       </div>
       
     </div>
-      
+       
+
   </div>
 [/#macro]
 
 [#macro contactPersonMacro element name index=-1 partnerIndex=-1 isTemplate=false institutionID=-1]
   <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}" listname="partner-${partnerIndex}-person-${index}">
     [#-- Remove link for all partners --]
-    [#if editable && action.canBeDeleted((element.id)!-1,(element.class.name)!)]
+    [#if editable]
       <div class="removePerson removeElement" title="[@s.text name="projectPartners.removePerson" /]"></div>
     [/#if]
     <div class="leftHead">

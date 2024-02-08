@@ -139,7 +139,6 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -5156,6 +5155,31 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.session;
   }
 
+  public List<Deliverable> getShfrmActionDeliverablesRelation(long shfrmPrimaryActionId) {
+    List<Deliverable> deliverablesRelated = new ArrayList<>();
+    List<DeliverableShfrmPriorityAction> deliverableShfrmPriorityActions =
+      deliverableShfrmPriorityActionManager.findAll().stream()
+        .filter(d -> d.getShfrmPriorityAction() != null && d.getShfrmPriorityAction().getId() != null
+          && d.getShfrmPriorityAction().getId().equals(shfrmPrimaryActionId) && d.getPhase() != null
+          && d.getPhase().getId().equals(this.getActualPhase().getId()))
+        .collect(Collectors.toList());
+    if (deliverableShfrmPriorityActions != null && !deliverableShfrmPriorityActions.isEmpty()) {
+      for (DeliverableShfrmPriorityAction deliverableShfrmPriorityAction : deliverableShfrmPriorityActions) {
+        if (deliverableShfrmPriorityAction != null && deliverableShfrmPriorityAction.getDeliverable() != null) {
+          Deliverable deliverableAdd = deliverableShfrmPriorityAction.getDeliverable();
+          deliverableAdd.setDeliverableInfo(deliverableAdd.getDeliverableInfo(getActualPhase()));
+          deliverablesRelated.add(deliverableShfrmPriorityAction.getDeliverable());
+        }
+      }
+    }
+
+    if (deliverablesRelated != null && !deliverablesRelated.isEmpty()) {
+      return deliverablesRelated;
+    } else {
+      return null;
+    }
+  }
+
   /**
    * This method return the first AF AICCRA ID Phase
    *
@@ -8371,6 +8395,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   //
   public boolean validURL(String URL) {
     try {
@@ -8386,5 +8411,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
 }

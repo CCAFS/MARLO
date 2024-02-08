@@ -2,29 +2,48 @@
 [#macro relationsMacro element labelText=true  tag=""]
   [#local className = ((element.class.name)?split('.')?last)!''/]
   [#local composedID = "${className}-${(element.id)!}"]
+   [#-- 
   [#local deliverablesProject = (action.getDeliverableRelationsProject(element.id, element.class.name,(element.project.id)!-1))! /]
   [#local deliverablesImpact = (action.getDeliverableRelationsImpact(element.id, element.class.name))! /]
   [#local deliverablesPartner = (action.getDeliverablesLedByPartner(element.id))! /]
-
-  [#if className == "ProjectPartner"]
-    [#local deliverables = deliverablesPartner /]
-  [#elseif ((className == "ProjectOutcome") && (tag == "")) || (className == "ProjectBudget")]
-    [#local deliverables = deliverablesProject /]
+  --]
+  
+  [#if tag == "shfrm"]
+    [#local shfrmDeliverables = (action.getShfrmActionDeliverablesRelation(element.id))! /]
+    [#local deliverables = shfrmDeliverables /]
   [#else]
-    [#local deliverables = ((deliverablesImpact)!deliverablesPartner)! /]
+
+    [#if className == "ProjectPartner"]
+      [#local deliverablesPartner = (action.getDeliverablesLedByPartner(element.id))! /]
+      [#local deliverables = deliverablesPartner /]
+    [#elseif ((className == "ProjectOutcome") && (tag == "")) || (className == "ProjectBudget")]
+      [#local deliverablesProject = (action.getDeliverableRelationsProject(element.id, element.class.name,(element.project.id)!-1))! /]
+      [#local deliverables = deliverablesProject /]
+    [#else]
+      [#local deliverablesImpact = (action.getDeliverableRelationsImpact(element.id, element.class.name))! /]
+      [#local deliverablesPartner = (action.getDeliverablesLedByPartner(element.id))! /]
+      [#local deliverables = ((deliverablesImpact)!deliverablesPartner)! /]
+    [/#if]
+
   [/#if]
+
   [#local projects = (action.getProjectRelationsImpact(element.id, element.class.name))! /]
 
   [#-- News buttons --]
-  [#local policies = (action.getPolicyContributingByPartner(element.id))![] /]
-  [#local innovations = (action.getInnovationContributingByPartner(element.id))![] /]
-  [#local evidencies = (action.getStudyContributingByPartner(element.id))![] /]
+  [#if !action.isAiccra()]
+    [#local policies = (action.getPolicyContributingByPartner(element.id))![] /]
+  [/#if]
   
   [#if tag == "expectedOutcomes"]
     [#local evidencies = (action.getexpectedCrpOutcomes(element.id))![] /]
+  [#else]
+    [#local evidencies = (action.getStudyContributingByPartner(element.id))![] /]
   [/#if]
+
   [#if tag == "innovationOutcomes"]
     [#local innovations = (action.getInnovationProjectOutcomes(element.id))![] /]
+  [#else]
+    [#local innovations = (action.getInnovationContributingByPartner(element.id))![] /]
   [/#if]
   [#-- News buttons --]
 
@@ -138,8 +157,12 @@
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
                     <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
                     <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>
-                    <th id="deliverableType">[@s.text name="project.deliverableList.owner" /]</th>
-                    <th id="deliverableType">[@s.text name="project.deliverableList.sharedW" /]</th>
+                                       
+                    [#if tag != "shfrm"]
+                        <th id="deliverableType">[@s.text name="project.deliverableList.owner" /]</th>
+                        <th id="deliverableType">[@s.text name="project.deliverableList.sharedW" /]</th>
+                    [/#if]
+
                     <th id="deliverableType">[@s.text name="project.deliverableList.status" /]</th>
                     <th id="deliverableYear">[@s.text name="project.deliverableList.year" /]</th>
                     <th></th>
@@ -162,8 +185,12 @@
                         [/#if]
                         </td>
                         <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'-'}</td>
-                        <td>${(d.owner)!'-'}</td>
-                        <td class="col-md-2"> ${(d.sharedWithProjects)!'-'} </td>
+                        
+                        [#if tag != "shfrm"]
+                          <td>${(d.owner)!'-'}</td>
+                          <td class="col-md-2"> ${(d.sharedWithProjects)!'-'} </td>
+                        [/#if]
+
                         <td>${(d.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}</td>
                         [#-- Deliverable Year --]
                           <td class="text-center">
