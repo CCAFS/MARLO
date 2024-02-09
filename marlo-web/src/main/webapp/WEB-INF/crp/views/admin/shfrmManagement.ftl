@@ -70,10 +70,10 @@
 [/#if]
 
 [#-- Single partner TEMPLATE from partnersTemplate.ftl --]
-[@projectPartnerMacro element={} name="deliverable.shfrmPriorityActions[-1]" isTemplate=true /]
+[@projectPartnerMacro element={} name="priorityActions[-1]" isTemplate=true /]
 
 [#-- Contact person TEMPLATE from partnersTemplate.ftl --]
-[@contactPersonMacro element={} name="deliverable.shfrmPriorityActions[-1].shfrmSubActions[-1]" isTemplate=true /]
+[@contactPersonMacro element={} name="priorityActions[-1].shfrmSubActions[-1]" isTemplate=true /]
 
 [#-- Project roles descriptions --]
 <span class="contactPersonRole-PC" style="display:none">[@s.text name="projectPartners.contactPersonRolePC" /]</span>
