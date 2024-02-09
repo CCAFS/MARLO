@@ -156,9 +156,9 @@
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
                     <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
-                    <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>
                                        
                     [#if tag != "shfrm"]
+                        <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>
                         <th id="deliverableType">[@s.text name="project.deliverableList.owner" /]</th>
                         <th id="deliverableType">[@s.text name="project.deliverableList.sharedW" /]</th>
                     [/#if]
@@ -183,10 +183,10 @@
                         [#else]
                           ${(d.deliverableInfo.title)!'Untitled'}
                         [/#if]
-                        </td>
-                        <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'-'}</td>
+                        </td>                       
                         
                         [#if tag != "shfrm"]
+                          <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'-'}</td>
                           <td>${(d.owner)!'-'}</td>
                           <td class="col-md-2"> ${(d.sharedWithProjects)!'-'} </td>
                         [/#if]
