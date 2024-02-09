@@ -4009,13 +4009,16 @@ public class DeliverableAction extends BaseAction {
         for (DeliverableShfrmPriorityAction priorityAction : deliverable.getDeliverableShfrmPriorityAction()) {
 
           if (priorityAction != null && priorityAction.getId() != null) {
-            List<DeliverableShfrmSubAction> subActionPrev = new ArrayList<>(deliverableShfrmSubActionManager
-              .findByPriorityActionAndPhase(priorityAction.getId(), this.getActualPhase().getId()));
+            List<DeliverableShfrmSubAction> subActionPrev = new ArrayList<>();
+            subActionPrev = deliverableShfrmSubActionManager.findByPriorityActionAndPhase(priorityAction.getId(),
+              this.getActualPhase().getId());
 
-            for (DeliverableShfrmSubAction subAction : subActionPrev) {
-              if (subAction != null && subAction.getId() != null && (priorityAction.getShfrmSubActions() == null
-                || !priorityAction.getShfrmSubActions().contains(subAction))) {
-                this.deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(subAction.getId());
+            if (subActionPrev != null) {
+              for (DeliverableShfrmSubAction subAction : subActionPrev) {
+                if (subAction != null && subAction.getId() != null && (priorityAction.getShfrmSubActions() == null
+                  || !priorityAction.getShfrmSubActions().contains(subAction))) {
+                  this.deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(subAction.getId());
+                }
               }
             }
           }
