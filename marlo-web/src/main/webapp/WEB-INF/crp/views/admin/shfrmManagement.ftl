@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "SHFRM Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2", "flag-icon-css"] /]
+[#assign pageLibs = ["select2", "flag-icon-css", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/admin/shfrmManagement.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -124,22 +124,24 @@
     [#-- TODO: Please improve this validation at backend side --]
 
     [#-- Remove link for all partners --]
-    [#if isTemplate || action.canBeDeleted((element.id)!-1,(element.class.name)!)]
+    [#if isTemplate || action.canBeDeleted((element.id)!-1,("shfrm")!)]
       <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
     [/#if]
     
     [#-- Partner Title --]
     <div class="blockTitle ${opened?string('opened', 'closed')}">
-      [#-- Title --]
+      
+    [#-- Title --]
       <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="priorityActionTitle">${(element.name)!'Priority Action'}</span> </span>            
-    </div>
-    
     [#if !isTemplate] 
-    <div class="pull-right">
-      [@popUps.relationsMacro element=element labelText=true tag="shfrm" /]
+      </br>
+        <div class="pull-right">
+          [@popUps.relationsMacro element=element labelText=true tag="shfrm" /]
+        </div>
+      [/#if]
     </div>
     
-    [/#if]
+
     <div class="blockContent" style="display:${opened?string('block','none')}">
       <hr />
             
