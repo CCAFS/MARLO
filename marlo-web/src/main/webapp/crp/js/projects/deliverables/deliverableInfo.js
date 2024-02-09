@@ -184,6 +184,31 @@ function init() {
     }
     $subTypeSelect.trigger('change');
   });
+  
+  $('.actionSelect').on('change', function() {
+    var $subActionSelect = $(".subActionSelect");
+      var data = {
+      priorityActionId: $(this).find("option:selected").val()
+  };
+    $subActionSelect.empty();
+    $subActionSelect.append("<option value='-1' >Select an option... </option>");
+    $subActionSelect.trigger("change.select2");
+    var option = $(this).find("option:selected");
+
+    if(option.val() != "-1") {
+      $.ajax({
+          url: baseURL + "/subActionsByPriorityAction.do",
+          type: 'GET',
+          dataType: "json",
+          data: data
+      }).success(function(m) {
+        for(var i = 0; i < m.subActions.length; i++) {
+          $subActionSelect.addOption(m.subActions[i].id, m.subActions[i].name)
+        }
+      });
+    }
+    $subActionSelect.trigger('change');
+  });
 
   $(".subTypeSelect").on("change", function() {
     var subTypeOption = $(this).find("option:selected").val();

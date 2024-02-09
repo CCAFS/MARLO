@@ -1,5 +1,5 @@
 var $removePartnerDialog, $projectPPAPartners;
-var defaultType, partnerRespRequired;
+var canUpdatePPAPartners, partnerPersonTypes, leaderType, coordinatorType, defaultType, partnerRespRequired;
 var projectLeader;
 var lWordsResp = 100;
 
@@ -11,9 +11,22 @@ function init() {
   $removePartnerDialog = $('#partnerRemove-dialog');
   $partnersBlock = $('#projectPartnersBlock');
   $projectPPAPartners = $('#projectPPAPartners');
+  canUpdatePPAPartners = ($("#canUpdatePPAPartners").val() === "true");
   partnerRespRequired = ($("#partnerRespRequired").val() === "true");
+  leaderType = 'PL';
+  coordinatorType = 'PC';
   defaultType = 'CP';
+  partnerPersonTypes = [
+      coordinatorType, leaderType, defaultType, '-1'
+  ];
 
+  if(editable) {
+    // Getting the actual project leader
+    projectLeader = jQuery.extend({}, getProjectLeader());
+    // Update initial project CCAFS partners list for each partner
+    updateProjectPPAPartnersLists();
+
+  }
   // Activate the chosen to the existing partners
   addSelect2();
 
@@ -36,6 +49,11 @@ function init() {
   // Attaching listeners
   attachEvents();
 
+  // Set the unique person as leader
+ /*
+   * if(editable){ var contactPeople = $partnersBlock.find('.projectPartner'); if ((contactPeople.length == 1)){ var
+   * person = new PartnerPersonObject(contactPeople); person.setPartnerType(leaderType); person.changeType(); } }
+   */
 
   $('.loadingBlock').hide().next().fadeIn(500, function() {
     // Missing fields in parter person
@@ -47,7 +65,6 @@ function init() {
   });
 
   $("textarea[id!='justification']").autoGrow();
-  
 }
 
 function attachEvents() {
@@ -100,8 +117,6 @@ function attachEvents() {
    * Project partner Events
    */
   // Add a project partner Event
-  $(".addPriorityAction").on('click', addPartnerEvent);
-  // Add a project partner Event
   $(".addProjectPartner").on('click', addPartnerEvent);
   // Remove a project partner Event
   $(".removePartner").on('click', removePartnerEvent);
@@ -111,7 +126,97 @@ function attachEvents() {
   $("input.name").on("change", function(e) {
     find('.priorityActionTitle').text(this.name);
   }); 
+  // When organization change
+  $("select.institutionsList").on("change", function(e) {
+    var partner = new PartnerObject($(this).parents('.projectPartner'));
+    // Update Partner Title
+    partner.updateBlockContent();
 
+    // Get Countries from Institution ID
+    $.ajax({
+        url: baseURL + "/institutionBranchList.do",
+        data: {
+          institutionID: $(this).val(),
+          phaseID: phaseID
+        },
+        beforeSend: function() {
+          partner.startLoader();
+        },
+        success: function(data) {
+          partner.clearCountries();
+
+          $(partner.countriesSelect).empty();
+          $(partner.countriesSelect).addOption(-1, "Select a country...");
+
+          // Validate if the current partner is not selected, then add the countries
+          if(!($('input.institutionsList[value=' + partner.institutionId + ']').exists())) {
+            $.each(data.branches, function(index,branch) {
+
+              if((branch.name).indexOf("HQ") != "-1") {
+                partner.addCountry({
+                    iso: branch.iso,
+                    name: branch.name
+                });
+              } else {
+                $(partner.countriesSelect).addOption(branch.iso, branch.name);
+              }
+            });
+          }
+
+          $(partner.countriesSelect).trigger("change.select2");
+        },
+        complete: function() {
+          partner.stopLoader();
+        }
+    });
+
+    // Update PPA Partners List
+    updateProjectPPAPartnersLists(e);
+  });
+  // Partnership Geographic Scope
+  $(".geographicScopeSelect").on('change', function(){
+    var $partner = $(this).parents('.projectPartner');
+    var $regionalBlock = $partner.find('.regionalBlock');
+    var $nationalBlock = $partner.find('.nationalBlock');
+
+    var isRegional = this.value == 2;
+    var isMultiNational = this.value == 3;
+    var isNational = this.value == 4;
+    var isSubNational = this.value == 5;
+
+    // Regions
+    if(isRegional){
+      $regionalBlock.show();
+    }else{
+      $regionalBlock.hide();
+    }
+
+    // Countries
+    $nationalBlock.find("select").val(null).trigger('change');
+    if(isMultiNational || isNational || isSubNational){
+      if (isMultiNational){
+        $nationalBlock.find("select").select2({
+          maximumSelectionLength: 0,
+          placeholder: "Select a country(ies)",
+          templateResult: formatStateCountries,
+          templateSelection: formatStateCountries,
+          width: '100%'
+        });
+      }else{
+        $nationalBlock.find("select").select2({
+          maximumSelectionLength: 1,
+          placeholder: "Select a country(ies)",
+          templateResult: formatStateCountries,
+          templateSelection: formatStateCountries,
+          width: '100%'
+        });
+      }
+      $nationalBlock.show();
+    }else{
+      $nationalBlock.hide();
+    }
+
+  });
   // Partners filters
   $(".filters-link span").on("click", filterInstitutions);
 
@@ -250,13 +355,43 @@ function changePartnerPersonType(e) {
   var $contactPerson = $(e.target).parents('.contactPerson');
   var contact = new PartnerPersonObject($contactPerson);
   // Set as unique contact type in the project
-
+  if((contact.type == leaderType)) {
+    setPartnerTypeToDefault(contact.type);
+  }
   // Change partner person type
   contact.changeType();
   // Change parent partner type
   var partner = new PartnerObject($contactPerson.parents('.projectPartner'));
   partner.changeType();
-
+  console.log(contact.type);
+  // If the contact type selected is PL
+  if(contact.type == leaderType) {
+    // If there is a PL previous selected
+    if(!jQuery.isEmptyObject(projectLeader)) {
+      var previousLeaderName = projectLeader.contactInfo;
+      var messages = '<li>Please note that there can only be one project leader per project. <br/>';
+      messages +=
+          'Therefore <strong>' + previousLeaderName
+              + '</strong> was assigned a Project collaborator/partner role.</li>';
+      // Show a pop up with the message
+      $("#contactChangeType-dialog").find('.messages').append(messages);
+      $("#contactChangeType-dialog").dialog({
+          modal: true,
+          closeText: "",
+          width: 500,
+          buttons: {
+            Close: function() {
+              $(this).dialog("close");
+            }
+          },
+          close: function() {
+            $(this).find('.messages').empty();
+          }
+      });
+    }
+  }
+  // Update project leader contact person
+  setProjectLeader(getProjectLeader());
 }
 
 function updateOrganizationsList(e) {
@@ -301,18 +436,13 @@ function updateProjectPPAPartnersLists(e) {
     var partner = new PartnerObject($(projectPartner));
     // Collecting partners institutions
     projectInstitutions.push(parseInt(partner.institutionId));
-    // Validating if the partners is PPA Partner
-    if(partner.isPPA()) {
-      partner.hidePPAs();
-      // Collecting list CCAFS partners from all project partners
-      $projectPPAPartners.append(setOption(partner.institutionId, partner.institutionName));
-    } else {
+    // Validating if the partners is PPA Partner   
       if(partner.institutionId == -1) {
         partner.hidePPAs();
       } else {
         partner.showPPAs();
       }
-    }
+    
   });
   $projectPPAPartners.trigger("change.select2");
 
@@ -351,6 +481,20 @@ function updateProjectPPAPartnersLists(e) {
     $select.trigger("change.select2");
   });
 
+}
+
+function setPartnerTypeToDefault(type) {
+  $partnersBlock.find('.projectPartner').each(function(i,partner) {
+    var projectPartner = new PartnerObject($(partner));
+    $(partner).find('.contactPerson').each(function(i,partnerPerson) {
+      var contact = new PartnerPersonObject($(partnerPerson));
+      if(contact.type == type) {
+        $(partnerPerson).removeClass(partnerPersonTypes.join(' ')).addClass(defaultType);
+        contact.setPartnerType(defaultType);
+      }
+    });
+    projectPartner.changeType();
+  });
 }
 
 function removePartnerEvent(e) {
@@ -395,20 +539,6 @@ function removePartnerEvent(e) {
         Close: function() {
           $(this).dialog("close");
         }
-    };
-  }
-  // Validate if the CCAFS partner is currently contributing has any contributions to another partner
-  if(partner.isPPA() && (partnerContributions.length > 0)) {
-    messages += '<li>' + partner.institutionName + ' is currently allocating budget to the following partner(s):';
-    messages += '<ul>';
-    for(var i = 0, len = partnerContributions.length; i < len; i++) {
-      messages += '<li>' + partnerContributions[i] + '</li>';
-    }
-    messages += '</ul> </li>';
-    removeDialogOptions.buttons = {
-      Close: function() {
-        $(this).dialog("close");
-      }
     };
   }
   // Validate if the project partner has any project leader assigned
@@ -457,6 +587,7 @@ function addPartnerEvent(e) {
 
   // Activate the select2 plugin for new partners created
   // Organization
+  $newElement.find("select.institutionsList").select2(searchInstitutionsOptions(canUpdatePPAPartners));
   $newElement.find("select.institutionsList").parent().find("span.select2-selection__placeholder")
       .text(placeholderText); 
 
@@ -547,7 +678,16 @@ function removePersonEvent(e) {
         }
     };
   }
-
+  // Validate if the person type is PL
+  if(person.isLeader()) {
+    messages +=
+        '<li>There must be one project leader per project. Please select another project leader before deleting this contact.</li>';
+    removeDialogOptions.buttons = {
+      Close: function() {
+        $(this).dialog("close");
+      }
+    };
+  }
   // Validate if there are any activity linked to this person
   if(activities > 0) {
     messages += '<li>This contact person cannot be deleted because he/she is leading activity(ies)';
@@ -614,6 +754,7 @@ function addItemList($option) {
 function addSelect2() {
 
   // Organization / institution
+  $("form select.institutionsList").select2(searchInstitutionsOptions(canUpdatePPAPartners));
   $("form select.institutionsList").parent().find("span.select2-selection__placeholder").text(placeholderText);
 
   // Role Selection
@@ -695,7 +836,10 @@ function PartnerObject(partner) {
       $(partner).find('.subDepartment').slideUp();
     }
   };
-
+  this.updateBlockContent = function() {
+    $(partner).find('.partnerTitle').text(this.institutionName);
+    this.validateGovernmentType();
+  };
   this.hasPartnerContributions = function() {
     var partners = [];
     var institutionId = this.institutionId;
@@ -718,13 +862,6 @@ function PartnerObject(partner) {
       }
     });
     return result;
-  };
-  this.isPPA = function() {
-    var instID = parseInt($(partner).find('.institutionsList').val());
-    if(instID == -1) {
-      $(partner).find("> .blockTitle .index").removeClass('ppa').text('Partner');
-      return false;
-    }
   };
   this.getRelationsNumber = function(relation) {
     var count = 0;
@@ -869,7 +1006,10 @@ function PartnerPersonObject(partnerPerson) {
   this.getPartnerType = function() {
     return $(partnerPerson).find('.partnerPersonType').val();
   };
-  
+  this.changeType = function() {
+    $(partnerPerson).removeClass(partnerPersonTypes.join(' ')).addClass(this.type);
+    this.setPartnerType(this.type);
+  };
   this.getRelationsNumber = function(relation) {
     return parseInt($(partnerPerson).find('.tag.' + relation + ' span').text()) || 0;
   };
@@ -884,6 +1024,9 @@ function PartnerPersonObject(partnerPerson) {
     $(partnerPerson).find(".userName").attr("name", "partner-" + partnerIndex + "-person-" + index);
     $(partnerPerson).find(".userName").attr("id", "partner-" + partnerIndex + "-person-" + index);
 
+  };
+  this.isLeader = function() {
+    return(this.type == leaderType);
   };
   this.remove = function() {
     var partner = new PartnerObject($(partnerPerson).parents('.projectPartner'));

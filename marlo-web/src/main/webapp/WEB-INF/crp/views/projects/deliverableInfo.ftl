@@ -142,15 +142,17 @@
       [#-- SHRFM contribution --]
       </br>
       [@deliverableMacros.shfmrContributionMacro /]
+
+      [#-- Single partner TEMPLATE from partnersTemplate.ftl --]
+      [@deliverableMacros.projectPartnerMacro  element={} name="deliverable.shfrmPriorityActions[-1]" isTemplate=true /]
+
+      [#-- Contact person TEMPLATE from partnersTemplate.ftl --]
+      [@deliverableMacros.contactPersonMacro element={} name="deliverable.shfrmPriorityActions[-1].shfrmSubActions[-1]" isTemplate=true /]
+
     [/#if]
     
 
-    [#-- Single partner TEMPLATE from partnersTemplate.ftl    --]
-    [@deliverableMacros.priorityActionsMacro element={} name="deliverable.shfrmPriorityActions[-1]" isTemplate=true /]
- 
-    [#-- Contact person TEMPLATE from partnersTemplate.ftl 
-    [@deliverableMacros.subActionsMacro element={} name="deliverable.shfrmPriorityActions[-1].shfrmSubActions[-1]" isTemplate=true /]
---]
+    
     
   [#-- Key Outputs select --]
   [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]
