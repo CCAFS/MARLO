@@ -133,7 +133,7 @@
       
     [#-- Title --]
       <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="priorityActionTitle">${(element.name)!'Priority Action'}</span> </span>            
-    [#if !isTemplate] 
+    [#if !isTemplate && element?has_content && element.id?has_content] 
       </br>
         <div class="pull-right">
           [@popUps.relationsMacro element=element labelText=true tag="shfrm" /]

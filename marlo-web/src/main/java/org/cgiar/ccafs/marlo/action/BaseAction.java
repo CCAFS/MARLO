@@ -5155,24 +5155,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.session;
   }
 
-  public List<Deliverable> getShfrmActionDeliverablesRelation(long shfrmPrimaryActionId) {
+  public List<Deliverable> getShfrmActionDeliverablesRelation(Long shfrmPrimaryActionId) {
+
     List<Deliverable> deliverablesRelated = new ArrayList<>();
-    List<DeliverableShfrmPriorityAction> deliverableShfrmPriorityActions =
-      deliverableShfrmPriorityActionManager.findAll().stream()
-        .filter(d -> d.getShfrmPriorityAction() != null && d.getShfrmPriorityAction().getId() != null
-          && d.getShfrmPriorityAction().getId().equals(shfrmPrimaryActionId) && d.getPhase() != null
-          && d.getPhase().getId().equals(this.getActualPhase().getId()))
-        .collect(Collectors.toList());
-    if (deliverableShfrmPriorityActions != null && !deliverableShfrmPriorityActions.isEmpty()) {
-      for (DeliverableShfrmPriorityAction deliverableShfrmPriorityAction : deliverableShfrmPriorityActions) {
-        if (deliverableShfrmPriorityAction != null && deliverableShfrmPriorityAction.getDeliverable() != null) {
-          Deliverable deliverableAdd = deliverableShfrmPriorityAction.getDeliverable();
-          deliverableAdd.setDeliverableInfo(deliverableAdd.getDeliverableInfo(getActualPhase()));
-          deliverablesRelated.add(deliverableShfrmPriorityAction.getDeliverable());
+    if (shfrmPrimaryActionId != null && shfrmPrimaryActionId != 0) {
+      List<DeliverableShfrmPriorityAction> deliverableShfrmPriorityActions = null;
+      try {
+        deliverableShfrmPriorityActions = deliverableShfrmPriorityActionManager.findAll().stream()
+          .filter(d -> d.getShfrmPriorityAction() != null && d.getShfrmPriorityAction().getId() != null
+            && d.getShfrmPriorityAction().getId().equals(shfrmPrimaryActionId) && d.getPhase() != null
+            && d.getPhase().getId().equals(this.getActualPhase().getId()))
+          .collect(Collectors.toList());
+      } catch (Exception e) {
+        Log.error("error getting shfrm " + e);
+      }
+      if (deliverableShfrmPriorityActions != null && !deliverableShfrmPriorityActions.isEmpty()) {
+        for (DeliverableShfrmPriorityAction deliverableShfrmPriorityAction : deliverableShfrmPriorityActions) {
+          if (deliverableShfrmPriorityAction != null && deliverableShfrmPriorityAction.getDeliverable() != null) {
+            Deliverable deliverableAdd = deliverableShfrmPriorityAction.getDeliverable();
+            deliverableAdd.setDeliverableInfo(deliverableAdd.getDeliverableInfo(getActualPhase()));
+            deliverablesRelated.add(deliverableShfrmPriorityAction.getDeliverable());
+          }
         }
       }
     }
-
     if (deliverablesRelated != null && !deliverablesRelated.isEmpty()) {
       return deliverablesRelated;
     } else {
