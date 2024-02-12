@@ -4004,9 +4004,8 @@ public class DeliverableAction extends BaseAction {
 
     // Search and deleted form Information
     try {
-      if (deliverable.getDeliverableShfrmPriorityAction() != null
-        && !deliverable.getDeliverableShfrmPriorityAction().isEmpty()) {
-        for (DeliverableShfrmPriorityAction priorityAction : deliverable.getDeliverableShfrmPriorityAction()) {
+      if (deliverable.getShfrmPriorityActions() != null && !deliverable.getShfrmPriorityActions().isEmpty()) {
+        for (DeliverableShfrmPriorityAction priorityAction : deliverable.getShfrmPriorityActions()) {
 
           if (priorityAction != null && priorityAction.getId() != null) {
             List<DeliverableShfrmSubAction> subActionPrev = new ArrayList<>();
@@ -4015,8 +4014,9 @@ public class DeliverableAction extends BaseAction {
 
             if (subActionPrev != null) {
               for (DeliverableShfrmSubAction subAction : subActionPrev) {
-                if (subAction != null && subAction.getId() != null && (priorityAction.getShfrmSubActions() == null
-                  || !priorityAction.getShfrmSubActions().contains(subAction))) {
+                if (subAction != null && subAction.getId() != null
+                  && (priorityAction.getShfrmSubActions() == null || (priorityAction.getShfrmSubActions() != null
+                    && !priorityAction.getShfrmSubActions().contains(subAction)))) {
                   this.deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(subAction.getId());
                 }
               }

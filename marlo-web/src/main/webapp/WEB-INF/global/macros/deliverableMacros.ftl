@@ -1643,13 +1643,15 @@
     [#if customForm.changedField('${name}.id') != '']
       <span class="label label-info pull-right">Added/Updated</span> 
     [/#if]
+    
+
     <div class="">
 
       <div class="form-group row">
        
-        [@customForm.elementsListComponent name="${name}.shfrmSubActions.id" elementType="shfrmSubAction" help="deliverable.shfrmContribution.subAction.help" helpIcon=false elementList=(element.shfrmSubActions)![] label="deliverable.shfrmContribution.subAction" listName="element.deliverableShfrmPriorityAction.shfrmPriorityAction.shfrmSubActions" keyFieldName="id" displayFieldName="composedName" required=true /]
-        [#--  
-        [@customForm.select name="${name}.shfrmSubAction.id" label="" i18nkey="deliverable.shfrmContribution.subAction" listName="element.deliverableShfrmPriorityAction.shfrmPriorityAction.shfrmSubActions" keyFieldName="id"  displayFieldName="composedName" multiple=false required=true className="countriesSelect" disabled=!editable/]
+        [@customForm.elementsListComponent name="${name}.shfrmSubAction.id" elementType="shfrmSubAction" help="deliverable.shfrmContribution.subAction.help" helpIcon=false label="deliverable.shfrmContribution.subAction" elementList=shfrmSubAction listName="(element.deliverableShfrmPriorityAction.shfrmSubActions)![]" keyFieldName="id" displayFieldName="name" required=true /]
+        [#--
+        [@customForm.select name="${name}.shfrmSubAction.id" label="" i18nkey="deliverable.shfrmContribution.subAction" listName="(element.deliverableShfrmPriorityAction.shfrmSubActions)![]" keyFieldName="id"  displayFieldName="name" multiple=false required=true className="countriesSelect" disabled=!editable/]
 --]
       </div>
            
