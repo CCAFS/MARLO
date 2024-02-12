@@ -4004,24 +4004,53 @@ public class DeliverableAction extends BaseAction {
 
     // Search and deleted form Information
     try {
-      if (deliverable.getShfrmPriorityActions() != null && !deliverable.getShfrmPriorityActions().isEmpty()) {
+      if (this.deliverable.getShfrmPriorityActions() != null && !this.deliverable.getShfrmPriorityActions().isEmpty()) {
         for (DeliverableShfrmPriorityAction priorityAction : deliverable.getShfrmPriorityActions()) {
 
-          if (priorityAction != null && priorityAction.getId() != null) {
-            List<DeliverableShfrmSubAction> subActionPrev = new ArrayList<>();
-            subActionPrev = deliverableShfrmSubActionManager.findByPriorityActionAndPhase(priorityAction.getId(),
-              this.getActualPhase().getId());
 
-            if (subActionPrev != null) {
-              for (DeliverableShfrmSubAction subAction : subActionPrev) {
-                if (subAction != null && subAction.getId() != null
-                  && (priorityAction.getShfrmSubActions() == null || (priorityAction.getShfrmSubActions() != null
-                    && !priorityAction.getShfrmSubActions().contains(subAction)))) {
-                  this.deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(subAction.getId());
+          /*************/
+          List<Long> existingIds = new ArrayList<>();
+
+
+          List<DeliverableShfrmSubAction> subPrev = deliverableShfrmSubActionManager
+            .findByPriorityActionAndPhase(priorityAction.getId(), this.getActualPhase().getId());
+
+          if (priorityAction.getShfrmSubActions() != null) {
+
+            for (DeliverableShfrmSubAction shfrmSubDeliverable : priorityAction.getShfrmSubActions()) {
+              if (shfrmSubDeliverable != null && shfrmSubDeliverable.getId() != null) {
+                existingIds.add(shfrmSubDeliverable.getId());
+              }
+            }
+
+            if (subPrev != null) {
+              for (DeliverableShfrmSubAction subAction : subPrev) {
+                if (subAction != null && subAction.getId() != null) {
+
+                  if (!existingIds.contains(subAction.getId())) {
+                    deliverableShfrmPriorityActionManager.deleteDeliverableShfrmPriorityAction(subAction.getId());
+                  }
+
+                }
+              }
+            }
+          } else {
+            // Delete all in DB
+            if (subPrev != null && !subPrev.isEmpty()) {
+              for (DeliverableShfrmSubAction subAction : subPrev) {
+                if (subAction != null && subAction.getId() != null) {
+
+                  if (!existingIds.contains(subAction.getId())) {
+                    deliverableShfrmPriorityActionManager.deleteDeliverableShfrmPriorityAction(subAction.getId());
+                  }
+
                 }
               }
             }
           }
+
+          /***************/
+
         }
 
       }
