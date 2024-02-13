@@ -137,6 +137,7 @@
       <span class="icon-20 icon-uncheck" title=""></span> There are required fields still incompleted
     [/#if]
   </div>
+
      
     [#if action.hasSpecificities('shfrm_contribution_active') ]
       [#-- SHRFM contribution --]
@@ -147,7 +148,9 @@
       [@deliverableMacros.projectPartnerMacro  element={} name="deliverable.shfrmPriorityActions[-1]" isTemplate=true /]
 
       [#-- Contact person TEMPLATE from partnersTemplate.ftl --]
-      [@deliverableMacros.contactPersonMacro element={} name="deliverable.shfrmPriorityActions[-1].shfrmSubActions[-1]" isTemplate=true /]
+      [@deliverableMacros.contactPersonMacro element={} allSubActions=[] name="deliverable.shfrmPriorityActions[-1].shfrmSubActions[-1]" isTemplate=true /]
+
+      [@deliverableMacros.subActionItemMacro subActionItem={} name="deliverable.shfrmPriorityActions[-1].shfrmSubActions" index=-1 isTemplate=true /]
 
     [/#if]
     
