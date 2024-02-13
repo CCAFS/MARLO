@@ -66,8 +66,10 @@ public class DeliverableShfrmSubActionManagerImpl implements DeliverableShfrmSub
     Phase phase = phaseDAO.find(next.getId());
 
     DeliverableShfrmSubAction deliverableShfrmSubActionDelete = new DeliverableShfrmSubAction();
-    deliverableShfrmSubActionDelete = deliverableShfrmSubActionDAO.findByPriorityActionAndPhase(
-      deliverableShfrmSubAction.getDeliverableShfrmPriorityAction().getId(), phase.getId()).get(0);
+    deliverableShfrmSubActionDelete = deliverableShfrmSubActionDAO
+      .findByPriorityActionPhaseAndSubAction(deliverableShfrmSubAction.getDeliverableShfrmPriorityAction().getId(),
+        phase.getId(), deliverableShfrmSubAction.getShfrmSubAction().getId())
+      .get(0);
 
     if (deliverableShfrmSubActionDelete != null) {
       deliverableShfrmSubActionDAO.deleteDeliverableShfrmSubAction(deliverableShfrmSubActionDelete.getId());
@@ -98,6 +100,13 @@ public class DeliverableShfrmSubActionManagerImpl implements DeliverableShfrmSub
   }
 
   @Override
+  public List<DeliverableShfrmSubAction> findByPriorityActionPhaseAndSubAction(long priorityActionId, long phaseId,
+    long shfrmSubActionId) {
+    return deliverableShfrmSubActionDAO.findByPriorityActionPhaseAndSubAction(priorityActionId, phaseId,
+      shfrmSubActionId);
+  }
+
+  @Override
   public DeliverableShfrmSubAction getDeliverableShfrmSubActionById(long deliverableShfrmSubActionID) {
 
     return deliverableShfrmSubActionDAO.find(deliverableShfrmSubActionID);
@@ -121,8 +130,10 @@ public class DeliverableShfrmSubActionManagerImpl implements DeliverableShfrmSub
     Phase phase = phaseDAO.find(next.getId());
     DeliverableShfrmSubAction deliverableShfrmSubActionPhase = new DeliverableShfrmSubAction();
     try {
-      deliverableShfrmSubActionPhase = deliverableShfrmSubActionDAO.findByPriorityActionAndPhase(
-        deliverableShfrmSubAction.getDeliverableShfrmPriorityAction().getId(), phase.getId()).get(0);
+      deliverableShfrmSubActionPhase = deliverableShfrmSubActionDAO
+        .findByPriorityActionPhaseAndSubAction(deliverableShfrmSubAction.getDeliverableShfrmPriorityAction().getId(),
+          phase.getId(), deliverableShfrmSubAction.getShfrmSubAction().getId())
+        .get(0);
     } catch (Exception e) {
       logger.error("error getting deliverableShfrmSubActionPhase: " + e);
     }
@@ -130,12 +141,14 @@ public class DeliverableShfrmSubActionManagerImpl implements DeliverableShfrmSub
     if (deliverableShfrmSubActionPhase != null) {
       DeliverableShfrmSubAction deliverableShfrmSubActionAdd = deliverableShfrmSubActionPhase;
       deliverableShfrmSubActionAdd.setPhase(phase);
+      deliverableShfrmSubActionAdd.setShfrmSubAction(deliverableShfrmSubAction.getShfrmSubAction());
       deliverableShfrmSubActionAdd
         .setDeliverableShfrmPriorityAction(deliverableShfrmSubAction.getDeliverableShfrmPriorityAction());
       deliverableShfrmSubActionDAO.save(deliverableShfrmSubActionAdd);
     } else {
       DeliverableShfrmSubAction deliverableShfrmSubActionAdd = new DeliverableShfrmSubAction();
       deliverableShfrmSubActionAdd.setPhase(phase);
+      deliverableShfrmSubActionAdd.setShfrmSubAction(deliverableShfrmSubAction.getShfrmSubAction());
       deliverableShfrmSubActionAdd
         .setDeliverableShfrmPriorityAction(deliverableShfrmSubAction.getDeliverableShfrmPriorityAction());
       deliverableShfrmSubActionDAO.save(deliverableShfrmSubActionAdd);

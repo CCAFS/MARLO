@@ -2346,11 +2346,6 @@ public class DeliverableAction extends BaseAction {
 
       // this.saveProjectOutcomes(deliverableDB, this.getActualPhase());
       this.saveCrpOutcomes(deliverableDB, this.getActualPhase());
-      // SHFRM contribution
-      if (this.hasSpecificities(APConstants.SHFRM_CONTRIBUTION_ACTIVE)) {
-        this.savePriorityActions(deliverableManagedState, this.getActualPhase());
-        this.saveSubActions(deliverableManagedState, this.getActualPhase());
-      }
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -2406,6 +2401,12 @@ public class DeliverableAction extends BaseAction {
         if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
           this.saveDeliverableClusterParticipant();
         }
+      }
+
+      // SHFRM contribution
+      if (this.hasSpecificities(APConstants.SHFRM_CONTRIBUTION_ACTIVE)) {
+        this.savePriorityActions();
+        this.saveSubActions();
       }
 
       /*
@@ -3652,13 +3653,13 @@ public class DeliverableAction extends BaseAction {
    * @param deliverable
    * @param phase
    */
-  public void savePriorityActions(Deliverable deliverable, Phase phase) {
+  public void savePriorityActions() {
 
     // Search and deleted form Information
     try {
 
-      List<DeliverableShfrmPriorityAction> actionPrev =
-        deliverableShfrmPriorityActionManager.findByDeliverableAndPhase(deliverable.getId(), phase.getId());
+      List<DeliverableShfrmPriorityAction> actionPrev = deliverableShfrmPriorityActionManager
+        .findByDeliverableAndPhase(deliverable.getId(), this.getActualPhase().getId());
 
       if (this.deliverable.getShfrmPriorityActions() != null) {
         List<Long> existingIds = new ArrayList<>();
@@ -3701,7 +3702,7 @@ public class DeliverableAction extends BaseAction {
           // For new deliverable Priority Actions
           if (deliverablePriorityActions.getId() == null) {
             deliverablePriorityActionsSave.setDeliverable(deliverable);
-            deliverablePriorityActionsSave.setPhase(phase);
+            deliverablePriorityActionsSave.setPhase(this.getActualPhase());
           } else {
             // For old deliverable Priority Actions
             try {
@@ -3721,7 +3722,7 @@ public class DeliverableAction extends BaseAction {
             if (deliverable != null && priorityAction != null && priorityAction.getId() != null) {
               deliverablePriorityActionsSave.setDeliverable(deliverable);
               deliverablePriorityActionsSave.setShfrmPriorityAction(priorityAction);
-              deliverablePriorityActionsSave.setPhase(phase);
+              deliverablePriorityActionsSave.setPhase(this.getActualPhase());
             }
 
             this.deliverableShfrmPriorityActionManager
@@ -4000,20 +4001,23 @@ public class DeliverableAction extends BaseAction {
    * @param deliverable
    * @param phase
    */
-  public void saveSubActions(Deliverable deliverable, Phase phase) {
+  public void saveSubActions() {
 
     // Search and deleted form Information
     try {
       if (this.deliverable.getShfrmPriorityActions() != null && !this.deliverable.getShfrmPriorityActions().isEmpty()) {
-        for (DeliverableShfrmPriorityAction priorityAction : deliverable.getShfrmPriorityActions()) {
+        for (DeliverableShfrmPriorityAction priorityAction : this.deliverable.getShfrmPriorityActions()) {
 
 
           /*************/
           List<Long> existingIds = new ArrayList<>();
-
-
-          List<DeliverableShfrmSubAction> subPrev = deliverableShfrmSubActionManager
-            .findByPriorityActionAndPhase(priorityAction.getId(), this.getActualPhase().getId());
+          List<DeliverableShfrmSubAction> subPrev = new ArrayList<>();
+          try {
+            subPrev = deliverableShfrmSubActionManager.findByPriorityActionAndPhase(priorityAction.getId(),
+              this.getActualPhase().getId());
+          } catch (Exception e) {
+            logger.error("No sub actions added ", e);
+          }
 
           if (priorityAction.getShfrmSubActions() != null) {
 
@@ -4028,7 +4032,7 @@ public class DeliverableAction extends BaseAction {
                 if (subAction != null && subAction.getId() != null) {
 
                   if (!existingIds.contains(subAction.getId())) {
-                    deliverableShfrmPriorityActionManager.deleteDeliverableShfrmPriorityAction(subAction.getId());
+                    deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(subAction.getId());
                   }
 
                 }
@@ -4041,7 +4045,7 @@ public class DeliverableAction extends BaseAction {
                 if (subAction != null && subAction.getId() != null) {
 
                   if (!existingIds.contains(subAction.getId())) {
-                    deliverableShfrmPriorityActionManager.deleteDeliverableShfrmPriorityAction(subAction.getId());
+                    deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(subAction.getId());
                   }
 
                 }
@@ -4066,38 +4070,43 @@ public class DeliverableAction extends BaseAction {
           for (DeliverableShfrmSubAction deliverableSubAction : deliverablePriorityAction.getShfrmSubActions()) {
             deliverableSubActionSave = new DeliverableShfrmSubAction();
 
-
             if (deliverableSubAction != null) {
-              // For new deliverable Priority Actions
-              if (deliverableSubAction.getId() == null) {
-                deliverableSubActionSave.setDeliverableShfrmPriorityAction(deliverablePriorityAction);
-                deliverableSubActionSave.setPhase(phase);
-              } else {
-                // For old deliverable Priority Actions
-                try {
-                  if (deliverableSubAction.getId() != null) {
-                    deliverableSubActionSave =
-                      deliverableShfrmSubActionManager.getDeliverableShfrmSubActionById(deliverableSubAction.getId());
-                  }
-                } catch (Exception e) {
-                  logger.error("unable to get old deliverable sub Actions", e);
-                }
-              }
-
               if (deliverableSubAction.getShfrmSubAction() != null
                 && deliverableSubAction.getShfrmSubAction().getId() != null) {
                 ShfrmSubAction subAction =
                   shfrmSubActionManager.getShfrmSubActionById(deliverableSubAction.getShfrmSubAction().getId());
                 if (subAction != null) {
-                  deliverableSubActionSave.setDeliverableShfrmPriorityAction(deliverablePriorityAction);
-                  deliverableSubActionSave.setShfrmSubAction(subAction);
-                  deliverableSubActionSave.setPhase(phase);
-                }
+                  // For new deliverable Priority Actions
+                  if (deliverableSubAction.getId() == null || deliverableSubAction.getId() == -1) {
+                    deliverableSubActionSave.setId(null);
+                    deliverableSubActionSave.setDeliverableShfrmPriorityAction(deliverablePriorityAction);
+                    deliverableSubActionSave.setPhase(this.getActualPhase());
+                    deliverableSubActionSave.setShfrmSubAction(subAction);
+                    this.deliverableShfrmSubActionManager.saveDeliverableShfrmSubAction(deliverableSubActionSave);
 
-                this.deliverableShfrmSubActionManager.saveDeliverableShfrmSubAction(deliverableSubActionSave);
-                // This is to add deliverablePriorityActions to generate correct auditlog.
-                if (!this.deliverable.getDeliverableShfrmSubAction().contains(deliverableSubActionSave)) {
-                  this.deliverable.getDeliverableShfrmSubAction().add(deliverableSubActionSave);
+                  } else {
+                    // For old deliverable Priority Actions
+                    try {
+                      deliverableSubActionSave =
+                        deliverableShfrmSubActionManager.getDeliverableShfrmSubActionById(deliverableSubAction.getId());
+                      if (deliverableSubActionSave != null) {
+                        deliverableSubActionSave.setDeliverableShfrmPriorityAction(deliverablePriorityAction);
+                        deliverableSubActionSave.setPhase(this.getActualPhase());
+                        deliverableSubActionSave.setShfrmSubAction(subAction);
+                        this.deliverableShfrmSubActionManager.saveDeliverableShfrmSubAction(deliverableSubActionSave);
+                      }
+
+                    } catch (Exception e) {
+                      logger.error("unable to get old deliverable sub Actions", e);
+                    }
+                  }
+
+                  // This is to add deliverablePriorityActions to generate correct auditlog.
+                  /*
+                   * if (!this.deliverable.getDeliverableShfrmSubAction().contains(deliverableSubActionSave)) {
+                   * this.deliverable.getDeliverableShfrmSubAction().add(deliverableSubActionSave);
+                   * }
+                   */
                 }
               }
             }
