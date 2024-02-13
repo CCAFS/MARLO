@@ -1534,12 +1534,10 @@
       <br>    
       [#-- Shfrm Priority Action --]
       <div class="form-group">
-      [#--  
-              [@customForm.select name="deliverable.shfrmPriorityActions" label="" showTitle=true    i18nkey="deliverable.shfrmContribution.priorityAction" listName="shfrmPriorityActions"  multiple=true header=true required=true className="activity" editable=editable  keyFieldName="id" displayFieldName="composedName"/]
-
-      --]
-
-        [@customForm.elementsListComponent id="deliverablePriorityActions" name="deliverable.shfrmPriorityActions" elementType="shfrmPriorityAction" help="deliverable.shfrmContribution.priorityAction.help" helpIcon=false elementList=(deliverable.shfrmPriorityActions)![] label="deliverable.shfrmContribution.priorityAction" listName="shfrmPriorityActions" keyFieldName="id" displayFieldName="composedName" required=true /]
+       
+        <div id="actionsListReference">
+          [@customForm.elementsListComponent id="deliverablePriorityActions" name="deliverable.shfrmPriorityActions" elementType="shfrmPriorityAction" help="deliverable.shfrmContribution.priorityAction.help" helpIcon=false elementList=(deliverable.shfrmPriorityActions)![] label="deliverable.shfrmContribution.priorityAction" listName="shfrmPriorityActions" keyFieldName="id" displayFieldName="composedName" required=true /]
+        </div>
        
       </div>
       
@@ -1552,28 +1550,38 @@
           
             [#-- Priority actions list --]
             <div id="projectPartnersBlock" class="simpleBox" listname="deliverable.shfrmPriorityActions">
-
+            
               [#if deliverable.shfrmPriorityActions?has_content]
                 [#list deliverable.shfrmPriorityActions as priorityAction]
                   [@projectPartnerMacro element=priorityAction!{} name="deliverable.shfrmPriorityActions[${priorityAction_index}]" index=priorityAction_index opened=(deliverable.shfrmPriorityActions?size = 1)/]
-                [/#list]
+                [/#list] 
               [#else]
-              [#--  
-                [@priorityActionsMacro element={} name="deliverable.shfrmPriorityActions[0].shfrmPriorityAction" index=0 opened=true defaultPerson=true /]
-              --]
                 <p class="noContactMessage">[@s.text name="shfrmManagement.actionsEmpty" /]</p>     
               [/#if] 
-              <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="shfrmManagement.priorityActions.add" /]</div>
+            <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="shfrmManagement.priorityActions.add" /]</div>
             </div> 
-              [#--  
-                <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="shfrmManagement.priorityActions.add" /]</div>
-                  --]
+     
       </div>
       
     </div>
   </div>
   <br>
 [/#macro]
+
+
+[#macro subActionItemMacro subActionItem name index=-1 isTemplate=false]
+  [#assign deliverableCustomName = "${name}[${index}]" /]
+  <div id="deliverableActivity-${isTemplate?string('template',(projectActivity.id)!)}" class="deliverableActivity"  style="display:${isTemplate?string('none','block')}">
+    [#if editable]<div class="removeDeliverable removeIcon" title="Remove deliverable"></div>[/#if]
+     <input type="hidden" name="${deliverableCustomName}.id" value="${(subActionItem.id)!-1}" />
+    <input class="id" type="hidden" name="${deliverableCustomName}.shfrmSubAction.id" value="${(subActionItem.shfrmSubAction.id)!-1}" />
+    <input class="name" type="hidden" name="${deliverableCustomName}.shfrmSubAction.name" value="${(subActionItem.shfrmSubAction.name)!'null'}" />
+    [#--  <input class="idTable" type="hidden" name="${deliverableCustomName}.id" value="${(subActionItem.id)!-1}" />  --]
+    <span class="name">${(subActionItem.shfrmSubAction.name)!'null'}</span>
+    <div class="clearfix"></div>
+  </div>
+[/#macro]
+
 
 
 [#macro projectPartnerMacro element name index=-1 opened=false defaultPerson=false isTemplate=false]
@@ -1597,29 +1605,29 @@
     <div class="blockContent" style="display:${opened?string('block','none')}">
       <hr />
             
-      [#-- Action name  
-      <input id="id" class="partnerPersonId" type="hidden" name="${name}.id" value="${(element.id)!}" />
-      <input type="hidden"  name="${customName}.id"         class="id"              value="${(element.id)!}" />
-                --]
-      
  
       
       [#-- Sub Actions  --]
       <div class="contactsPerson panel tertiary">
-        <h5 class="sectionSubTitle">[@s.text name="shfrmManagement.subActions.add" /] <small>[@customForm.req required=true /]</small></h5>
-        <div class="fullPartBlock" listname="(${name}.shfrmSubActions)![]">
-        [#-- Sub Actions --]
-          [#if element.shfrmSubActions?has_content]
-            [#list element.shfrmSubActions as subAction]
-              [@contactPersonMacro element=subAction name="${name}.shfrmSubActions[${subAction_index}]" index=subAction_index partnerIndex=index institutionID=(element.institution.id)! /]
-            [/#list]
-          [#else]            
-              <p class="noContactMessage">[@s.text name="shfrmManagement.subActionsEmpty" /]</p>
-          [/#if]  
 
-          [#if (editable && canEdit)]
-            <div class="addContact bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="shfrmManagement.subActions.add"/]</div>
-          [/#if]
+        <div class="fullPartBlock" listname="(${name}.shfrmSubActions)![]">
+
+          <div class="subSectionsSelector" actionindex="${index}">
+            <div class="deliverableWrapper simpleBox form-group" >
+              [#if element.shfrmSubActions?has_content]
+                [#list (element.shfrmSubActions)![] as subActionListItem]
+                    [@subActionItemMacro subActionItem=subActionListItem name="${name}.shfrmSubActions"  index=subActionListItem_index /]
+                [/#list]
+              [/#if]
+            </div>
+  
+            [#if editable]
+             <h5 class="sectionSubTitle">[@s.text name="shfrmManagement.subActions.add" /] <small>[@customForm.req required=true /]</small></h5>
+             <div class="form-group">  
+              [@customForm.select name="" label=""  i18nkey="project.activities.deliverableSelect" listName="${name}.shfrmPriorityAction.shfrmSubActions" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" deliverableList" disabled=!editable/]
+            </div>  
+            [/#if]
+          </div>
 
         </div>
       </div>
@@ -1629,7 +1637,7 @@
   </div>
 [/#macro]
 
-[#macro contactPersonMacro element name index=-1 partnerIndex=-1 isTemplate=false institutionID=-1]
+[#macro contactPersonMacro element allSubActions name index=-1 partnerIndex=-1 isTemplate=false institutionID=-1]
   <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}" listname="partner-${partnerIndex}-person-${index}">
     [#-- Remove link for all partners --]
     [#if editable]
@@ -1646,8 +1654,15 @@
     
 
     <div class="">
+      <h1>In sua => Actions size: ${allSubActions?size}</h1>
+
+
+      [#list allSubActions as ctrlistitemmmm]
+          <p>&nbsp;&nbsp;&nbsp;&nbsp; * ctrl   name: ${(ctrlistitemmmm.name)!'Empty name'} - id: ${(ctrlistitemmmm.id)!'Empty id'}</p> 
+      [/#list]
 
       <div class="form-group row">
+
        
         [@customForm.elementsListComponent name="${name}.shfrmSubAction.id" elementType="shfrmSubAction" help="deliverable.shfrmContribution.subAction.help" helpIcon=false label="deliverable.shfrmContribution.subAction" elementList=shfrmSubAction listName="(element.deliverableShfrmPriorityAction.shfrmSubActions)![]" keyFieldName="id" displayFieldName="name" required=true /]
         [#--

@@ -17,10 +17,10 @@ function init() {
   coordinatorType = 'PC';
   defaultType = 'CP';
   partnerPersonTypes = [
-      coordinatorType, leaderType, defaultType, '-1'
+    coordinatorType, leaderType, defaultType, '-1'
   ];
 
-  if(editable) {
+  if (editable) {
     // Getting the actual project leader
     projectLeader = jQuery.extend({}, getProjectLeader());
     // Update initial project CCAFS partners list for each partner
@@ -30,10 +30,10 @@ function init() {
   // Activate the chosen to the existing partners
   addSelect2();
 
-  addUser = function(composedName,userId) {
+  addUser = function (composedName, userId) {
     var $contact = $elementSelected.parents('.contactsPerson ').find('input[value="' + userId + '"]');
 
-    if(!$contact.exists()) {
+    if (!$contact.exists()) {
       $elementSelected.parents('.userField ').find("input.userName").val(composedName).addClass('animated flash');
       $elementSelected.parents('.userField ').find("input.userId").val(userId);
     } else {
@@ -50,14 +50,14 @@ function init() {
   attachEvents();
 
   // Set the unique person as leader
- /*
-   * if(editable){ var contactPeople = $partnersBlock.find('.projectPartner'); if ((contactPeople.length == 1)){ var
-   * person = new PartnerPersonObject(contactPeople); person.setPartnerType(leaderType); person.changeType(); } }
-   */
+  /*
+    * if(editable){ var contactPeople = $partnersBlock.find('.projectPartner'); if ((contactPeople.length == 1)){ var
+    * person = new PartnerPersonObject(contactPeople); person.setPartnerType(leaderType); person.changeType(); } }
+    */
 
-  $('.loadingBlock').hide().next().fadeIn(500, function() {
+  $('.loadingBlock').hide().next().fadeIn(500, function () {
     // Missing fields in parter person
-    $("form .projectPartner ").each(function(i,e) {
+    $("form .projectPartner ").each(function (i, e) {
       verifyMissingFields(e);
     });
     showHelpText();
@@ -65,6 +65,89 @@ function init() {
   });
 
   $("textarea[id!='justification']").autoGrow();
+  $(".deliverableList").on("change", addDeliverable);
+}
+
+// Add a new deliverable element
+function addDeliverable() {
+  var option = $(this).find("option:selected");
+  console.log(option)
+  var canAdd = true;
+  if (option.val() == "-1") {
+    canAdd = false;
+  }
+
+  var $list = $(this).parents(".select").parent().parent().find(".deliverableWrapper");
+  var $item = $("#deliverableActivity-template").clone(true).removeAttr("id");
+  console.log($item)
+  var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
+
+  // Check if is already selected
+  $list.find('.deliverableActivity').each(function (i, e) {
+    if ($(e).find('input.id').val() == option.val()) {
+      canAdd = false;
+      return;
+    }
+  });
+
+  // Reset select
+  $(this).val("-1");
+  $(this).trigger('change.select2');
+
+  if (!canAdd) {
+    return;
+  }
+
+  // Set deliverable parameters
+  $item.find(".name").attr("title", $(option).text());
+  $item.find(".name").val($(option).text());
+  $item.find(".name").html(v);
+  $item.find(".id").val(option.val());
+  $list.append($item);
+  $item.show('slow');
+  // var $actionContainer = $(this).parents(".fullPartBlock");
+  // var activityIndex = $activity.find(".index").html();
+  updateDeliverable(this);
+  checkItems($list);
+
+}
+
+function checkItems(block) {
+  console.log(block);
+  var items = $(block).find('.deliverableActivity').length;
+  if (items == 0) {
+    $(block).parent().find('p.inf').fadeIn();
+  } else {
+    $(block).parent().find('p.inf').fadeOut();
+  }
+}
+
+
+function updateDeliverable(currentElement) {
+
+  console.clear();
+
+  var $subSectionsSelector = $(currentElement).parents(".subSectionsSelector");
+  var actionindex = $subSectionsSelector.attr("actionindex");
+  console.log($subSectionsSelector)
+  console.log(actionindex)
+
+
+  let itemsSize = Number($('#actionsListReference').find('.list').length ?? 0);
+  itemsSize && itemsSize++;
+
+  console.log(itemsSize)
+
+
+  $subSectionsSelector.find('.deliverableActivity').each(function (indexDeliverable, deliverableItem) {
+    // console.log(indexDeliverable);
+    // console.log(deliverableItem)
+    console.log(actionindex)
+    // Set activity indexes
+    $(deliverableItem).setNameIndexes(1, actionindex);
+    // Set indexes
+    $(deliverableItem).setNameIndexes(2, indexDeliverable);
+  });
 }
 
 function attachEvents() {
@@ -73,8 +156,8 @@ function attachEvents() {
    * General
    */
 
-  $('.blockTitle').on('click', function() {
-    if($(this).hasClass('closed')) {
+  $('.blockTitle').on('click', function () {
+    if ($(this).hasClass('closed')) {
       $('.blockContent').slideUp();
       $('.blockTitle').removeClass('opened').addClass('closed');
       $(this).removeClass('closed').addClass('opened');
@@ -82,27 +165,27 @@ function attachEvents() {
       $(this).removeClass('opened').addClass('closed');
     }
 
-    $(this).next().slideToggle(500, function() {
+    $(this).next().slideToggle(500, function () {
       $(this).find('textarea').autoGrow();
       $(this).find(".errorTag").hide();
       $(this).find(".errorTag").css("left", $(this).outerWidth());
       $(this).find(".errorTag").fadeIn(1000);
 
       // Scroll to selected partner
-      $('html, body').animate({scrollTop: $(this).offset().top - 100}, 500);
+      $('html, body').animate({ scrollTop: $(this).offset().top - 100 }, 500);
     });
   });
 
-  $('.button-save').on('click', function(e) {
+  $('.button-save').on('click', function (e) {
     var missingFields = 0
-    $('form select.institutionsList').each(function(i,e){
-      if(!e.value){
+    $('form select.institutionsList').each(function (i, e) {
+      if (!e.value) {
         missingFields++;
       }
     });
 
     // Validate if there are missing fields
-    if(missingFields) {
+    if (missingFields) {
       e.preventDefault();
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
       notyOptions.text = "You must select a partner organization";
@@ -123,58 +206,58 @@ function attachEvents() {
   // When Partner Type change
   $("select.partnerTypes, select.countryList").change(updateOrganizationsList);
   // When name change
-  $("input.name").on("change", function(e) {
+  $("input.name").on("change", function (e) {
     find('.priorityActionTitle').text(this.name);
-  }); 
+  });
   // When organization change
-  $("select.institutionsList").on("change", function(e) {
+  $("select.institutionsList").on("change", function (e) {
     var partner = new PartnerObject($(this).parents('.projectPartner'));
     // Update Partner Title
     partner.updateBlockContent();
 
     // Get Countries from Institution ID
     $.ajax({
-        url: baseURL + "/institutionBranchList.do",
-        data: {
-          institutionID: $(this).val(),
-          phaseID: phaseID
-        },
-        beforeSend: function() {
-          partner.startLoader();
-        },
-        success: function(data) {
-          partner.clearCountries();
+      url: baseURL + "/institutionBranchList.do",
+      data: {
+        institutionID: $(this).val(),
+        phaseID: phaseID
+      },
+      beforeSend: function () {
+        partner.startLoader();
+      },
+      success: function (data) {
+        partner.clearCountries();
 
-          $(partner.countriesSelect).empty();
-          $(partner.countriesSelect).addOption(-1, "Select a country...");
+        $(partner.countriesSelect).empty();
+        $(partner.countriesSelect).addOption(-1, "Select a country...");
 
-          // Validate if the current partner is not selected, then add the countries
-          if(!($('input.institutionsList[value=' + partner.institutionId + ']').exists())) {
-            $.each(data.branches, function(index,branch) {
+        // Validate if the current partner is not selected, then add the countries
+        if (!($('input.institutionsList[value=' + partner.institutionId + ']').exists())) {
+          $.each(data.branches, function (index, branch) {
 
-              if((branch.name).indexOf("HQ") != "-1") {
-                partner.addCountry({
-                    iso: branch.iso,
-                    name: branch.name
-                });
-              } else {
-                $(partner.countriesSelect).addOption(branch.iso, branch.name);
-              }
-            });
-          }
-
-          $(partner.countriesSelect).trigger("change.select2");
-        },
-        complete: function() {
-          partner.stopLoader();
+            if ((branch.name).indexOf("HQ") != "-1") {
+              partner.addCountry({
+                iso: branch.iso,
+                name: branch.name
+              });
+            } else {
+              $(partner.countriesSelect).addOption(branch.iso, branch.name);
+            }
+          });
         }
+
+        $(partner.countriesSelect).trigger("change.select2");
+      },
+      complete: function () {
+        partner.stopLoader();
+      }
     });
 
     // Update PPA Partners List
     updateProjectPPAPartnersLists(e);
   });
   // Partnership Geographic Scope
-  $(".geographicScopeSelect").on('change', function(){
+  $(".geographicScopeSelect").on('change', function () {
     var $partner = $(this).parents('.projectPartner');
     var $regionalBlock = $partner.find('.regionalBlock');
     var $nationalBlock = $partner.find('.nationalBlock');
@@ -185,16 +268,16 @@ function attachEvents() {
     var isSubNational = this.value == 5;
 
     // Regions
-    if(isRegional){
+    if (isRegional) {
       $regionalBlock.show();
-    }else{
+    } else {
       $regionalBlock.hide();
     }
 
     // Countries
     $nationalBlock.find("select").val(null).trigger('change');
-    if(isMultiNational || isNational || isSubNational){
-      if (isMultiNational){
+    if (isMultiNational || isNational || isSubNational) {
+      if (isMultiNational) {
         $nationalBlock.find("select").select2({
           maximumSelectionLength: 0,
           placeholder: "Select a country(ies)",
@@ -202,7 +285,7 @@ function attachEvents() {
           templateSelection: formatStateCountries,
           width: '100%'
         });
-      }else{
+      } else {
         $nationalBlock.find("select").select2({
           maximumSelectionLength: 1,
           placeholder: "Select a country(ies)",
@@ -212,7 +295,7 @@ function attachEvents() {
         });
       }
       $nationalBlock.show();
-    }else{
+    } else {
       $nationalBlock.hide();
     }
 
@@ -226,65 +309,65 @@ function attachEvents() {
 
   // Request country office
   $('#requestModal').on(
-      'show.bs.modal',
-      function(event) {
-        $.noty.closeAll();
-        var partner = new PartnerObject($(event.relatedTarget).parents('.projectPartner'));
+    'show.bs.modal',
+    function (event) {
+      $.noty.closeAll();
+      var partner = new PartnerObject($(event.relatedTarget).parents('.projectPartner'));
 
-        var $modal = $(this);
-        // Show Form & button
-        $modal.find('form, .requestButton').show();
-        $modal.find('.messageBlock').hide();
-        $modal.find('input.institution_id').val(partner.institutionId);
-        $modal.find('select.countriesRequest').val(null).trigger('select2:change');
-        $modal.find('select.countriesRequest').trigger('change');
-        $modal.find('.modal-title').html(
-            'Request Country office(s) <br /><small>(' + partner.institutionName + ')</small>');
-      });
-  $('#requestModal button.requestButton').on('click', function() {
+      var $modal = $(this);
+      // Show Form & button
+      $modal.find('form, .requestButton').show();
+      $modal.find('.messageBlock').hide();
+      $modal.find('input.institution_id').val(partner.institutionId);
+      $modal.find('select.countriesRequest').val(null).trigger('select2:change');
+      $modal.find('select.countriesRequest').trigger('change');
+      $modal.find('.modal-title').html(
+        'Request Country office(s) <br /><small>(' + partner.institutionName + ')</small>');
+    });
+  $('#requestModal button.requestButton').on('click', function () {
     var $modal = $(this).parents('.modal');
-    if($modal.find('select.countriesRequest').val() == null) {
+    if ($modal.find('select.countriesRequest').val() == null) {
       return
 
     }
 
     $.ajax({
-        url: baseURL + '/requestCountryOffice.do',
-        data: $('#requestModal form').serialize(),
-        beforeSend: function(data) {
-          $modal.find('.loading').fadeIn();
-        },
-        success: function(data) {
-          console.log(data);
-          if(data.sucess.result == "1") {
-            // Hide Form & button
-            $modal.find('form, .requestButton').hide();
-            $modal.find('.messageBlock').show();
+      url: baseURL + '/requestCountryOffice.do',
+      data: $('#requestModal form').serialize(),
+      beforeSend: function (data) {
+        $modal.find('.loading').fadeIn();
+      },
+      success: function (data) {
+        console.log(data);
+        if (data.sucess.result == "1") {
+          // Hide Form & button
+          $modal.find('form, .requestButton').hide();
+          $modal.find('.messageBlock').show();
 
-            // Noty Message
-            /*
-             * var message = $modal.find('.messageBlock .notyMessage').html(); var notyOptions = jQuery.extend({},
-             * notyDefaultOptions); notyOptions.text = message; notyOptions.type = 'info'; notyOptions.timeout = 5000;
-             * notyOptions.animation = { open: 'animated fadeIn', // Animate.css class names close: 'animated fadeOut', //
-             * Animate.css class names easing: 'swing', // unavailable - no need speed: 400 // unavailable - no need };
-             * notyOptions.callback = { onClose : function(){ $modal.modal('hide'); } }; $modal.find('.messageBlock
-             * .notyMessage').noty(notyOptions);
-             */
-          }
-        },
-        complete: function() {
-          $modal.find('.loading').fadeOut();
+          // Noty Message
+          /*
+           * var message = $modal.find('.messageBlock .notyMessage').html(); var notyOptions = jQuery.extend({},
+           * notyDefaultOptions); notyOptions.text = message; notyOptions.type = 'info'; notyOptions.timeout = 5000;
+           * notyOptions.animation = { open: 'animated fadeIn', // Animate.css class names close: 'animated fadeOut', //
+           * Animate.css class names easing: 'swing', // unavailable - no need speed: 400 // unavailable - no need };
+           * notyOptions.callback = { onClose : function(){ $modal.modal('hide'); } }; $modal.find('.messageBlock
+           * .notyMessage').noty(notyOptions);
+           */
         }
+      },
+      complete: function () {
+        $modal.find('.loading').fadeOut();
+      }
     });
   });
 
   /**
    * CCAFS Partners list events
    */
-  $('.ppaPartnersList select').on('change', function(e) {
+  $('.ppaPartnersList select').on('change', function (e) {
     addItemList($(this).find('option:selected'));
   });
-  $('ul li .remove').on('click', function(e) {
+  $('ul li .remove').on('click', function (e) {
     removeItemList($(this).parents('li'));
   });
 
@@ -310,9 +393,9 @@ function showHelpText() {
 
 function getProjectLeader() {
   var contactLeader = {};
-  $partnersBlock.find('.contactPerson').each(function(i,partnerPerson) {
+  $partnersBlock.find('.contactPerson').each(function (i, partnerPerson) {
     var contact = new PartnerPersonObject($(partnerPerson));
-    if(contact.isLeader()) {
+    if (contact.isLeader()) {
       contactLeader = jQuery.extend({}, contact);
     }
   });
@@ -325,7 +408,7 @@ function setProjectLeader(obj) {
 
 function filterInstitutions(e) {
   var $filterContent = $(e.target).parent().next();
-  if($filterContent.is(":visible")) {
+  if ($filterContent.is(":visible")) {
     updateOrganizationsList(e);
   }
   $filterContent.slideToggle();
@@ -334,20 +417,20 @@ function filterInstitutions(e) {
 function showPersonRelations(e) {
   var $relations = $(this).next().html();
   $('#relations-dialog').dialog({
-      modal: true,
-      closeText: "",
-      width: 500,
-      buttons: {
-        Close: function() {
-          $(this).dialog("close");
-        }
-      },
-      open: function() {
-        $(this).html($relations);
-      },
-      close: function() {
-        $(this).empty();
+    modal: true,
+    closeText: "",
+    width: 500,
+    buttons: {
+      Close: function () {
+        $(this).dialog("close");
       }
+    },
+    open: function () {
+      $(this).html($relations);
+    },
+    close: function () {
+      $(this).empty();
+    }
   });
 }
 
@@ -355,7 +438,7 @@ function changePartnerPersonType(e) {
   var $contactPerson = $(e.target).parents('.contactPerson');
   var contact = new PartnerPersonObject($contactPerson);
   // Set as unique contact type in the project
-  if((contact.type == leaderType)) {
+  if ((contact.type == leaderType)) {
     setPartnerTypeToDefault(contact.type);
   }
   // Change partner person type
@@ -365,28 +448,28 @@ function changePartnerPersonType(e) {
   partner.changeType();
   console.log(contact.type);
   // If the contact type selected is PL
-  if(contact.type == leaderType) {
+  if (contact.type == leaderType) {
     // If there is a PL previous selected
-    if(!jQuery.isEmptyObject(projectLeader)) {
+    if (!jQuery.isEmptyObject(projectLeader)) {
       var previousLeaderName = projectLeader.contactInfo;
       var messages = '<li>Please note that there can only be one project leader per project. <br/>';
       messages +=
-          'Therefore <strong>' + previousLeaderName
-              + '</strong> was assigned a Project collaborator/partner role.</li>';
+        'Therefore <strong>' + previousLeaderName
+        + '</strong> was assigned a Project collaborator/partner role.</li>';
       // Show a pop up with the message
       $("#contactChangeType-dialog").find('.messages').append(messages);
       $("#contactChangeType-dialog").dialog({
-          modal: true,
-          closeText: "",
-          width: 500,
-          buttons: {
-            Close: function() {
-              $(this).dialog("close");
-            }
-          },
-          close: function() {
-            $(this).find('.messages').empty();
+        modal: true,
+        closeText: "",
+        width: 500,
+        buttons: {
+          Close: function () {
+            $(this).dialog("close");
           }
+        },
+        close: function () {
+          $(this).find('.messages').empty();
+        }
       });
     }
   }
@@ -401,7 +484,7 @@ function updateOrganizationsList(e) {
   var optionSelected = $selectInstitutions.find('option:selected').val(); // Institution selected
   var source = baseURL + "/institutionsByTypeAndCountry.do";
 
-  if($(e.target).parent().attr("class") != "filters-link") {
+  if ($(e.target).parent().attr("class") != "filters-link") {
     var partnerTypes = $parent.find("select.partnerTypes").find('option:selected').val() || -1; // Type value
     var countryList = $parent.find("select.countryList").find('option:selected').val() || -1; // Value value
     source += "?institutionTypeID=" + partnerTypes + "&countryID=" + countryList;
@@ -409,21 +492,21 @@ function updateOrganizationsList(e) {
     source += "?institutionTypeID=-1&countryID=-1";
   }
   $.ajax({
-      url: source,
-      beforeSend: function() {
-        partner.startLoader();
-        $selectInstitutions.empty().append(setOption(-1, "Select an option"));
-      },
-      success: function(data) {
-        $.each(data.institutions, function(index,institution) {
-          $selectInstitutions.append(setOption(institution.id, institution.name));
-        });
-      },
-      complete: function() {
-        partner.stopLoader();
-        $selectInstitutions.val(optionSelected);
-        $selectInstitutions.trigger("change.select2");
-      }
+    url: source,
+    beforeSend: function () {
+      partner.startLoader();
+      $selectInstitutions.empty().append(setOption(-1, "Select an option"));
+    },
+    success: function (data) {
+      $.each(data.institutions, function (index, institution) {
+        $selectInstitutions.append(setOption(institution.id, institution.name));
+      });
+    },
+    complete: function () {
+      partner.stopLoader();
+      $selectInstitutions.val(optionSelected);
+      $selectInstitutions.trigger("change.select2");
+    }
   });
 }
 
@@ -432,50 +515,50 @@ function updateProjectPPAPartnersLists(e) {
   // Clean PPA partners from hidden select
   $projectPPAPartners.empty();
   // Loop for all projects partners
-  $partnersBlock.find('.projectPartner').each(function(i,projectPartner) {
+  $partnersBlock.find('.projectPartner').each(function (i, projectPartner) {
     var partner = new PartnerObject($(projectPartner));
     // Collecting partners institutions
     projectInstitutions.push(parseInt(partner.institutionId));
     // Validating if the partners is PPA Partner   
-      if(partner.institutionId == -1) {
-        partner.hidePPAs();
-      } else {
-        partner.showPPAs();
-      }
-    
+    if (partner.institutionId == -1) {
+      partner.hidePPAs();
+    } else {
+      partner.showPPAs();
+    }
+
   });
   $projectPPAPartners.trigger("change.select2");
 
   // Validating if the institution chosen is already selected
-  if(e) {
+  if (e) {
     var $fieldError = $(e.target).parents('.partnerName').find('p.fieldErrorInstitutions');
     $fieldError.text('');
     var count = 0;
     // Verify if the partner is already selected
-    for(var i = 0; i < projectInstitutions.length; ++i) {
-      if(projectInstitutions[i] == e.target.value) {
+    for (var i = 0; i < projectInstitutions.length; ++i) {
+      if (projectInstitutions[i] == e.target.value) {
         count++;
       }
     }
     // If there is one selected , show an error message
-    if(count > 1) {
+    if (count > 1) {
       var institutionName = $(e.target).find('option[value="' + e.target.value + '"]').text();
       var institutionName_saved =
-          $('input.institutionsList[value=' + e.target.value + ']').parents('.projectPartner').find('.partnerTitle')
-              .text();
+        $('input.institutionsList[value=' + e.target.value + ']').parents('.projectPartner').find('.partnerTitle')
+          .text();
       $fieldError.html('<i>"' + (institutionName || institutionName_saved) + '</i>" is already selected').animateCss(
-          'flipInX');
+        'flipInX');
       e.target.value = -1;
     }
   }
 
   // Filling CCAFS partners lists for each project partner cooment
-  $partnersBlock.find('.projectPartner').each(function(i,partner) {
+  $partnersBlock.find('.projectPartner').each(function (i, partner) {
     var $select = $(partner).find('select.ppaPartnersSelect');
     $select.empty().append(setOption(-1, "Select an option"));
     $select.append($projectPPAPartners.html());
     // Removing of the list CCAFS partners previously selected by project partner
-    $(partner).find('li input.id').each(function(i_id,id) {
+    $(partner).find('li input.id').each(function (i_id, id) {
       $select.find('option[value=' + $(id).val() + ']').remove();
     });
     $select.trigger("change.select2");
@@ -484,11 +567,11 @@ function updateProjectPPAPartnersLists(e) {
 }
 
 function setPartnerTypeToDefault(type) {
-  $partnersBlock.find('.projectPartner').each(function(i,partner) {
+  $partnersBlock.find('.projectPartner').each(function (i, partner) {
     var projectPartner = new PartnerObject($(partner));
-    $(partner).find('.contactPerson').each(function(i,partnerPerson) {
+    $(partner).find('.contactPerson').each(function (i, partnerPerson) {
       var contact = new PartnerPersonObject($(partnerPerson));
-      if(contact.type == type) {
+      if (contact.type == type) {
         $(partnerPerson).removeClass(partnerPersonTypes.join(' ')).addClass(defaultType);
         contact.setPartnerType(defaultType);
       }
@@ -505,67 +588,67 @@ function removePartnerEvent(e) {
   var deliverables = partner.getRelationsNumber('deliverables');
   var partnerContributions = partner.hasPartnerContributions();
   var removeDialogOptions = {
-      modal: true,
-      width: 500,
-      buttons: {},
-      closeText: "",
-      close: function() {
-        $(this).find('.messages').empty();
-      }
+    modal: true,
+    width: 500,
+    buttons: {},
+    closeText: "",
+    close: function () {
+      $(this).find('.messages').empty();
+    }
   };
   // The budget related with this partner will be deleted
-  if(partner.id != -1) {
+  if (partner.id != -1) {
     // messages += '<li>Note that the budget affected to this partner will also be deleted.</li>';
     removeDialogOptions.buttons = {
-        "Remove partner": function() {
-          partner.remove();
-          $(this).dialog("close");
-        },
-        Close: function() {
-          $(this).dialog("close");
-        }
+      "Remove partner": function () {
+        partner.remove();
+        $(this).dialog("close");
+      },
+      Close: function () {
+        $(this).dialog("close");
+      }
     };
   }
   // Validate if there are any deliverables linked to any contact persons from this partner
-  if(deliverables > 0) {
+  if (deliverables > 0) {
     messages +=
-        '<li>Please bear in mind that if you delete this partner, ' + deliverables
-            + ' deliverables relations will be deleted</li>';
+      '<li>Please bear in mind that if you delete this partner, ' + deliverables
+      + ' deliverables relations will be deleted</li>';
     removeDialogOptions.buttons = {
-        "Remove partner": function() {
-          partner.remove();
-          $(this).dialog("close");
-        },
-        Close: function() {
-          $(this).dialog("close");
-        }
+      "Remove partner": function () {
+        partner.remove();
+        $(this).dialog("close");
+      },
+      Close: function () {
+        $(this).dialog("close");
+      }
     };
   }
   // Validate if the project partner has any project leader assigned
-  if(partner.hasLeader()) {
+  if (partner.hasLeader()) {
     messages +=
-        '<li>Please indicate another project leader from a different partner before deleting this partner.</li>';
+      '<li>Please indicate another project leader from a different partner before deleting this partner.</li>';
     removeDialogOptions.buttons = {
-      Close: function() {
+      Close: function () {
         $(this).dialog("close");
       }
     };
   }
   // Validate if there are any activity linked to any contact person of this partner
-  if(activities > 0) {
+  if (activities > 0) {
     messages +=
-        '<li>This partner cannot be deleted because at least one or more contact persons is leading ' + activities
-            + ' activity(ies)</li>';
+      '<li>This partner cannot be deleted because at least one or more contact persons is leading ' + activities
+      + ' activity(ies)</li>';
     messages +=
-        '<li>If you want to proceed with the deletion, please go to the activities and change the activity leader</li>';
+      '<li>If you want to proceed with the deletion, please go to the activities and change the activity leader</li>';
     removeDialogOptions.buttons = {
-      Close: function() {
+      Close: function () {
         $(this).dialog("close");
       }
     };
   }
 
-  if(messages === "") {
+  if (messages === "") {
     // Remove partner if there is not any problem
     partner.remove();
   } else {
@@ -575,12 +658,14 @@ function removePartnerEvent(e) {
   }
 }
 
+
+
 function addPartnerEvent(e) {
   console.log("addPartnerEvent");
   var $newElement = $("#projectPartner-template").clone(true).removeAttr("id");
   $(this).before($newElement);
   $newElement.find('.blockTitle').trigger('click');
-  $newElement.show("slow", function() {
+  $newElement.show("slow", function () {
     // Update component
     $(document).trigger('updateComponent');
   });
@@ -589,31 +674,31 @@ function addPartnerEvent(e) {
   // Organization
   $newElement.find("select.institutionsList").select2(searchInstitutionsOptions(canUpdatePPAPartners));
   $newElement.find("select.institutionsList").parent().find("span.select2-selection__placeholder")
-      .text(placeholderText); 
+    .text(placeholderText);
 
   // Role Selection
   $newElement.find("select.partnerPersonType").select2({
-      templateResult: formatState,
-      width: "100%"
+    templateResult: formatState,
+    width: "100%"
   });
 
   // Research Phase
   $newElement.find("select.researchPhasesSelect ").select2({
-      placeholder: "Select here...",
-      width: '100%'
+    placeholder: "Select here...",
+    width: '100%'
   });
 
   // Countries
   $newElement.find('select.countriesList, select.countriesSelect').select2({
-      placeholder: "Select a country(ies)",
-      templateResult: formatStateCountries,
-      templateSelection: formatStateCountries,
-      width: '100%'
+    placeholder: "Select a country(ies)",
+    templateResult: formatStateCountries,
+    templateSelection: formatStateCountries,
+    width: '100%'
   });
 
   // Other Selects
   $newElement.find('select.setSelect2').select2({
-      width: '100%'
+    width: '100%'
   });
 
   // Update indexes
@@ -629,12 +714,12 @@ function addContactEvent(e) {
   $newElement.show("slow");
   // Activate the select2 plugin for new partners created
   $newElement.find("select").select2({
-      templateResult: formatState,
-      width: '100%'
+    templateResult: formatState,
+    width: '100%'
   });
 
   // IFPRI Division
-  if(partner.institutionId == 89){
+  if (partner.institutionId == 89) {
     $newElement.find('.divisionBlock.division-IFPRI').show();
   }
 
@@ -655,55 +740,55 @@ function removePersonEvent(e) {
   var activities = person.getRelationsNumber('activities');
   var deliverables = person.getRelationsNumber('deliverables');
   var removeDialogOptions = {
-      modal: true,
-      closeText: "",
-      width: 500,
-      buttons: {},
-      close: function() {
-        $(this).find('.messages').empty();
-      }
+    modal: true,
+    closeText: "",
+    width: 500,
+    buttons: {},
+    close: function () {
+      $(this).find('.messages').empty();
+    }
   };
   // Validate if there are any deliverable linked to this person
-  if(deliverables > 0) {
+  if (deliverables > 0) {
     messages +=
-        '<li>Please bear in mind that if you delete this contact, ' + deliverables
-            + ' deliverables relations will be deleted.</li>';
+      '<li>Please bear in mind that if you delete this contact, ' + deliverables
+      + ' deliverables relations will be deleted.</li>';
     removeDialogOptions.buttons = {
-        "Remove Person": function() {
-          person.remove();
-          $(this).dialog("close");
-        },
-        Close: function() {
-          $(this).dialog("close");
-        }
+      "Remove Person": function () {
+        person.remove();
+        $(this).dialog("close");
+      },
+      Close: function () {
+        $(this).dialog("close");
+      }
     };
   }
   // Validate if the person type is PL
-  if(person.isLeader()) {
+  if (person.isLeader()) {
     messages +=
-        '<li>There must be one project leader per project. Please select another project leader before deleting this contact.</li>';
+      '<li>There must be one project leader per project. Please select another project leader before deleting this contact.</li>';
     removeDialogOptions.buttons = {
-      Close: function() {
+      Close: function () {
         $(this).dialog("close");
       }
     };
   }
   // Validate if there are any activity linked to this person
-  if(activities > 0) {
+  if (activities > 0) {
     messages += '<li>This contact person cannot be deleted because he/she is leading activity(ies)';
     messages +=
-        '<li>If you want to proceed with the deletion, please go to the following activities and change the activity leader</li>';
+      '<li>If you want to proceed with the deletion, please go to the following activities and change the activity leader</li>';
     messages += '<ul>';
     messages += person.getRelations('activities');
     messages += '</ul>';
     messages += '</li>';
     removeDialogOptions.buttons = {
-      Close: function() {
+      Close: function () {
         $(this).dialog("close");
       }
     };
   }
-  if(messages === "") {
+  if (messages === "") {
     // Remove person if there is not any message
     person.remove();
   } else {
@@ -714,7 +799,10 @@ function removePersonEvent(e) {
 }
 
 function setProjectPartnersIndexes() {
-  $partnersBlock.find(".projectPartner").each(function(index,element) {
+  console.log("tal vez")
+  $partnersBlock.find(".projectPartner").each(function (index, element) {
+    console.log(element)
+    console.log(index)
     var partner = new PartnerObject($(element));
     partner.setIndex(index);
   });
@@ -730,7 +818,7 @@ function removeItemList($item) {
   $select.append(setOption($item.find('.id').val(), $item.find('.name').text()));
   $select.trigger("change.select2");
   // Removing from list
-  $item.hide("slow", function() {
+  $item.hide("slow", function () {
     $item.remove();
     setProjectPartnersIndexes();
   });
@@ -759,28 +847,28 @@ function addSelect2() {
 
   // Role Selection
   $("form select.partnerPersonType").select2({
-      templateResult: formatState,
-      width: "100%"
+    templateResult: formatState,
+    width: "100%"
   });
 
   // Research Phase
   $("form select.researchPhasesSelect ").select2({
-      placeholder: "Select here...",
-      width: '100%'
+    placeholder: "Select here...",
+    width: '100%'
   });
 
 
 
   $('form select.countriesList, select.countriesRequest, form select.countriesSelect').select2({
-      placeholder: "Select a country(ies)",
-      templateResult: formatStateCountries,
-      templateSelection: formatStateCountries,
-      width: '100%'
+    placeholder: "Select a country(ies)",
+    templateResult: formatStateCountries,
+    templateSelection: formatStateCountries,
+    width: '100%'
   });
 
   // Other selects
   $("form select.setSelect2 ").select2({
-      width: '100%'
+    width: '100%'
   });
 
 }
@@ -797,82 +885,82 @@ function PartnerObject(partner) {
   this.id = parseInt($(partner).find('.partnerId').val());
   this.institutionId = parseInt($(partner).find('.institutionsList').val());
   this.institutionName =
-      $('#instID-' + this.institutionId + ' .composedName').text() || $(partner).find('.partnerTitle').text();
+    $('#instID-' + this.institutionId + ' .composedName').text() || $(partner).find('.partnerTitle').text();
   this.allowSubDepart = ($('#instID-' + this.institutionId + ' .allowSubDepart').text() === "true") || false;
   this.subDepartments = $('#instID-' + this.institutionId + ' .subDepartments option');
   this.ppaPartnersList = $(partner).find('.ppaPartnersList');
   this.persons = $(partner).find('.contactsPerson .contactPerson');
   this.countriesSelect = $(partner).find('.countriesList');
-  this.setIndex = function(index) {
+  this.setIndex = function (index) {
 
     // Updating indexes
     $(partner).setNameIndexes(1, index);
     // Update index for project Partner
     $(partner).find("> .blockTitle .index_number").html(index + 1);
     // Update index for CCAFS Partners
-    $(partner).find('.ppaPartnersList ul.list li').each(function(li_index,li) {
+    $(partner).find('.ppaPartnersList ul.list li').each(function (li_index, li) {
       $(li).setNameIndexes(2, li_index);
     });
 
     // Update radio buttons labels and for
-    $(partner).find('input.hasPartnerships-yes').attr('id', "hasPartnerships-yes-"+ index).next().attr('for',"hasPartnerships-yes-"+ index);
-    $(partner).find('input.hasPartnerships-no').attr('id', "hasPartnerships-no-"+ index).next().attr('for',"hasPartnerships-no-"+ index);
+    $(partner).find('input.hasPartnerships-yes').attr('id', "hasPartnerships-yes-" + index).next().attr('for', "hasPartnerships-yes-" + index);
+    $(partner).find('input.hasPartnerships-no').attr('id', "hasPartnerships-no-" + index).next().attr('for', "hasPartnerships-no-" + index);
 
     // Update index for partner persons
-    $(partner).find('.contactPerson').each(function(person_index,partnerPerson) {
+    $(partner).find('.contactPerson').each(function (person_index, partnerPerson) {
       var contact = new PartnerPersonObject($(partnerPerson));
       contact.setIndex(index, person_index);
     });
 
     // Update index for locations
-    $(partner).find('.locElement').each(function(i,element) {
+    $(partner).find('.locElement').each(function (i, element) {
       $(element).setNameIndexes(2, i);
     });
   };
-  this.validateGovernmentType = function() {
-    if(this.allowSubDepart) {
+  this.validateGovernmentType = function () {
+    if (this.allowSubDepart) {
       $(partner).find('.subDepartment').slideDown();
     } else {
       $(partner).find('.subDepartment').slideUp();
     }
   };
-  this.updateBlockContent = function() {
+  this.updateBlockContent = function () {
     $(partner).find('.partnerTitle').text(this.institutionName);
     this.validateGovernmentType();
   };
-  this.hasPartnerContributions = function() {
+  this.hasPartnerContributions = function () {
     var partners = [];
     var institutionId = this.institutionId;
-    $partnersBlock.find(".projectPartner").each(function(index,element) {
+    $partnersBlock.find(".projectPartner").each(function (index, element) {
       var projectPartner = new PartnerObject($(element));
-      $(element).find('.ppaPartnersList ul.list li input.id').each(function(i_id,id) {
-        if($(id).val() == institutionId) {
+      $(element).find('.ppaPartnersList ul.list li input.id').each(function (i_id, id) {
+        if ($(id).val() == institutionId) {
           partners.push(projectPartner.institutionName);
         }
       });
     });
     return partners;
   };
-  this.hasLeader = function() {
+  this.hasLeader = function () {
     var result = false;
-    $(partner).find('.contactPerson').each(function(i,partnerPerson) {
+    $(partner).find('.contactPerson').each(function (i, partnerPerson) {
       var contact = new PartnerPersonObject($(partnerPerson));
-      if(contact.isLeader()) {
+      if (contact.isLeader()) {
         result = true;
       }
     });
     return result;
   };
-  this.getRelationsNumber = function(relation) {
+  this.getRelationsNumber = function (relation) {
     var count = 0;
-    $(partner).find('.contactPerson').each(function(i,partnerPerson) {
+    $(partner).find('.contactPerson').each(function (i, partnerPerson) {
       var contact = new PartnerPersonObject($(partnerPerson));
       count += contact.getRelationsNumber(relation);
     });
     return count;
   };
-  this.checkLeader = function() {
-    if($(partner).find('.contactPerson.PL').length == 0) {
+  this.checkLeader = function () {
+    if ($(partner).find('.contactPerson.PL').length == 0) {
       $(partner).removeClass('leader');
       $(partner).find('.type-leader').hide();
     } else {
@@ -881,8 +969,8 @@ function PartnerObject(partner) {
       types.push('Leader');
     }
   };
-  this.checkCoordinator = function() {
-    if($(partner).find('.contactPerson.PC').length == 0) {
+  this.checkCoordinator = function () {
+    if ($(partner).find('.contactPerson.PC').length == 0) {
       $(partner).removeClass('coordinator');
       $(partner).find('.type-coordinator').hide();
     } else {
@@ -891,42 +979,42 @@ function PartnerObject(partner) {
       types.push('Coordinator');
     }
   };
-  this.changeType = function() {
+  this.changeType = function () {
     types = [];
     this.checkLeader();
     this.checkCoordinator();
-    if(types.length != 0) {
+    if (types.length != 0) {
       $(partner).find('strong.type').text(' (' + types.join(", ") + ')');
     } else {
       $(partner).find('strong.type').text('');
     }
   };
-  this.remove = function() {
-    $(partner).hide("slow", function() {
+  this.remove = function () {
+    $(partner).hide("slow", function () {
       $(partner).remove();
       updateProjectPPAPartnersLists();
       setProjectPartnersIndexes();
     });
   };
-  this.clearCountries = function() {
+  this.clearCountries = function () {
     var $list = $(partner).find(".countries-list.items-list ul");
     $list.empty();
   };
-  this.addCountry = function(country) {
+  this.addCountry = function (country) {
     var contryISO = country.iso;
     var countryName = country.name;
-    if(contryISO == "-1") {
+    if (contryISO == "-1") {
       return
 
     }
 
     var $list = $(partner).find(".items-list ul");
 
-    var selectedCountries = $list.find('.locElement').map(function() {
+    var selectedCountries = $list.find('.locElement').map(function () {
       return $(this).find('input.locElementCountry').val();
     }).get();
 
-    if(selectedCountries.indexOf(contryISO) != -1) {
+    if (selectedCountries.indexOf(contryISO) != -1) {
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
       notyOptions.text = 'Countries office cannot be repeated';
       noty(notyOptions);
@@ -962,16 +1050,16 @@ function PartnerObject(partner) {
     $(this.countriesSelect).val('-1');
     $(this.countriesSelect).trigger('select2:change');
   };
-  this.showPPAs = function() {
+  this.showPPAs = function () {
     $(this.ppaPartnersList).slideDown();
     // $(partner).find('.partnerResponsabilities .requiredTag').hide();
     $(partner).find('.contactsPerson .requiredTag').hide();
   };
-  this.hidePPAs = function() {
+  this.hidePPAs = function () {
     $(this.ppaPartnersList).slideUp();
 
     // Add a contact person by default
-    if($(this.persons).length <= 0) {
+    if ($(this.persons).length <= 0) {
       console.log('asdfasdf');
       $(partner).find('.addContact .addLink').trigger('click');
     }
@@ -981,10 +1069,10 @@ function PartnerObject(partner) {
 
   };
 
-  this.startLoader = function() {
+  this.startLoader = function () {
     $(partner).find('.loading').fadeIn();
   };
-  this.stopLoader = function() {
+  this.stopLoader = function () {
     $(partner).find('.loading').fadeOut();
   };
 }
@@ -999,24 +1087,24 @@ function PartnerPersonObject(partnerPerson) {
   this.type = $(partnerPerson).find('.partnerPersonType').val();
   this.contactInfo = $(partnerPerson).find('.userName').val();
   this.canEditEmail = ($(partnerPerson).find('input.canEditEmail').val() === "true");
-  this.setPartnerType = function(type) {
+  this.setPartnerType = function (type) {
     this.type = type;
     $(partnerPerson).find('.partnerPersonType').val(type).trigger('change.select2');
   };
-  this.getPartnerType = function() {
+  this.getPartnerType = function () {
     return $(partnerPerson).find('.partnerPersonType').val();
   };
-  this.changeType = function() {
+  this.changeType = function () {
     $(partnerPerson).removeClass(partnerPersonTypes.join(' ')).addClass(this.type);
     this.setPartnerType(this.type);
   };
-  this.getRelationsNumber = function(relation) {
+  this.getRelationsNumber = function (relation) {
     return parseInt($(partnerPerson).find('.tag.' + relation + ' span').text()) || 0;
   };
-  this.getRelations = function(relation) {
+  this.getRelations = function (relation) {
     return $(partnerPerson).find('.tag.' + relation).next().find('ul').html();
   };
-  this.setIndex = function(partnerIndex,index) {
+  this.setIndex = function (partnerIndex, index) {
     // Update Indexes
     $(partnerPerson).setNameIndexes(2, index);
 
@@ -1025,12 +1113,12 @@ function PartnerPersonObject(partnerPerson) {
     $(partnerPerson).find(".userName").attr("id", "partner-" + partnerIndex + "-person-" + index);
 
   };
-  this.isLeader = function() {
-    return(this.type == leaderType);
+  this.isLeader = function () {
+    return (this.type == leaderType);
   };
-  this.remove = function() {
+  this.remove = function () {
     var partner = new PartnerObject($(partnerPerson).parents('.projectPartner'));
-    $(partnerPerson).hide("slow", function() {
+    $(partnerPerson).hide("slow", function () {
       $(partnerPerson).remove();
       partner.changeType(this.type);
       setProjectPartnersIndexes();
@@ -1040,21 +1128,21 @@ function PartnerPersonObject(partnerPerson) {
 
 function formatState(state) {
   var $state =
-      $("<span><b>"
-          + state.text
-          + "</b> <br><small style='margin-top:2px; font-size:85%; line-height:13px; display:block; font-style:normal; font-weight:600;'>"
-          + $('span.contactPersonRole-' + state.id).text() + "</small> </span>");
+    $("<span><b>"
+      + state.text
+      + "</b> <br><small style='margin-top:2px; font-size:85%; line-height:13px; display:block; font-style:normal; font-weight:600;'>"
+      + $('span.contactPersonRole-' + state.id).text() + "</small> </span>");
   return $state;
 
 };
 
 function formatStateCountries(state) {
-  if(!state.id) {
+  if (!state.id) {
     return state.text;
   }
   var flag = '<i class="flag-icon flag-icon-' + state.element.value.toLowerCase() + '"></i> ';
   var $state;
-  if(state.id != -1) {
+  if (state.id != -1) {
     $state = $('<span>' + flag + state.text + '</span>');
   } else {
     $state = $('<span>' + state.text + '</span>');
@@ -1069,8 +1157,8 @@ function addLocElementCountry() {
 
   var $countrySelected = $(this).find("option:selected");
   partner.addCountry({
-      iso: $countrySelected.val(),
-      name: $countrySelected.text()
+    iso: $countrySelected.val(),
+    name: $countrySelected.text()
   });
 }
 
@@ -1080,7 +1168,7 @@ function removeLocElement() {
   // Add removed item to the selection list
   $select.addOption($parent.find('input.locElementCountry').val(), $parent.find('span.name').text());
   // Removing item
-  $parent.hide('slow', function() {
+  $parent.hide('slow', function () {
     $parent.remove();
     setProjectPartnersIndexes();
   });
