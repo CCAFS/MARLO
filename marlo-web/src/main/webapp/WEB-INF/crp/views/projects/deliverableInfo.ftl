@@ -145,7 +145,6 @@
       [@deliverableMacros.shfmrContributionMacro /]
 
       [#-- Single partner TEMPLATE from partnersTemplate.ftl --]
-      [@deliverableMacros.projectPartnerMacro  element={} name="deliverable.shfrmPriorityActions[-1]" isTemplate=true /]
 
       [#-- Contact person TEMPLATE from partnersTemplate.ftl --]
       [@deliverableMacros.contactPersonMacro element={} allSubActions=[] name="deliverable.shfrmPriorityActions[-1].shfrmSubActions[-1]" isTemplate=true /]

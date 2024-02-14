@@ -269,6 +269,10 @@
 </section>
 [/#if]
 
+
+[@deliverableMacros.projectPartnerMacro  element={} name="deliverable.shfrmPriorityActions[-1]" isTemplate=true /]
+[@deliverableMacros.subactionsSelectsctrlList /]
+
 [#-- ----------------------------------- Deliverable Type Rules ------------------------------------------------]
 [#--  Publication Metadata
       49 -> Articles and Books --]

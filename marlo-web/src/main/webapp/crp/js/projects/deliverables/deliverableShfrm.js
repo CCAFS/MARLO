@@ -71,15 +71,12 @@ function init() {
 // Add a new deliverable element
 function addDeliverable() {
   var option = $(this).find("option:selected");
-  console.log(option)
   var canAdd = true;
   if (option.val() == "-1") {
     canAdd = false;
   }
-
-  var $list = $(this).parents(".select").parent().parent().find(".deliverableWrapper");
+  var $list = $(this).parents(".subSectionsSelector").find('.deliverableWrapper')
   var $item = $("#deliverableActivity-template").clone(true).removeAttr("id");
-  console.log($item)
   var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
 
   // Check if is already selected
@@ -107,7 +104,8 @@ function addDeliverable() {
   $item.show('slow');
   // var $actionContainer = $(this).parents(".fullPartBlock");
   // var activityIndex = $activity.find(".index").html();
-  updateDeliverable(this);
+  // updateDeliverable(this);
+  updateActionsAndSubActionsIndexes();
   checkItems($list);
 
 }
@@ -125,7 +123,6 @@ function checkItems(block) {
 
 function updateDeliverable(currentElement) {
 
-  console.clear();
 
   var $subSectionsSelector = $(currentElement).parents(".subSectionsSelector");
   var actionindex = $subSectionsSelector.attr("actionindex");
@@ -141,7 +138,7 @@ function updateDeliverable(currentElement) {
 
   $subSectionsSelector.find('.deliverableActivity').each(function (indexDeliverable, deliverableItem) {
     // console.log(indexDeliverable);
-    // console.log(deliverableItem)
+    // console.log(deliverableItem);
     console.log(actionindex)
     // Set activity indexes
     $(deliverableItem).setNameIndexes(1, actionindex);
@@ -593,38 +590,44 @@ function removePartnerEvent(e) {
 }
 
 function updateActionsAndSubActionsIndexes() {
-  console.log("updateActionsAndSubActionsIndexes")
+  const $actionsList = $('#projectPartnersBlock').find('.projectPartner');
+  $actionsList.each(function (actionIndex, $actionItem) {
+    $($actionItem).setNameIndexes(1, actionIndex);
+    const $subActionsList = $($actionItem).find('.deliverableWrapper').find('.deliverableActivity');
+    $subActionsList.each(function (subActionIndex, $subActionItem) {
+      $($subActionItem).setNameIndexes(2, subActionIndex);
+    });
+  });
+
 }
 
 
 
 function addPartnerEvent(e) {
   var option = $(this).find("option:selected");
-  console.log(option)
-
-
   var $newElement = $("#projectPartner-template").clone(true).removeAttr("id");
   $newElement.find(".actionidvalue").val(option.val());
 
   let itemsSize = Number($('#projectPartnersBlock').find('.projectPartner').length ?? 0);
   itemsSize && itemsSize++;
 
-  console.log(itemsSize)
-
   $newElement.find(".index_number").html(itemsSize);
   $newElement.find(".priorityActionTitle").html($(option).text());
-
+  $newElement.find(".subActionsSelector").html(cloneSubActionSelect(option.val()));
 
   console.log($('#projectPartnersBlock'))
   $('#projectPartnersBlock').append($newElement);
-  // $(this).before($newElement);
-  // $newElement.find('.blockTitle').trigger('click');
   $newElement.show("slow", function () {
-    // Update component
     $(document).trigger('updateComponent');
+    $newElement.find("select").select2();
   });
 
   updateActionsAndSubActionsIndexes();
+}
+
+function cloneSubActionSelect(value) {
+  var $select = $(`#subactionSelect-${value}`).find('.baseselect').clone(true);
+  return $select;
 }
 
 function addContactEvent(e) {
