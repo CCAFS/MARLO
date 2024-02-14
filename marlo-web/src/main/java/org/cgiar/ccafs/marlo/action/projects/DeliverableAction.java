@@ -3736,7 +3736,7 @@ public class DeliverableAction extends BaseAction {
 
         if (deliverablePriorityActions != null) {
           // For new deliverable Priority Actions
-          if (deliverablePriorityActions.getId() == null) {
+          if (deliverablePriorityActions.getId() == null || deliverablePriorityActions.getId() == -1) {
             deliverablePriorityActionsSave.setDeliverable(deliverable);
             deliverablePriorityActionsSave.setPhase(this.getActualPhase());
           } else {
@@ -3761,8 +3761,11 @@ public class DeliverableAction extends BaseAction {
               deliverablePriorityActionsSave.setPhase(this.getActualPhase());
             }
 
-            this.deliverableShfrmPriorityActionManager
+            DeliverableShfrmPriorityAction priorityActionTemp = this.deliverableShfrmPriorityActionManager
               .saveDeliverableShfrmPriorityAction(deliverablePriorityActionsSave);
+            if (priorityActionTemp != null && priorityActionTemp.getId() != null) {
+              deliverablePriorityActions.setId(priorityActionTemp.getId());
+            }
             // This is to add deliverablePriorityActions to generate correct auditlog.
             if (!this.deliverable.getDeliverableShfrmPriorityAction().contains(deliverablePriorityActionsSave)) {
               this.deliverable.getDeliverableShfrmPriorityAction().add(deliverablePriorityActionsSave);
