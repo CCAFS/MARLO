@@ -1539,7 +1539,9 @@
       <div id="subSectionsSelectTemplates"  style="display: none">
           <div class="">
              [#list (deliverable.shfrmPriorityActions)![] as priorityAction]
-               [@customForm.select name="" label=""  i18nkey="project.activities.deliverableSelect" listName="deliverable.shfrmPriorityActions[${priorityAction_index}].shfrmPriorityAction.shfrmSubActions" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" deliverableList" disabled=!editable/] 
+                <div id="actionSelect-${priorityAction.shfrmPriorityAction.id}">
+                  [@customForm.select name="" label=""  i18nkey="project.activities.deliverableSelect" listName="deliverable.shfrmPriorityActions[${priorityAction_index}].shfrmPriorityAction.shfrmSubActions" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" deliverableList" disabled=!editable/] 
+                </div>
              [/#list] 
           </div>
       </div>
@@ -1606,6 +1608,7 @@
     [#-- Partner Title --]
     <div class="blockTitle ${opened?string('opened', 'closed')}">
       [#-- Title --]
+      <input class="actionidvalue" type="hidden"  value="${(element.shfrmPriorityAction.id)!'none'}" />
       <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="priorityActionTitle">${(element.shfrmPriorityAction.name)!'Priority Action'}</span> </span>            
     </div>
     

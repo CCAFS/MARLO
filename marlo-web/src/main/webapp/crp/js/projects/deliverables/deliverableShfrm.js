@@ -201,9 +201,14 @@ function attachEvents() {
    */
   // Add a project partner Event
   $(".elementType-shfrmPriorityAction-deliverablePriorityActions").on("change", addPartnerEvent);
+  $(".removeElementType-shfrmPriorityAction-deliverablePriorityActions").on('click', removePartnerEvent);
+  $(".removeElementType-shfrmPriorityAction-deliverablePriorityActions").on('mouseenter', function () {
+    currentDeleteActionId = $(this).parent('.relationElement').find('.elementRelationID').val();
+  });
+
 
   // Remove a project partner Event
-  $(".removePartner").on('click', removePartnerEvent);
+  // $(".removePartner").on('click', removePartnerEvent);
   // When Partner Type change
   $("select.partnerTypes, select.countryList").change(updateOrganizationsList);
   // When name change
@@ -581,91 +586,35 @@ function setPartnerTypeToDefault(type) {
   });
 }
 
+let currentDeleteActionId = null;
 function removePartnerEvent(e) {
-  e.preventDefault();
-  var partner = new PartnerObject($(e.target).parent().parent());
-  var messages = "";
-  var activities = partner.getRelationsNumber('activities');
-  var deliverables = partner.getRelationsNumber('deliverables');
-  var partnerContributions = partner.hasPartnerContributions();
-  var removeDialogOptions = {
-    modal: true,
-    width: 500,
-    buttons: {},
-    closeText: "",
-    close: function () {
-      $(this).find('.messages').empty();
-    }
-  };
-  // The budget related with this partner will be deleted
-  if (partner.id != -1) {
-    // messages += '<li>Note that the budget affected to this partner will also be deleted.</li>';
-    removeDialogOptions.buttons = {
-      "Remove partner": function () {
-        partner.remove();
-        $(this).dialog("close");
-      },
-      Close: function () {
-        $(this).dialog("close");
-      }
-    };
-  }
-  // Validate if there are any deliverables linked to any contact persons from this partner
-  if (deliverables > 0) {
-    messages +=
-      '<li>Please bear in mind that if you delete this partner, ' + deliverables
-      + ' deliverables relations will be deleted</li>';
-    removeDialogOptions.buttons = {
-      "Remove partner": function () {
-        partner.remove();
-        $(this).dialog("close");
-      },
-      Close: function () {
-        $(this).dialog("close");
-      }
-    };
-  }
-  // Validate if the project partner has any project leader assigned
-  if (partner.hasLeader()) {
-    messages +=
-      '<li>Please indicate another project leader from a different partner before deleting this partner.</li>';
-    removeDialogOptions.buttons = {
-      Close: function () {
-        $(this).dialog("close");
-      }
-    };
-  }
-  // Validate if there are any activity linked to any contact person of this partner
-  if (activities > 0) {
-    messages +=
-      '<li>This partner cannot be deleted because at least one or more contact persons is leading ' + activities
-      + ' activity(ies)</li>';
-    messages +=
-      '<li>If you want to proceed with the deletion, please go to the activities and change the activity leader</li>';
-    removeDialogOptions.buttons = {
-      Close: function () {
-        $(this).dialog("close");
-      }
-    };
-  }
+  $(`input.actionidvalue[value="${currentDeleteActionId}"]`).parents('.projectPartner').remove();
+  updateActionsAndSubActionsIndexes();
+}
 
-  if (messages === "") {
-    // Remove partner if there is not any problem
-    partner.remove();
-  } else {
-    // Show pop up if there are any message
-    $("#partnerRemove-dialog").find('.messages').append(messages);
-    $("#partnerRemove-dialog").dialog(removeDialogOptions);
-  }
+function updateActionsAndSubActionsIndexes() {
+  console.log("updateActionsAndSubActionsIndexes")
 }
 
 
 
 function addPartnerEvent(e) {
+  var option = $(this).find("option:selected");
+  console.log(option)
 
-  console.log("addPartnerEvent")
 
   var $newElement = $("#projectPartner-template").clone(true).removeAttr("id");
+  $newElement.find(".actionidvalue").val(option.val());
+
+  let itemsSize = Number($('#projectPartnersBlock').find('.projectPartner').length ?? 0);
+  itemsSize && itemsSize++;
+
+  console.log(itemsSize)
+
+  $newElement.find(".index_number").html(itemsSize);
+  $newElement.find(".priorityActionTitle").html($(option).text());
+
+
   console.log($('#projectPartnersBlock'))
   $('#projectPartnersBlock').append($newElement);
   // $(this).before($newElement);
@@ -675,7 +624,7 @@ function addPartnerEvent(e) {
     $(document).trigger('updateComponent');
   });
 
-  // setProjectPartnersIndexes();
+  updateActionsAndSubActionsIndexes();
 }
 
 function addContactEvent(e) {
