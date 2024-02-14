@@ -874,9 +874,8 @@ span.timelineControl:hover {
 	}
 	
 	.itemsTablet{
-		width: 140px;
-		min-width: 120px;
-		max-width: 160px;
+		padding-top: 1rem;
+    width: 40%;
 	}
 
 	.containerTabletItems #dashboardContent{

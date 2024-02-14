@@ -8260,6 +8260,7 @@ img.qaOptionsComment {
     width: 100px;
     height: 40px;
     padding: revert;
+    justify-content: left;
 	}
 	
 	.DownloadButton .IconDownloadButton{
