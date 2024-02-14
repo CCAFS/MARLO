@@ -575,15 +575,21 @@ public class DeliverableValidator extends BaseValidator {
           action.addMissingField("deliverable.shfrmPriorityActions");
           action.getInvalidFields().put("list-deliverable.shfrmPriorityActions", InvalidFieldsMessages.EMPTYFIELD);
         } else if (deliverable.getShfrmPriorityActions() != null && !deliverable.getShfrmPriorityActions().isEmpty()) {
-          int index = 0;
+          int indexJ = 0;
+
           for (DeliverableShfrmPriorityAction priorityAction : deliverable.getShfrmPriorityActions()) {
-            if (priorityAction != null && priorityAction.getShfrmSubActions() != null
-              && !priorityAction.getShfrmSubActions().isEmpty()) {
-              action.addMessage(action.getText("deliverable.shfrmSubActions[" + index + "]"));
-              action.addMissingField("deliverable.shfrmSubActions[" + index + "]");
-              action.getInvalidFields().put("list-deliverable.shfrmPriorityAction[" + index + "].shfrmSubActions",
-                InvalidFieldsMessages.EMPTYFIELD);
-              index++;
+            if (priorityAction != null && priorityAction.getShfrmSubActions() == null
+              || (priorityAction.getShfrmSubActions() != null && priorityAction.getShfrmSubActions().isEmpty())) {
+              action.addMessage(action.getText("deliverable.shfrmSubActions"));
+              action.addMissingField("deliverable.shfrmPriorityActions");
+              action.getInvalidFields().put("list-deliverable.shfrmPriorityActions", InvalidFieldsMessages.EMPTYFIELD);
+              /*
+               * action.addMessage(action.getText("deliverable.shfrmSubActions[" + indexJ + "]"));
+               * action.addMissingField("deliverable.shfrmSubActions[" + indexJ + "]");
+               * action.getInvalidFields().put("list-deliverable.shfrmPriorityAction[" + indexJ + "].shfrmSubActions",
+               * InvalidFieldsMessages.EMPTYFIELD);
+               */
+              indexJ++;
             }
           }
         }
