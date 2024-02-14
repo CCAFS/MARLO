@@ -8,7 +8,7 @@
   "${baseUrlCdn}/global/js/usersManagement.js?20230927"
   ] 
 /]
-[#assign customCSS = [ "${baseUrlMedia}/css/admin/crpPhases.css" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/admin/crpPhases.css", "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20240213"] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "shfrmManagement" /]
 [#assign hideJustification = true /]

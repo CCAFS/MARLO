@@ -163,6 +163,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -1481,7 +1482,7 @@ public class DeliverableAction extends BaseAction {
           if (deliverable.getDeliverableShfrmPriorityAction() != null) {
             deliverable.setShfrmPriorityActions(new ArrayList<>(deliverable.getDeliverableShfrmPriorityAction().stream()
               .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
-              .collect(Collectors.toList())));
+              .sorted(Comparator.comparing(DeliverableShfrmPriorityAction::getId)).collect(Collectors.toList())));
           }
           this.fillSubActionsList();
 
@@ -1501,7 +1502,7 @@ public class DeliverableAction extends BaseAction {
                   deliverablePriorityAction
                     .setShfrmSubActions(new ArrayList<>(deliverablePriorityAction.getDeliverableShfrmSubAction()
                       .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
-                      .collect(Collectors.toList())));
+                      .sorted(Comparator.comparing(DeliverableShfrmSubAction::getId)).collect(Collectors.toList())));
                 }
 
               } catch (Exception e) {
@@ -3677,8 +3678,7 @@ public class DeliverableAction extends BaseAction {
             if (priorityAction != null && priorityAction.getId() != null) {
               deliverableSubActions = deliverableShfrmSubActionManager
                 .findByPriorityActionAndPhase(priorityAction.getId(), this.getActualPhase().getId());
-              if (deliverableSubActions == null
-                || (deliverableSubActions != null && !deliverableSubActions.isEmpty())) {
+              if (deliverableSubActions == null || (deliverableSubActions != null && deliverableSubActions.isEmpty())) {
                 if (!existingIds.contains(priorityAction.getId())) {
                   deliverableShfrmPriorityActionManager.deleteDeliverableShfrmPriorityAction(priorityAction.getId());
                 }
@@ -4008,10 +4008,8 @@ public class DeliverableAction extends BaseAction {
       if (this.deliverable.getShfrmPriorityActions() != null && !this.deliverable.getShfrmPriorityActions().isEmpty()) {
         for (DeliverableShfrmPriorityAction priorityAction : this.deliverable.getShfrmPriorityActions()) {
 
-
-          /*************/
           List<Long> existingIds = new ArrayList<>();
-          List<DeliverableShfrmSubAction> subPrev = new ArrayList<>();
+          List<DeliverableShfrmSubAction> subPrev = null;
           try {
             subPrev = deliverableShfrmSubActionManager.findByPriorityActionAndPhase(priorityAction.getId(),
               this.getActualPhase().getId());
@@ -4040,17 +4038,17 @@ public class DeliverableAction extends BaseAction {
             }
           } else {
             // Delete all in DB
-            if (subPrev != null && !subPrev.isEmpty()) {
-              for (DeliverableShfrmSubAction subAction : subPrev) {
-                if (subAction != null && subAction.getId() != null) {
-
-                  if (!existingIds.contains(subAction.getId())) {
-                    deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(subAction.getId());
-                  }
-
-                }
-              }
-            }
+            /*
+             * if (subPrev != null && !subPrev.isEmpty()) {
+             * for (DeliverableShfrmSubAction subAction : subPrev) {
+             * if (subAction != null && subAction.getId() != null) {
+             * if (!existingIds.contains(subAction.getId())) {
+             * deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(subAction.getId());
+             * }
+             * }
+             * }
+             * }
+             */
           }
 
           /***************/
