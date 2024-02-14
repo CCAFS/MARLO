@@ -730,7 +730,6 @@ span.timelineControl:hover {
 
   .containerItems {
     flex-wrap: wrap;
-    width: 100%;
     display: table-cell;
     text-align: center;
     margin-left: 4px;
@@ -806,13 +805,18 @@ span.timelineControl:hover {
     .tableItemsTitle{
       font-size: 1.1em;
     }
+    
+   	.itemsTablet{
+    	width: 45%;
+		}
   }
 
  @media (max-width:750px){
 
   .containerItems {
     display: flex;
-    justify-content: center;
+    justify-content: start;
+    margin-left: 0%;
 }
 
 .sectionItems {
@@ -827,7 +831,6 @@ span.timelineControl:hover {
 
   .itemsTablet {
     height: 80px;
-    width: 80px;
     margin: 10px;
   }
 
@@ -870,7 +873,8 @@ span.timelineControl:hover {
 	}
 	
 	.containerItems{
-		margin-left: 0%;
+		justify-content: center;
+		
 	}
 	
 	.itemsTablet{
