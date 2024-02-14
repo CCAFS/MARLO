@@ -8172,6 +8172,22 @@ img.qaOptionsComment {
 	margin-bottom: -15px;
 }
 
+@media only screen and (max-width: 768px){
+		/************* 2. HEADER ***************/
+		.breadcrumb{
+			width: max-content;
+			position: relative;
+		}
+		
+		.usersInfo{
+			padding-left: 2rem;
+		}
+		/************* 2.1. SUPERADMIN ***************/
+		/************* 3. MAIN MENU ***************/
+		/************* BODY ***************/
+
+}
+
 @media only screen and (max-width:440px) {
 
 	/************* 2. HEADER ***************/
@@ -8201,7 +8217,6 @@ img.qaOptionsComment {
 	
 	.breadcrumb{
 		width: 70%;
-		position: relative;
 	}
 	
 	.usersInfo{
@@ -8212,6 +8227,8 @@ img.qaOptionsComment {
     top: 0;
     display: flex;
     flex-wrap: wrap;
+    padding-left: 0;
+
 	}
 	
 	.user-badge{
@@ -8246,15 +8263,6 @@ img.qaOptionsComment {
 	}
 	
 	/************* BODY ***************/
-	
-/*		.buttons-content {*/
-/*			width: 100%;*/
-/*		}*/
-	
-/*		button {*/
-/*			width: 100%;*/
-/*			margin-bottom: 1rem;*/
-/*		}*/
 	
 	.DownloadButton {
     width: 100px;
