@@ -1536,15 +1536,13 @@
       <div class="form-group">
 
         
-      <div id="subSectionsSelectTemplates"  style="display: none">
-          <div class="">
-             [#list (deliverable.shfrmPriorityActions)![] as priorityAction]
-                <div id="actionSelect-${priorityAction.shfrmPriorityAction.id}">
-                  [@customForm.select name="" label=""  i18nkey="project.activities.deliverableSelect" listName="deliverable.shfrmPriorityActions[${priorityAction_index}].shfrmPriorityAction.shfrmSubActions" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" deliverableList" disabled=!editable/] 
-                </div>
-             [/#list] 
-          </div>
-      </div>
+        <div id="subSectionsSelectTemplates"  style="display: none">
+              [#list (deliverable.shfrmPriorityActions)![] as priorityAction]
+                  <div id="subactionSelect-${priorityAction.shfrmPriorityAction.id}">
+                    [@customForm.select name="" label=""  i18nkey="project.activities.deliverableSelect" listName="deliverable.shfrmPriorityActions[${priorityAction_index}].shfrmPriorityAction.shfrmSubActions" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" deliverableList" disabled=!editable/] 
+                  </div>
+              [/#list] 
+        </div>
 
        
         <div id="actionsListReference">
@@ -1554,24 +1552,19 @@
       </div>
       
      
-      [#-- Project Section Content --]
-      <div>
-        [#-- Section Messages --]
 
-          [#-- Listing actions  --]
           
-            [#-- Priority actions list --]
-            <div id="projectPartnersBlock" class="simpleBox" listname="deliverable.shfrmPriorityActions">
-              [#if deliverable.shfrmPriorityActions?has_content]
-                [#list deliverable.shfrmPriorityActions as priorityAction]
-                  [@projectPartnerMacro element=priorityAction!{} name="deliverable.shfrmPriorityActions[${priorityAction_index}]" index=priorityAction_index opened=(deliverable.shfrmPriorityActions?size = 1)/]
-                [/#list] 
-              [#else]
-                <p class="noContactMessage">[@s.text name="shfrmManagement.actionsEmpty" /]</p>     
-              [/#if] 
-     
-      </div>
-      
+        [#-- Priority actions list --]
+        <div id="projectPartnersBlock" class="simpleBox" listname="deliverable.shfrmPriorityActions">
+          [#if deliverable.shfrmPriorityActions?has_content]
+            [#list deliverable.shfrmPriorityActions as priorityAction]
+              [@projectPartnerMacro element=priorityAction!{} name="deliverable.shfrmPriorityActions[${priorityAction_index}]" index=priorityAction_index opened=(deliverable.shfrmPriorityActions?size = 1)/]
+            [/#list] 
+          [#else]
+            <p class="noContactMessage">[@s.text name="shfrmManagement.actionsEmpty" /]</p>     
+          [/#if] 
+  
+        </div>
     </div>
   </div>
   <br>
@@ -1633,7 +1626,7 @@
   
             [#if editable]
              <h5 class="sectionSubTitle">[@s.text name="shfrmManagement.subActions.add" /] <small>[@customForm.req required=true /]</small></h5>
-             <div class="form-group">  
+             <div class="form-group subActionsSelector">  
               [@customForm.select name="" label=""  i18nkey="project.activities.deliverableSelect" listName="${name}.shfrmPriorityAction.shfrmSubActions" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" deliverableList" disabled=!editable/]
             </div>  
             [/#if]
