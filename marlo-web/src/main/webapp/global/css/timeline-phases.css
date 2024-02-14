@@ -302,13 +302,15 @@ div#tl-adnyds {
   font-size: 70% !important;
 }
 
-@media only screen and (max-width:440px){
-	
-	
+@media only screen and (max-width: 768px){
 	.example .scrollbar {
  	 	width: 100%;
  	 	overflow: hidden;
 	}
+}
+
+@media only screen and (max-width:440px){
+	
 	
 	.example .frame{
 		width: 80%;
