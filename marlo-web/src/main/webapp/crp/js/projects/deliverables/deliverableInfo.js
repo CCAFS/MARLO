@@ -69,14 +69,6 @@ function init() {
   // Event to validate the expected date
   $(".yearExpected").on("change", validateCurrentDate);
 
-  $(".elementType-shfrmPriorityAction-deliverablePriorityActions").on("change", function () {
-    // console.log("change action");
-    console.log("addProjectPartner")
-    $('.addProjectPartner').trigger('click');
-
-
-  });
-
   // Event when status is changed
   $statuses.on("change", function () {
     justificationByStatus(this.value);

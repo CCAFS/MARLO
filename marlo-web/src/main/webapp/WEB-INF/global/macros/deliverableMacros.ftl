@@ -1534,6 +1534,16 @@
       <br>    
       [#-- Shfrm Priority Action --]
       <div class="form-group">
+
+        
+      <div id="subSectionsSelectTemplates"  style="display: none">
+          <div class="">
+             [#list (deliverable.shfrmPriorityActions)![] as priorityAction]
+               [@customForm.select name="" label=""  i18nkey="project.activities.deliverableSelect" listName="deliverable.shfrmPriorityActions[${priorityAction_index}].shfrmPriorityAction.shfrmSubActions" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" deliverableList" disabled=!editable/] 
+             [/#list] 
+          </div>
+      </div>
+
        
         <div id="actionsListReference">
           [@customForm.elementsListComponent id="deliverablePriorityActions" name="deliverable.shfrmPriorityActions" elementType="shfrmPriorityAction" help="deliverable.shfrmContribution.priorityAction.help" helpIcon=false elementList=(deliverable.shfrmPriorityActions)![] label="deliverable.shfrmContribution.priorityAction" listName="shfrmPriorityActions" keyFieldName="id" displayFieldName="composedName" required=true /]
@@ -1550,7 +1560,6 @@
           
             [#-- Priority actions list --]
             <div id="projectPartnersBlock" class="simpleBox" listname="deliverable.shfrmPriorityActions">
-            
               [#if deliverable.shfrmPriorityActions?has_content]
                 [#list deliverable.shfrmPriorityActions as priorityAction]
                   [@projectPartnerMacro element=priorityAction!{} name="deliverable.shfrmPriorityActions[${priorityAction_index}]" index=priorityAction_index opened=(deliverable.shfrmPriorityActions?size = 1)/]
@@ -1558,8 +1567,6 @@
               [#else]
                 <p class="noContactMessage">[@s.text name="shfrmManagement.actionsEmpty" /]</p>     
               [/#if] 
-            <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="shfrmManagement.priorityActions.add" /]</div>
-            </div> 
      
       </div>
       
@@ -1592,9 +1599,9 @@
     [#-- TODO: Please improve this validation at backend side --]
 
     [#-- Remove link for all partners --]
-    [#if isTemplate] [#--&& (isTemplate) --]
+    [#--  [#if isTemplate] 
       <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
-    [/#if]
+    [/#if]  --]
     
     [#-- Partner Title --]
     <div class="blockTitle ${opened?string('opened', 'closed')}">
