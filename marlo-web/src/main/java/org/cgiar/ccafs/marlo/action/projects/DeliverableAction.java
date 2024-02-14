@@ -644,6 +644,42 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  public void fillSubActionsGeneralList() {
+    try {
+      if (shfrmPriorityActions != null && !shfrmPriorityActions.isEmpty()) {
+        List<ShfrmSubAction> subActions;
+        List<ShfrmSubAction> subActionsAdd;
+        for (ShfrmPriorityAction shfrmPriorityAction : shfrmPriorityActions) {
+          subActions = new ArrayList<>();
+
+          // Priority action front
+          if (shfrmPriorityAction != null && shfrmPriorityAction.getId() != null) {
+            subActionsAdd = new ArrayList<>();
+            // Sub Actions DB
+            subActions = shfrmSubActionManager.findAll();
+            if (subActions != null) {
+              for (ShfrmSubAction subAction : subActions) {
+
+                if (subAction != null && subAction.getShfrmPriorityAction() != null
+                  && subAction.getShfrmPriorityAction().getId() != null) {
+                  if (subAction.getShfrmPriorityAction().getId().equals(shfrmPriorityAction.getId())) {
+                    subActionsAdd.add(subAction);
+                  }
+                }
+              }
+              if (subActionsAdd != null) {
+                shfrmPriorityAction.setShfrmSubActions(subActionsAdd);
+              }
+            }
+          }
+        }
+      }
+
+    } catch (Exception e) {
+      logger.error("error getting sub actions: " + e);
+    }
+  }
+
   public void fillSubActionsList() {
     try {
       if (deliverable.getShfrmPriorityActions() != null && !deliverable.getShfrmPriorityActions().isEmpty()) {
@@ -1485,7 +1521,7 @@ public class DeliverableAction extends BaseAction {
               .sorted(Comparator.comparing(DeliverableShfrmPriorityAction::getId)).collect(Collectors.toList())));
           }
           this.fillSubActionsList();
-
+          this.fillSubActionsGeneralList();
 
           if (deliverable != null && deliverable.getShfrmPriorityActions() != null
             && !deliverable.getShfrmPriorityActions().isEmpty()) {
