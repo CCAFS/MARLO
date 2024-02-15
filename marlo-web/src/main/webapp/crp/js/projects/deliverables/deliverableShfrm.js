@@ -202,6 +202,7 @@ function attachEvents() {
   $(".removeElementType-shfrmPriorityAction-deliverablePriorityActions").on('mouseenter', function () {
     currentDeleteActionId = $(this).parent('.relationElement').find('.elementRelationID').val();
   });
+  $(".removeDeliverable ").on('click', removeSubActionEvent);
 
 
   // Remove a project partner Event
@@ -601,7 +602,10 @@ function updateActionsAndSubActionsIndexes() {
 
 }
 
-
+function removeSubActionEvent() {
+  $(this).parents('.deliverableActivity').remove();
+  updateActionsAndSubActionsIndexes();
+}
 
 function addPartnerEvent(e) {
   var option = $(this).find("option:selected");

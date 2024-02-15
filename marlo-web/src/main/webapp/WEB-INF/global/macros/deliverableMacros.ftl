@@ -1575,9 +1575,6 @@
 [/#macro]
 
 [#macro subactionsSelectsctrlList ]
-
-
-
     [#list shfrmPriorityActions as priorityAction]
       <div id="subactionSelect-${priorityAction.id}">
       [#--  ${(shfrmPriorityActions[${priorityAction_index}].shfrmSubActions)![]}  --]
@@ -1588,10 +1585,8 @@
         
         [/#if]   
       </div>
-
         <br>
     [/#list] 
-
 [/#macro]
 
 
