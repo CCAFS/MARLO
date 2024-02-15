@@ -3711,13 +3711,29 @@ public class DeliverableAction extends BaseAction {
         if (actionPrev != null) {
           for (DeliverableShfrmPriorityAction priorityAction : actionPrev) {
             if (priorityAction != null && priorityAction.getId() != null) {
-              deliverableSubActions = deliverableShfrmSubActionManager
-                .findByPriorityActionAndPhase(priorityAction.getId(), this.getActualPhase().getId());
-              if (deliverableSubActions == null || (deliverableSubActions != null && deliverableSubActions.isEmpty())) {
-                if (!existingIds.contains(priorityAction.getId())) {
-                  deliverableShfrmPriorityActionManager.deleteDeliverableShfrmPriorityAction(priorityAction.getId());
+
+              // if (deliverableSubActions == null || (deliverableSubActions != null &&
+              // deliverableSubActions.isEmpty())) {
+
+              if (!existingIds.contains(priorityAction.getId())) {
+                deliverableSubActions = deliverableShfrmSubActionManager
+                  .findByPriorityActionAndPhase(priorityAction.getId(), this.getActualPhase().getId());
+
+                if (deliverableSubActions != null && !deliverableSubActions.isEmpty()) {
+
+                  // delete sub actions
+                  for (DeliverableShfrmSubAction deliverableSubActionDelete : deliverableSubActions) {
+                    if (deliverableSubActionDelete != null && deliverableSubActionDelete.getId() != null) {
+                      deliverableShfrmSubActionManager
+                        .deleteDeliverableShfrmSubAction(deliverableSubActionDelete.getId());
+                    }
+                  }
                 }
+
+                // delete actions
+                deliverableShfrmPriorityActionManager.deleteDeliverableShfrmPriorityAction(priorityAction.getId());
               }
+
             }
           }
         }
@@ -4150,10 +4166,13 @@ public class DeliverableAction extends BaseAction {
 
     // Try to check -> delete priority actions deleted from front-end after delete the sub-actions when all sub actions
     // was deleted
-    if (this.deliverable.getShfrmPriorityActions() == null
-      || (this.deliverable.getShfrmPriorityActions() != null && this.deliverable.getShfrmPriorityActions().isEmpty())) {
-      this.savePriorityActions(true);
-    }
+    /*
+     * if (this.deliverable.getShfrmPriorityActions() == null
+     * || (this.deliverable.getShfrmPriorityActions() != null && this.deliverable.getShfrmPriorityActions().isEmpty()))
+     * {
+     * this.savePriorityActions(true);
+     * }
+     */
   }
 
   public void saveUsers() {
