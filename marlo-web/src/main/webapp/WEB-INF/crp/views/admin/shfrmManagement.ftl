@@ -124,7 +124,7 @@
     [#-- TODO: Please improve this validation at backend side --]
 
     [#-- Remove link for all partners --]
-    [#if isTemplate || action.canBeDeleted((element.id)!-1,("shfrm")!)]
+    [#if isTemplate || action.canBeDeleted((element.id)!-1,(element.class.name)!)!false]
       <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
     [/#if]
     

@@ -2442,7 +2442,7 @@ public class DeliverableAction extends BaseAction {
 
       // SHFRM contribution
       if (this.hasSpecificities(APConstants.SHFRM_CONTRIBUTION_ACTIVE)) {
-        this.savePriorityActions();
+        this.savePriorityActions(false);
         this.saveSubActions();
       }
 
@@ -3687,10 +3687,9 @@ public class DeliverableAction extends BaseAction {
   /**
    * Save Deliverable SHFRM priority action Information
    * 
-   * @param deliverable
-   * @param phase
+   * @param delete - true for only execute delete process
    */
-  public void savePriorityActions() {
+  public void savePriorityActions(boolean onlyDeleteProcess) {
 
     // Search and deleted form Information
     try {
@@ -3729,7 +3728,7 @@ public class DeliverableAction extends BaseAction {
     }
 
     // Save form Information
-    if (this.deliverable.getShfrmPriorityActions() != null) {
+    if (this.deliverable.getShfrmPriorityActions() != null && onlyDeleteProcess == false) {
       DeliverableShfrmPriorityAction deliverablePriorityActionsSave;
       for (DeliverableShfrmPriorityAction deliverablePriorityActions : this.deliverable.getShfrmPriorityActions()) {
         deliverablePriorityActionsSave = new DeliverableShfrmPriorityAction();
@@ -4036,9 +4035,6 @@ public class DeliverableAction extends BaseAction {
 
   /**
    * Save Deliverable SHFRM sub actions Information
-   * 
-   * @param deliverable
-   * @param phase
    */
   public void saveSubActions() {
 
@@ -4150,6 +4146,13 @@ public class DeliverableAction extends BaseAction {
           }
         }
       }
+    }
+
+    // Try to check -> delete priority actions deleted from front-end after delete the sub-actions when all sub actions
+    // was deleted
+    if (this.deliverable.getShfrmPriorityActions() == null
+      || (this.deliverable.getShfrmPriorityActions() != null && this.deliverable.getShfrmPriorityActions().isEmpty())) {
+      this.savePriorityActions(true);
     }
   }
 

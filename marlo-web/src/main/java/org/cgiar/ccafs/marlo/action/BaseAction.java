@@ -892,7 +892,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       }
 
-      if (className != null && className.equals("shfrm")) {
+      if (clazz == ShfrmPriorityAction.class) {
         ShfrmPriorityAction shfrmPriorityAction = this.shfrmPriorityActionManager.getShfrmPriorityActionById(id);
         if (shfrmPriorityAction != null && shfrmPriorityAction.getId() != null) {
           List<DeliverableShfrmPriorityAction> deliverableShfrmPriorityActions =
@@ -1087,7 +1087,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
       return true;
     } catch (Exception e) {
-
+      Log.error("error getting class " + e);
       return true;
     }
 
