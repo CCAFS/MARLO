@@ -631,6 +631,7 @@ function addPartnerEvent(e) {
 
 function cloneSubActionSelect(value) {
   var $select = $(`#subactionSelect-${value}`).find('.baseselect').clone(true);
+  $select.removeClass('hideSelect');
   return $select;
 }
 
