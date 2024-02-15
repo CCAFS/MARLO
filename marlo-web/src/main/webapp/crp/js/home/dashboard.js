@@ -477,6 +477,15 @@ if (windowWidth < 440) {
 	})
 }
 
+if (windowWidth < 768) {
+	divDataTables_length.css({
+		"left": "35%",
+		"bottom": "0",
+		"margin-top": "4rem",
+		"margin-left": "0"
+	})
+}
+
 
 $('a#impact[data-toggle="tab"]').on('shown.bs.tab', function(e) {
   e.target // newly activated tab
