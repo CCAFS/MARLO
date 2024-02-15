@@ -1551,7 +1551,7 @@
               [@projectPartnerMacro element=priorityAction!{} name="deliverable.shfrmPriorityActions[${priorityAction_index}]" index=priorityAction_index opened=(deliverable.shfrmPriorityActions?size = 1)/]
             [/#list] 
           [#else]
-            <p class="noContactMessage">[@s.text name="shfrmManagement.actionsEmpty" /]</p>     
+            [#--p class="noContactMessage">[@s.text name="shfrmManagement.actionsEmpty" /]</p> --]    
           [/#if] 
   
         </div>
@@ -1564,7 +1564,7 @@
 [#macro subActionItemMacro subActionItem name index=-1 isTemplate=false]
   [#assign deliverableCustomName = "${name}[${index}]" /]
   <div id="deliverableActivity-${isTemplate?string('template',(projectActivity.id)!)}" class="deliverableActivity"  style="display:${isTemplate?string('none','block')}">
-    [#if editable]<div class="removeDeliverable removeIcon" title="Remove deliverable"></div>[/#if]
+    [#if editable]<div class="removeDeliverable removeIcon" title="Remove sub-action"></div>[/#if]
     <input type="hidden" name="${deliverableCustomName}.id" value="${(subActionItem.id)!-1}" />
     <input class="id" type="hidden" name="${deliverableCustomName}.shfrmSubAction.id" value="${(subActionItem.shfrmSubAction.id)!-1}" />
     <input class="name" type="hidden" name="${deliverableCustomName}.shfrmSubAction.name" value="${(subActionItem.shfrmSubAction.name)!'null'}" />
@@ -1575,7 +1575,7 @@
 [/#macro]
 
 [#macro subactionsSelectsctrlList ]
-    [#list shfrmPriorityActions as priorityAction]
+    [#list (shfrmPriorityActions)![] as priorityAction]
       <div id="subactionSelect-${priorityAction.id}">
       [#--  ${(shfrmPriorityActions[${priorityAction_index}].shfrmSubActions)![]}  --]
         [#if priorityAction.shfrmSubActions?has_content]
@@ -1607,7 +1607,7 @@
     <div class="blockTitle ${opened?string('opened', 'closed')}">
       [#-- Title --]
       <input class="actionidvalue" type="hidden"  value="${(element.shfrmPriorityAction.id)!'none'}" />
-      <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="priorityActionTitle">${(element.shfrmPriorityAction.name)!'Priority Action'}</span> </span>            
+      <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="priorityActionTitle">${(element.shfrmPriorityAction.composedName)!'Priority Action'}</span> </span>            
     </div>
     
     <div class="blockContent" style="display:${opened?string('block','none')}">
@@ -1621,20 +1621,23 @@
         <div class="fullPartBlock" listname="(${name}.shfrmSubActions)![]">
 
           <div class="subSectionsSelector" actionindex="${index}">
+            
+            [#if editable]
+              [#--<h5 class="sectionSubTitle">[@s.text name="shfrmManagement.subActions.add" /] <small>[@customForm.req required=false /]</small></h5>--]
+              <div class="form-group subActionsSelector">  
+                [@customForm.select name="" label="" help="deliverable.shfrmContribution.subAction.help" helpIcon=false i18nkey="shfrmManagement.subActions.add" listName="${name}.shfrmPriorityAction.shfrmSubActions" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" deliverableList" disabled=!editable/]
+              </div>  
+            [/#if]
+
             <div class="deliverableWrapper simpleBox form-group" >
               [#if element.shfrmSubActions?has_content]
                 [#list (element.shfrmSubActions)![] as subActionListItem]
                     [@subActionItemMacro subActionItem=subActionListItem name="${name}.shfrmSubActions"  index=subActionListItem_index /]
                 [/#list]
+              [#else]
+                [#-- <div class="input"><p>[@s.text name="shfrmManagement.subActionsEmpty" /]</p></div>--]
               [/#if]
             </div>
-  
-            [#if editable]
-             <h5 class="sectionSubTitle">[@s.text name="shfrmManagement.subActions.add" /] <small>[@customForm.req required=true /]</small></h5>
-             <div class="form-group subActionsSelector">  
-              [@customForm.select name="" label=""  i18nkey="project.activities.deliverableSelect" listName="${name}.shfrmPriorityAction.shfrmSubActions" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" deliverableList" disabled=!editable/]
-            </div>  
-            [/#if]
           </div>
 
         </div>
@@ -1662,20 +1665,8 @@
     
 
     <div class="">
-      <h1>In sua => Actions size: ${allSubActions?size}</h1>
-
-
-      [#list allSubActions as ctrlistitemmmm]
-          <p>&nbsp;&nbsp;&nbsp;&nbsp; * ctrl   name: ${(ctrlistitemmmm.name)!'Empty name'} - id: ${(ctrlistitemmmm.id)!'Empty id'}</p> 
-      [/#list]
-
       <div class="form-group row">
-
-       
         [@customForm.elementsListComponent name="${name}.shfrmSubAction.id" elementType="shfrmSubAction" help="deliverable.shfrmContribution.subAction.help" helpIcon=false label="deliverable.shfrmContribution.subAction" elementList=shfrmSubAction listName="(element.deliverableShfrmPriorityAction.shfrmSubActions)![]" keyFieldName="id" displayFieldName="name" required=true /]
-        [#--
-        [@customForm.select name="${name}.shfrmSubAction.id" label="" i18nkey="deliverable.shfrmContribution.subAction" listName="(element.deliverableShfrmPriorityAction.shfrmSubActions)![]" keyFieldName="id"  displayFieldName="name" multiple=false required=true className="countriesSelect" disabled=!editable/]
---]
       </div>
            
     </div> 
