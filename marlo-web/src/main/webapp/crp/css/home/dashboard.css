@@ -811,7 +811,7 @@ span.timelineControl:hover {
 		}
   }
 
- @media (max-width:750px){
+ @media (max-width:768px){
 
   .containerItems {
     display: flex;
@@ -854,6 +854,26 @@ span.timelineControl:hover {
   table.dataTable {
     font-size: 0.7em;
   }
+  
+  	/*************** sectionMap ********************/
+  	
+  .containerTextMap .titleMap{
+		font-size: 1.4em;
+	}
+	
+	.containerTextMap .textMap{
+		font-size: 1.15rem;
+	}
+	.containerImgMap{
+		min-width: 25%;
+		display:flex;
+  	flex-direction: column;
+  	justify-content: center;
+	}
+	
+	.containerImgMap img{
+		width: 100%;
+	}
  }
 
 @media only screen and (max-width:440px){
@@ -900,7 +920,16 @@ span.timelineControl:hover {
 	
 	/*************** sectionMap ********************/
 	
+	  .containerTextMap .titleMap{
+		font-size: 1.2em;
+	}
+	
+	.containerTextMap .textMap{
+		font-size: 1rem;
+	}
+	
 	.containerImgMap{
+		display: block;
 		position: absolute;
 		right: 10%;
 		top: 0;
