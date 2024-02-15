@@ -1580,7 +1580,7 @@
       [#--  ${(shfrmPriorityActions[${priorityAction_index}].shfrmSubActions)![]}  --]
         [#if priorityAction.shfrmSubActions?has_content]
           <div class="baseselect hideSelect">
-              [@customForm.select name="" label=""  i18nkey="deliverable.shfrmContribution.subAction.help" listName="shfrmPriorityActions[${priorityAction_index}].shfrmSubActions" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" deliverableList" disabled=!editable/] 
+              [@customForm.select name="" label=""  i18nkey="deliverable.shfrmContribution.subAction.help" listName="shfrmPriorityActions[${priorityAction_index}].shfrmSubActions" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" deliverableList" disabled=!editable/] 
           </div>
         
         [/#if]   
