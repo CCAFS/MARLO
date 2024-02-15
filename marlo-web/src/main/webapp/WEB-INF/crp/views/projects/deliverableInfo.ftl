@@ -1,4 +1,6 @@
 [#ftl]
+[#import "/WEB-INF/global/macros/deliverableMacros.ftl" as deliverableMacros /]
+
 <input type="hidden" id="traineesIndicator" name="traineesIndicator" value="${(action.getTraineesIndicatorDB())!''}"/>
 <input type="hidden" name="deliverable.deliverableInfo.remainingPending" value="${(deliverable.deliverableInfo.remainingPending!'false')?c}"/>
 <div class="simpleBox">
@@ -136,6 +138,24 @@
     [/#if]
   </div>
 
+     
+    [#if action.hasSpecificities('shfrm_contribution_active') ]
+      [#-- SHRFM contribution --]
+      </br>
+      [@deliverableMacros.shfmrContributionMacro /]
+
+      [#-- Single partner TEMPLATE from partnersTemplate.ftl --]
+
+      [#-- Contact person TEMPLATE from partnersTemplate.ftl --]
+      [@deliverableMacros.contactPersonMacro element={} allSubActions=[] name="deliverable.shfrmPriorityActions[-1].shfrmSubActions[-1]" isTemplate=true /]
+
+      [@deliverableMacros.subActionItemMacro subActionItem={} name="deliverable.shfrmPriorityActions[-1].shfrmSubActions" index=-1 isTemplate=true /]
+
+    [/#if]
+    
+
+    
+    
   [#-- Key Outputs select --]
   [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]
     <div class="form-group listindicators" >

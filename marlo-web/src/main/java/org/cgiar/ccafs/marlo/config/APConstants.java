@@ -161,6 +161,7 @@ public final class APConstants {
   public static final String DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE =
     "duplicated_deliverables_functionality_active";
   public static final String HIGHLIGHT_COMMENTS_ACTIVE = "highlight_comments_active";
+  public static final String SHFRM_CONTRIBUTION_ACTIVE = "shfrm_contribution_active";
 
   public static final String TIP_SECTION_ACTIVE = "tip_section_active";
 
@@ -183,6 +184,8 @@ public final class APConstants {
   public static final String DELIVERABLE_FILE_LOCALLY_HOSTED_STR = "Locally";
 
   public static final String DELIVERABLE_ID = "deliverableId";
+  public static final String PRIORITY_ACTION_ID = "priorityActionId";
+  public static final String SUB_ACTION_ID = "subActionId";
   public static final int DELIVERABLE_QUALITY_ANSWER_NO = 3;
   public static final int DELIVERABLE_QUALITY_ANSWER_YES = 2;
   public static final int DELIVERABLE_QUALITY_ANSWER_YES_BUT_NO = 1;

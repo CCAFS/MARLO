@@ -1,0 +1,2 @@
+RENAME TABLE deliverable_shfmr_sub_action TO deliverable_shfmr_sub_actions;
+RENAME TABLE deliverable_shfrm_priority_action TO deliverable_shfrm_priority_actions;

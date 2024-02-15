@@ -1,0 +1,1 @@
+RENAME TABLE deliverable_shfmr_sub_actions TO deliverable_shfrm_sub_actions;

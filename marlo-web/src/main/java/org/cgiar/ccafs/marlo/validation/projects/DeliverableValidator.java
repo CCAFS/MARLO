@@ -24,26 +24,31 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
+import org.cgiar.ccafs.marlo.data.manager.SoilIndicatorManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
+import org.cgiar.ccafs.marlo.data.model.DeliverableShfrmPriorityAction;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
+import org.cgiar.ccafs.marlo.data.model.SoilIndicator;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,6 +74,7 @@ public class DeliverableValidator extends BaseValidator {
   private DeliverableUserManager deliverableUserManager;
   private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
   private RepIndTypeActivityManager repIndTypeActivityManager;
+  private SoilIndicatorManager soilIndicatorManager;
 
   Boolean doesNotHaveDOI;
 
@@ -76,13 +82,14 @@ public class DeliverableValidator extends BaseValidator {
   public DeliverableValidator(GlobalUnitManager crpManager, ProjectManager projectManager,
     ProjectPartnerPersonManager projectPartnerPersonManager,
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager, RepIndTypeActivityManager repIndTypeActivityManager,
-    DeliverableUserManager deliverableUserManager) {
+    DeliverableUserManager deliverableUserManager, SoilIndicatorManager soilIndicatorManager) {
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
     this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
     this.deliverableUserManager = deliverableUserManager;
     this.repIndTypeActivityManager = repIndTypeActivityManager;
+    this.soilIndicatorManager = soilIndicatorManager;
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID, BaseAction action) {
@@ -525,7 +532,71 @@ public class DeliverableValidator extends BaseValidator {
         }
       }
 
+      // SHFRM contribution validations
+
+      if (action.hasSpecificities(APConstants.SHFRM_CONTRIBUTION_ACTIVE) && dInfo != null
+        && dInfo.getContributingShfrm() != null && dInfo.getContributingShfrm() == true) {
+
+        // Validate Soil indicators
+        if (deliverable.getCrpOutcomes() == null || !deliverable.getCrpOutcomes().isEmpty()) {
+          List<SoilIndicator> soilIndicators = new ArrayList<>();
+          soilIndicators = soilIndicatorManager.findAll();
+
+          for (DeliverableCrpOutcome indicator : deliverable.getCrpOutcomes()) {
+            if (soilIndicators != null && !soilIndicators.isEmpty()) {
+              for (SoilIndicator soilIndicator : soilIndicators) {
+                if (soilIndicator != null && soilIndicator.getIndicatorName() != null && indicator != null
+                  && indicator.getCrpProgramOutcome() != null && indicator.getCrpProgramOutcome().getAcronym() != null
+                  && !indicator.getCrpProgramOutcome().getAcronym().contains(soilIndicator.getIndicatorName())) {
+                  action.addMessage(action.getText("deliverable.crpOutcomes"));
+                  action.addMissingField("deliverable.crpOutcomes");
+                  action.getInvalidFields().put("list-deliverable.crpOutcomes", InvalidFieldsMessages.EMPTYFIELD);
+                }
+              }
+            }
+          }
+        }
+
+        // Validate contribution narrative
+        if (!(this
+          .isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative())
+          && this.wordCount(
+            deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative()) <= 200)) {
+          action.addMessage(action.getText("deliverable.deliverableInfo.shfrmContributionNarrative"));
+          action.addMissingField("deliverable.deliverableInfo.shfrmContributionNarrative");
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.shfrmContributionNarrative",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // Validate priority actions
+        if (deliverable.getShfrmPriorityActions() == null
+          || (deliverable.getShfrmPriorityActions() != null && deliverable.getShfrmPriorityActions().isEmpty())) {
+          action.addMessage(action.getText("deliverable.shfrmPriorityActions"));
+          action.addMissingField("deliverable.shfrmPriorityActions");
+          action.getInvalidFields().put("list-deliverable.shfrmPriorityActions", InvalidFieldsMessages.EMPTYFIELD);
+        } else if (deliverable.getShfrmPriorityActions() != null && !deliverable.getShfrmPriorityActions().isEmpty()) {
+          int indexJ = 0;
+
+          for (DeliverableShfrmPriorityAction priorityAction : deliverable.getShfrmPriorityActions()) {
+            if (priorityAction != null && priorityAction.getShfrmSubActions() == null
+              || (priorityAction.getShfrmSubActions() != null && priorityAction.getShfrmSubActions().isEmpty())) {
+              action.addMessage(action.getText("deliverable.shfrmSubActions"));
+              action.addMissingField("deliverable.shfrmPriorityActions");
+              action.getInvalidFields().put("list-deliverable.shfrmPriorityActions", InvalidFieldsMessages.EMPTYFIELD);
+              /*
+               * action.addMessage(action.getText("deliverable.shfrmSubActions[" + indexJ + "]"));
+               * action.addMissingField("deliverable.shfrmSubActions[" + indexJ + "]");
+               * action.getInvalidFields().put("list-deliverable.shfrmPriorityAction[" + indexJ + "].shfrmSubActions",
+               * InvalidFieldsMessages.EMPTYFIELD);
+               */
+              indexJ++;
+            }
+          }
+        }
+
+      }
     }
+
     this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
   }

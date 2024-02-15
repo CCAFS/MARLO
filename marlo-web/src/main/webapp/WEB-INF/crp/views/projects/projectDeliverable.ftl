@@ -4,9 +4,10 @@
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate", "vue"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20240123",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableShfrm.js?20240203",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20230810",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20231017",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20241017",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
@@ -267,6 +268,10 @@
     </div>
 </section>
 [/#if]
+
+
+[@deliverableMacros.projectPartnerMacro  element={} name="deliverable.shfrmPriorityActions[-1]" isTemplate=true /]
+[@deliverableMacros.subactionsSelectsctrlList /]
 
 [#-- ----------------------------------- Deliverable Type Rules ------------------------------------------------]
 [#--  Publication Metadata

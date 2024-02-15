@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmPriorityActionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTraineesIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeRuleManager;
@@ -82,6 +83,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.manager.ShfrmPriorityActionManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
@@ -313,6 +315,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ProjectBudgetManager projectBudgetManager;
+
+  @Inject
+  private DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
+
+  @Inject
+  private ShfrmPriorityActionManager shfrmPriorityActionManager;
 
   @Inject
   private ProjectPartnerPersonManager partnerPersonManager;
@@ -884,6 +892,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       }
 
+      if (clazz == ShfrmPriorityAction.class) {
+        ShfrmPriorityAction shfrmPriorityAction = this.shfrmPriorityActionManager.getShfrmPriorityActionById(id);
+        if (shfrmPriorityAction != null && shfrmPriorityAction.getId() != null) {
+          List<DeliverableShfrmPriorityAction> deliverableShfrmPriorityActions =
+            deliverableShfrmPriorityActionManager.findAll().stream()
+              .filter(d -> d.getShfrmPriorityAction() != null && d.getShfrmPriorityAction().getId() != null
+                && d.getShfrmPriorityAction().getId().equals(id) && d.getPhase() != null
+                && d.getPhase().getId().equals(this.getActualPhase().getId()))
+              .collect(Collectors.toList());
+          if (deliverableShfrmPriorityActions != null && deliverableShfrmPriorityActions.isEmpty()
+            || (deliverableShfrmPriorityActions == null)) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      }
+
       if (clazz == ProjectBudget.class) {
 
         ProjectBudget projectBudget = this.projectBudgetManager.getProjectBudgetById(id);
@@ -1061,7 +1087,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
       return true;
     } catch (Exception e) {
-
+      Log.error("error getting class " + e);
       return true;
     }
 
@@ -5129,6 +5155,37 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.session;
   }
 
+  public List<Deliverable> getShfrmActionDeliverablesRelation(Long shfrmPrimaryActionId) {
+
+    List<Deliverable> deliverablesRelated = new ArrayList<>();
+    if (shfrmPrimaryActionId != null && shfrmPrimaryActionId != 0) {
+      List<DeliverableShfrmPriorityAction> deliverableShfrmPriorityActions = null;
+      try {
+        deliverableShfrmPriorityActions = deliverableShfrmPriorityActionManager.findAll().stream()
+          .filter(d -> d.getShfrmPriorityAction() != null && d.getShfrmPriorityAction().getId() != null
+            && d.getShfrmPriorityAction().getId().equals(shfrmPrimaryActionId) && d.getPhase() != null
+            && d.getPhase().getId().equals(this.getActualPhase().getId()))
+          .collect(Collectors.toList());
+      } catch (Exception e) {
+        Log.error("error getting shfrm " + e);
+      }
+      if (deliverableShfrmPriorityActions != null && !deliverableShfrmPriorityActions.isEmpty()) {
+        for (DeliverableShfrmPriorityAction deliverableShfrmPriorityAction : deliverableShfrmPriorityActions) {
+          if (deliverableShfrmPriorityAction != null && deliverableShfrmPriorityAction.getDeliverable() != null) {
+            Deliverable deliverableAdd = deliverableShfrmPriorityAction.getDeliverable();
+            deliverableAdd.setDeliverableInfo(deliverableAdd.getDeliverableInfo(getActualPhase()));
+            deliverablesRelated.add(deliverableShfrmPriorityAction.getDeliverable());
+          }
+        }
+      }
+    }
+    if (deliverablesRelated != null && !deliverablesRelated.isEmpty()) {
+      return deliverablesRelated;
+    } else {
+      return null;
+    }
+  }
+
   /**
    * This method return the first AF AICCRA ID Phase
    *
@@ -7288,6 +7345,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.saveable;
   }
 
+  public boolean isShfrmSpecificityActive() {
+    try {
+      return Boolean.parseBoolean(this.getSession().get(APConstants.SHFRM_CONTRIBUTION_ACTIVE).toString());
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
   public boolean isSubmit(long projectID) {
     Project project = this.projectManager.getProjectById(projectID);
     int year = this.getCurrentCycleYear();
@@ -8336,6 +8401,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   //
   public boolean validURL(String URL) {
     try {
@@ -8351,5 +8417,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
 }

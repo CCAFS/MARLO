@@ -47,6 +47,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   private Boolean duplicated;
   @Expose
   private Boolean remainingPending;
+  @Expose
+  private Boolean contributingShfrm;
+  @Expose
+  private String shfrmContributionNarrative;
 
   public DeliverableInfo() {
   }
@@ -55,10 +59,13 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return adoptedLicense;
   }
 
+  public Boolean getContributingShfrm() {
+    return contributingShfrm;
+  }
+
   public CrpClusterKeyOutput getCrpClusterKeyOutput() {
     return crpClusterKeyOutput;
   }
-
 
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
@@ -68,7 +75,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return deliverable;
   }
 
-
   public DeliverableType getDeliverableType() {
     return deliverableType;
   }
@@ -77,11 +83,9 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return description;
   }
 
-
   public Boolean getDuplicated() {
     return duplicated;
   }
-
 
   public RepIndGeographicScope getGeographicScope() {
     return geographicScope;
@@ -90,7 +94,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public Boolean getIsLocationGlobal() {
     return isLocationGlobal;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -103,7 +106,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public Integer getNewExpectedYear() {
     return newExpectedYear;
   }
-
 
   public Phase getPhase() {
     return phase;
@@ -119,15 +121,17 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public String getShfrmContributionNarrative() {
+    return shfrmContributionNarrative;
+  }
+
   public Integer getStatus() {
     return status;
   }
 
-
   public String getStatusDescription() {
     return statusDescription;
   }
-
 
   public String getStatusName(Phase phase) {
 
@@ -227,6 +231,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
     return false;
   }
+
 
   public Boolean isRequiredToBeReported() {
     if (this.getStatus() == null) {
@@ -371,11 +376,14 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.adoptedLicense = adoptedLicense;
   }
 
+  public void setContributingShfrm(Boolean contributingShfrm) {
+    this.contributingShfrm = contributingShfrm;
+  }
+
 
   public void setCrpClusterKeyOutput(CrpClusterKeyOutput crpClusterKeyOutput) {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
   }
-
 
   public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
     this.crpProgramOutcome = crpProgramOutcome;
@@ -386,11 +394,9 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.deliverable = deliverable;
   }
 
-
   public void setDeliverableType(DeliverableType deliverableType) {
     this.deliverableType = deliverableType;
   }
-
 
   public void setDescription(String description) {
     this.description = description;
@@ -399,7 +405,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public void setDuplicated(Boolean duplicated) {
     this.duplicated = duplicated;
   }
-
 
   public void setGeographicScope(RepIndGeographicScope geographicScope) {
     this.geographicScope = geographicScope;
@@ -423,6 +428,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
   public void setRemainingPending(Boolean remainingPending) {
     this.remainingPending = remainingPending;
+  }
+
+  public void setShfrmContributionNarrative(String shfrmContributionNarrative) {
+    this.shfrmContributionNarrative = shfrmContributionNarrative;
   }
 
   public void setStatus(Integer status) {
@@ -460,7 +469,8 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.setStatusDescription(update.getStatusDescription());
     this.setGeographicScope(update.getGeographicScope());
     this.setRegion(update.getRegion());
+    this.setContributingShfrm(update.getContributingShfrm());
+    this.setShfrmContributionNarrative(update.getShfrmContributionNarrative());
   }
-
 }
 
