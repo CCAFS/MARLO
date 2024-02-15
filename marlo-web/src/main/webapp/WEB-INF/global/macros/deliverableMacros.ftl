@@ -1580,7 +1580,7 @@
       [#--  ${(shfrmPriorityActions[${priorityAction_index}].shfrmSubActions)![]}  --]
         [#if priorityAction.shfrmSubActions?has_content]
           <div class="baseselect hideSelect">
-              [@customForm.select name="" label=""  i18nkey="project.activities.deliverableSelect" listName="shfrmPriorityActions[${priorityAction_index}].shfrmSubActions" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" deliverableList" disabled=!editable/] 
+              [@customForm.select name="" label=""  i18nkey="deliverable.shfrmContribution.priorityAction.help" listName="shfrmPriorityActions[${priorityAction_index}].shfrmSubActions" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" deliverableList" disabled=!editable/] 
           </div>
         
         [/#if]   
@@ -1625,11 +1625,11 @@
             [#if editable]
               [#--<h5 class="sectionSubTitle">[@s.text name="shfrmManagement.subActions.add" /] <small>[@customForm.req required=false /]</small></h5>--]
               <div class="form-group subActionsSelector">  
-                [@customForm.select name="" label="" help="deliverable.shfrmContribution.subAction.help" helpIcon=false i18nkey="shfrmManagement.subActions.add" listName="${name}.shfrmPriorityAction.shfrmSubActions" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" deliverableList" disabled=!editable/]
+                [@customForm.select name="" label="" help="" helpIcon=false i18nkey="deliverable.shfrmContribution.subAction.help" listName="${name}.shfrmPriorityAction.shfrmSubActions" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" deliverableList" disabled=!editable/]
               </div>  
             [/#if]
 
-            <div class="deliverableWrapper simpleBox form-group" >
+            <div class="deliverableWrapper form-group" >
               [#if element.shfrmSubActions?has_content]
                 [#list (element.shfrmSubActions)![] as subActionListItem]
                     [@subActionItemMacro subActionItem=subActionListItem name="${name}.shfrmSubActions"  index=subActionListItem_index /]
