@@ -1579,7 +1579,7 @@
       <div id="subactionSelect-${priorityAction.id}">
       [#--  ${(shfrmPriorityActions[${priorityAction_index}].shfrmSubActions)![]}  --]
         [#if priorityAction.shfrmSubActions?has_content]
-          <div class="baseselect">
+          <div class="baseselect hideSelect">
               [@customForm.select name="" label=""  i18nkey="project.activities.deliverableSelect" listName="shfrmPriorityActions[${priorityAction_index}].shfrmSubActions" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" deliverableList" disabled=!editable/] 
           </div>
         
