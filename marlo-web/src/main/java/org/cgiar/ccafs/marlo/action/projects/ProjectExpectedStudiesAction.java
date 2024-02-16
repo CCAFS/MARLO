@@ -2469,15 +2469,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           // auditlog.
           this.expectedStudy.getProjectExpectedStudyReferences().add(studyReferenceSave);
         } else {
-          ProjectExpectedStudyReference studyReferenceSave =
-            this.projectExpectedStudyReferenceManager.getProjectExpectedStudyReferenceById(studyReference.getId());
-          studyReferenceSave.setProjectExpectedStudy(projectExpectedStudy);
-          studyReferenceSave.setPhase(phase);
-          studyReferenceSave.setReference(studyReference.getReference());
-          studyReferenceSave.setLink(studyReference.getLink());
-          studyReferenceSave.setExternalAuthor(studyReference.getExternalAuthor());
-
           try {
+            ProjectExpectedStudyReference studyReferenceSave =
+              this.projectExpectedStudyReferenceManager.getProjectExpectedStudyReferenceById(studyReference.getId());
+            if (studyReferenceSave != null && projectExpectedStudy != null) {
+              studyReferenceSave.setProjectExpectedStudy(projectExpectedStudy);
+              studyReferenceSave.setPhase(phase);
+              studyReferenceSave.setReference(studyReference.getReference());
+              studyReferenceSave.setLink(studyReference.getLink());
+              studyReferenceSave.setExternalAuthor(studyReference.getExternalAuthor());
+            }
+
             this.projectExpectedStudyReferenceManager.saveProjectExpectedStudyReference(studyReferenceSave);
             // This is to add studyReferenceSave to generate correct
             // auditlog.
