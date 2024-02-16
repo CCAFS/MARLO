@@ -1528,9 +1528,15 @@
       <hr />
       
       [#-- Shfrm Contribution Narrative --]
+      [#if reportingActive]
       <div class="form-group">
-        [@customForm.textArea name="deliverable.deliverableInfo.shfrmContributionNarrative" value="${(deliverable.deliverableInfo.shfrmContributionNarrative)!}" i18nkey="deliverable.shfrmContribution.narrative"  placeholder="" className="limitWords-200" required=true editable=editable /]
+        [@customForm.textArea name="deliverable.deliverableInfo.shfrmContributionNarrative" value="${(deliverable.deliverableInfo.shfrmContributionNarrative)!}" i18nkey="deliverable.shfrmContribution.narrative.reporting"  placeholder="" className="limitWords-200" required=true editable=editable /]
       </div>
+      [#else]
+      <div class="form-group">
+        [@customForm.textArea name="deliverable.deliverableInfo.shfrmContributionNarrative" value="${(deliverable.deliverableInfo.shfrmContributionNarrative)!}" i18nkey="deliverable.shfrmContribution.narrative.planning"  placeholder="" className="limitWords-200" required=true editable=editable /]
+      </div>
+      [/#if]
       <br>    
       [#-- Shfrm Priority Action --]
       <div class="form-group">
