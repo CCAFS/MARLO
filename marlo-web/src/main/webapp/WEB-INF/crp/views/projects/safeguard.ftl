@@ -38,10 +38,15 @@
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
 
-[@customForm.qaPopUp /]
-
 [#if action.hasSpecificities('feedback_active') ]
-
+  [#if feedbackComments?has_content]
+    [#list feedbackComments as feedback]
+      [@customForm.qaPopUpMultiple fields=feedback.qaComments name=feedback.fieldDescription index=feedback_index canLeaveComments=(action.canLeaveComments()!false)/]
+    [/#list]
+    <div id="qaTemplate" style="display: none">
+      [@customForm.qaPopUpMultiple canLeaveComments=(action.canLeaveComments()!false) template=true/]
+    </div>
+  [/#if]
 [/#if]
 
 <section class="container">

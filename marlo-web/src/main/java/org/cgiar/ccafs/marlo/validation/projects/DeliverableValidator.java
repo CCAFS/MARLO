@@ -417,7 +417,8 @@ public class DeliverableValidator extends BaseValidator {
              */
             // Deliverable Quality Check
             if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
-              && (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().intValue() == 51
+              && (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != null
+                && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().intValue() == 51
                 || deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId()
                   .intValue() == 74)) {
               if (deliverable.getQualityCheck() != null) {
