@@ -26,11 +26,11 @@ public class SoilIndicator extends MarloBaseEntity implements java.io.Serializab
   @Expose
   private String indicatorName;
   @Expose
-  private long indicatorId;
+  private Long indicatorId;
   @Expose
   private Phase phase;
 
-  public long getIndicatorId() {
+  public Long getIndicatorId() {
     return indicatorId;
   }
 
@@ -66,7 +66,7 @@ public class SoilIndicator extends MarloBaseEntity implements java.io.Serializab
     return false;
   }
 
-  public void setIndicatorId(long indicatorId) {
+  public void setIndicatorId(Long indicatorId) {
     this.indicatorId = indicatorId;
   }
 
@@ -82,5 +82,6 @@ public class SoilIndicator extends MarloBaseEntity implements java.io.Serializab
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
+
 }
 
