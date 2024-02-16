@@ -1607,7 +1607,7 @@
     <div class="blockTitle ${opened?string('opened', 'closed')}">
       [#-- Title --]
       <input class="actionidvalue" type="hidden"  value="${(element.shfrmPriorityAction.id)!'none'}" />
-      <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="priorityActionTitle">${(element.shfrmPriorityAction.composedName)!'Priority Action'}</span> </span>            
+      <span class="${customForm.changedField('${name}.id')}"> [#--  <span class="index_number">${index+1}</span>. --]<span class="priorityActionTitle">${(element.shfrmPriorityAction.composedName)!'Priority Action'}</span> </span>            
     </div>
     
     <div class="blockContent" style="display:${opened?string('block','none')}">

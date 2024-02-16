@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.validation.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -26,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.SoilIndicatorManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome;
@@ -56,6 +58,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +78,7 @@ public class DeliverableValidator extends BaseValidator {
   private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
   private RepIndTypeActivityManager repIndTypeActivityManager;
   private SoilIndicatorManager soilIndicatorManager;
+  private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
   Boolean doesNotHaveDOI;
 
@@ -82,7 +86,8 @@ public class DeliverableValidator extends BaseValidator {
   public DeliverableValidator(GlobalUnitManager crpManager, ProjectManager projectManager,
     ProjectPartnerPersonManager projectPartnerPersonManager,
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager, RepIndTypeActivityManager repIndTypeActivityManager,
-    DeliverableUserManager deliverableUserManager, SoilIndicatorManager soilIndicatorManager) {
+    DeliverableUserManager deliverableUserManager, SoilIndicatorManager soilIndicatorManager,
+    CrpProgramOutcomeManager crpProgramOutcomeManager) {
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
@@ -90,6 +95,7 @@ public class DeliverableValidator extends BaseValidator {
     this.deliverableUserManager = deliverableUserManager;
     this.repIndTypeActivityManager = repIndTypeActivityManager;
     this.soilIndicatorManager = soilIndicatorManager;
+    this.crpProgramOutcomeManager = crpProgramOutcomeManager;
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID, BaseAction action) {
@@ -534,68 +540,98 @@ public class DeliverableValidator extends BaseValidator {
 
       // SHFRM contribution validations
 
-      if (action.hasSpecificities(APConstants.SHFRM_CONTRIBUTION_ACTIVE) && dInfo != null
-        && dInfo.getContributingShfrm() != null && dInfo.getContributingShfrm() == true) {
+      if (action.hasSpecificities(APConstants.SHFRM_CONTRIBUTION_ACTIVE)) {
 
-        // Validate Soil indicators
-        if (deliverable.getCrpOutcomes() == null || !deliverable.getCrpOutcomes().isEmpty()) {
-          List<SoilIndicator> soilIndicators = new ArrayList<>();
-          soilIndicators = soilIndicatorManager.findAll();
+        // Validate if is contributing
+        if (dInfo != null && dInfo.getContributingShfrm() != null && dInfo.getContributingShfrm() == true) {
 
-          for (DeliverableCrpOutcome indicator : deliverable.getCrpOutcomes()) {
-            if (soilIndicators != null && !soilIndicators.isEmpty()) {
-              for (SoilIndicator soilIndicator : soilIndicators) {
-                if (soilIndicator != null && soilIndicator.getIndicatorName() != null && indicator != null
-                  && indicator.getCrpProgramOutcome() != null && indicator.getCrpProgramOutcome().getAcronym() != null
-                  && !indicator.getCrpProgramOutcome().getAcronym().contains(soilIndicator.getIndicatorName())) {
-                  action.addMessage(action.getText("deliverable.crpOutcomes"));
-                  action.addMissingField("deliverable.crpOutcomes");
-                  action.getInvalidFields().put("list-deliverable.crpOutcomes", InvalidFieldsMessages.EMPTYFIELD);
+          // Validate Soil indicators
+          if (deliverable.getCrpOutcomes() != null || !deliverable.getCrpOutcomes().isEmpty()) {
+            List<SoilIndicator> soilIndicators = new ArrayList<>();
+            soilIndicators = soilIndicatorManager.findAll();
+            boolean containsIndicator = false;
+            for (DeliverableCrpOutcome indicator : deliverable.getCrpOutcomes()) {
+              if (soilIndicators != null && !soilIndicators.isEmpty()) {
+                for (SoilIndicator soilIndicator : soilIndicators) {
+                  if (indicator != null && indicator.getCrpProgramOutcome() != null
+                    && indicator.getCrpProgramOutcome().getId() != null) {
+                    try {
+                      CrpProgramOutcome outcome =
+                        crpProgramOutcomeManager.getCrpProgramOutcomeById(indicator.getCrpProgramOutcome().getId());
+                      if (outcome != null && outcome.getAcronym() != null) {
+                        indicator.getCrpProgramOutcome().setAcronym(outcome.getAcronym());
+                      }
+                    } catch (Exception e) {
+                      Log.error("error getting crp program outcome " + e);
+                    }
+                  }
+                  if (soilIndicator != null && soilIndicator.getIndicatorName() != null && indicator != null
+                    && indicator.getCrpProgramOutcome() != null && indicator.getCrpProgramOutcome().getAcronym() != null
+                    && indicator.getCrpProgramOutcome().getAcronym().contains(soilIndicator.getIndicatorName())) {
+                    containsIndicator = true;
+                  }
                 }
               }
             }
-          }
-        }
 
-        // Validate contribution narrative
-        if (!(this
-          .isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative())
-          && this.wordCount(
-            deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative()) <= 200)) {
-          action.addMessage(action.getText("deliverable.deliverableInfo.shfrmContributionNarrative"));
-          action.addMissingField("deliverable.deliverableInfo.shfrmContributionNarrative");
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.shfrmContributionNarrative",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-
-        // Validate priority actions
-        if (deliverable.getShfrmPriorityActions() == null
-          || (deliverable.getShfrmPriorityActions() != null && deliverable.getShfrmPriorityActions().isEmpty())) {
-          action.addMessage(action.getText("deliverable.shfrmPriorityActions"));
-          action.addMissingField("deliverable.shfrmPriorityActions");
-          action.getInvalidFields().put("list-deliverable.shfrmPriorityActions", InvalidFieldsMessages.EMPTYFIELD);
-        } else if (deliverable.getShfrmPriorityActions() != null && !deliverable.getShfrmPriorityActions().isEmpty()) {
-          int indexJ = 0;
-
-          for (DeliverableShfrmPriorityAction priorityAction : deliverable.getShfrmPriorityActions()) {
-            if (priorityAction != null && priorityAction.getShfrmSubActions() == null
-              || (priorityAction.getShfrmSubActions() != null && priorityAction.getShfrmSubActions().isEmpty())) {
-              action.addMessage(action.getText("deliverable.shfrmSubActions"));
-              action.addMissingField("deliverable.shfrmPriorityActions");
-              action.getInvalidFields().put("list-deliverable.shfrmPriorityActions", InvalidFieldsMessages.EMPTYFIELD);
-              /*
-               * action.addMessage(action.getText("deliverable.shfrmSubActions[" + indexJ + "]"));
-               * action.addMissingField("deliverable.shfrmSubActions[" + indexJ + "]");
-               * action.getInvalidFields().put("list-deliverable.shfrmPriorityAction[" + indexJ + "].shfrmSubActions",
-               * InvalidFieldsMessages.EMPTYFIELD);
-               */
-              indexJ++;
+            // not contains indicator
+            if (containsIndicator == false) {
+              action.addMessage(action.getText("deliverable.crpOutcomes"));
+              action.addMissingField("deliverable.crpOutcomes");
+              action.getInvalidFields().put("list-deliverable.crpOutcomes", InvalidFieldsMessages.EMPTYFIELD);
             }
           }
-        }
 
+          // Validate contribution narrative
+          if (!(this
+            .isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative())
+            && this.wordCount(
+              deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative()) <= 200)) {
+            action.addMessage(action.getText("deliverable.deliverableInfo.shfrmContributionNarrative"));
+            action.addMissingField("deliverable.deliverableInfo.shfrmContributionNarrative");
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.shfrmContributionNarrative",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          // Validate priority actions
+          if (deliverable.getShfrmPriorityActions() == null
+            || (deliverable.getShfrmPriorityActions() != null && deliverable.getShfrmPriorityActions().isEmpty())) {
+            action.addMessage(action.getText("deliverable.shfrmPriorityActions"));
+            action.addMissingField("deliverable.shfrmPriorityActions");
+            action.getInvalidFields().put("list-deliverable.shfrmPriorityActions", InvalidFieldsMessages.EMPTYFIELD);
+          } else if (deliverable.getShfrmPriorityActions() != null
+            && !deliverable.getShfrmPriorityActions().isEmpty()) {
+            int indexJ = 0;
+
+            for (DeliverableShfrmPriorityAction priorityAction : deliverable.getShfrmPriorityActions()) {
+              if (priorityAction != null && priorityAction.getShfrmSubActions() == null || (priorityAction != null
+                && priorityAction.getShfrmSubActions() != null && priorityAction.getShfrmSubActions().isEmpty())) {
+                action.addMessage(action.getText("deliverable.shfrmSubActions"));
+                action.addMissingField("deliverable.shfrmPriorityActions");
+                action.getInvalidFields().put("list-deliverable.shfrmPriorityActions",
+                  InvalidFieldsMessages.EMPTYFIELD);
+                /*
+                 * action.addMessage(action.getText("deliverable.shfrmSubActions[" + indexJ + "]"));
+                 * action.addMissingField("deliverable.shfrmSubActions[" + indexJ + "]");
+                 * action.getInvalidFields().put("list-deliverable.shfrmPriorityAction[" + indexJ + "].shfrmSubActions",
+                 * InvalidFieldsMessages.EMPTYFIELD);
+                 */
+                indexJ++;
+              }
+            }
+          }
+
+        } else {
+          // Validate empty contributing question
+          if (dInfo != null && (dInfo.getContributingShfrm() == null)) {
+            action.addMessage(action.getText("deliverable.deliverableInfo.contributingShfrm"));
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.contributingShfrm",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
       }
     }
+
 
     this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
