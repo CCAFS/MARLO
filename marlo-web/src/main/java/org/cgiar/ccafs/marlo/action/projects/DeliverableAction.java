@@ -529,6 +529,42 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+  public void deleteAllActionsAndSubActions() {
+    try {
+      deliverable.getDeliverableInfo().setShfrmContributionNarrative(null);
+      List<DeliverableShfrmPriorityAction> actionPrev = deliverableShfrmPriorityActionManager
+        .findByDeliverableAndPhase(deliverable.getId(), this.getActualPhase().getId());
+
+      List<DeliverableShfrmSubAction> deliverableSubActions = new ArrayList<>();
+
+      if (actionPrev != null) {
+        for (DeliverableShfrmPriorityAction priorityAction : actionPrev) {
+          if (priorityAction != null && priorityAction.getId() != null) {
+
+            deliverableSubActions = deliverableShfrmSubActionManager
+              .findByPriorityActionAndPhase(priorityAction.getId(), this.getActualPhase().getId());
+
+            if (deliverableSubActions != null && !deliverableSubActions.isEmpty()) {
+
+              // delete sub actions
+              for (DeliverableShfrmSubAction deliverableSubActionDelete : deliverableSubActions) {
+                if (deliverableSubActionDelete != null && deliverableSubActionDelete.getId() != null) {
+                  deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(deliverableSubActionDelete.getId());
+                }
+              }
+            }
+
+            // delete actions
+            deliverableShfrmPriorityActionManager.deleteDeliverableShfrmPriorityAction(priorityAction.getId());
+          }
+        }
+      }
+
+    } catch (Exception e) {
+      logger.error("unable to delete priority action", e);
+    }
+  }
+
   private void deleteDeliverableLocations(List<DeliverableLocation> locationsDB) {
     if (locationsDB != null) {
       for (DeliverableLocation deliverableLocation : locationsDB) {
@@ -726,6 +762,7 @@ public class DeliverableAction extends BaseAction {
     return activities;
   }
 
+
   /**
    * Get the ID of the clusterParticipantObject for this cluster in actual phase
    * 
@@ -751,7 +788,6 @@ public class DeliverableAction extends BaseAction {
   public List<DeliverableQualityAnswer> getAnswers() {
     return answers;
   }
-
 
   public List<DeliverableQualityAnswer> getAnswersDataDic() {
     return answersDataDic;
@@ -894,6 +930,7 @@ public class DeliverableAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public List<Project> getMyProjects() {
     return myProjects;
   }
@@ -902,7 +939,6 @@ public class DeliverableAction extends BaseAction {
   public List<Institution> getPartnerInstitutions() {
     return partnerInstitutions;
   }
-
 
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
@@ -2444,6 +2480,10 @@ public class DeliverableAction extends BaseAction {
       if (this.hasSpecificities(APConstants.SHFRM_CONTRIBUTION_ACTIVE)) {
         this.savePriorityActions(false);
         this.saveSubActions();
+        if (deliverable.getDeliverableInfo() != null && (deliverable.getDeliverableInfo().getContributingShfrm() != null
+          && deliverable.getDeliverableInfo().getContributingShfrm() == false)) {
+          this.deleteAllActionsAndSubActions();
+        }
       }
 
       /*
