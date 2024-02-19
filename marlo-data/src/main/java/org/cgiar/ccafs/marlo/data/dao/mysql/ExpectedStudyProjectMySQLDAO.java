@@ -72,8 +72,8 @@ public class ExpectedStudyProjectMySQLDAO extends AbstractMarloDAO<ExpectedStudy
 
   @Override
   public List<ExpectedStudyProject> getByProjectAndPhase(long projectId, long phaseId) {
-    String query =
-      "select distinct esp from ExpectedStudyProject esp " + "where project.id = :projectId and phase.id = :phaseId";
+    String query = "select distinct esp from ExpectedStudyProject esp "
+      + "where project.id = :projectId and phase.id = :phaseId and is_active = 1";
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("projectId", projectId);
     createQuery.setParameter("phaseId", phaseId);
