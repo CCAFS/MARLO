@@ -63,6 +63,9 @@ public class TIPManagementAction extends BaseAction {
         if (tipParameter.getId() != null) {
           tipParameterSave.setId(tipParameter.getId());
         }
+        if (tipParameter.getTipBaseUrl() != null) {
+          tipParameterSave.setTipBaseUrl(tipParameter.getTipBaseUrl());
+        }
         if (tipParameter.getTipLoginService() != null) {
           tipParameterSave.setTipLoginService(tipParameter.getTipLoginService());
         }

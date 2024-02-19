@@ -37,6 +37,8 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
   @Expose
   private String privateKey;
   @Expose
+  private String tipBaseUrl;
+  @Expose
   private Date tokenDueDate;
 
   @Override
@@ -59,6 +61,10 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
 
   public String getPrivateKey() {
     return privateKey;
+  }
+
+  public String getTipBaseUrl() {
+    return tipBaseUrl;
   }
 
   public String getTipLoginService() {
@@ -96,9 +102,14 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
     this.privateKey = privateKey;
   }
 
+  public void setTipBaseUrl(String tipBaseUrl) {
+    this.tipBaseUrl = tipBaseUrl;
+  }
+
   public void setTipLoginService(String tipLoginService) {
     this.tipLoginService = tipLoginService;
   }
+
 
   public void setTipStatusService(String tipStatusService) {
     this.tipStatusService = tipStatusService;
