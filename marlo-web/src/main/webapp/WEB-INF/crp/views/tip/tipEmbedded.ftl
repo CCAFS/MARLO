@@ -16,8 +16,8 @@
     <section class="container">      
           <h4 class="sectionTitle sectionTitle-tip">Deliverable Dissemination</h4>
           <div id="tip">        
-          
-             If you need to disseminate a deliverable...           
+            Our main goal is to continuously improve the planning and reporting process for our users in the system. Taking into account the above and working in line with OneCGIAR, we have integrated with the TIP tool of the Alliance, which will allow users to disseminate publications in CGSpace and Harvard Datavers for the AICCRA project collections.</br>
+            With this new tool, we will have a more efficient process when putting our publications online             
           </div>           
           </br>
           </br>         
