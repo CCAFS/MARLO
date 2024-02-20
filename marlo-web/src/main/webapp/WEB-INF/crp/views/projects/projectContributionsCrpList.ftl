@@ -82,7 +82,7 @@
         [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
 
           <h3 class="headTitle">[@s.text name="projectContributionsCrpList.title" /]</h3>
-          <div id="projectContributionsCrpList" class="borderBox">
+          <div id="projectContributionsCrpList" class="borderBox table-responsive">
             [#-- Your project contributes to the flagships --]
             <div class="form-group">
               <p>

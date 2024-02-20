@@ -173,3 +173,30 @@ table.dataTable a {
 .subHeader {
     background-color: #8ea786;
 }
+
+@media only screen and (max-width:768px){
+	
+	.dataTables_paginate{
+		margin-bottom: 3rem !important;
+	}
+	
+}
+
+@media only screen and (max-width:440px){
+	.dataTables_filter{
+		width: 100%;
+	}
+	
+	.dataTables_filter label{
+		width: 100%;
+	}
+	
+	.dataTables_filter label input{
+		width: 100% !important;
+	}
+	
+	.dataTables_paginate{
+		margin-bottom: 32px !important;
+	}
+	
+}
