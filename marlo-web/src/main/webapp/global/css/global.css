@@ -8185,6 +8185,28 @@ img.qaOptionsComment {
 		/************* 2.1. SUPERADMIN ***************/
 		/************* 3. MAIN MENU ***************/
 		/************* BODY ***************/
+		
+		/************* FOOTER ***************/
+		
+		#guide-button{
+			width: 35px;
+    	height: 35px;
+    	padding: 6px 6px 4px 6px;
+		}
+		
+		#guide-button img{
+			width: 22px;
+    	margin-top: 0;
+		}
+		
+		#draggable-button{
+			width: 35px;
+    	height: 35px;
+		}
+		
+		#draggable-button img{
+			width: 16px;
+		}
 
 }
 
