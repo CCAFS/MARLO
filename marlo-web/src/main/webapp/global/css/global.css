@@ -8202,6 +8202,7 @@ img.qaOptionsComment {
 		#draggable-button{
 			width: 35px;
     	height: 35px;
+    	padding: 6px 6px 4px 6px;
 		}
 		
 		#draggable-button img{

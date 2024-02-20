@@ -856,16 +856,18 @@ span.timelineControl:hover {
   }
   
   	/*************** sectionMap ********************/
-  	
+  .containerTextMap{
+		margin: 10px 20px 25px 20px;
+	}
   .containerTextMap .titleMap{
-		font-size: 1.4em;
+		font-size: 1.35rem;
 	}
 	
 	.containerTextMap .textMap{
-		font-size: 1.15rem;
+		font-size: 1.1rem;
 	}
 	.containerImgMap{
-		min-width: 25%;
+		min-width: 17%;
 		display:flex;
   	flex-direction: column;
   	justify-content: center;
@@ -921,11 +923,11 @@ span.timelineControl:hover {
 	/*************** sectionMap ********************/
 	
 	  .containerTextMap .titleMap{
-		font-size: 1.2em;
+		font-size: 1.15em;
 	}
 	
 	.containerTextMap .textMap{
-		font-size: 1rem;
+		font-size: 0.95rem;
 	}
 	
 	.containerImgMap{
