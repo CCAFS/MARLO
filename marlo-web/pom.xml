@@ -555,7 +555,7 @@
                     <goal>minify</goal>
                   </goals>
                </execution>
-                 
+                <!--
 				<execution>
 				    <id>crp-minify</id>
 				    <configuration>	
@@ -566,7 +566,7 @@
 				        <includes>
 			              <include>**/*.js</include>
 			            </includes>
-			            <!-- Exclude already minified files. -->
+			            
 			            <excludes>
 			              <exclude>**/*.min.*</exclude>
 			            </excludes>
@@ -578,6 +578,7 @@
 		                 <goal>minify</goal>
 		              </goals>
                 </execution>
+				--> 
                </executions>
 			</plugin>
 
