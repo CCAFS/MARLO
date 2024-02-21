@@ -84,6 +84,9 @@
 		<property name="contributingShfrm" type="java.lang.Boolean">
             <column name="is_contributing_shfrm" />
         </property>
+        <property name="shfrmContributionNarrativeAR" type="string">
+            <column name="shfrm_contribution_narrative_ar" sql-type="TEXT" />
+        </property>        
 		<property name="shfrmContributionNarrative" type="string">
             <column name="shfrm_contribution_narrative" sql-type="TEXT" />
         </property>
