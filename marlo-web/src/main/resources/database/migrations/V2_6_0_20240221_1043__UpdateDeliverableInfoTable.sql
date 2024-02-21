@@ -1,0 +1,1 @@
+ALTER TABLE deliverables_info MODIFY COLUMN shfrm_contribution_narrative text CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
