@@ -81,6 +81,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndTypeParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.ShfrmPriorityActionManager;
 import org.cgiar.ccafs.marlo.data.manager.ShfrmSubActionManager;
+import org.cgiar.ccafs.marlo.data.manager.SoilIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
@@ -147,6 +148,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndTypeParticipant;
 import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 import org.cgiar.ccafs.marlo.data.model.ShfrmPriorityAction;
 import org.cgiar.ccafs.marlo.data.model.ShfrmSubAction;
+import org.cgiar.ccafs.marlo.data.model.SoilIndicator;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -261,6 +263,7 @@ public class DeliverableAction extends BaseAction {
   private ShfrmSubActionManager shfrmSubActionManager;
   private DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
   private DeliverableShfrmSubActionManager deliverableShfrmSubActionManager;
+  private SoilIndicatorManager soilIndicatorManager;
 
   // Variables
   private List<DeliverableQualityAnswer> answers;
@@ -310,6 +313,7 @@ public class DeliverableAction extends BaseAction {
   private String DOI;
   private String handle;
   private String disseminationURL;
+  private String soilIndicatorsText;
 
 
   private List<RepIndGenderYouthFocusLevel> focusLevels;
@@ -363,7 +367,7 @@ public class DeliverableAction extends BaseAction {
     DeliverableTraineesIndicatorManager deliverableTraineesIndicatorManager,
     ShfrmPriorityActionManager shfrmPriorityActionManager, ShfrmSubActionManager shfrmSubActionManager,
     DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager,
-    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager) {
+    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager, SoilIndicatorManager soilIndicatorManager) {
     super(config);
     this.activityManager = activityManager;
     this.deliverableManager = deliverableManager;
@@ -429,6 +433,7 @@ public class DeliverableAction extends BaseAction {
     this.shfrmSubActionManager = shfrmSubActionManager;
     this.deliverableShfrmPriorityActionManager = deliverableShfrmPriorityActionManager;
     this.deliverableShfrmSubActionManager = deliverableShfrmSubActionManager;
+    this.soilIndicatorManager = soilIndicatorManager;
   }
 
   /**
@@ -449,6 +454,7 @@ public class DeliverableAction extends BaseAction {
       return null;
     }
   }
+
 
   @Override
   public String cancel() {
@@ -473,6 +479,7 @@ public class DeliverableAction extends BaseAction {
 
     return SUCCESS;
   }
+
 
   public Boolean candEditExpectedYear(long deliverableID) {
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -680,6 +687,27 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  public void fillSoilIndicatorsText() {
+    try {
+      soilIndicatorsText = null;
+      List<SoilIndicator> soilIndicators = soilIndicatorManager.findAll();
+      if (soilIndicators != null && !soilIndicators.isEmpty()) {
+        for (SoilIndicator soilIndicator : soilIndicators) {
+          if (soilIndicator != null && soilIndicator.getIndicatorName() != null) {
+            if (soilIndicatorsText == null) {
+              soilIndicatorsText = soilIndicator.getIndicatorName();
+            } else {
+              soilIndicatorsText.concat(", " + soilIndicator.getIndicatorName());
+            }
+          }
+
+        }
+      }
+    } catch (Exception e) {
+      Log.info("error getting soil indicators " + e);
+    }
+  }
+
   public void fillSubActionsGeneralList() {
     try {
       if (shfrmPriorityActions != null && !shfrmPriorityActions.isEmpty()) {
@@ -762,7 +790,6 @@ public class DeliverableAction extends BaseAction {
     return activities;
   }
 
-
   /**
    * Get the ID of the clusterParticipantObject for this cluster in actual phase
    * 
@@ -784,14 +811,15 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   public List<DeliverableQualityAnswer> getAnswers() {
     return answers;
   }
 
+
   public List<DeliverableQualityAnswer> getAnswersDataDic() {
     return answersDataDic;
   }
+
 
   private Path getAutoSaveFilePath() {
 
@@ -930,19 +958,19 @@ public class DeliverableAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public List<Project> getMyProjects() {
     return myProjects;
   }
-
 
   public List<Institution> getPartnerInstitutions() {
     return partnerInstitutions;
   }
 
+
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
+
 
   public List<ProjectPartner> getPartners() {
     return partners;
@@ -1036,6 +1064,10 @@ public class DeliverableAction extends BaseAction {
 
   public List<ShfrmPriorityAction> getShfrmPriorityActions() {
     return shfrmPriorityActions;
+  }
+
+  public String getSoilIndicatorsText() {
+    return soilIndicatorsText;
   }
 
   public Map<String, String> getStatus() {
@@ -1584,7 +1616,7 @@ public class DeliverableAction extends BaseAction {
             }
           }
 
-
+          this.fillSoilIndicatorsText();
         }
 
         // Expected Study Geographic Regions List
@@ -4424,6 +4456,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setShfrmPriorityActions(List<ShfrmPriorityAction> shfrmPriorityActions) {
     this.shfrmPriorityActions = shfrmPriorityActions;
+  }
+
+  public void setSoilIndicatorsText(String soilIndicatorsText) {
+    this.soilIndicatorsText = soilIndicatorsText;
   }
 
   public void setStatus(Map<String, String> status) {
