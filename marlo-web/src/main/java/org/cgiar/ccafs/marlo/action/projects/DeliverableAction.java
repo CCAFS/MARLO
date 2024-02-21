@@ -314,7 +314,7 @@ public class DeliverableAction extends BaseAction {
   private String handle;
   private String disseminationURL;
   private String soilIndicatorsText;
-
+  private String previousContributionNarrative;
 
   private List<RepIndGenderYouthFocusLevel> focusLevels;
   // HJ 08/01/2019 new fileds Deliverable Partnerships
@@ -687,6 +687,23 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  public void fillPreviousContributionNarrative() {
+    try {
+      if (this.isReportingActive()) {
+        Phase previousPhase = phaseManager.findPreviousPhase(this.getActualPhase().getId());
+        if (previousPhase != null) {
+          if (deliverable.getDeliverableInfo(previousPhase) != null
+            && deliverable.getDeliverableInfo(previousPhase).getShfrmContributionNarrative() != null) {
+            previousContributionNarrative =
+              deliverable.getDeliverableInfo(previousPhase).getShfrmContributionNarrative();
+          }
+        }
+      }
+    } catch (Exception e) {
+      Log.error("error getting previous contribution narrative " + e);
+    }
+  }
+
   public void fillSoilIndicatorsText() {
     try {
       soilIndicatorsText = null;
@@ -811,6 +828,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   public List<DeliverableQualityAnswer> getAnswers() {
     return answers;
   }
@@ -819,7 +837,6 @@ public class DeliverableAction extends BaseAction {
   public List<DeliverableQualityAnswer> getAnswersDataDic() {
     return answersDataDic;
   }
-
 
   private Path getAutoSaveFilePath() {
 
@@ -962,6 +979,7 @@ public class DeliverableAction extends BaseAction {
     return myProjects;
   }
 
+
   public List<Institution> getPartnerInstitutions() {
     return partnerInstitutions;
   }
@@ -970,7 +988,6 @@ public class DeliverableAction extends BaseAction {
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
-
 
   public List<ProjectPartner> getPartners() {
     return partners;
@@ -996,6 +1013,10 @@ public class DeliverableAction extends BaseAction {
     }
 
     return EMPTY_ARRAY;
+  }
+
+  public String getPreviousContributionNarrative() {
+    return previousContributionNarrative;
   }
 
   public List<CrpProgramOutcome> getProgramOutcomes() {
@@ -1617,6 +1638,7 @@ public class DeliverableAction extends BaseAction {
           }
 
           this.fillSoilIndicatorsText();
+          this.fillPreviousContributionNarrative();
         }
 
         // Expected Study Geographic Regions List
@@ -4388,6 +4410,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setPartners(List<ProjectPartner> partners) {
     this.partners = partners;
+  }
+
+  public void setPreviousContributionNarrative(String previousContributionNarrative) {
+    this.previousContributionNarrative = previousContributionNarrative;
   }
 
   public void setProgramOutcomes(List<CrpProgramOutcome> programOutcomes) {

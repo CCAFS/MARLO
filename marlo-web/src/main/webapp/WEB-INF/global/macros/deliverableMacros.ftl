@@ -1529,6 +1529,12 @@
       
       [#-- Shfrm Contribution Narrative --]
       [#if reportingActive]
+        [#-- Previous narrative --]
+        [#if previousContribionNarrative?has_content]       
+          <div class="form-group">
+            [@customForm.textArea name="deliverable.deliverableInfo.shfrmContributionNarrative" value="${(deliverable.deliverableInfo.shfrmContributionNarrative)!}" i18nkey="deliverable.shfrmContribution.narrative.reporting"  placeholder="" className="limitWords-200" required=false editable=false /]
+          </div>
+        [/#if]
       <div class="form-group">
         [@customForm.textArea name="deliverable.deliverableInfo.shfrmContributionNarrative" value="${(deliverable.deliverableInfo.shfrmContributionNarrative)!}" i18nkey="deliverable.shfrmContribution.narrative.reporting"  placeholder="" className="limitWords-200" required=true editable=editable /]
       </div>
