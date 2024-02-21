@@ -84,18 +84,16 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
     }
 
     if (deliverables != null && !deliverables.isEmpty() && phase != null) {
-      deliverables = deliverables.stream()
-        .filter(d -> d != null && d.isActive() && d.getId() != null && d.getId() != deliverableID
-          && d.getDeliverableInfo(phase).isActive())
+      deliverables = deliverables.stream().filter(d -> d != null && d.getId() != deliverableID)
         .sorted(Comparator.comparing(Deliverable::getId)).collect(Collectors.toList());
 
       if (deliverables != null && !deliverables.isEmpty()) {
 
         List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
         for (Deliverable deliverable : deliverables) {
-          if (deliverable != null && deliverable.getId() != null) {
-            deliverable = deliverableManager.getDeliverableById(deliverable.getId());
-          }
+
+          deliverable = deliverableManager.getDeliverableById(deliverable.getId());
+
           DeliverableDissemination deliverableDissemination = new DeliverableDissemination();
           boolean isDOIDuplicated = false;
           boolean isDisseminationURLDuplicated = false;

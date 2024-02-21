@@ -3461,7 +3461,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 .collect(Collectors.toList());
             if (filteredCrpOutcomes != null && !filteredCrpOutcomes.isEmpty()) {
               projectExpectedStudy.setCrpOutcomes(new ArrayList<>(filteredCrpOutcomes));
+              if(!expectedStudies.contains(projectExpectedStudy)) {
               expectedStudies.add(projectExpectedStudy);
+              }
             }
           }
         }
