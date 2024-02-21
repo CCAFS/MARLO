@@ -611,7 +611,8 @@ public class DeliverableValidator extends BaseValidator {
                 action.getInvalidFields().put("list-deliverable.shfrmPriorityActions",
                   InvalidFieldsMessages.EMPTYFIELD);
 
-                action.getInvalidFields().put("list-deliverable.shfrmPriorityActions[" + indexJ + "]",
+                action.getInvalidFields().put(
+                  "list-deliverable.shfrmPriorityActions[" + indexJ + "].shfrmSubActions[-1]",
                   InvalidFieldsMessages.EMPTYFIELD);
                 /*
                  * action.addMessage(action.getText("deliverable.shfrmSubActions[" + indexJ + "]"));

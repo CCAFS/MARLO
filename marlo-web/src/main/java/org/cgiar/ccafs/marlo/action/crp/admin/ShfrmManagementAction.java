@@ -19,9 +19,11 @@ import org.cgiar.ccafs.marlo.data.manager.ShfrmSubActionManager;
 import org.cgiar.ccafs.marlo.data.model.ShfrmPriorityAction;
 import org.cgiar.ccafs.marlo.data.model.ShfrmSubAction;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -310,8 +313,30 @@ public class ShfrmManagementAction extends BaseAction {
 
   @Override
   public void validate() {
-    if (save) {
-      // validator.validate(this, feedbackFields);
+    try {
+      if (save) {
+        HashMap<String, String> error = new HashMap<>();
+        // validator.validate(this, feedbackFields);
+        if (this.priorityActions != null && !this.priorityActions.isEmpty()) {
+          int indexJ = 0;
+          for (ShfrmPriorityAction priorityAction : this.priorityActions) {
+            if (priorityAction != null) {
+
+              if (!(priorityAction.getName() != null && priorityAction.getName().length() <= 100)) {
+                error.put("input-.priorityActions[" + indexJ + "].name", InvalidFieldsMessages.EMPTYFIELD);
+              }
+              if (!(priorityAction.getDescription() != null && priorityAction.getDescription().length() <= 200)) {
+                error.put("input-.priorityActions[" + indexJ + "].description", InvalidFieldsMessages.EMPTYFIELD);
+              }
+            }
+            indexJ++;
+          }
+          this.setInvalidFields(error);
+
+        }
+      }
+    } catch (Exception e) {
+      Log.error("validating error " + e);
     }
   }
 }
