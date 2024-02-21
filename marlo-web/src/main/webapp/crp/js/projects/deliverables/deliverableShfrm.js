@@ -66,6 +66,7 @@ function init() {
 
   $("textarea[id!='justification']").autoGrow();
   $(".deliverableList").on("change", addDeliverable);
+  autoEnableOptions();
 }
 
 // Add a new deliverable element
@@ -108,6 +109,22 @@ function addDeliverable() {
   updateActionsAndSubActionsIndexes();
   checkItems($list);
 
+  disabledOption(this, option.val());
+}
+
+function disabledOption(element, value) {
+  console.clear()
+  $(element).find(`option[value="${value}"]`).attr('disabled', true);
+  $(element).select2("destroy").select2();
+}
+
+function enablesOption(element, value) {
+  $(element).parents('.subSectionsSelector').find('select').find(`option[value="${value}"]`).removeAttr('disabled');
+  $(element).parents('.subSectionsSelector').find('select').select2("destroy").select2();
+}
+
+function autoEnableOptions() {
+  console.log("autoEnableOptions")
 }
 
 function checkItems(block) {
@@ -603,8 +620,11 @@ function updateActionsAndSubActionsIndexes() {
 }
 
 function removeSubActionEvent() {
-  $(this).parents('.deliverableActivity').remove();
+  const value = $(this).parents('.deliverableActivity').find('input.id').val();
   updateActionsAndSubActionsIndexes();
+  enablesOption(this, value);
+  $(this).parents('.deliverableActivity').remove();
+
 }
 
 function addPartnerEvent(e) {
