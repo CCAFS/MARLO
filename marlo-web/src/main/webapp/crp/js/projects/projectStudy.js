@@ -246,7 +246,7 @@ function attachEvents() {
       var $element = $('#multiInput-references-template').clone(true).removeAttr("id");
       var $listLength = $list.children().length;
 
-      if ($listLength <= 20) {
+      if ($listLength <= 30) {
         // Remove template tag
         $element.find('input, textarea').each(function (i, e) {
           e.name = (e.name).replace("_TEMPLATE_", "");
