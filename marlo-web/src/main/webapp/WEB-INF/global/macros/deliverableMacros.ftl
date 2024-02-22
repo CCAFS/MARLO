@@ -1581,7 +1581,7 @@
     <input class="id" type="hidden" name="${deliverableCustomName}.shfrmSubAction.id" value="${(subActionItem.shfrmSubAction.id)!-1}" />
     <input class="name" type="hidden" name="${deliverableCustomName}.shfrmSubAction.name" value="${(subActionItem.shfrmSubAction.name)!'null'}" />
     [#--  <input class="idTable" type="hidden" name="${deliverableCustomName}.id" value="${(subActionItem.id)!-1}" />  --]
-    <span class="name">${(subActionItem.shfrmSubAction.name)!'null'}</span>
+    <span class="name">${(subActionItem.shfrmSubAction.composedName)!'null'}</span>
     <div class="clearfix"></div>
   </div>
 [/#macro]
