@@ -110,6 +110,15 @@ public class DeliverableShfrmPriorityActionManagerImpl implements DeliverableShf
   }
 
   @Override
+  public List<DeliverableShfrmPriorityAction> findByDeliverablePriorityActionAndPhase(long deliverableId,
+    long priorityActionId, long phaseId) {
+    return deliverableShfrmPriorityActionDAO.findByDeliverablePriorityActionAndPhase(deliverableId, priorityActionId,
+      phaseId);
+
+  }
+
+
+  @Override
   public DeliverableShfrmPriorityAction getDeliverableShfrmPriorityActionById(long deliverableShfrmPriorityActionID) {
 
     return deliverableShfrmPriorityActionDAO.find(deliverableShfrmPriorityActionID);
@@ -134,7 +143,7 @@ public class DeliverableShfrmPriorityActionManagerImpl implements DeliverableShf
   public void saveDeliverableShfrmPriorityActionPhase(Phase next, long deliverableId,
     DeliverableShfrmPriorityAction deliverableShfrmPriorityAction) {
     Phase phase = phaseDAO.find(next.getId());
-    DeliverableShfrmPriorityAction deliverableShfrmPriorityActionPhase = new DeliverableShfrmPriorityAction();
+    DeliverableShfrmPriorityAction deliverableShfrmPriorityActionPhase = null;
     try {
       deliverableShfrmPriorityActionPhase = deliverableShfrmPriorityActionDAO
         .findByDeliverableAndPhase(deliverableId, phase.getId()).stream()

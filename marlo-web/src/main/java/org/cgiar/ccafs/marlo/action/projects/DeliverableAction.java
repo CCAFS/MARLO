@@ -314,7 +314,6 @@ public class DeliverableAction extends BaseAction {
   private String handle;
   private String disseminationURL;
   private String soilIndicatorsText;
-  private String previousContributionNarrative;
 
   private List<RepIndGenderYouthFocusLevel> focusLevels;
   // HJ 08/01/2019 new fileds Deliverable Partnerships
@@ -687,23 +686,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-  public void fillPreviousContributionNarrative() {
-    try {
-      if (this.isReportingActive()) {
-        Phase previousPhase = phaseManager.findPreviousPhase(this.getActualPhase().getId());
-        if (previousPhase != null) {
-          if (deliverable.getDeliverableInfo(previousPhase) != null
-            && deliverable.getDeliverableInfo(previousPhase).getShfrmContributionNarrative() != null) {
-            previousContributionNarrative =
-              deliverable.getDeliverableInfo(previousPhase).getShfrmContributionNarrative();
-          }
-        }
-      }
-    } catch (Exception e) {
-      Log.error("error getting previous contribution narrative " + e);
-    }
-  }
-
   public void fillSoilIndicatorsText() {
     try {
       soilIndicatorsText = null;
@@ -1015,10 +997,6 @@ public class DeliverableAction extends BaseAction {
     return EMPTY_ARRAY;
   }
 
-  public String getPreviousContributionNarrative() {
-    return previousContributionNarrative;
-  }
-
   public List<CrpProgramOutcome> getProgramOutcomes() {
     return programOutcomes;
   }
@@ -1259,6 +1237,43 @@ public class DeliverableAction extends BaseAction {
     }
 
     return false;
+  }
+
+  public boolean isSoilIndicatorSelected() {
+    boolean containsIndicator = false;
+
+    try {
+      if (deliverable.getCrpOutcomes() != null || !deliverable.getCrpOutcomes().isEmpty()) {
+        List<SoilIndicator> soilIndicators = new ArrayList<>();
+        soilIndicators = soilIndicatorManager.findAll();
+        for (DeliverableCrpOutcome indicator : deliverable.getCrpOutcomes()) {
+          if (soilIndicators != null && !soilIndicators.isEmpty()) {
+            for (SoilIndicator soilIndicator : soilIndicators) {
+              if (indicator != null && indicator.getCrpProgramOutcome() != null
+                && indicator.getCrpProgramOutcome().getId() != null) {
+                try {
+                  CrpProgramOutcome outcome =
+                    crpProgramOutcomeManager.getCrpProgramOutcomeById(indicator.getCrpProgramOutcome().getId());
+                  if (outcome != null && outcome.getAcronym() != null) {
+                    indicator.getCrpProgramOutcome().setAcronym(outcome.getAcronym());
+                  }
+                } catch (Exception e) {
+                  Log.error("error getting crp program outcome " + e);
+                }
+              }
+              if (soilIndicator != null && soilIndicator.getIndicatorName() != null && indicator != null
+                && indicator.getCrpProgramOutcome() != null && indicator.getCrpProgramOutcome().getAcronym() != null
+                && indicator.getCrpProgramOutcome().getAcronym().contains(soilIndicator.getIndicatorName())) {
+                containsIndicator = true;
+              }
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      Log.error("error validating soil indicator boolean " + e);
+    }
+    return containsIndicator;
   }
 
   @Override
@@ -1638,7 +1653,6 @@ public class DeliverableAction extends BaseAction {
           }
 
           this.fillSoilIndicatorsText();
-          this.fillPreviousContributionNarrative();
         }
 
         // Expected Study Geographic Regions List
@@ -4183,17 +4197,15 @@ public class DeliverableAction extends BaseAction {
             }
           } else {
             // Delete all in DB
-            /*
-             * if (subPrev != null && !subPrev.isEmpty()) {
-             * for (DeliverableShfrmSubAction subAction : subPrev) {
-             * if (subAction != null && subAction.getId() != null) {
-             * if (!existingIds.contains(subAction.getId())) {
-             * deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(subAction.getId());
-             * }
-             * }
-             * }
-             * }
-             */
+
+            if (subPrev != null && !subPrev.isEmpty()) {
+              for (DeliverableShfrmSubAction subAction : subPrev) {
+                if (subAction != null && subAction.getId() != null) {
+                  deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(subAction.getId());
+                }
+              }
+            }
+
           }
 
           /***************/
@@ -4222,6 +4234,9 @@ public class DeliverableAction extends BaseAction {
                   // For new deliverable Priority Actions
                   if (deliverableSubAction.getId() == null || deliverableSubAction.getId() == -1) {
                     deliverableSubActionSave.setId(null);
+                    if (deliverablePriorityAction.getDeliverable() == null) {
+                      deliverablePriorityAction.setDeliverable(deliverable);
+                    }
                     deliverableSubActionSave.setDeliverableShfrmPriorityAction(deliverablePriorityAction);
                     deliverableSubActionSave.setPhase(this.getActualPhase());
                     deliverableSubActionSave.setShfrmSubAction(subAction);
@@ -4233,6 +4248,9 @@ public class DeliverableAction extends BaseAction {
                       deliverableSubActionSave =
                         deliverableShfrmSubActionManager.getDeliverableShfrmSubActionById(deliverableSubAction.getId());
                       if (deliverableSubActionSave != null) {
+                        if (deliverablePriorityAction.getDeliverable() == null) {
+                          deliverablePriorityAction.setDeliverable(deliverable);
+                        }
                         deliverableSubActionSave.setDeliverableShfrmPriorityAction(deliverablePriorityAction);
                         deliverableSubActionSave.setPhase(this.getActualPhase());
                         deliverableSubActionSave.setShfrmSubAction(subAction);
@@ -4410,10 +4428,6 @@ public class DeliverableAction extends BaseAction {
 
   public void setPartners(List<ProjectPartner> partners) {
     this.partners = partners;
-  }
-
-  public void setPreviousContributionNarrative(String previousContributionNarrative) {
-    this.previousContributionNarrative = previousContributionNarrative;
   }
 
   public void setProgramOutcomes(List<CrpProgramOutcome> programOutcomes) {
