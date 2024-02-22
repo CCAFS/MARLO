@@ -149,12 +149,12 @@
       <input id="id" class="partnerPersonId" type="hidden" name="${name}.id" value="${(element.id)!}" />
 
       <div class="form-group">
-        [@customForm.input name="${name}.name" i18nkey="shfrmManagement.priorityActions.title" className="name limitWords-100" required=true /]
+        [@customForm.input name="${name}.name" i18nkey="shfrmManagement.priorityActions.title" className="name" required=true /]
       </div>
       <div class="clearfix"></div>
       [#-- Action description  --]
       <div class="form-group">
-        [@customForm.input name="${name}.description" i18nkey="shfrmManagement.priorityActions.description" className="description limitWords-100" required=true /]
+        [@customForm.input name="${name}.description" i18nkey="shfrmManagement.priorityActions.description" className="description" required=true /]
       </div>
       <div class="clearfix"></div>      
                  

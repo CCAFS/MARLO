@@ -86,6 +86,18 @@ public class DeliverableShfrmPriorityActionMySQLDAO extends AbstractMarloDAO<Del
   }
 
   @Override
+  public List<DeliverableShfrmPriorityAction> findByDeliverablePriorityActionAndPhase(long deliverableId,
+    long priorityActionId, long phaseId) {
+    String query = "from " + DeliverableShfrmPriorityAction.class.getName() + " where is_active=1 and deliverable_id="
+      + deliverableId + " and shfrm_priority_action_id=" + priorityActionId + " and id_phase=" + phaseId;
+    List<DeliverableShfrmPriorityAction> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+  }
+
+  @Override
   public DeliverableShfrmPriorityAction save(DeliverableShfrmPriorityAction deliverableShfrmPriorityAction) {
     if (deliverableShfrmPriorityAction.getId() == null) {
       super.saveEntity(deliverableShfrmPriorityAction);
