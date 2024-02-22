@@ -57,6 +57,9 @@ public interface DeliverableShfrmPriorityActionDAO {
 
   public List<DeliverableShfrmPriorityAction> findByDeliverableAndPhase(long deliverableId, long phaseId);
 
+  public List<DeliverableShfrmPriorityAction> findByDeliverablePriorityActionAndPhase(long deliverableId,
+    long priorityActionId, long phaseId);
+
 
   /**
    * This method saves the information of the given deliverableShfrmPriorityAction

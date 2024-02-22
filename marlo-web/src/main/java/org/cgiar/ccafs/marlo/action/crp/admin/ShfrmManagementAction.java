@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -310,8 +311,11 @@ public class ShfrmManagementAction extends BaseAction {
 
   @Override
   public void validate() {
-    if (save) {
-      // validator.validate(this, feedbackFields);
+    try {
+      if (save) {
+      }
+    } catch (Exception e) {
+      Log.error("validating error " + e);
     }
   }
 }

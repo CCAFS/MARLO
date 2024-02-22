@@ -51,6 +51,8 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   private Boolean contributingShfrm;
   @Expose
   private String shfrmContributionNarrative;
+  @Expose
+  private String shfrmContributionNarrativeAR;
 
   public DeliverableInfo() {
   }
@@ -125,6 +127,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return shfrmContributionNarrative;
   }
 
+  public String getShfrmContributionNarrativeAR() {
+    return shfrmContributionNarrativeAR;
+  }
+
   public Integer getStatus() {
     return status;
   }
@@ -190,6 +196,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
     return false;
   }
+
 
   /**
    * Check if the deliverables is from a previous year for the current cycle
@@ -371,24 +378,23 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return false;
   }
 
-
   public void setAdoptedLicense(Boolean adoptedLicense) {
     this.adoptedLicense = adoptedLicense;
   }
+
 
   public void setContributingShfrm(Boolean contributingShfrm) {
     this.contributingShfrm = contributingShfrm;
   }
 
-
   public void setCrpClusterKeyOutput(CrpClusterKeyOutput crpClusterKeyOutput) {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
   }
 
+
   public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
     this.crpProgramOutcome = crpProgramOutcome;
   }
-
 
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
@@ -434,6 +440,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.shfrmContributionNarrative = shfrmContributionNarrative;
   }
 
+  public void setShfrmContributionNarrativeAR(String shfrmContributionNarrativeAR) {
+    this.shfrmContributionNarrativeAR = shfrmContributionNarrativeAR;
+  }
+
   public void setStatus(Integer status) {
     this.status = status;
   }
@@ -471,6 +481,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.setRegion(update.getRegion());
     this.setContributingShfrm(update.getContributingShfrm());
     this.setShfrmContributionNarrative(update.getShfrmContributionNarrative());
+    this.setShfrmContributionNarrativeAR(update.getShfrmContributionNarrativeAR());
   }
 }
 

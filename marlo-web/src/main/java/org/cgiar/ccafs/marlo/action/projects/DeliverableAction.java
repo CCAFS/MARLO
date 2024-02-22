@@ -315,7 +315,6 @@ public class DeliverableAction extends BaseAction {
   private String disseminationURL;
   private String soilIndicatorsText;
 
-
   private List<RepIndGenderYouthFocusLevel> focusLevels;
   // HJ 08/01/2019 new fileds Deliverable Partnerships
   private List<Institution> partnerInstitutions;
@@ -811,6 +810,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   public List<DeliverableQualityAnswer> getAnswers() {
     return answers;
   }
@@ -819,7 +819,6 @@ public class DeliverableAction extends BaseAction {
   public List<DeliverableQualityAnswer> getAnswersDataDic() {
     return answersDataDic;
   }
-
 
   private Path getAutoSaveFilePath() {
 
@@ -962,6 +961,7 @@ public class DeliverableAction extends BaseAction {
     return myProjects;
   }
 
+
   public List<Institution> getPartnerInstitutions() {
     return partnerInstitutions;
   }
@@ -970,7 +970,6 @@ public class DeliverableAction extends BaseAction {
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
-
 
   public List<ProjectPartner> getPartners() {
     return partners;
@@ -1240,6 +1239,43 @@ public class DeliverableAction extends BaseAction {
     }
 
     return false;
+  }
+
+  public boolean isSoilIndicatorSelected() {
+    boolean containsIndicator = false;
+
+    try {
+      if (deliverable.getCrpOutcomes() != null || !deliverable.getCrpOutcomes().isEmpty()) {
+        List<SoilIndicator> soilIndicators = new ArrayList<>();
+        soilIndicators = soilIndicatorManager.findAll();
+        for (DeliverableCrpOutcome indicator : deliverable.getCrpOutcomes()) {
+          if (soilIndicators != null && !soilIndicators.isEmpty()) {
+            for (SoilIndicator soilIndicator : soilIndicators) {
+              if (indicator != null && indicator.getCrpProgramOutcome() != null
+                && indicator.getCrpProgramOutcome().getId() != null) {
+                try {
+                  CrpProgramOutcome outcome =
+                    crpProgramOutcomeManager.getCrpProgramOutcomeById(indicator.getCrpProgramOutcome().getId());
+                  if (outcome != null && outcome.getAcronym() != null) {
+                    indicator.getCrpProgramOutcome().setAcronym(outcome.getAcronym());
+                  }
+                } catch (Exception e) {
+                  Log.error("error getting crp program outcome " + e);
+                }
+              }
+              if (soilIndicator != null && soilIndicator.getIndicatorName() != null && indicator != null
+                && indicator.getCrpProgramOutcome() != null && indicator.getCrpProgramOutcome().getAcronym() != null
+                && indicator.getCrpProgramOutcome().getAcronym().contains(soilIndicator.getIndicatorName())) {
+                containsIndicator = true;
+              }
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      Log.error("error validating soil indicator boolean " + e);
+    }
+    return containsIndicator;
   }
 
   @Override
@@ -4164,17 +4200,15 @@ public class DeliverableAction extends BaseAction {
             }
           } else {
             // Delete all in DB
-            /*
-             * if (subPrev != null && !subPrev.isEmpty()) {
-             * for (DeliverableShfrmSubAction subAction : subPrev) {
-             * if (subAction != null && subAction.getId() != null) {
-             * if (!existingIds.contains(subAction.getId())) {
-             * deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(subAction.getId());
-             * }
-             * }
-             * }
-             * }
-             */
+
+            if (subPrev != null && !subPrev.isEmpty()) {
+              for (DeliverableShfrmSubAction subAction : subPrev) {
+                if (subAction != null && subAction.getId() != null) {
+                  deliverableShfrmSubActionManager.deleteDeliverableShfrmSubAction(subAction.getId());
+                }
+              }
+            }
+
           }
 
           /***************/
@@ -4203,6 +4237,9 @@ public class DeliverableAction extends BaseAction {
                   // For new deliverable Priority Actions
                   if (deliverableSubAction.getId() == null || deliverableSubAction.getId() == -1) {
                     deliverableSubActionSave.setId(null);
+                    if (deliverablePriorityAction.getDeliverable() == null) {
+                      deliverablePriorityAction.setDeliverable(deliverable);
+                    }
                     deliverableSubActionSave.setDeliverableShfrmPriorityAction(deliverablePriorityAction);
                     deliverableSubActionSave.setPhase(this.getActualPhase());
                     deliverableSubActionSave.setShfrmSubAction(subAction);
@@ -4214,6 +4251,9 @@ public class DeliverableAction extends BaseAction {
                       deliverableSubActionSave =
                         deliverableShfrmSubActionManager.getDeliverableShfrmSubActionById(deliverableSubAction.getId());
                       if (deliverableSubActionSave != null) {
+                        if (deliverablePriorityAction.getDeliverable() == null) {
+                          deliverablePriorityAction.setDeliverable(deliverable);
+                        }
                         deliverableSubActionSave.setDeliverableShfrmPriorityAction(deliverablePriorityAction);
                         deliverableSubActionSave.setPhase(this.getActualPhase());
                         deliverableSubActionSave.setShfrmSubAction(subAction);
