@@ -623,8 +623,6 @@ public class DeliverableValidator extends BaseValidator {
                 action.addMissingField("deliverable.shfrmSubActions");
                 action.getInvalidFields().put("list-deliverable.shfrmPriorityActions",
                   InvalidFieldsMessages.EMPTYFIELD);
-                action.getInvalidFields().put("list-deliverable.shfrmPriorityActions",
-                  InvalidFieldsMessages.EMPTYFIELD);
                 /*
                  * action.addMessage(action.getText("deliverable.shfrmSubActions[" + indexI + "]"));
                  * action.addMissingField("deliverable.shfrmSubActions[" + indexI + "]");
