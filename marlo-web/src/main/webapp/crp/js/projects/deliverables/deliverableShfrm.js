@@ -1011,14 +1011,13 @@ function PartnerObject(partner) {
   this.showPPAs = function () {
     $(this.ppaPartnersList).slideDown();
     // $(partner).find('.partnerResponsabilities .requiredTag').hide();
-    $(partner).find('.contactsPerson .requiredTag').hide();
+    // $(partner).find('.contactsPerson .requiredTag').hide();
   };
   this.hidePPAs = function () {
     $(this.ppaPartnersList).slideUp();
 
     // Add a contact person by default
     if ($(this.persons).length <= 0) {
-      console.log('asdfasdf');
       $(partner).find('.addContact .addLink').trigger('click');
     }
 
