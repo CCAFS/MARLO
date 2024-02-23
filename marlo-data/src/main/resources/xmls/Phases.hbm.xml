@@ -106,6 +106,22 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" />
     </set>
+    <set name="deliverableShfrmPriorityActions" table="deliverable_shfmr_priority_action" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.DeliverableShfrmPriorityAction" />
+    </set>
+    <set name="deliverableShfrmSubActions" table="deliverable_shfmr_sub_action" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.DeliverableShfrmSubAction" />
+    </set>
     <set name="projectOutcomeIndicators" table="project_outcome_indicators" inverse="true"
       lazy="true" fetch="select">
       <key>

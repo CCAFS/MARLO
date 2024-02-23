@@ -279,5 +279,13 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome" />
     </set>
+    <set name="deliverableShfrmPriorityAction" table="deliverable_shfrm_priority_actions"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="deliverable_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.DeliverableShfrmPriorityAction" />
+    </set>
 	</class>
 </hibernate-mapping>

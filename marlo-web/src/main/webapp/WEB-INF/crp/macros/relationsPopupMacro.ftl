@@ -9,8 +9,8 @@
   --]
   
   [#if tag == "shfrm"]
-    [#--  [#-local shfrmDeliverables = (action.getShfrmActionDeliverablesRelation(element.id))! /]
-    [#local deliverables = (shfrmDeliverables)![] /] --]
+    [#local shfrmDeliverables = (action.getShfrmActionDeliverablesRelation(element.id))! /]
+    [#local deliverables = (shfrmDeliverables)![] /]
   [#else]
 
     [#if className == "ProjectPartner"]
