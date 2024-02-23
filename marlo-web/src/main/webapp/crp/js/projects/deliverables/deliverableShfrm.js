@@ -66,7 +66,7 @@ function init() {
 
   $("textarea[id!='justification']").autoGrow();
   $(".deliverableList").on("change", addDeliverable);
-  autoEnableOptions();
+  autoDisabledOptions();
 }
 
 // Add a new deliverable element
@@ -103,9 +103,7 @@ function addDeliverable() {
   $item.find(".id").val(option.val());
   $list.append($item);
   $item.show('slow');
-  // var $actionContainer = $(this).parents(".fullPartBlock");
-  // var activityIndex = $activity.find(".index").html();
-  // updateDeliverable(this);
+
   updateActionsAndSubActionsIndexes();
   checkItems($list);
 
@@ -113,7 +111,6 @@ function addDeliverable() {
 }
 
 function disabledOption(element, value) {
-  console.clear()
   $(element).find(`option[value="${value}"]`).attr('disabled', true);
   $(element).select2("destroy").select2();
 }
@@ -123,8 +120,19 @@ function enablesOption(element, value) {
   $(element).parents('.subSectionsSelector').find('select').select2("destroy").select2();
 }
 
-function autoEnableOptions() {
-  console.log("autoEnableOptions")
+function autoDisabledOptions() {
+  
+  $("#projectPartnersBlock").find('.deliverableWrapper').each(function(i,e){
+		const val = $(e).find("input.id").val();
+		if(val>-1){
+			const parent = $(e).parents('.subSectionsSelector');
+			const select = parent.find("select")
+			
+			disabledOption(select, val);
+		}
+		
+	});
+  
 }
 
 function checkItems(block) {
