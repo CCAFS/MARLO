@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate", "vue"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20240123",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableShfrm.js?20240203",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableShfrm.js?20240226",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20230810",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20241017",
