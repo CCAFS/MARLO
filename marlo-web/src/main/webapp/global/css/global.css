@@ -8284,6 +8284,9 @@ img.qaOptionsComment {
 	#mainMenu .menuContent ul li{
 		font-size: 	0.9em;
 	}
+	.menuContentTitle{
+		display: none;
+	}
 	
 	/************* BODY ***************/
 	

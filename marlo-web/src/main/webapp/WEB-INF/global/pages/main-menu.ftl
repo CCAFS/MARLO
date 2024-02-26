@@ -120,7 +120,7 @@
 <div class="menuContent">
 	<div class="container">
 	  <ul class="hidden-md hidden-lg">
-	   <li> <span class="glyphicon glyphicon-menu-hamburger"></span> Main menu
+	   <li> <span class="glyphicon glyphicon-menu-hamburger"></span> <span class="menuContentTitle">Main menu</span>
 	     <ul class="subMenu">
 	       [@mainMenuList /]
 	     </ul>

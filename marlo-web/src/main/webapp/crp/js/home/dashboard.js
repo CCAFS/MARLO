@@ -459,7 +459,9 @@ $('table.projectsList').dataTable({
 var iconSearch = $("<div></div>").addClass("iconSearch");
 var divDataTables_filter = $('.dataTables_filter').parent();
 iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Imagen"  style="width: 24px; margin: auto;" >');
-iconSearch.prependTo(divDataTables_filter)
+iconSearch.prependTo(divDataTables_filter);
+
+
 var divDataTables_length =$('.dataTables_length').parent();
 divDataTables_length.css("position", "absolute");
 divDataTables_length.css("bottom", "8px");
@@ -470,12 +472,17 @@ var windowWidth = $(window).width();
 
 
 if (windowWidth < 768) {
+	
+	divDataTables_filter.css({
+		"width": "100%",	
+	});
+	
 	divDataTables_length.css({
 		"left": "30vw",
 		"bottom": "0",
 		"margin-top": "4rem",
 		"margin-left": "0"
-	})
+	});
 }
 
 if (windowWidth < 440) {

@@ -176,6 +176,10 @@ table.dataTable a {
 
 @media only screen and (max-width:768px){
 	
+	.dataTables_filter label input{
+		width: 100% !important;
+	}
+	
 	.dataTables_paginate{
 		margin-bottom: 3rem !important;
 	}
@@ -189,10 +193,6 @@ table.dataTable a {
 	
 	.dataTables_filter label{
 		width: 100%;
-	}
-	
-	.dataTables_filter label input{
-		width: 100% !important;
 	}
 	
 	.dataTables_paginate{
