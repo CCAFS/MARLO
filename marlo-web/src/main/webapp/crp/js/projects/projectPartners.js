@@ -1057,7 +1057,6 @@ function PartnerObject(partner) {
 
     // Add a contact person by default
     if($(this.persons).length <= 0) {
-      console.log('asdfasdf');
       $(partner).find('.addContact .addLink').trigger('click');
     }
 
