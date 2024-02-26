@@ -8182,10 +8182,26 @@ img.qaOptionsComment {
 		.usersInfo{
 			padding-left: 2rem;
 		}
+		
+		#mainMenu .menuContent.positionFixedTop #userInfo{
+		padding: 9px 22px 3px 20px;
+		}
+	
+		a#userLogOut{
+		top: auto;
+		}
 		/************* 2.1. SUPERADMIN ***************/
 		/************* 3. MAIN MENU ***************/
 		/************* BODY ***************/
 		
+		.headTitle{
+			text-align: center;
+		}
+		
+		#top-quote{
+			margin-top: 1rem;
+			text-align: center;
+		}
 		/************* FOOTER ***************/
 		
 		#guide-button{
