@@ -728,7 +728,8 @@ public class ProjectOutcomeAction extends BaseAction {
     if (milestonesProject != null && !milestonesProject.isEmpty()) {
       milestonesProjectYear = new ArrayList<>();
       for (CrpMilestone milestoneElement : milestonesProject) {
-        if (milestoneElement != null && milestoneElement.getYear() != null && !milestoneElement.getYear().equals(0)) {
+        if (milestoneElement != null && milestoneElement.getYear() != null && !milestoneElement.getYear().equals(0)
+          && milestoneElement.getYear() <= this.getActualPhase().getYear()) {
           milestonesProjectYear.add(milestoneElement.getYear());
         }
       }
