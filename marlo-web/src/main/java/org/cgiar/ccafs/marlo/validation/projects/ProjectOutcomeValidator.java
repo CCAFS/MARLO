@@ -146,192 +146,21 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
     if (projectOutcomeIndicator != null && projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
       && projectOutcome.getCrpProgramOutcome().getDescription() != null) {
-      String programOutcome = projectOutcome.getCrpProgramOutcome().getDescription();
 
-      // PDO 1 and 3
-      if (programOutcome.contains("PDO Indicator 1") || programOutcome.contains("PDO Indicator 3")
-        || programOutcome.contains("PDO Indicator 4")) {
-        List<String> params = new ArrayList<>();
-        params.add(String.valueOf(i + 1));
-        // if (action.isPlanningActive()) {
-        if (projectOutcomeIndicator.getNarrative() != null) {
-          if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-            && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 150)) {
-            action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        } else {
+      List<String> params = new ArrayList<>();
+      params.add(String.valueOf(i + 1));
+      // if (action.isPlanningActive()) {
+      if (projectOutcomeIndicator.getNarrative() != null) {
+        if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
+          && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 150)) {
           action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
           action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
             InvalidFieldsMessages.EMPTYFIELD);
         }
-        // }
-        /*
-         * if (i == 0) {
-         * if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
-         * action.addMessage(action.getText("projectOutcomeIndicator.value"));
-         * action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].value",
-         * InvalidFieldsMessages.EMPTYFIELD);
-         * }
-         * }
-         */
-        if (action.isReportingActive()) {
-
-          if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
-            && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
-            /*
-             * action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-             * action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-             * InvalidFieldsMessages.EMPTYFIELD);
-             */
-          }
-
-
-          /*
-           * if (projectOutcomeIndicator.getValueReporting() == null
-           * || projectOutcomeIndicator.getValueReporting().longValue() < 0) {
-           * action.addMessage(action.getText("projectOutcomeIndicator.valueReporting"));
-           * action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].valueReporting",
-           * InvalidFieldsMessages.EMPTYFIELD);
-           * }
-           */
-        }
-
-      }
-
-      // PDO 2
-      if (programOutcome.contains("PDO Indicator 2")) {
-        List<String> params = new ArrayList<>();
-        params.add(String.valueOf(i + 1));
-        // if (action.isPlanningActive()) {
-        if (projectOutcomeIndicator.getNarrative() != null) {
-          if (i != 0) {
-            if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-              && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 150)) {
-              action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-              action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-        } else {
-          action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-          action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-        // }
-
-        if (action.isReportingActive()) {
-
-          // if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
-          // && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
-          /*
-           * action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-           * action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-           * InvalidFieldsMessages.EMPTYFIELD);
-           */
-          // }
-        }
-      }
-
-      // IPI 1.1 and IPI 1.4
-      if (programOutcome.contains("IPI 1.1") || programOutcome.contains("IPI 1.4")) {
-        List<String> params = new ArrayList<>();
-        params.add(String.valueOf(i + 1));
-        // if (action.isPlanningActive()) {
-
-        if (projectOutcomeIndicator.getNarrative() != null) {
-          if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-            && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 150)) {
-            action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        } else {
-          action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-          action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-        // }
-
-
-        if (action.isReportingActive()) {
-
-          // if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
-          // && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
-          /*
-           * action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-           * action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-           * InvalidFieldsMessages.EMPTYFIELD);
-           */
-          // }
-        }
-      }
-
-      // IPI 1.2 and IPI 2.2
-      if (programOutcome.contains("IPI 1.2") || programOutcome.contains("IPI 2.2")) {
-        List<String> params = new ArrayList<>();
-        params.add(String.valueOf(i + 1));
-        // if (action.isPlanningActive()) {
-        if (projectOutcomeIndicator.getNarrative() != null) {
-          if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-            && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 150)) {
-            action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        } else {
-          action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-          action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-        // }
-
-
-        if (action.isReportingActive()) {
-          // if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
-          // && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
-          /*
-           * action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-           * action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-           * InvalidFieldsMessages.EMPTYFIELD);
-           */
-          // }
-        }
-      }
-
-      // IPI 2.1, 2.3, IPI 3.1, IPI 3.2, IPI 3.4, IPI 3.5
-      if (programOutcome.contains("IPI 2.1") || programOutcome.contains("IPI 2.3") || programOutcome.contains("IPI 3.1")
-        || programOutcome.contains("IPI 3.2") || programOutcome.contains("IPI 3.4")
-        || programOutcome.contains("IPI 2.4") || programOutcome.contains("IPI 2.5")
-        || programOutcome.contains("IPI 3.5") || programOutcome.contains("IPI 2.6")) {
-        List<String> params = new ArrayList<>();
-        params.add(String.valueOf(i + 1));
-        // if (action.isPlanningActive()) {
-        if (projectOutcomeIndicator.getNarrative() != null) {
-          if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-            && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 150)) {
-            action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-            action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        } else {
-          action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-          action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-        // }
-
-        if (action.isReportingActive()) {
-          if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
-            && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
-            /*
-             * action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
-             * action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
-             * InvalidFieldsMessages.EMPTYFIELD);
-             */
-          }
-        }
+      } else {
+        action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+        action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+          InvalidFieldsMessages.EMPTYFIELD);
       }
 
     }
@@ -509,6 +338,19 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
     if (action.hasSpecificities(APConstants.CRP_BASELINE_INDICATORS)) {
       if (action.isAiccra()) {
+
+        // Validate project outcomes without answers for the questions
+        projectOutcome.setCrpProgramOutcome(
+          crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId()));
+        projectOutcome.getCrpProgramOutcome().setIndicators(projectOutcome.getCrpProgramOutcome()
+          .getCrpProgramOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        if (projectOutcome.getCrpProgramOutcome() != null
+          && projectOutcome.getCrpProgramOutcome().getIndicators() != null && projectOutcome.getIndicators() == null) {
+          action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative"));
+          action.getInvalidFields().put("input-projectOutcome.indicators[" + 0 + "].narrative",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
         if (projectOutcome.getIndicators() != null && !projectOutcome.getIndicators().isEmpty()) {
           for (int i = 0; i < projectOutcome.getIndicators().size(); i++) {
             this.validateAiccraProjectOutcomeIndicator(action, projectOutcome, projectOutcome.getIndicators().get(i),

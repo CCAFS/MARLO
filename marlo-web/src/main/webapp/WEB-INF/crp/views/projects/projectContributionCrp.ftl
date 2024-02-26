@@ -180,14 +180,14 @@
                   [#if editable]
                   
                     [#if (action.isAFPhase(actualPhase.id))!false]
-                      [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(afYear)!2023 type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
+                      [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(projectOutcome.crpProgramOutcome.year)!afYear type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                     [#else]
                       [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                     [/#if]
                     
                   [#else]
                     [#if (action.isAFPhase(actualPhase.id))!false]
-                      <label for="">[@s.text name="projectOutcome.expectedValueAF" /]${afYear}: </label>
+                      <label for="">[@s.text name="projectOutcome.expectedValueAF" /]${(projectOutcome.crpProgramOutcome.year)!afYear}: </label>
                     [#else]
                       <label for="">[@s.text name="projectOutcome.expectedValue" /]: </label>
                     [/#if]
