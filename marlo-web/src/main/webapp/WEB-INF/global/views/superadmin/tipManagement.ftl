@@ -13,7 +13,6 @@
   {"label":"tipManagement", "nameSpace":"", "action":""}
 ]/]
 
-
 [#include "/WEB-INF/global/pages/header.ftl" /]
 <hr />
 
@@ -36,9 +35,6 @@
         <h4 class="sectionTitle">[@s.text name="tipParameterManagement.title" /]</h4>
  
         <div id="tipManagement" class="borderBox">
-              <div class="form-group">
-                [@customForm.input name="tipParameter.tipBaseUrl" i18nkey="tipParameter.tipBaseUrl" className="description limitWords-100" required=true /]
-              </div>
               <div class="form-group">
                 [@customForm.input name="tipParameter.privateKey" i18nkey="tipParameter.privateKey" className="description limitWords-100" required=true /]
               </div>

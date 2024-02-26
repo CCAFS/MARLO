@@ -102,7 +102,7 @@ public class BiReportsTokenAction extends BaseAction {
       /* Identities */
       List<Identities> identities = new ArrayList<>();
       Identities identitie = new Identities();
-      identitie.setUsername(this.getCurrentUser().getEmail());
+      identitie.setUsername(this.getCurrentUser().getUsername());
 
       /* Roles */
       List<String> roles = new ArrayList<>();

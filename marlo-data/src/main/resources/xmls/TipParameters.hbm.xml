@@ -26,8 +26,5 @@
     <property name="privateKey" type="string">
       <column name="private_key" />
     </property>
-    <property name="tipBaseUrl" type="string">
-      <column name="tip_base_url"/>
-    </property>
   </class>
 </hibernate-mapping>

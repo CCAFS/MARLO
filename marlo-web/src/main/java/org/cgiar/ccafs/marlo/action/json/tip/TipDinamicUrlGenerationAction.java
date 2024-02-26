@@ -44,36 +44,22 @@ public class TipDinamicUrlGenerationAction extends BaseAction {
 
   public String createDinamicURL() {
     String tipURL = null;
-    boolean isCGIARUser = true;
-
     try {
+      List<TipParameters> tipParameters = tipParametersManager.findAll();
+
       String userEmail = "", token = "", loginService = "";
       if (this.getCurrentUser() != null && this.getCurrentUser().getEmail() != null) {
         userEmail = this.getCurrentUser().getEmail();
-        if (this.getCurrentUser().isCgiarUser() == true) {
-          isCGIARUser = true;
-        } else {
-          isCGIARUser = false;
+      }
+      if (tipParameters != null && !tipParameters.isEmpty() && tipParameters.get(0) != null) {
+        if (tipParameters.get(0).getTipTokenService() != null) {
+          token = tipParameters.get(0).getTokenValue();
+        }
+        if (tipParameters.get(0).getTipLoginService() != null) {
+          loginService = tipParameters.get(0).getTipLoginService();
         }
       }
-
-      List<TipParameters> tipParameters = tipParametersManager.findAll();
-      if (isCGIARUser) {
-        if (tipParameters != null && !tipParameters.isEmpty() && tipParameters.get(0) != null) {
-          if (tipParameters.get(0).getTipTokenService() != null) {
-            token = tipParameters.get(0).getTokenValue();
-          }
-          if (tipParameters.get(0).getTipLoginService() != null) {
-            loginService = tipParameters.get(0).getTipLoginService();
-          }
-        }
-        tipURL = loginService + "/" + token + "/staff/" + userEmail;
-      } else {
-        // Not CGIAR User
-        if (tipParameters != null && tipParameters.get(0) != null && tipParameters.get(0).getTipBaseUrl() != null) {
-          tipURL = tipParameters.get(0).getTipBaseUrl();
-        }
-      }
+      tipURL = loginService + "/" + token + "/staff/" + userEmail;
     } catch (NumberFormatException e) {
       LOG.error("Error getting tip URL: " + e);
     }
