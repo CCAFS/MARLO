@@ -68,7 +68,7 @@
           
           [#-- Studies list --]
           <h3 class="headTitle">[@s.text name="projectStudies.studiesTitle" /] <br /><small>[@s.text name="projectStudies.studiesSubTitle" /]</small></h3>
-          <div id="caseStudiesBlock" class="simpleBox">
+          <div id="caseStudiesBlock" class="simpleBox table-responsive">
             [@tableList list=(projectStudies)![]  /]
           </div>
           [#-- Add a new --]
@@ -85,7 +85,7 @@
           
           [#-- OLD Studies list --]
           <h3 class="headTitle">[@s.text name="projectStudies.studiesTitleOldFormat" /]</h3>
-          <div id="caseStudiesBlock" class="simpleBox">
+          <div id="caseStudiesBlock" class="simpleBox table-responsive">
             [@tableList list=(projectOldStudies)![] previousTable=true /]
           </div>
           
