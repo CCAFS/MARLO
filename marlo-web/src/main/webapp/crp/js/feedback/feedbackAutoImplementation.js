@@ -30,10 +30,36 @@ function feedbackAutoImplementation (){
   // If an identifier exists and it corresponds to a section on the page
   if (identificador && $("#" + identificador).length) {
     // Get the section element
-    var seccion = $("#" + identificador);
+	  var seccion = $("#" + identificador);
 
     // Get the exact position of the target element relative to the document
     var seccionOffset = seccion.offset();
+    
+    //Validate if the seccion position is visible, could be display:none at that moment because is in other tab
+    if(seccionOffset.left === 0 || seccionOffset.top === 0){
+			// Get parent tab-container where info is located
+			const $parentTab = $(seccion).closest('.tab-pane').first();
+			// Get the tab selector associated to the tab-container id
+			const $parentTabSelector = $(`[href="#${$parentTab.attr('id')}"]`).closest('li');
+			
+			//Get all the tabs selector available
+			const $tabsSelector = $('[role="presentation"]'); 
+			//Remove all possible selector being selected
+			$tabsSelector.removeClass("active");
+			//Add selected to selector where the message is display
+			$parentTabSelector.addClass("active");
+			
+			//Get all the tab-container available in HTML
+			const $tabsContent = $('.tab-pane');
+			//Remove all possible information being display
+			$tabsContent.removeClass('in active');
+			//Add visualization to information where the message is display
+			$parentTab.addClass('in active');
+			
+			//Recalculate position of the section where the message is attach
+			seccionOffset = seccion.offset();
+			
+		}
 
     // Calculate the coordinates to open the qaPopup centered on the target element
     var popupLeft = seccionOffset.left + (seccion.outerWidth() / 2);
