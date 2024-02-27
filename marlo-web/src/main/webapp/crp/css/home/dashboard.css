@@ -241,6 +241,7 @@ span.timelineControl:hover {
   }
   
   .timeline{
+		position: static;
     margin: 30px 0;
     display: flex;
     justify-content: center;
@@ -273,7 +274,7 @@ span.timelineControl:hover {
     position: relative;
     scroll-behavior: smooth;
     overflow-x: scroll;
-    width: 100%;
+    width: 85%;
     margin-left: auto;
     margin-right: auto;
     margin: 0 auto;
@@ -292,7 +293,7 @@ span.timelineControl:hover {
   }
   
   .containerTimeline {
-    width: 90%;
+    width: 100%;
     position: relative;
   }
   
@@ -350,11 +351,11 @@ span.timelineControl:hover {
   }
   
   .buttonLeftTimeline {
-    left: -45px;
+    left: 0.75rem;
   }
   
   .buttonRightTimeline {
-    right: -45px;
+    right: 0.75rem;
   }
   
   .timelineBackSuccess {
@@ -395,67 +396,6 @@ span.timelineControl:hover {
     margin-top: 7px;
   }
 
-  @media (max-width:750px){
-
-    .buttonLeftTimeline {
-      left: -10px;
-    }
-
-    .buttonRightTimeline {
-      right: -10px;
-    }
-
-    .timelineAlert {
-      top: 325px !important;
-    }
-
-    .timelineAlertText {
-      font-size: 7px;
-    }
-
-    .infTimelineTimeline {
-      min-width: 180px;
-    }
-
-    .titleTimeline {
-      height: 142px;
-      font-size: 10px;
-    }
-
-    .timeline {
-      height: 243px;
-    }
-
-    .dateTimeline {
-      margin-right: -130px;
-      margin-top: -27px;
-      font-size: 13px;
-    }
-
-    
-    .timeline-line {
-      width: 180px;
-      margin-top: -48px;
-    }
-
-    .timeline-pointTimeline {      
-      bottom: 32px;
-    }
-
-    .sideButtonTimeline {      
-      width: 30px;
-      height: 30px;
-      font-size: 22px;
-      top: 40%;
-    }
-
-    .porcentTimeLine {      
-      margin-top: -48px;
-      max-width: 143px;
-  }
-    
-  }
-
   .timelineRefresh{
     margin: 30px 0;
     display: flex;
@@ -485,6 +425,7 @@ span.timelineControl:hover {
 
   .containerMapsection{
     display: flex;
+    position: relative;
   }
 
   .borderMap{
@@ -728,7 +669,6 @@ span.timelineControl:hover {
 
   .containerItems {
     flex-wrap: wrap;
-    width: 100%;
     display: table-cell;
     text-align: center;
     margin-left: 4px;
@@ -804,13 +744,18 @@ span.timelineControl:hover {
     .tableItemsTitle{
       font-size: 1.1em;
     }
+    
+   	.itemsTablet{
+    	width: 45%;
+		}
   }
 
- @media (max-width:750px){
+ @media (max-width:768px){
 
   .containerItems {
     display: flex;
-    justify-content: center;
+    justify-content: start;
+    margin-left: 0%;
 }
 
 .sectionItems {
@@ -824,9 +769,9 @@ span.timelineControl:hover {
   }
 
   .itemsTablet {
-    height: 80px;
-    width: 80px;
+    height: 100px;
     margin: 10px;
+    padding-top: 2rem;
   }
 
   .itemsTablet img {
@@ -849,8 +794,196 @@ span.timelineControl:hover {
   table.dataTable {
     font-size: 0.7em;
   }
+  
+  #projects_filter{
+		width: 100%;
+	}
+	
+	#projects_filter label{
+		width: 100%;
+	}
+	
+	.iconSearch{
+		right: 1.5rem;
+		margin-top: 0;
+	}
+  
+  	/*************** sectionMap ********************/
+  .containerTextMap{
+		margin: 10px 20px 25px 20px;
+	}
+  .containerTextMap .titleMap{
+		font-size: 1.35rem;
+	}
+	
+	.containerTextMap .textMap{
+		font-size: 1.1rem;
+	}
+	.containerImgMap{
+		min-width: 17%;
+		display:flex;
+  	flex-direction: column;
+  	justify-content: center;
+	}
+	
+	.containerImgMap img{
+		width: 100%;
+	}
+	
+	
+	/*************** timeline ********************/
+	.homeTitleTimeline{
+		font-size: 1.1em;
+	}
+	
+	  .buttonLeftTimeline {
+      left: 2rem;
+    }
+
+    .buttonRightTimeline {
+      right: 2rem;
+    }
+
+    .timelineAlert {
+      top: 325px !important;
+    }
+
+    .timelineAlertText {
+      font-size: 7px;
+    }
+
+    .infTimelineTimeline {
+      min-width: 180px;
+    }
+
+    .titleTimeline {
+      height: 142px;
+      font-size: 10px;
+    }
+
+    .timeline {
+      height: 200px;
+    }
+
+    .dateTimeline {
+      margin-right: -130px;
+      margin-top: -27px;
+      font-size: 13px;
+    }
+
+    
+    .timeline-line {
+      width: 180px;
+      margin-top: -48px;
+    }
+
+    .timeline-pointTimeline {      
+      bottom: 32px;
+    }
+
+    .sideButtonTimeline {      
+      width: 30px;
+      height: 30px;
+      font-size: 22px;
+    }
+
+    .porcentTimeLine {      
+      margin-top: -48px;
+      max-width: 143px;
+  }
+  
+  	.scroll-x-containerTimeline{
+			width: 80%;
+			margin-top: 3rem;
+		}
  }
 
+@media only screen and (max-width:440px){
+	
+	#dashboardContent{
+		display: contents;
+	}
+	
+	.containerTabletItems{
+		height: 100%;
+	}
+	
+	/**************** Content Items Table **************/
+	
+	.sectionItems{
+		margin-left: 0%;
+	}
+	
+	.containerItems{
+		justify-content: center;
+		
+	}
+	
+	.itemsTablet{
+		padding-top: 1.5rem;
+    width: 40%;
+	}
+
+	.containerTabletItems #dashboardContent{
+		width: 100%;
+    width: -moz-available;         
+    width: -webkit-fill-available;  
+    width: fill-available;
+	}
+	
+	.tab-content{
+		width: auto;	
+	}
+	
+	/*************** sectionMap ********************/
+	
+	  .containerTextMap .titleMap{
+		font-size: 1.15em;
+	}
+	
+	.containerTextMap .textMap{
+		font-size: 0.95rem;
+	}
+	
+	.containerImgMap{
+		display: block;
+		position: absolute;
+		right: 10%;
+		top: 0;
+		width: 100%;
+		text-align: right;
+	}
+	
+	.containerImgMap img{
+		width: 8%;
+	}
+	
+	/*************** timeline ********************/
+	
+	.timeline{
+		position: relative;
+	}
+	
+	.timelineAlert{
+		bottom: 8px;
+		top: auto !important;
+		right: auto;
+	}
+	
+	.buttonRightTimeline{
+		right: 2rem;
+	}
+	
+	.buttonLeftTimeline{
+		left: 2rem;
+	}
+	
+	.scroll-x-containerTimeline{
+			width: 70%;
+			margin-top: 0;
+	}
+	
+}
  
 /* Add styles to the table */
 .dataTables_wrapper {
@@ -864,7 +997,7 @@ span.timelineControl:hover {
 .dataTables_filter label input{
   height: 30px !important;
   width: 295px !important;
-  margin-left: -44px !important;
+  margin-left: 0 !important;
 }
 
 .iconSearch{
@@ -879,3 +1012,4 @@ span.timelineControl:hover {
  #guide-button{
   display: block;
 }
+

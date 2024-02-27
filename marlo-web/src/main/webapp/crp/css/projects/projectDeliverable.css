@@ -27,9 +27,6 @@ body .WOS_tag p{
   margin: 0px;
   width: 350px;
 }
-.hideSelect{
-  display: none;
-}
 .loading-WOS-container{
   display: flex;
   align-items: center;
@@ -51,17 +48,6 @@ body .WOS_tag p{
 
 #deliverableInformation {
   margin-top: 60px;
-}
-
-.deliverableActivity {
-  list-style: none;
-  padding: 1px 4px 0px 6px;
-  background-color: #F7F7F7;
-  border: 1px solid #E0E0E0 !important;
-  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  margin-bottom: 5px;
-  position: relative;
 }
 
 /* Bootstrap Tabs */
@@ -1118,10 +1104,62 @@ div.fieldFocus-deliverable {
   .textAchived{
     font-size: 10px;
   }
+  
+}
+
+ /*
+button.active {
+  background-color:green; 
+}
+*/
+.fieldFocus-deliverable {
+   border: 1px solid rgb(255, 170, 170)!important;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 1px rgb(255, 94, 94);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 1px rgb(255, 94, 94);
+}
+
+div.fieldFocus-deliverable {
+  padding: 10px 15px !important;
+  margin: 10px 0 !important;
+  background-color: rgba(230, 230, 230, 0.1);
+}
+
+
+.slide-transition {
+  transition: transform 0.5s ease;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.5s ease;
+}
+
+.slide-enter,
+.slide-leave-to {
+  transform: translateY(1%);
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.button-effect {
+  transition: background-color 0.3s ease; 
+}
+
+.button-effect:hover {
+  background-color: #2592b3;
 }
 
 @media (max-width:1520px){
   .containerShowHide{
     left: 610px;
+  }
+}
+
+@media (max-width:440px){
+  .containerShowHide{
+    position: static;
   }
 }
