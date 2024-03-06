@@ -86,6 +86,7 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
     return tokenValue;
   }
 
+
   @Override
   public boolean isActive() {
     // TODO Auto-generated method stub
@@ -95,6 +96,7 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
   @Override
   public void setModifiedBy(User modifiedBy) {
     // TODO Auto-generated method stub
+
   }
 
   public void setPrivateKey(String privateKey) {
@@ -108,7 +110,6 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
   public void setTipLoginService(String tipLoginService) {
     this.tipLoginService = tipLoginService;
   }
-
 
   public void setTipStatusService(String tipStatusService) {
     this.tipStatusService = tipStatusService;

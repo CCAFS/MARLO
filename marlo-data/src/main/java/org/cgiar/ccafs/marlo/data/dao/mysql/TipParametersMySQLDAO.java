@@ -29,7 +29,6 @@ import org.hibernate.SessionFactory;
 @Named
 public class TipParametersMySQLDAO extends AbstractMarloDAO<TipParameters, Long> implements TipParametersDAO {
 
-
   @Inject
   public TipParametersMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
@@ -48,7 +47,6 @@ public class TipParametersMySQLDAO extends AbstractMarloDAO<TipParameters, Long>
       return false;
     }
     return true;
-
   }
 
   @Override
@@ -59,13 +57,12 @@ public class TipParametersMySQLDAO extends AbstractMarloDAO<TipParameters, Long>
 
   @Override
   public List<TipParameters> findAll() {
-    String query = "from " + TipParameters.class.getName() + " where is_active=1";
+    String query = "from " + TipParameters.class.getName();
     List<TipParameters> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
     return null;
-
   }
 
   @Override
@@ -75,10 +72,6 @@ public class TipParametersMySQLDAO extends AbstractMarloDAO<TipParameters, Long>
     } else {
       tipParameters = super.update(tipParameters);
     }
-
-
     return tipParameters;
   }
-
-
 }

@@ -15,7 +15,7 @@
       <column name="tip_login_service"/>
     </property>
     <property name="tipStatusService" type="string">
-      <column name="tip_Status_service"/>
+      <column name="tip_status_service"/>
     </property>
     <property name="tokenValue" type="string">
       <column name="token_value"  />
