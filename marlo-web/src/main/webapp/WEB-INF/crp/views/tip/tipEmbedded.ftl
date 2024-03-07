@@ -1,9 +1,9 @@
 [#ftl]
 [#assign title = "TIP" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign customJS = ["${baseUrlMedia}/js/tip/tipEmbedded.js?20240306"] /]
+[#assign customJS = ["${baseUrlMedia}/js/tip/tipEmbedded.js?20240307"] /]
 [#assign customCSS = [
-  "${baseUrl}/crp/css/tip/tipEmbedded.css?20240306",  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+  "${baseUrl}/crp/css/tip/tipEmbedded.css?20240307",  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
   ] 
 /]
 [#assign currentSection = "tip" /] 
