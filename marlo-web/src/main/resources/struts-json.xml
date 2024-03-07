@@ -1206,6 +1206,15 @@
         <param name="excludeNullProperties">true</param>
       </result>
     </action>
+    
+    		
+	<action name="tipTokenService"		
+		class="org.cgiar.ccafs.marlo.action.json.superadmin.TipGetTokenServiceAction">
+		<result type="json">
+		    <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+		</result>
+	</action>
 
 	</package>
 
@@ -1243,14 +1252,6 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-		
-		<action name="tipTokenService"		
-	      class="org.cgiar.ccafs.marlo.action.json.superadmin.TipGetTokenServiceAction">
-	      <result type="json">
-	        <param name="noCache">true</param>
-	        <param name="excludeNullProperties">true</param>
-	      </result>
-	    </action>
 
 		<action name="validateCenterImpactPathway"
 			class="org.cgiar.ccafs.marlo.action.center.json.impactpathway.ValidateImpactPathwaySectionAction">
