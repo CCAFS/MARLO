@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<class name="org.cgiar.ccafs.marlo.data.model.TipParameters" table="tip_parameters"
+    optimistic-lock="none">
+      <id name="id" type="java.lang.Long">
+      <column name="id" />
+     <generator class="identity" />
+    </id>
+    <property name="tipTokenService" type="string">
+      <column name="tip_token_service"/>
+    </property>
+    <property name="tipLoginService" type="string">
+      <column name="tip_login_service"/>
+    </property>
+    <property name="tipStatusService" type="string">
+      <column name="tip_status_service"/>
+    </property>
+    <property name="tokenValue" type="string">
+      <column name="token_value"  />
+    </property>
+    <property name="tokenDueDate" type="timestamp">
+      <column name="token_due_date" />
+    </property>
+    <property name="privateKey" type="string">
+      <column name="private_key" />
+    </property>
+    <property name="tipBaseUrl" type="string">
+      <column name="tip_base_url"/>
+    </property>
+  </class>
+</hibernate-mapping>

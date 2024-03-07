@@ -1,0 +1,13 @@
+.fullscreen-button {
+    position: absolute;
+    top: -10x;
+    right: 17px;
+}
+
+.timeline-phases {
+  display: none;
+}
+
+.sectionTitle-tip{
+  margin-top:10px; 
+}
