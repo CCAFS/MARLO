@@ -2812,7 +2812,7 @@ public class DeliverableAction extends BaseAction {
             && deliverableOutcome.getCrpProgramOutcome().getId() != null) {
             CrpProgramOutcome outcome =
               crpProgramOutcomeManager.getCrpProgramOutcomeById(deliverableOutcome.getCrpProgramOutcome().getId());
-            if (outcome != null) {
+            if (outcome != null && outcome.getId() != null) {
               deliverableOutcomeSave.setCrpProgramOutcome(outcome);
             }
 
