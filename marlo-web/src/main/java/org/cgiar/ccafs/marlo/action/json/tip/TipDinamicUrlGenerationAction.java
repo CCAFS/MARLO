@@ -16,8 +16,10 @@
 package org.cgiar.ccafs.marlo.action.json.tip;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.TipParametersManager;
 import org.cgiar.ccafs.marlo.data.model.TipParameters;
+import org.cgiar.ccafs.marlo.utils.AESConvert;
 
 import java.util.List;
 
@@ -67,7 +69,11 @@ public class TipDinamicUrlGenerationAction extends BaseAction {
             loginService = tipParameters.get(0).getTipLoginService();
           }
         }
-        tipURL = loginService + "/" + token + "/staff/" + userEmail;
+        if (this.hasSpecificities(APConstants.TIP_SECURITY_ACTIVE)) {
+          tipURL = loginService + "/" + (AESConvert.stringToAES(token + "/staff/" + userEmail));
+        } else {
+          tipURL = loginService + "/" + token + "/staff/" + userEmail;
+        }
       } else {
         // Not CGIAR User
         if (tipParameters != null && tipParameters.get(0) != null && tipParameters.get(0).getTipBaseUrl() != null) {
