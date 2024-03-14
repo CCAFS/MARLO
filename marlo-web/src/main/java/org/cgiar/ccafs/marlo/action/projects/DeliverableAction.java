@@ -694,12 +694,15 @@ public class DeliverableAction extends BaseAction {
         for (SoilIndicator soilIndicator : soilIndicators) {
           if (soilIndicator != null && soilIndicator.getIndicatorName() != null) {
             if (soilIndicatorsText == null) {
-              soilIndicatorsText = soilIndicator.getIndicatorName();
+              soilIndicatorsText = soilIndicatorsText + "(" + soilIndicator.getIndicatorName();
             } else {
-              soilIndicatorsText.concat(", " + soilIndicator.getIndicatorName());
+              soilIndicatorsText = soilIndicatorsText + ", " + soilIndicator.getIndicatorName();
             }
           }
-
+        }
+        if (soilIndicatorsText != null && !soilIndicatorsText.isEmpty()) {
+          soilIndicatorsText = soilIndicatorsText.replace("null", "");
+          soilIndicatorsText = soilIndicatorsText + ")";
         }
       }
     } catch (Exception e) {

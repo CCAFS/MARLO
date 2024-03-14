@@ -118,17 +118,17 @@
 
 <nav id="mainMenu">
 <div class="menuContent">
-  <div class="container">
-    <ul class="hidden-md hidden-lg">
-     <li> <span class="glyphicon glyphicon-menu-hamburger"></span> Main menu
-       <ul class="subMenu">
-         [@mainMenuList /]
-       </ul>
-     </li>
-    </ul>
-    <ul class="visible-md-block visible-lg-block visible-ul">
-      [@mainMenuList /]
-    </ul>
+	<div class="container">
+	  <ul class="hidden-md hidden-lg">
+	   <li> <span class="glyphicon glyphicon-menu-hamburger"></span> <span class="menuContentTitle">Main menu</span>
+	     <ul class="subMenu">
+	       [@mainMenuList /]
+	     </ul>
+	   </li>
+	  </ul>
+	  <ul class="visible-md-block visible-lg-block visible-ul">
+	    [@mainMenuList /]
+	  </ul>
 
     [#if logged?? && logged]
       <div id="userInfo">
