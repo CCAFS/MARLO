@@ -25,6 +25,8 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmPriorityActionManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmSubActionManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
@@ -55,104 +57,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Activity;
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
-import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
-import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
-import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
-import org.cgiar.ccafs.marlo.data.model.Deliverable;
-import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
-import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
-import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
-import org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome;
-import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
-import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
-import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
-import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
-import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
-import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
-import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetPantentTypeEnum;
-import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
-import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
-import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
-import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
-import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
-import org.cgiar.ccafs.marlo.data.model.DeliverableType;
-import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
-import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
-import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
-import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
-import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.IpElement;
-import org.cgiar.ccafs.marlo.data.model.IpIndicator;
-import org.cgiar.ccafs.marlo.data.model.IpProjectContribution;
-import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
-import org.cgiar.ccafs.marlo.data.model.LocElement;
-import org.cgiar.ccafs.marlo.data.model.ProgramType;
-import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
-import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
-import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
-import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
-import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCenter;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrpOutcome;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
-import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
-import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
-import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
-import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
-import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
-import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
-import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
-import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
-import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
-import org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipLocation;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipResearchPhase;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInnovation;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyOwner;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
-import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
-import org.cgiar.ccafs.marlo.data.model.Submission;
+import org.cgiar.ccafs.marlo.data.model.*;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.FileManager;
 import org.cgiar.ccafs.marlo.utils.HTMLParser;
@@ -285,6 +190,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final DeliverableGeographicRegionManager deliverableGeographicRegionManager;
   private final ProjectDeliverableSharedManager projectDeliverableSharedManager;
   private final UserManager userManager;
+  private final DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
+  private final DeliverableShfrmSubActionManager deliverableShfrmSubActionManager;
 
   @Inject
   public ReportingSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
@@ -313,7 +220,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ActivityManager activityManager, DeliverableActivityManager deliverableActivityManager,
     DeliverableLocationManager deliverableLocationManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
-    ProjectDeliverableSharedManager projectDeliverableSharedManager, UserManager userManager) {
+    ProjectDeliverableSharedManager projectDeliverableSharedManager, UserManager userManager,
+    DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager,
+    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
@@ -352,6 +261,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
     this.userManager = userManager;
+    this.deliverableShfrmPriorityActionManager = deliverableShfrmPriorityActionManager;
+    this.deliverableShfrmSubActionManager = deliverableShfrmSubActionManager;
   }
 
   /**
@@ -667,6 +578,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nDeliverableType", this.getText("deliverable.type"));
     masterReport.getParameterValues().put("i8nDeliverableNewExpectedYear", this.getText("deliverable.newExpectedYear"));
     masterReport.getParameterValues().put("i8nDeliverablesActivities", this.getText("project.activities.title"));
+    masterReport.getParameterValues().put("i8nDeliverablesContributingSHFRM",
+      this.getText("deliverable.shfrmContribution.question.reporting"));
+    masterReport.getParameterValues().put("i8nDeliverablesContributingNarrative",
+      this.getText("deliverable.shfrmContribution.narrative.reporting"));
+    masterReport.getParameterValues().put("i8nDeliverablesActions",
+      "To which Priority(ies) action is contributing to:");
     /*
      * Activities
      */
@@ -2807,7 +2724,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         "intellectualAssetPvpBreederCrop", "intellectualAssetDateFilling", "intellectualAssetDateRegistration",
         "intellectualAssetDateExpiry", "intellectualAssetAdditionalInformation", "intellectualAssetLinkPublished",
         "intellectualAssetCommunication", "otherPartner", "deliv_description", "activities", "geographicScope",
-        "countries", "regions", "sharedClusters", "focusEvent", "likelyOutcomes"},
+        "countries", "regions", "sharedClusters", "focusEvent", "likelyOutcomes", "isContributing",
+        "contributingNarrative", "shfrmActions"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -2820,7 +2738,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getDeliverables().isEmpty()) {
@@ -3741,6 +3659,67 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             }
           }
         }
+
+        String isContributing = "", contributingNarrative = "", shfrmActions = "";
+
+        // SOIL Contribution
+        if (deliverable.getDeliverableInfo() != null
+          && deliverable.getDeliverableInfo().getContributingShfrm() != null) {
+          if (deliverable.getDeliverableInfo().getContributingShfrm() == true) {
+            isContributing = "Yes";
+          } else {
+            isContributing = "No";
+          }
+        } else {
+          isContributing = "<Not Defined>";
+        }
+
+        if (isContributing.equals("Yes")) {
+
+          if (deliverable.getDeliverableInfo().getShfrmContributionNarrativeAR() != null) {
+            contributingNarrative = deliverable.getDeliverableInfo().getShfrmContributionNarrativeAR();
+          } else {
+            contributingNarrative = "<Not provided>";
+          }
+
+          List<DeliverableShfrmPriorityAction> actions = new ArrayList<>();
+          List<DeliverableShfrmSubAction> subActions = new ArrayList<>();
+          String actionsText = "";
+
+          try {
+            actions = deliverableShfrmPriorityActionManager.findByDeliverableAndPhase(deliverable.getId(),
+              this.getSelectedPhase().getId());
+
+            if (actions != null && !actions.isEmpty()) {
+              for (DeliverableShfrmPriorityAction action : actions) {
+                if (action != null && action.getShfrmPriorityAction() != null
+                  && action.getShfrmPriorityAction().getId() != null
+                  && action.getShfrmPriorityAction().getComposedName() != null) {
+                  actionsText += "<br> ●  " + action.getShfrmPriorityAction().getComposedName();
+                  subActions = deliverableShfrmSubActionManager.findByPriorityActionAndPhase(action.getId(),
+                    this.getSelectedPhase().getId());
+
+                  if (subActions != null && !subActions.isEmpty()) {
+                    actionsText += "<br><b> SubActions:</b><br>";
+                    for (DeliverableShfrmSubAction subAction : subActions) {
+                      if (subAction != null && subAction.getShfrmSubAction() != null
+                        && subAction.getShfrmSubAction().getComposedName() != null) {
+                        actionsText += " ●  " + subAction.getShfrmSubAction().getComposedName() + "<br>";
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            shfrmActions = actionsText;
+          } catch (Exception e) {
+            LOG.error(e + " error getting shfrm actions and subactions");
+          }
+        } else {
+          contributingNarrative = "<Not Apply>";
+          shfrmActions = "<Not Apply>";
+        }
+
         model.addRow(new Object[] {deliverable.getId(), deliverable.getDeliverableInfo().getTitle(), delivType,
           delivSubType, delivStatus, delivYear, keyOutput, leader, institution, fundingSources, crossCutting,
           delivNewYear, delivNewYearJustification, delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess,
@@ -3758,7 +3737,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           intellectualAssetPvpBreederCrop, intellectualAssetDateFilling, intellectualAssetDateRegistration,
           intellectualAssetDateExpiry, intellectualAssetAdditionalInformation, intellectualAssetLinkPublished,
           intellectualAssetCommunication, otherPartner, delivDescription, activities, geographicScope, countries,
-          regions, sharedClusters, focusEvent, likelyOutcomes});
+          regions, sharedClusters, focusEvent, likelyOutcomes, isContributing, contributingNarrative, shfrmActions});
       }
     }
     return model;
@@ -3784,7 +3763,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         "intellectualAssetPvpBreederCrop", "intellectualAssetDateFilling", "intellectualAssetDateRegistration",
         "intellectualAssetDateExpiry", "intellectualAssetAdditionalInformation", "intellectualAssetLinkPublished",
         "intellectualAssetCommunication", "otherPartner", "deliv_description", "activities", "geographicScope",
-        "countries", "regions", "sharedClusters"},
+        "countries", "regions", "sharedClusters", "isContributing", "contributingNarrative", "shfrmActions"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -3796,7 +3775,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         Boolean.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getDeliverables().isEmpty()) {
@@ -3822,7 +3802,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         .collect(Collectors.toList())) {
         String delivType = null, delivSubType = null, delivYear = null, keyOutput = "", leader = null,
           institution = null, fundingSources = "", deliv_description = null, otherPartner = "", activities = "",
-          geographicScope = "", countries = "", regions = "", sharedClusters = "";
+          geographicScope = "", countries = "", regions = "", sharedClusters = "", isContributing = "",
+          contributingNarrative = "", shfrmActions = "";
         // String delivDescription = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDescription();
         String delivStatus =
           deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getSelectedPhase());
@@ -4685,6 +4666,65 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             }
           }
         }
+
+        // SOIL Contribution
+        if (deliverable.getDeliverableInfo() != null
+          && deliverable.getDeliverableInfo().getContributingShfrm() != null) {
+          if (deliverable.getDeliverableInfo().getContributingShfrm() == true) {
+            isContributing = "Yes";
+          } else {
+            isContributing = "No";
+          }
+        } else {
+          isContributing = "<Not Defined>";
+        }
+
+        if (isContributing.equals("Yes")) {
+
+          if (deliverable.getDeliverableInfo().getShfrmContributionNarrative() != null) {
+            contributingNarrative = deliverable.getDeliverableInfo().getShfrmContributionNarrative();
+          } else {
+            contributingNarrative = "<Not provided>";
+          }
+
+          List<DeliverableShfrmPriorityAction> actions = new ArrayList<>();
+          List<DeliverableShfrmSubAction> subActions = new ArrayList<>();
+          String actionsText = "";
+
+          try {
+            actions = deliverableShfrmPriorityActionManager.findByDeliverableAndPhase(deliverable.getId(),
+              this.getSelectedPhase().getId());
+
+            if (actions != null && !actions.isEmpty()) {
+              for (DeliverableShfrmPriorityAction action : actions) {
+                if (action != null && action.getShfrmPriorityAction() != null
+                  && action.getShfrmPriorityAction().getId() != null
+                  && action.getShfrmPriorityAction().getComposedName() != null) {
+                  actionsText += "<br> ●  " + action.getShfrmPriorityAction().getComposedName();
+                  subActions = deliverableShfrmSubActionManager.findByPriorityActionAndPhase(action.getId(),
+                    this.getSelectedPhase().getId());
+
+                  if (subActions != null && !subActions.isEmpty()) {
+                    actionsText += "<br><b> SubActions: </b><br>";
+                    for (DeliverableShfrmSubAction subAction : subActions) {
+                      if (subAction != null && subAction.getShfrmSubAction() != null
+                        && subAction.getShfrmSubAction().getComposedName() != null) {
+                        actionsText += " ● " + subAction.getShfrmSubAction().getComposedName() + "<br>";
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            shfrmActions = actionsText;
+          } catch (Exception e) {
+            LOG.error(e + " error getting shfrm actions and subactions");
+          }
+        } else {
+          contributingNarrative = "<Not Apply>";
+          shfrmActions = "<Not Apply>";
+        }
+
         model.addRow(new Object[] {deliverable.getId(), deliverable.getDeliverableInfo().getTitle(), delivType,
           delivSubType, delivStatus, delivYear, keyOutput, leader, institution, fundingSources, crossCutting,
           delivNewYear, delivNewYearJustification, delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess,
@@ -4702,7 +4742,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           intellectualAssetPvpBreederCrop, intellectualAssetDateFilling, intellectualAssetDateRegistration,
           intellectualAssetDateExpiry, intellectualAssetAdditionalInformation, intellectualAssetLinkPublished,
           intellectualAssetCommunication, otherPartner, delivDescription, activities, geographicScope, countries,
-          regions, sharedClusters});
+          regions, sharedClusters, isContributing, contributingNarrative, shfrmActions});
       }
     }
     return model;
