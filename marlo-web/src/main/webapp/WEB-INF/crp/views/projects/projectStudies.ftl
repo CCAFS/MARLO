@@ -5,7 +5,7 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectCaseStudiesList.js?20230306",
   "${baseUrlCdn}/global/js/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectCaseStudies.css?20230306"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectCaseStudies.css?20240314"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "projectStudies" /]
 [#assign hideJustification = true /]
@@ -68,7 +68,7 @@
           
           [#-- Studies list --]
           <h3 class="headTitle">[@s.text name="projectStudies.studiesTitle" /] <br /><small>[@s.text name="projectStudies.studiesSubTitle" /]</small></h3>
-          <div id="caseStudiesBlock" class="simpleBox">
+          <div id="caseStudiesBlock" class="simpleBox table-responsive">
             [@tableList list=(projectStudies)![]  /]
           </div>
           [#-- Add a new --]
@@ -85,7 +85,7 @@
           
           [#-- OLD Studies list --]
           <h3 class="headTitle">[@s.text name="projectStudies.studiesTitleOldFormat" /]</h3>
-          <div id="caseStudiesBlock" class="simpleBox">
+          <div id="caseStudiesBlock" class="simpleBox table-responsive">
             [@tableList list=(projectOldStudies)![] previousTable=true /]
           </div>
           
