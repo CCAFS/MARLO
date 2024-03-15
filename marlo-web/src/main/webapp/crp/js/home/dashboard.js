@@ -252,20 +252,33 @@ function createTimeline() {
 
 const getFirstAndLastDates = (dates) => {
   const sortDatesByStart = dates.map(date => Date.parse(date.startDate)).sort((a, b) => a - b);
-  //console.log(sortDatesByStart);
   const sortDatesByEnd = dates.map(date => Date.parse(date.endDate)).sort((a, b) => a - b);
-  //console.log(sortDatesByEnd);
   return {
     firstDate: sortDatesByStart[0],
     lastDate: sortDatesByEnd[sortDatesByEnd.length - 1]
   };
 }
 
+function convertDateToText(date) {
+  return new Date(date).toLocaleString('default', { month: 'short', day: 'numeric', year: "numeric" });
+}
+
 function createTimeline2() {
+	const getFirstDateText = convertDateToText(getFirstAndLastDates(timelineElements).firstDate);
+	const getLastDateText = convertDateToText(getFirstAndLastDates(timelineElements).lastDate);
+	
 	const listItemTimeline=document.getElementById("listItemTimeline2");
 	listItemTimeline.innerHTML = `
 	  <div>
-    <h1>Schedule</h1>
+	  <div id="timelineDescription">
+	  	<div class="homeTitleTimeline">
+	  		<b>Schedule</b>
+	  	</div>
+	  	<div id="timeline_range">${getFirstDateText} - ${getLastDateText}</div>
+	  </div>
+	  
+    
+    
     <div id="timelineContainer">
       <div id="timeline_today"></div>
       <div id="timeline_times">
