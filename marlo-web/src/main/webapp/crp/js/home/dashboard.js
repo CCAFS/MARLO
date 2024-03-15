@@ -18,6 +18,7 @@ function initDashboard() {
 
   getTimeline();
   createTimeline();
+  createTimeline2();
 
   $('.buttonRightTimeline').on("click", moveScrollRight);
 
@@ -247,6 +248,35 @@ function createTimeline() {
   const element = document.querySelector(".scroll-x-containerTimeline");
   element.scrollLeft += 243*(counterActvi-2);
   
+}
+
+const getFirstAndLastDates = (dates) => {
+  const sortDatesByStart = dates.map(date => Date.parse(date.startDate)).sort((a, b) => a - b);
+  //console.log(sortDatesByStart);
+  const sortDatesByEnd = dates.map(date => Date.parse(date.endDate)).sort((a, b) => a - b);
+  //console.log(sortDatesByEnd);
+  return {
+    firstDate: sortDatesByStart[0],
+    lastDate: sortDatesByEnd[sortDatesByEnd.length - 1]
+  };
+}
+
+function createTimeline2() {
+	const listItemTimeline=document.getElementById("listItemTimeline2");
+	listItemTimeline.innerHTML = `
+	  <div>
+    <h1>Schedule</h1>
+    <div id="timelineContainer">
+      <div id="timeline_today"></div>
+      <div id="timeline_times">
+      </div>
+      <div id="timeline_activities">
+      </div>
+
+    </div>
+    <button id="moveToToday">Move to today</button>
+  </div>
+	`
 }
 
 function updateTable(){

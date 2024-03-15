@@ -123,6 +123,21 @@
 	</section>
 [/#if]
 
+[#if action.hasSpecificities('homepage_timeline_active') ]
+  <section class="timelineRefresh">	
+    <div class="homeTitleTimeline"><b>Schedule</b></div>
+    <img class="itemimgdeliverables" src="${baseUrlCdn}/global/images/loading-loading-forever.gif" >    
+	</section>
+  <section class="timeline" style="display: none">	
+    <div class="homeTitleTimeline"><b>Schedule</b></div>
+		<div class="containerTimeline">
+			<div class="scroll-x-containerTimeline2 " id="listItemTimeline2">
+			</div>
+
+		</div>
+	</section>
+[/#if]
+
   <section class="containerTabletItems">
   <div class="tableItemsBackground"></div>	
     <div class="containerSeccionItems">
