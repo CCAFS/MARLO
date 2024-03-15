@@ -416,7 +416,7 @@ span.timelineControl:hover {
   
   #timelineContainer {
 	  position: relative;
-	  padding-top: 1rem;
+	  margin: 18px 30px 18px 30px;
 	  width: 90vw;
 	  overflow-x: scroll;
 	}
@@ -436,6 +436,7 @@ span.timelineControl:hover {
 	
 	#timelineDescription_range{
 		font-size: 1.5rem;
+		
 	}
 
 	#timeline_times {
@@ -443,7 +444,7 @@ span.timelineControl:hover {
 	  width: max-content;
 	  margin-top: 10px;
 	  margin-bottom: 10px;
-	  background-color: #D9D9D9;
+	  background-color: #C7C7C7;
 	  padding: 5px 0;
 	}
 	
@@ -457,12 +458,17 @@ span.timelineControl:hover {
 	  border-radius: 5px;
 	}
 	
-	.ansbox {
+	.timebox {
 	  width: 80px;
-	  background-color: grey;
-	  height: 2px;
+	  background: #DDDDDD;;
 	  margin-right: 2px;
 	  position: relative;
+	  border-radius: 15px;
+    text-align: center;
+	}
+	
+	.timeNumber{
+		margin: 1.5px;
 	}
 
   /*************** sectionMap ********************/

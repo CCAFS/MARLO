@@ -250,6 +250,22 @@ function createTimeline() {
   
 }
 
+const convertDateToText = (date, withYear) => {
+  return new Date(date).toLocaleString('default', withYear? { month: 'short', day: 'numeric', year: "numeric" } : { month: 'short', day: 'numeric' });
+}
+
+const getAbsoluteDays = (startDate, endDate) => {
+  const oneDay = 24 * 60 * 60 * 1000;
+  return Math.round(Math.abs((new Date(startDate) - new Date(endDate)) / oneDay));
+};
+
+const getRemainingDays = (endDate) => {
+  const oneDay = 24 * 60 * 60 * 1000;
+  const today = new Date();
+
+  return new Date(endDate) - today > 0 ? Math.round(Math.abs((new Date(today) - new Date(endDate)) / oneDay)) : 0;
+}
+
 const getFirstAndLastDates = (dates) => {
   const sortDatesByStart = dates.map(date => Date.parse(date.startDate)).sort((a, b) => a - b);
   const sortDatesByEnd = dates.map(date => Date.parse(date.endDate)).sort((a, b) => a - b);
@@ -259,13 +275,64 @@ const getFirstAndLastDates = (dates) => {
   };
 }
 
-function convertDateToText(date) {
-  return new Date(date).toLocaleString('default', { month: 'short', day: 'numeric', year: "numeric" });
+function getDateBasedOnASumOfDays(startDate, days) {
+  const newDate = new Date(startDate);
+  newDate.setDate(newDate.getDate() + days);
+  return newDate;
+}
+
+function createDivTimes(totalDays, divClass, divIdPrefix){
+	let arrayDays = [];
+	for(let i=0; i < totalDays; i++){
+		let newDiv = document.createElement('div');
+		newDiv.id = `time_${i}` 
+		newDiv.className = divClass;
+		newDiv.innerHTML = `
+			<p class="timeNumber">
+			${convertDateToText(getDateBasedOnASumOfDays(divIdPrefix,i))}
+			</p>
+		`;
+		arrayDays.push(newDiv);
+	}
+	return arrayDays;
+}
+
+function createDivActivities(activity){
+	const card = document.createElement('div');
+	card.className = 'activity';
+	card.id = `activity_${activity.id}`;
+	card.innerHTML = `
+    <h3>${activity.description}</h3>
+    <p>${getRemainingDays(activity.endDate)} days left</p>
+    <p>Start date: ${activity.startDate}</p>
+    <p>End date: ${activity.endDate}</p>
+    <p>Status: ${setStatus(activity.startDate, activity.endDate)}</p>
+  `;
+  
+  return card;
+}
+
+const setStatus = (startDate, endDate) => {
+	const today = new Date();
+  const dateStatus = {
+    "Completed": today > new Date(endDate),
+    "In progress": today > new Date(startDate) && today < new Date(endDate),
+    "Not started": today < new Date(startDate)
+  };
+
+  const entries = Object.entries(dateStatus);
+  for (let i = 0; i < entries.length; i++) {
+    const [status, value] = entries[i];
+    if (value) {
+      return status;
+    }
+  }
 }
 
 function createTimeline2() {
-	const getFirstDateText = convertDateToText(getFirstAndLastDates(timelineElements).firstDate);
-	const getLastDateText = convertDateToText(getFirstAndLastDates(timelineElements).lastDate);
+	const getFirstDate = getFirstAndLastDates(timelineElements).firstDate;
+	const getLastDate = getFirstAndLastDates(timelineElements).lastDate;
+	const getTotalDays = getAbsoluteDays(getFirstDate,getLastDate);
 	
 	const listItemTimeline=document.getElementById("listItemTimeline2");
 	listItemTimeline.innerHTML = `
@@ -274,20 +341,20 @@ function createTimeline2() {
 	  	<div id="timelineDescription_title">
 	  		<b>Schedule</b>
 	  	</div>
-	  	<p id="timelineDescription_range">${getFirstDateText} - ${getLastDateText}</p>
+	  	<p id="timelineDescription_range">${convertDateToText(getFirstDate,true)} - ${convertDateToText(getLastDate,true)}</p>
 	  </div>
-	  
-    
-    
     <div id="timelineContainer">
       <div id="timeline_today"></div>
       <div id="timeline_times">
+      	${createDivTimes(getTotalDays,"timebox",getFirstDate).reduce((acc, curr) => acc + curr.outerHTML, '')}
       </div>
       <div id="timeline_activities">
+      	${timelineElements.map(elem => `
+      		${createDivActivities(elem).outerHTML}
+      	` ).join('')}
       </div>
 
     </div>
-    <button id="moveToToday">Move to today</button>
   </div>
 	`
 }
