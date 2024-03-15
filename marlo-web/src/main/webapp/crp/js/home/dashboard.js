@@ -297,16 +297,19 @@ function createDivTimes(totalDays, divClass, divIdPrefix){
 	return arrayDays;
 }
 
-function createDivActivities(activity){
+function createDivActivities(activity, id){
+	console.log(activity);
 	const card = document.createElement('div');
-	card.className = 'activity';
-	card.id = `activity_${activity.id}`;
+	card.className = 'activityCard';
+	card.id = `activityCard_${id}`;
 	card.innerHTML = `
-    <h3>${activity.description}</h3>
-    <p>${getRemainingDays(activity.endDate)} days left</p>
-    <p>Start date: ${activity.startDate}</p>
-    <p>End date: ${activity.endDate}</p>
-    <p>Status: ${setStatus(activity.startDate, activity.endDate)}</p>
+    <h3 class="activityCard_description">${activity.description}</h3>
+    <div class="activityCard_details">
+        <p>${getRemainingDays(activity.endDate)} days left</p>
+    		<p>Start date: ${activity.startDate}</p>
+    		<p>End date: ${activity.endDate}</p>
+    </div>
+
   `;
   
   return card;
@@ -349,8 +352,8 @@ function createTimeline2() {
       	${createDivTimes(getTotalDays,"timebox",getFirstDate).reduce((acc, curr) => acc + curr.outerHTML, '')}
       </div>
       <div id="timeline_activities">
-      	${timelineElements.map(elem => `
-      		${createDivActivities(elem).outerHTML}
+      	${timelineElements.map((elem,id) => `
+      		${createDivActivities(elem,id).outerHTML}
       	` ).join('')}
       </div>
 
