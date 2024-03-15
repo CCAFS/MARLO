@@ -271,10 +271,10 @@ function createTimeline2() {
 	listItemTimeline.innerHTML = `
 	  <div>
 	  <div id="timelineDescription">
-	  	<div class="homeTitleTimeline">
+	  	<div id="timelineDescription_title">
 	  		<b>Schedule</b>
 	  	</div>
-	  	<div id="timeline_range">${getFirstDateText} - ${getLastDateText}</div>
+	  	<p id="timelineDescription_range">${getFirstDateText} - ${getLastDateText}</p>
 	  </div>
 	  
     

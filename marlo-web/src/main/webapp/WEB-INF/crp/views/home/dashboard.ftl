@@ -129,7 +129,6 @@
     <img class="itemimgdeliverables" src="${baseUrlCdn}/global/images/loading-loading-forever.gif" >    
 	</section>
   <section class="timeline" style="display: none">	
-    <div class="homeTitleTimeline"><b>Schedule</b></div>
 		<div class="containerTimeline">
 			<div class="scroll-x-containerTimeline2 " id="listItemTimeline2">
 			</div>

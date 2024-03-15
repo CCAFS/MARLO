@@ -420,6 +420,23 @@ span.timelineControl:hover {
 	  width: 90vw;
 	  overflow-x: scroll;
 	}
+	
+	#timelineDescription{
+		display: flex;
+		justify-content: space-between;
+    padding: 18px 30px 18px 30px;
+    width: 100%;
+    align-items: baseline;
+	}
+	
+	#timelineDescription_title{
+    font-size: 2.0em;
+    color: #333;
+	}
+	
+	#timelineDescription_range{
+		font-size: 1.5rem;
+	}
 
 	#timeline_times {
 	  display: flex;
