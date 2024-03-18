@@ -44,7 +44,7 @@
               </div>
               <div class="clearfix"></div>
               <div class="form-group">
-                [@customForm.input name="tipParameter.tipTokenService" i18nkey="tipParameter.tipTokenService" className="description limitWords-100" required=true /]
+                [@customForm.input name="tipParameter.tipTokenService" i18nkey="tipParameter.tipTokenService" className="description" required=true /]
               </div>
               <div class="clearfix"></div>      
               <div class="form-group ">
@@ -53,6 +53,10 @@
               <div class="clearfix"></div>
               <div class="form-group">
                 [@customForm.input name="tipParameter.tipStatusService" i18nkey="tipParameter.tipStatusService" className="description limitWords-100" required=true /]
+              </div>
+              <div class="clearfix"></div>
+              <div class="form-group">
+                [@customForm.input name="tipParameter.encryptionKey" i18nkey="tipParameter.tipEncryptionKey" className="description" required=true /]
               </div>
               <div class="clearfix"></div>
               <div class="form-group" style="display:block">
