@@ -29,5 +29,8 @@
     <property name="tipBaseUrl" type="string">
       <column name="tip_base_url"/>
     </property>
+    <property name="encryptionKey" type="string">
+      <column name="encryption_key"/>
+    </property>
   </class>
 </hibernate-mapping>
