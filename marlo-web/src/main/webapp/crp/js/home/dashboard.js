@@ -302,6 +302,8 @@ function createDivActivities(activity, id){
 	const card = document.createElement('div');
 	card.className = 'activityCard';
 	card.id = `activityCard_${id}`;
+	card.style.width = setActivityWidth(getAbsoluteDays(activity.startDate, activity.endDate))
+	card.style.left = setDistances(activity.startDate);
 	card.innerHTML = `
     <h3 class="activityCard_description">${activity.description}</h3>
     <div class="activityCard_details">
@@ -330,6 +332,22 @@ const setStatus = (startDate, endDate) => {
       return status;
     }
   }
+}
+
+function setActivityWidth(dayAmount) {
+	return  `${dayAmount * 82}px`;
+}
+
+function setDistances(startDate,isToday) {
+	const today = new Date();
+  const { firstDate } = getFirstAndLastDates(timelineElements);
+  
+  if(isToday){
+		return `${getAbsoluteDays(today, startDate) * 82}px`;
+	}
+
+  return `${getAbsoluteDays(firstDate, startDate) * 82}px`;
+
 }
 
 function createTimeline2() {
