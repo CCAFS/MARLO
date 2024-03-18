@@ -302,16 +302,19 @@ function createDivActivities(activity, id){
 	const card = document.createElement('div');
 	card.className = 'activityCard';
 	card.id = `activityCard_${id}`;
-	card.style.width = setActivityWidth(getAbsoluteDays(activity.startDate, activity.endDate))
-	card.style.left = setDistances(activity.startDate);
 	card.innerHTML = `
-    <h3 class="activityCard_description">${activity.description}</h3>
-    <div class="activityCard_details">
-        <p>${getRemainingDays(activity.endDate)} days left</p>
-    		<p>Start date: ${activity.startDate}</p>
-    		<p>End date: ${activity.endDate}</p>
-    </div>
-
+			<div class="activityCard_container" 
+			style="left: ${setDistances(activity.startDate)}; 
+			width: ${setActivityWidth(getAbsoluteDays(activity.startDate, activity.endDate))} " >
+				<div class="activityCard_content"> 
+					<h3 class="activityCard_description">${activity.description}</h3>
+			    <div class="activityCard_details">
+			        <p>${getRemainingDays(activity.endDate)} days left</p>
+			    		<p>Start date: ${activity.startDate}</p>
+			    		<p>End date: ${activity.endDate}</p>
+			    </div>
+				</div>
+			</div>
   `;
   
   return card;
@@ -335,7 +338,8 @@ const setStatus = (startDate, endDate) => {
 }
 
 function setActivityWidth(dayAmount) {
-	return  `${dayAmount * 82}px`;
+	console.log(dayAmount);
+	return  `${(dayAmount === 0? 2 : dayAmount) * 82}px`;
 }
 
 function setDistances(startDate,isToday) {
