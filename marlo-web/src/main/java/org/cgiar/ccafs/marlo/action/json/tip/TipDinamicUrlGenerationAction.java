@@ -70,7 +70,11 @@ public class TipDinamicUrlGenerationAction extends BaseAction {
           }
         }
         if (this.hasSpecificities(APConstants.TIP_SECURITY_ACTIVE)) {
-          tipURL = loginService + "/" + (AESConvert.stringToAES(token + "/staff/" + userEmail));
+          String encryptionKey = null;
+          if (tipParameters != null && tipParameters.get(0).getEncryptionKey() != null) {
+            encryptionKey = tipParameters.get(0).getEncryptionKey();
+          }
+          tipURL = loginService + "/" + (AESConvert.stringToAES(token + "/staff/" + userEmail, encryptionKey));
         } else {
           tipURL = loginService + "/" + token + "/staff/" + userEmail;
         }
