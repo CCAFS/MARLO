@@ -343,7 +343,7 @@ function setDistances(startDate,isToday) {
   const { firstDate } = getFirstAndLastDates(timelineElements);
   
   if(isToday){
-		return `${getAbsoluteDays(today, startDate) * 82}px`;
+		return `${getAbsoluteDays(firstDate, today) * 82}px`;
 	}
 
   return `${getAbsoluteDays(firstDate, startDate) * 82}px`;
@@ -365,7 +365,7 @@ function createTimeline2() {
 	  	<p id="timelineDescription_range">${convertDateToText(getFirstDate,true)} - ${convertDateToText(getLastDate,true)}</p>
 	  </div>
     <div id="timelineContainer">
-      <div id="timeline_today"></div>
+      <div id="timeline_today" style="left: ${setDistances(null,true)}"></div>
       <div id="timeline_times">
       	${createDivTimes(getTotalDays,"timebox",getFirstDate).reduce((acc, curr) => acc + curr.outerHTML, '')}
       </div>
