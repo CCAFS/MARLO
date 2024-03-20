@@ -417,9 +417,12 @@ span.timelineControl:hover {
   #timelineContainer {
 	  position: relative;
 	  margin: 18px 30px 18px 30px;
+	  scroll-behavior: smooth;
 	  overflow-x: scroll;
 	  overflow-y: hidden;
 	  height: 28vh;
+	  width: 80vw;
+	  margin: 0 auto;
 	}
 	
 	#timelineDescription{
@@ -464,13 +467,11 @@ span.timelineControl:hover {
 	}
 	
 	.timebox {
-	  width: 82px;
-	  padding-right: 2px;
 	  height: 144px;
 	  position: relative;
     text-align: center;
-    border-right: 1px dashed #767575;
-		border-left: 1px dashed #767575;
+    border-right: 1px dashed #CCCCCC;
+		border-left: 1px dashed #CCCCCC;
 	}
 	
 	.timeNumber{

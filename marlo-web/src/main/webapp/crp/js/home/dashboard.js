@@ -287,6 +287,7 @@ function createDivTimes(totalDays, divClass, divIdPrefix){
 		let newDiv = document.createElement('div');
 		newDiv.id = `time_${i}` 
 		newDiv.className = divClass;
+		newDiv.style.width = setWidth();
 		newDiv.innerHTML = `
 			<p class="timeNumber">
 			${convertDateToText(getDateBasedOnASumOfDays(divIdPrefix,i))}
@@ -306,7 +307,7 @@ function createDivActivities(activity, id){
 	card.innerHTML = `
 			<div class="activityCard_container" 
 			style="left: ${setDistances(activity.startDate)}; 
-			width: ${setActivityWidth(getAbsoluteDays(activity.startDate, activity.endDate))}; 
+			width: ${setWidth(getAbsoluteDays(activity.startDate, activity.endDate))}; 
 			background: ${setStatusColor(status)}
 			" >
 			
@@ -351,8 +352,8 @@ const setStatusColor = (status) => {
   return colorStatus[status];
 }
 
-function setActivityWidth(dayAmount) {
-	return  `${(dayAmount === 0? 3 : dayAmount) * 82}px`;
+function setWidth(amount) {
+	return `calc(${amount? (amount === 0? 3: amount)+"*(80vw / 7))": "calc(80vw / 7)"}`;
 }
 
 function setDistances(startDate,isToday) {
@@ -360,10 +361,10 @@ function setDistances(startDate,isToday) {
   const { firstDate } = getFirstAndLastDates(timelineElements);
   
   if(isToday){
-		return `${getAbsoluteDays(firstDate, today) * 82}px`;
+		return `calc(${getAbsoluteDays(firstDate, today)} * (80vw / 7))`;
 	}
 
-  return `${getAbsoluteDays(firstDate, startDate) * 82}px`;
+  return `calc(${getAbsoluteDays(firstDate, startDate)} * (80vw / 7))`;
 
 }
 
