@@ -445,8 +445,8 @@ span.timelineControl:hover {
 	  width: max-content;
 	  margin-top: 10px;
 	  margin-bottom: 10px;
-	  background-color: #C7C7C7;
 	  padding: 5px 0;
+	  position: absolute;
 	}
 	
 	#timeline_activities {
@@ -464,12 +464,13 @@ span.timelineControl:hover {
 	}
 	
 	.timebox {
-	  width: 80px;
-	  background: #DDDDDD;;
-	  margin-right: 2px;
+	  width: 82px;
+	  padding-right: 2px;
+	  height: 144px;
 	  position: relative;
-	  border-radius: 15px;
     text-align: center;
+    border-right: 1px dashed #767575;
+		border-left: 1px dashed #767575;
 	}
 	
 	.timeNumber{
@@ -522,7 +523,6 @@ span.timelineControl:hover {
 	}
 	
 	.activityCard_details p{
-
 		font-size: 1rem;
 		font-style: normal;
 		font-weight: 400;
@@ -531,7 +531,11 @@ span.timelineControl:hover {
 	}
 	
 	.activityCard:nth-child(even){
-		top: 72px;
+		top: 108px;
+	}
+	
+	.activityCard:nth-child(odd){
+		top: 48px;
 	}
 
 
