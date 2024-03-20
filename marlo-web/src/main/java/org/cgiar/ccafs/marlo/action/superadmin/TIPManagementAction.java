@@ -82,6 +82,9 @@ public class TIPManagementAction extends BaseAction {
         if (tipParameter.getPrivateKey() != null) {
           tipParameterSave.setPrivateKey(tipParameter.getPrivateKey());
         }
+        if (tipParameter.getEncryptionKey() != null) {
+          tipParameterSave.setEncryptionKey(tipParameter.getEncryptionKey());
+        }
 
         tipParameterManager.saveTipParameters(tipParameterSave);
 

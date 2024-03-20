@@ -32,16 +32,26 @@ public class AESConvert {
 
   private static Logger LOG = LoggerFactory.getLogger(AESConvert.class);
 
-  public static String stringToAES(String value) {
+  /**
+   * @param value String with text to encrypt
+   * @param encryptionKey String with AES encryption key
+   * @return String with the encrypt text
+   */
+  public static String stringToAES(String value, String encryptionKey) {
     MessageDigest md;
     try {
-      // Generate a secret key
-      KeyGenerator keygen = KeyGenerator.getInstance("AES");
-      keygen.init(256); // Use a 256-bit key (AES-256)
-      SecretKey secretKey = keygen.generateKey();
+      byte[] secretKeyBytes;
+      if (encryptionKey != null && !encryptionKey.isEmpty()) {
+        secretKeyBytes = encryptionKey.getBytes();
+      } else {
+        // Generate a secret key
+        KeyGenerator keygen = KeyGenerator.getInstance("AES");
+        keygen.init(256); // Use a 256-bit key (AES-256)
+        SecretKey secretKey = keygen.generateKey();
 
-      // Convert the secret key to byte array
-      byte[] secretKeyBytes = secretKey.getEncoded();
+        // Convert the secret key to byte array
+        secretKeyBytes = secretKey.getEncoded();
+      }
 
       // Convert the text to compress into bytes
       String originalText = "Sample text to compress and encrypt using AES";

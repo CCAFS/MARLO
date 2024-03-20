@@ -290,7 +290,7 @@ public class ValidateProjectSectionAction extends BaseAction {
             && project.getProjecInfoPhase(this.getActualPhase()) != null
             && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
             && !project.getProjecInfoPhase(this.getActualPhase()).getAdministrative()) {
-            section.put("missingFields", section.get("missingFields") + "-" + "deliveralbes");
+            section.put("missingFields", section.get("missingFields") + "-" + "deliverables");
           }
 
           Phase phase = this.getActualPhase();
@@ -330,6 +330,11 @@ public class ValidateProjectSectionAction extends BaseAction {
                   .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
                   sectionStatus.setMissingFields("");
                 }
+              }
+
+              if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
+                .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+                sectionStatus.setMissingFields("");
               }
 
             }
@@ -431,6 +436,12 @@ public class ValidateProjectSectionAction extends BaseAction {
               sectionStatus = new SectionStatus();
               sectionStatus.setMissingFields("No section");
             }
+
+            //
+            if (this.isAWPBActive()) {
+              sectionStatus.setMissingFields("");
+            }
+
             if (sectionStatus.getMissingFields().length() > 0) {
               section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
             }

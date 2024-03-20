@@ -38,7 +38,13 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
   @Expose
   private String tipBaseUrl;
   @Expose
+  private String encryptionKey;
+  @Expose
   private Date tokenDueDate;
+
+  public String getEncryptionKey() {
+    return encryptionKey;
+  }
 
   @Override
   public String getLogDeatil() {
@@ -82,15 +88,19 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
     return tokenDueDate;
   }
 
+
   public String getTokenValue() {
     return tokenValue;
   }
-
 
   @Override
   public boolean isActive() {
     // TODO Auto-generated method stub
     return false;
+  }
+
+  public void setEncryptionKey(String encryptionKey) {
+    this.encryptionKey = encryptionKey;
   }
 
   @Override

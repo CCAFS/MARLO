@@ -5,7 +5,7 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectCaseStudiesList.js?20230306",
   "${baseUrlCdn}/global/js/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectCaseStudies.css?20230306"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectCaseStudies.css?20240314"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "projectStudies" /]
 [#assign hideJustification = true /]
