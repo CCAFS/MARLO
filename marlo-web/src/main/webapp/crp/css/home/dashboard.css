@@ -419,7 +419,7 @@ span.timelineControl:hover {
 	  margin: 18px 30px 18px 30px;
 	  overflow-x: scroll;
 	  overflow-y: hidden;
-	  height: 25vh;
+	  height: 28vh;
 	}
 	
 	#timelineDescription{
@@ -495,6 +495,7 @@ span.timelineControl:hover {
 	.activityCard_content{
 		display: inline-flex;
 		flex-direction: column;
+		gap: 0.5rem;
     left: 0;
     overflow: hidden;
     padding: 4px 6px;
@@ -517,6 +518,7 @@ span.timelineControl:hover {
 		display: flex;
 		justify-content: space-between;
 		max-width: max-content;
+		gap: 1rem;
 	}
 	
 	.activityCard_details p{
@@ -529,7 +531,7 @@ span.timelineControl:hover {
 	}
 	
 	.activityCard:nth-child(even){
-		top: 50px;
+		top: 72px;
 	}
 
 

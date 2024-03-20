@@ -298,19 +298,23 @@ function createDivTimes(totalDays, divClass, divIdPrefix){
 }
 
 function createDivActivities(activity, id){
-	console.log(activity);
+	
+	const status = setStatus(activity.startDate,activity.endDate);
 	const card = document.createElement('div');
 	card.className = 'activityCard';
 	card.id = `activityCard_${id}`;
 	card.innerHTML = `
 			<div class="activityCard_container" 
 			style="left: ${setDistances(activity.startDate)}; 
-			width: ${setActivityWidth(getAbsoluteDays(activity.startDate, activity.endDate))} " >
+			width: ${setActivityWidth(getAbsoluteDays(activity.startDate, activity.endDate))}; 
+			background: ${setStatusColor(status)}
+			" >
+			
 				<div class="activityCard_content"> 
 					<h3 class="activityCard_description">${activity.description}</h3>
 			    <div class="activityCard_details">
-			        <p>${getRemainingDays(activity.endDate)} days left</p>
 			    		<p>Start date: ${activity.startDate}</p>
+			    		<p>Status: ${status} </p>
 			    		<p>End date: ${activity.endDate}</p>
 			    </div>
 				</div>
@@ -337,9 +341,18 @@ const setStatus = (startDate, endDate) => {
   }
 }
 
+const setStatusColor = (status) => {
+	  const colorStatus = {
+    "Completed": "#B5D08B",
+    "In progress": "#81B8C1",
+    "Not started": "#F9C786"
+  };
+  
+  return colorStatus[status];
+}
+
 function setActivityWidth(dayAmount) {
-	console.log(dayAmount);
-	return  `${(dayAmount === 0? 2 : dayAmount) * 82}px`;
+	return  `${(dayAmount === 0? 3 : dayAmount) * 82}px`;
 }
 
 function setDistances(startDate,isToday) {
