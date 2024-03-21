@@ -257,8 +257,12 @@ function createTimeline() {
   
 }
 
+const convertDateToAfricanDate = (date) => {
+	  const africanOptions = { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric', year: "numeric" };
+    return new Date(date.toLocaleString('en-US', africanOptions));
+}
 const convertDateToText = (date, withYear) => {
-  return new Date(date).toLocaleString('default', withYear? { month: 'short', day: 'numeric', year: "numeric" } : { month: 'short', day: 'numeric' });
+  return new Date(date).toLocaleString('default', withYear? { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric', year: "numeric" } : { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric' });
 }
 
 const getAbsoluteDays = (startDate, endDate) => {
@@ -283,7 +287,7 @@ function getDateBasedOnASumOfDays(startDate, days) {
 
 function createDivTimes(totalDays, divClass, divIdPrefix){
 	let arrayDays = [];
-	for(let i=0; i < totalDays; i++){
+	for(let i=0; i < totalDays+1; i++){
 		let newDiv = document.createElement('div');
 		newDiv.id = `time_${i}` 
 		newDiv.className = divClass;
@@ -353,7 +357,7 @@ const setStatusColor = (status) => {
 }
 
 function setWidth(amount) {
-	return `calc(${amount !==undefined? (amount === 0? 3: amount)+"*(80vw / 7))": "calc(80vw / 7)"}`;
+	return `calc(${amount !==undefined? (amount === 0? 3: amount+1)+"*(80vw / 7))": "calc(80vw / 7)"}`;
 }
 
 function setDistances(startDate,isToday, isJS) {
@@ -407,7 +411,6 @@ function createTimeline2() {
 	  	<p id="timelineDescription_range">${convertDateToText(getFirstDate,true)} - ${convertDateToText(getLastDate,true)}</p>
 	  </div>
     <div id="timelineContainer">
-      <div id="timeline_today" style="left: ${setDistances(null,true)}"></div>
       <div id="timeline_times">
       	${createDivTimes(getTotalDays,"timebox",getFirstDate).reduce((acc, curr) => acc + curr.outerHTML, '')}
       </div>
@@ -416,7 +419,7 @@ function createTimeline2() {
       		${createDivActivities(elem,id).outerHTML}
       	` ).join('')}
       </div>
-
+      <div id="timeline_today" style="left: ${setDistances(null,true)}"></div>
     </div>
   </div>
 	`
