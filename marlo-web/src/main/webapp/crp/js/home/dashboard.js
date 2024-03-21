@@ -17,8 +17,9 @@ function initDashboard() {
   $('.loadingBlock').hide().next().fadeIn(500);
 
   getTimeline();
-  createTimeline();
   createTimeline2();
+  $(".timelineRefresh").hide();
+  $(".timeline").show();
   setTimelinePosition();
 
   $('.buttonRightTimeline').on("click", moveScrollRight);
@@ -165,98 +166,6 @@ function moveScrollLeft() {
   element.scrollLeft -= containerSize;
 }
 
-function createTimeline() {
-  var counter = 0;
-  var counterActvi = 0;
-  var previusDate;
-  var linePorcent;
-  var lastPosition = timelineElements.length;
-
-  // iterate timeline elements
-  timelineElements.forEach(function(data,index){
-    var listItemTimeline=document.getElementById("listItemTimeline");
-    var newDiv= document.createElement("div")    
-    newDiv.className='infTimelineTimeline';
-    listItemTimeline.appendChild(newDiv);
-    var newDivTitle= document.createElement("span")    
-    newDivTitle.className='titleTimeline';
-    newDiv.appendChild(newDivTitle)
-    var newDivPoint= document.createElement("div") 
-    newDivPoint.className='timeline-pointTimeline';
-    newDiv.appendChild(newDivPoint)
-    var newPorcentTimeLine= document.createElement("div") 
-    newDiv.appendChild(newPorcentTimeLine)
-    var newDivTimeLine= document.createElement("div") 
-    newDivTimeLine.className='timeline-line';
-    newDiv.appendChild(newDivTimeLine)
-    var newPTimeLine= document.createElement("p") 
-    newPTimeLine.className='dateTimeline';
-    newDiv.appendChild(newPTimeLine)
-    var options = {timeZone: 'Africa/Nairobi', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'};
-    var africaOpciones = { timeZone: 'Africa/Nairobi', day: 'numeric' };
-    var africanDate = new Date(new Date().toLocaleString('en-US', options));
-
-    var description = document.createTextNode(data.description);
-    var dateMonthStart = new Date(data.startDate).toLocaleString("en-US", { month: "short" });
-    var dateDayStart = new Date(data.startDate).getDate()+1;    
-    var dateMonthYear =new Date(data.endDate).getFullYear();
-    var dateMonthEnd = new Date(new Date(data.endDate).toLocaleString('en-US', options)).toLocaleString("en-US", { month: "short" });
-    var dateDayEnd = new Date(data.endDate).toLocaleString('en-US', africaOpciones);
-    var date =document.createTextNode(dateMonthEnd+' '+ dateDayEnd+' - '+dateMonthYear)
-    newDivTitle.appendChild(description);
-    newPTimeLine.appendChild(date);
-    var endDate = new Date(new Date(data.endDate).toLocaleString('en-US', options));
-    endDate.setDate(endDate.getDate() + 1)
-
-    if(description.length > 120)newDivTitle.style["width"] = '120px';
-
-    //hide alert the days left to finalize activity 
-    if(((lastPosition - 1) == index) && endDate < africanDate )$('.timelineAlert').hide();
-    
-    var closingTime = new Date(africanDate.setHours(africanDate.getHours() + 1));
-    
-    if(endDate < closingTime){
-
-      var newImgTimeLine= document.createElement("img");
-      newImgTimeLine.className='imgTimeline';
-      newImgTimeLine.setAttribute("src",baseURL +"/global/images/icon-check-tiny-white.png")
-      newDivPoint.appendChild(newImgTimeLine);
-      newDivTitle.classList.add('timelineColorSuccess');
-      newDivPoint.classList.add('timelineBackSuccess');
-      newDivTimeLine.classList.add('timelineBackSuccess');
-      previusDate=data.endDate;
-      counterActvi =counterActvi+1      
-
-    }
-    // Define the color and percentage of the bar
-    if(counter == 0 && (endDate > africanDate)){
-
-      let dateDiff = endDate.getTime() - new Date(previusDate).getTime();
-      let daysFinalizeActivity = ((endDate.getTime() - africanDate.getTime())/(1000*60*60*24));
-      newPorcentTimeLine.className='porcentTimeLine';
-      newDivTitle.classList.add('timelineColorAlert');
-      newDivPoint.classList.add('timelineBackAlert');
-
-      linePorcent = -(daysFinalizeActivity*100)/(dateDiff/(1000*60*60*24))+100;
-      newDivTimeLine.style["margin-top"] = "0";
-      newPorcentTimeLine.style["width"] = Math.round(linePorcent)+'%';
-      if(linePorcent < 0) newPorcentTimeLine.style["width"] = Math.round(0)+'%';
-      newPorcentTimeLine.appendChild(newDivTimeLine);      
-      let textAlert ='';
-      textAlert = Math.round(daysFinalizeActivity+1)+' day left to finalize the current activity';
-      if(Math.round(daysFinalizeActivity+1)>1) textAlert = Math.round(daysFinalizeActivity+1)+' days left to finalize the current activity';
-      counter = 1;
-      $('.timelineAlertText').text(textAlert);
-    }
-  })
-  $(".timelineRefresh").hide();
-  $(".timeline").show();
-  // Locate pending activity
-  const element = document.querySelector(".scroll-x-containerTimeline");
-  element.scrollLeft += 243*(counterActvi-2);
-  
-}
-
 const convertDateToAfricanDate = (date) => {
 	  const africanOptions = { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric', year: "numeric" };
     return new Date(date.toLocaleString('en-US', africanOptions));
@@ -294,7 +203,7 @@ function createDivTimes(totalDays, divClass, divIdPrefix){
 		newDiv.style.width = setWidth();
 		newDiv.innerHTML = `
 			<p class="timeNumber">
-			${convertDateToText(getDateBasedOnASumOfDays(divIdPrefix,i))}
+				${convertDateToText(getDateBasedOnASumOfDays(divIdPrefix,i))}
 			</p>
 		`;
 		arrayDays.push(newDiv);
@@ -318,9 +227,15 @@ function createDivActivities(activity, id){
 				<div class="activityCard_content"> 
 					<h3 class="activityCard_description">${activity.description}</h3>
 			    <div class="activityCard_details">
-			    		<p>Start date: ${activity.startDate}</p>
-			    		<p>Status: ${status} </p>
-			    		<p>End date: ${activity.endDate}</p>
+			    		<div>
+			    			<img src=${baseURL +"/global/images/start_date.png"} alt="start_icon" />
+			    			<p><b>Start date:</b> ${activity.startDate}</p>
+			    		</div>
+			    		<p><b>Status:</b> ${status} </p>
+			    		<div>
+			    			<img src=${baseURL +"/global/images/end_date.png"} alt="end_icon" />
+			    			<p><b>End date:</b> ${activity.endDate}</p>
+			    		</div>
 			    </div>
 				</div>
 			</div>
@@ -362,6 +277,11 @@ function setWidth(amount) {
 
 function setDistances(startDate,isToday, isJS) {
 	const today = new Date();
+	today.setDate(today.getDate()-1);
+	let startofDay = new Date(today.getTime());
+	startofDay.setHours(0,0,0,0);
+	const porcentOfDay = ((today.getTime() - startofDay.getTime()) / (1000*60*60*24))
+	console.log(porcentOfDay);
   const { firstDate } = getFirstAndLastDates(timelineElements);
   
   const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
@@ -370,7 +290,7 @@ function setDistances(startDate,isToday, isJS) {
   if(isJS){
 		
 		if(isToday){
-			return (getAbsoluteDays(firstDate,today) * (containerSize/7))
+			return (getAbsoluteDays(firstDate,today) * ((containerSize/7) + ((containerSize/7)*porcentOfDay)) )
 		}
 		
 		return (getAbsoluteDays(firstDate,startDate) * (containerSize/7))
@@ -378,7 +298,7 @@ function setDistances(startDate,isToday, isJS) {
 	} else {
 		
 		if(isToday){
-			return `calc(${getAbsoluteDays(firstDate, today)} * (80vw / 7))`;
+			return `calc(${getAbsoluteDays(firstDate, today)} * (80vw / 7) + ((80vw / 7)* ${porcentOfDay}) )`;
 		}
 
   	return `calc(${getAbsoluteDays(firstDate, startDate)} * (80vw / 7))`;
@@ -391,7 +311,7 @@ function setTimelinePosition(){
 	
 	const timelineContainer = document.getElementById("timelineContainer");
 	timelineContainer.scrollLeft += setDistances(weekStart, undefined,true);
-	console.log(timelineContainer.scrollLeft);
+	
 }
 
 
@@ -408,7 +328,6 @@ function createTimeline2() {
 	  	<div id="timelineDescription_title">
 	  		<b>Schedule</b>
 	  	</div>
-	  	<p id="timelineDescription_range">${convertDateToText(getFirstDate,true)} - ${convertDateToText(getLastDate,true)}</p>
 	  </div>
     <div id="timelineContainer">
       <div id="timeline_times">
@@ -423,8 +342,6 @@ function createTimeline2() {
     </div>
   </div>
 	`
-	
-	
 }
 
 function updateTable(){

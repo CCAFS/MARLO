@@ -108,27 +108,6 @@
     <img class="itemimgdeliverables" src="${baseUrlCdn}/global/images/loading-loading-forever.gif" >    
 	</section>
   <section class="timeline" style="display: none">	
-    <div class="homeTitleTimeline"><b>Schedule</b></div>
-    <div class="timelineAlert">
-      <!--  <img src="${baseUrlCdn}/global/images/icon-transparent-warning.png" width="30">  -->
-      <p class="timelineAlertText"> days left until the end of the activity</p>
-    </div>
-		<div class="containerTimeline">
-			<!--  <a href="#item1">touch me</a>  -->
-			<div class="scroll-x-containerTimeline " id="listItemTimeline">
-			</div>
-			<div class="sideButtonTimeline buttonLeftTimeline"><p><</p></div>
-			<div class="sideButtonTimeline buttonRightTimeline"><p>></p></div>
-		</div>
-	</section>
-[/#if]
-
-[#if action.hasSpecificities('homepage_timeline_active') ]
-  <section class="timelineRefresh">	
-    <div class="homeTitleTimeline"><b>Schedule</b></div>
-    <img class="itemimgdeliverables" src="${baseUrlCdn}/global/images/loading-loading-forever.gif" >    
-	</section>
-  <section class="timeline" style="display: none">	
 		<div class="containerTimeline">
 			<div class="scroll-x-containerTimeline2 " id="listItemTimeline2">
 			</div>
