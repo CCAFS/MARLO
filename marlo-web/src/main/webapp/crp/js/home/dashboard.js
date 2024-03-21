@@ -19,6 +19,7 @@ function initDashboard() {
   getTimeline();
   createTimeline();
   createTimeline2();
+  setTimelinePosition();
 
   $('.buttonRightTimeline').on("click", moveScrollRight);
 
@@ -368,6 +369,22 @@ function setDistances(startDate,isToday) {
 
 }
 
+function setTimelinePosition(){
+	let weekStart = new Date();
+	weekStart.setDate(weekStart.getDate() - weekStart.getDay())
+	
+	const { firstDate } = getFirstAndLastDates(timelineElements);
+	
+	const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+	let containerSize = vw * 0.8;
+	
+	const timelineContainer = document.getElementById("timelineContainer");
+	timelineContainer.scrollLeft += (getAbsoluteDays(firstDate,weekStart) * (containerSize/7))
+	console.log(timelineContainer.scrollLeft);
+}
+
+
+
 function createTimeline2() {
 	const getFirstDate = getFirstAndLastDates(timelineElements).firstDate;
 	const getLastDate = getFirstAndLastDates(timelineElements).lastDate;
@@ -396,6 +413,8 @@ function createTimeline2() {
     </div>
   </div>
 	`
+	
+	
 }
 
 function updateTable(){
