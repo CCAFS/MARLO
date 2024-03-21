@@ -245,7 +245,7 @@ function createDivActivities(activity, id){
 }
 
 const setStatus = (startDate, endDate) => {
-	const today = new Date();
+	const today = convertDateToAfricanDate(new Date());
   const dateStatus = {
     "Completed": today > new Date(endDate),
     "In progress": today > new Date(startDate) && today < new Date(endDate),
@@ -276,8 +276,8 @@ function setWidth(amount) {
 }
 
 function setDistances(startDate,isToday, isJS) {
-	const today = new Date();
-	today.setDate(today.getDate()-1);
+	const today = convertDateToAfricanDate(new Date());
+	today.setDate(today.getDate());
 	let startofDay = new Date(today.getTime());
 	startofDay.setHours(0,0,0,0);
 	const porcentOfDay = ((today.getTime() - startofDay.getTime()) / (1000*60*60*24))
