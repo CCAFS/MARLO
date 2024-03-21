@@ -70,7 +70,9 @@ public class TipGetTokenServiceAction extends BaseAction {
         connection.setRequestProperty("Accept", "application/json");
         connection.setDoOutput(true);
 
-        String requestBody = "{private_key:" + privateKey + "}";
+        String requestBody = "{\"private_key\":\"" + privateKey.replace("\"", "\\\"") + "\"}";
+
+        // String requestBody = "{private_key:" + privateKey + "}";
 
         // Get the output stream to send data
         try (OutputStream os = connection.getOutputStream()) {
