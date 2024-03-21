@@ -150,13 +150,19 @@ function locateContentDialog(id){
 }
 
 function moveScrollRight() {
-  const element = document.querySelector(".scroll-x-containerTimeline");
-  element.scrollLeft += 200;
+  const element = document.getElementById("timelineContainer");
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+	const containerSize = vw * 0.8;
+	
+  element.scrollLeft += containerSize;
 }
 
 function moveScrollLeft() {
-  const element = document.querySelector(".scroll-x-containerTimeline");
-  element.scrollLeft -= 200;
+  const element = document.getElementById("timelineContainer");
+  const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+	const containerSize = vw * 0.8;
+	
+  element.scrollLeft -= containerSize;
 }
 
 function createTimeline() {
@@ -260,13 +266,6 @@ const getAbsoluteDays = (startDate, endDate) => {
   return Math.round(Math.abs((new Date(startDate) - new Date(endDate)) / oneDay));
 };
 
-const getRemainingDays = (endDate) => {
-  const oneDay = 24 * 60 * 60 * 1000;
-  const today = new Date();
-
-  return new Date(endDate) - today > 0 ? Math.round(Math.abs((new Date(today) - new Date(endDate)) / oneDay)) : 0;
-}
-
 const getFirstAndLastDates = (dates) => {
   const sortDatesByStart = dates.map(date => Date.parse(date.startDate)).sort((a, b) => a - b);
   const sortDatesByEnd = dates.map(date => Date.parse(date.endDate)).sort((a, b) => a - b);
@@ -357,29 +356,37 @@ function setWidth(amount) {
 	return `calc(${amount !==undefined? (amount === 0? 3: amount)+"*(80vw / 7))": "calc(80vw / 7)"}`;
 }
 
-function setDistances(startDate,isToday) {
+function setDistances(startDate,isToday, isJS) {
 	const today = new Date();
   const { firstDate } = getFirstAndLastDates(timelineElements);
   
-  if(isToday){
-		return `calc(${getAbsoluteDays(firstDate, today)} * (80vw / 7))`;
+  const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+	let containerSize = vw * 0.8;
+  
+  if(isJS){
+		
+		if(isToday){
+			return (getAbsoluteDays(firstDate,today) * (containerSize/7))
+		}
+		
+		return (getAbsoluteDays(firstDate,startDate) * (containerSize/7))
+		
+	} else {
+		
+		if(isToday){
+			return `calc(${getAbsoluteDays(firstDate, today)} * (80vw / 7))`;
+		}
+
+  	return `calc(${getAbsoluteDays(firstDate, startDate)} * (80vw / 7))`;
 	}
-
-  return `calc(${getAbsoluteDays(firstDate, startDate)} * (80vw / 7))`;
-
 }
 
 function setTimelinePosition(){
 	let weekStart = new Date();
 	weekStart.setDate(weekStart.getDate() - weekStart.getDay())
 	
-	const { firstDate } = getFirstAndLastDates(timelineElements);
-	
-	const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-	let containerSize = vw * 0.8;
-	
 	const timelineContainer = document.getElementById("timelineContainer");
-	timelineContainer.scrollLeft += (getAbsoluteDays(firstDate,weekStart) * (containerSize/7))
+	timelineContainer.scrollLeft += setDistances(weekStart, undefined,true);
 	console.log(timelineContainer.scrollLeft);
 }
 

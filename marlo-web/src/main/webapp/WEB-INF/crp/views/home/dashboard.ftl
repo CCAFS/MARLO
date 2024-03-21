@@ -132,7 +132,8 @@
 		<div class="containerTimeline">
 			<div class="scroll-x-containerTimeline2 " id="listItemTimeline2">
 			</div>
-
+			<div class="sideButtonTimeline buttonLeftTimeline"><p><</p></div>
+			<div class="sideButtonTimeline buttonRightTimeline"><p>></p></div>
 		</div>
 	</section>
 [/#if]

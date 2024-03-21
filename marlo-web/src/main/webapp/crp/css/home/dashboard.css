@@ -425,6 +425,10 @@ span.timelineControl:hover {
 	  margin: 0 auto;
 	}
 	
+	#timelineContainer::-webkit-scrollbar {
+    -webkit-appearance: none;
+	}
+	
 	#timelineDescription{
 		display: flex;
 		justify-content: space-between;
