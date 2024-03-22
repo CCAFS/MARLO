@@ -17,7 +17,10 @@ function initDashboard() {
   $('.loadingBlock').hide().next().fadeIn(500);
 
   getTimeline();
-  createTimeline();
+  createTimeline2();
+  $(".timelineRefresh").hide();
+  $(".timeline").show();
+  setTimelinePosition();
 
   $('.buttonRightTimeline').on("click", moveScrollRight);
 
@@ -148,105 +151,197 @@ function locateContentDialog(id){
 }
 
 function moveScrollRight() {
-  const element = document.querySelector(".scroll-x-containerTimeline");
-  element.scrollLeft += 200;
+  const element = document.getElementById("timelineContainer");
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+	const containerSize = vw * 0.8;
+	
+  element.scrollLeft += containerSize;
 }
 
 function moveScrollLeft() {
-  const element = document.querySelector(".scroll-x-containerTimeline");
-  element.scrollLeft -= 200;
+  const element = document.getElementById("timelineContainer");
+  const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+	const containerSize = vw * 0.8;
+	
+  element.scrollLeft -= containerSize;
 }
 
-function createTimeline() {
-  var counter = 0;
-  var counterActvi = 0;
-  var previusDate;
-  var linePorcent;
-  var lastPosition = timelineElements.length;
+const convertDateToAfricanDate = (date) => {
+	  const africanOptions = { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric', year: "numeric" };
+    return new Date(date.toLocaleString('en-US', africanOptions));
+}
+const convertDateToText = (date, withYear) => {
+  return new Date(date).toLocaleString('default', withYear? { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric', year: "numeric" } : { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric' });
+}
 
-  // iterate timeline elements
-  timelineElements.forEach(function(data,index){
-    var listItemTimeline=document.getElementById("listItemTimeline");
-    var newDiv= document.createElement("div")    
-    newDiv.className='infTimelineTimeline';
-    listItemTimeline.appendChild(newDiv);
-    var newDivTitle= document.createElement("span")    
-    newDivTitle.className='titleTimeline';
-    newDiv.appendChild(newDivTitle)
-    var newDivPoint= document.createElement("div") 
-    newDivPoint.className='timeline-pointTimeline';
-    newDiv.appendChild(newDivPoint)
-    var newPorcentTimeLine= document.createElement("div") 
-    newDiv.appendChild(newPorcentTimeLine)
-    var newDivTimeLine= document.createElement("div") 
-    newDivTimeLine.className='timeline-line';
-    newDiv.appendChild(newDivTimeLine)
-    var newPTimeLine= document.createElement("p") 
-    newPTimeLine.className='dateTimeline';
-    newDiv.appendChild(newPTimeLine)
-    var options = {timeZone: 'Africa/Nairobi', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'};
-    var africaOpciones = { timeZone: 'Africa/Nairobi', day: 'numeric' };
-    var africanDate = new Date(new Date().toLocaleString('en-US', options));
+const getAbsoluteDays = (startDate, endDate) => {
+  const oneDay = 24 * 60 * 60 * 1000;
+  return Math.round(Math.abs((new Date(startDate) - new Date(endDate)) / oneDay));
+};
 
-    var description = document.createTextNode(data.description);
-    var dateMonthStart = new Date(data.startDate).toLocaleString("en-US", { month: "short" });
-    var dateDayStart = new Date(data.startDate).getDate()+1;    
-    var dateMonthYear =new Date(data.endDate).getFullYear();
-    var dateMonthEnd = new Date(new Date(data.endDate).toLocaleString('en-US', options)).toLocaleString("en-US", { month: "short" });
-    var dateDayEnd = new Date(data.endDate).toLocaleString('en-US', africaOpciones);
-    var date =document.createTextNode(dateMonthEnd+' '+ dateDayEnd+' - '+dateMonthYear)
-    newDivTitle.appendChild(description);
-    newPTimeLine.appendChild(date);
-    var endDate = new Date(new Date(data.endDate).toLocaleString('en-US', options));
-    endDate.setDate(endDate.getDate() + 1)
+const getFirstAndLastDates = (dates) => {
+  const sortDatesByStart = dates.map(date => Date.parse(date.startDate)).sort((a, b) => a - b);
+  const sortDatesByEnd = dates.map(date => Date.parse(date.endDate)).sort((a, b) => a - b);
+  return {
+    firstDate: sortDatesByStart[0],
+    lastDate: sortDatesByEnd[sortDatesByEnd.length - 1]
+  };
+}
 
-    if(description.length > 120)newDivTitle.style["width"] = '120px';
+function getDateBasedOnASumOfDays(startDate, days) {
+  const newDate = new Date(startDate);
+  newDate.setDate(newDate.getDate() + days);
+  return newDate;
+}
 
-    //hide alert the days left to finalize activity 
-    if(((lastPosition - 1) == index) && endDate < africanDate )$('.timelineAlert').hide();
-    
-    var closingTime = new Date(africanDate.setHours(africanDate.getHours() + 1));
-    
-    if(endDate < closingTime){
+function createDivTimes(totalDays, divClass, divIdPrefix){
+	let arrayDays = [];
+	for(let i=0; i < totalDays+1; i++){
+		let newDiv = document.createElement('div');
+		newDiv.id = `time_${i}` 
+		newDiv.className = divClass;
+		newDiv.style.width = setWidth();
+		newDiv.innerHTML = `
+			<p class="timeNumber">
+				${convertDateToText(getDateBasedOnASumOfDays(divIdPrefix,i))}
+			</p>
+		`;
+		arrayDays.push(newDiv);
+	}
+	return arrayDays;
+}
 
-      var newImgTimeLine= document.createElement("img");
-      newImgTimeLine.className='imgTimeline';
-      newImgTimeLine.setAttribute("src",baseURL +"/global/images/icon-check-tiny-white.png")
-      newDivPoint.appendChild(newImgTimeLine);
-      newDivTitle.classList.add('timelineColorSuccess');
-      newDivPoint.classList.add('timelineBackSuccess');
-      newDivTimeLine.classList.add('timelineBackSuccess');
-      previusDate=data.endDate;
-      counterActvi =counterActvi+1      
-
-    }
-    // Define the color and percentage of the bar
-    if(counter == 0 && (endDate > africanDate)){
-
-      let dateDiff = endDate.getTime() - new Date(previusDate).getTime();
-      let daysFinalizeActivity = ((endDate.getTime() - africanDate.getTime())/(1000*60*60*24));
-      newPorcentTimeLine.className='porcentTimeLine';
-      newDivTitle.classList.add('timelineColorAlert');
-      newDivPoint.classList.add('timelineBackAlert');
-
-      linePorcent = -(daysFinalizeActivity*100)/(dateDiff/(1000*60*60*24))+100;
-      newDivTimeLine.style["margin-top"] = "0";
-      newPorcentTimeLine.style["width"] = Math.round(linePorcent)+'%';
-      if(linePorcent < 0) newPorcentTimeLine.style["width"] = Math.round(0)+'%';
-      newPorcentTimeLine.appendChild(newDivTimeLine);      
-      let textAlert ='';
-      textAlert = Math.round(daysFinalizeActivity+1)+' day left to finalize the current activity';
-      if(Math.round(daysFinalizeActivity+1)>1) textAlert = Math.round(daysFinalizeActivity+1)+' days left to finalize the current activity';
-      counter = 1;
-      $('.timelineAlertText').text(textAlert);
-    }
-  })
-  $(".timelineRefresh").hide();
-  $(".timeline").show();
-  // Locate pending activity
-  const element = document.querySelector(".scroll-x-containerTimeline");
-  element.scrollLeft += 243*(counterActvi-2);
+function createDivActivities(activity, id){
+	
+	const status = setStatus(activity.startDate,activity.endDate);
+	const card = document.createElement('div');
+	card.className = 'activityCard';
+	card.id = `activityCard_${id}`;
+	card.innerHTML = `
+			<div class="activityCard_container" 
+			style="left: ${setDistances(activity.startDate)}; 
+			width: ${setWidth(getAbsoluteDays(activity.startDate, activity.endDate))}; 
+			background: ${setStatusColor(status)}
+			" >
+			
+				<div class="activityCard_content"> 
+					<h3 class="activityCard_description">${activity.description}</h3>
+			    <div class="activityCard_details">
+			    		<div>
+			    			<img src=${baseURL +"/global/images/start_date.png"} alt="start_icon" />
+			    			<p><b>Start date:</b> ${activity.startDate}</p>
+			    		</div>
+			    		<p><b>Status:</b> ${status} </p>
+			    		<div>
+			    			<img src=${baseURL +"/global/images/end_date.png"} alt="end_icon" />
+			    			<p><b>End date:</b> ${activity.endDate}</p>
+			    		</div>
+			    </div>
+				</div>
+			</div>
+  `;
   
+  return card;
+}
+
+const setStatus = (startDate, endDate) => {
+	const today = convertDateToAfricanDate(new Date());
+  const dateStatus = {
+    "Completed": today > new Date(endDate),
+    "In progress": today > new Date(startDate) && today < new Date(endDate),
+    "Not started": today < new Date(startDate)
+  };
+
+  const entries = Object.entries(dateStatus);
+  for (let i = 0; i < entries.length; i++) {
+    const [status, value] = entries[i];
+    if (value) {
+      return status;
+    }
+  }
+}
+
+const setStatusColor = (status) => {
+	  const colorStatus = {
+    "Completed": "#B5D08B",
+    "In progress": "#81B8C1",
+    "Not started": "#F9C786"
+  };
+  
+  return colorStatus[status];
+}
+
+function setWidth(amount) {
+	return `calc(${amount !==undefined? (amount === 0? 3: amount+1)+"*(80vw / 7))": "calc(80vw / 7)"}`;
+}
+
+function setDistances(startDate,isToday, isJS) {
+	const today = convertDateToAfricanDate(new Date());
+	today.setDate(today.getDate());
+	let startofDay = new Date(today.getTime());
+	startofDay.setHours(0,0,0,0);
+	const porcentOfDay = ((today.getTime() - startofDay.getTime()) / (1000*60*60*24))
+	console.log(porcentOfDay);
+  const { firstDate } = getFirstAndLastDates(timelineElements);
+  
+  const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+	let containerSize = vw * 0.8;
+  
+  if(isJS){
+		
+		if(isToday){
+			return (getAbsoluteDays(firstDate,today) * ((containerSize/7) + ((containerSize/7)*porcentOfDay)) )
+		}
+		
+		return (getAbsoluteDays(firstDate,startDate) * (containerSize/7))
+		
+	} else {
+		
+		if(isToday){
+			return `calc(${getAbsoluteDays(firstDate, today)} * (80vw / 7) + ((80vw / 7)* ${porcentOfDay}) )`;
+		}
+
+  	return `calc(${getAbsoluteDays(firstDate, startDate)} * (80vw / 7))`;
+	}
+}
+
+function setTimelinePosition(){
+	let weekStart = new Date();
+	weekStart.setDate(weekStart.getDate() - weekStart.getDay())
+	
+	const timelineContainer = document.getElementById("timelineContainer");
+	timelineContainer.scrollLeft += setDistances(weekStart, undefined,true);
+	
+}
+
+
+
+function createTimeline2() {
+	const getFirstDate = getFirstAndLastDates(timelineElements).firstDate;
+	const getLastDate = getFirstAndLastDates(timelineElements).lastDate;
+	const getTotalDays = getAbsoluteDays(getFirstDate,getLastDate);
+	
+	const listItemTimeline=document.getElementById("listItemTimeline2");
+	listItemTimeline.innerHTML = `
+	  <div>
+	  <div id="timelineDescription">
+	  	<div id="timelineDescription_title">
+	  		<b>Schedule</b>
+	  	</div>
+	  </div>
+    <div id="timelineContainer">
+      <div id="timeline_times">
+      	${createDivTimes(getTotalDays,"timebox",getFirstDate).reduce((acc, curr) => acc + curr.outerHTML, '')}
+      </div>
+      <div id="timeline_activities">
+      	${timelineElements.map((elem,id) => `
+      		${createDivActivities(elem,id).outerHTML}
+      	` ).join('')}
+      </div>
+      <div id="timeline_today" style="left: ${setDistances(null,true)}"></div>
+    </div>
+  </div>
+	`
 }
 
 function updateTable(){

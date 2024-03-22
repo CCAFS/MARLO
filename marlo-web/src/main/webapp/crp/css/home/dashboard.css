@@ -211,6 +211,8 @@ div#impactGraphic-fullscreen {
     height: 100%;
 }
 
+  /*************** Timeline ********************/
+
 span.leftControl {
     left: 5px;
 }
@@ -411,6 +413,143 @@ span.timelineControl:hover {
     height: 50px;
     align-self: center;
   }
+  
+  #timelineContainer {
+	  position: relative;
+	  margin: 18px 30px 18px 30px;
+	  scroll-behavior: smooth;
+	  overflow-x: scroll;
+	  overflow-y: hidden;
+	  height: 28vh;
+	  width: 80vw;
+	  margin: 0 auto;
+	}
+	
+	#timelineContainer::-webkit-scrollbar {
+    -webkit-appearance: none;
+	}
+	
+	#timelineDescription{
+		display: flex;
+		justify-content: space-between;
+    padding: 18px 30px 18px 30px;
+    width: 100%;
+    align-items: baseline;
+	}
+	
+	#timelineDescription_title{
+    font-size: 2.0em;
+    color: #333;
+	}
+	
+	#timelineDescription_range{
+		font-size: 1.5rem;
+		
+	}
+
+	#timeline_times {
+	  display: flex;
+	  width: max-content;
+	  margin-top: 10px;
+	  margin-bottom: 10px;
+	  padding: 5px 0;
+	  position: absolute;
+	}
+	
+	#timeline_activities {
+		position: relative;
+	}
+	
+	#timeline_today {
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  width: 2px;
+	  height: 100%;
+	  background-color: red;
+	  border-radius: 5px;
+	}
+	
+	.timebox {
+	  height: 144px;
+	  position: relative;
+    text-align: center;
+    border-right: 1px dashed #CCCCCC;
+		border-left: 1px dashed #CCCCCC;
+	}
+	
+	.timeNumber{
+		margin: 1.5px;
+	}
+	
+	.activityCard {
+		position: relative;
+	}
+	
+	.activityCard_container{
+		position: absolute;
+		display: flex;
+		padding: 0.5rem;
+		flex-direction: column;
+		gap: 0.5rem;
+		flex-shrink: 0;
+		border-radius: 0.75rem;
+		background: #E8F4FF;
+		margin-bottom: 1rem;
+	}
+	
+	.activityCard_content{
+		display: inline-flex;
+		flex-direction: column;
+		gap: 0.25rem;
+    left: 0;
+    overflow: hidden;
+    padding: 4px 6px;
+    position: sticky;
+    max-width: max-content;
+	}
+	
+	.activityCard_description {
+		overflow: hidden;
+		color: #000;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: 1.5rem;
+		font-style: normal;
+		font-weight: 400;
+		margin: 0;
+	}
+	
+	.activityCard_details{
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		max-width: max-content;
+		gap: 2rem;
+	}
+	
+	.activityCard_details div{
+		display: flex;
+    align-items: center;
+    gap: 0.5rem;
+	}
+	
+	.activityCard_details p{
+		font-size: 1rem;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 0.75rem;
+		margin: 0;
+	}
+	
+	.activityCard:nth-child(even){
+		top: 108px;
+	}
+	
+	.activityCard:nth-child(odd){
+		top: 48px;
+	}
+
 
   /*************** sectionMap ********************/
 
