@@ -4,41 +4,58 @@ $(document).ready(function() {
     var iframeInitialWidth = '100%';
     var iframeInitialHeight = '800px';
     var fullscreenButton = null;
+    var token = null;
 
-    $.ajax({
-        url: baseURL + '/tipGenerateUrlAction.do',
-        type: 'GET',
-        dataType: 'json',
-        success: function(response) {
-            
-            var embeddedPageUrl = response.dinamicTipURL;
-            console.log("embeddedPageUrl " + embeddedPageUrl);
-            iframe = document.createElement('iframe');
-            iframe.src = embeddedPageUrl;
-            iframe.style.width = iframeInitialWidth;
-            iframe.style.height = iframeInitialHeight;
-            
-            /****************/
-            iframe.setAttribute('allow', 'autoplay');
-            iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-same-origin allow-top-navigation');
+ $.ajax({
+          url: baseURL + '/tipTokenService.do',
+          type: 'POST',
+          dataType: 'json',
+          success: function(response) {       
+            token = response.token;
 
-            // Add iframe to the element with ID 'embeddedPage'
-            document.getElementById('embeddedPage').appendChild(iframe);
+              $.ajax({
+                      url: baseURL + '/tipGenerateUrlAction.do',
+                      data: {
+                        fieldID: token
+                      },
+                      type: 'GET',
+                      dataType: 'json',
+                      success: function(response) {
+                          
+                          var embeddedPageUrl = response.dinamicTipURL;
+                          console.log("embeddedPageUrl " + embeddedPageUrl);
+                          iframe = document.createElement('iframe');
+                          iframe.src = embeddedPageUrl;
+                          iframe.style.width = iframeInitialWidth;
+                          iframe.style.height = iframeInitialHeight;
+                          
+                          /****************/
+                          iframe.setAttribute('allow', 'autoplay');
+                          iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-same-origin allow-top-navigation');
+              
+                          // Add iframe to the element with ID 'embeddedPage'
+                          document.getElementById('embeddedPage').appendChild(iframe);
+              
+                          // Create and add fullscreen button
+                          fullscreenButton = document.createElement('button');
+                          fullscreenButton.classList.add('fullscreen-button');
+                          fullscreenButton.innerHTML = '<i class="fas fa-expand"></i> Fullscreen';
+              
+                          fullscreenButton.addEventListener('click', toggleFullscreen);
+              
+                          // Add button to the 'embeddedPage' container
+                          document.getElementById('embeddedPage').appendChild(fullscreenButton);
+                      },
+                      error: function(xhr, status, error) {
+                          console.error('Error getting embedded URL:', error);
+                      }
+                  });
 
-            // Create and add fullscreen button
-            fullscreenButton = document.createElement('button');
-            fullscreenButton.classList.add('fullscreen-button');
-            fullscreenButton.innerHTML = '<i class="fas fa-expand"></i> Fullscreen';
-
-            fullscreenButton.addEventListener('click', toggleFullscreen);
-
-            // Add button to the 'embeddedPage' container
-            document.getElementById('embeddedPage').appendChild(fullscreenButton);
-        },
-        error: function(xhr, status, error) {
-            console.error('Error getting embedded URL:', error);
-        }
-    });
+          },
+          error: function(error) {
+              console.error('Error getting embedded URL:', error);
+          }
+       });    
 
     function toggleFullscreen() {
         var elem = document.getElementById('embeddedPage');

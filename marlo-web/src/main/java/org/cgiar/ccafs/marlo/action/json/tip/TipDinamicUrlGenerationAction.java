@@ -22,9 +22,12 @@ import org.cgiar.ccafs.marlo.data.model.TipParameters;
 import org.cgiar.ccafs.marlo.utils.AESConvert;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +38,7 @@ public class TipDinamicUrlGenerationAction extends BaseAction {
 
   // Front-end
   private String dinamicTipURL;
+  private String tokenParameter;
 
   @Inject
   private TipParametersManager tipParametersManager;
@@ -50,6 +54,9 @@ public class TipDinamicUrlGenerationAction extends BaseAction {
 
     try {
       String userEmail = "", token = "", loginService = "";
+      if (tokenParameter != null && !tokenParameter.isEmpty()) {
+        token = tokenParameter;
+      }
       if (this.getCurrentUser() != null && this.getCurrentUser().getEmail() != null) {
         userEmail = this.getCurrentUser().getEmail();
         if (this.getCurrentUser().isCgiarUser() == true) {
@@ -93,9 +100,15 @@ public class TipDinamicUrlGenerationAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    Map<String, Parameter> parameters = this.getParameters();
+    try {
+      tokenParameter = StringUtils.trim(parameters.get(APConstants.FIELD_ID).getMultipleValues()[0]);
+    } catch (Exception e) {
+      LOG.error("Error reading token parameter: " + e);
+    }
 
-    if (this.createDinamicURL() != null) {
-      this.dinamicTipURL = this.createDinamicURL();
+    this.dinamicTipURL = this.createDinamicURL();
+    if (this.dinamicTipURL != null) {
       return SUCCESS;
     }
     return ERROR;
