@@ -575,7 +575,7 @@
 [#macro findableOptions ]
   [#local isSynced = (deliverable.dissemination.synced)!false ]
   [#local customName = "deliverable.dissemination" /]
-  <div class="disseminationChannelBlock" style="display:${isSynced?string('none','block')};">
+  <div class="disseminationChannelBlock" >
     [#-- Note 
     <div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
     --]
