@@ -249,7 +249,6 @@ span.timelineControl:hover {
     justify-content: center;
     -webkit-box-shadow: 0px 0px 10px rgb(0 0 0 / 15%);
     border-radius: 5px;
-    height: 297px;
   }
 
   .porcentTimeLine {
@@ -420,7 +419,7 @@ span.timelineControl:hover {
 	  scroll-behavior: smooth;
 	  overflow-x: scroll;
 	  overflow-y: hidden;
-	  height: 28vh;
+	  height: 36vh;
 	  width: 80vw;
 	  margin: 0 auto;
 	}
@@ -471,7 +470,7 @@ span.timelineControl:hover {
 	}
 	
 	.timebox {
-	  height: 144px;
+	  height: 198px;
 	  position: relative;
     text-align: center;
     border-right: 1px dashed #CCCCCC;
@@ -542,12 +541,18 @@ span.timelineControl:hover {
 		margin: 0;
 	}
 	
-	.activityCard:nth-child(even){
+	.activityCard:nth-child(n+1){
+		top: 48px;
+	}
+	
+	.activityCard:nth-child(2n+2){
 		top: 108px;
 	}
 	
-	.activityCard:nth-child(odd){
-		top: 48px;
+	
+	.activityCard:nth-child(3n+3){
+		top: 168px;
+
 	}
 
 

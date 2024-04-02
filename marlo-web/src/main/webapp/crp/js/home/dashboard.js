@@ -174,9 +174,10 @@ const convertDateToText = (date, withYear) => {
   return new Date(date).toLocaleString('default', withYear? { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric', year: "numeric" } : { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric' });
 }
 
-const getAbsoluteDays = (startDate, endDate) => {
+const getAbsoluteDays = (startDate, endDate, restDays)  => {
   const oneDay = 24 * 60 * 60 * 1000;
-  return Math.round(Math.abs((new Date(startDate) - new Date(endDate)) / oneDay));
+  const isRestDays = restDays? restDays : 0;
+  return Math.round(Math.abs((new Date(startDate) - new Date(endDate)) / oneDay)) - isRestDays;
 };
 
 const getFirstAndLastDates = (dates) => {
@@ -276,10 +277,14 @@ function setWidth(amount) {
 }
 
 function setDistances(startDate,isToday, isJS,endDate) {
-	const today = convertDateToAfricanDate(new Date());
+	const { firstDate, lastDate } = getFirstAndLastDates(timelineElements);
+	let today = convertDateToAfricanDate(new Date());
+	
+	console.log(timelineElements);
+	today = today.getDate() > lastDate? convertDateToAfricanDate(lastDate): today;
+	
 	const currentHour = today.getHours();
 	const percentageCompletion = (currentHour / 24);
-  const { firstDate, lastDate } = getFirstAndLastDates(timelineElements);
   
   const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
 	let containerSize = vw * 0.8;
@@ -289,7 +294,7 @@ function setDistances(startDate,isToday, isJS,endDate) {
   if(isJS){
 		
 		if(isToday){
-			return (getAbsoluteDays(firstDate,today) * ((containerSize/7) + ((containerSize/7)*percentageCompletion)) )
+			return (getAbsoluteDays(firstDate,today,1) * ((containerSize/7) + ((containerSize/7)*percentageCompletion)) )
 		}
 		
 		return ((isFinalActivity? getAbsoluteDays(firstDate,startDate)-2:getAbsoluteDays(firstDate,startDate) ) * (containerSize/7))
@@ -297,7 +302,7 @@ function setDistances(startDate,isToday, isJS,endDate) {
 	} else {
 		
 		if(isToday){
-			return `calc(${getAbsoluteDays(firstDate, today)} * (80vw / 7) + ((80vw / 7)* ${percentageCompletion}) )`;
+			return `calc(${getAbsoluteDays(firstDate, today,1)} * (80vw / 7) + ((80vw / 7)* ${percentageCompletion}) )`;
 		} 
   	return `calc((${isFinalActivity? getAbsoluteDays(firstDate,startDate)-2:getAbsoluteDays(firstDate,startDate)}) * (80vw / 7))`;
 	}
