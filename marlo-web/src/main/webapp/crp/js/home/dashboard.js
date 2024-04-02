@@ -167,16 +167,17 @@ function moveScrollLeft() {
 }
 
 const convertDateToAfricanDate = (date) => {
-	  const africanOptions = { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric', year: "numeric" };
+	  const africanOptions = { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric', year: "numeric", hour: "numeric", minute: "numeric"};
     return new Date(date.toLocaleString('en-US', africanOptions));
 }
 const convertDateToText = (date, withYear) => {
   return new Date(date).toLocaleString('default', withYear? { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric', year: "numeric" } : { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric' });
 }
 
-const getAbsoluteDays = (startDate, endDate) => {
+const getAbsoluteDays = (startDate, endDate, restDays)  => {
   const oneDay = 24 * 60 * 60 * 1000;
-  return Math.round(Math.abs((new Date(startDate) - new Date(endDate)) / oneDay));
+  const isRestDays = restDays? restDays : 0;
+  return Math.round(Math.abs((new Date(startDate) - new Date(endDate)) / oneDay)) - isRestDays;
 };
 
 const getFirstAndLastDates = (dates) => {
@@ -219,7 +220,7 @@ function createDivActivities(activity, id){
 	card.id = `activityCard_${id}`;
 	card.innerHTML = `
 			<div class="activityCard_container" 
-			style="left: ${setDistances(activity.startDate)}; 
+			style="left: ${setDistances(activity.startDate,false,false,activity.endDate)}; 
 			width: ${setWidth(getAbsoluteDays(activity.startDate, activity.endDate))}; 
 			background: ${setStatusColor(status)}
 			" >
@@ -272,36 +273,39 @@ const setStatusColor = (status) => {
 }
 
 function setWidth(amount) {
-	return `calc(${amount !==undefined? (amount === 0? 3: amount+1)+"*(80vw / 7))": "calc(80vw / 7)"}`;
+
+	return `calc(${amount !==undefined? (amount === 0? 3: amount)+"*(80vw / 7))": "calc(80vw / 7)"}`;
 }
 
-function setDistances(startDate,isToday, isJS) {
-	const today = convertDateToAfricanDate(new Date());
-	today.setDate(today.getDate());
-	let startofDay = new Date(today.getTime());
-	startofDay.setHours(0,0,0,0);
-	const porcentOfDay = ((today.getTime() - startofDay.getTime()) / (1000*60*60*24))
-	console.log(porcentOfDay);
-  const { firstDate } = getFirstAndLastDates(timelineElements);
+function setDistances(startDate,isToday, isJS,endDate) {
+	const { firstDate, lastDate } = getFirstAndLastDates(timelineElements);
+	let today = convertDateToAfricanDate(new Date());
+	
+	console.log(timelineElements);
+	today = today.getDate() > lastDate? convertDateToAfricanDate(lastDate): today;
+	
+	const currentHour = today.getHours();
+	const percentageCompletion = (currentHour / 24);
   
   const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
 	let containerSize = vw * 0.8;
+	
+	const isFinalActivity = new Date(lastDate).getTime() === new Date(endDate).getTime();
   
   if(isJS){
 		
 		if(isToday){
-			return (getAbsoluteDays(firstDate,today) * ((containerSize/7) + ((containerSize/7)*porcentOfDay)) )
+			return (getAbsoluteDays(firstDate,today,1) * ((containerSize/7) + ((containerSize/7)*percentageCompletion)) )
 		}
 		
-		return (getAbsoluteDays(firstDate,startDate) * (containerSize/7))
+		return ((isFinalActivity? getAbsoluteDays(firstDate,startDate)-2:getAbsoluteDays(firstDate,startDate) ) * (containerSize/7))
 		
 	} else {
 		
 		if(isToday){
-			return `calc(${getAbsoluteDays(firstDate, today)} * (80vw / 7) + ((80vw / 7)* ${porcentOfDay}) )`;
-		}
-
-  	return `calc(${getAbsoluteDays(firstDate, startDate)} * (80vw / 7))`;
+			return `calc(${getAbsoluteDays(firstDate, today,1)} * (80vw / 7) + ((80vw / 7)* ${percentageCompletion}) )`;
+		} 
+  	return `calc((${isFinalActivity? getAbsoluteDays(firstDate,startDate)-2:getAbsoluteDays(firstDate,startDate)}) * (80vw / 7))`;
 	}
 }
 
