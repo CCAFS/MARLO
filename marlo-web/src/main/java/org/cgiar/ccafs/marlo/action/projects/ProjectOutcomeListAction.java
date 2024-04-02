@@ -433,30 +433,39 @@ public class ProjectOutcomeListAction extends BaseAction {
     project.setFlagships(programs);
 
     if (this.hasSpecificities(this.feedbackModule())) {
+      System.out.println(" INICIO -------------");
       this.getCommentStatuses();
+      System.out.println(" FIN -------------");
     }
 
     String params[] = {gp.getGlobalUnit().getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
 
+    System.out.println(" etapa 1 -------------");
     if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE)) {
 
+      System.out.println(" etapa 2 -------------");
       if (this.getActualPhase() != null && projectID != 0) {
-
+        System.out.println(" etapa 3 -------------");
         if (projectLp6ContributionManager.findAll() != null) {
           List<ProjectLp6Contribution> projectLp6Contributions = projectLp6ContributionManager.findAll().stream()
             .filter(c -> c.isActive() && c.getProject().getId().equals(projectID)
               && c.getPhase().equals(this.getActualPhase()))
             .collect(Collectors.toList());
+          System.out.println(" etapa 4 -------------");
           if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
+            System.out.println(" etapa 5 -------------");
             this.setProjectLp6Contribution(projectLp6Contributions.get(0));
+            System.out.println(" etapa 6 -------------");
           } else {
             if (contributionValue) {
+              System.out.println(" etapa 7 -------------");
               ProjectLp6Contribution newContribution = new ProjectLp6Contribution();
               newContribution.setProject(project);
               newContribution.setPhase(this.getActualPhase());
               newContribution.setContribution(contributionValue);
               projectLp6ContributionManager.saveProjectLp6Contribution(newContribution);
+              System.out.println(" etapa 8 -------------");
             }
           }
         }
@@ -465,9 +474,12 @@ public class ProjectOutcomeListAction extends BaseAction {
 
     if (project.getOutcomes() != null) {
       for (ProjectOutcome projectOutcome : project.getOutcomes()) {
+        System.out.println(" etapa 9 -------------");
         this.defineProjectOutcomeOrder(projectOutcome);
+        System.out.println(" etapa 10 -------------");
       }
     }
+    System.out.println(" etapa 11 -------------");
   }
 
 

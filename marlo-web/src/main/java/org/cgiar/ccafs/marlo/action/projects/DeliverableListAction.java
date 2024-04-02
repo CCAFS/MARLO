@@ -71,6 +71,8 @@ public class DeliverableListAction extends BaseAction {
 
 
   private static final long serialVersionUID = -823169163612346982L;
+
+
   // Logger
   private final Logger logger = LoggerFactory.getLogger(DeliverableListAction.class);
 
@@ -84,8 +86,8 @@ public class DeliverableListAction extends BaseAction {
   private SectionStatusManager sectionStatusManager;
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
-  private FeedbackQACommentManager commentManager;
 
+  private FeedbackQACommentManager commentManager;
   // Front-end
   private List<Integer> allYears;
   private long deliverableID;
@@ -95,8 +97,9 @@ public class DeliverableListAction extends BaseAction {
   private List<DeliverableType> deliverablesType;
   private GlobalUnit loggedCrp;
   private Project project;
-  private long projectID;
 
+
+  private long projectID;
 
   @Inject
   public DeliverableListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -115,6 +118,8 @@ public class DeliverableListAction extends BaseAction {
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.commentManager = commentManager;
+
+    System.out.println(" test mayor");
   }
 
   @Override
@@ -159,7 +164,6 @@ public class DeliverableListAction extends BaseAction {
       this.addDeliverablePhase(phase.getNext(), deliverable);
     }
   }
-
 
   public boolean canEdit(long deliverableID) {
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -207,17 +211,40 @@ public class DeliverableListAction extends BaseAction {
     try {
       List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
 
+      System.out.println(" comment 1 ");
       // get the commentable fields by sectionName
       if (feedbackQACommentableFieldsManager.findAll() != null) {
+        System.out.println(" comment 2 ");
         commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
           .filter(f -> f != null && f.getSectionName().equals("deliverable")).collect(Collectors.toList());
+        System.out.println(" comment 3 ");
       }
+
+      System.out.println(" comment 4 ");
       if (project.getDeliverables() != null && !project.getDeliverables().isEmpty() && commentableFields != null
         && !commentableFields.isEmpty()) {
 
+        System.out.println(" comment 5 ");
+        System.out.println(" this.getActualPhase() " + this.getActualPhase());
+
+
+        List<FeedbackQAComment> comments1 = commentManager.findAll().stream()
+          .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+            && f.getPhase().getId().equals(this.getActualPhase().getId())
+            && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null
+              && (!f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))
+              // &&
+              // !f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))
+              ))
+
+          // && f.getField() != null && f.getField().getId().equals(commentableField.getId())
+          ).collect(Collectors.toList());
+
+        System.out.println(" this.getActualPhase() FASE 2" + this.getActualPhase());
+
 
         // Set the comment status in each project outcome
-
+        // cgamboa -there is the problem
         for (Deliverable deliverable : project.getDeliverables()) {
           int answeredComments = 0;
           int totalComments = 0;
@@ -226,8 +253,10 @@ public class DeliverableListAction extends BaseAction {
             for (FeedbackQACommentableFields commentableField : commentableFields) {
               if (commentableField != null && commentableField.getId() != null) {
 
+
                 if (deliverable != null && deliverable.getId() != null && commentableField != null
                   && commentableField.getId() != null) {
+
                   List<FeedbackQAComment> comments = commentManager.findAll().stream()
                     .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
                       && f.getPhase().getId().equals(this.getActualPhase().getId())
@@ -257,6 +286,13 @@ public class DeliverableListAction extends BaseAction {
                 }
               }
             }
+            if (answeredComments != 0 || totalComments != 0) {
+              System.out.println(" -----------------[start]------------------------ ");
+              System.out.println("  deliverable " + deliverable.getId());
+              System.out.println("  answeredComments " + answeredComments);
+              System.out.println("  totalComments " + totalComments);
+              System.out.println(" -----------------[end]------------------------ ");
+            }
             deliverable.setCommentStatus(answeredComments + "/" + totalComments);
 
             if (deliverable.getCommentStatus() == null
@@ -270,6 +306,136 @@ public class DeliverableListAction extends BaseAction {
         }
 
       }
+    } catch (Exception e) {
+      logger.error("unable to get feedbackcomments info", e);
+      e.printStackTrace();
+    }
+  }
+
+
+  public void getCommentStatusesNew() {
+
+    try {
+      List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
+
+      System.out.println(" comment 1 ");
+      // get the commentable fields by sectionName
+      if (feedbackQACommentableFieldsManager.findAll() != null) {
+        System.out.println(" comment 2 ");
+        commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
+          .filter(f -> f != null && f.getSectionName().equals("deliverable")).collect(Collectors.toList());
+        System.out.println(" comment 3 ");
+      }
+
+      System.out.println(" comment 4 ");
+      if (project.getDeliverables() != null && !project.getDeliverables().isEmpty() && commentableFields != null
+        && !commentableFields.isEmpty()) {
+
+        System.out.println(" comment 5 ");
+        System.out.println(" this.getActualPhase() " + this.getActualPhase());
+
+
+        List<FeedbackQAComment> comments1 = commentManager.findAll().stream()
+          .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+            && f.getPhase().getId().equals(this.getActualPhase().getId())
+            && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null
+              && (!f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))))
+
+          // && f.getField() != null && f.getField().getId().equals(commentableField.getId())
+          ).collect(Collectors.toList());
+
+        System.out.println(" this.getActualPhase() FASE 2" + this.getActualPhase());
+
+
+        // Set the comment status in each project outcome
+        // cgamboa -there is the problem
+        for (Deliverable deliverable : project.getDeliverables()) {
+          int answeredComments = 0;
+          int totalComments = 0;
+          try {
+
+            for (FeedbackQACommentableFields commentableField : commentableFields) {
+              if (commentableField != null && commentableField.getId() != null) {
+
+
+                if (deliverable != null && deliverable.getId() != null && commentableField != null
+                  && commentableField.getId() != null) {
+
+                  // System.out.println("Inicia for x "+deliverable.getId());
+
+                  for (FeedbackQAComment feedbackQAComment : comments1) {
+
+                    if (feedbackQAComment.getParentId() == deliverable.getId()
+                      && feedbackQAComment.getField().getId().equals(commentableField.getId())) {
+                      System.out.println("entra 1 " + feedbackQAComment.getParentId());
+                      totalComments += 1;
+                    }
+
+                    if (feedbackQAComment.getParentId() == deliverable.getId()
+                      && feedbackQAComment.getField().getId().equals(commentableField.getId())
+                      && ((feedbackQAComment.getFeedbackStatus() != null && feedbackQAComment.getFeedbackStatus()
+                        .getId().equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
+                        || (feedbackQAComment.getFeedbackStatus() != null && feedbackQAComment.getReply() != null))) {
+                      System.out.println("entra 2 " + feedbackQAComment.getParentId());
+                      answeredComments += 1;
+                    }
+                  }
+
+                  // System.out.println("Finaliza for x "+deliverable.getId());
+
+                  /*
+                   * List<FeedbackQAComment> comments = commentManager.findAll().stream()
+                   * .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+                   * && f.getPhase().getId().equals(this.getActualPhase().getId())
+                   * && f.getParentId() == deliverable.getId()
+                   * && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null && (!f
+                   * .getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))
+                   * // &&
+                   * // !f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))
+                   * ))
+                   * && f.getField() != null && f.getField().getId().equals(commentableField.getId()))
+                   * .collect(Collectors.toList());
+                   */
+                  /*
+                   * if (comments != null && !comments.isEmpty()) {
+                   * totalComments += comments.size();
+                   * comments = comments.stream()
+                   * .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+                   * && f.getPhase().getId().equals(this.getActualPhase().getId())
+                   * && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId()
+                   * .equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
+                   * || (f.getFeedbackStatus() != null && f.getReply() != null)))
+                   * .collect(Collectors.toList());
+                   * if (comments != null) {
+                   * answeredComments += comments.size();
+                   * }
+                   * }
+                   */
+                }
+              }
+            }
+            if (answeredComments != 0 || totalComments != 0) {
+              System.out.println(" -----------------[start]------------------------ ");
+              System.out.println("  deliverable " + deliverable.getId());
+              System.out.println("  answeredComments " + answeredComments);
+              System.out.println("  totalComments " + totalComments);
+              System.out.println(" -----------------[end]------------------------ ");
+            }
+            deliverable.setCommentStatus(answeredComments + "/" + totalComments);
+
+            if (deliverable.getCommentStatus() == null
+              || (deliverable.getCommentStatus() != null && deliverable.getCommentStatus().isEmpty())) {
+              deliverable.setCommentStatus(0 + "/" + 0);
+            }
+          } catch (Exception e) {
+            deliverable.setCommentStatus(0 + "/" + 0);
+
+          }
+        }
+
+      }
+      System.out.println(" --------------------------------ENTRA A FASE 2------------------------------------");
+      // this.getCommentStatusesOld();
     } catch (Exception e) {
       logger.error("unable to get feedbackcomments info", e);
       e.printStackTrace();
@@ -433,13 +599,13 @@ public class DeliverableListAction extends BaseAction {
     return deliverablesType;
   }
 
+
   public int getIndexDeliverables(long id) {
     Deliverable activity = new Deliverable();
     activity.setId(id);
     return deliverables.indexOf(activity);
 
   }
-
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -453,10 +619,10 @@ public class DeliverableListAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
-
 
   /*
    * Copy method from project.getCurrentDeliverables to allow add the shared deliverables to list
@@ -757,26 +923,35 @@ public class DeliverableListAction extends BaseAction {
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     Phase phase = this.getActualPhase();
     phase = phaseManager.getPhaseById(phase.getId());
+    System.out.println(" phase " + phase.getId());
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
       project = projectManager.getProjectById(projectID);
+
+      System.out.println(" projectID " + projectID);
 
       if (project != null) {
 
         allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
 
+        System.out.println(" etapa 1 " + projectID);
         if (deliverableTypeManager.findAll() != null) {
+          System.out.println(" etapa 2 " + projectID);
           deliverablesType = new ArrayList<>(deliverableTypeManager.findAll());
         }
 
+        System.out.println(" etapa 3 " + projectID);
         if (project.getDeliverables() != null) {
-
+          System.out.println(" etapa 4 " + projectID);
           List<DeliverableInfo> infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
+          System.out.println(" etapa 5 " + projectID);
           deliverables = new ArrayList<>();
           if (infos != null && !infos.isEmpty()) {
             for (DeliverableInfo deliverableInfo : infos) {
+
               Deliverable deliverable = deliverableInfo.getDeliverable();
               deliverable.setDeliverableInfo(deliverableInfo);
+              System.out.println(" etapa 6 " + deliverableInfo + " deliverable " + deliverable.getId());
               deliverables.add(deliverable);
             }
           }
@@ -791,20 +966,30 @@ public class DeliverableListAction extends BaseAction {
             for (DeliverableFundingSource deliverableFundingSource : fundingSources) {
               deliverableFundingSource.getFundingSource().setFundingSourceInfo(
                 deliverableFundingSource.getFundingSource().getFundingSourceInfo(this.getActualPhase()));
+              System.out.println(" etapa 7 " + this.getActualPhase());
             }
 
             deliverable.setFundingSources(fundingSources);
           }
+          System.out.println(" etapa 8 " + this.getActualPhase());
         }
 
+        System.out.println(" etapa 9 " + this.getActualPhase());
         this.loadCurrentDeliverables();
+        System.out.println(" etapa 10 " + this.getActualPhase());
       }
 
+      System.out.println(" etapa 11 " + this.getActualPhase());
       if (this.hasSpecificities(this.feedbackModule())) {
+        System.out.println(" etapa 12 " + this.getActualPhase());
         this.getCommentStatuses();
       }
+      System.out.println(" etapa 13 " + this.getActualPhase());
 
+      System.out.println(" this.isReportingActive() " + this.isReportingActive());
+      System.out.println(" this.isUpKeepActive() " + this.isUpKeepActive());
       if (this.isReportingActive() || this.isUpKeepActive()) {
+        System.out.println(" TEST this.isUpKeepActive() " + this.isUpKeepActive());
         deliverables.sort((p1, p2) -> this.isDeliverableComplete(p1.getId(), this.getActualPhase().getId())
           .compareTo(this.isDeliverableComplete(p2.getId(), this.getActualPhase().getId())));
 
@@ -865,6 +1050,7 @@ public class DeliverableListAction extends BaseAction {
   public void setProject(Project project) {
     this.project = project;
   }
+
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
