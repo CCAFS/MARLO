@@ -230,12 +230,12 @@ function createDivActivities(activity, id){
 			    <div class="activityCard_details">
 			    		<div>
 			    			<img src=${baseURL +"/global/images/start_date.png"} alt="start_icon" />
-			    			<p><b>Start date:</b> ${activity.startDate}</p>
+			    			<p><b>Start date:</b> ${convertDateToText(activity.startDate,true)}</p>
 			    		</div>
 			    		<p><b>Status:</b> ${status} </p>
 			    		<div>
 			    			<img src=${baseURL +"/global/images/end_date.png"} alt="end_icon" />
-			    			<p><b>End date:</b> ${activity.endDate}</p>
+			    			<p><b>End date:</b> ${convertDateToText(activity.endDate,true)}</p>
 			    		</div>
 			    </div>
 				</div>
