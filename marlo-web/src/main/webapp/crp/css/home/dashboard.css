@@ -420,7 +420,7 @@ span.timelineControl:hover {
 	  overflow-x: scroll;
 	  overflow-y: hidden;
 	  height: 36vh;
-	  width: 80vw;
+	  width: 80%;
 	  margin: 0 auto;
 	}
 	
@@ -453,6 +453,7 @@ span.timelineControl:hover {
 	  margin-bottom: 10px;
 	  padding: 5px 0;
 	  position: absolute;
+	  height: 100%;
 	}
 	
 	#timeline_activities {
@@ -464,13 +465,13 @@ span.timelineControl:hover {
 	  top: 0;
 	  left: 0;
 	  width: 2px;
-	  height: 100%;
+	  height: 80%;
 	  background-color: red;
 	  border-radius: 5px;
 	}
 	
 	.timebox {
-	  height: 198px;
+	  height: 80%;
 	  position: relative;
     text-align: center;
     border-right: 1px dashed #CCCCCC;
