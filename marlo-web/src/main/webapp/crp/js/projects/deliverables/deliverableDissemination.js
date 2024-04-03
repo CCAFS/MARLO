@@ -751,7 +751,9 @@ function updateReadOnly() {
     if ($('.deliverableDisseminationUrl ').prop('readonly')) {
       getWOSInfo();
     }
-    //if not
+    $('select[name="deliverable.dissemination.disseminationChannel"]').prop("disabled",true);
+    $('select').select2();
+  //if not
   } else {
 
     $('.WOS_tag').hide("slow");
@@ -788,6 +790,8 @@ function updateReadOnly() {
         hideOrShowCheckBoxIsOtherUrl(true);
       }
     }
+    $('select[name="deliverable.dissemination.disseminationChannel"]').prop("disabled",false);
+    $('select').select2();
 
   }
 
@@ -1482,8 +1486,8 @@ function setLicense(license) {
  * Sync the deliverable in the interface and set as synced
  */
 function syncDeliverable() {
-  // Hide Sync Button & dissemination channel
-  $('#fillMetadata .checkButton, .disseminationChannelBlock').hide('slow');
+  // Hide Sync Button
+  $('#fillMetadata .checkButton').hide('slow');
   // Show UnSync & Update Button
   $('#fillMetadata .unSyncBlock').show();
   // Set hidden inputs

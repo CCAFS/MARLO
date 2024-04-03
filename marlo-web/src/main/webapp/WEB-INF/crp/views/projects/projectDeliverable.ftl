@@ -5,9 +5,9 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20240123",
   "${baseUrlMedia}/js/projects/deliverables/deliverableShfrm.js?20240226",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20230810",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20240322",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20241017",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20240313",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"

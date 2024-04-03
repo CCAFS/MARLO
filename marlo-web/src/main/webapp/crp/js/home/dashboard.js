@@ -78,6 +78,19 @@ function contentDialog(id){
   
 }
 
+
+function updateImg() {
+  let name = $(this).attr("id");
+  $('.itemimg'+name).show();
+  $('.itemgif'+name).hide();
+}
+
+function updateGif() {
+  let name = $(this).attr("id");
+  $('.itemimg'+name).hide();
+  $('.itemgif'+name).show();
+}
+
 function locateContentDialog(id){
 
   switch (id) {
@@ -132,19 +145,6 @@ function locateContentDialog(id){
   }
 
   
-}
-
-
-function updateImg() {
-  let name = $(this).attr("id");
-  $('.itemimg'+name).show();
-  $('.itemgif'+name).hide();
-}
-
-function updateGif() {
-  let name = $(this).attr("id");
-  $('.itemimg'+name).hide();
-  $('.itemgif'+name).show();
 }
 
 function moveScrollRight() {
@@ -459,12 +459,40 @@ $('table.projectsList').dataTable({
 var iconSearch = $("<div></div>").addClass("iconSearch");
 var divDataTables_filter = $('.dataTables_filter').parent();
 iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Imagen"  style="width: 24px; margin: auto;" >');
-iconSearch.prependTo(divDataTables_filter)
+iconSearch.prependTo(divDataTables_filter);
+
+
 var divDataTables_length =$('.dataTables_length').parent();
 divDataTables_length.css("position", "absolute");
 divDataTables_length.css("bottom", "8px");
 divDataTables_length.css("margin-left", "43%");
 divDataTables_length.css("z-index", "1");
+
+var windowWidth = $(window).width();
+
+
+if (windowWidth < 768) {
+	
+	divDataTables_filter.css({
+		"width": "100%",	
+	});
+	
+	divDataTables_length.css({
+		"left": "30vw",
+		"bottom": "0",
+		"margin-top": "4rem",
+		"margin-left": "0"
+	});
+}
+
+if (windowWidth < 440) {
+	divDataTables_length.css({
+		"left": "18vw",
+		"bottom": "0",
+		"margin-top": "32px",
+		"margin-left": "0"
+	})
+}
 
 $('a#impact[data-toggle="tab"]').on('shown.bs.tab', function(e) {
   e.target // newly activated tab
