@@ -352,11 +352,11 @@ span.timelineControl:hover {
   }
   
   .buttonLeftTimeline {
-    left: 0.75rem;
+    left: 2.5%;
   }
   
   .buttonRightTimeline {
-    right: 0.75rem;
+    right: 2.5%;
   }
   
   .timelineBackSuccess {
