@@ -430,7 +430,7 @@ span.timelineControl:hover {
 	
 	#timelineDescription{
 		display: flex;
-		justify-content: space-between;
+		justify-content: center;
     padding: 18px 30px 18px 30px;
     width: 100%;
     align-items: baseline;
