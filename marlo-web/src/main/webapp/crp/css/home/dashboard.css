@@ -458,6 +458,19 @@ span.timelineControl:hover {
 	
 	#timeline_activities {
 		position: relative;
+		font-size: 14px;
+	}
+	
+	@media only screen and (min-height:975px){
+		#timeline_activities {
+			font-size: 18px;
+		}
+	}
+	
+	@media only screen and (min-height:1170px){
+		#timeline_activities {
+			font-size: 20px;
+		}
 	}
 	
 	#timeline_today {
@@ -544,16 +557,16 @@ span.timelineControl:hover {
 	}
 	
 	.activityCard:nth-child(n+1){
-		top: 48px;
+		top: 3.4em;
 	}
 	
 	.activityCard:nth-child(2n+2){
-		top: 108px;
+		top: 7.8em;
 	}
 	
 	
 	.activityCard:nth-child(3n+3){
-		top: 168px;
+		top: 12.1em;
 
 	}
 
