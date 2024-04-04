@@ -156,6 +156,7 @@ function moveScrollRight() {
   const widthContainer = $('.sectionMap').width();
 	const containerSize = widthContainer * 0.8;
 	
+	element.style.scrollBehavior = "smooth"
   element.scrollLeft += (containerSize+(containerSize* (2/5)));
 }
 
@@ -165,6 +166,7 @@ function moveScrollLeft() {
 	const widthContainer = $('.sectionMap').width();
 	const containerSize = widthContainer * 0.8;
 	
+	element.style.scrollBehavior = "smooth"
   element.scrollLeft -= (containerSize+(containerSize* (2/5)));
 }
 
@@ -341,15 +343,15 @@ function createTimeline2() {
 	    	<b>Progress status:</b>
 	    	<section id="timelineAlert_container">
 	    		<article class="timelineAlert_item">
-	    			<div class="timelineAlert_item_color"></div>
+	    			<div class="timelineAlert_item_color timelineAlert_item_color--1"></div>
 	    			<p>Not started</p>
 	    		</article>
 	    		<article class="timelineAlert_item">
-	    			<div class="timelineAlert_item_color"></div>
+	    			<div class="timelineAlert_item_color timelineAlert_item_color--2"></div>
 	    			<p>In progress</p>
 	    		</article>
 	    		<article class="timelineAlert_item">
-	    			<div class="timelineAlert_item_color"></div>
+	    			<div class="timelineAlert_item_color timelineAlert_item_color--3"></div>
 	    			<p>Completed</p>
 	    		</article>
 	    	</section>

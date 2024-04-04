@@ -416,7 +416,6 @@ span.timelineControl:hover {
   #timelineContainer {
 	  position: relative;
 	  margin: 18px 30px 18px 30px;
-	  scroll-behavior: smooth;
 	  overflow-x: scroll;
 	  overflow-y: hidden;
 	  height: 36vh;
@@ -603,7 +602,17 @@ span.timelineControl:hover {
 		background-color: #0377a3;
 	}
 
-
+	.timelineAlert_item_color--1{
+		background-color: #F9C786;
+	}
+	
+	.timelineAlert_item_color--2{
+		background-color: #81B8C1;
+	}
+	
+	.timelineAlert_item_color--3{
+		background-color: #B5D08B;
+	}
   /*************** sectionMap ********************/
 
   .sectionMap{
