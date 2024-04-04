@@ -152,18 +152,20 @@ function locateContentDialog(id){
 
 function moveScrollRight() {
   const element = document.getElementById("timelineContainer");
-    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-	const containerSize = vw * 0.8;
+  
+  const widthContainer = $('.sectionMap').width();
+	const containerSize = widthContainer * 0.8;
 	
-  element.scrollLeft += containerSize;
+  element.scrollLeft += (containerSize+(containerSize* (2/5)));
 }
 
 function moveScrollLeft() {
   const element = document.getElementById("timelineContainer");
-  const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-	const containerSize = vw * 0.8;
+  
+	const widthContainer = $('.sectionMap').width();
+	const containerSize = widthContainer * 0.8;
 	
-  element.scrollLeft -= containerSize;
+  element.scrollLeft -= (containerSize+(containerSize* (2/5)));
 }
 
 const convertDateToAfricanDate = (date) => {
@@ -273,8 +275,9 @@ const setStatusColor = (status) => {
 }
 
 function setWidth(amount) {
-
-	return `calc(${amount !==undefined? (amount === 0? 3: amount)+"*(80vw / 7) - 10px)": "calc(80vw / 7)"}`;
+	const widthContainer = $('.sectionMap').width();
+	const widthInPx = `${widthContainer * 0.8}px`;
+	return `calc(${amount !==undefined? (amount === 0? 3: amount)+"*("+widthInPx+" / 5) - 10px)": "calc("+widthInPx+" / 5)"}`;
 }
 
 function setDistances(startDate,isToday, isJS,endDate) {
@@ -287,25 +290,27 @@ function setDistances(startDate,isToday, isJS,endDate) {
 	const currentHour = today.getHours();
 	const percentageCompletion = (currentHour / 24);
   
-  const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-	let containerSize = vw * 0.8;
+  
+	const widthContainer = $('.sectionMap').width();
+	const widthInPx = `${widthContainer * 0.8}px`;
+	const containerSize = widthContainer*0.8;
 	
 	const isFinalActivity = new Date(lastDate).getTime() === new Date(endDate).getTime();
   
   if(isJS){
 		
 		if(isToday){
-			return (getAbsoluteDays(firstDate,today,1) * ((containerSize/7) + ((containerSize/7)*percentageCompletion)) )
+			return (getAbsoluteDays(firstDate,today,1) * ((containerSize/5) + ((containerSize/5)*percentageCompletion)) )
 		}
 		
-		return ((isFinalActivity? getAbsoluteDays(firstDate,startDate)-2:getAbsoluteDays(firstDate,startDate) ) * (containerSize/7))
+		return ((isFinalActivity? getAbsoluteDays(firstDate,startDate)-2:getAbsoluteDays(firstDate,startDate) ) * (containerSize/5))
 		
 	} else {
 		
 		if(isToday){
-			return `calc(${getAbsoluteDays(firstDate, today,1)} * (80vw / 7) + ((80vw / 7)* ${percentageCompletion}) )`;
+			return `calc(${getAbsoluteDays(firstDate, today,1)} * (${widthInPx} / 5) + ((${widthInPx} / 5)* ${percentageCompletion}) )`;
 		} 
-  	return `calc((${isFinalActivity? getAbsoluteDays(firstDate,startDate)-2:getAbsoluteDays(firstDate,startDate)}) * (80vw / 7))`;
+  	return `calc((${isFinalActivity? getAbsoluteDays(firstDate,startDate)-2:getAbsoluteDays(firstDate,startDate)}) * (${widthInPx} / 5))`;
 	}
 }
 
