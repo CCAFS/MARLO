@@ -152,18 +152,22 @@ function locateContentDialog(id){
 
 function moveScrollRight() {
   const element = document.getElementById("timelineContainer");
-    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-	const containerSize = vw * 0.8;
+  
+  const widthContainer = $('.sectionMap').width();
+	const containerSize = widthContainer * 0.8;
 	
-  element.scrollLeft += containerSize;
+	element.style.scrollBehavior = "smooth"
+  element.scrollLeft += (containerSize+(containerSize* (2/5)));
 }
 
 function moveScrollLeft() {
   const element = document.getElementById("timelineContainer");
-  const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-	const containerSize = vw * 0.8;
+  
+	const widthContainer = $('.sectionMap').width();
+	const containerSize = widthContainer * 0.8;
 	
-  element.scrollLeft -= containerSize;
+	element.style.scrollBehavior = "smooth"
+  element.scrollLeft -= (containerSize+(containerSize* (2/5)));
 }
 
 const convertDateToAfricanDate = (date) => {
@@ -230,12 +234,12 @@ function createDivActivities(activity, id){
 			    <div class="activityCard_details">
 			    		<div>
 			    			<img src=${baseURL +"/global/images/start_date.png"} alt="start_icon" />
-			    			<p><b>Start date:</b> ${activity.startDate}</p>
+			    			<p><b>Start date:</b> ${convertDateToText(activity.startDate,true)}</p>
 			    		</div>
 			    		<p><b>Status:</b> ${status} </p>
 			    		<div>
 			    			<img src=${baseURL +"/global/images/end_date.png"} alt="end_icon" />
-			    			<p><b>End date:</b> ${activity.endDate}</p>
+			    			<p><b>End date:</b> ${convertDateToText(activity.endDate,true)}</p>
 			    		</div>
 			    </div>
 				</div>
@@ -273,8 +277,9 @@ const setStatusColor = (status) => {
 }
 
 function setWidth(amount) {
-
-	return `calc(${amount !==undefined? (amount === 0? 3: amount)+"*(80vw / 7))": "calc(80vw / 7)"}`;
+	const widthContainer = $('.sectionMap').width();
+	const widthInPx = `${widthContainer * 0.8}px`;
+	return `calc(${amount !==undefined? (amount === 0? 3: amount)+"*("+widthInPx+" / 5) - 10px)": "calc("+widthInPx+" / 5)"}`;
 }
 
 function setDistances(startDate,isToday, isJS,endDate) {
@@ -287,25 +292,27 @@ function setDistances(startDate,isToday, isJS,endDate) {
 	const currentHour = today.getHours();
 	const percentageCompletion = (currentHour / 24);
   
-  const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-	let containerSize = vw * 0.8;
+  
+	const widthContainer = $('.sectionMap').width();
+	const widthInPx = `${widthContainer * 0.8}px`;
+	const containerSize = widthContainer*0.8;
 	
 	const isFinalActivity = new Date(lastDate).getTime() === new Date(endDate).getTime();
   
   if(isJS){
 		
 		if(isToday){
-			return (getAbsoluteDays(firstDate,today,1) * ((containerSize/7) + ((containerSize/7)*percentageCompletion)) )
+			return (getAbsoluteDays(firstDate,today,1) * ((containerSize/5) + ((containerSize/5)*percentageCompletion)) )
 		}
 		
-		return ((isFinalActivity? getAbsoluteDays(firstDate,startDate)-2:getAbsoluteDays(firstDate,startDate) ) * (containerSize/7))
+		return ((isFinalActivity? getAbsoluteDays(firstDate,startDate)-2:getAbsoluteDays(firstDate,startDate) ) * (containerSize/5))
 		
 	} else {
 		
 		if(isToday){
-			return `calc(${getAbsoluteDays(firstDate, today,1)} * (80vw / 7) + ((80vw / 7)* ${percentageCompletion}) )`;
+			return `calc(${getAbsoluteDays(firstDate, today,1)} * (${widthInPx} / 5) + ((${widthInPx} / 5)* ${percentageCompletion}) )`;
 		} 
-  	return `calc((${isFinalActivity? getAbsoluteDays(firstDate,startDate)-2:getAbsoluteDays(firstDate,startDate)}) * (80vw / 7))`;
+  	return `calc((${isFinalActivity? getAbsoluteDays(firstDate,startDate)-2:getAbsoluteDays(firstDate,startDate)}) * (${widthInPx} / 5))`;
 	}
 }
 
@@ -332,6 +339,23 @@ function createTimeline2() {
 	  	<div id="timelineDescription_title">
 	  		<b>Schedule</b>
 	  	</div>
+	  	<div id="timelineAlert">
+	    	<b>Progress status:</b>
+	    	<section id="timelineAlert_container">
+	    		<article class="timelineAlert_item">
+	    			<div class="timelineAlert_item_color timelineAlert_item_color--1"></div>
+	    			<p>Not started</p>
+	    		</article>
+	    		<article class="timelineAlert_item">
+	    			<div class="timelineAlert_item_color timelineAlert_item_color--2"></div>
+	    			<p>In progress</p>
+	    		</article>
+	    		<article class="timelineAlert_item">
+	    			<div class="timelineAlert_item_color timelineAlert_item_color--3"></div>
+	    			<p>Completed</p>
+	    		</article>
+	    	</section>
+    	</div>
 	  </div>
     <div id="timelineContainer">
       <div id="timeline_times">
