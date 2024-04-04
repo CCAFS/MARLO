@@ -274,7 +274,7 @@ const setStatusColor = (status) => {
 
 function setWidth(amount) {
 
-	return `calc(${amount !==undefined? (amount === 0? 3: amount)+"*(80vw / 7))": "calc(80vw / 7)"}`;
+	return `calc(${amount !==undefined? (amount === 0? 3: amount)+"*(80vw / 7) - 10px)": "calc(80vw / 7)"}`;
 }
 
 function setDistances(startDate,isToday, isJS,endDate) {
