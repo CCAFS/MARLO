@@ -337,6 +337,23 @@ function createTimeline2() {
 	  	<div id="timelineDescription_title">
 	  		<b>Schedule</b>
 	  	</div>
+	  	<div id="timelineAlert">
+	    	<b>Progress status:</b>
+	    	<section id="timelineAlert_container">
+	    		<article class="timelineAlert_item">
+	    			<div class="timelineAlert_item_color"></div>
+	    			<p>Not started</p>
+	    		</article>
+	    		<article class="timelineAlert_item">
+	    			<div class="timelineAlert_item_color"></div>
+	    			<p>In progress</p>
+	    		</article>
+	    		<article class="timelineAlert_item">
+	    			<div class="timelineAlert_item_color"></div>
+	    			<p>Completed</p>
+	    		</article>
+	    	</section>
+    	</div>
 	  </div>
     <div id="timelineContainer">
       <div id="timeline_times">

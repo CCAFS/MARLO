@@ -430,10 +430,10 @@ span.timelineControl:hover {
 	
 	#timelineDescription{
 		display: flex;
-		justify-content: center;
+		justify-content: space-between;
     padding: 18px 30px 18px 30px;
     width: 100%;
-    align-items: baseline;
+    align-items: end;
 	}
 	
 	#timelineDescription_title{
@@ -568,6 +568,39 @@ span.timelineControl:hover {
 	.activityCard:nth-child(3n+3){
 		top: 12.1em;
 
+	}
+	
+	#timelineAlert{
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+    gap: 0.5rem;
+    align-items: end;
+    padding-bottom: 6px;
+	}
+	
+	#timelineAlert_container{
+		display: flex;
+		flex-direction: row;
+		gap: 2rem;
+	}
+	
+	.timelineAlert_item{
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		gap: 0.5rem;
+	}
+	
+	.timelineAlert_item p{
+		font-size: 10px;
+	}
+	
+	.timelineAlert_item_color{
+		width: 10px;
+		height: 10px;
+		border-radius: 12.5px;
+		background-color: #0377a3;
 	}
 
 
