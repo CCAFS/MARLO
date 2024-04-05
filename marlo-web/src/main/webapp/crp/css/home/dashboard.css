@@ -482,6 +482,12 @@ span.timelineControl:hover {
 	  border-radius: 5px;
 	}
 	
+	#timeline_timeRange{
+		position: absolute;
+		left: 50%;
+		top: 15%;
+	}
+	
 	.timebox {
 	  height: 80%;
 	  position: relative;
@@ -587,12 +593,13 @@ span.timelineControl:hover {
 	.timelineAlert_item{
 		display: flex;
 		flex-direction: row;
-		align-items: flex-start;
+		align-items: flex-end;
 		gap: 0.5rem;
 	}
 	
 	.timelineAlert_item p{
 		font-size: 10px;
+		margin: 0;
 	}
 	
 	.timelineAlert_item_color{
