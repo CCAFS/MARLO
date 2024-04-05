@@ -21,6 +21,7 @@ function initDashboard() {
   $(".timelineRefresh").hide();
   $(".timeline").show();
   setTimelinePosition();
+  getIntersectedDatesInScreen();
 
   $('.buttonRightTimeline').on("click", moveScrollRight);
 
@@ -158,6 +159,10 @@ function moveScrollRight() {
 	
 	element.style.scrollBehavior = "smooth"
   element.scrollLeft += (containerSize+(containerSize* (2/5)));
+  
+  setTimeout(() => {
+	    getIntersectedDatesInScreen();
+	}, 500);
 }
 
 function moveScrollLeft() {
@@ -168,6 +173,10 @@ function moveScrollLeft() {
 	
 	element.style.scrollBehavior = "smooth"
   element.scrollLeft -= (containerSize+(containerSize* (2/5)));
+  
+  setTimeout(() => {
+	    getIntersectedDatesInScreen();
+	}, 500);
 }
 
 const convertDateToAfricanDate = (date) => {
@@ -199,18 +208,52 @@ function getDateBasedOnASumOfDays(startDate, days) {
   return newDate;
 }
 
+function getIntersectedDatesInScreen() {
+	const timeline_times = document.getElementsByClassName('timebox');
+	const list_times = Array.from(timeline_times);
+	
+	const timeline_timeRange = document.getElementById('timeline_timeRange');
+	let rangeText = '';
+	
+	const observer = new IntersectionObserver((entries) => {
+		
+		let timesIntersected = [];
+		
+		entries.forEach((entry) => {
+			if(entry.isIntersecting){
+				timesIntersected.push(entry.target.dataset.id);
+			}
+			
+		});
+		console.log(timesIntersected);
+		
+		rangeText = convertDateToText(timesIntersected[1]) + " - " + convertDateToText(timesIntersected[timesIntersected.length-1])
+		
+		timeline_timeRange.innerHTML = rangeText;
+	},{});
+	
+	
+	
+	list_times.forEach((time)=> {
+		observer.observe(time);
+	});
+	
+	
+	
+	setTimeout(() => {
+	    observer.disconnect();
+	}, 100);
+	
+}
+
 function createDivTimes(totalDays, divClass, divIdPrefix){
 	let arrayDays = [];
 	for(let i=0; i < totalDays+1; i++){
 		let newDiv = document.createElement('div');
 		newDiv.id = `time_${i}` 
+		newDiv.dataset.id = getDateBasedOnASumOfDays(divIdPrefix, i);
 		newDiv.className = divClass;
 		newDiv.style.width = setWidth();
-		newDiv.innerHTML = `
-			<p class="timeNumber">
-				${convertDateToText(getDateBasedOnASumOfDays(divIdPrefix,i))}
-			</p>
-		`;
 		arrayDays.push(newDiv);
 	}
 	return arrayDays;
@@ -286,7 +329,6 @@ function setDistances(startDate,isToday, isJS,endDate) {
 	const { firstDate, lastDate } = getFirstAndLastDates(timelineElements);
 	let today = convertDateToAfricanDate(new Date());
 	
-	console.log(timelineElements);
 	today = today.getDate() > lastDate? convertDateToAfricanDate(lastDate): today;
 	
 	const currentHour = today.getHours();
@@ -321,7 +363,7 @@ function setTimelinePosition(){
 	weekStart.setDate(weekStart.getDate() - weekStart.getDay())
 	
 	const timelineContainer = document.getElementById("timelineContainer");
-	timelineContainer.scrollLeft += setDistances(weekStart, undefined,true);
+	timelineContainer.scrollLeft += (setDistances(weekStart, undefined,true)-10);
 	
 }
 
@@ -357,6 +399,9 @@ function createTimeline2() {
 	    	</section>
     	</div>
 	  </div>
+	  <p id="timeline_timeRange">
+    	Provisional Text
+    </p>
     <div id="timelineContainer">
       <div id="timeline_times">
       	${createDivTimes(getTotalDays,"timebox",getFirstDate).reduce((acc, curr) => acc + curr.outerHTML, '')}
