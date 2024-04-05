@@ -187,8 +187,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   // Years available per CRPs (used in Summaries)
   private ArrayList<String> years;
-
   protected boolean add;
+
   private Long phaseID;
 
   /**
@@ -200,12 +200,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private InstitutionManager institutionManager;
-
   @Inject
   private GlobalUnitTypeManager globalUnitTypeManager;
   private String basePermission;
   protected boolean cancel;
   private boolean editStatus = false; // If user is able to edit the form.
+
   private boolean otherUrl = false;
 
   private boolean canEdit; // If user is able to edit the form.
@@ -216,13 +216,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private boolean canSwitchProject; // If user is able to Switch Project.
   // (generally is a project leader)
-
   private boolean switchSession;
   protected APConfig config;
   @Inject
   private PhaseManager phaseManager;
   @Inject
   private ClusterTypeManager clusterTypeManager;
+
   private CenterOutputsOutcomeManager centerOutputsOutcomeManager;
 
   @Inject
@@ -239,11 +239,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private CrpMilestoneManager crpMilestoneManager;
-
   private Long crpID;
   // Managers
   @Inject
   private GlobalUnitManager crpManager;
+
   @Inject
   private CrpPpaPartnerManager crpPpaPartnerManager;
 
@@ -255,9 +255,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
-
   @Inject
   private CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
+
   @Inject
   private CustomParameterManager customParameterManager;
 
@@ -290,9 +290,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ExpectedStudyProjectManager expectedStudyProjectManager;
-
   // Variables
   private String crpSession;
+
   private String customTextHeader;
 
   protected boolean dataSaved;
@@ -300,16 +300,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private GlobalUnit currentCrp;
 
   protected boolean delete;
-
   @Inject
   private DeliverableManager deliverableManager;
+
   @Inject
   private ProjectPolicyManager policyManager;
 
   private boolean draft;
-
   @Inject
   private SrfTargetUnitManager targetUnitManager;
+
   @Inject
   private LocElementTypeManager locElementTypeManager;
 
@@ -324,11 +324,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ProjectPartnerPersonManager partnerPersonManager;
-
   @Inject
   private UserManager userManager;
   @Inject
   private FileDBManager fileDBManager;
+
   private boolean fullEditable; // If user is able to edit all the form.
 
   @Inject
@@ -346,13 +346,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private LiaisonUserManager liaisonUserManager;
-
   protected boolean next;
   private Map<String, Parameter> parameters;
   private boolean planningActive;
   private int planningYear;
   @Inject
   private ProjectComponentLessonManager projectComponentLessonManager;
+
   @Inject
   private ProjectManager projectManager;
 
@@ -361,11 +361,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private PowbSynthesisManager powbSynthesisManager;
-
   @Inject
   private LiaisonInstitutionManager liaisonInstitutionManager;
   @Inject
   private DeliverableTypeManager deliverableTypeManager;
+
   private boolean reportingActive;
 
   private int reportingYear;
@@ -384,9 +384,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ICenterImpactManager impactService;
-
   @Inject
   private ICenterOutcomeManager outcomeService;
+
   @Inject
   private ICenterOutputManager outputService;
 
@@ -401,9 +401,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ICenterDeliverableManager deliverableService;
-
   @Inject
   private ICenterSectionStatusManager sectionStatusService;
+
   @Inject
   private ICapacityDevelopmentService capacityDevelopmentService;
 
@@ -429,22 +429,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   // button actions
   protected boolean save;
-
   private boolean saveable; // If user is able to see the save, cancel, delete
   // buttons
   @Inject
   private SectionStatusManager sectionStatusManager;
+
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
 
   private Map<String, Object> session;
-
   private Submission submission;
+
   protected boolean submit;
 
   private String url;
-
   @Inject
   private UserRoleManager userRoleManager;
   @Inject
@@ -464,12 +463,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private ProjectPartnerPersonManager projectPartnerPersonManager;
   @Inject
   private ProjectPartnerManager projectPartnerManager;
+
   @Inject
   private DeliverableTraineesIndicatorManager deliverableTraineesIndicatorManager;
 
   private StringBuilder validationMessage = new StringBuilder();
-
   private StringBuilder missingFields = new StringBuilder();
+
   private StringBuilder synthesisFlagships = new StringBuilder();
 
   public BaseAction() {
@@ -515,6 +515,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   /**
    * This method add a missing field separated by a semicolon (;).
    *
@@ -528,7 +529,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       this.missingFields.append(field);
     }
   }
-
 
   /**
    * This method add a synthesis flagship separated by a semicolon (;).
@@ -3152,6 +3152,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.differences;
   }
 
+
   /**
    * Get information for duplicated deliverables - Validation by DOI, Handle and Dissemination URL
    * 
@@ -3440,6 +3441,72 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return deliverableDTOs;
   }
 
+  /**
+   * Get listing to validate duplicate information (dissemination_URL,DIO, handle)
+   * 
+   * @author IBD
+   * @param DOI doi
+   * @param handle handle
+   * @param disseminationURL url
+   * @param deliverableID id related to the deliverable
+   * @return deliverable list with the data to validate duplicates (dissemination_URL,DIO, handle)
+   */
+  public List<DeliverableSearchSummary> getDuplicatedDeliverableInformationNew(String DOI, String handle,
+    String disseminationURL, long deliverableID, List<String> deliverablesURL) {
+    List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
+
+    if ((disseminationURL != null || handle != null || DOI != null) && deliverableID != 0) {
+
+
+      if (deliverablesURL != null && !deliverablesURL.isEmpty()) {
+        for (String deliverable : deliverablesURL) {
+          if (deliverable.contains(disseminationURL) && !deliverable.contains((deliverableID + ""))
+            && disseminationURL != null) {
+            DeliverableSearchSummary deliverableDTO = new DeliverableSearchSummary();
+            deliverableDTO.setDeliverableID(Long.parseLong("0"));
+            deliverableDTOs.add(deliverableDTO);
+          }
+
+          if (handle != null) {
+            if (deliverable.contains(handle) && !deliverable.contains((deliverableID + ""))) {
+              DeliverableSearchSummary deliverableDTO = new DeliverableSearchSummary();
+              deliverableDTO.setDeliverableID(Long.parseLong("0"));
+              deliverableDTOs.add(deliverableDTO);
+            }
+          }
+
+          if (DOI != null) {
+
+            if (deliverable.contains(DOI) && !deliverable.contains((deliverableID + ""))) {
+              DeliverableSearchSummary deliverableDTO = new DeliverableSearchSummary();
+              deliverableDTO.setDeliverableID(Long.parseLong("0"));
+              deliverableDTOs.add(deliverableDTO);
+            }
+          }
+
+        }
+
+        if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+          deliverableDTOs = deliverableDTOs.stream()
+            .sorted(Comparator.comparing(DeliverableSearchSummary::getDeliverableID)).collect(Collectors.toList());
+          if (deliverableDTOs.get(0).getDeliverableID() != null) {
+
+          }
+          if (deliverableDTOs.get(0).getDeliverableID() == deliverableID) {
+            deliverableDTOs.clear();
+            return deliverableDTOs;
+          }
+          if (deliverableDTOs.get(0).getDeliverableID() > deliverableID) {
+            deliverableDTOs.clear();
+            return deliverableDTOs;
+          }
+
+        }
+      }
+    }
+    return deliverableDTOs;
+  }
+
   public List<ProjectExpectedStudy> getexpectedCrpOutcomes(Long id) {
     List<ProjectExpectedStudy> expectedStudies = new ArrayList<>();
     ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
@@ -3487,8 +3554,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 .collect(Collectors.toList());
             if (filteredCrpOutcomes != null && !filteredCrpOutcomes.isEmpty()) {
               projectExpectedStudy.setCrpOutcomes(new ArrayList<>(filteredCrpOutcomes));
-              if(!expectedStudies.contains(projectExpectedStudy)) {
-              expectedStudies.add(projectExpectedStudy);
+              if (!expectedStudies.contains(projectExpectedStudy)) {
+                expectedStudies.add(projectExpectedStudy);
               }
             }
           }
@@ -5175,7 +5242,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         for (DeliverableShfrmPriorityAction deliverableShfrmPriorityAction : deliverableShfrmPriorityActions) {
           if (deliverableShfrmPriorityAction != null && deliverableShfrmPriorityAction.getDeliverable() != null) {
             Deliverable deliverableAdd = deliverableShfrmPriorityAction.getDeliverable();
-            deliverableAdd.setDeliverableInfo(deliverableAdd.getDeliverableInfo(getActualPhase()));
+            deliverableAdd.setDeliverableInfo(deliverableAdd.getDeliverableInfo(this.getActualPhase()));
             deliverablesRelated.add(deliverableShfrmPriorityAction.getDeliverable());
           }
         }
@@ -8389,6 +8456,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   public boolean validatePolicy(long policyID) {
     SectionStatus sectionStatus =
       this.sectionStatusManager.getSectionStatusByProjectPolicy(policyID, this.getCurrentCycle(),
@@ -8402,7 +8470,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
-
 
   //
   public boolean validURL(String URL) {

@@ -133,6 +133,30 @@ public class DeliverableManagerImpl implements DeliverableManager {
 
   }
 
+  /**
+   * Get the answered comment by phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverable list with the comment count. olny coment with answer
+   */
+  @Override
+  public List<String> getAnsweredCommentByPhase(long phase) {
+    return deliverableDAO.getAnsweredCommentByPhase(phase);
+  }
+
+  /**
+   * Get the commentstatus by phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverable list with the comment count
+   */
+  @Override
+  public List<String> getCommentStatusByPhase(long phase) {
+    return deliverableDAO.getCommentStatusByPhase(phase);
+  }
+
   @Override
   public Deliverable getDeliverableById(long deliverableID) {
 
@@ -256,6 +280,18 @@ public class DeliverableManagerImpl implements DeliverableManager {
     }
     deliverables.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     return deliverables;
+  }
+
+  /**
+   * Get listing to validate duplicate information (dissemination_URL,DIO, handle)
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverable list with the data to validate duplicates (dissemination_URL,DIO, handle)
+   */
+  @Override
+  public List<String> getDuplicatesDeliverablesByPhase(long phase) {
+    return deliverableDAO.getDuplicatesDeliverablesByPhase(phase);
   }
 
   /**
