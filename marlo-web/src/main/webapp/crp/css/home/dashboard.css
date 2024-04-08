@@ -418,7 +418,7 @@ span.timelineControl:hover {
 	  margin: 18px 30px 18px 30px;
 	  overflow-x: scroll;
 	  overflow-y: hidden;
-	  height: 36vh;
+	  height: 34vh;
 	  width: 80%;
 	  margin: 0 auto;
 	}
@@ -429,7 +429,6 @@ span.timelineControl:hover {
 	
 	#timelineDescription{
 		display: flex;
-		justify-content: space-between;
     padding: 18px 30px 18px 30px;
     width: 100%;
     align-items: end;
@@ -438,6 +437,8 @@ span.timelineControl:hover {
 	#timelineDescription_title{
     font-size: 2.0em;
     color: #333;
+    width: 100%;
+    text-align: center;
 	}
 	
 	#timelineDescription_range{
@@ -460,15 +461,19 @@ span.timelineControl:hover {
 		font-size: 14px;
 	}
 	
-	@media only screen and (min-height:975px){
+	@media only screen and (min-width:1545px){
 		#timeline_activities {
-			font-size: 18px;
+			font-size: 20px;
+		}
+		
+		#timelineContainer{
+			height: 30vh;
 		}
 	}
 	
-	@media only screen and (min-height:1170px){
+	@media only screen and (min-width:2560px){
 		#timeline_activities {
-			font-size: 20px;
+			font-size: 28px;
 		}
 	}
 	
@@ -484,8 +489,8 @@ span.timelineControl:hover {
 	
 	#timeline_timeRange{
 		position: absolute;
-		left: 50%;
-		top: 15%;
+		left: 47.5%;
+		margin-top: -12px;
 	}
 	
 	.timebox {
@@ -562,16 +567,16 @@ span.timelineControl:hover {
 	}
 	
 	.activityCard:nth-child(n+1){
-		top: 3.4em;
+		top: 1em;
 	}
 	
 	.activityCard:nth-child(2n+2){
-		top: 7.8em;
+		top: 5.5em;
 	}
 	
 	
 	.activityCard:nth-child(3n+3){
-		top: 12.1em;
+		top: 10em;
 
 	}
 	
@@ -582,6 +587,8 @@ span.timelineControl:hover {
     gap: 0.5rem;
     align-items: end;
     padding-bottom: 6px;
+    position: absolute;
+    right: 2.5%;
 	}
 	
 	#timelineAlert_container{
