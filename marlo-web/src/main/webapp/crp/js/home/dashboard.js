@@ -162,7 +162,7 @@ function moveScrollRight() {
   
   setTimeout(() => {
 	    getIntersectedDatesInScreen();
-	}, 500);
+	}, 250);
 }
 
 function moveScrollLeft() {
@@ -176,7 +176,7 @@ function moveScrollLeft() {
   
   setTimeout(() => {
 	    getIntersectedDatesInScreen();
-	}, 500);
+	}, 250);
 }
 
 const convertDateToAfricanDate = (date) => {
@@ -242,7 +242,7 @@ function getIntersectedDatesInScreen() {
 	
 	setTimeout(() => {
 	    observer.disconnect();
-	}, 100);
+	}, 10);
 	
 }
 
