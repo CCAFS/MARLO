@@ -1281,6 +1281,7 @@ public class DeliverableAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+
     existCurrentCluster = false;
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -1299,6 +1300,7 @@ public class DeliverableAction extends BaseAction {
        * continue processing or re-throw the exception.
        */
     }
+
     has_specific_management_deliverables =
       this.hasSpecificities(APConstants.CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES);
     isManagingPartnerPersonRequerid = this.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
@@ -1335,14 +1337,12 @@ public class DeliverableAction extends BaseAction {
     } else {
       deliverable = deliverableManager.getDeliverableById(deliverableID);
     }
-
     if (deliverable != null) {
 
       project = projectManager.getProjectById(deliverable.getProject().getId());
       projectID = project.getId();
       project.getProjecInfoPhase(this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
-
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave() && !this.isHttpPost()) {
 
         BufferedReader reader = null;
@@ -1359,7 +1359,6 @@ public class DeliverableAction extends BaseAction {
         // Geographic Scope List AutoSave
         boolean haveRegions = false;
         boolean haveCountries = false;
-
         if (deliverable.getGeographicScopes() != null) {
           for (DeliverableGeographicScope projectInnovationGeographicScope : deliverable.getGeographicScopes()) {
             projectInnovationGeographicScope.setRepIndGeographicScope(repIndGeographicScopeManager
@@ -1376,6 +1375,7 @@ public class DeliverableAction extends BaseAction {
 
           }
         }
+
 
         if (haveRegions) {
           // Deliverable Geographic Regions List Autosave
@@ -1402,6 +1402,7 @@ public class DeliverableAction extends BaseAction {
         if (metadataElementManager.findAll() != null) {
           deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
         }
+
 
         Deliverable deliverableDb = deliverableManager.getDeliverableById(deliverable.getId());
 
@@ -1439,6 +1440,7 @@ public class DeliverableAction extends BaseAction {
 
           }
         }
+
 
         if (deliverable.getCrps() != null) {
           for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
@@ -1508,6 +1510,7 @@ public class DeliverableAction extends BaseAction {
 
         }
 
+
         // Cgiar Cross Cutting Markers Autosave
         if (deliverable.getCrossCuttingMarkers() != null) {
           for (DeliverableCrossCuttingMarker deliverableCrossCuttingMarker : deliverable.getCrossCuttingMarkers()) {
@@ -1522,6 +1525,7 @@ public class DeliverableAction extends BaseAction {
             }
           }
         }
+
 
         // Deliverable responsible
         if (deliverable.getResponsiblePartnership() != null) {
@@ -1562,7 +1566,6 @@ public class DeliverableAction extends BaseAction {
             }
           }
         }
-
         this.setDraft(true);
       } else {
         deliverable.getDeliverableInfo(this.getActualPhase());
@@ -1613,6 +1616,7 @@ public class DeliverableAction extends BaseAction {
          * }
          */
         // Deliverable Crp Outcome list
+
         if (deliverable.getDeliverableCrpOutcomes() != null) {
           deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
             .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
@@ -1654,10 +1658,8 @@ public class DeliverableAction extends BaseAction {
               }
             }
           }
-
           this.fillSoilIndicatorsText();
         }
-
         // Expected Study Geographic Regions List
         if (deliverable.getDeliverableGeographicRegions() != null
           && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
@@ -1683,7 +1685,6 @@ public class DeliverableAction extends BaseAction {
 
           deliverable.setActivities(deliverableActivities);
         }
-
         for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
 
           deliverableFundingSource.setFundingSource(
@@ -1853,7 +1854,6 @@ public class DeliverableAction extends BaseAction {
 
           }
         }
-
         // Shows the projects to create a shared link with their
         this.myProjects = new ArrayList<>();
 
@@ -1910,7 +1910,6 @@ public class DeliverableAction extends BaseAction {
           }
         }
 
-
         /*
          * HJ 08/01/2019 Getting the Deliverable Partnerships Information
          * -- Deliverable Others
@@ -1942,7 +1941,6 @@ public class DeliverableAction extends BaseAction {
 
           }
         }
-
         this.setDraft(false);
       }
 
@@ -1968,6 +1966,7 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
+
       genderLevels = new ArrayList<>();
       List<GenderType> genderTypes = null;
       if (this.hasSpecificities(APConstants.CRP_CUSTOM_GENDER)) {
@@ -1980,9 +1979,11 @@ public class DeliverableAction extends BaseAction {
           .collect(Collectors.toList());
       }
 
+
       for (GenderType projectStatusEnum : genderTypes) {
         genderLevels.add(projectStatusEnum);
       }
+
 
       status = new HashMap<>();
       List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
@@ -1990,6 +1991,7 @@ public class DeliverableAction extends BaseAction {
       for (ProjectStatusEnum projectStatusEnum : list) {
         status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
       }
+
 
       // Status rules for planning
       if (this.isPlanningActive() && !this.isUpKeepActive()) {
@@ -2034,6 +2036,7 @@ public class DeliverableAction extends BaseAction {
         crps.add(crp);
       }
       crps.sort((c1, c2) -> c1.getComposedName().compareTo(c2.getComposedName()));
+
 
       programs = new ArrayList<CrpProgram>();
       for (CrpProgram program : crpProgramManager.findAll().stream().filter(c -> c.isActive()
@@ -2105,11 +2108,9 @@ public class DeliverableAction extends BaseAction {
 
         }
       }
-
       programOutcomes.sort((k1, k2) -> k1.getId().compareTo(k2.getId()));
 
       partners = new ArrayList<>();
-
       /*
        * HJ - 08/01/2019 Setting the Project partners in institutions List
        */
@@ -2132,7 +2133,6 @@ public class DeliverableAction extends BaseAction {
           }
         }
       }
-
       partnerPersons = new ArrayList<>();
       /**
        * This for is not being used properly. The internal logic is
@@ -2144,6 +2144,7 @@ public class DeliverableAction extends BaseAction {
         partners.stream().flatMap(e -> e.getProjectPartnerPersons().stream()).collect(Collectors.toList());
 
       this.fundingSources = new ArrayList<>();
+
 
       for (ProjectBudget budget : project.getProjectBudgets().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
@@ -2174,6 +2175,7 @@ public class DeliverableAction extends BaseAction {
           this.activities.add(activity);
         }
       }
+
 
       // Add activities from the shared clusters
       /*
@@ -2207,17 +2209,27 @@ public class DeliverableAction extends BaseAction {
 
       List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
       if (this.hasSpecificities(APConstants.DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE)) {
-        deliverableDTOs = this.getDuplicatedDeliverableInformation(DOI, handle, disseminationURL, deliverableID);
-        if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
-          // Set is duplicated field in true
-          isDuplicated = true;
-        } else {
-          isDuplicated = false;
+        List<String> deliverables = null;
+        try {
+          // cgamboa change is made to obtain deliverables only for the phase 08/04/2024
+          deliverables = deliverableManager.getDuplicatesDeliverablesByPhase(this.getActualPhase().getId());
+          // deliverableDTOs = this.getDuplicatedDeliverableInformation(DOI, handle, disseminationURL, deliverableID);
+          deliverableDTOs =
+            this.getDuplicatedDeliverableInformationNew(DOI, handle, disseminationURL, deliverableID, deliverables);
+          if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+            // Set is duplicated field in true
+            isDuplicated = true;
+          } else {
+            isDuplicated = false;
+          }
+          if (deliverable.getDeliverableInfo(this.getActualPhase()) != null) {
+            deliverable.getDeliverableInfo(this.getActualPhase()).setDuplicated(isDuplicated);
+            deliverableManager.saveDeliverable(deliverable);
+          }
+        } catch (Exception e) {
+          logger.error("unable to get duplivated deliverables", e);
         }
-        if (deliverable.getDeliverableInfo(this.getActualPhase()) != null) {
-          deliverable.getDeliverableInfo(this.getActualPhase()).setDuplicated(isDuplicated);
-          deliverableManager.saveDeliverable(deliverable);
-        }
+
       }
 
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
@@ -2283,7 +2295,6 @@ public class DeliverableAction extends BaseAction {
         this.fillClusterParticipantsList();
         existCurrentCluster = this.existCurrentClusterDB();
       }
-
       /*
        * get feedback comments
        */
@@ -2310,6 +2321,7 @@ public class DeliverableAction extends BaseAction {
         }
       } catch (Exception e) {
       }
+
 
       // Deliverable remaining value
       if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getRemainingPending() == null) {
@@ -2434,6 +2446,7 @@ public class DeliverableAction extends BaseAction {
       }
 
     }
+
 
   }
 

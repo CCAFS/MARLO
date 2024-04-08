@@ -132,6 +132,14 @@ public class DeliverableCrpOutcomeManagerImpl implements DeliverableCrpOutcomeMa
 
   }
 
+
+  @Override
+  public List<DeliverableCrpOutcome> findAllByPhase(Long phaseId) {
+
+    return deliverableCrpOutcomeDAO.findAllByPhase(phaseId);
+
+  }
+
   @Override
   public DeliverableCrpOutcome getDeliverableCrpOutcomeById(long deliverableCrpOutcomeID) {
 
