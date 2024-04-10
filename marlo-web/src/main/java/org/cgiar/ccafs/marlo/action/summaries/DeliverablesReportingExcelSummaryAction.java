@@ -25,6 +25,8 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmPriorityActionManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmSubActionManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -48,6 +50,8 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableProgram;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
+import org.cgiar.ccafs.marlo.data.model.DeliverableShfrmPriorityAction;
+import org.cgiar.ccafs.marlo.data.model.DeliverableShfrmSubAction;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
@@ -118,6 +122,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   private DeliverableLocationManager deliverableLocationManager;
   private final CrpPpaPartnerManager crpPpaPartnerManager;
   private final DeliverableInfoManager deliverableInfoManager;
+  private final DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
+  private final DeliverableShfrmSubActionManager deliverableShfrmSubActionManager;
   private String showAllYears;
   private String ppa;
 
@@ -141,7 +147,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     DeliverableGeographicScopeManager deliverableGeographicScopeManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
     DeliverableLocationManager deliverableLocationManager, CrpPpaPartnerManager crpPpaPartnerManager,
-    DeliverableInfoManager deliverableInfoManager) {
+    DeliverableInfoManager deliverableInfoManager,
+    DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager,
+    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.genderTypeManager = genderTypeManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
@@ -155,6 +163,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
     this.deliverableLocationManager = deliverableLocationManager;
     this.deliverableInfoManager = deliverableInfoManager;
+    this.deliverableShfrmPriorityActionManager = deliverableShfrmPriorityActionManager;
+    this.deliverableShfrmSubActionManager = deliverableShfrmSubActionManager;
   }
 
   /**
@@ -258,6 +268,14 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     masterReport.getParameterValues().put("i8nJustification", this.getText("deliverable.justification"));
     masterReport.getParameterValues().put("i8nDeliverableDescription", this.getText("deliverable.description"));
     masterReport.getParameterValues().put("i8nProjectLeadPartner", this.getText("summaries.deliverable.leadPartner"));
+    masterReport.getParameterValues().put("i8nDeliverablesContributingSHFRM",
+      "Is this deliverable aligned with the Soil Health and Fertility Road Map (SHFRM) implementation?");
+    masterReport.getParameterValues().put("i8nDeliverablesContributingNarrative",
+      "How this deliverable is expecting to contribute to the SHFRM?");
+    masterReport.getParameterValues().put("i8nDeliverablesContributingNarrativeReporting",
+      "How this deliverable is contributing to the SHFRM?");
+    masterReport.getParameterValues().put("i8nDeliverablesActions",
+      "To which Priority(ies) action is contributing to:");
 
     /*
      * Reporting
@@ -402,7 +420,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
         "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles", "newExceptedFlag",
         "phaseID", "gender", "youth", "cap", "geographicScope", "region", "country", "status", "isComplete",
-        "individual", "ppaResponsible", "managingResponsible", "climate", "justification", "description", "articleURL"},
+        "individual", "ppaResponsible", "managingResponsible", "climate", "justification", "description", "articleURL",
+        "isContributing", "contributingNarrative", "shfrmActions", "contributingNarrativeReporting"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Integer.class, String.class,
         String.class, String.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -411,7 +430,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, Long.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
     if (!deliverableManager.findAll().isEmpty()) {
       List<Deliverable> deliverables = new ArrayList<>();
@@ -1789,6 +1808,72 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           country = "<Not Defined>";
         }
 
+        String isContributing = "", contributingNarrative = "", contributingNarrativeReporting = "", shfrmActions = "";
+
+        // SOIL Contribution
+        if (deliverable.getDeliverableInfo() != null
+          && deliverable.getDeliverableInfo().getContributingShfrm() != null) {
+          if (deliverable.getDeliverableInfo().getContributingShfrm() == true) {
+            isContributing = "Yes";
+          } else {
+            isContributing = "No";
+          }
+        } else {
+          isContributing = "<Not Defined>";
+        }
+
+        if (isContributing.equals("Yes")) {
+
+          if (deliverable.getDeliverableInfo().getShfrmContributionNarrative() != null) {
+            contributingNarrative = deliverable.getDeliverableInfo().getShfrmContributionNarrative();
+          } else {
+            contributingNarrative = "<Not provided>";
+          }
+
+          if (deliverable.getDeliverableInfo().getShfrmContributionNarrativeAR() != null) {
+            contributingNarrativeReporting = deliverable.getDeliverableInfo().getShfrmContributionNarrativeAR();
+          } else {
+            contributingNarrativeReporting = "<Not provided>";
+          }
+
+          List<DeliverableShfrmPriorityAction> actions = new ArrayList<>();
+          List<DeliverableShfrmSubAction> subActions = new ArrayList<>();
+          String actionsText = "";
+
+          try {
+            actions = deliverableShfrmPriorityActionManager.findByDeliverableAndPhase(deliverable.getId(),
+              this.getSelectedPhase().getId());
+
+            if (actions != null && !actions.isEmpty()) {
+              for (DeliverableShfrmPriorityAction action : actions) {
+                if (action != null && action.getShfrmPriorityAction() != null
+                  && action.getShfrmPriorityAction().getId() != null
+                  && action.getShfrmPriorityAction().getComposedName() != null) {
+                  actionsText += "<br>  " + action.getShfrmPriorityAction().getComposedName();
+                  subActions = deliverableShfrmSubActionManager.findByPriorityActionAndPhase(action.getId(),
+                    this.getSelectedPhase().getId());
+
+                  if (subActions != null && !subActions.isEmpty()) {
+                    actionsText += "<br><b> SubActions:</b><br>";
+                    for (DeliverableShfrmSubAction subAction : subActions) {
+                      if (subAction != null && subAction.getShfrmSubAction() != null
+                        && subAction.getShfrmSubAction().getComposedName() != null) {
+                        actionsText += " ●  " + subAction.getShfrmSubAction().getComposedName() + "<br>";
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            shfrmActions = actionsText;
+          } catch (Exception e) {
+            LOG.error(e + " error getting shfrm actions and subactions");
+          }
+        } else {
+          contributingNarrative = "<Not Apply>";
+          shfrmActions = "<Not Apply>";
+          contributingNarrativeReporting = "<Not Apply>";
+        }
 
         model.addRow(new Object[] {deliverable.getId(), title, delivType, delivSubType, delivStatus, delivYear,
           keyOutput, outcomes, leader, fundingSources, delivNewYear, delivNewYearJustification,
@@ -1798,7 +1883,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           disseminated, restrictedAccess, delivLicenseModifications, volume, issue, pages, journal, journalIndicator,
           acknowledge, flContrib, projectID, projectTitle, flagships, regions, othersResponsibles, newExceptedFlag,
           phaseID, gender, youth, cap, geographicScope, region, country, status, isComplete, individual, ppaResponsible,
-          managingResponsible, climate, justification, description, articleURL});
+          managingResponsible, climate, justification, description, articleURL, isContributing, contributingNarrative,
+          shfrmActions, contributingNarrativeReporting});
       }
     }
     return model;
