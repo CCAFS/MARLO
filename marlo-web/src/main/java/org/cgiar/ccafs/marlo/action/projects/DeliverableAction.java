@@ -1141,13 +1141,45 @@ public class DeliverableAction extends BaseAction {
     return transaction;
   }
 
+
+  /**
+   * cgamboa 10/04/2024
+   * This method gets a list of users
+   *
+   * @param institutionId institution identifier
+   * @return User list
+   */
+  public List<User> getUserList(Long institutionId) {
+
+    List<User> users = new ArrayList<>();
+
+    List<ProjectPartner> partnersTmp = new ArrayList<>();
+    try {
+      partnersTmp = projectPartnerManager.findAllByPhaseProjectAndInstitution(projectID, this.getActualPhase().getId(),
+        institutionId);
+    } catch (Exception e) {
+      logger.error("unable to get partners");
+    }
+    if (partnersTmp != null && !partnersTmp.isEmpty()) {
+      ProjectPartner projectPartner = partnersTmp.get(0);
+      List<ProjectPartnerPerson> partnerPersons = new ArrayList<>(
+        projectPartner.getProjectPartnerPersons().stream().filter(pp -> pp.isActive()).collect(Collectors.toList()));
+      for (ProjectPartnerPerson projectPartnerPerson : partnerPersons) {
+
+        users.add(projectPartnerPerson.getUser());
+      }
+    }
+
+    return users;
+  }
+
   /**
    * HJ 08/01/2019
    *
    * @param institutionId
    * @return
    */
-  public List<User> getUserList(Long institutionId) {
+  public List<User> getUserListOld(Long institutionId) {
 
     List<User> users = new ArrayList<>();
 
@@ -2116,9 +2148,15 @@ public class DeliverableAction extends BaseAction {
        */
       partnerInstitutions = new ArrayList<>();
 
+      /*
+       * gamboa 10/04/2024 findall is changed to a specific query
+       * List<ProjectPartner> partnersTmp =
+       * projectPartnerManager.findAll().stream().filter(pp -> pp.isActive() && pp.getProject().getId() == projectID
+       * && pp.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList());
+       */
+
       List<ProjectPartner> partnersTmp =
-        projectPartnerManager.findAll().stream().filter(pp -> pp.isActive() && pp.getProject().getId() == projectID
-          && pp.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList());
+        projectPartnerManager.findAllByPhaseProject(projectID, this.getActualPhase().getId());
 
       for (ProjectPartner partner : partnersTmp) {
         List<ProjectPartnerPerson> persons =
@@ -2446,7 +2484,6 @@ public class DeliverableAction extends BaseAction {
       }
 
     }
-
 
   }
 
