@@ -157,7 +157,7 @@ function moveScrollRight() {
   const containerSize = widthContainer * 0.8;
 
   element.style.scrollBehavior = "smooth"
-  element.scrollLeft += (containerSize + (containerSize * (2 / 5)));
+  element.scrollLeft += (containerSize);
 }
 
 function moveScrollLeft() {
@@ -167,7 +167,7 @@ function moveScrollLeft() {
   const containerSize = widthContainer * 0.8;
 
   element.style.scrollBehavior = "smooth"
-  element.scrollLeft -= (containerSize + (containerSize * (2 / 5)));
+  element.scrollLeft -= (containerSize);
 }
 
 const convertDateToAfricanDate = (date) => {
@@ -196,7 +196,6 @@ const getFirstAndLastDates = (dates) => {
 const getWeeks = (startDate, endDate) => {
   const firstDate = new Date(startDate);
   const lastDate = new Date(endDate);
-  console.log(firstDate);
   const weeks = [];
 
   const firstDayofFirstWeek = getFirstDateOfTheWeek(firstDate);
@@ -204,19 +203,18 @@ const getWeeks = (startDate, endDate) => {
   const totalDaysOfTimeline = getAbsoluteDays(firstDayofFirstWeek, lastDayofLastWeek);
 
   for (let i = 0; i < totalDaysOfTimeline; i += 7) {
-    console.log(i);
     weeks.push({
       firstDate: getDateBasedOnASumOfDays(firstDayofFirstWeek, i),
       lastDate: getDateBasedOnASumOfDays(firstDayofFirstWeek, i + 6),
       id: i
     });
   }
-  console.log(weeks);
   return weeks;
 }
 
 const getWeekBasedOnDay = (date, weeks) => {
   const dateToCompare = new Date(date);
+  console.log(dateToCompare);
   for (let i = 0; i < weeks.length; i++) {
     const { firstDate, lastDate } = weeks[i];
     if (dateToCompare >= firstDate && dateToCompare <= lastDate) {
@@ -263,7 +261,6 @@ function createDivActivities(activity, weeks, id) {
   const card = document.createElement('div');
   card.className = 'activityCard';
   card.id = `activityCard_${id}`;
-  console.log(activity.description);
   card.innerHTML = `
 			<div class="activityCard_container" 
 			style="left: ${setDistances(weeks,activity.startDate, activity.endDate,false )}; 
@@ -278,7 +275,11 @@ function createDivActivities(activity, weeks, id) {
 			    			<img src=${baseURL + "/global/images/start_date.png"} alt="start_icon" />
 			    			<p><b>Start date:</b> ${convertDateToText(activity.startDate, true)}</p>
 			    		</div>
-			    		<p><b>Status:</b> ${status} </p>
+              <div>
+                <b>Status:</b>
+                <p> ${status} </p>
+              </div>
+			    		
 			    		<div>
 			    			<img src=${baseURL + "/global/images/end_date.png"} alt="end_icon" />
 			    			<p><b>End date:</b> ${convertDateToText(activity.endDate, true)}</p>
@@ -322,26 +323,22 @@ function calculateAmountForWidth(startDate, endDate, weeks) {
   const startWeek = getWeekBasedOnDay(startDate, weeks);
   const endWeek = getWeekBasedOnDay(endDate, weeks);
 
-  console.log(startWeek +" "+ endWeek);
   const getDateFirstOfTheWeek = getFirstDateOfTheWeek(startDate);
   const getDateLastOfTheWeek = getLastDateOfTheWeek(endDate);
 
   const diffStartDateFromLastDayOfWeek = getAbsoluteDays(getDateFirstOfTheWeek, startDate);
   const diffEndDateFromLastDayOfWeek = getAbsoluteDays(getDateLastOfTheWeek, endDate);
 
-  console.log(diffEndDateFromLastDayOfWeek);
-
   const decimalAmount = (7-(diffEndDateFromLastDayOfWeek+diffStartDateFromLastDayOfWeek))/7 ;
-  
-  console.log(decimalAmount);
-  console.log(Math.abs((endWeek - startWeek)) + decimalAmount);
+
   return Math.abs((endWeek - startWeek)) + decimalAmount;
 }
 
 function setWidth(amount) {
+  const extraAmount = amount < 0.3 ? 2.5/7 : 0;
   const widthContainer = $('.sectionMap').width();
   const widthInPx = `${widthContainer * 0.8}px`;
-  return `calc(${amount !== undefined ? (amount) + "*(" + widthInPx + " / 2)" : "calc(" + widthInPx + " / 2)"} )  `;
+  return `calc(${amount !== undefined ? (amount + extraAmount) + "*(" + widthInPx + " / 2)" : "calc(" + widthInPx + " / 2)"} )  `;
 }
 function setDistances(weeks, startDate, endDate, isToday) {
   const { lastDate } = getFirstAndLastDates(timelineElements);
@@ -367,11 +364,21 @@ function setDistances(weeks, startDate, endDate, isToday) {
 
 
 function setTimelinePosition() {
-  let weekStart = new Date();
-  weekStart.setDate(weekStart.getDate() - weekStart.getDay())
+  const getFirstDate = getFirstAndLastDates(timelineElements).firstDate;
+  const getLastDate = getFirstAndLastDates(timelineElements).lastDate;
 
+  const getWeeksArray = getWeeks(getFirstDate, getLastDate);
+
+  const today = new Date();
   const timelineContainer = document.getElementById("timelineContainer");
-  timelineContainer.scrollLeft += (setDistances(weekStart, undefined, true) - 10);
+
+  const widthContainer = $('.sectionMap').width();
+  const containerSize = widthContainer * 0.8;
+
+  console.log(today);
+  console.log(getWeeksArray);
+  console.log(getWeekBasedOnDay(today, getWeeksArray));
+  timelineContainer.scrollLeft += ((getWeekBasedOnDay(today, getWeeksArray)/2) * (containerSize));
 
 }
 
@@ -382,7 +389,6 @@ function createTimeline2() {
   const getLastDate = getFirstAndLastDates(timelineElements).lastDate;
 
   const getWeeksArray = getWeeks(getFirstDate, getLastDate);
-  console.log(getWeeksArray);
 
   const listItemTimeline = document.getElementById("listItemTimeline2");
   listItemTimeline.innerHTML = `
