@@ -1849,16 +1849,16 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
                 if (action != null && action.getShfrmPriorityAction() != null
                   && action.getShfrmPriorityAction().getId() != null
                   && action.getShfrmPriorityAction().getComposedName() != null) {
-                  actionsText += "<br>  " + action.getShfrmPriorityAction().getComposedName();
+                  actionsText += "\n  " + action.getShfrmPriorityAction().getComposedName();
                   subActions = deliverableShfrmSubActionManager.findByPriorityActionAndPhase(action.getId(),
                     this.getSelectedPhase().getId());
 
                   if (subActions != null && !subActions.isEmpty()) {
-                    actionsText += "<br><b> SubActions:</b><br>";
+                    actionsText += "\n <b> SubActions:</b>\n";
                     for (DeliverableShfrmSubAction subAction : subActions) {
                       if (subAction != null && subAction.getShfrmSubAction() != null
                         && subAction.getShfrmSubAction().getComposedName() != null) {
-                        actionsText += " ●  " + subAction.getShfrmSubAction().getComposedName() + "<br>";
+                        actionsText += " ●  " + subAction.getShfrmSubAction().getComposedName() + "\n";
                       }
                     }
                   }
@@ -1870,9 +1870,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             LOG.error(e + " error getting shfrm actions and subactions");
           }
         } else {
-          contributingNarrative = "<Not Apply>";
-          shfrmActions = "<Not Apply>";
-          contributingNarrativeReporting = "<Not Apply>";
+          contributingNarrative = "<Not Applicable>";
+          shfrmActions = "<Not Applicable>";
+          contributingNarrativeReporting = "<Not Applicable>";
         }
 
         model.addRow(new Object[] {deliverable.getId(), title, delivType, delivSubType, delivStatus, delivYear,

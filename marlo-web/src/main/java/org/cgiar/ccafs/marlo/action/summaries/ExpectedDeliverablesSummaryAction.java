@@ -676,13 +676,17 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           if (deliverableDissemination.getArticleUrl() != null) {
             articleURL = deliverableDissemination.getArticleUrl();
           } else {
-            articleURL = "<Not Defined>";
+            articleURL = "&lt;Not Defined&gt;";
           }
         } else {
-          articleURL = "<Not Applicable>";
+          articleURL = "&lt;Not Applicable&gt;";
         }
       } else {
-        articleURL = "<Not Applicable>";
+        articleURL = "&lt;Not Applicable&gt;";
+      }
+
+      if (articleURL == null || (articleURL != null && articleURL.isEmpty())) {
+        articleURL = "Not Defined&gt;";
       }
 
       LinkedHashSet<Institution> managingResponsibleList = new LinkedHashSet<>();
@@ -1112,6 +1116,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         } else {
           regions = null;
         }
+
+        if (regions == null) {
+          regions = "&lt;Not Defined&gt;";
+        }
+
         String openFS = "";
         String finishedFS = "";
         Set<String> fsWindowsSet = new HashSet<String>();
@@ -1349,10 +1358,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
         if (isContributing.equals("Yes")) {
 
-          if (deliverable.getDeliverableInfo().getShfrmContributionNarrative() != null) {
+          if (deliverable.getDeliverableInfo().getShfrmContributionNarrative() != null
+            && !deliverable.getDeliverableInfo().getShfrmContributionNarrative().isEmpty()) {
             contributingNarrative = deliverable.getDeliverableInfo().getShfrmContributionNarrative();
           } else {
-            contributingNarrative = "<Not provided>";
+            contributingNarrative = "<Not Provided>";
           }
 
           List<DeliverableShfrmPriorityAction> actions = new ArrayList<>();
@@ -1368,16 +1378,16 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                 if (action != null && action.getShfrmPriorityAction() != null
                   && action.getShfrmPriorityAction().getId() != null
                   && action.getShfrmPriorityAction().getComposedName() != null) {
-                  actionsText += "<br>  " + action.getShfrmPriorityAction().getComposedName();
+                  actionsText += "\n  " + action.getShfrmPriorityAction().getComposedName();
                   subActions = deliverableShfrmSubActionManager.findByPriorityActionAndPhase(action.getId(),
                     this.getSelectedPhase().getId());
 
                   if (subActions != null && !subActions.isEmpty()) {
-                    actionsText += "<br><b> SubActions:</b><br>";
+                    actionsText += "\n <b> SubActions:</b> \n";
                     for (DeliverableShfrmSubAction subAction : subActions) {
                       if (subAction != null && subAction.getShfrmSubAction() != null
                         && subAction.getShfrmSubAction().getComposedName() != null) {
-                        actionsText += " ●  " + subAction.getShfrmSubAction().getComposedName() + "<br>";
+                        actionsText += " ●  " + subAction.getShfrmSubAction().getComposedName() + "\n";
                       }
                     }
                   }
@@ -1389,8 +1399,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             LOG.error(e + " error getting shfrm actions and subactions");
           }
         } else {
-          contributingNarrative = "<Not Apply>";
-          shfrmActions = "<Not Apply>";
+          contributingNarrative = "&lt;Not Applicable&gt;";
+          shfrmActions = "&lt;Not Applicable&gt;";
         }
 
         model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
