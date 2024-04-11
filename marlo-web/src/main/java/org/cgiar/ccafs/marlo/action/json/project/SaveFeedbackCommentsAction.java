@@ -484,11 +484,11 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         feedbackStatus =
           feedbackStatusManager.getFeedbackStatusById(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()));
       } else {
-        // Set comment as Agreed
+        // Set comment as Admitted
         feedbackStatus =
           feedbackStatusManager.getFeedbackStatusById(Long.parseLong(FeedbackStatusEnum.Admitted.getStatusId()));
-        qaComment.setUserApproval(this.getCurrentUser());
-        qaComment.setApprovalDate(date);
+        qaComment.setDraftActionUser(this.getCurrentUser());
+        qaComment.setDraftActionDate(date);
       }
 
       qaComment.setFeedbackStatus(feedbackStatus);
