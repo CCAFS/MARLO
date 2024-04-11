@@ -56,6 +56,10 @@ public interface DeliverableDAO {
    */
   public List<Deliverable> findAll();
 
+  List<String> getAnsweredCommentByPhase(long phase);
+
+  List<String> getCommentStatusByPhase(long phase);
+
   /**
    * This method gets a list of Deliverable that are active by a given parameters
    * 
@@ -89,6 +93,8 @@ public interface DeliverableDAO {
   public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
 
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
+
+  List<String> getDuplicatesDeliverablesByPhase(long phase);
 
   public List<Deliverable> getPublicationsByPhase(long phase);
 

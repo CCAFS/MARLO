@@ -55,6 +55,23 @@ public interface ProjectPartnerManager {
    */
   public List<ProjectPartner> findAll();
 
+  /**
+   * This method gets a list of projectPartner that are active, by phase and project
+   * 
+   * @param projectId project identifier.
+   * @param phaseId phase identifier.
+   * @return ProjectPartner list.
+   */
+  List<ProjectPartner> findAllByPhaseProject(long projectId, long phaseId);
+
+  /**
+   * This method gets a list of projectPartner that are active, by phase, project and institution
+   * 
+   * @param projectId project identifier.
+   * @param phaseId phase identifier.
+   * @return ProjectPartner list.
+   */
+  List<ProjectPartner> findAllByPhaseProjectAndInstitution(long projectId, long phaseId, long institutionId);
 
   /**
    * This method gets a projectPartner object by a given projectPartner identifier.
@@ -68,8 +85,10 @@ public interface ProjectPartnerManager {
 
   public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPartnerPersons(long projectId);
 
+
   public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(long projectId,
     long phaseId);
+
 
   /**
    * This method saves the information of the given projectPartner

@@ -340,6 +340,20 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
   }
 
   @Override
+  public List<ProjectPartner> findAllByPhaseProject(long projectId, long phaseId) {
+
+    return projectPartnerDAO.findAllByPhaseProject(projectId, phaseId);
+
+  }
+
+  @Override
+  public List<ProjectPartner> findAllByPhaseProjectAndInstitution(long projectId, long phaseId, long institutionId) {
+
+    return projectPartnerDAO.findAllByPhaseProjectAndInstitution(projectId, phaseId, institutionId);
+
+  }
+
+  @Override
   public ProjectPartner getProjectPartnerById(long projectPartnerID) {
 
     return projectPartnerDAO.find(projectPartnerID);

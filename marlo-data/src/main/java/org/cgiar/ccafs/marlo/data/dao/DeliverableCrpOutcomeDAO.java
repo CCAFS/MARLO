@@ -54,6 +54,12 @@ public interface DeliverableCrpOutcomeDAO {
    */
   public List<DeliverableCrpOutcome> findAll();
 
+  /**
+   * This method gets a list of deliverableCrpOutcome by phase that are active
+   * 
+   * @return a list from DeliverableCrpOutcome null if no exist records
+   */
+  List<DeliverableCrpOutcome> findAllByPhase(Long phaseId);
 
   /**
    * This method saves the information of the given deliverableCrpOutcome

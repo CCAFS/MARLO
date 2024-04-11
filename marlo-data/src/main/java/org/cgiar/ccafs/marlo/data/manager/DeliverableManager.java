@@ -56,6 +56,10 @@ public interface DeliverableManager {
    */
   public List<Deliverable> findAll();
 
+  List<String> getAnsweredCommentByPhase(long phase);
+
+  List<String> getCommentStatusByPhase(long phase);
+
   /**
    * This method gets a deliverable object by a given deliverable identifier.
    * 
@@ -94,6 +98,7 @@ public interface DeliverableManager {
    */
   public List<DeliverableHomeDTO> getDeliverablesByProjectAndPhaseHome(Long phaseId, Long projectId);
 
+
   public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
 
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
@@ -109,6 +114,8 @@ public interface DeliverableManager {
    */
   public List<Deliverable> getDeliverablesList(LiaisonInstitution liaisonInstitution, Phase phase);
 
+  List<String> getDuplicatesDeliverablesByPhase(long phase);
+
   public List<Deliverable> getNotPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
 
   /**
@@ -118,6 +125,7 @@ public interface DeliverableManager {
    */
 
   public List<Deliverable> getPublicationsByPhase(long phase);
+
 
   /**
    * This method gets a list of publications that are active for an specific liaisonInstitution
@@ -130,7 +138,9 @@ public interface DeliverableManager {
    */
   public List<Deliverable> getPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
 
+
   public Boolean isDeliverableExcluded(Long deliverableId, Long phaseId);
+
 
   /**
    * This method saves the information of the given deliverable
@@ -141,6 +151,7 @@ public interface DeliverableManager {
    *         or -1 is some error occurred.
    */
   public Deliverable saveDeliverable(Deliverable deliverable);
+
 
   /**
    * This method saves the information of the given deliverable and save the history in the auditlog
