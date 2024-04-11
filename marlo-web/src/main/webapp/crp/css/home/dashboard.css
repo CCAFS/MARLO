@@ -487,12 +487,6 @@ span.timelineControl:hover {
 	  border-radius: 5px;
 	}
 	
-	#timeline_timeRange{
-		position: absolute;
-		left: 47.5%;
-		margin-top: -12px;
-	}
-	
 	.timebox {
 	  height: 80%;
 	  position: relative;
