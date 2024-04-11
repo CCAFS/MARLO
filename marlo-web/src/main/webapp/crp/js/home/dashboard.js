@@ -266,7 +266,7 @@ function createDivActivities(activity, weeks, id) {
   console.log(activity.description);
   card.innerHTML = `
 			<div class="activityCard_container" 
-			style="left: ${setDistances(weeks,activity.startDate, activity.endDate,false, false )}; 
+			style="left: ${setDistances(weeks,activity.startDate, activity.endDate,false )}; 
 			width: ${setWidth(calculateAmountForWidth(activity.startDate, activity.endDate, weeks))}; 
 			background: ${setStatusColor(status)}
 			" >
@@ -343,53 +343,28 @@ function setWidth(amount) {
   const widthInPx = `${widthContainer * 0.8}px`;
   return `calc(${amount !== undefined ? (amount) + "*(" + widthInPx + " / 2)" : "calc(" + widthInPx + " / 2)"} )  `;
 }
-function setDistances(weeks, startDate, endDate, isToday, isJs) {
+function setDistances(weeks, startDate, endDate, isToday) {
+  const { lastDate } = getFirstAndLastDates(timelineElements);
 
   let today = convertDateToAfricanDate(new Date());
-  //today = today.getDate() > lastDate ? convertDateToAfricanDate(lastDate) : today;
+  today = today.getDate() > lastDate ? convertDateToAfricanDate(lastDate) : today;
+  const getWeekDistanceFromToday = getWeekBasedOnDay(today, weeks);
+  const getDayDistanceFromToday = (getAbsoluteDays(today, getFirstDateOfTheWeek(today))) / 7;
+  const currentHour = today.getHours();
+  const percentageCompletion = ((currentHour / 24)/7);
 
   const widthContainer = $('.sectionMap').width();
-  const widthInPx = `${widthContainer * 0.8}px`;
   const containerSize = widthContainer * 0.8;
 
   const getWeekDistance = getWeekBasedOnDay(startDate, weeks);
   const getDayDistance = (getAbsoluteDays(startDate, getFirstDateOfTheWeek(startDate))) / 7;
+  if(isToday){
 
-  return `calc(${getWeekDistance + getDayDistance}px * (${containerSize} / 2))`;
-
-}
-/* function setDistances(startDate, isToday, isJS, endDate) {
-  const { firstDate, lastDate } = getFirstAndLastDates(timelineElements);
-  let today = convertDateToAfricanDate(new Date());
-
-  today = today.getDate() > lastDate ? convertDateToAfricanDate(lastDate) : today;
-
-  const currentHour = today.getHours();
-  const percentageCompletion = (currentHour / 24);
-
-
-  const widthContainer = $('.sectionMap').width();
-  const widthInPx = `${widthContainer * 0.8}px`;
-  const containerSize = widthContainer * 0.8;
-
-  const isFinalActivity = new Date(lastDate).getTime() === new Date(endDate).getTime();
-
-  if (isJS) {
-
-    if (isToday) {
-      return (getAbsoluteDays(firstDate, today, 1) * ((containerSize / 5) + ((containerSize / 5) * percentageCompletion)))
-    }
-
-    return ((isFinalActivity ? getAbsoluteDays(firstDate, startDate) - 2 : getAbsoluteDays(firstDate, startDate)) * (containerSize / 5))
-
-  } else {
-
-    if (isToday) {
-      return `calc(${getAbsoluteDays(firstDate, today, 1)} * (${widthInPx} / 5) + ((${widthInPx} / 5)* ${percentageCompletion}) )`;
-    }
-    return `calc((${isFinalActivity ? getAbsoluteDays(firstDate, startDate) - 2 : getAbsoluteDays(firstDate, startDate)}) * (${widthInPx} / 5))`;
+    return `calc(${getWeekDistanceFromToday + getDayDistanceFromToday + percentageCompletion}px * (${containerSize} / 2) )`
   }
-} */
+  return `calc(${getWeekDistance + getDayDistance}px * (${containerSize} / 2))`;
+}
+
 
 function setTimelinePosition() {
   let weekStart = new Date();
@@ -443,13 +418,11 @@ function createTimeline2() {
       		${createDivActivities(elem, getWeeksArray, id).outerHTML}
       	` ).join('')}
       </div>
-     
+      <div id="timeline_today" style="left: ${setDistances(getWeeksArray,null,null, true)}"></div>
     </div>
   </div>
 	`
 }
-
-//<div id="timeline_today" style="left: ${setDistances(weeks,null,null, true,false)}"></div>
 
 function updateTable() {
   // console.log(this.attr("id"))
