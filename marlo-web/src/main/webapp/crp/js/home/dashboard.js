@@ -256,7 +256,7 @@ function getIntersectedActivities() {
   const list_activities = Array.from(timeline_activities);
 
   const timelineContainer = document.getElementById("timelineContainer");
-
+  
   const observer = new IntersectionObserver((entries) => {
     let activitiesIntersected = [];
 
@@ -305,7 +305,7 @@ function getIntersectedActivities() {
 
   setTimeout(() => {
     observer.disconnect();
-  }, 10);
+  }, 20);
 
 }
 
@@ -341,7 +341,7 @@ function createDivActivities(activity, weeks, id) {
 			" >
 			
 				<div class="activityCard_content"> 
-					<h3 class="activityCard_description">${activity.description}</h3>
+					<h3 class="user-badge activityCard_description" tiltle="${activity.description}">${activity.description}</h3>
 			    <div class="activityCard_details">
 			    		<div>
 			    			<img src=${baseURL + "/global/images/start_date.png"} alt="start_icon" />
