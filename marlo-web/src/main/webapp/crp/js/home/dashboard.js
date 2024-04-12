@@ -32,6 +32,11 @@ function initDashboard() {
   $('.itemsTablet').hover(updateGif, updateImg);
 
   $('.circleMap').hover(itemMapHover, itemMap);
+
+  $('.activityCard_container').hover(function(){
+    const $info = $(this).find('.activityCard_description');
+    $info.tooltip();
+  })	
 }
 
 function itemMapHover() {
@@ -341,7 +346,7 @@ function createDivActivities(activity, weeks, id) {
 			" >
 			
 				<div class="activityCard_content"> 
-					<h3 class="user-badge activityCard_description" tiltle="${activity.description}">${activity.description}</h3>
+					<h3 class="user-badge activityCard_description" title="${activity.description}">${activity.description}</h3>
 			    <div class="activityCard_details">
 			    		<div>
 			    			<img src=${baseURL + "/global/images/start_date.png"} alt="start_icon" />
