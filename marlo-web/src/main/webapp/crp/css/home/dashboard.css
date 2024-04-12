@@ -418,7 +418,7 @@ span.timelineControl:hover {
 	  margin: 18px 30px 18px 30px;
 	  overflow-x: scroll;
 	  overflow-y: hidden;
-	  height: 34vh;
+	  height: 36vh;
 	  width: 80%;
 	  margin: 0 auto;
 	}
@@ -487,12 +487,6 @@ span.timelineControl:hover {
 	  border-radius: 5px;
 	}
 	
-	#timeline_timeRange{
-		position: absolute;
-		left: 47.5%;
-		margin-top: -12px;
-	}
-	
 	.timebox {
 	  height: 80%;
 	  position: relative;
@@ -500,6 +494,13 @@ span.timelineControl:hover {
     border-right: 1px dashed #CCCCCC;
 		border-left: 1px dashed #CCCCCC;
 	}
+
+  .timebox_information {
+    position: absolute;
+    bottom: -24px;
+    left: -12px;
+    
+  }
 	
 	.timeNumber{
 		margin: 1.5px;
@@ -539,7 +540,7 @@ span.timelineControl:hover {
 		white-space: nowrap;
 		font-size: 1.4rem;
 		font-style: normal;
-		font-weight: 400;
+		font-weight: 700;
 		margin: 0;
 	}
 	
@@ -554,8 +555,23 @@ span.timelineControl:hover {
 	.activityCard_details div{
 		display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0 0.5rem;
+    max-width: 33.3%;
+    flex-wrap: wrap;
 	}
+
+  .activityCard_details div:nth-child(odd){
+    max-width: 35%;
+  }
+
+  .activityCard_details div:nth-child(even){
+    max-width: 30%;
+  }
+
+  .activityCard_details div b{
+    font-size: 1rem;
+    color: #000;
+  }
 	
 	.activityCard_details p{
 		font-size: 1rem;
@@ -567,18 +583,30 @@ span.timelineControl:hover {
 	}
 	
 	.activityCard:nth-child(n+1){
-		top: 1em;
+		top: -0.3em;
 	}
 	
 	.activityCard:nth-child(2n+2){
-		top: 5.5em;
+		top: 4.2em;
 	}
 	
 	
 	.activityCard:nth-child(3n+3){
-		top: 10em;
+		top: 8.7em;
 
 	}
+
+  .activityCard ~ .activityFlexTop{
+    top: -0.3em;
+  }
+
+  .activityFlexTop ~ .activityFlexTop{
+    top: 4.2em;
+  }
+
+  .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop{
+    top: 8.7em;
+  }
 	
 	#timelineAlert{
 		display: flex;
