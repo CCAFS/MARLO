@@ -21,6 +21,7 @@ function initDashboard() {
   $(".timelineRefresh").hide();
   $(".timeline").show();
   setTimelinePosition();
+  getIntersectedActivities();
 
   $('.buttonRightTimeline').on("click", moveScrollRight);
 
@@ -158,6 +159,11 @@ function moveScrollRight() {
 
   element.style.scrollBehavior = "smooth"
   element.scrollLeft += (containerSize);
+
+  setTimeout(() => {
+    getIntersectedActivities();
+  }, 500);
+  
 }
 
 function moveScrollLeft() {
@@ -168,6 +174,10 @@ function moveScrollLeft() {
 
   element.style.scrollBehavior = "smooth"
   element.scrollLeft -= (containerSize);
+
+  setTimeout(() => {
+    getIntersectedActivities();
+  }, 500);
 }
 
 const convertDateToAfricanDate = (date) => {
@@ -214,7 +224,6 @@ const getWeeks = (startDate, endDate) => {
 
 const getWeekBasedOnDay = (date, weeks) => {
   const dateToCompare = new Date(date);
-  console.log(dateToCompare);
   for (let i = 0; i < weeks.length; i++) {
     const { firstDate, lastDate } = weeks[i];
     if (dateToCompare >= firstDate && dateToCompare <= lastDate) {
@@ -240,6 +249,64 @@ function getDateBasedOnASumOfDays(startDate, days) {
   const newDate = new Date(startDate);
   newDate.setDate(newDate.getDate() + days);
   return newDate;
+}
+
+function getIntersectedActivities() {
+  const timeline_activities = $(".activityCard_container");
+  const list_activities = Array.from(timeline_activities);
+
+  const timelineContainer = document.getElementById("timelineContainer");
+
+  const observer = new IntersectionObserver((entries) => {
+    let activitiesIntersected = [];
+
+    entries.forEach(entry => {
+      const activity = entry.target;
+      if (entry.isIntersecting) {
+        activitiesIntersected.push(activity);
+      }
+      $(activity).parent().removeClass("activityFlexTop");
+    });
+
+    activitiesIntersected.forEach(activity => {
+      $(activity).parent().addClass("activityFlexTop");
+    });
+
+    switch(activitiesIntersected.length){
+      case 1:
+        if(document.documentElement.getBoundingClientRect().width > 1500){
+          timelineContainer.style.height = "18vh";
+        } else {
+          timelineContainer.style.height = "24vh";
+        }
+
+        break;
+      case 2:
+        if(document.documentElement.getBoundingClientRect().width > 1500){
+          timelineContainer.style.height = "22vh";
+        } else {
+          timelineContainer.style.height = "28vh";
+        }
+        break;
+      default:
+        timelineContainer.style.removeProperty("height");
+        activitiesIntersected.forEach(activity => {
+          $(activity).parent().removeClass("activityFlexTop");
+        });
+        break;
+    }
+
+  },{});
+
+  
+  list_activities.forEach(activity => { 
+    observer.observe(activity);
+  });
+
+  setTimeout(() => {
+    observer.disconnect();
+  }, 10);
+
 }
 
 function createDivTimes(totalWeeks, divClass) {
@@ -341,7 +408,7 @@ function calculateAmountForWidth(startDate, endDate, weeks) {
 
 function setWidth(amount) {
 
-  const extraAmount = amount < 0.3 ? 2.5/7 : amount > 1.5 ? -2/7 : 0;
+  const extraAmount = amount < 0.3 ? 2.5/7 : amount > 1.5 ? -1.5/7 : 0;
   const widthContainer = $('.sectionMap').width();
   const widthInPx = `${widthContainer * 0.8}px`;
   return `calc(${amount !== undefined ? (amount + extraAmount) + "*(" + widthInPx + " / 2)" : "calc(" + widthInPx + " / 2)"} )  `;
@@ -381,9 +448,6 @@ function setTimelinePosition() {
   const widthContainer = $('.sectionMap').width();
   const containerSize = widthContainer * 0.8;
 
-  console.log(today);
-  console.log(getWeeksArray);
-  console.log(getWeekBasedOnDay(today, getWeeksArray));
   timelineContainer.scrollLeft += ((getWeekBasedOnDay(today, getWeeksArray)/2) * (containerSize));
 
 }

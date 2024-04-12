@@ -583,7 +583,7 @@ span.timelineControl:hover {
 	}
 	
 	.activityCard:nth-child(n+1){
-		top: -0.3rem;
+		top: -0.3em;
 	}
 	
 	.activityCard:nth-child(2n+2){
@@ -595,6 +595,18 @@ span.timelineControl:hover {
 		top: 8.7em;
 
 	}
+
+  .activityCard ~ .activityFlexTop{
+    top: -0.3em;
+  }
+
+  .activityFlexTop ~ .activityFlexTop{
+    top: 4.2em;
+  }
+
+  .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop{
+    top: 8.7em;
+  }
 	
 	#timelineAlert{
 		display: flex;
