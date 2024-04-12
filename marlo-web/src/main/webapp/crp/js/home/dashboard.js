@@ -249,7 +249,12 @@ function createDivTimes(totalWeeks, divClass) {
     newDiv.id = `time_${i}`
     newDiv.className = divClass;
     newDiv.style.width = setWidth();
-    newDiv.innerHTML = `${convertDateToText(totalWeeks[i].firstDate)} `;
+    newDiv.innerHTML = `
+    <div class="${divClass}_information">
+      	${convertDateToText(totalWeeks[i].firstDate)} 
+    </div>
+    
+    `;
     arrayDays.push(newDiv);
   }
   return arrayDays;
@@ -335,7 +340,8 @@ function calculateAmountForWidth(startDate, endDate, weeks) {
 }
 
 function setWidth(amount) {
-  const extraAmount = amount < 0.3 ? 2.5/7 : 0;
+
+  const extraAmount = amount < 0.3 ? 2.5/7 : amount > 1.5 ? -2/7 : 0;
   const widthContainer = $('.sectionMap').width();
   const widthInPx = `${widthContainer * 0.8}px`;
   return `calc(${amount !== undefined ? (amount + extraAmount) + "*(" + widthInPx + " / 2)" : "calc(" + widthInPx + " / 2)"} )  `;
