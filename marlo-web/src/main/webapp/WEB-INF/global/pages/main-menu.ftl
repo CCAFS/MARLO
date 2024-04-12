@@ -130,7 +130,7 @@
 	    [@mainMenuList /]
 	  </ul>
 
-	  [#if logged?? && logged]
+    [#if logged?? && logged]
       <div id="userInfo">
         <a id="userLogOut" href="[@s.url action="logout" namespace="/" /]">[@s.text name="header.logout" /]</a>
         <p class="userId" style="display:none">${(currentUser.id)!}</p>
@@ -138,7 +138,7 @@
         <p class="institution">${(currentUser.email)!}</p>
         <p class="roles"> [${(roles)!}${(roles?has_content && liasons?has_content)?string(',','')}${(liasons)!}]</p>
       </div>
-  	[/#if]
+    [/#if]
   </div>
 </div>
 </nav>

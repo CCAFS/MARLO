@@ -1,0 +1,1 @@
+ALTER TABLE tip_parameters ADD encryption_key text NULL;
