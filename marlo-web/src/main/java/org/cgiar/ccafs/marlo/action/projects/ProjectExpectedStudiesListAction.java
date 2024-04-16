@@ -54,7 +54,6 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ProjectExpectedStudiesListAction extends BaseAction {
 
-
   private static final long serialVersionUID = 5533305942651533875L;
 
 
@@ -204,10 +203,10 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     return allYears;
   }
 
+
   public void getCommentStatuses() {
 
     try {
-
 
       List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
 
@@ -221,7 +220,6 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
 
         // Set the comment status in each project outcome
-
         for (ProjectExpectedStudy study : projectStudies) {
           int answeredComments = 0, totalComments = 0;
           try {
@@ -257,6 +255,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
                 }
               }
             }
+
             study.setCommentStatus(answeredComments + "/" + totalComments);
 
             if (study.getCommentStatus() == null
@@ -270,6 +269,54 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
         }
 
       }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void getCommentStatusesNew() {
+    try {
+
+      List<String> commentList = null;
+      commentList = feedbackQACommentableFieldsManager.getCommentStatusByPhaseToStudy(this.getActualPhase().getId());
+
+      List<String> commentAnsweredList = null;
+      commentAnsweredList =
+        feedbackQACommentableFieldsManager.getAnsweredCommentByPhaseToStudy(this.getActualPhase().getId());
+
+
+      for (ProjectExpectedStudy study : projectStudies) {
+        int answeredComments = 0;
+        int totalComments = 0;
+        try {
+
+          for (String string : commentList) {
+            String test = string.replace("|", ";");
+
+            if (test.split(";")[0].equals(study.getId() + "")) {
+              totalComments = Integer.parseInt(test.split(";")[1]);
+            }
+          }
+
+          for (String string : commentAnsweredList) {
+            String test = string.replace("|", ";");
+
+            if (test.split(";")[0].equals(study.getId() + "")) {
+              answeredComments = Integer.parseInt(test.split(";")[1]);
+            }
+          }
+
+          study.setCommentStatus(answeredComments + "/" + totalComments);
+          if (study.getCommentStatus() == null
+            || (study.getCommentStatus() != null && study.getCommentStatus().isEmpty())) {
+            study.setCommentStatus(0 + "/" + 0);
+          }
+
+        } catch (Exception e) {
+          study.setCommentStatus(0 + "/" + 0);
+        }
+      }
+
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -315,7 +362,6 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     this.setPhaseID(this.getActualPhase().getId());
 
@@ -449,8 +495,10 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
       }
     }
     if (this.hasSpecificities(this.feedbackModule())) {
-      this.getCommentStatuses();
+      // this.getCommentStatuses();
+      this.getCommentStatusesNew();
     }
+
   }
 
 
