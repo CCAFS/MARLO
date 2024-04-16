@@ -190,7 +190,7 @@ const convertDateToAfricanDate = (date) => {
   return new Date(date.toLocaleString('en-US', africanOptions));
 }
 const convertDateToText = (date, withYear) => {
-  return new Date(date).toLocaleString('default', withYear ? { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric', year: "numeric" } : { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric' });
+  return new Date(date).toLocaleString('default', withYear ? { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric', year: "2-digit" } : { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric' });
 }
 
 const getAbsoluteDays = (startDate, endDate, restDays) => {
@@ -350,7 +350,7 @@ function createDivActivities(activity, weeks, id) {
 			    <div class="activityCard_details">
 			    		<div>
 			    			<img src=${baseURL + "/global/images/start_date.png"} alt="start_icon" />
-			    			<p><b>Start date:</b> ${convertDateToText(activity.startDate, true)}</p>
+			    			<p><b>Start date:</b> ${convertDateToText(activity.startDate)}</p>
 			    		</div>
               <div>
                 <b>Status:</b>
@@ -359,7 +359,7 @@ function createDivActivities(activity, weeks, id) {
 			    		
 			    		<div>
 			    			<img src=${baseURL + "/global/images/end_date.png"} alt="end_icon" />
-			    			<p><b>End date:</b> ${convertDateToText(activity.endDate, true)}</p>
+			    			<p><b>End date:</b> ${convertDateToText(activity.endDate)}</p>
 			    		</div>
 			    </div>
 				</div>
@@ -413,7 +413,7 @@ function calculateAmountForWidth(startDate, endDate, weeks) {
 
 function setWidth(amount) {
 
-  const extraAmount = amount < 0.3 ? 2.5/7 : amount > 1.5 ? -1.5/7 : 0;
+  const extraAmount = amount < 0.3 ? 4/7 : amount > 1.5 ? -1.5/7 : 0;
   const widthContainer = $('.sectionMap').width();
   const widthInPx = `${widthContainer * 0.8}px`;
   return `calc(${amount !== undefined ? (amount + extraAmount) + "*(" + widthInPx + " / 2)" : "calc(" + widthInPx + " / 2)"} )  `;

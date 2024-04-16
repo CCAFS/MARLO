@@ -481,10 +481,10 @@ span.timelineControl:hover {
 	  position: absolute;
 	  top: 0;
 	  left: 0;
-	  width: 2px;
+	  width: 0.375rem;
 	  height: 80%;
-	  background-color: red;
-	  border-radius: 5px;
+    border: 2px dashed red;
+    border-width: 1px 2.5px;
 	}
 	
 	.timebox {
@@ -497,9 +497,7 @@ span.timelineControl:hover {
 
   .timebox_information {
     position: absolute;
-    bottom: -24px;
-    left: -12px;
-    
+    bottom: -24px;    
   }
 	
 	.timeNumber{
@@ -542,6 +540,7 @@ span.timelineControl:hover {
 		font-style: normal;
 		font-weight: 700;
 		margin: 0;
+		padding: 0;
 	}
 	
 	.activityCard_details{
@@ -571,6 +570,7 @@ span.timelineControl:hover {
   .activityCard_details div b{
     font-size: 1rem;
     color: #000;
+    line-height: 1.2em;
   }
 	
 	.activityCard_details p{
