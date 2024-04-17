@@ -282,7 +282,7 @@ function getIntersectedActivities() {
         if(document.documentElement.getBoundingClientRect().width > 1500){
           timelineContainer.style.height = "18vh";
         } else {
-          timelineContainer.style.height = "24vh";
+          timelineContainer.style.height = "26vh";
         }
 
         break;
@@ -290,9 +290,30 @@ function getIntersectedActivities() {
         if(document.documentElement.getBoundingClientRect().width > 1500){
           timelineContainer.style.height = "22vh";
         } else {
-          timelineContainer.style.height = "28vh";
+          timelineContainer.style.height = "30vh";
         }
         break;
+      case 3:
+        if(document.documentElement.getBoundingClientRect().width > 1500){
+          timelineContainer.style.height = "26vh";
+        } else {
+          timelineContainer.style.height = "36vh";
+        }
+        break;
+      case 4: 
+      if(document.documentElement.getBoundingClientRect().width > 1500){
+        timelineContainer.style.height = "26vh";
+      } else {
+        timelineContainer.style.height = "36vh";
+      }
+        break;
+      case 5: 
+        if(document.documentElement.getBoundingClientRect().width > 1500){
+          timelineContainer.style.height = "26vh";
+        } else {
+          timelineContainer.style.height = "36vh";
+        }
+      break;
       default:
         timelineContainer.style.removeProperty("height");
         activitiesIntersected.forEach(activity => {
@@ -310,7 +331,7 @@ function getIntersectedActivities() {
 
   setTimeout(() => {
     observer.disconnect();
-  }, 20);
+  }, 25);
 
 }
 
@@ -413,7 +434,7 @@ function calculateAmountForWidth(startDate, endDate, weeks) {
 
 function setWidth(amount) {
 
-  const extraAmount = amount < 0.3 ? 4/7 : amount > 1.5 ? -1.5/7 : 0;
+  const extraAmount = amount < 0.3 ? 2.9/7 : amount > 1.5 ? -1.5/7 : 0;
   const widthContainer = $('.sectionMap').width();
   const widthInPx = `${widthContainer * 0.8}px`;
   return `calc(${amount !== undefined ? (amount + extraAmount) + "*(" + widthInPx + " / 2)" : "calc(" + widthInPx + " / 2)"} )  `;
