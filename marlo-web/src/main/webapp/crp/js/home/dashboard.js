@@ -426,7 +426,7 @@ function setDistances(weeks, startDate, endDate, isToday) {
   const getWeekDistanceFromToday = getWeekBasedOnDay(today, weeks);
   const getDayDistanceFromToday = (getAbsoluteDays(today, getFirstDateOfTheWeek(today))) / 7;
   const currentHour = today.getHours();
-  const percentageCompletion = ((currentHour / 24)/7);
+  const percentageCompletion = ((currentHour / 24)/7)/2;
 
   const widthContainer = $('.sectionMap').width();
   const containerSize = widthContainer * 0.8;

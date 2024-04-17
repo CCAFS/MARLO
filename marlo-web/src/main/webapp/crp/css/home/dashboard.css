@@ -481,10 +481,10 @@ span.timelineControl:hover {
 	  position: absolute;
 	  top: 0;
 	  left: 0;
-	  width: 0.375rem;
+	  width: 0.25rem;
 	  height: 80%;
     border: 2px dashed red;
-    border-width: 1px 2.5px;
+    border-width: 0.5px 1.5px;
 	}
 	
 	.timebox {
