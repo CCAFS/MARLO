@@ -294,26 +294,16 @@ function getIntersectedActivities() {
         }
         break;
       case 3:
+      case 4:
+      case 5:
+      case 6:
+      case 7:
         if(document.documentElement.getBoundingClientRect().width > 1500){
-          timelineContainer.style.height = "26vh";
+          timelineContainer.style.height = "30vh";
         } else {
           timelineContainer.style.height = "36vh";
         }
         break;
-      case 4: 
-      if(document.documentElement.getBoundingClientRect().width > 1500){
-        timelineContainer.style.height = "26vh";
-      } else {
-        timelineContainer.style.height = "36vh";
-      }
-        break;
-      case 5: 
-        if(document.documentElement.getBoundingClientRect().width > 1500){
-          timelineContainer.style.height = "26vh";
-        } else {
-          timelineContainer.style.height = "36vh";
-        }
-      break;
       default:
         timelineContainer.style.removeProperty("height");
         activitiesIntersected.forEach(activity => {
