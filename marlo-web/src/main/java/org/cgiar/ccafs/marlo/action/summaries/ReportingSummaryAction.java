@@ -579,9 +579,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nDeliverableNewExpectedYear", this.getText("deliverable.newExpectedYear"));
     masterReport.getParameterValues().put("i8nDeliverablesActivities", this.getText("project.activities.title"));
     masterReport.getParameterValues().put("i8nDeliverablesContributingSHFRM",
-      this.getText("deliverable.shfrmContribution.question.reporting"));
+      "Is this deliverable aligned with the Soil Health and Fertility Road Map (SHFRM) implementation?");
     masterReport.getParameterValues().put("i8nDeliverablesContributingNarrative",
-      this.getText("deliverable.shfrmContribution.narrative.reporting"));
+      "How this deliverable is expecting to contribute to the SHFRM?");
+    masterReport.getParameterValues().put("i8nDeliverablesContributingNarrativeReporting",
+      "How this deliverable is contributing to the SHFRM?");
     masterReport.getParameterValues().put("i8nDeliverablesActions",
       "To which Priority(ies) action is contributing to:");
     /*
@@ -2725,7 +2727,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         "intellectualAssetDateExpiry", "intellectualAssetAdditionalInformation", "intellectualAssetLinkPublished",
         "intellectualAssetCommunication", "otherPartner", "deliv_description", "activities", "geographicScope",
         "countries", "regions", "sharedClusters", "focusEvent", "likelyOutcomes", "isContributing",
-        "contributingNarrative", "shfrmActions"},
+        "contributingNarrative", "shfrmActions", "contributingNarrativeReporting"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -2738,7 +2740,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getDeliverables().isEmpty()) {
@@ -3660,7 +3662,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
         }
 
-        String isContributing = "", contributingNarrative = "", shfrmActions = "";
+        String isContributing = "", contributingNarrative = "", contributingNarrativeReporting = "", shfrmActions = "";
 
         // SOIL Contribution
         if (deliverable.getDeliverableInfo() != null
@@ -3676,10 +3678,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
         if (isContributing.equals("Yes")) {
 
-          if (deliverable.getDeliverableInfo().getShfrmContributionNarrativeAR() != null) {
-            contributingNarrative = deliverable.getDeliverableInfo().getShfrmContributionNarrativeAR();
+          if (deliverable.getDeliverableInfo().getShfrmContributionNarrative() != null) {
+            contributingNarrative = deliverable.getDeliverableInfo().getShfrmContributionNarrative();
           } else {
             contributingNarrative = "<Not provided>";
+          }
+
+          if (deliverable.getDeliverableInfo().getShfrmContributionNarrativeAR() != null) {
+            contributingNarrativeReporting = deliverable.getDeliverableInfo().getShfrmContributionNarrativeAR();
+          } else {
+            contributingNarrativeReporting = "<Not provided>";
           }
 
           List<DeliverableShfrmPriorityAction> actions = new ArrayList<>();
@@ -3695,7 +3703,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                 if (action != null && action.getShfrmPriorityAction() != null
                   && action.getShfrmPriorityAction().getId() != null
                   && action.getShfrmPriorityAction().getComposedName() != null) {
-                  actionsText += "<br> ●  " + action.getShfrmPriorityAction().getComposedName();
+                  actionsText += "<br>  " + action.getShfrmPriorityAction().getComposedName();
                   subActions = deliverableShfrmSubActionManager.findByPriorityActionAndPhase(action.getId(),
                     this.getSelectedPhase().getId());
 
@@ -3718,6 +3726,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         } else {
           contributingNarrative = "<Not Apply>";
           shfrmActions = "<Not Apply>";
+          contributingNarrativeReporting = "<Not Apply>";
         }
 
         model.addRow(new Object[] {deliverable.getId(), deliverable.getDeliverableInfo().getTitle(), delivType,
@@ -3737,7 +3746,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           intellectualAssetPvpBreederCrop, intellectualAssetDateFilling, intellectualAssetDateRegistration,
           intellectualAssetDateExpiry, intellectualAssetAdditionalInformation, intellectualAssetLinkPublished,
           intellectualAssetCommunication, otherPartner, delivDescription, activities, geographicScope, countries,
-          regions, sharedClusters, focusEvent, likelyOutcomes, isContributing, contributingNarrative, shfrmActions});
+          regions, sharedClusters, focusEvent, likelyOutcomes, isContributing, contributingNarrative, shfrmActions,
+          contributingNarrativeReporting});
       }
     }
     return model;
@@ -4700,7 +4710,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                 if (action != null && action.getShfrmPriorityAction() != null
                   && action.getShfrmPriorityAction().getId() != null
                   && action.getShfrmPriorityAction().getComposedName() != null) {
-                  actionsText += "<br> ●  " + action.getShfrmPriorityAction().getComposedName();
+                  actionsText += "<br>  " + action.getShfrmPriorityAction().getComposedName();
                   subActions = deliverableShfrmSubActionManager.findByPriorityActionAndPhase(action.getId(),
                     this.getSelectedPhase().getId());
 

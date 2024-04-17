@@ -75,9 +75,9 @@
     
     [#-- Google Analytics --]
     [#if config.production]
-      [#assign googleAnalyticsID = "UA-86349544-1"]
+      [#assign googleAnalyticsID = "G-4H6N4FNEF0"]
     [#else]
-      [#assign googleAnalyticsID = "UA-86349544-3"]
+      [#assign googleAnalyticsID = "G-ZBG3ZWZK92"]
     [/#if]
       
     <!-- Global site tag (gtag.js) - Google Analytics -->
