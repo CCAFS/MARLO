@@ -587,12 +587,12 @@ span.timelineControl:hover {
 	}
 	
 	.activityCard:nth-child(2n+2){
-		top: 4.2em;
+		top: 4.3em;
 	}
 	
 	
 	.activityCard:nth-child(3n+3){
-		top: 8.7em;
+		top: 8.8em;
 
 	}
 
@@ -601,11 +601,19 @@ span.timelineControl:hover {
   }
 
   .activityFlexTop ~ .activityFlexTop{
-    top: 4.2em;
+    top: 4.3em;
   }
 
   .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop{
-    top: 8.7em;
+    top: 8.8em;
+  }
+
+  .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop{
+    top: -0.3em;
+  }
+
+  .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop{
+    top: 8.8em;
   }
 	
 	#timelineAlert{
