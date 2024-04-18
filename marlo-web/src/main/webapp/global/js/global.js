@@ -933,11 +933,13 @@ function alertRemoveCluster() {
 
     $('.close-modal-evidences').on('click', function () {
       modal.hide();
-      if ($(this).hasClass('remove-cluster-alert')) {
+      reject(true);
+      // In case that we allow the user to close the modal rwemoving the cluster
+    /*       if ($(this).hasClass('remove-cluster-alert')) {
         resolve(false);
       } else {
         reject(true);
-      }
+      } */
     });
   });
 }
@@ -1032,8 +1034,6 @@ function initialRemaining() {
 
 
 }
-
-
 
 function onSelectElementPrimary() {
   var $select = $(this);

@@ -106,15 +106,17 @@
       <div class="button-exit close-modal-evidences">
         <div class="x-close-modal" ></div>
       </div>
-      <p class="title-modal-evidences">Are you sure you want to remove this cluster?</p>
+      <p class="title-modal-evidences">Remove cluster</p>
       <div class="text-modal-evidences">
-        <p>When you remove the selected cluster, the information shared in the Dissemination and Metadata tab of the Trainee-related contribution will also be deleted. 
-        If you are certain you want to proceed, you will need to redistribute all of the Trainees among the remaining clusters that are contributing to this deliverable.</p>          
+        <p>It is not possible to remove the shared cluster from the list, this cluster has already been submitted and has trainees related.</p>
+        <br>
+        <p>We suggest the following actions so you can save the information correctly:</p>
+        <ul>
+          <li>Distribute the remaining values across the shared cluster list</li>
+          <li>Contact the cluster leader to unsubmitt the cluster and update the information.</li>
+        </ul>       
       </div>                
       <div class="container-buttons-evidences"> 
-        <div class="button-close-modal close-modal-evidences remove-cluster-alert">
-          <p>Remove cluster</p>
-        </div>
         <div class="button-close-modal close-modal-evidences">
           <p>Close</p>
         </div>

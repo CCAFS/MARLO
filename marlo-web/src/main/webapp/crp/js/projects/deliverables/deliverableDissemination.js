@@ -117,7 +117,10 @@ $('.listindicators .setSelect2').select2().on('change', function() {
   initialRemaining();
   });
 
-
+  // Validate cluster removed in select2
+/*   $(".listClusters .removeElement").on("click", function () {
+    console.log("Remove Shared from Select2");
+  }); */
 
   // close modal evidences
   $('.close-modal-evidences').on('click', closeModalEvidences);
