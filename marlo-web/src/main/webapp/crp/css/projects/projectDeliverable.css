@@ -27,6 +27,9 @@ body .WOS_tag p{
   margin: 0px;
   width: 350px;
 }
+.hideSelect{
+  display: none;
+}
 .loading-WOS-container{
   display: flex;
   align-items: center;
