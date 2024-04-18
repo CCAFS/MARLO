@@ -101,7 +101,7 @@
 
 <section class="container">
 
-  <div class="modal-evidences" style="display: none">
+  <div class="modal-deliverable modal-evidences" style="display: none">
     <div class="content-modal">
       <div class="button-exit close-modal-evidences">
         <div class="x-close-modal" ></div>
@@ -122,6 +122,24 @@
         </div>
       </div> 
     </div>              
+  </div>
+
+  <div class=" modal-deliverable modal-indicator" style="display: none">
+    <div class="content-modal">
+      <div class="button-exit close-modal-evidences">
+        <div class="x-close-modal" ></div>
+      </div>
+      <p class="title-modal-evidences title-modal-indicator">Remove Indicator</p>
+      <div class="text-modal-evidences text-modal-indicator">
+        <p>It is not possible to remove the indicator from the list, since this deliverable has shared clusters that have already been submitted and have related trainees.</p>
+
+      </div>                
+      <div class="container-buttons-evidences"> 
+        <div class="button-close-modal close-modal-indicator">
+          <p>Close</p>
+        </div>
+      </div> 
+    </div>   
   </div>
 
     <div class="row">

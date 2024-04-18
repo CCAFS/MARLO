@@ -867,7 +867,21 @@ async function onClickRemoveElement() {
     return;
   }
 
+  // check if the indicator IPI2.3 has information, to avoid removing, it in the Performance Indicator
+  if (id === "7505" || name.includes("IPI 2.3")) {
+    console.log("Removing IPI 2.3")
+    try {
+      // Wait for the user to click on the modal
+      await alertRemoveIndicatorIPI2_3();
+    } catch (error) {
+      // User clicked on the close button instead of the remove button
+      return;
+    }
+3
 
+  }
+
+  // check if the shared cluster has information, to avoid removing it, in the listClustersDM
   if (hasListClusters) {
     const inputs = document.querySelectorAll("div.form-group.row[clusteridparticipant='" + id + "'] input");
     const values = [];
@@ -888,6 +902,8 @@ async function onClickRemoveElement() {
     removeCluster(id);
 
   }
+
+
 
   $parent.slideUp(300, function () {
     $parent.remove();
@@ -940,6 +956,18 @@ function alertRemoveCluster() {
       } else {
         reject(true);
       } */
+    });
+  });
+}
+
+function alertRemoveIndicatorIPI2_3() {
+  return new Promise(function (resolve, reject) {
+    let modal = $('.modal-indicator');
+    modal.show();
+
+    $('.close-modal-indicator').on('click', function () {
+      modal.hide();
+      reject(true);
     });
   });
 }
