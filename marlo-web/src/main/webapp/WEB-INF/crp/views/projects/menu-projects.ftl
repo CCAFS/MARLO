@@ -179,12 +179,31 @@
   [/#if]
   
   [#assign enableUnsubmitButton = !upKeepActive ]
-  [#-- Submit button --]
-  [#if enableUnsubmitButton && canEdit]
-    [#assign showSubmit=(canSubmit && !submission && completed)]
-    <a id="submitProject-${projectID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
-      [@s.text name="form.buttons.submit" /]
-    </a>
+  
+  [#if action.canAccessSuperAdmin()]
+            
+    [#-- Submit button --]
+    [#assign showSubmit=(!submission)]
+    [#if enableUnsubmitButton && showSubmit]
+      <br>        
+      <div class="borderBox text-center">
+        <p class="projectValidateButton-message text-center">Only for SuperAdmin<br/></p>          
+        <a id="submitProject-${projectID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
+          [@s.text name="form.buttons.submit" /]
+        </a>
+      </div>
+    [/#if]
+    
+  [#else]
+  
+    [#-- Submit button --]
+    [#if enableUnsubmitButton && canEdit]
+      [#assign showSubmit=(canSubmit && !submission && completed)]
+      <a id="submitProject-${projectID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
+        [@s.text name="form.buttons.submit" /]
+      </a>
+    [/#if]
+      
   [/#if]
   
   [#-- Unsubmit button --]
