@@ -1035,7 +1035,7 @@ div.fieldFocus-deliverable {
   max-width: 100%;
   padding: 30px 50px;
   border-radius: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(43, 166, 203, 1);
   /* text-align: center; */
 }
 

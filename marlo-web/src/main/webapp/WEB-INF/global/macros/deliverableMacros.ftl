@@ -411,25 +411,25 @@
             </div>
             <div class="col-md-2 participantsNumbers">
               <div class="text-area-container">
-              [@customForm.input name="${customName}[${index}].participants" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+              [@customForm.input name="${customName}[${index}].participants"  placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
               </div>
               <br>
             </div>
             <div class="col-md-2 femaleNumbers">
               <div class="text-area-container">
-                [@customForm.input name="${customName}[${index}].females" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+                [@customForm.input name="${customName}[${index}].females" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
               </div>
               <br>
             </div>
             <div class="col-md-2 africanNumbers">
               <div class="text-area-container">
-                [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+                [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
               </div>
               <br>
             </div>
             <div class="col-md-2 youthNumbers">
               <div class="text-area-container">
-                [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+                [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
               </div>
               <br>
             </div>
