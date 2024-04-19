@@ -549,6 +549,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
+
     this.loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     this.loggedCrp = this.crpManager.getGlobalUnitById(this.loggedCrp.getId());
     this.setPhaseID(this.getActualPhase().getId());
@@ -1018,6 +1019,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       }
 
+
       if (!this.isDraft()) {
         if (this.expectedStudy.getCountries() != null) {
           for (ProjectExpectedStudyCountry country : this.expectedStudy.getCountries()) {
@@ -1026,16 +1028,29 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
 
+
       // Getting The list
       this.statuses = this.generalStatusManager.findByTable(APConstants.PROJECT_EXPECTED_STUDIES_TABLE);
 
-      this.countries = this.locElementManager.findAll().stream()
-        .filter(c -> c.getLocElementType().getId().intValue() == 2 && c.isActive()).collect(Collectors.toList());
+
+      this.countries = this.locElementManager.findAllToCountries();
+
+      // cgamboa 17/04/2024 the query has been optimized to get fewer records
+      // this.countries = this.locElementManager.findAll().stream().filter(c -> c.getLocElementType().getId().intValue()
+      // == 2 &&
+      // c.isActive()).collect(Collectors.toList());
+
 
       this.geographicScopes = this.geographicScopeManager.findAll();
-      this.regions = this.locElementManager.findAll().stream()
-        .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
-        .collect(Collectors.toList());
+      this.regions = this.locElementManager.findAllToRegions();
+
+      // cgamboa 17/04/2024 the query has been optimized to get fewer records
+      /*
+       * this.regions = this.locElementManager.findAll().stream()
+       * .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
+       * .collect(Collectors.toList());
+       */
+
       this.organizationTypes = this.organizationTypeManager.findAll();
       // Focus levels and Too early to tell was removed
       this.focusLevels = this.focusLevelManager.findAll().stream().collect(Collectors.toList());
@@ -1050,6 +1065,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
       this.subIdos = this.srfSubIdoManager.findAll();
       this.targets = this.srfSloIndicatorManager.findAll();
+
 
       // institutions
       Project projectTemp = null;
@@ -1078,7 +1094,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
         centers = centersTemp;
       }
-
 
       this.tags = this.evidenceTagManager.findAll();
       this.innovationsList = new ArrayList<>();
@@ -1115,6 +1130,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
 
+
       this.myProjects = new ArrayList<>();
       for (ProjectPhase projectPhase : phase.getProjectPhases()) {
         if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
@@ -1134,6 +1150,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
         .collect(Collectors.toList());
 
+
       List<ProjectExpectedStudyCrp> tempPcrp = null;
       // Update crp list - Delete the actual crp from the list except if this crp was
 
@@ -1148,6 +1165,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         crps.remove(this.getCurrentGlobalUnit());
       }
 
+
       this.flagshipList = this.crpProgramManager.findAll().stream()
         .filter(p -> p.isActive() && p.getCrp() != null && p.getCrp().getId() == this.loggedCrp.getId()
           && p.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
@@ -1158,8 +1176,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           && p.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList());
 
+
       this.institutions =
         this.institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
+
 
       this.expectedStudyDB = this.projectExpectedStudyManager.getProjectExpectedStudyById(this.expectedID);
 
@@ -1168,6 +1188,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.project = this.projectManager.getProjectById(this.projectID);
         this.project.getProjecInfoPhase(phase);
       }
+
 
       if (this.project != null) {
         Project projectL = this.projectManager.getProjectById(this.projectID);
@@ -1180,6 +1201,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
          */
         milestones = new ArrayList<>();
         projectOutcomes = new ArrayList<>();
+
 
         // Get outcomes list
         List<ProjectOutcome> projectOutcomesList = new ArrayList<>();
@@ -1439,6 +1461,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(null);
 
     }
+
 
   }
 

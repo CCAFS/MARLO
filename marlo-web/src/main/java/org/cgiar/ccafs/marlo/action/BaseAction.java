@@ -1277,8 +1277,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       response = true;
     }
 
-    if (this.getRolesList() != null && !this.getRolesList().isEmpty()) {
-      for (Role role : this.getRolesList()) {
+    // cagmboa 19/04/2024 this.getRolesList() function is called once and it is reused
+    List<Role> roles = new ArrayList<>();
+    roles = this.getRolesList();
+    if (roles != null && !roles.isEmpty()) {
+      for (Role role : roles) {
         if (role != null && role.getAcronym() != null) {
           // FPL & FPM roles can comment
 
@@ -1294,11 +1297,43 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Validate the user permission to replay or react to a comment
+   * note: The difference with the function canManageFeedbackOld is that the code block
+   * that starts with the conditional if (projectID != null && response) is eliminated.
+   * This conditional was not intervening in the function
    * 
    * @param projectID
    * @return true if the current user rol is PL or PC
    */
   public boolean canManageFeedback(Long projectID) {
+    boolean response = false;
+
+    // TODO: Update the permissions for manage feedback comments
+    if (this.canAccessSuperAdmin()) {
+      response = true;
+    }
+
+    if (this.getRolesList() != null && !this.getRolesList().isEmpty()) {
+      for (Role role : this.getRolesList()) {
+        if (role != null && role.getAcronym() != null) {
+          // FPL & FPM roles can comment
+
+          if (role.getAcronym().equals("PL") || role.getAcronym().equals("PC")) {
+            response = true;
+          }
+        }
+      }
+    }
+    return response;
+  }
+
+
+  /**
+   * Validate the user permission to replay or react to a comment
+   * 
+   * @param projectID
+   * @return true if the current user rol is PL or PC
+   */
+  public boolean canManageFeedbackOld(Long projectID) {
     boolean response = false;
 
     // TODO: Update the permissions for manage feedback comments
@@ -1327,7 +1362,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           for (ProjectPartner projectPartner : projectPartners) {
             if (projectPartner != null && projectPartner.getId() != null) {
               projectParnerPersons = projectPartnerPersonManager.findAllActiveForProjectPartner(projectPartner.getId());
-
               if (projectParnerPersons != null) {
                 projectParnerPersons = projectParnerPersons.stream()
                   .filter(pp -> pp != null && pp.getUser() != null && pp.getUser().getId() != null
@@ -4901,7 +4935,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             }
 
           }
-
           returnValue = true;
           break;
         case DELIVERABLES:
@@ -4962,7 +4995,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             // return false;
             // }
           }
-
           returnValue = true;
 
           break;
@@ -4999,7 +5031,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               prevMissingActivity = new ArrayList<>();
             }
 
-
             prevMissingActivity.stream()
               .filter((deliverable) -> (deliverable.getDeliverableActivities().isEmpty()
                 || deliverable.getDeliverableActivities().stream().filter(da -> da.isActive())
@@ -5011,7 +5042,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               .forEachOrdered((_item) -> {
                 deliverablesMissingActivity.add(_item);
               });
-
 
             if (deliverablesMissingActivity != null && !deliverablesMissingActivity.isEmpty()) {
               // this.addMessage(this.getText("missingDeliverableActivity", "deliverable.missing.activity"));
@@ -5073,7 +5103,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         case DESCRIPTION:
         case LOCATIONS:
-
           sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
             this.getCurrentCycleYear(), this.isUpKeepActive(), section);
           if (sectionStatus != null) {
@@ -5089,7 +5118,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           break;
 
         case EXPECTEDSTUDIES:
-
           project = this.projectManager.getProjectById(projectID);
           List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
 
@@ -5134,7 +5162,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           break;
 
         case INNOVATIONS:
-
           project = this.projectManager.getProjectById(projectID);
           List<ProjectInnovation> innovations = project.getProjectInnovations().stream()
             .filter(c -> c.getProjectInnovationInfo(this.getActualPhase()) != null && c.isActive()
@@ -5161,7 +5188,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           break;
 
         case POLICIES:
-
           project = this.projectManager.getProjectById(projectID);
           List<ProjectPolicy> policies = project.getProjectPolicies().stream()
             .filter(c -> c.getProjectPolicyInfo(this.getActualPhase()) != null && c.isActive()
@@ -5184,7 +5210,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           break;
 
         case LEVERAGES:
-
           sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
             this.getCurrentCycleYear(), this.isUpKeepActive(), section);
           if (sectionStatus != null) {
