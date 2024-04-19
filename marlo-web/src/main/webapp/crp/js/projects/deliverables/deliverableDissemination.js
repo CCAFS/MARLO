@@ -91,11 +91,37 @@ $('.listindicators .setSelect2').select2().on('change', function() {
 });
 
   // Validate indicator removed in select2
-  $(".listindicators .removeElement").on("click", function () {
+  $(".listindicators .removeElement").on("click",async function () {
 
-    // detects when an element is removed and checks if the IPI 2.3 flag is still in the list
-    $(this).closest("li").remove();
-    searchIndicator();
+    //These is validation for the IPI 2.3 indicator is selected and is able to be removed
+    if($(this).siblings('.elementRelationID').val() === "7505"){
+
+      const inputs = document.querySelectorAll("div.form-group.row[clusteridparticipant] .participantsNumbers input");
+    
+      const values = [];
+      inputs.forEach(input => {
+        values.push(parseInt(input.value));
+      });
+      var sumData = values.reduce((a, b) => a + b, 0);
+      if (sumData > 0) { 
+        // If the flag is still in the list, the user is notified that the element is related to the IPI 2.3 indicator
+        try {
+          await alertRemoveIndicatorIPI2_3();
+        } catch (error) {
+          return;
+        }
+      } else {
+        $(this).closest("li").remove();
+        searchIndicator();
+        return
+      }
+      
+    } else {
+      // detects when an element is removed and checks if the IPI 2.3 flag is still in the list
+      $(this).closest("li").remove();
+      searchIndicator();
+      return
+    }
   });
 
   // Validate which cluster is sectioned in select2
@@ -124,6 +150,9 @@ $('.listindicators .setSelect2').select2().on('change', function() {
 
   // close modal evidences
   $('.close-modal-evidences').on('click', closeModalEvidences);
+
+  // close modal indicator
+  $('.close-modal-indicator').on('click', closeModalIndicator);
 
   initialTotals();
   initialRemaining();
@@ -419,6 +448,12 @@ function closeModalEvidences(){
   let modal = $('.modal-evidences');
   modal.hide();
 
+}
+
+function closeModalIndicator(){
+  let modal = $('.modal-indicator');
+  console.log("close modal indicator");
+  modal.hide();
 }
 
 function validateRequiredTagToCategory() {

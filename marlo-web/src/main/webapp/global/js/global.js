@@ -867,7 +867,33 @@ async function onClickRemoveElement() {
     return;
   }
 
+  // check if the indicator IPI2.3 has information, to avoid removing, it in the Performance Indicator
+  if (id === "7505" || name.includes("IPI 2.3")) {
 
+    //Represents a collection of input elements that contain the information of the total participants for each shared clusters.
+   
+    const inputs = document.querySelectorAll("div.form-group.row[clusteridparticipant] .participantsNumbers input");
+    
+    const values = [];
+    inputs.forEach(input => {
+      values.push(parseInt(input.value));
+    });
+    var sumData = values.reduce((a, b) => a + b, 0);
+    if (sumData > 0) { 
+      
+      try {
+        // Wait for the user to click on the modal
+        await alertRemoveIndicatorIPI2_3();
+      } catch (error) {
+        // User clicked on the close button instead of the remove button
+        console.log("Not removed");
+        return;
+      }
+    }
+    removeCluster(id);
+  }
+
+  // check if the shared cluster has information, to avoid removing it, in the listClustersDM
   if (hasListClusters) {
     const inputs = document.querySelectorAll("div.form-group.row[clusteridparticipant='" + id + "'] input");
     const values = [];
@@ -888,6 +914,8 @@ async function onClickRemoveElement() {
     removeCluster(id);
 
   }
+
+
 
   $parent.slideUp(300, function () {
     $parent.remove();
@@ -940,6 +968,18 @@ function alertRemoveCluster() {
       } else {
         reject(true);
       } */
+    });
+  });
+}
+
+function alertRemoveIndicatorIPI2_3() {
+  return new Promise(function (resolve, reject) {
+    let modal = $('.modal-indicator');
+    modal.show();
+
+    $('.close-modal-indicator').on('click', function () {
+      modal.hide();
+      reject(true);
     });
   });
 }
