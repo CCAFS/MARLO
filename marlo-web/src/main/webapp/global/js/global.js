@@ -869,16 +869,28 @@ async function onClickRemoveElement() {
 
   // check if the indicator IPI2.3 has information, to avoid removing, it in the Performance Indicator
   if (id === "7505" || name.includes("IPI 2.3")) {
-    console.log("Removing IPI 2.3")
-    try {
-      // Wait for the user to click on the modal
-      await alertRemoveIndicatorIPI2_3();
-    } catch (error) {
-      // User clicked on the close button instead of the remove button
-      return;
-    }
-3
 
+    //Represents a collection of input elements that contain the information of the total participants for each shared clusters.
+   
+    const inputs = document.querySelectorAll("div.form-group.row[clusteridparticipant] .participantsNumbers input");
+    
+    const values = [];
+    inputs.forEach(input => {
+      values.push(parseInt(input.value));
+    });
+    var sumData = values.reduce((a, b) => a + b, 0);
+    if (sumData > 0) { 
+      
+      try {
+        // Wait for the user to click on the modal
+        await alertRemoveIndicatorIPI2_3();
+      } catch (error) {
+        // User clicked on the close button instead of the remove button
+        console.log("Not removed");
+        return;
+      }
+    }
+    removeCluster(id);
   }
 
   // check if the shared cluster has information, to avoid removing it, in the listClustersDM

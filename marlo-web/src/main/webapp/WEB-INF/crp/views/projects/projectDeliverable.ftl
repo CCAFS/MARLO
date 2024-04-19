@@ -126,7 +126,7 @@
 
   <div class=" modal-deliverable modal-indicator" style="display: none">
     <div class="content-modal">
-      <div class="button-exit close-modal-evidences">
+      <div class="button-exit close-modal-indicator">
         <div class="x-close-modal" ></div>
       </div>
       <p class="title-modal-evidences title-modal-indicator">Remove Indicator</p>
