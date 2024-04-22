@@ -870,11 +870,11 @@ public class OutcomesAction extends BaseAction {
         if (crpProgramOutcomeIndicator != null
           && !crpProgramOutcomeDetached.getIndicators().contains(crpProgramOutcomeIndicator)) {
           crpProgramOutcomeIndicatorManager.deleteCrpProgramOutcomeIndicator(crpProgramOutcomeIndicator.getId());
-          crpProgramOutcomeIndicatorManager.remove(crpProgramOutcomeIndicator, nextPhase);
+          // crpProgramOutcomeIndicatorManager.remove(crpProgramOutcomeIndicator, nextPhase);
         }
       } else {
         crpProgramOutcomeIndicatorManager.deleteCrpProgramOutcomeIndicator(crpProgramOutcomeIndicator.getId());
-        crpProgramOutcomeIndicatorManager.remove(crpProgramOutcomeIndicator, nextPhase);
+        // crpProgramOutcomeIndicatorManager.remove(crpProgramOutcomeIndicator, nextPhase);
       }
     }
 
