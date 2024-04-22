@@ -623,6 +623,10 @@ span.timelineControl:hover {
   .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop{
     top: -0.3em;
   }
+
+  #timeline_activities .activityUnique{
+    top: 2.1em;
+  }
 	
 	#timelineAlert{
 		display: flex;

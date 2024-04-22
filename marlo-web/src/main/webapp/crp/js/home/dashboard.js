@@ -274,7 +274,11 @@ function getIntersectedActivities() {
     });
 
     activitiesIntersected.forEach(activity => {
-      $(activity).parent().addClass("activityFlexTop");
+      if(activitiesIntersected.length === 1){
+        $(activity).parent().addClass("activityUnique");
+      } else {
+        $(activity).parent().addClass("activityFlexTop");
+      }
     });
 
     switch(activitiesIntersected.length){
@@ -292,22 +296,28 @@ function getIntersectedActivities() {
         } else {
           timelineContainer.style.height = "30vh";
         }
+        list_activities.forEach(activity => {
+          $(activity).parent().removeClass("activityUnique");
+        });
         break;
       case 3:
       case 4:
       case 5:
       case 6:
-      case 7:
         if(document.documentElement.getBoundingClientRect().width > 1500){
           timelineContainer.style.height = "30vh";
         } else {
           timelineContainer.style.height = "36vh";
         }
+        list_activities.forEach(activity => {
+          $(activity).parent().removeClass("activityUnique");
+        });
         break;
       default:
         timelineContainer.style.removeProperty("height");
-        activitiesIntersected.forEach(activity => {
+        list_activities.forEach(activity => {
           $(activity).parent().removeClass("activityFlexTop");
+          $(activity).parent().removeClass("activityUnique");
         });
         break;
     }
