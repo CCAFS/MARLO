@@ -776,19 +776,21 @@ public class DeliverableListAction extends BaseAction {
             }
 
             // Shared with others
-            for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
-              if (deliverableShared.getDeliverable().getSharedWithProjects() == null) {
-                deliverableShared.getDeliverable().setSharedWithProjects(
-                  "" + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-              } else {
-                if (deliverableShared.getDeliverable() != null
-                  && deliverableShared.getDeliverable().getSharedWithProjects() != null
-                  && deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
-                  && !deliverableShared.getDeliverable().getSharedWithProjects()
-                    .contains(deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
-                  deliverableShared.getDeliverable()
-                    .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; "
-                      + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+            if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+              for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+                if (deliverableShared.getDeliverable().getSharedWithProjects() == null) {
+                  deliverableShared.getDeliverable().setSharedWithProjects(
+                    "" + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                } else {
+                  if (deliverableShared.getDeliverable() != null
+                    && deliverableShared.getDeliverable().getSharedWithProjects() != null
+                    && deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
+                    && !deliverableShared.getDeliverable().getSharedWithProjects().contains(
+                      deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
+                    deliverableShared.getDeliverable()
+                      .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; "
+                        + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                  }
                 }
               }
             }

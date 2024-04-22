@@ -169,6 +169,7 @@ public class DeliverableManagerImpl implements DeliverableManager {
     return deliverableDAO.getDeliverablesByParameters(phase, filterPhaseYear, filterParticipants, filterPublications);
   }
 
+
   @Override
   public List<Deliverable> getDeliverablesByPhase(long phase) {
     return deliverableDAO.getDeliverablesByPhase(phase);
@@ -612,6 +613,20 @@ public class DeliverableManagerImpl implements DeliverableManager {
     }
     deliverables.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     return deliverables;
+  }
+
+  /**
+   * get deliverables without activities
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @param projectId project id
+   * @return quantity deliverables without activities
+   */
+  @Override
+  public int getQuantityDeliverablesWithActivities(long phase, long projectId) {
+
+    return deliverableDAO.getQuantityDeliverablesWithActivities(phase, projectId);
   }
 
   @Override

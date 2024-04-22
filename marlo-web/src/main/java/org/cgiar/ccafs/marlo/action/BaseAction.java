@@ -5017,31 +5017,46 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             List<Deliverable> deliverablesMissingActivity = new ArrayList<>();
             List<Deliverable> prevMissingActivity = new ArrayList<>();
 
+            int quantityMissingDeliverables = 0;
             try {
-              prevMissingActivity = project.getCurrentDeliverables(this.getActualPhase());
-
-              if (prevMissingActivity != null && !prevMissingActivity.isEmpty()) {
-                prevMissingActivity = prevMissingActivity.stream()
-                  .filter(d -> d != null && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                    && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 5)
-                  .collect(Collectors.toList());
-              }
+              quantityMissingDeliverables = deliverableManager
+                .getQuantityDeliverablesWithActivities(this.getActualPhase().getId(), project.getId());
             } catch (Exception e) {
-              LOG.error("unable to get deliverables without activities", e);
+              LOG.error("unable to get deliverables without activities Quantity", e);
               prevMissingActivity = new ArrayList<>();
             }
 
-            prevMissingActivity.stream()
-              .filter((deliverable) -> (deliverable.getDeliverableActivities().isEmpty()
-                || deliverable.getDeliverableActivities().stream().filter(da -> da.isActive())
-                  .collect(Collectors.toList()).isEmpty()
-                || deliverable.getDeliverableActivities().stream()
-                  .filter(da -> da.getPhase().getId().equals(this.getActualPhase().getId())
-                    && da.getActivity().isActive() && da.isActive())
-                  .collect(Collectors.toList()).isEmpty()))
-              .forEachOrdered((_item) -> {
-                deliverablesMissingActivity.add(_item);
-              });
+            // cgamboa 22/04/2024 query is added to get quantity deliverables without activities, before to do the
+            // validations
+            if (quantityMissingDeliverables > 0) {
+              try {
+                prevMissingActivity = project.getCurrentDeliverables(this.getActualPhase());
+
+
+                if (prevMissingActivity != null && !prevMissingActivity.isEmpty()) {
+                  prevMissingActivity = prevMissingActivity.stream()
+                    .filter(d -> d != null && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                      && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 5)
+                    .collect(Collectors.toList());
+                }
+              } catch (Exception e) {
+                LOG.error("unable to get deliverables without activities", e);
+                prevMissingActivity = new ArrayList<>();
+              }
+
+              prevMissingActivity.stream()
+                .filter((deliverable) -> (deliverable.getDeliverableActivities().isEmpty()
+                  || deliverable.getDeliverableActivities().stream().filter(da -> da.isActive())
+                    .collect(Collectors.toList()).isEmpty()
+                  || deliverable.getDeliverableActivities().stream()
+                    .filter(da -> da.getPhase().getId().equals(this.getActualPhase().getId())
+                      && da.getActivity().isActive() && da.isActive())
+                    .collect(Collectors.toList()).isEmpty()))
+                .forEachOrdered((_item) -> {
+                  deliverablesMissingActivity.add(_item);
+                });
+
+            }
 
             if (deliverablesMissingActivity != null && !deliverablesMissingActivity.isEmpty()) {
               // this.addMessage(this.getText("missingDeliverableActivity", "deliverable.missing.activity"));
@@ -5058,6 +5073,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                * status.setMissingFields("missingDeliverableActivity");
                * sectionStatusManager.saveSectionStatus(status);
                */
+
               return false;
             }
           }
