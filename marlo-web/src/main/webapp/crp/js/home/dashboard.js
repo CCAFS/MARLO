@@ -267,17 +267,34 @@ function getIntersectedActivities() {
 
     entries.forEach(entry => {
       const activity = entry.target;
-      if (entry.isIntersecting) {
+      if (entry.isIntersecting && entry.intersectionRatio > 0.025) {
         activitiesIntersected.push(activity);
       }
-      $(activity).parent().removeClass("activityFlexTop");
+      $(activity).parent().removeClass("activityFlexTop--1");
+      $(activity).parent().removeClass("activityFlexTop--2");
+      $(activity).parent().removeClass("activityFlexTop--3");
+    });
+    console.log(activitiesIntersected)
+    activitiesIntersected.sort((a, b) => {
+      const rectA = a.getBoundingClientRect();
+      const rectB = b.getBoundingClientRect();
+      return rectA.left - rectB.left;
     });
 
     activitiesIntersected.forEach(activity => {
       if(activitiesIntersected.length === 1){
         $(activity).parent().addClass("activityUnique");
       } else {
-        $(activity).parent().addClass("activityFlexTop");
+
+        const index = activitiesIntersected.indexOf(activity);
+        if(index % 3 === 0){
+          $(activity).parent().addClass("activityFlexTop--1");
+        } else if(index % 3 === 1){
+          $(activity).parent().addClass("activityFlexTop--2");
+        } else if(index % 3 === 2){
+          $(activity).parent().addClass("activityFlexTop--3");
+        }
+
       }
     });
 
@@ -304,6 +321,7 @@ function getIntersectedActivities() {
       case 4:
       case 5:
       case 6:
+      case 7:
         if(document.documentElement.getBoundingClientRect().width > 1500){
           timelineContainer.style.height = "30vh";
         } else {
@@ -316,7 +334,9 @@ function getIntersectedActivities() {
       default:
         timelineContainer.style.removeProperty("height");
         list_activities.forEach(activity => {
-          $(activity).parent().removeClass("activityFlexTop");
+          $(activity).parent().removeClass("activityFlexTop--1");
+          $(activity).parent().removeClass("activityFlexTop--2");
+          $(activity).parent().removeClass("activityFlexTop--3");
           $(activity).parent().removeClass("activityUnique");
         });
         break;
@@ -331,7 +351,7 @@ function getIntersectedActivities() {
 
   setTimeout(() => {
     observer.disconnect();
-  }, 25);
+  }, 500); // Adjust the time as per your scroll smooth time
 
 }
 

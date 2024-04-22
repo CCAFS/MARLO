@@ -583,11 +583,11 @@ span.timelineControl:hover {
 	}
 	
 	.activityCard:nth-child(n+1){
-		top: -0.3em;
+		top: 0em;
 	}
 	
 	.activityCard:nth-child(2n+2){
-		top: 4.2em;
+		top: 4.5em;
 	}
 	
 	
@@ -596,32 +596,16 @@ span.timelineControl:hover {
 
 	}
 
-  .activityCard ~ .activityFlexTop{
-    top: -0.3em;
+  #timeline_activities .activityFlexTop--1{
+    top: 0em;
   }
 
-  .activityFlexTop ~ .activityFlexTop{
-    top: 4.2em;
+  #timeline_activities .activityFlexTop--2{
+    top: 4.5em;
   }
 
-  .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop{
-    top: 8.7em;
-  }
-
-  .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop{
-    top: -0.3em;
-  }
-
-  .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop{
-    top: 4.2em;
-  }
-
-  .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop{
-    top: 8.7em;
-  }
-
-  .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop ~ .activityFlexTop{
-    top: -0.3em;
+  #timeline_activities .activityFlexTop--3{
+    top: 9em;
   }
 
   #timeline_activities .activityUnique{
