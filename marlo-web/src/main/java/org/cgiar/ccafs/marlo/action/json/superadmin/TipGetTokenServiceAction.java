@@ -96,7 +96,14 @@ public class TipGetTokenServiceAction extends BaseAction {
           token = jsonResponse.getString("token");
           SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-          Date dueDate = dateFormat.parse(jsonResponse.getString("due_date"));
+          Date dueDate = null;
+          if (jsonResponse.has("due_date")) {
+            dueDate = dateFormat.parse(jsonResponse.getString("due_date"));
+          }
+
+          if (jsonResponse.has("updated_at")) {
+            dueDate = dateFormat.parse(jsonResponse.getString("updated_at"));
+          }
 
           // Save token in DB
           if (token != null && !token.isEmpty()) {
