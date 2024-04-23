@@ -100,16 +100,14 @@ public class CrpProgramOutcomeIndicatorManagerImpl implements CrpProgramOutcomeI
       List<CrpProgramOutcome> outcomes = crpProgramOutcomeManager.getAllCrpProgramOutcomesByComposedIdFromPhase(
         originalCrpOutcomeIndicator.getCrpProgramOutcome().getComposeID(), initialPhase.getId());
 
-      if (outcomes != null) {
+      if (outcomes != null && !outcomes.isEmpty()) {
         for (CrpProgramOutcome crpProgramOutcome : outcomes) {
 
-          if (this.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(originalCrpOutcomeIndicator.getIndicator(),
-            crpProgramOutcome) != null
-            || (!this.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(originalCrpOutcomeIndicator.getIndicator(),
-              crpProgramOutcome).isEmpty())) {
-            List<CrpProgramOutcomeIndicator> indicators =
-              new ArrayList<>(this.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(
-                originalCrpOutcomeIndicator.getIndicator(), crpProgramOutcome));
+          List<CrpProgramOutcomeIndicator> result = this.getCrpProgramOutcomeIndicatorByOutcomeAndIndicator(
+            originalCrpOutcomeIndicator.getIndicator(), crpProgramOutcome);
+
+          if (result != null && !result.isEmpty()) {
+            List<CrpProgramOutcomeIndicator> indicators = new ArrayList<>(result);
 
             for (CrpProgramOutcomeIndicator indicator : indicators) {
               if (indicator != null && indicator.getId() != null) {
