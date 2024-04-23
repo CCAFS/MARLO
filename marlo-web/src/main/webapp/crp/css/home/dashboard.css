@@ -415,10 +415,9 @@ span.timelineControl:hover {
   
   #timelineContainer {
 	  position: relative;
-	  margin: 18px 30px 18px 30px;
 	  overflow-x: scroll;
 	  overflow-y: hidden;
-	  height: 36vh;
+	  height: 31vh;
 	  width: 80%;
 	  margin: 0 auto;
 	}
@@ -458,16 +457,16 @@ span.timelineControl:hover {
 	
 	#timeline_activities {
 		position: relative;
-		font-size: 14px;
+		font-size: 13.5px;
 	}
 	
 	@media only screen and (min-width:1545px){
 		#timeline_activities {
-			font-size: 20px;
+			font-size: 19.5px;
 		}
 		
 		#timelineContainer{
-			height: 30vh;
+			height: 26vh;
 		}
 	}
 	
@@ -609,7 +608,7 @@ span.timelineControl:hover {
   }
 
   #timeline_activities .activityUnique{
-    top: 2.1em;
+    top: 2.25em;
   }
 	
 	#timelineAlert{

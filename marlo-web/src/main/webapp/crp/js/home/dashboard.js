@@ -309,7 +309,7 @@ function getIntersectedActivities() {
         break;
       case 2:
         if(document.documentElement.getBoundingClientRect().width > 1500){
-          timelineContainer.style.height = "22vh";
+          timelineContainer.style.height = "24.5vh";
         } else {
           timelineContainer.style.height = "30vh";
         }
@@ -323,9 +323,9 @@ function getIntersectedActivities() {
       case 6:
       case 7:
         if(document.documentElement.getBoundingClientRect().width > 1500){
-          timelineContainer.style.height = "30vh";
+          timelineContainer.style.height = "31vh";
         } else {
-          timelineContainer.style.height = "36vh";
+          timelineContainer.style.height = "37vh";
         }
         list_activities.forEach(activity => {
           $(activity).parent().removeClass("activityUnique");
