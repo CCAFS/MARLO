@@ -1012,17 +1012,18 @@ div.fieldFocus-deliverable {
   right: 0;
   border-radius: 0px 3px 0px 8px;
   cursor: pointer;
-  margin: -23px -40px 0px 0px;
+  margin: -23px 0px 0px 0px;
 }
 
 .title-modal-evidences{
   font-size: 19px;
   font-weight: 600;
-  margin-top: -8px;
+  padding: .6em 1em .6em 1em;
 }
 
 .text-modal-evidences{
   margin-top: 25px;
+  padding: .6em 1em .6em 1em;
 }
 
 .text-modal-evidences p{
@@ -1033,21 +1034,21 @@ div.fieldFocus-deliverable {
   background-color: #fff;
   width: 600px;
   max-width: 100%;
-  padding: 30px 50px;
   border-radius: 15px;
   border: 2px solid rgba(43, 166, 203, 1);
-  /* text-align: center; */
+  overflow: hidden;
 }
 
 .container-buttons-evidences{
   float: right;
   display: flex;
+  padding: .6em 1em .6em 1em;
 }
 
 .button-pdf-modal{
   background-color: #ffffff;
-  min-width: 160px;
-  height: 40px;
+  min-width: 100px;
+  height: 30px;
   text-align: center;
   display: flex;
   align-items: center;
