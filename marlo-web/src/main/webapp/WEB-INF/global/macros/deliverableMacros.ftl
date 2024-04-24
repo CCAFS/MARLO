@@ -404,8 +404,11 @@
           <input type="hidden" name="${customName}[${index}].project.id" value="${(cluster.project.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}"/>
           <div class="form-group row" clusterIdParticipant="${(cluster.project.id)!0}">
             <div class="col-md-2">
-              <div class="text-area-container">
+              <div class="text-area-container text-flex-column">
               [@customForm.text name=(list[index].project.acronym)!"" /]
+              [#if action.isSubmit(cluster.project.id)]
+                <p style="font-style: italic; font-size: 10px;">Cluster submitted.</p>
+              [/#if]
               </div>
               <br>
             </div>
