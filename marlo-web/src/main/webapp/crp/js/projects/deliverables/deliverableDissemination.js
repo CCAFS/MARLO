@@ -308,7 +308,7 @@ if(remainingYouth == 0 && remainingAfrican == 0 && remainingFemales == 0 && rema
   $('input[name="deliverable.deliverableInfo.remainingPending"]').val('false');
 }
 else{
-  $('.remaining-container').css('color', '#FFC300');
+  $('.remaining-container').css('color', '#ECB00C');
   $('.doneParticipant').css('display', 'none');
   $('.alertParticipant').css('display', 'flex');
   $('input[name="deliverable.deliverableInfo.remainingPending"]').val('true');
