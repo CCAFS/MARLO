@@ -996,7 +996,10 @@ div.fieldFocus-deliverable {
 
 
 .button-exit{
- float: right;
+  position: absolute;
+  float: inline-end;
+  top: 50px;
+  right: 10px;
  font-size: 18px;
  cursor: pointer;
 }
