@@ -458,15 +458,16 @@ public class PartnersSaveAction extends BaseAction {
       // setting requestSource CLARISA parameter
       String requestSource;
       if (project != null && project.getAcronym() != null) {
-        requestSource = project.getAcronym();
+        requestSource = project.getAcronym() + " Cluster";
       } else if (project != null && project.getProjectInfo() != null && project.getProjectInfo().getTitle() != null) {
-        requestSource = project.getProjectInfo().getTitle();
+        requestSource = project.getProjectInfo().getTitle() + " Cluster";
       } else {
         requestSource = "Request made from AICCRA";
       }
       request.put("requestSource", requestSource);
 
-      request.put("misAcronym", "userId:" + this.getCurrentUser().getId());
+      request.put("misAcronym", "aiccra");
+      request.put("userId", this.getCurrentUser().getId());
       request.put("externalUserMail", this.getCurrentUser().getEmail());
       request.put("externalUserName", this.getCurrentUser().getUsername());
       request.put("externalUserComments", "Request made from AICCRA");
