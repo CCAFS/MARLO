@@ -40,10 +40,12 @@ function initDashboard() {
       $x.css("display", "flex");
       $(this).find('.activityCard_toggle--deactive').css("display", "none");
       $(this).find('.activityCard_toggle--active').css("display", "block");
+      $(this).closest('.activityCard').css("z-index", 8);
     } else {
       $x.css("display", "none");  
       $(this).find('.activityCard_toggle--deactive').css("display", "block");
       $(this).find('.activityCard_toggle--active').css("display", "none");
+      $(this).closest('.activityCard').css("z-index");
     }
   });
 

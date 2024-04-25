@@ -518,6 +518,7 @@ span.timelineControl:hover {
 		border-radius: 0.75rem;
 		background: #E8F4FF;
 		margin-bottom: 1rem;
+    z-index: 4;
 	}
 	
 	.activityCard_content{
