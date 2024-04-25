@@ -342,7 +342,7 @@ span.timelineControl:hover {
     height: 40px;
     border-radius: 50%;
     position: absolute;
-    top: 12.5%;
+    top: 15%;
     transform: translateY(-50%);
     font-size: 27px;
     font-weight: bold;
@@ -418,7 +418,7 @@ span.timelineControl:hover {
 	  overflow-x: scroll;
 	  overflow-y: hidden;
 	  height: 31vh;
-	  width: 80%;
+	  width: 95%;
 	  margin: 0 auto;
 	}
 	
@@ -496,7 +496,8 @@ span.timelineControl:hover {
 
   .timebox_information {
     position: absolute;
-    bottom: -24px;    
+    top: -12px;
+    left: 6px;  
   }
 	
 	.timeNumber{
@@ -619,44 +620,45 @@ span.timelineControl:hover {
 	}
 	
 	.activityCard:nth-child(n+1){
-		top: 0em;
+		top: 1.5em;
 	}
 	
 	.activityCard:nth-child(2n+2){
-		top: 4.5em;
+		top: 6em;
 	}
 	
 	
 	.activityCard:nth-child(3n+3){
-		top: 8.7em;
+		top: 10.5em;
 
 	}
 
   #timeline_activities .activityFlexTop--1{
-    top: 0em;
+    top: 1.5em;
   }
 
   #timeline_activities .activityFlexTop--2{
-    top: 4.5em;
+    top: 6em;
   }
 
   #timeline_activities .activityFlexTop--3{
-    top: 9em;
+    top: 10.5em;
   }
 
   #timeline_activities .activityUnique{
-    top: 2.25em;
+    top: 2.5em;
   }
 	
 	#timelineAlert{
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		justify-content: flex-end;
     gap: 0.5rem;
     align-items: end;
     padding-bottom: 6px;
     position: absolute;
     right: 2.5%;
+    bottom: 2.5%;
 	}
 	
 	#timelineAlert_container{
@@ -668,7 +670,7 @@ span.timelineControl:hover {
 	.timelineAlert_item{
 		display: flex;
 		flex-direction: row;
-		align-items: flex-end;
+		align-items: center;
 		gap: 0.5rem;
 	}
 	

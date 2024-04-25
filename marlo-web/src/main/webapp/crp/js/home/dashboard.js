@@ -174,7 +174,7 @@ function moveScrollRight() {
   const element = document.getElementById("timelineContainer");
 
   const widthContainer = $('.sectionMap').width();
-  const containerSize = widthContainer * 0.8;
+  const containerSize = widthContainer * 0.95;
 
   element.style.scrollBehavior = "smooth"
   element.scrollLeft += (containerSize);
@@ -189,7 +189,7 @@ function moveScrollLeft() {
   const element = document.getElementById("timelineContainer");
 
   const widthContainer = $('.sectionMap').width();
-  const containerSize = widthContainer * 0.8;
+  const containerSize = widthContainer * 0.95;
 
   element.style.scrollBehavior = "smooth"
   element.scrollLeft -= (containerSize);
@@ -472,7 +472,7 @@ function setWidth(amount) {
 
   const extraAmount = amount > 1.5 ? -1/7 : 0;
   const widthContainer = $('.sectionMap').width();
-  const widthInPx = `${widthContainer * 0.8}px`;
+  const widthInPx = `${widthContainer * 0.95}px`;
   return `calc(${amount !== undefined ? (amount + extraAmount) + "*(" + widthInPx + " / 2)" : "calc(" + widthInPx + " / 2)"} )  `;
 }
 function setDistances(weeks, startDate, endDate, isToday) {
@@ -486,7 +486,7 @@ function setDistances(weeks, startDate, endDate, isToday) {
   const percentageCompletion = ((currentHour / 24)/7)/2;
 
   const widthContainer = $('.sectionMap').width();
-  const containerSize = widthContainer * 0.8;
+  const containerSize = widthContainer * 0.95;
 
   const getWeekDistance = getWeekBasedOnDay(startDate, weeks);
   const getDayDistance = (getAbsoluteDays(startDate, getFirstDateOfTheWeek(startDate))) / 7;
@@ -508,7 +508,7 @@ function setTimelinePosition() {
   const timelineContainer = document.getElementById("timelineContainer");
 
   const widthContainer = $('.sectionMap').width();
-  const containerSize = widthContainer * 0.8;
+  const containerSize = widthContainer * 0.95;
 
   timelineContainer.scrollLeft += ((getWeekBasedOnDay(today, getWeeksArray)/2) * (containerSize));
 
@@ -529,23 +529,6 @@ function createTimeline2() {
 	  	<div id="timelineDescription_title">
 	  		<b>Schedule</b>
 	  	</div>
-	  	<div id="timelineAlert">
-	    	<b>Progress status:</b>
-	    	<section id="timelineAlert_container">
-	    		<article class="timelineAlert_item">
-	    			<div class="timelineAlert_item_color timelineAlert_item_color--1"></div>
-	    			<p>Not started</p>
-	    		</article>
-	    		<article class="timelineAlert_item">
-	    			<div class="timelineAlert_item_color timelineAlert_item_color--2"></div>
-	    			<p>In progress</p>
-	    		</article>
-	    		<article class="timelineAlert_item">
-	    			<div class="timelineAlert_item_color timelineAlert_item_color--3"></div>
-	    			<p>Completed</p>
-	    		</article>
-	    	</section>
-    	</div>
 	  </div>
     <div id="timelineContainer">
       <div id="timeline_times">
@@ -557,6 +540,23 @@ function createTimeline2() {
       	` ).join('')}
       </div>
       <div id="timeline_today" style="left: ${setDistances(getWeeksArray,null,null, true)}"></div>
+    </div>
+    <div id="timelineAlert">
+      <b>Progress status:</b>
+      <section id="timelineAlert_container">
+        <article class="timelineAlert_item">
+          <div class="timelineAlert_item_color timelineAlert_item_color--1"></div>
+          <p>Not started</p>
+        </article>
+        <article class="timelineAlert_item">
+          <div class="timelineAlert_item_color timelineAlert_item_color--2"></div>
+          <p>In progress</p>
+        </article>
+        <article class="timelineAlert_item">
+          <div class="timelineAlert_item_color timelineAlert_item_color--3"></div>
+          <p>Completed</p>
+        </article>
+      </section>
     </div>
   </div>
 	`
