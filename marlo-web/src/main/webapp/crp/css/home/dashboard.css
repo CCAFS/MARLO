@@ -342,7 +342,7 @@ span.timelineControl:hover {
     height: 40px;
     border-radius: 50%;
     position: absolute;
-    top: 50%;
+    top: 15%;
     transform: translateY(-50%);
     font-size: 27px;
     font-weight: bold;
@@ -352,11 +352,11 @@ span.timelineControl:hover {
   }
   
   .buttonLeftTimeline {
-    left: 2.5%;
+    left: 39%;
   }
   
   .buttonRightTimeline {
-    right: 2.5%;
+    right: 39%;
   }
   
   .timelineBackSuccess {
@@ -415,11 +415,10 @@ span.timelineControl:hover {
   
   #timelineContainer {
 	  position: relative;
-	  margin: 18px 30px 18px 30px;
 	  overflow-x: scroll;
 	  overflow-y: hidden;
-	  height: 36vh;
-	  width: 80%;
+	  height: 31vh;
+	  width: 95%;
 	  margin: 0 auto;
 	}
 	
@@ -458,16 +457,16 @@ span.timelineControl:hover {
 	
 	#timeline_activities {
 		position: relative;
-		font-size: 14px;
+		font-size: 13.5px;
 	}
 	
 	@media only screen and (min-width:1545px){
 		#timeline_activities {
-			font-size: 20px;
+			font-size: 19.5px;
 		}
 		
 		#timelineContainer{
-			height: 30vh;
+			height: 26vh;
 		}
 	}
 	
@@ -497,7 +496,8 @@ span.timelineControl:hover {
 
   .timebox_information {
     position: absolute;
-    bottom: -24px;    
+    top: -12px;
+    left: 6px;  
   }
 	
 	.timeNumber{
@@ -518,6 +518,7 @@ span.timelineControl:hover {
 		border-radius: 0.75rem;
 		background: #E8F4FF;
 		margin-bottom: 1rem;
+    z-index: 4;
 	}
 	
 	.activityCard_content{
@@ -529,6 +530,7 @@ span.timelineControl:hover {
     padding: 4px 6px;
     position: sticky;
     max-width: max-content;
+    z-index: 8;
 	}
 	
 	.activityCard_description {
@@ -581,46 +583,83 @@ span.timelineControl:hover {
 		margin: 0;
 		color: #000;
 	}
+
+  .activityCard_details--1{
+    display: flex;
+    max-width: max-content;
+    gap: 0.5rem;
+    flex-direction: column;
+    z-index: 4;
+  }
+
+  .activityCard_details--1 div{
+		display: flex;
+    align-items: center;
+    gap: 0 0.5rem;
+    flex-wrap: wrap;
+	}
+
+  .activityCard_viewMore p{
+    font-size: 9px;
+    color: #000;
+    cursor: pointer;
+  }
+
+  .activityCard_details--1 div b{
+    font-size: 1rem;
+    color: #000;
+    line-height: 1.2em;
+  }
+	
+	.activityCard_details--1 p{
+		font-size: 1rem;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 0.75rem;
+		margin: 0;
+		color: #000;
+	}
 	
 	.activityCard:nth-child(n+1){
-		top: 0em;
+		top: 1.5em;
 	}
 	
 	.activityCard:nth-child(2n+2){
-		top: 4.5em;
+		top: 6em;
 	}
 	
 	
 	.activityCard:nth-child(3n+3){
-		top: 8.7em;
+		top: 10.5em;
 
 	}
 
   #timeline_activities .activityFlexTop--1{
-    top: 0em;
+    top: 1.5em;
   }
 
   #timeline_activities .activityFlexTop--2{
-    top: 4.5em;
+    top: 6em;
   }
 
   #timeline_activities .activityFlexTop--3{
-    top: 9em;
+    top: 10.5em;
   }
 
   #timeline_activities .activityUnique{
-    top: 2.1em;
+    top: 2.5em;
   }
 	
 	#timelineAlert{
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		justify-content: flex-end;
     gap: 0.5rem;
     align-items: end;
     padding-bottom: 6px;
     position: absolute;
     right: 2.5%;
+    bottom: 2.5%;
 	}
 	
 	#timelineAlert_container{
@@ -632,7 +671,7 @@ span.timelineControl:hover {
 	.timelineAlert_item{
 		display: flex;
 		flex-direction: row;
-		align-items: flex-end;
+		align-items: center;
 		gap: 0.5rem;
 	}
 	
