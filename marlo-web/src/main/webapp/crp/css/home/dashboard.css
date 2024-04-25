@@ -342,7 +342,7 @@ span.timelineControl:hover {
     height: 40px;
     border-radius: 50%;
     position: absolute;
-    top: 50%;
+    top: 12.5%;
     transform: translateY(-50%);
     font-size: 27px;
     font-weight: bold;
@@ -352,11 +352,11 @@ span.timelineControl:hover {
   }
   
   .buttonLeftTimeline {
-    left: 2.5%;
+    left: 39%;
   }
   
   .buttonRightTimeline {
-    right: 2.5%;
+    right: 39%;
   }
   
   .timelineBackSuccess {
