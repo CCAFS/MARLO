@@ -528,6 +528,7 @@ span.timelineControl:hover {
     padding: 4px 6px;
     position: sticky;
     max-width: max-content;
+    z-index: 8;
 	}
 	
 	.activityCard_description {
@@ -573,6 +574,42 @@ span.timelineControl:hover {
   }
 	
 	.activityCard_details p{
+		font-size: 1rem;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 0.75rem;
+		margin: 0;
+		color: #000;
+	}
+
+  .activityCard_details--1{
+    display: flex;
+    max-width: max-content;
+    gap: 0.5rem;
+    flex-direction: column;
+    z-index: 4;
+  }
+
+  .activityCard_details--1 div{
+		display: flex;
+    align-items: center;
+    gap: 0 0.5rem;
+    flex-wrap: wrap;
+	}
+
+  .activityCard_viewMore p{
+    font-size: 9px;
+    color: #000;
+    cursor: pointer;
+  }
+
+  .activityCard_details--1 div b{
+    font-size: 1rem;
+    color: #000;
+    line-height: 1.2em;
+  }
+	
+	.activityCard_details--1 p{
 		font-size: 1rem;
 		font-style: normal;
 		font-weight: 400;
