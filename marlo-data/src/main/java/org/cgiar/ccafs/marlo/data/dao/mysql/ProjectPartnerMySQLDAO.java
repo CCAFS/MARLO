@@ -86,6 +86,30 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
   }
 
   @Override
+  public List<ProjectPartner> findAllByPhaseProject(long projectId, long phaseId) {
+    String query = "from " + ProjectPartner.class.getName() + " where id_phase=" + phaseId + " and project_id="
+      + projectId + " and is_active=1";
+    List<ProjectPartner> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
+  public List<ProjectPartner> findAllByPhaseProjectAndInstitution(long projectId, long phaseId, long institutionId) {
+    String query = "from " + ProjectPartner.class.getName() + " where id_phase=" + phaseId + " and project_id="
+      + projectId + " and institution_id=" + institutionId + " and is_active=1";
+    List<ProjectPartner> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
   public ProjectPartner getPartnerPhase(Phase phase, Project project, Institution institution) {
     String query = "select distinct pp from ProjectPartner pp "
       + " where project.id = :projectId and institution.id= :institutionId and phase.id= :phaseId and active=true";

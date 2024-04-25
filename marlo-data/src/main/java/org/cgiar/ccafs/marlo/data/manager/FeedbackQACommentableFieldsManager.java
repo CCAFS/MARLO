@@ -61,12 +61,32 @@ public interface FeedbackQACommentableFieldsManager {
 
 
   /**
+   * Get the commentstatus by phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverable list with the comment count
+   */
+  List<String> getAnsweredCommentByPhaseToStudy(long phase);
+
+  /**
+   * Get the commentstatus by phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverable list with the comment count
+   */
+  List<String> getCommentStatusByPhaseToStudy(long phase);
+
+
+  /**
    * This method gets a internalQaCommentableFields object by a given internalQaCommentableFields identifier.
    * 
    * @param internalQaCommentableFieldsID is the internalQaCommentableFields identifier.
    * @return a FeedbackQACommentableFields object.
    */
   public FeedbackQACommentableFields getInternalQaCommentableFieldsById(long internalQaCommentableFieldsID);
+
 
   /**
    * This method saves the information of the given internalQaCommentableFields

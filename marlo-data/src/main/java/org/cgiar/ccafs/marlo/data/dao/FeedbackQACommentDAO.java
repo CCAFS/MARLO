@@ -54,6 +54,12 @@ public interface FeedbackQACommentDAO {
    */
   public List<FeedbackQAComment> findAll();
 
+  /**
+   * This method gets a list of feedbackQAComment by phase, that are active
+   * 
+   * @return a list from FeedbackQAComment null if no exist records
+   */
+  List<FeedbackQAComment> findAllByPhase(long phaseId);
 
   /**
    * This method gets a list of feedbackQAComment that are active by Parent id

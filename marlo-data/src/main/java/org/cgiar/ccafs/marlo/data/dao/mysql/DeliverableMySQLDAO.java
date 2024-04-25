@@ -77,6 +77,69 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
 
   }
 
+  /**
+   * Get the answered comment by phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverable list with the comment count. olny coment with answer
+   */
+  @Override
+  public List<String> getAnsweredCommentByPhase(long phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT parent_id as parent_id,count(*) as count ");
+    query.append("FROM feedback_qa_comments fqc");
+    query.append(" WHERE id_phase=" + phase);
+    query.append(" and status_id = 1 ");
+    query.append(" and field_id in (select id from feedback_qa_commentable_fields fqcf ");
+    query.append(" where section_name = 'deliverable') ");
+    query.append(" and reply_id is not null ");
+    query.append(" group by parent_id ");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<String> comments = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        String tmp = map.get("parent_id").toString() + "|" + map.get("count").toString();
+        comments.add(tmp);
+      }
+    }
+
+    return comments;
+  }
+
+  /**
+   * Get the commentstatus by phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverable list with the comment count
+   */
+  @Override
+  public List<String> getCommentStatusByPhase(long phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT parent_id as parent_id,count(*) as count ");
+    query.append("FROM feedback_qa_comments fqc");
+    query.append(" WHERE id_phase=" + phase);
+    query.append(" and status_id <> 6 ");
+    query.append(" and field_id in (select id from feedback_qa_commentable_fields fqcf ");
+    query.append(" where section_name = 'deliverable') ");
+    query.append(" group by parent_id ");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<String> comments = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        String tmp = map.get("parent_id").toString() + "|" + map.get("count").toString();
+        comments.add(tmp);
+      }
+    }
+
+    return comments;
+  }
+
   @Override
   public List<Deliverable> getDeliverablesByParameters(Phase phase, boolean filterPhaseYear, boolean filterParticipants,
     Boolean filterPublications) {
@@ -162,6 +225,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     return deliverables;
   }
 
+
   @Override
   public List<Deliverable> getDeliverablesByProjectAndPhase(long phaseId, long projectId) {
     String query = "select d from Deliverable d, DeliverableInfo di "
@@ -177,6 +241,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
 
     return deliverables;
   }
+
 
   @Override
   public List<DeliverableHomeDTO> getDeliverablesByProjectAndPhaseHome(long phaseId, long projectId) {
@@ -256,6 +321,55 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     return deliverables;
   }
 
+  /**
+   * Get listing to validate duplicate information (dissemination_URL,DIO, handle)
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverable list with the data to validate duplicates (dissemination_URL,DIO, handle)
+   */
+  @Override
+  public List<String> getDuplicatesDeliverablesByPhase(long phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("d.id as id,");
+    query.append("dv.dissemination_URL as dissemination_URL ");
+    query.append("FROM ");
+    query.append("deliverables AS d ");
+    query.append("INNER JOIN deliverable_dissemination AS dv ON d.id = dv.deliverable_id ");
+    query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");
+    query.append(" WHERE di.is_active =1 ");
+    query.append(" and d.id_phase=" + phase);
+    query.append(" and dv.dissemination_URL is not null");
+    query.append(" and length(dissemination_URL)>0");
+    query.append(" UNION ");
+    query.append("SELECT DISTINCT  ");
+    query.append("d.id as id,");
+    query.append("dme.element_value as dissemination_URL ");
+    query.append("FROM ");
+    query.append("deliverables AS d ");
+    query.append("INNER JOIN deliverable_metadata_elements AS dme ON d.id = dme.deliverable_id ");
+    query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");
+    query.append(" where dme.element_id in(35,36) ");
+    query.append(" and di.is_active =1 ");
+    query.append(" and d.id_phase=" + phase);
+    query.append(" and element_value is not null");
+    query.append(" and length(element_value)>0");
+
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<String> deliverables = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        String tmp = map.get("id").toString() + "|" + map.get("dissemination_URL").toString();
+        deliverables.add(tmp);
+      }
+    }
+
+    return deliverables;
+  }
+
   @Override
   public List<Deliverable> getPublicationsByPhase(long phase) {
     StringBuilder query = new StringBuilder();
@@ -279,6 +393,44 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     }
 
     return deliverables;
+  }
+
+  /**
+   * get deliverables without activities
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @param projectId project id
+   * @return quantity deliverables without activities
+   */
+  @Override
+  public int getQuantityDeliverablesWithActivities(long phase, long projectId) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT count(*) as count FROM deliverables d ");
+    query.append("join deliverables_info di on d.id = di.deliverable_id ");
+    query.append("join phases p on p.id = d.id_phase");
+    query.append(" WHERE d.id_phase=" + phase);
+    query.append(" and d.id_phase = di.id_phase ");
+    query.append(" and d.is_active = 1 and d.is_active =di.is_active ");
+    query.append(" and d.project_id=" + projectId);
+    query.append(
+      " and (d.id not in (select da.deliverable_id from deliverable_activities da where da.deliverable_id = d.id and da.is_active =1 ) ");
+    query.append(
+      "  or d.id not in (select da.deliverable_id from deliverable_activities da where deliverable_id = d.id and da.is_active =1 and da.id_phase =p.id) ");
+    query.append(
+      "  or d.id not in (select da.deliverable_id from deliverable_activities da join activities a  on da.activity_id = a.id where deliverable_id = d.id and da.is_active =1 and a.is_active =1 and da.id_phase =p.id)) ");
+
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    int deliverable = 0;
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        deliverable = Integer.parseInt(map.get("count").toString());
+      }
+    }
+
+    return deliverable;
   }
 
   @Override

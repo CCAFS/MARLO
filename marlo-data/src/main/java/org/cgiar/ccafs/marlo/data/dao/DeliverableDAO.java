@@ -56,6 +56,10 @@ public interface DeliverableDAO {
    */
   public List<Deliverable> findAll();
 
+  List<String> getAnsweredCommentByPhase(long phase);
+
+  List<String> getCommentStatusByPhase(long phase);
+
   /**
    * This method gets a list of Deliverable that are active by a given parameters
    * 
@@ -90,7 +94,19 @@ public interface DeliverableDAO {
 
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
 
+  List<String> getDuplicatesDeliverablesByPhase(long phase);
+
   public List<Deliverable> getPublicationsByPhase(long phase);
+
+  /**
+   * get deliverables without activities
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @param projectId project id
+   * @return quantity deliverables without activities
+   */
+  int getQuantityDeliverablesWithActivities(long phase, long projectId);
 
   public Boolean isDeliverableExcluded(Long deliverableId, Long phaseId);
 
