@@ -23,6 +23,8 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmPriorityActionManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmSubActionManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -38,6 +40,8 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
+import org.cgiar.ccafs.marlo.data.model.DeliverableShfrmPriorityAction;
+import org.cgiar.ccafs.marlo.data.model.DeliverableShfrmSubAction;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
@@ -132,6 +136,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   private final DeliverableGeographicRegionManager deliverableGeographicRegionManager;
   private DeliverableLocationManager deliverableLocationManager;
   private DeliverableInfoManager deliverableInfoManager;
+  private final DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
+  private final DeliverableShfrmSubActionManager deliverableShfrmSubActionManager;
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams
@@ -144,7 +150,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     ResourceManager resourceManager, ProjectManager projectManager,
     DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
-    DeliverableLocationManager deliverableLocationManager, DeliverableInfoManager deliverableInfoManager) {
+    DeliverableLocationManager deliverableLocationManager, DeliverableInfoManager deliverableInfoManager,
+    DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager,
+    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.genderTypeManager = genderTypeManager;
     this.crpProgramManager = crpProgramManager;
@@ -154,6 +162,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
     this.deliverableLocationManager = deliverableLocationManager;
     this.deliverableInfoManager = deliverableInfoManager;
+    this.deliverableShfrmPriorityActionManager = deliverableShfrmPriorityActionManager;
+    this.deliverableShfrmSubActionManager = deliverableShfrmSubActionManager;
   }
 
   /**
@@ -206,6 +216,14 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       this.getText("summaries.board.report.expectedDeliverables.isNewDeliverable"));
     masterReport.getParameterValues().put("i8nArticleURL",
       this.getText("summaries.board.report.expectedDeliverables.articleURL"));
+    masterReport.getParameterValues().put("i8nDeliverablesContributingSHFRM",
+      "Is this deliverable aligned with the Soil Health and Fertility Road Map (SHFRM) implementation?");
+    masterReport.getParameterValues().put("i8nDeliverablesContributingNarrative",
+      "How this deliverable is expecting to contribute to the SHFRM?");
+    masterReport.getParameterValues().put("i8nDeliverablesContributingNarrativeReporting",
+      "How this deliverable is contributing to the SHFRM?");
+    masterReport.getParameterValues().put("i8nDeliverablesActions",
+      "To which Priority(ies) action is contributing to:");
 
     return masterReport;
   }
@@ -299,12 +317,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         "flagships", "regions", "individual", "partnersResponsible", "shared", "openFS", "fsWindows", "outcomes",
         "projectLeadPartner", "managingResponsible", "phaseID", "finishedFS", "gender", "youth", "cap", "climate",
         "deliverableDescription", "geographicScope", "region", "country", "newDeliverable", "divisions", "hasDivisions",
-        "articleURL"},
+        "articleURL", "isContributing", "contributingNarrative", "shfrmActions"},
       new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, Boolean.class, String.class},
+        String.class, String.class, Boolean.class, String.class, String.class, Boolean.class, String.class},
       0);
     Boolean activePPAFilter = ppa != null && !ppa.isEmpty() && !ppa.equals("All") && !ppa.equals("-1");
     Boolean addDeliverableRow = true;
@@ -658,13 +676,17 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           if (deliverableDissemination.getArticleUrl() != null) {
             articleURL = deliverableDissemination.getArticleUrl();
           } else {
-            articleURL = "<Not Defined>";
+            articleURL = "&lt;Not Defined&gt;";
           }
         } else {
-          articleURL = "<Not Applicable>";
+          articleURL = "&lt;Not Applicable&gt;";
         }
       } else {
-        articleURL = "<Not Applicable>";
+        articleURL = "&lt;Not Applicable&gt;";
+      }
+
+      if (articleURL == null || (articleURL != null && articleURL.isEmpty())) {
+        articleURL = "Not Defined&gt;";
       }
 
       LinkedHashSet<Institution> managingResponsibleList = new LinkedHashSet<>();
@@ -1094,6 +1116,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         } else {
           regions = null;
         }
+
+        if (regions == null) {
+          regions = "&lt;Not Defined&gt;";
+        }
+
         String openFS = "";
         String finishedFS = "";
         Set<String> fsWindowsSet = new HashSet<String>();
@@ -1315,12 +1342,72 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           divisions = null;
         }
 
+        String isContributing = "", contributingNarrative = "", shfrmActions = "";
+
+        // SOIL Contribution
+        if (deliverable.getDeliverableInfo() != null
+          && deliverable.getDeliverableInfo().getContributingShfrm() != null) {
+          if (deliverable.getDeliverableInfo().getContributingShfrm() == true) {
+            isContributing = "Yes";
+          } else {
+            isContributing = "No";
+          }
+        } else {
+          isContributing = "<Not Defined>";
+        }
+
+        if (isContributing.equals("Yes")) {
+
+          if (deliverable.getDeliverableInfo().getShfrmContributionNarrative() != null
+            && !deliverable.getDeliverableInfo().getShfrmContributionNarrative().isEmpty()) {
+            contributingNarrative = deliverable.getDeliverableInfo().getShfrmContributionNarrative();
+          } else {
+            contributingNarrative = "<Not Provided>";
+          }
+
+          List<DeliverableShfrmPriorityAction> actions = new ArrayList<>();
+          List<DeliverableShfrmSubAction> subActions = new ArrayList<>();
+          String actionsText = "";
+
+          try {
+            actions = deliverableShfrmPriorityActionManager.findByDeliverableAndPhase(deliverable.getId(),
+              this.getSelectedPhase().getId());
+
+            if (actions != null && !actions.isEmpty()) {
+              for (DeliverableShfrmPriorityAction action : actions) {
+                if (action != null && action.getShfrmPriorityAction() != null
+                  && action.getShfrmPriorityAction().getId() != null
+                  && action.getShfrmPriorityAction().getComposedName() != null) {
+                  actionsText += "\n  " + action.getShfrmPriorityAction().getComposedName();
+                  subActions = deliverableShfrmSubActionManager.findByPriorityActionAndPhase(action.getId(),
+                    this.getSelectedPhase().getId());
+
+                  if (subActions != null && !subActions.isEmpty()) {
+                    actionsText += "\n <b> SubActions:</b> \n";
+                    for (DeliverableShfrmSubAction subAction : subActions) {
+                      if (subAction != null && subAction.getShfrmSubAction() != null
+                        && subAction.getShfrmSubAction().getComposedName() != null) {
+                        actionsText += " ●  " + subAction.getShfrmSubAction().getComposedName() + "\n";
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            shfrmActions = actionsText;
+          } catch (Exception e) {
+            LOG.error(e + " error getting shfrm actions and subactions");
+          }
+        } else {
+          contributingNarrative = "&lt;Not Applicable&gt;";
+          shfrmActions = "&lt;Not Applicable&gt;";
+        }
 
         model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
           keyOutput, delivStatus, delivNewYear, projectID, projectTitle, projectClusterActivities, flagships, regions,
           individual, ppaResponsible, shared, openFS, fsWindows, outcomes, projectLeadPartner, managingResponsible,
           phaseID, finishedFS, gender, youth, cap, climate, deliverableDescription, geographicScope, region, country,
-          newDeliverable, divisions, hasDivisions, articleURL});
+          newDeliverable, divisions, hasDivisions, articleURL, isContributing, contributingNarrative, shfrmActions});
 
         if (deliverablePerYearList.containsKey(completionYear)) {
           Set<Deliverable> deliverableSet = deliverablePerYearList.get(completionYear);
