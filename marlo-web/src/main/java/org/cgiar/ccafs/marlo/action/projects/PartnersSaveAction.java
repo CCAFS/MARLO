@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
@@ -111,6 +112,7 @@ public class PartnersSaveAction extends BaseAction {
   private int activityID;
   private int capdevID;
   private String pageRequestName;
+  private ProjectInfo projectInfo;
 
   @Inject
   public PartnersSaveAction(APConfig config, LocElementManager locationManager,
@@ -165,7 +167,9 @@ public class PartnersSaveAction extends BaseAction {
 
   public void addProjectMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
-    ProjectInfo projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
+    if (projectInfo == null) {
+      projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
+    }
     String sourceMessage = "";
     if (this.isAiccra()) {
       sourceMessage = "" + context + " Cluster: (" + projectID + ") - " + projectInfo.getTitle();
@@ -342,6 +346,12 @@ public class PartnersSaveAction extends BaseAction {
     countryId = String.valueOf(locationId);
     partnerWebPage = activityPartner.getPartner().getWebsiteLink();
 
+    // Get project info
+    projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
+
+    // Get project information
+    Project project = projectInfo != null ? projectInfo.getProject() : null;
+
     // Get the partner type name
     countryName = locationManager.getLocElementById(Long.parseLong(countryId)).getName();
 
@@ -444,6 +454,20 @@ public class PartnersSaveAction extends BaseAction {
       request.put("websiteLink", partnerRequest.getWebPage());
       request.put("institutionTypeCode", partnerRequest.getInstitutionType().getId());
       request.put("hqCountryIso", partnerRequest.getLocElement().getIsoAlpha2());
+
+      // setting requestSource CLARISA parameter
+      String requestSource;
+      if (project != null && project.getAcronym() != null) {
+        requestSource = project.getAcronym() + " Cluster";
+      } else if (project != null && project.getProjectInfo() != null && project.getProjectInfo().getTitle() != null) {
+        requestSource = project.getProjectInfo().getTitle() + " Cluster";
+      } else {
+        requestSource = "Request made from AICCRA";
+      }
+      request.put("requestSource", requestSource);
+
+      request.put("misAcronym", "aiccra");
+      request.put("userId", this.getCurrentUser().getId());
       request.put("externalUserMail", this.getCurrentUser().getEmail());
       request.put("externalUserName", this.getCurrentUser().getUsername());
       request.put("externalUserComments", "Request made from AICCRA");
@@ -456,8 +480,7 @@ public class PartnersSaveAction extends BaseAction {
         ExternalPostUtils epu = new ExternalPostUtils();
         epu.setUsername(config.getClarisaAPIUsername());
         epu.setPassword(config.getClarisaAPIPassword());
-        String responseStr =
-          epu.postJson(config.getClarisaAPIHost() + "/api/CCAFS/institutions/institution-requests", requestStr);
+        String responseStr = epu.postJson(config.getClarisaAPIHost() + "/api/partner-requests/create", requestStr);
 
         if (responseStr.isEmpty()) {
           postFailed = true;
@@ -478,11 +501,11 @@ public class PartnersSaveAction extends BaseAction {
 
     try {
       /*
-      if (this.validateEmailNotification()) {
-        sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
-          null, null, null, true);
-      }
-      */
+       * if (this.validateEmailNotification()) {
+       * sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
+       * null, null, null, true);
+       * }
+       */
     } catch (Exception e) {
       LOG.error("unable to send mail", e);
       /**
