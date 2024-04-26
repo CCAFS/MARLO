@@ -70,6 +70,17 @@ public class DeliverableCrpOutcomeMySQLDAO extends AbstractMarloDAO<DeliverableC
   }
 
   @Override
+  public List<DeliverableCrpOutcome> findAllByPhase(Long phaseId) {
+    String query = "from " + DeliverableCrpOutcome.class.getName() + " where id_phase=" + phaseId.longValue();
+    List<DeliverableCrpOutcome> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
   public DeliverableCrpOutcome save(DeliverableCrpOutcome deliverableCrpOutcome) {
     if (deliverableCrpOutcome.getId() == null) {
       super.saveEntity(deliverableCrpOutcome);

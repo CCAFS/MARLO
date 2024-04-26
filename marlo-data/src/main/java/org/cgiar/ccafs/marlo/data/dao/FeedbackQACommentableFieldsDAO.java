@@ -64,6 +64,24 @@ public interface FeedbackQACommentableFieldsDAO {
 
 
   /**
+   * Get the answered comment by phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverable list with the comment count. olny coment with answer
+   */
+  List<String> getAnsweredCommentByPhaseToStudy(long phase);
+
+  /**
+   * Get the commentstatus by phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverable list with the comment count
+   */
+  List<String> getCommentStatusByPhaseToStudy(long phase);
+
+  /**
    * This method saves the information of the given internalQaCommentableFields
    * 
    * @param feedbackQACommentableFields - is the internalQaCommentableFields object with the new information to be
@@ -74,4 +92,6 @@ public interface FeedbackQACommentableFieldsDAO {
    *         or -1 is some error occurred.
    */
   public FeedbackQACommentableFields save(FeedbackQACommentableFields feedbackQACommentableFields);
+
+
 }

@@ -51,6 +51,12 @@ public interface DeliverableCrpOutcomeManager {
    */
   public List<DeliverableCrpOutcome> findAll();
 
+  /**
+   * This method gets a list of deliverableCrpOutcome by phase that are active
+   * 
+   * @return a list from DeliverableCrpOutcome null if no exist records
+   */
+  List<DeliverableCrpOutcome> findAllByPhase(Long phaseId);
 
   /**
    * This method gets a deliverableCrpOutcome object by a given deliverableCrpOutcome identifier.
@@ -59,6 +65,7 @@ public interface DeliverableCrpOutcomeManager {
    * @return a DeliverableCrpOutcome object.
    */
   public DeliverableCrpOutcome getDeliverableCrpOutcomeById(long deliverableCrpOutcomeID);
+
 
   /**
    * This method saves the information of the given deliverableCrpOutcome

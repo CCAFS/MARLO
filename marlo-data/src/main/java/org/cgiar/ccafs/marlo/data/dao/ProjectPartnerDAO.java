@@ -57,8 +57,25 @@ public interface ProjectPartnerDAO {
    */
   public List<ProjectPartner> findAll();
 
-  public ProjectPartner getPartnerPhase(Phase phase, Project project, Institution institution);
+  /**
+   * This method gets a list of projectPartner that are active, by phase and project
+   * 
+   * @param projectId project identifier.
+   * @param phaseId phase identifier.
+   * @return ProjectPartner list.
+   */
+  List<ProjectPartner> findAllByPhaseProject(long projectId, long phaseId);
 
+  /**
+   * This method gets a list of projectPartner that are active, by phase, project and institution
+   * 
+   * @param projectId project identifier.
+   * @param phaseId phase identifier.
+   * @return ProjectPartner list.
+   */
+  List<ProjectPartner> findAllByPhaseProjectAndInstitution(long projectId, long phaseId, long institutionId);
+
+  public ProjectPartner getPartnerPhase(Phase phase, Project project, Institution institution);
 
   /**
    * Eager fetch ProjectPartnerLocations with Project Partner.
@@ -68,11 +85,11 @@ public interface ProjectPartnerDAO {
    */
   public ProjectPartner getProjectPartnerByIdAndEagerFetchLocations(long projectPartnerID);
 
+
   public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPartnerPersons(long projectId);
 
   public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(long projectId,
     long phaseId);
-
 
   /**
    * This method saves the information of the given projectPartner

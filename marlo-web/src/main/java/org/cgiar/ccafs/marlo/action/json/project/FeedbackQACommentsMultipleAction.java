@@ -85,6 +85,8 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
             qa -> qa != null && qa.isActive() && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
           .collect(Collectors.toList());
 
+        // cgamboa 19/04/2024 comments.findAll function has been changed by commentManager.findAllByPhase function
+        List<FeedbackQAComment> allfeedbackQAComment = commentManager.findAllByPhase(phaseId);
         if (fields != null && !fields.isEmpty()) {
           int countField = 0;
           for (FeedbackQACommentableFields field : fields) {
@@ -97,10 +99,11 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
             long fieldIdLocal = fieldId;
 
             // Get comments for field
-            if (fieldId != null && commentManager.findAll() != null) {
+            // cgamboa 19/04/2024 comments.findAll function has been changed by commentManager.findAllByPhase function
+            if (fieldId != null && allfeedbackQAComment != null) {
 
               if (frontName != null) {
-                feedbackComments = (commentManager.findAll().stream()
+                feedbackComments = (allfeedbackQAComment.stream()
                   .filter(c -> c.getField() != null && c.getField().getId() != null
                     && c.getField().getId().equals(fieldIdLocal) && c.getField().getFieldName() != null
                     && c.getField().getFieldName().equals(frontName) && c.getPhase() != null
@@ -108,7 +111,7 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                     && c.getParentId() == parentId)
                   .collect(Collectors.toList()));
               } else {
-                feedbackComments = (commentManager.findAll().stream()
+                feedbackComments = (allfeedbackQAComment.stream()
                   .filter(c -> c.getField() != null && c.getField().getId() != null
                     && c.getField().getId().equals(fieldIdLocal) && c.getPhase() != null && c.getPhase().getId() != null
                     && c.getPhase().getId().equals(phaseId) && c.getParentId() == parentId)
