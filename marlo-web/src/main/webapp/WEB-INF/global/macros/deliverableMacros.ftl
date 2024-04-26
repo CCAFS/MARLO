@@ -522,7 +522,7 @@
     </div>
   </div>
       <div style="display: flex;" class="alertParticipant">
-        <div class="noteAlert" style="font-weight: 700;color: #ffc800;">Alert:&nbsp;</div>
+        <div class="noteAlert" style="font-weight: 700;color: #ECB00C;">Alert:&nbsp;</div>
         <div class="textNote">  The remaining fields must be 0, please distribute the trainees in the shared clusters</div>
       </div>
       <div style="display: none" class="doneParticipant">
