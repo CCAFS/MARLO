@@ -998,10 +998,10 @@ div.fieldFocus-deliverable {
 .button-exit{
   position: absolute;
   float: inline-end;
-  top: 50px;
+  top: 40px;
   right: 10px;
- font-size: 18px;
- cursor: pointer;
+  font-size: 18px;
+  cursor: pointer;
 }
 
 .x-close-modal{
@@ -1021,7 +1021,6 @@ div.fieldFocus-deliverable {
 .title-modal-evidences{
   font-size: 19px;
   font-weight: 600;
-  padding: .6em 1em .6em 1em;
 }
 
 .text-modal-evidences{
