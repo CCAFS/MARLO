@@ -36,6 +36,9 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author CCAFS
  */
@@ -48,6 +51,8 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
   private ProjectPartnerManager projectPartnerManager;
 
   // Managers
+
+  private final Logger logger = LoggerFactory.getLogger(DeliverableUserPartnershipManagerImpl.class);
 
 
   @Inject
@@ -195,11 +200,26 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
 
   }
 
+
   @Override
   public List<DeliverableUserPartnership> findByDeliverableID(long deliverableID) {
     return deliverableUserPartnershipDAO.findByDeliverableID(deliverableID);
   }
 
+  @Override
+  public List<DeliverableUserPartnership> findByDeliverableIDAndPhase(long deliverableID, long phaseId) {
+
+    return deliverableUserPartnershipDAO.findByDeliverableIDAndPhase(deliverableID, phaseId);
+
+  }
+
+
+  @Override
+  public List<DeliverableUserPartnership> findByDeliverableIDCustom(long deliverableID) {
+
+    return deliverableUserPartnershipDAO.findByDeliverableIDCustom(deliverableID);
+
+  }
 
   @Override
   public DeliverableUserPartnership getDeliverableUserPartnershipById(long deliverableUserPartnershipID) {
@@ -216,10 +236,22 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
 
     List<User> users = new ArrayList<>();
 
-    List<ProjectPartner> partnersTmp = projectPartnerManager.findAll().stream()
-      .filter(pp -> pp.isActive() && pp.getProject().getId().equals(projectID)
-        && pp.getPhase().getId().equals(phase.getId()) && pp.getInstitution().getId().equals(institutionId))
-      .collect(Collectors.toList());
+    /*
+     * cgamboa 26/04/2024 the query has been optimized
+     * List<ProjectPartner> partnersTmp = projectPartnerManager.findAll().stream()
+     * .filter(pp -> pp.isActive() && pp.getProject().getId().equals(projectID)
+     * && pp.getPhase().getId().equals(phase.getId()) && pp.getInstitution().getId().equals(institutionId))
+     * .collect(Collectors.toList());
+     */
+
+    List<ProjectPartner> partnersTmp = new ArrayList<>();
+    try {
+      partnersTmp = projectPartnerManager.findAllByPhaseProjectAndInstitution(projectID, phase.getId(), institutionId);
+
+      logger.info(" DeliverableUserPartnershipManagerImpl linea 244 " + partnersTmp.get(0).getId());
+    } catch (Exception e) {
+      logger.error("unable to get partners");
+    }
 
     if (partnersTmp != null && !partnersTmp.isEmpty()) {
       ProjectPartner projectPartner = partnersTmp.get(0);
@@ -229,6 +261,10 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
 
         users.add(projectPartnerPerson.getUser());
       }
+    }
+
+    for (User projectPartner : users) {
+      logger.info(" DeliverableUserPartnershipManagerImpl linea 266 " + projectPartner.getId());
     }
 
     return users;
@@ -243,10 +279,27 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
     if (userPartnership != null && userPartnership.getDeliverable() != null) {
       boolean isPublication = userPartnership.getDeliverable().getIsPublication() != null
         && userPartnership.getDeliverable().getIsPublication();
+
+      // cgamboa 26/04/2024 the query has been optimized to be used in the replication process
+
+      List<DeliverableUserPartnership> deliverableUserPartnershipsCustom = null;
+
+      try {
+        deliverableUserPartnershipsCustom = this.findByDeliverableIDCustom(userPartnership.getDeliverable().getId());
+        for (DeliverableUserPartnership deliverableUserPartnership2 : deliverableUserPartnershipsCustom) {
+          logger.info(" --> " + deliverableUserPartnership2.getId());
+        }
+
+      } catch (Exception e) {
+        // TODO: handle exception
+        logger.error(e.getMessage());
+      }
+
       if (userPartnership.getPhase().getDescription().equals(APConstants.PLANNING)
         && userPartnership.getPhase().getNext() != null && !isPublication) {
+        // cgamboa 26/04/2024 the query has been optimized to be used in the replication process
         this.saveDeliverableUserPartnershipPhase(userPartnership.getPhase().getNext(),
-          userPartnership.getDeliverable().getId(), deliverableUserPartnership);
+          userPartnership.getDeliverable().getId(), deliverableUserPartnership, deliverableUserPartnershipsCustom);
       }
 
       if (userPartnership.getPhase().getDescription().equals(APConstants.REPORTING)) {
@@ -254,8 +307,9 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
           && !isPublication) {
           Phase upkeepPhase = userPartnership.getPhase().getNext().getNext();
           if (upkeepPhase != null) {
+            // cgamboa 26/04/2024 the query has been optimized to be used in the replication process
             this.saveDeliverableUserPartnershipPhase(upkeepPhase, userPartnership.getDeliverable().getId(),
-              deliverableUserPartnership);
+              deliverableUserPartnership, deliverableUserPartnershipsCustom);
           }
         }
       }
@@ -266,7 +320,8 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
   }
 
   public void saveDeliverableUserPartnershipPhase(Phase next, long deliverableID,
-    DeliverableUserPartnership deliverableUserPartnership) {
+    DeliverableUserPartnership deliverableUserPartnership,
+    List<DeliverableUserPartnership> deliverableUserPartnershipsCustom) {
 
     Phase phase = phaseDAO.find(next.getId());
     List<DeliverableUserPartnership> deliverableUserPartnerships = null;
@@ -274,12 +329,21 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
     if (deliverableID != 0 && deliverableUserPartnership != null && deliverableUserPartnership.getInstitution() != null
       && deliverableUserPartnership.getInstitution().getId() != null
       && deliverableUserPartnership.getDeliverablePartnerType() != null) {
-      deliverableUserPartnerships = phase.getDeliverableUserPartnerships().stream().filter(c -> c.isActive()
-        && c.getDeliverable() != null && c.getDeliverable().getId().equals(deliverableID) && c.getInstitution() != null
-        && c.getInstitution().getId().equals(deliverableUserPartnership.getInstitution().getId())
-        && c.getDeliverablePartnerType() != null
-        && c.getDeliverablePartnerType().getId().equals(deliverableUserPartnership.getDeliverablePartnerType().getId()))
-        .collect(Collectors.toList());
+      logger.info(" DeliverableUserPartnershipManagerImpl linea 282");
+      if (deliverableUserPartnershipsCustom != null && !deliverableUserPartnershipsCustom.isEmpty()) {
+        logger.info(" DeliverableUserPartnershipManagerImpl linea 314  " + phase.getId());
+        // cgamboa 26/04/2024 the query has been optimized to be used in the replication process
+        deliverableUserPartnerships = deliverableUserPartnershipsCustom.stream()
+          .filter(c -> c.isActive() && c.getDeliverable() != null && c.getDeliverable().getId().equals(deliverableID)
+            && c.getInstitution() != null
+            && c.getInstitution().getId().equals(deliverableUserPartnership.getInstitution().getId())
+            && c.getDeliverablePartnerType() != null
+            && c.getDeliverablePartnerType().getId()
+              .equals(deliverableUserPartnership.getDeliverablePartnerType().getId())
+            && c.getPhase().getId().equals(phase.getId()))
+          .collect(Collectors.toList());
+      }
+      logger.info(" DeliverableUserPartnershipManagerImpl linea 289 " + deliverableUserPartnerships.size());
     }
 
     if (deliverableUserPartnerships != null && deliverableUserPartnerships.isEmpty()) {
@@ -287,11 +351,20 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
       if (deliverableUserPartnership != null && deliverableUserPartnership.getDeliverablePartnerType() != null
         && deliverableUserPartnership.getDeliverablePartnerType().getId() != null && deliverableUserPartnership
           .getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE)) {
-        List<DeliverableUserPartnership> checkInstitutiondeliverableUserPartnerships = phase
-          .getDeliverableUserPartnerships().stream()
-          .filter(c -> c.isActive() && c.getDeliverable().getId().equals(deliverableID) && c.getDeliverablePartnerType()
-            .getId().equals(deliverableUserPartnership.getDeliverablePartnerType().getId()))
-          .collect(Collectors.toList());
+
+        List<DeliverableUserPartnership> checkInstitutiondeliverableUserPartnerships = null;
+        if (deliverableUserPartnershipsCustom != null && !deliverableUserPartnershipsCustom.isEmpty()) {
+          /// phase.getDeliverableUserPartnerships()
+          // cgamboa 26/04/2024 the query has been optimized to be used in the replication process
+          checkInstitutiondeliverableUserPartnerships = deliverableUserPartnershipsCustom.stream()
+            .filter(c -> c.isActive() && c.getDeliverable().getId().equals(deliverableID)
+              && c.getDeliverablePartnerType().getId()
+                .equals(deliverableUserPartnership.getDeliverablePartnerType().getId())
+              && c.getPhase().getId().equals(phase.getId()))
+            .collect(Collectors.toList());
+          logger.info(
+            " DeliverableUserPartnershipManagerImpl linea 342 " + checkInstitutiondeliverableUserPartnerships.size());
+        }
 
         if (checkInstitutiondeliverableUserPartnerships != null
           && !checkInstitutiondeliverableUserPartnerships.isEmpty()) {
@@ -411,6 +484,8 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
       }
 
     } else {
+
+      logger.info(" DeliverableUserPartnershipManagerImpl linea 467 " + deliverableUserPartnerships.size());
       DeliverableUserPartnership dp = null;
       if (deliverableUserPartnerships != null && deliverableUserPartnerships.get(0) != null) {
         dp = deliverableUserPartnerships.get(0);
@@ -486,7 +561,9 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
 
 
     if (phase.getNext() != null) {
-      this.saveDeliverableUserPartnershipPhase(phase.getNext(), deliverableID, deliverableUserPartnership);
+      // cgamboa 26/04/2024 the query has been optimized to be used in the replication process
+      this.saveDeliverableUserPartnershipPhase(phase.getNext(), deliverableID, deliverableUserPartnership,
+        deliverableUserPartnershipsCustom);
     }
   }
 

@@ -2511,14 +2511,22 @@ public class DeliverableAction extends BaseAction {
 
   @Override
   public String save() {
+    logger.info(" DeliverableAction linea 2514");
     if (this.hasPermission("canEdit")) {
+
+      logger.info(" DeliverableAction linea 2516");
       this.getSession().put("indexTab", indexTab);
       // we update the mofification Justification only here.
       this.saveProjectAuditData();
 
+      logger.info(" DeliverableAction linea 2521");
+
       Deliverable deliverableManagedState = this.updateDeliverableInfo();
       this.updateDeliverableFundingSources(deliverableManagedState);
+      logger.info(" DeliverableAction linea 2525");
       this.saveDeliverableActivities(deliverableManagedState);
+
+      logger.info(" DeliverableAction linea 2528");
 
       // This gets a DeliverablePartnership responsible entity in managed state.
       // DeliverablePartnership partnershipResponsibleManaged = deliverable.getResponsiblePartner();
@@ -2533,13 +2541,16 @@ public class DeliverableAction extends BaseAction {
        * 08/01 - HJ - Save the Deliverables Part Responsible
        */
       this.saveDeliverablePartnershipResponsible(deliverableDB);
+      logger.info(" DeliverableAction linea 2543");
       this.saveDeliverablePartnershipOther(deliverableDB);
-
+      logger.info(" DeliverableAction linea 2545");
       // Save Geographic Scope Data
       this.saveGeographicScope(deliverableManagedState, this.getActualPhase());
 
       // this.saveProjectOutcomes(deliverableDB, this.getActualPhase());
       this.saveCrpOutcomes(deliverableDB, this.getActualPhase());
+
+      logger.info(" DeliverableAction linea 2552");
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -2560,12 +2571,16 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
+      logger.info(" DeliverableAction linea 2573");
+
       if (haveRegions) {
         // Save the Regions List
         this.saveDeliverableRegions(deliverableDB, this.getActualPhase(), deliverableManagedState);
       } else {
         this.deleteLocElements(deliverableManagedState, this.getActualPhase(), false);
       }
+
+      logger.info(" DeliverableAction linea 2582");
 
       if (haveCountries) {
 
@@ -2575,28 +2590,38 @@ public class DeliverableAction extends BaseAction {
         this.deleteLocElements(deliverableManagedState, this.getActualPhase(), true);
       }
 
+      logger.info(" DeliverableAction linea 2592");
+
       this.saveCrossCutting();
       this.saveProjects(deliverableDB);
 
+      logger.info(" DeliverableAction linea 2597");
       // Reporting and upkeep
       if (this.isReportingActive() || this.isUpKeepActive()) {
         if (deliverable.getQualityCheck() != null) {
           this.saveQualityCheck();
         }
         this.saveDissemination();
+
+        logger.info(" DeliverableAction linea 2605");
         this.saveMetadata();
         this.saveCrps();
+        logger.info(" DeliverableAction linea 2608");
         this.savePublicationMetadata();
         // Data Sharing is not longer used.
         this.saveDataSharing();
         this.saveUsers();
+        logger.info(" DeliverableAction linea 2613");
         this.saveParticipant();
         this.saveDuplicated();
+
+        logger.info(" DeliverableAction linea 2613");
         if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
           this.saveDeliverableClusterParticipant();
         }
       }
 
+      logger.info(" DeliverableAction linea 2623");
       // SHFRM contribution
       if (this.hasSpecificities(APConstants.SHFRM_CONTRIBUTION_ACTIVE)) {
         this.savePriorityActions(false);
@@ -2606,6 +2631,8 @@ public class DeliverableAction extends BaseAction {
           this.deleteAllActionsAndSubActions();
         }
       }
+
+      logger.info(" DeliverableAction linea 2634");
 
       /*
        * Delete the field 'new expected year' when the status is different to Extended and this field has information
@@ -2622,6 +2649,7 @@ public class DeliverableAction extends BaseAction {
        */
       deliverableInfoManager.saveDeliverableInfo(deliverableManagedState.getDeliverableInfo());
 
+      logger.info(" DeliverableAction linea 2651");
       /*
        * Delete the field 'justification' when the status is equals to Completed and this field has information
        */
@@ -2642,6 +2670,8 @@ public class DeliverableAction extends BaseAction {
 
         this.removeTraineesIndicatorMapping();
       }
+
+      logger.info(" DeliverableAction linea 2673");
 
       if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingActive()
         && this.getProjectLp6ContributionValue(project.getId(), this.getActualPhase().getId())) {
@@ -2667,6 +2697,8 @@ public class DeliverableAction extends BaseAction {
         }
         relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
       }
+
+      logger.info(" DeliverableAction linea 2700");
 
       /**
        * The following is required because we need to update something on
@@ -3222,13 +3254,26 @@ public class DeliverableAction extends BaseAction {
 
     if (deliverableDB.getDeliverableUserPartnerships() != null
       && deliverableDB.getDeliverableUserPartnerships().size() > 0) {
-
-      List<DeliverableUserPartnership> deliverableUserPartnershipPrev =
-        deliverableDB.getDeliverableUserPartnerships().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
-            && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
-          .collect(Collectors.toList());
-
+      logger.info(" DeliverableAction linea 3256");
+      List<DeliverableUserPartnership> deliverableUserPartnershipsCustom = null;
+      try {
+        deliverableUserPartnershipsCustom = deliverableUserPartnershipManager
+          .findByDeliverableIDAndPhase(deliverableDB.getId(), this.getActualPhase().getId());
+      } catch (Exception e) {
+        // TODO: handle exception
+        logger.info(e.getMessage());
+      }
+      List<DeliverableUserPartnership> deliverableUserPartnershipPrev = null;
+      if (deliverableUserPartnershipsCustom != null && !deliverableUserPartnershipsCustom.isEmpty()) {
+        // cgamboa 26/04/2024 the query has been optimized
+        deliverableUserPartnershipPrev =
+          // deliverableDB.getDeliverableUserPartnerships()
+          deliverableUserPartnershipsCustom.stream()
+            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+              && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+            .collect(Collectors.toList());
+      }
+      logger.info(" DeliverableAction linea 3262 " + deliverableUserPartnershipPrev.size());
       for (DeliverableUserPartnership deliverableUserPartnership : deliverableUserPartnershipPrev) {
         if (this.deliverable.getResponsiblePartnership() == null
           || !this.deliverable.getResponsiblePartnership().contains(deliverableUserPartnership)) {
@@ -3236,6 +3281,7 @@ public class DeliverableAction extends BaseAction {
           deliverableUserPartnershipManager.deleteDeliverableUserPartnership(deliverableUserPartnership.getId());
         }
       }
+      logger.info(" DeliverableAction linea 3270");
 
     }
 
@@ -3243,6 +3289,7 @@ public class DeliverableAction extends BaseAction {
       deliverablePartnerTypeManager.getDeliverablePartnerTypeById(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE);
     if (this.deliverable.getResponsiblePartnership() != null) {
 
+      logger.info(" DeliverableAction linea 3278");
       for (DeliverableUserPartnership deliverableUserPartnership : this.deliverable.getResponsiblePartnership()) {
         if (deliverableUserPartnership.getId() != null) {
 
@@ -3298,6 +3345,8 @@ public class DeliverableAction extends BaseAction {
 
         }
       }
+
+      logger.info(" DeliverableAction linea 3334");
 
     }
 
@@ -3590,19 +3639,32 @@ public class DeliverableAction extends BaseAction {
 
       List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
 
-      deliverableDTOs = this.getDuplicatedDeliverableInformation(doi, handle, disseminationURL, deliverableID);
-      if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
-        // Set is duplicated field in true
-        isDuplicated = true;
-      } else {
-        isDuplicated = false;
+      try {
+        List<String> deliverables = null;
+        // cgamboa change is made to obtain deliverables only for the phase 08/04/2024
+        deliverables = deliverableManager.getDuplicatesDeliverablesByPhase(this.getActualPhase().getId());
+        logger.info(" DeliverableAction linea 3593");
+        // deliverableDTOs = this.getDuplicatedDeliverableInformation(DOI, handle, disseminationURL, deliverableID);
+        deliverableDTOs =
+          this.getDuplicatedDeliverableInformationNew(DOI, handle, disseminationURL, deliverableID, deliverables);
+        logger.info(" DeliverableAction linea 3595");
+        if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+          // Set is duplicated field in true
+          isDuplicated = true;
+        } else {
+          isDuplicated = false;
+        }
+
+        if (deliverableInfoDb != null) {
+          deliverableInfoDb.setDuplicated(isDuplicated);
+          deliverableBase.setDeliverableInfo(deliverableInfoDb);
+          deliverableInfoManager.saveDeliverableInfo(deliverableBase.getDeliverableInfo());
+        }
+      } catch (Exception e) {
+        logger.error("unable to get duplivated deliverables", e);
       }
 
-      if (deliverableInfoDb != null) {
-        deliverableInfoDb.setDuplicated(isDuplicated);
-        deliverableBase.setDeliverableInfo(deliverableInfoDb);
-        deliverableInfoManager.saveDeliverableInfo(deliverableBase.getDeliverableInfo());
-      }
+
     }
   }
 
