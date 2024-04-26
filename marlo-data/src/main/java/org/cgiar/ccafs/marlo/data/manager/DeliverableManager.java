@@ -148,7 +148,6 @@ public interface DeliverableManager {
    */
   int getQuantityDeliverablesWithActivities(long phase, long projectId);
 
-
   public Boolean isDeliverableExcluded(Long deliverableId, Long phaseId);
 
 

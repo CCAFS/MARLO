@@ -211,6 +211,8 @@ div#impactGraphic-fullscreen {
     height: 100%;
 }
 
+  /*************** Timeline ********************/
+
 span.leftControl {
     left: 5px;
 }
@@ -247,7 +249,6 @@ span.timelineControl:hover {
     justify-content: center;
     -webkit-box-shadow: 0px 0px 10px rgb(0 0 0 / 15%);
     border-radius: 5px;
-    height: 297px;
   }
 
   .porcentTimeLine {
@@ -341,7 +342,7 @@ span.timelineControl:hover {
     height: 40px;
     border-radius: 50%;
     position: absolute;
-    top: 50%;
+    top: 15%;
     transform: translateY(-50%);
     font-size: 27px;
     font-weight: bold;
@@ -351,11 +352,11 @@ span.timelineControl:hover {
   }
   
   .buttonLeftTimeline {
-    left: 0.75rem;
+    left: 39%;
   }
   
   .buttonRightTimeline {
-    right: 0.75rem;
+    right: 39%;
   }
   
   .timelineBackSuccess {
@@ -411,7 +412,292 @@ span.timelineControl:hover {
     height: 50px;
     align-self: center;
   }
+  
+  #timelineContainer {
+	  position: relative;
+	  overflow-x: scroll;
+	  overflow-y: hidden;
+	  height: 31vh;
+	  width: 95%;
+	  margin: 0 auto;
+	}
+	
+	#timelineContainer::-webkit-scrollbar {
+    -webkit-appearance: none;
+	}
+	
+	#timelineDescription{
+		display: flex;
+    padding: 18px 30px 18px 30px;
+    width: 100%;
+    align-items: end;
+	}
+	
+	#timelineDescription_title{
+    font-size: 2.0em;
+    color: #333;
+    width: 100%;
+    text-align: center;
+	}
+	
+	#timelineDescription_range{
+		font-size: 1.5rem;
+		
+	}
 
+	#timeline_times {
+	  display: flex;
+	  width: max-content;
+	  margin-top: 10px;
+	  margin-bottom: 10px;
+	  padding: 5px 0;
+	  position: absolute;
+	  height: 100%;
+	}
+	
+	#timeline_activities {
+		position: relative;
+		font-size: 13.5px;
+	}
+	
+	@media only screen and (min-width:1545px){
+		#timeline_activities {
+			font-size: 19.5px;
+		}
+		
+		#timelineContainer{
+			height: 26vh;
+		}
+	}
+	
+	@media only screen and (min-width:2560px){
+		#timeline_activities {
+			font-size: 28px;
+		}
+	}
+	
+	#timeline_today {
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  width: 0.25rem;
+	  height: 80%;
+    border: 2px dashed red;
+    border-width: 0.5px 1.5px;
+	}
+	
+	.timebox {
+	  height: 80%;
+	  position: relative;
+    text-align: center;
+    border-right: 1px dashed #CCCCCC;
+		border-left: 1px dashed #CCCCCC;
+	}
+
+  .timebox_information {
+    position: absolute;
+    top: -12px;
+    left: 6px;  
+  }
+	
+	.timeNumber{
+		margin: 1.5px;
+	}
+	
+	.activityCard {
+		position: relative;
+	}
+	
+	.activityCard_container{
+		position: absolute;
+		display: flex;
+		padding: 0.5rem;
+		flex-direction: column;
+		gap: 0.5rem;
+		flex-shrink: 0;
+		border-radius: 0.75rem;
+		background: #E8F4FF;
+		margin-bottom: 1rem;
+    z-index: 4;
+	}
+	
+	.activityCard_content{
+		display: inline-flex;
+		flex-direction: column;
+		gap: 0.25rem;
+    left: 0;
+    overflow: hidden;
+    padding: 4px 6px;
+    position: sticky;
+    max-width: max-content;
+    z-index: 8;
+	}
+	
+	.activityCard_description {
+		overflow: hidden;
+		color: #000;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: 1.4rem;
+		font-style: normal;
+		font-weight: 700;
+		margin: 0;
+		padding: 0;
+	}
+	
+	.activityCard_details{
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		max-width: max-content;
+		gap: 2rem;
+	}
+	
+	.activityCard_details div{
+		display: flex;
+    align-items: center;
+    gap: 0 0.5rem;
+    max-width: 33.3%;
+    flex-wrap: wrap;
+	}
+
+  .activityCard_details div:nth-child(odd){
+    max-width: 35%;
+  }
+
+  .activityCard_details div:nth-child(even){
+    max-width: 30%;
+  }
+
+  .activityCard_details div b{
+    font-size: 1rem;
+    color: #000;
+    line-height: 1.2em;
+  }
+	
+	.activityCard_details p{
+		font-size: 1rem;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 0.75rem;
+		margin: 0;
+		color: #000;
+	}
+
+  .activityCard_details--1{
+    display: flex;
+    max-width: max-content;
+    gap: 0.5rem;
+    flex-direction: column;
+    z-index: 4;
+  }
+
+  .activityCard_details--1 div{
+		display: flex;
+    align-items: center;
+    gap: 0 0.5rem;
+    flex-wrap: wrap;
+	}
+
+  .activityCard_viewMore p{
+    font-size: 9px;
+    color: #000;
+    cursor: pointer;
+  }
+
+  .activityCard_details--1 div b{
+    font-size: 1rem;
+    color: #000;
+    line-height: 1.2em;
+  }
+	
+	.activityCard_details--1 p{
+		font-size: 1rem;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 0.75rem;
+		margin: 0;
+		color: #000;
+	}
+	
+	.activityCard:nth-child(n+1){
+		top: 1.5em;
+	}
+	
+	.activityCard:nth-child(2n+2){
+		top: 6em;
+	}
+	
+	
+	.activityCard:nth-child(3n+3){
+		top: 10.5em;
+
+	}
+
+  #timeline_activities .activityFlexTop--1{
+    top: 1.5em;
+  }
+
+  #timeline_activities .activityFlexTop--2{
+    top: 6em;
+  }
+
+  #timeline_activities .activityFlexTop--3{
+    top: 10.5em;
+  }
+
+  #timeline_activities .activityUnique{
+    top: 2.5em;
+  }
+	
+	#timelineAlert{
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-end;
+    gap: 0.5rem;
+    align-items: end;
+    padding-bottom: 6px;
+    position: absolute;
+    right: 2.5%;
+    bottom: 2.5%;
+	}
+	
+	#timelineAlert_container{
+		display: flex;
+		flex-direction: row;
+		gap: 2rem;
+	}
+	
+	.timelineAlert_item{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	
+	.timelineAlert_item p{
+		font-size: 10px;
+		margin: 0;
+	}
+	
+	.timelineAlert_item_color{
+		width: 10px;
+		height: 10px;
+		border-radius: 12.5px;
+		background-color: #0377a3;
+	}
+
+	.timelineAlert_item_color--1{
+		background-color: #F9C786;
+	}
+	
+	.timelineAlert_item_color--2{
+		background-color: #81B8C1;
+	}
+	
+	.timelineAlert_item_color--3{
+		background-color: #B5D08B;
+	}
   /*************** sectionMap ********************/
 
   .sectionMap{
