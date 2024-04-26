@@ -68,11 +68,36 @@ public class FeedbackQACommentableFieldsManagerImpl implements FeedbackQAComment
 
   }
 
+  /**
+   * Get the commentstatus by phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverable list with the comment count
+   */
+  @Override
+  public List<String> getAnsweredCommentByPhaseToStudy(long phase) {
+    return feedbackQACommentableFieldsDAO.getAnsweredCommentByPhaseToStudy(phase);
+  }
+
+  /**
+   * Get the commentstatus by phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverable list with the comment count
+   */
+  @Override
+  public List<String> getCommentStatusByPhaseToStudy(long phase) {
+    return feedbackQACommentableFieldsDAO.getCommentStatusByPhaseToStudy(phase);
+  }
+
   @Override
   public FeedbackQACommentableFields getInternalQaCommentableFieldsById(long internalQaCommentableFieldsID) {
 
     return feedbackQACommentableFieldsDAO.find(internalQaCommentableFieldsID);
   }
+
 
   @Override
   public FeedbackQACommentableFields

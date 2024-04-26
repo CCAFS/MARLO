@@ -243,6 +243,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     return deliverables;
   }
 
+
   @Override
   public List<DeliverableHomeDTO> getDeliverablesByProjectAndPhaseHome(long phaseId, long projectId) {
     String query = "select d.id as deliverableId, coalesce(di.newExpectedYear, -1) as newExpectedYear, "
@@ -393,6 +394,44 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     }
 
     return deliverables;
+  }
+
+  /**
+   * get deliverables without activities
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @param projectId project id
+   * @return quantity deliverables without activities
+   */
+  @Override
+  public int getQuantityDeliverablesWithActivities(long phase, long projectId) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT count(*) as count FROM deliverables d ");
+    query.append("join deliverables_info di on d.id = di.deliverable_id ");
+    query.append("join phases p on p.id = d.id_phase");
+    query.append(" WHERE d.id_phase=" + phase);
+    query.append(" and d.id_phase = di.id_phase ");
+    query.append(" and d.is_active = 1 and d.is_active =di.is_active ");
+    query.append(" and d.project_id=" + projectId);
+    query.append(
+      " and (d.id not in (select da.deliverable_id from deliverable_activities da where da.deliverable_id = d.id and da.is_active =1 ) ");
+    query.append(
+      "  or d.id not in (select da.deliverable_id from deliverable_activities da where deliverable_id = d.id and da.is_active =1 and da.id_phase =p.id) ");
+    query.append(
+      "  or d.id not in (select da.deliverable_id from deliverable_activities da join activities a  on da.activity_id = a.id where deliverable_id = d.id and da.is_active =1 and a.is_active =1 and da.id_phase =p.id)) ");
+
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    int deliverable = 0;
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        deliverable = Integer.parseInt(map.get("count").toString());
+      }
+    }
+
+    return deliverable;
   }
 
   @Override

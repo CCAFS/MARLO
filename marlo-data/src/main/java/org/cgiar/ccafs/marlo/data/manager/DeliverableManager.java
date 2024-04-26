@@ -138,6 +138,15 @@ public interface DeliverableManager {
    */
   public List<Deliverable> getPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
 
+  /**
+   * get deliverables without activities
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @param projectId project id
+   * @return quantity deliverables without activities
+   */
+  int getQuantityDeliverablesWithActivities(long phase, long projectId);
 
   public Boolean isDeliverableExcluded(Long deliverableId, Long phaseId);
 

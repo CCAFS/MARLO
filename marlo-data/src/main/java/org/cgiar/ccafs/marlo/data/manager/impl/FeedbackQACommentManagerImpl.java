@@ -62,6 +62,13 @@ public class FeedbackQACommentManagerImpl implements FeedbackQACommentManager {
   }
 
   @Override
+  public List<FeedbackQAComment> findAllByPhase(long phaseId) {
+
+    return feedbackQACommentDAO.findAllByPhase(phaseId);
+
+  }
+
+  @Override
   public FeedbackQAComment getFeedbackQACommentById(long feedbackQACommentID) {
 
     return feedbackQACommentDAO.find(feedbackQACommentID);

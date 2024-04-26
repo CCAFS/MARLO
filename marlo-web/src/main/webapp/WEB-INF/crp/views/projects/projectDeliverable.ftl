@@ -101,7 +101,7 @@
 
 <section class="container">
 
-  <div class="modal-deliverable ui-dialog modal-evidences" style="display: none">
+  <div class="modal-deliverable ui-dialog modal-evidences" style="display: none; background-color: #50505070 !important;">
     <div class="content-modal">
       <div class="ui-dialog-titlebar">
         <p class="title-modal-evidences">Remove cluster</p>
@@ -128,7 +128,7 @@
     </div>              
   </div>
 
-  <div class=" modal-deliverable ui-dialog modal-indicator" style="display: none">
+  <div class=" modal-deliverable ui-dialog modal-indicator" style="display: none;  background-color: #50505070 !important;">
     <div class="content-modal">
       <div class="ui-dialog-titlebar">
         <p class="title-modal-evidences title-modal-indicator">Remove Indicator</p>
