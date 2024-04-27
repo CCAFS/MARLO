@@ -3467,7 +3467,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<DeliverableSearchSummary> getDuplicatedDeliverableInformation(String DOI, String handle,
     String disseminationURL, long deliverableID) {
 
-    LOG.info(" BaseAction linea 3470");
     List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
 
     List<Deliverable> deliverables = null;
@@ -3723,7 +3722,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             deliverableDTOs.add(deliverableDTO);
           }
         } // End deliverables for
-        LOG.info(" BaseAction linea 3726");
         if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
           deliverableDTOs = deliverableDTOs.stream()
             .sorted(Comparator.comparing(DeliverableSearchSummary::getDeliverableID)).collect(Collectors.toList());
@@ -3742,7 +3740,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
     }
-    LOG.info(" BaseAction linea 3745");
     return deliverableDTOs;
   }
 

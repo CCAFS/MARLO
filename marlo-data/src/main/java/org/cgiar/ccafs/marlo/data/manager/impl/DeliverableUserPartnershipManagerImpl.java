@@ -248,7 +248,6 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
     try {
       partnersTmp = projectPartnerManager.findAllByPhaseProjectAndInstitution(projectID, phase.getId(), institutionId);
 
-      logger.info(" DeliverableUserPartnershipManagerImpl linea 244 " + partnersTmp.get(0).getId());
     } catch (Exception e) {
       logger.error("unable to get partners");
     }
@@ -263,9 +262,6 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
       }
     }
 
-    for (User projectPartner : users) {
-      logger.info(" DeliverableUserPartnershipManagerImpl linea 266 " + projectPartner.getId());
-    }
 
     return users;
   }
@@ -286,9 +282,6 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
 
       try {
         deliverableUserPartnershipsCustom = this.findByDeliverableIDCustom(userPartnership.getDeliverable().getId());
-        for (DeliverableUserPartnership deliverableUserPartnership2 : deliverableUserPartnershipsCustom) {
-          logger.info(" --> " + deliverableUserPartnership2.getId());
-        }
 
       } catch (Exception e) {
         // TODO: handle exception
@@ -329,9 +322,7 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
     if (deliverableID != 0 && deliverableUserPartnership != null && deliverableUserPartnership.getInstitution() != null
       && deliverableUserPartnership.getInstitution().getId() != null
       && deliverableUserPartnership.getDeliverablePartnerType() != null) {
-      logger.info(" DeliverableUserPartnershipManagerImpl linea 282");
       if (deliverableUserPartnershipsCustom != null && !deliverableUserPartnershipsCustom.isEmpty()) {
-        logger.info(" DeliverableUserPartnershipManagerImpl linea 314  " + phase.getId());
         // cgamboa 26/04/2024 the query has been optimized to be used in the replication process
         deliverableUserPartnerships = deliverableUserPartnershipsCustom.stream()
           .filter(c -> c.isActive() && c.getDeliverable() != null && c.getDeliverable().getId().equals(deliverableID)
@@ -343,7 +334,6 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
             && c.getPhase().getId().equals(phase.getId()))
           .collect(Collectors.toList());
       }
-      logger.info(" DeliverableUserPartnershipManagerImpl linea 289 " + deliverableUserPartnerships.size());
     }
 
     if (deliverableUserPartnerships != null && deliverableUserPartnerships.isEmpty()) {
@@ -362,8 +352,7 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
                 .equals(deliverableUserPartnership.getDeliverablePartnerType().getId())
               && c.getPhase().getId().equals(phase.getId()))
             .collect(Collectors.toList());
-          logger.info(
-            " DeliverableUserPartnershipManagerImpl linea 342 " + checkInstitutiondeliverableUserPartnerships.size());
+
         }
 
         if (checkInstitutiondeliverableUserPartnerships != null
@@ -485,7 +474,6 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
 
     } else {
 
-      logger.info(" DeliverableUserPartnershipManagerImpl linea 467 " + deliverableUserPartnerships.size());
       DeliverableUserPartnership dp = null;
       if (deliverableUserPartnerships != null && deliverableUserPartnerships.get(0) != null) {
         dp = deliverableUserPartnerships.get(0);
