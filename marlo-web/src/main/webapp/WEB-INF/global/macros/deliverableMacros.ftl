@@ -409,6 +409,9 @@
               [#if action.isSubmit(cluster.project.id)]
                 <p style="font-style: italic; font-size: 10px;">Cluster submitted.</p>
               [/#if]
+                [#-- Allow to track if the cluster is submitted --]
+                [#assign isSubmit = action.isSubmit(cluster.project.id)?string('true', 'false') /]
+                <p style="display:none" class="clusterSubmitted" isSubmit="${isSubmit}" name="${(list[index].project.acronym)!''}"></p>
               </div>
               <br>
             </div>
