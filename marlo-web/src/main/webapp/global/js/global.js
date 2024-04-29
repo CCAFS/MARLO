@@ -197,6 +197,29 @@ $(document).ready(function () {
         var message = $(messageSelector).html().split(":")[1];
         var messageType = "success";
         notifyErrorMessage(messageType, message);
+      } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message" && messageSelector.html().split(":")[1] === " deliverable.status.remaining") {
+        // SHOW CLUSTER SUBMITTED BASED ON THE DISABLED INPUT
+        var $clusterSubmitted = $(`.clusterSubmitted`);
+        var message = "";
+        if ($clusterSubmitted.length > 0) {
+          // $clusterSubmitted exists, do something
+          const $mapClusterSubmit = $clusterSubmitted.filter((index, ele) => $(ele).attr("issubmit") === "true").get();
+          const $stringClusterSubmit = $mapClusterSubmit.reduce((prev,curr) => prev +$(curr).attr("name")+",","");
+          const stringFixed = $stringClusterSubmit.substring(0, $stringClusterSubmit.length - 1);
+          message += "The Information was correctly saved. <br> ";
+          message += "It seems that the following cluster(s) were submitted: <b>"+stringFixed+ "</b>. We suggest the following actions so you can save the information correctly: <br> ";
+          message += "<ul style='padding-left: 32px;'> <li>Click on the cluster name to see the information. </li> ";
+          message += "<li>Contact the cluster leader to unsubmitt the cluster and update the information. </li> ";
+          message += "</ul> ";
+        } else {
+          // $clusterSubmitted does not exist, do something else
+          message += "The Information was correctly saved. <br> ";
+          message += "It seems that the <b>Remaining shared information</b> is incompleted please take a look.";
+        }
+        // WARNING MESSAGE
+        
+        var messageType = "warning";
+        notifyErrorMessage(messageType, message);
       } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message") {
         // WARNING MESSAGE
         var message = ""

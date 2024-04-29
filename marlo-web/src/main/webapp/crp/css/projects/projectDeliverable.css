@@ -998,7 +998,6 @@ div.fieldFocus-deliverable {
 .button-exit{
   position: absolute;
   float: inline-end;
-  top: 40px;
   right: 10px;
   font-size: 18px;
   cursor: pointer;
@@ -1021,6 +1020,7 @@ div.fieldFocus-deliverable {
 .title-modal-evidences{
   font-size: 19px;
   font-weight: 600;
+  margin: 0;
 }
 
 .text-modal-evidences{
@@ -1029,7 +1029,10 @@ div.fieldFocus-deliverable {
 }
 
 .text-modal-evidences p{
-  max-width: 500px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .content-modal{
@@ -1073,8 +1076,8 @@ div.fieldFocus-deliverable {
 
 .button-close-modal{
   background-color: #0779a4;
-  min-width: 120px;
-  height: 40px;
+  min-width: 100px;
+  height: 30px;
   text-align: center;
   display: flex;
   align-items: center;
