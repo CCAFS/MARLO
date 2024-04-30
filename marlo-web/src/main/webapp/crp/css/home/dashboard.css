@@ -417,7 +417,7 @@ span.timelineControl:hover {
 	  position: relative;
 	  overflow-x: scroll;
 	  overflow-y: visible;
-	  height: 31vh;
+	  height: 32vh;
 	  width: 95%;
 	  margin: 0 auto;
 	}
@@ -530,6 +530,8 @@ span.timelineControl:hover {
 	
 	.activityCard {
 		position: relative;
+    top: 1.5em;
+    transition: all 0.25s ease-out;
 	}
 	
 	.activityCard_container{
@@ -643,20 +645,6 @@ span.timelineControl:hover {
 		margin: 0;
 		color: #000;
 	}
-	
-	.activityCard:nth-child(n+1){
-		top: 1.5em;
-	}
-	
-	.activityCard:nth-child(2n+2){
-		top: 6em;
-	}
-	
-	
-	.activityCard:nth-child(3n+3){
-		top: 10.5em;
-
-	}
 
   #timeline_activities .activityFlexTop--1{
     top: 1.5em;
@@ -671,7 +659,7 @@ span.timelineControl:hover {
   }
 
   #timeline_activities .activityUnique{
-    top: 5em;
+    top: 4.5em;
   }
 	
 	#timelineAlert{
