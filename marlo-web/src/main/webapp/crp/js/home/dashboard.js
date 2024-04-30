@@ -283,7 +283,7 @@ function getIntersectedActivities() {
 
     entries.forEach(entry => {
       const activity = entry.target;
-      if (entry.isIntersecting && entry.intersectionRatio > 0.025) {
+      if (entry.isIntersecting && entry.intersectionRatio > 0.01) {
         activitiesIntersected.push(activity);
       }
       $(activity).parent().removeClass("activityFlexTop--1");
@@ -318,7 +318,7 @@ function getIntersectedActivities() {
         if(document.documentElement.getBoundingClientRect().width > 1500){
           timelineContainer.style.height = "22vh";
         } else {
-          timelineContainer.style.height = "30vh";
+          timelineContainer.style.height = "32vh";
         }
 
         break;
@@ -326,7 +326,7 @@ function getIntersectedActivities() {
         if(document.documentElement.getBoundingClientRect().width > 1500){
           timelineContainer.style.height = "24.5vh";
         } else {
-          timelineContainer.style.height = "30vh";
+          timelineContainer.style.height = "32vh";
         }
         list_activities.forEach(activity => {
           $(activity).parent().removeClass("activityUnique");
@@ -366,7 +366,7 @@ function getIntersectedActivities() {
 
   setTimeout(() => {
     observer.disconnect();
-  }, 500); // Adjust the time as per your scroll smooth time
+  }, 550); // Adjust the time as per your scroll smooth time
 
 }
 
