@@ -316,9 +316,9 @@ function getIntersectedActivities() {
     switch(activitiesIntersected.length){
       case 1:
         if(document.documentElement.getBoundingClientRect().width > 1500){
-          timelineContainer.style.height = "18vh";
+          timelineContainer.style.height = "22vh";
         } else {
-          timelineContainer.style.height = "26vh";
+          timelineContainer.style.height = "30vh";
         }
 
         break;
@@ -532,17 +532,6 @@ function createTimeline2() {
 	  		<b>Schedule</b>
 	  	</div>
 	  </div>
-    <div id="timelineContainer">
-      <div id="timeline_times">
-      	${createDivTimes(getWeeksArray, "timebox").reduce((acc, curr) => acc + curr.outerHTML, '')}
-      </div>
-      <div id="timeline_activities">
-      	${timelineElements.map((elem, id) => `
-      		${createDivActivities(elem, getWeeksArray, id).outerHTML}
-      	` ).join('')}
-      </div>
-      <div id="timeline_today" style="left: ${setDistances(getWeeksArray,null,null, true)}"></div>
-    </div>
     <div id="timelineAlert">
       <b>Progress status:</b>
       <section id="timelineAlert_container">
@@ -559,6 +548,17 @@ function createTimeline2() {
           <p>Completed</p>
         </article>
       </section>
+    </div>
+    <div id="timelineContainer">
+      <div id="timeline_times">
+      	${createDivTimes(getWeeksArray, "timebox").reduce((acc, curr) => acc + curr.outerHTML, '')}
+      </div>
+      <div id="timeline_activities">
+      	${timelineElements.map((elem, id) => `
+      		${createDivActivities(elem, getWeeksArray, id).outerHTML}
+      	` ).join('')}
+      </div>
+      <div id="timeline_today" style="left: ${setDistances(getWeeksArray,null,null, true)}"></div>
     </div>
   </div>
 	`
