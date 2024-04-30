@@ -78,6 +78,9 @@ public interface DeliverableDAO {
    */
   public List<Deliverable> getDeliverablesByPhase(long phase);
 
+  List<Deliverable> getDeliverablesByPhaseAndUrlAndDoiAndHandel(long phase, String disseminationURL, String handle,
+    String DOI);
+
   public List<Deliverable> getDeliverablesByProjectAndPhase(long phaseId, long projectId);
 
   /**

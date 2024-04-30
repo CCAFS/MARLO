@@ -175,6 +175,13 @@ public class DeliverableManagerImpl implements DeliverableManager {
     return deliverableDAO.getDeliverablesByPhase(phase);
   }
 
+
+  @Override
+  public List<Deliverable> getDeliverablesByPhaseAndUrlAndDoiAndHandel(long phase, String disseminationURL,
+    String handle, String DOI) {
+    return deliverableDAO.getDeliverablesByPhaseAndUrlAndDoiAndHandel(phase, disseminationURL, handle, DOI);
+  }
+
   @Override
   public List<Deliverable> getDeliverablesByProjectAndPhase(Long phaseId, Long projectId) {
     return deliverableDAO.getDeliverablesByProjectAndPhase(phaseId, projectId);

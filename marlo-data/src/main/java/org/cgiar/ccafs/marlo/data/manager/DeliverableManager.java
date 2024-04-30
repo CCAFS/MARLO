@@ -86,7 +86,11 @@ public interface DeliverableManager {
    */
   public List<Deliverable> getDeliverablesByPhase(long phase);
 
+  List<Deliverable> getDeliverablesByPhaseAndUrlAndDoiAndHandel(long phase, String disseminationURL, String handle,
+    String DOI);
+
   public List<Deliverable> getDeliverablesByProjectAndPhase(Long phaseId, Long projectId);
+
 
   /**
    * Gets a list of all the deliverables from a project planned for the phase's year
@@ -97,7 +101,6 @@ public interface DeliverableManager {
    * @return a list of DeliverableHomeDTO or empty
    */
   public List<DeliverableHomeDTO> getDeliverablesByProjectAndPhaseHome(Long phaseId, Long projectId);
-
 
   public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
 
@@ -118,6 +121,7 @@ public interface DeliverableManager {
 
   public List<Deliverable> getNotPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
 
+
   /**
    * This method gets a list of publications that are active by a given phase
    * 
@@ -125,7 +129,6 @@ public interface DeliverableManager {
    */
 
   public List<Deliverable> getPublicationsByPhase(long phase);
-
 
   /**
    * This method gets a list of publications that are active for an specific liaisonInstitution
@@ -137,6 +140,7 @@ public interface DeliverableManager {
    * @return a list from Deliverable null if no exist records
    */
   public List<Deliverable> getPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
+
 
   /**
    * get deliverables without activities
