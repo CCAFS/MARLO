@@ -1018,14 +1018,14 @@ div.fieldFocus-deliverable {
 }
 
 .title-modal-evidences{
-  font-size: 19px;
+  font-size: 16px;
   font-weight: 600;
   margin: 0;
 }
 
 .text-modal-evidences{
   margin-top: 25px;
-  padding: .6em 1em .6em 1em;
+  padding: .6em 2em .6em 2em;
 }
 
 .text-modal-evidences p{
@@ -1047,7 +1047,8 @@ div.fieldFocus-deliverable {
 .container-buttons-evidences{
   float: right;
   display: flex;
-  padding: .6em 1em .6em 1em;
+  padding: .5em 1em 1em 1em;
+
 }
 
 .button-pdf-modal{
@@ -1063,6 +1064,7 @@ div.fieldFocus-deliverable {
   font-weight: 600;
   border: #f79090 solid 2px;
   color: #ff6464;
+  
 }
 
 .button-pdf-modal p{
