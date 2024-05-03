@@ -36,12 +36,17 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Christian Garcia
  */
 
 @Named
 public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
+
+  private final Logger logger = LoggerFactory.getLogger(DeliverableInfoManagerImpl.class);
 
   private PhaseDAO phaseDAO;
   private DeliverableInfoDAO deliverableInfoDAO;
@@ -85,6 +90,11 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
   }
 
   @Override
+  public List<DeliverableInfo> getDeliverablesInfoByDeliverableId(long deliverableId) {
+    return deliverableInfoDAO.getDeliverablesInfoByDeliverableId(deliverableId);
+  }
+
+  @Override
   public List<DeliverableInfo> getDeliverablesInfoByPhase(Phase phase) {
     return deliverableInfoDAO.getDeliverablesInfoByPhase(phase);
   }
@@ -99,6 +109,7 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
     return deliverableInfoDAO.getDeliverablesInfoByType(phase, deliverableType);
   }
 
+
   @Override
   public boolean isDeliverableSubcategoryIncludedWebsite(long deliverableID, Phase phase) {
 
@@ -110,30 +121,46 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
     DeliverableInfo resultDeliverableInfo = deliverableInfoDAO.save(deliverableInfo);
     boolean isPublication = deliverableInfo.getDeliverable().getIsPublication() != null
       && deliverableInfo.getDeliverable().getIsPublication();
+
+    List<DeliverableInfo> deliverableInfosTemp = new ArrayList<>();
+    try {
+      deliverableInfosTemp =
+        deliverableInfoDAO.getDeliverablesInfoByDeliverableId(deliverableInfo.getDeliverable().getId());
+      logger.info("DeliverableInfoManagerImpl linea 127 " + deliverableInfosTemp.size());
+    } catch (Exception e) {
+      logger.error("unable to get deliverables info");
+    }
+
     if (deliverableInfo.getPhase().getDescription().equals(APConstants.PLANNING)
       && deliverableInfo.getPhase().getNext() != null && !isPublication) {
       this.saveInfoPhase(deliverableInfo.getPhase().getNext(), deliverableInfo.getDeliverable().getId(),
-        deliverableInfo);
+        deliverableInfo, deliverableInfosTemp);
     }
     if (deliverableInfo.getPhase().getDescription().equals(APConstants.REPORTING)) {
       if (deliverableInfo.getPhase().getNext() != null && deliverableInfo.getPhase().getNext().getNext() != null
         && !isPublication) {
         Phase upkeepPhase = deliverableInfo.getPhase().getNext().getNext();
         if (upkeepPhase != null) {
-          this.saveInfoPhase(upkeepPhase, deliverableInfo.getDeliverable().getId(), deliverableInfo);
+          this.saveInfoPhase(upkeepPhase, deliverableInfo.getDeliverable().getId(), deliverableInfo,
+            deliverableInfosTemp);
         }
       }
     }
     return resultDeliverableInfo;
   }
 
-  public void saveInfoPhase(Phase next, Long deliverableId, DeliverableInfo deliverableInfo) {
+  public void saveInfoPhase(Phase next, Long deliverableId, DeliverableInfo deliverableInfo,
+    List<DeliverableInfo> deliverableInfosTemp) {
     Phase phase = phaseDAO.find(next.getId());
-    List<DeliverableInfo> deliverableInfos = phase.getDeliverableInfos().stream()
-      .filter(c -> c.getDeliverable().getId().equals(deliverableId)).collect(Collectors.toList());
-
+    logger.info("DeliverableInfoManagerImpl linea 138 ");
+    // cgamboa 03/05/2024 function phase.getDeliverableInfos() has been changed by deliverableInfosTemp
+    List<DeliverableInfo> deliverableInfos = deliverableInfosTemp.stream()
+      .filter(c -> c.getDeliverable().getId().equals(deliverableId) && c.getPhase().getId().equals(phase.getId()))
+      .collect(Collectors.toList());
+    // logger.info("DeliverableInfoManagerImpl linea 141 " + phase.getDeliverableInfos().size());
     CrpClusterKeyOutput keyOutputPhase = null;
-
+    logger.info("DeliverableInfoManagerImpl linea 142 " + deliverableInfos.size());
+    logger.info("DeliverableInfoManagerImpl linea 154 id " + deliverableInfos.get(0).getId());
     if (deliverableInfo.getCrpClusterKeyOutput() != null && deliverableInfo.getCrpClusterKeyOutput().getId() != -1) {
 
       CrpClusterKeyOutput keyOutput =
@@ -190,8 +217,9 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
       deliverableInfoDAO.save(deliverableInfoAdd);
     }
     if (phase.getNext() != null) {
-      this.saveInfoPhase(phase.getNext(), deliverableId, deliverableInfo);
+      this.saveInfoPhase(phase.getNext(), deliverableId, deliverableInfo, deliverableInfosTemp);
     }
+    logger.info("DeliverableInfoManagerImpl linea 202 ");
   }
 
 
