@@ -126,7 +126,6 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
     try {
       deliverableInfosTemp =
         deliverableInfoDAO.getDeliverablesInfoByDeliverableId(deliverableInfo.getDeliverable().getId());
-      logger.info("DeliverableInfoManagerImpl linea 127 " + deliverableInfosTemp.size());
     } catch (Exception e) {
       logger.error("unable to get deliverables info");
     }
@@ -152,15 +151,11 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
   public void saveInfoPhase(Phase next, Long deliverableId, DeliverableInfo deliverableInfo,
     List<DeliverableInfo> deliverableInfosTemp) {
     Phase phase = phaseDAO.find(next.getId());
-    logger.info("DeliverableInfoManagerImpl linea 138 ");
     // cgamboa 03/05/2024 function phase.getDeliverableInfos() has been changed by deliverableInfosTemp
     List<DeliverableInfo> deliverableInfos = deliverableInfosTemp.stream()
       .filter(c -> c.getDeliverable().getId().equals(deliverableId) && c.getPhase().getId().equals(phase.getId()))
       .collect(Collectors.toList());
-    // logger.info("DeliverableInfoManagerImpl linea 141 " + phase.getDeliverableInfos().size());
     CrpClusterKeyOutput keyOutputPhase = null;
-    logger.info("DeliverableInfoManagerImpl linea 142 " + deliverableInfos.size());
-    logger.info("DeliverableInfoManagerImpl linea 154 id " + deliverableInfos.get(0).getId());
     if (deliverableInfo.getCrpClusterKeyOutput() != null && deliverableInfo.getCrpClusterKeyOutput().getId() != -1) {
 
       CrpClusterKeyOutput keyOutput =
@@ -219,7 +214,6 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
     if (phase.getNext() != null) {
       this.saveInfoPhase(phase.getNext(), deliverableId, deliverableInfo, deliverableInfosTemp);
     }
-    logger.info("DeliverableInfoManagerImpl linea 202 ");
   }
 
 

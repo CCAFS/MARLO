@@ -234,7 +234,6 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    LOG.info(" DeliverableMetadataByWOS linea 237");
     Map<String, Parameter> parameters = this.getParameters();
 
     // If there are parameters, take its values
@@ -255,7 +254,6 @@ public class DeliverableMetadataByWOS extends BaseAction {
       JsonElement response = this.readWOSDataFromClarisa2();
       this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
     }
-    LOG.info(" DeliverableMetadataByWOS linea 258");
 
   }
 
@@ -302,13 +300,11 @@ public class DeliverableMetadataByWOS extends BaseAction {
   }
 
   private void saveAffiliations(Phase phase, Deliverable deliverable) {
-    LOG.info(" DeliverableMetadataByWOS linea 305");
     DeliverableMetadataExternalSources externalSource =
       this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
     List<WOSInstitution> incomingInstitutions = this.response.getInstitutions();
 
     if (incomingInstitutions != null) {
-      LOG.info(" DeliverableMetadataByWOS linea 311");
       List<DeliverableAffiliation> dbAffiliations =
         this.deliverableAffiliationManager.findAll() != null ? this.deliverableAffiliationManager.findAll().stream()
           .filter(da -> da != null && da.getId() != null && da.getPhase() != null && da.getDeliverable() != null
@@ -319,7 +315,6 @@ public class DeliverableMetadataByWOS extends BaseAction {
             && da.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId()))
           .collect(Collectors.toList()) : Collections.emptyList();
 
-      LOG.info(" DeliverableMetadataByWOS linea 322");
       for (DeliverableAffiliation dbDeliverableAffiliation : dbAffiliations) {
         if (dbDeliverableAffiliation != null && dbDeliverableAffiliation.getInstitution() != null
           && (incomingInstitutions.stream().filter(i -> i != null && i.getFullName() != null
@@ -332,7 +327,6 @@ public class DeliverableMetadataByWOS extends BaseAction {
           }
         }
       }
-      LOG.info(" DeliverableMetadataByWOS linea 335");
 
       // save
       for (WOSInstitution incomingAffiliation : incomingInstitutions) {
@@ -374,13 +368,10 @@ public class DeliverableMetadataByWOS extends BaseAction {
           }
         }
       }
-      LOG.info(" DeliverableMetadataByWOS linea 377");
     }
-    LOG.info(" DeliverableMetadataByWOS linea 379");
   }
 
   private void saveAffiliationsNotMapped(Phase phase, Deliverable deliverable) {
-    LOG.info(" DeliverableMetadataByWOS linea 382");
     DeliverableMetadataExternalSources externalSource =
       this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
     List<WOSInstitution> incomingInstitutions = this.response.getInstitutions();
@@ -455,7 +446,6 @@ public class DeliverableMetadataByWOS extends BaseAction {
         }
       }
     }
-    LOG.info(" DeliverableMetadataByWOS linea 457");
   }
 
   private void saveAltmetricInfo(Phase phase, Deliverable deliverable) {

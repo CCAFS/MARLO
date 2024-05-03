@@ -43,8 +43,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.jfree.util.Log;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
@@ -62,8 +60,6 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
   private PhaseManager phaseManager;
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
 
-  private final Logger logger = LoggerFactory.getLogger(DeliverablesByDisseminationURLHandleDOIAction.class);
-
 
   public DeliverablesByDisseminationURLHandleDOIAction() {
   }
@@ -79,17 +75,11 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    logger.info("DeliverablesByDisseminationURLHandleDOIAction linea 83");
     sources = new ArrayList<>();
 
     Phase phase = phaseManager.getPhaseById(phaseID);
     List<Deliverable> deliverables = null;
 
-
-    logger.info("DeliverablesByDisseminationURLHandleDOIAction linea 88 phaseID " + phaseID);
-    logger.info("DeliverablesByDisseminationURLHandleDOIAction linea 88 disseminationURL " + disseminationURL);
-    logger.info("DeliverablesByDisseminationURLHandleDOIAction linea 88 handle " + handle);
-    logger.info("DeliverablesByDisseminationURLHandleDOIAction linea 88 DOI " + DOI);
 
     if ((disseminationURL != null || handle != null || DOI != null) && phaseID != 0 && deliverableID != 0) {
       // cgamboa 30/04/2024 the query to get duplicate records has been modified
@@ -99,21 +89,16 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
 
     }
 
-    logger.info("DeliverablesByDisseminationURLHandleDOIAction linea 92 deliverables.size() " + deliverables.size());
 
     if (deliverables != null && !deliverables.isEmpty() && phase != null) {
       deliverables = deliverables.stream().filter(d -> d != null && d.getId() != deliverableID)
         .sorted(Comparator.comparing(Deliverable::getId)).collect(Collectors.toList());
 
-      logger.info("DeliverablesByDisseminationURLHandleDOIAction linea 98 deliverables.size() " + deliverables.size());
 
       if (deliverables != null && !deliverables.isEmpty()) {
 
         List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
         for (Deliverable deliverable : deliverables) {
-
-          logger
-            .info("DeliverablesByDisseminationURLHandleDOIAction linea 105 deliverable.getId() " + deliverable.getId());
 
           deliverable = deliverableManager.getDeliverableById(deliverable.getId());
 
@@ -177,7 +162,6 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
               Log.info(e);
             }
 
-            logger.info("DeliverablesByDisseminationURLHandleDOIAction linea 171");
 
             try {
               if (deliverableDOI != null && !deliverableDOI.isEmpty()) {
@@ -266,7 +250,6 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
               }
               DeliverableUserPartnership responisble = deliverablePartnershipResponsibles.get(0);
 
-              logger.info("DeliverablesByDisseminationURLHandleDOIAction linea 259");
 
               if (responisble != null) {
                 if (responisble.getDeliverableUserPartnershipPersons() != null) {
@@ -410,8 +393,7 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
           }
         } // End deliverables for
 
-        logger.info(
-          "DeliverablesByDisseminationURLHandleDOIAction linea 392 deliverableDTOs.size() " + deliverableDTOs.size());
+
         if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
           deliverableDTOs = deliverableDTOs.stream()
             .sorted(Comparator.comparing(DeliverableSearchSummary::getDeliverableID)).collect(Collectors.toList());
@@ -446,7 +428,6 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
       }
     }
 
-    logger.info("DeliverablesByDisseminationURLHandleDOIAction linea 427");
 
     return SUCCESS;
 

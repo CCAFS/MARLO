@@ -1742,7 +1742,6 @@ public class DeliverableAction extends BaseAction {
             deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
           }
-          logger.info("DeliverableAction linea 1745 ");
           try {
             DOI = deliverable.getDeliverableMetadataElements().stream()
               .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
@@ -1753,7 +1752,6 @@ public class DeliverableAction extends BaseAction {
             Log.info(e);
           }
 
-          logger.info("DeliverableAction linea 1756 " + deliverable.getDeliverableMetadataElements().size());
 
           try {
             handle = deliverable.getDeliverableMetadataElements().stream()
@@ -1765,7 +1763,6 @@ public class DeliverableAction extends BaseAction {
             Log.info(e);
           }
 
-          logger.info("DeliverableAction linea 1768 " + deliverable.getDeliverableMetadataElements().size());
 
           if (deliverable.getDeliverableDisseminations() != null) {
             deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations().stream()
@@ -1859,7 +1856,6 @@ public class DeliverableAction extends BaseAction {
             }
           }
         }
-        logger.info("DeliverableAction linea 1862");
         // Cgiar Cross Cutting Markers List
         if (deliverable.getCrossCuttingMarkers() != null) {
           deliverable.setCrossCuttingMarkers(new ArrayList<>(deliverable.getDeliverableCrossCuttingMarkers().stream()
@@ -1909,7 +1905,6 @@ public class DeliverableAction extends BaseAction {
           logger.error("unable to get projectPhases", e);
         }
 
-        logger.info("DeliverableAction linea 1912");
         if (this.myProjects != null && !this.myProjects.isEmpty()) {
           this.myProjects.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
         }
@@ -1946,7 +1941,6 @@ public class DeliverableAction extends BaseAction {
           }
         }
 
-        logger.info("DeliverableAction linea 1948");
         /*
          * HJ 08/01/2019 Getting the Deliverable Partnerships Information
          * -- Deliverable Others
@@ -1980,7 +1974,6 @@ public class DeliverableAction extends BaseAction {
         }
         this.setDraft(false);
       }
-      logger.info("DeliverableAction linea 1982");
       this.setRepIndGeographicScopes(repIndGeographicScopeManager.findAll().stream()
         .sorted((g1, g2) -> g1.getName().compareTo(g2.getName())).collect(Collectors.toList()));
       // cgamboa 03/05/2024 function locElementManager.findAll() will be used once time
@@ -1990,7 +1983,6 @@ public class DeliverableAction extends BaseAction {
         .collect(Collectors.toList());
       this.setCountries(listLocElementPrevious.stream().filter(c -> c.isActive() && c.getLocElementType().getId() == 2)
         .collect(Collectors.toList()));
-      logger.info("DeliverableAction linea 1993");
       if (deliverable.getGenderLevels() != null) {
         for (DeliverableGenderLevel deliverableGenderLevel : deliverable.getGenderLevels()) {
           try {
@@ -2004,7 +1996,6 @@ public class DeliverableAction extends BaseAction {
           }
         }
       }
-      logger.info("DeliverableAction linea 2004");
 
       genderLevels = new ArrayList<>();
       List<GenderType> genderTypes = null;
@@ -2076,7 +2067,6 @@ public class DeliverableAction extends BaseAction {
       }
       crps.sort((c1, c2) -> c1.getComposedName().compareTo(c2.getComposedName()));
 
-      logger.info("DeliverableAction linea 2076");
       programs = new ArrayList<CrpProgram>();
       for (CrpProgram program : crpProgramManager.findAll().stream().filter(c -> c.isActive()
         && c.getCrp().equals(this.loggedCrp) && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
@@ -2084,7 +2074,6 @@ public class DeliverableAction extends BaseAction {
         programs.add(program);
       }
       programs.sort((f1, f2) -> f1.getAcronym().compareTo(f2.getAcronym()));
-      logger.info("DeliverableAction linea 2084");
       deliverableTypeParent = new ArrayList<>(
         deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null
           && dt.getCrp() == null && !dt.getAdminType().booleanValue()).collect(Collectors.toList()));
@@ -2108,7 +2097,6 @@ public class DeliverableAction extends BaseAction {
             && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && dt.getAdminType().booleanValue())
           .collect(Collectors.toList())));
       }
-      logger.info("DeliverableAction linea 2108");
       if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType() != null
         && deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() != null
         && deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId().longValue() != -1) {
@@ -2122,7 +2110,6 @@ public class DeliverableAction extends BaseAction {
           deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() != null
             && dt.getDeliverableCategory().getId() == deliverableTypeParentId).collect(Collectors.toList()));
       }
-      logger.info("DeliverableAction linea 2122");
       projectOutcomes = new ArrayList<>();
 
       if (project.getProjectOutcomes() != null) {
@@ -2161,7 +2148,6 @@ public class DeliverableAction extends BaseAction {
        * projectPartnerManager.findAll().stream().filter(pp -> pp.isActive() && pp.getProject().getId() == projectID
        * && pp.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList());
        */
-      logger.info("DeliverableAction linea 2161");
       List<ProjectPartner> partnersTmp =
         projectPartnerManager.findAllByPhaseProject(projectID, this.getActualPhase().getId());
 
@@ -2184,7 +2170,6 @@ public class DeliverableAction extends BaseAction {
        * repeated for each partner that has been consulted. The partner
        * object of the cycle is not being used within it. jurodca 20180129
        */
-      logger.info("DeliverableAction linea 2184");
       partnerPersons =
         partners.stream().flatMap(e -> e.getProjectPartnerPersons().stream()).collect(Collectors.toList());
 
@@ -2213,7 +2198,6 @@ public class DeliverableAction extends BaseAction {
 
       // Add Activities
       this.activities = new ArrayList<>();
-      logger.info("DeliverableAction linea 2213");
       for (Activity activity : project.getActivities()) {
         if (activity.isActive() && !this.activities.contains(activity)
           && activity.getPhase().getId().compareTo(this.getActualPhase().getId()) == 0) {
@@ -2244,13 +2228,11 @@ public class DeliverableAction extends BaseAction {
        * }
        * }
        */
-      logger.info("DeliverableAction linea 2244");
       if (activities != null && !activities.isEmpty()) {
         activities = activities.stream().filter(c -> c.isActive() && c.getActivityTitle() != null)
           .sorted((a1, a2) -> a1.getActivityTitle().getTitle().compareTo(a2.getActivityTitle().getTitle()))
           .collect(Collectors.toList());
       }
-      logger.info("DeliverableAction linea 2250");
 
       List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
       if (this.hasSpecificities(APConstants.DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE)) {
@@ -2276,7 +2258,6 @@ public class DeliverableAction extends BaseAction {
         }
 
       }
-      logger.info("DeliverableAction linea 2276");
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
 
@@ -2343,7 +2324,6 @@ public class DeliverableAction extends BaseAction {
       /*
        * get feedback comments
        */
-      logger.info("DeliverableAction linea 2343");
       try {
         if (this.hasSpecificities(this.feedbackModule())) {
 
@@ -2367,7 +2347,6 @@ public class DeliverableAction extends BaseAction {
       } catch (Exception e) {
       }
 
-      logger.info("DeliverableAction linea 2367");
       // Deliverable remaining value
       if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getRemainingPending() == null) {
         deliverable.getDeliverableInfo().setRemainingPending(false);
@@ -2491,7 +2470,6 @@ public class DeliverableAction extends BaseAction {
       }
 
     }
-    logger.info("DeliverableAction linea 2491");
 
   }
 
@@ -2519,7 +2497,6 @@ public class DeliverableAction extends BaseAction {
 
   @Override
   public String save() {
-    logger.info("DeliverableAction linea 2514");
     if (this.hasPermission("canEdit")) {
 
       this.getSession().put("indexTab", indexTab);
@@ -2530,12 +2507,10 @@ public class DeliverableAction extends BaseAction {
       Deliverable deliverableManagedState = this.updateDeliverableInfo();
       this.updateDeliverableFundingSources(deliverableManagedState);
       this.saveDeliverableActivities(deliverableManagedState);
-      logger.info("DeliverableAction linea 2525");
 
       // This gets a DeliverablePartnership responsible entity in managed state.
       // DeliverablePartnership partnershipResponsibleManaged = deliverable.getResponsiblePartner();
       Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
-      logger.info("DeliverableAction linea 2530");
 
       // gets delivetablePartnership responsible from database
       // DeliverablePartnership partnershipResponsibleDB = this.getDeliverablePartnershipResponsibleDB(deliverableDB);
@@ -2545,22 +2520,16 @@ public class DeliverableAction extends BaseAction {
       /*
        * 08/01 - HJ - Save the Deliverables Part Responsible
        */
-      logger.info("DeliverableAction linea 2540");
       this.saveDeliverablePartnershipResponsible(deliverableDB);
-      logger.info("DeliverableAction linea 2542");
       this.saveDeliverablePartnershipOther(deliverableDB);
-      logger.info("DeliverableAction linea 2544");
       // Save Geographic Scope Data
       this.saveGeographicScope(deliverableManagedState, this.getActualPhase());
-      logger.info("DeliverableAction linea 2547");
 
       // this.saveProjectOutcomes(deliverableDB, this.getActualPhase());
       this.saveCrpOutcomes(deliverableDB, this.getActualPhase());
-      logger.info("DeliverableAction linea 2550");
 
       boolean haveRegions = false;
       boolean haveCountries = false;
-      logger.info("DeliverableAction linea 2554");
 
       if (deliverable.getGeographicScopes() != null) {
         for (DeliverableGeographicScope deliverableGeographicScope : deliverable.getGeographicScopes()) {
@@ -2577,7 +2546,6 @@ public class DeliverableAction extends BaseAction {
           }
         }
       }
-      logger.info("DeliverableAction linea 2570");
 
       if (haveRegions) {
         // Save the Regions List
@@ -2585,7 +2553,6 @@ public class DeliverableAction extends BaseAction {
       } else {
         this.deleteLocElements(deliverableManagedState, this.getActualPhase(), false);
       }
-      logger.info("DeliverableAction linea 2578");
 
       if (haveCountries) {
 
@@ -2595,9 +2562,7 @@ public class DeliverableAction extends BaseAction {
         this.deleteLocElements(deliverableManagedState, this.getActualPhase(), true);
       }
 
-      logger.info("DeliverableAction linea 2584");
       this.saveCrossCutting();
-      logger.info("DeliverableAction linea 2586");
       this.saveProjects(deliverableDB);
 
       // Reporting and upkeep
@@ -2605,43 +2570,30 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getQualityCheck() != null) {
           this.saveQualityCheck();
         }
-        logger.info("DeliverableAction linea 2594");
         this.saveDissemination();
-        logger.info("DeliverableAction linea 2596");
         this.saveMetadata();
-        logger.info("DeliverableAction linea 2598");
         this.saveCrps();
-        logger.info("DeliverableAction linea 2600");
         this.savePublicationMetadata();
         // Data Sharing is not longer used.
         this.saveDataSharing();
-        logger.info("DeliverableAction linea 2604");
         this.saveUsers();
-        logger.info("DeliverableAction linea 2606");
         this.saveParticipant();
-        logger.info("DeliverableAction linea 2608");
         this.saveDuplicated();
-        logger.info("DeliverableAction linea 2610");
 
         if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
           this.saveDeliverableClusterParticipant();
-          logger.info("DeliverableAction linea 2614");
         }
       }
 
       // SHFRM contribution
       if (this.hasSpecificities(APConstants.SHFRM_CONTRIBUTION_ACTIVE)) {
-        logger.info("DeliverableAction linea 2620");
         this.savePriorityActions(false);
-        logger.info("DeliverableAction linea 2622");
         this.saveSubActions();
-        logger.info("DeliverableAction linea 2624");
         if (deliverable.getDeliverableInfo() != null && (deliverable.getDeliverableInfo().getContributingShfrm() != null
           && deliverable.getDeliverableInfo().getContributingShfrm() == false)) {
           this.deleteAllActionsAndSubActions();
         }
       }
-      logger.info("DeliverableAction linea 2626");
 
       /*
        * Delete the field 'new expected year' when the status is different to Extended and this field has information
@@ -2679,7 +2631,6 @@ public class DeliverableAction extends BaseAction {
         this.removeTraineesIndicatorMapping();
       }
 
-      logger.info("DeliverableAction linea 2664");
       if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingActive()
         && this.getProjectLp6ContributionValue(project.getId(), this.getActualPhase().getId())) {
         this.updateProjectLp6ContributionDeliverable();
@@ -2710,7 +2661,6 @@ public class DeliverableAction extends BaseAction {
        * The following is required because we need to update something on
        * the @Deliverable if we want a row created in the auditlog table.
        */
-      logger.info("DeliverableAction linea 2687");
       this.setModificationJustification(deliverableManagedState);
       deliverableManagedState = deliverableManager.saveDeliverable(deliverableManagedState, this.getActionName(),
         relationsName, this.getActualPhase());
@@ -2832,7 +2782,6 @@ public class DeliverableAction extends BaseAction {
    * @param phase
    */
   public void saveCrpOutcomes(Deliverable deliverable, Phase phase) {
-    logger.info("DeliverableAction linea 2827");
     // Get the IPI 2.3 object
     CrpProgramOutcome crpProgramOutcomeIPI = this.getTraineesIndicator();
     boolean addIPI = false;
@@ -2856,10 +2805,8 @@ public class DeliverableAction extends BaseAction {
     try {
       if (deliverable.getDeliverableCrpOutcomes() != null && !deliverable.getDeliverableCrpOutcomes().isEmpty()) {
 
-        logger.info("DeliverableAction linea 2851");
         List<DeliverableCrpOutcome> outcomePrev = new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
           .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-        logger.info("DeliverableAction linea 2854");
 
         for (DeliverableCrpOutcome deliverableOutcome : outcomePrev) {
           if (this.deliverable.getCrpOutcomes() == null
@@ -2868,7 +2815,6 @@ public class DeliverableAction extends BaseAction {
               this.getActualPhase().getId());
           }
         }
-        logger.info("DeliverableAction linea 2863");
       }
     } catch (Exception e) {
       logger.error("unable to delete crp outcome", e);
@@ -2876,17 +2822,14 @@ public class DeliverableAction extends BaseAction {
 
     // Save form Information
     if (this.deliverable.getCrpOutcomes() != null) {
-      logger.info("DeliverableAction linea 2871");
       if (!this.isDeliverableMappedToTrainessIndicator() && addIPI) {
         DeliverableCrpOutcome deliverableCrpOutcome = new DeliverableCrpOutcome();
         deliverableCrpOutcome.setDeliverable(deliverable);
         deliverableCrpOutcome.setCrpProgramOutcome(crpProgramOutcomeIPI);
         this.deliverable.getCrpOutcomes().add(deliverableCrpOutcome);
       }
-      logger.info("DeliverableAction linea 2878");
       for (DeliverableCrpOutcome deliverableOutcome : this.deliverable.getCrpOutcomes()) {
         DeliverableCrpOutcome deliverableOutcomeSave = new DeliverableCrpOutcome();
-        logger.info("DeliverableAction linea 2881");
         if (deliverableOutcome != null) {
           // For new crp outcomes
           if (deliverableOutcome.getId() == null) {
@@ -2898,7 +2841,6 @@ public class DeliverableAction extends BaseAction {
               if (deliverableOutcome.getId() != null) {
                 deliverableOutcomeSave =
                   deliverableCrpOutcomeManager.getDeliverableCrpOutcomeById(deliverableOutcome.getId());
-                logger.info("DeliverableAction linea 2893");
               }
             } catch (Exception e) {
               logger.error("unable to get old crp outcome", e);
@@ -2907,13 +2849,11 @@ public class DeliverableAction extends BaseAction {
 
           if (deliverableOutcome.getCrpProgramOutcome() != null
             && deliverableOutcome.getCrpProgramOutcome().getId() != null) {
-            logger.info("DeliverableAction linea 2902");
             CrpProgramOutcome outcome =
               crpProgramOutcomeManager.getCrpProgramOutcomeById(deliverableOutcome.getCrpProgramOutcome().getId());
             if (outcome != null && outcome.getId() != null) {
               deliverableOutcomeSave.setCrpProgramOutcome(outcome);
             }
-            logger.info("DeliverableAction linea 2908");
 
             this.deliverableCrpOutcomeManager.saveDeliverableCrpOutcome(deliverableOutcomeSave);
             // This is to add studyCrpSave to generate correct auditlog.
@@ -2924,7 +2864,6 @@ public class DeliverableAction extends BaseAction {
         }
       }
     }
-    logger.info("DeliverableAction linea 2913");
   }
 
   public void saveCrps() {
@@ -3615,7 +3554,6 @@ public class DeliverableAction extends BaseAction {
    */
   public void saveDuplicated() {
 
-    logger.info("DeliverableAction linea 3596 " + deliverable.getId());
     if (this.hasSpecificities(APConstants.DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE)) {
       Deliverable deliverableBase = deliverableManager.getDeliverableById(deliverableID);
       DeliverableInfo deliverableInfoDb = deliverableBase.getDeliverableInfo(this.getActualPhase());
@@ -3624,7 +3562,6 @@ public class DeliverableAction extends BaseAction {
       String disseminationURL = null;
 
       if (deliverable.getMetadataElements() != null) {
-        logger.info("DeliverableAction linea 3605 ");
         try {
           doi = deliverable.getMetadataElements().stream()
             .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
@@ -3644,14 +3581,12 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
-      logger.info("DeliverableAction linea 3625 ");
 
       if (deliverable.getDissemination() != null && deliverable.getDissemination().getDisseminationUrl() != null
         && !deliverable.getDissemination().getDisseminationUrl().isEmpty()) {
         disseminationURL = deliverable.getDissemination().getDisseminationUrl();
       }
 
-      logger.info("DeliverableAction linea 3632 ");
       List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
 
       try {
@@ -3667,13 +3602,11 @@ public class DeliverableAction extends BaseAction {
         } else {
           isDuplicated = false;
         }
-        logger.info("DeliverableAction linea 3648 ");
 
         if (deliverableInfoDb != null) {
           deliverableInfoDb.setDuplicated(isDuplicated);
           deliverableBase.setDeliverableInfo(deliverableInfoDb);
           deliverableInfoManager.saveDeliverableInfo(deliverableBase.getDeliverableInfo());
-          logger.info("DeliverableAction linea 3654 ");
         }
       } catch (Exception e) {
         logger.error("unable to get duplivated deliverables", e);
