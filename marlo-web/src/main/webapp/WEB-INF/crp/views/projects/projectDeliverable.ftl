@@ -101,25 +101,52 @@
 
 <section class="container">
 
-  <div class="modal-evidences" style="display: none">
+  <div class="modal-deliverable ui-dialog modal-evidences" style="display: none; background-color: #50505070 !important;">
     <div class="content-modal">
-      <div class="button-exit close-modal-evidences">
-        <div class="x-close-modal" ></div>
+      <div class="ui-dialog-titlebar">
+        <p class="title-modal-evidences">Remove cluster</p>
+        <div class="button-exit close-modal-evidences">
+          <div class="x-close-modal" ></div>
+        </div>
       </div>
-      <p class="title-modal-evidences">Are you sure you want to remove this cluster?</p>
+
+      
       <div class="text-modal-evidences">
-        <p>When you remove the selected cluster, the information shared in the Dissemination and Metadata tab of the Trainee-related contribution will also be deleted. 
-        If you are certain you want to proceed, you will need to redistribute all of the Trainees among the remaining clusters that are contributing to this deliverable.</p>          
+        <p>It is not possible to remove the shared cluster from the list, this cluster has already been submitted and has trainees related.</p>
+        <br>
+        <p>We suggest the following actions so you can save the information correctly:</p>
+        <ul>
+          <li>Distribute the remaining values across the shared cluster list</li>
+          <li>Contact the cluster leader to unsubmitt the cluster and update the information.</li>
+        </ul>       
       </div>                
       <div class="container-buttons-evidences"> 
-        <div class="button-close-modal close-modal-evidences remove-cluster-alert">
-          <p>Remove cluster</p>
-        </div>
         <div class="button-close-modal close-modal-evidences">
           <p>Close</p>
         </div>
       </div> 
     </div>              
+  </div>
+
+  <div class=" modal-deliverable ui-dialog modal-indicator" style="display: none;  background-color: #50505070 !important;">
+    <div class="content-modal">
+      <div class="ui-dialog-titlebar">
+        <p class="title-modal-evidences title-modal-indicator">Remove Indicator</p>
+        <div class="button-exit close-modal-indicator">
+          <div class="x-close-modal" ></div>
+        </div>
+      </div>
+      
+      <div class="text-modal-evidences text-modal-indicator">
+        <p>It is not possible to remove the indicator from the list, since this deliverable has shared clusters that have already been submitted and have related trainees.</p>
+
+      </div>                
+      <div class="container-buttons-evidences"> 
+        <div class="button-close-modal close-modal-indicator">
+          <p>Close</p>
+        </div>
+      </div> 
+    </div>   
   </div>
 
     <div class="row">
