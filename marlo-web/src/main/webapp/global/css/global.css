@@ -365,6 +365,13 @@ div.fieldFocus {
 	margin: 20px 0 !important;
 }
 
+div input.fieldDisabled {
+	background-color: #eee !important;
+	opacity: 1 !important;
+	color: #5A5A5A !important;
+	border: none !important;
+}
+
 /* Table default style*/
 table.default {
 	margin: 0px 0 !important;
@@ -7374,6 +7381,11 @@ img.fileIcon {
 
 .text-area-container .input {
 	width: 100%;
+}
+
+.text-flex-column{
+	display: flex;
+	flex-flow: column;
 }
 
 .commentNumberContainer {

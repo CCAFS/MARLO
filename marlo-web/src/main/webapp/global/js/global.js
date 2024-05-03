@@ -197,6 +197,29 @@ $(document).ready(function () {
         var message = $(messageSelector).html().split(":")[1];
         var messageType = "success";
         notifyErrorMessage(messageType, message);
+      } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message" && messageSelector.html().split(":")[1] === " deliverable.status.remaining") {
+        // SHOW CLUSTER SUBMITTED BASED ON THE DISABLED INPUT
+        var $clusterSubmitted = $(`.clusterSubmitted`);
+        var message = "";
+        if ($clusterSubmitted.length > 0) {
+          // $clusterSubmitted exists, do something
+          const $mapClusterSubmit = $clusterSubmitted.filter((index, ele) => $(ele).attr("issubmit") === "true").get();
+          const $stringClusterSubmit = $mapClusterSubmit.reduce((prev,curr) => prev +$(curr).attr("name")+",","");
+          const stringFixed = $stringClusterSubmit.substring(0, $stringClusterSubmit.length - 1);
+          message += "The Information was correctly saved. <br> ";
+          message += "It seems that the following cluster(s) were submitted: <b>"+stringFixed+ "</b>. We suggest the following actions so you can save the information correctly: <br> ";
+          message += "<ul style='padding-left: 32px;'> <li>Click on the cluster name to see the information. </li> ";
+          message += "<li>Contact the cluster leader to unsubmitt the cluster and update the information. </li> ";
+          message += "</ul> ";
+        } else {
+          // $clusterSubmitted does not exist, do something else
+          message += "The Information was correctly saved. <br> ";
+          message += "It seems that the <b>Remaining shared information</b> is incompleted please take a look.";
+        }
+        // WARNING MESSAGE
+        
+        var messageType = "warning";
+        notifyErrorMessage(messageType, message);
       } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message") {
         // WARNING MESSAGE
         var message = ""
@@ -867,7 +890,33 @@ async function onClickRemoveElement() {
     return;
   }
 
+  // check if the indicator IPI2.3 has information, to avoid removing, it in the Performance Indicator
+  if (id === "7505" || name.includes("IPI 2.3")) {
 
+    //Represents a collection of input elements that contain the information of the total participants for each shared clusters.
+   
+    const inputs = document.querySelectorAll("div.form-group.row[clusteridparticipant] .participantsNumbers input");
+    
+    const values = [];
+    inputs.forEach(input => {
+      values.push(parseInt(input.value));
+    });
+    var sumData = values.reduce((a, b) => a + b, 0);
+    if (sumData > 0) { 
+      
+      try {
+        // Wait for the user to click on the modal
+        await alertRemoveIndicatorIPI2_3();
+      } catch (error) {
+        // User clicked on the close button instead of the remove button
+        console.log("Not removed");
+        return;
+      }
+    }
+    removeCluster(id);
+  }
+
+  // check if the shared cluster has information, to avoid removing it, in the listClustersDM
   if (hasListClusters) {
     const inputs = document.querySelectorAll("div.form-group.row[clusteridparticipant='" + id + "'] input");
     const values = [];
@@ -888,6 +937,8 @@ async function onClickRemoveElement() {
     removeCluster(id);
 
   }
+
+
 
   $parent.slideUp(300, function () {
     $parent.remove();
@@ -933,11 +984,25 @@ function alertRemoveCluster() {
 
     $('.close-modal-evidences').on('click', function () {
       modal.hide();
-      if ($(this).hasClass('remove-cluster-alert')) {
+      reject(true);
+      // In case that we allow the user to close the modal rwemoving the cluster
+    /*       if ($(this).hasClass('remove-cluster-alert')) {
         resolve(false);
       } else {
         reject(true);
-      }
+      } */
+    });
+  });
+}
+
+function alertRemoveIndicatorIPI2_3() {
+  return new Promise(function (resolve, reject) {
+    let modal = $('.modal-indicator');
+    modal.show();
+
+    $('.close-modal-indicator').on('click', function () {
+      modal.hide();
+      reject(true);
     });
   });
 }
@@ -1032,8 +1097,6 @@ function initialRemaining() {
 
 
 }
-
-
 
 function onSelectElementPrimary() {
   var $select = $(this);
