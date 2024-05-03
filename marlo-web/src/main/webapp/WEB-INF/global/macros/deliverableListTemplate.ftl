@@ -63,6 +63,8 @@
             [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
             [#-- Owner --]
             [#local isOwner = (deliverable.project.id == projectID)!false]
+            [#-- Has Submitted shared clusters --]
+            [#local hasSubmittedSharedCluster = (action.hasSubmittedSharedCluster(deliverable.id, actualPhase.id))!false]
 
             [#if deliverable.deliverableInfo.title?has_content]
               <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
@@ -170,7 +172,7 @@
             </td>
             <td class="text-center">
               [#-- Remove icon --]
-              [#if isDeliverableNew && isOwner]
+              [#if isDeliverableNew && isOwner && hasSubmittedSharedCluster]
                 <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}&phaseID=${(actualPhase.id)!}" title="Remove deliverable">
                   <div class="icon-container"><span class="trash-icon glyphicon glyphicon-trash"></span><div>
                 </a>

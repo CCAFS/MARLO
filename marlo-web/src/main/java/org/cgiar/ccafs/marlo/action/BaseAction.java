@@ -6108,6 +6108,39 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+  /**
+   * @author KTANAKA
+   * @param deliverableID
+   * @param phaseID
+   * @return boolean - true if the deliverable has submitted shared clusters
+   */
+  public boolean hasSubmittedSharedCluster(long deliverableID, long phaseID) {
+
+    try {
+      // No submission in progress phase
+      if (this.isProgressActive()) {
+        return false;
+      } else {
+        List<ProjectDeliverableShared> deliverableSharedList =
+          projectDeliverableSharedManager.getByDeliverable(deliverableID, phaseID);
+        if (deliverableSharedList != null && !deliverableSharedList.isEmpty()) {
+          for (ProjectDeliverableShared deliverableShared : deliverableSharedList) {
+            if (deliverableShared != null && deliverableShared.getProject() != null
+              && deliverableShared.getProject().getId() != null) {
+              if (this.isSubmit(deliverableShared.getProject().getId())) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+
+    } catch (Exception e) {
+      LOG.error("error getting shared clusters statuses " + e);
+    }
+    return false;
+  }
+
   public <T> List<T> intersection(List<T> list1, List<T> list2) {
     List<T> list = new ArrayList<T>();
 
@@ -8764,7 +8797,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return true;
   }
-
 
   public boolean validatePolicy(long policyID) {
     SectionStatus sectionStatus =
