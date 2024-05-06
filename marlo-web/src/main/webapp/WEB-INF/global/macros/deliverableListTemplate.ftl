@@ -64,7 +64,7 @@
             [#-- Owner --]
             [#local isOwner = (deliverable.project.id == projectID)!false]
             [#-- Has Submitted shared clusters --]
-            [#local hasSubmittedSharedCluster = (action.hasSubmittedSharedCluster(deliverable.id, actualPhase.id))!false]
+            [#local hasSubmittedSharedCluster = (action.hasSubmittedParticipantSharedCluster(deliverable.id, actualPhase.id))!false]
 
             [#if deliverable.deliverableInfo.title?has_content]
               <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
@@ -171,13 +171,17 @@
               [/#if]
             </td>
             <td class="text-center">
-              [#-- Remove icon --]
-              [#if isDeliverableNew && isOwner && hasSubmittedSharedCluster]
+              [#-- Remove icon --]              
+              [#if isDeliverableNew && isOwner && (!hasSubmittedSharedCluster)]             
                 <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}&phaseID=${(actualPhase.id)!}" title="Remove deliverable">
                   <div class="icon-container"><span class="trash-icon glyphicon glyphicon-trash"></span><div>
                 </a>
               [#else]
-                 <div class="icon-container remove-disabled"><span class="trash-icon glyphicon glyphicon-trash" title="This deliverable cannot be deleted"></span><div>
+                [#if hasSubmittedSharedCluster]
+                   <div class="icon-container remove-disabled"><span class="trash-icon glyphicon glyphicon-trash" title="This deliverable cannot be deleted due it has trainees information from submitted shared clusters"></span><div>
+                [#else]
+                   <div class="icon-container remove-disabled"><span class="trash-icon glyphicon glyphicon-trash" title="This deliverable cannot be deleted"></span><div>
+                [/#if]
               [/#if]
               </td>
           [/#if]

@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableClusterParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
@@ -415,6 +416,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ButtonGuideContentManager buttonGuideContentManager;
+
+  @Inject
+  private DeliverableClusterParticipantManager deliverableClusterParticipantManager;
 
   private String centerSession;
 
@@ -6112,32 +6116,37 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @author KTANAKA
    * @param deliverableID
    * @param phaseID
-   * @return boolean - true if the deliverable has submitted shared clusters
+   * @return boolean - true if the deliverable has submitted shared clusters with trainees information
    */
-  public boolean hasSubmittedSharedCluster(long deliverableID, long phaseID) {
+  public boolean hasSubmittedParticipantSharedCluster(long deliverableID, long phaseID) {
 
     try {
-      // No submission in progress phase
-      if (this.isProgressActive()) {
-        return false;
-      } else {
-        List<ProjectDeliverableShared> deliverableSharedList =
-          projectDeliverableSharedManager.getByDeliverable(deliverableID, phaseID);
-        if (deliverableSharedList != null && !deliverableSharedList.isEmpty()) {
-          for (ProjectDeliverableShared deliverableShared : deliverableSharedList) {
-            if (deliverableShared != null && deliverableShared.getProject() != null
-              && deliverableShared.getProject().getId() != null) {
-              if (this.isSubmit(deliverableShared.getProject().getId())) {
-                return true;
-              }
+      // Check if there is no submission in progress phase
+      if (!this.isProgressActive()) {
+        // Retrieve deliverable cluster participants
+        List<DeliverableClusterParticipant> deliverableClusterParticipants = deliverableClusterParticipantManager
+          .getDeliverableClusterParticipantByDeliverableAndPhase(deliverableID, phaseID);
+
+        // Check if the list is not empty and process each participant
+        if (deliverableClusterParticipants != null && !deliverableClusterParticipants.isEmpty()) {
+          for (DeliverableClusterParticipant deliverableShared : deliverableClusterParticipants) {
+            Project project = deliverableShared.getProject();
+            Deliverable deliverable = deliverableShared.getDeliverable();
+            // Ensure necessary objects are not null and IDs are different, then check submission status
+            if (deliverableShared != null && project != null && project.getId() != null && deliverable != null
+              && deliverable.getProject() != null && project.getId() != deliverable.getProject().getId()
+              && this.isSubmit(project.getId())) {
+              // Return true if submission is found
+              return true;
             }
           }
         }
       }
-
     } catch (Exception e) {
-      LOG.error("error getting shared clusters statuses " + e);
+      // Log error if an exception occurs
+      LOG.error("Error getting shared clusters statuses", e);
     }
+    // Return false if no submission is found or an error occurred
     return false;
   }
 
