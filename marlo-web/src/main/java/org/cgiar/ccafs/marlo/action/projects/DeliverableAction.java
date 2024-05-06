@@ -2331,10 +2331,16 @@ public class DeliverableAction extends BaseAction {
           feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
             .filter(f -> f.getSectionName() != null && f.getSectionName().equals("deliverable"))
             .collect(Collectors.toList());
+
+          List<FeedbackQAComment> FeedbackQACommentTemp =
+            feedbackQACommentManager.findAllByPhase(this.getActualPhase().getId());
           if (feedbackComments != null) {
             for (FeedbackQACommentableFields field : feedbackComments) {
               List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
-              comments = feedbackQACommentManager.findAll().stream()
+              // cgamboa 06/05/2024 feedbackQACommentManager.findAll() function is changed to
+              // feedbackQACommentManager.findAllByPhase.
+              // this function will be called once
+              comments = FeedbackQACommentTemp.stream()
                 .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
                   && f.getPhase().getId().equals(this.getActualPhase().getId())
                   && f.getParentId() == deliverable.getId() && f.getField() != null && f.getField().getId() != null
