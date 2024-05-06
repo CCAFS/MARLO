@@ -283,7 +283,7 @@ function getIntersectedActivities() {
 
     entries.forEach(entry => {
       const activity = entry.target;
-      if (entry.isIntersecting && entry.intersectionRatio > 0.01) {
+      if (entry.isIntersecting) {
         activitiesIntersected.push(activity);
       }
       $(activity).parent().removeClass("activityFlexTop--1");
@@ -312,6 +312,7 @@ function getIntersectedActivities() {
 
       }
     });
+    console.log(activitiesIntersected.length);
 
     switch(activitiesIntersected.length){
       case 1:
@@ -320,7 +321,6 @@ function getIntersectedActivities() {
         } else {
           timelineContainer.style.height = "32vh";
         }
-
         break;
       case 2:
         if(document.documentElement.getBoundingClientRect().width > 1500){
@@ -337,6 +337,7 @@ function getIntersectedActivities() {
       case 5:
       case 6:
       case 7:
+      case 8:
         if(document.documentElement.getBoundingClientRect().width > 1500){
           timelineContainer.style.height = "31vh";
         } else {
@@ -357,16 +358,35 @@ function getIntersectedActivities() {
         break;
     }
 
-  },{});
+  },{
+    rootMargin: '0px',
+    threshold: 0.01,
+  });
 
-  
+  let observerCalled = false;
+  const handleScroll = () => {
+    if (!observerCalled) {
+      observerCalled = true;
+      observer.disconnect();
+      window.requestAnimationFrame(() => {
+        observerCalled = false;
+        list_activities.forEach(activity => {
+          observer.observe(activity);
+        });
+      });
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll);
+
   list_activities.forEach(activity => { 
     observer.observe(activity);
   });
 
   setTimeout(() => {
     observer.disconnect();
-  }, 550); // Adjust the time as per your scroll smooth time
+    window.removeEventListener('scroll', handleScroll);
+  }, 155); // Adjust the time as per your scroll smooth time
 
 }
 
