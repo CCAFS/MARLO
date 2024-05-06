@@ -181,8 +181,13 @@ function moveScrollRight() {
   element.style.scrollBehavior = "smooth"
   element.scrollLeft += (containerSize);
 
+  let onlyActive = true;
   setTimeout(() => {
-    getIntersectedActivities();
+    if(onlyActive){
+      getIntersectedActivities();
+      onlyActive = false;
+    }
+    
   }, 500);
   
 }
@@ -196,8 +201,13 @@ function moveScrollLeft() {
   element.style.scrollBehavior = "smooth"
   element.scrollLeft -= (containerSize);
 
+  let onlyActive = true;
   setTimeout(() => {
-    getIntersectedActivities();
+    if(onlyActive){
+      getIntersectedActivities();
+      onlyActive = false;
+    }
+    
   }, 500);
 }
 
@@ -296,6 +306,8 @@ function getIntersectedActivities() {
       return rectA.left - rectB.left;
     });
 
+    console.log(activitiesIntersected.length);
+
     activitiesIntersected.forEach(activity => {
       if(activitiesIntersected.length === 1){
         $(activity).parent().addClass("activityUnique");
@@ -312,7 +324,6 @@ function getIntersectedActivities() {
 
       }
     });
-    console.log(activitiesIntersected.length);
 
     switch(activitiesIntersected.length){
       case 1:
@@ -338,6 +349,7 @@ function getIntersectedActivities() {
       case 6:
       case 7:
       case 8:
+      case 9:
         if(document.documentElement.getBoundingClientRect().width > 1500){
           timelineContainer.style.height = "31vh";
         } else {
@@ -360,24 +372,8 @@ function getIntersectedActivities() {
 
   },{
     rootMargin: '0px',
-    threshold: 0.01,
+    threshold: 0.001,
   });
-
-  let observerCalled = false;
-  const handleScroll = () => {
-    if (!observerCalled) {
-      observerCalled = true;
-      observer.disconnect();
-      window.requestAnimationFrame(() => {
-        observerCalled = false;
-        list_activities.forEach(activity => {
-          observer.observe(activity);
-        });
-      });
-    }
-  };
-
-  window.addEventListener('scroll', handleScroll);
 
   list_activities.forEach(activity => { 
     observer.observe(activity);
@@ -385,8 +381,7 @@ function getIntersectedActivities() {
 
   setTimeout(() => {
     observer.disconnect();
-    window.removeEventListener('scroll', handleScroll);
-  }, 155); // Adjust the time as per your scroll smooth time
+  }, 25); // Adjust the time as per your scroll smooth time
 
 }
 
