@@ -6120,24 +6120,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public boolean hasSubmittedParticipantSharedCluster(long deliverableID, long phaseID) {
 
-    try {
-      // Check if there is no submission in progress phase
-      if (!this.isProgressActive()) {
-        // Retrieve deliverable cluster participants
-        List<DeliverableClusterParticipant> deliverableClusterParticipants = deliverableClusterParticipantManager
-          .getDeliverableClusterParticipantByDeliverableAndPhase(deliverableID, phaseID);
 
-        // Check if the list is not empty and process each participant
-        if (deliverableClusterParticipants != null && !deliverableClusterParticipants.isEmpty()) {
-          for (DeliverableClusterParticipant deliverableShared : deliverableClusterParticipants) {
-            Project project = deliverableShared.getProject();
-            Deliverable deliverable = deliverableShared.getDeliverable();
-            // Ensure necessary objects are not null and IDs are different, then check submission status
-            if (deliverableShared != null && project != null && project.getId() != null && deliverable != null
-              && deliverable.getProject() != null && project.getId() != deliverable.getProject().getId()
-              && this.isSubmit(project.getId())) {
-              // Return true if submission is found
-              return true;
+    try {
+      // Check if the shared cluster trainees specificity is active
+      if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+        // Check if there is no submission in progress phase
+        if (!this.isProgressActive()) {
+          // Retrieve deliverable cluster participants
+          List<DeliverableClusterParticipant> deliverableClusterParticipants = deliverableClusterParticipantManager
+            .getDeliverableClusterParticipantByDeliverableAndPhase(deliverableID, phaseID);
+
+          // Check if the list is not empty and process each participant
+          if (deliverableClusterParticipants != null && !deliverableClusterParticipants.isEmpty()) {
+            for (DeliverableClusterParticipant deliverableShared : deliverableClusterParticipants) {
+              Project project = deliverableShared.getProject();
+              Deliverable deliverable = deliverableShared.getDeliverable();
+              // Ensure necessary objects are not null and IDs are different, then check submission status
+              if (deliverableShared != null && project != null && project.getId() != null && deliverable != null
+                && deliverable.getProject() != null && project.getId() != deliverable.getProject().getId()
+                && this.isSubmit(project.getId())) {
+                // Return true if submission is found
+                return true;
+              }
             }
           }
         }
