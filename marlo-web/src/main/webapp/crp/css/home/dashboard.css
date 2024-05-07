@@ -338,13 +338,13 @@ span.timelineControl:hover {
   
   .sideButtonTimeline {
     background:rgba(133, 133, 133, 0.5);
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     position: absolute;
-    top: 15%;
+    top: 12%;
     transform: translateY(-50%);
-    font-size: 27px;
+    font-size: 20px;
     font-weight: bold;
     font-family: monospace;
     text-align: center;
@@ -587,14 +587,6 @@ span.timelineControl:hover {
     flex-wrap: wrap;
 	}
 
-  .activityCard_details div:nth-child(odd){
-    max-width: 35%;
-  }
-
-  .activityCard_details div:nth-child(even){
-    max-width: 30%;
-  }
-
   .activityCard_details div b{
     font-size: 1rem;
     color: #000;
@@ -626,9 +618,11 @@ span.timelineControl:hover {
 	}
 
   .activityCard_viewMore p{
-    font-size: 9px;
+    font-size: 10px;
     color: #000;
     cursor: pointer;
+    margin-top: 3px;
+    margin-bottom: 0;
   }
 
   .activityCard_details--1 div b{
