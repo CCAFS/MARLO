@@ -181,8 +181,13 @@ function moveScrollRight() {
   element.style.scrollBehavior = "smooth"
   element.scrollLeft += (containerSize);
 
+  let onlyActive = true;
   setTimeout(() => {
-    getIntersectedActivities();
+    if(onlyActive){
+      getIntersectedActivities();
+      onlyActive = false;
+    }
+    
   }, 500);
   
 }
@@ -196,25 +201,56 @@ function moveScrollLeft() {
   element.style.scrollBehavior = "smooth"
   element.scrollLeft -= (containerSize);
 
+  let onlyActive = true;
   setTimeout(() => {
-    getIntersectedActivities();
+    if(onlyActive){
+      getIntersectedActivities();
+      onlyActive = false;
+    }
+    
   }, 500);
 }
 
+/**
+ * Converts a given date to African date format.
+ * @param {Date} date - The date to be converted.
+ * @returns {Date} - The converted date in African date format.
+ */
 const convertDateToAfricanDate = (date) => {
   const africanOptions = { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric', year: "numeric", hour: "numeric", minute: "numeric" };
   return new Date(date.toLocaleString('en-US', africanOptions));
 }
+/**
+ * Converts a date to a formatted text representation.
+ *
+ * @param {Date} date - The date to be converted.
+ * @param {boolean} withYear - Indicates whether to include the year in the formatted text.
+ * @returns {string} The formatted text representation of the date.
+ */
 const convertDateToText = (date, withYear) => {
   return new Date(date).toLocaleString('default', withYear ? { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric', year: "2-digit" } : { timeZone: 'Africa/Nairobi', month: 'short', day: 'numeric' });
 }
 
+/**
+ * Calculates the absolute number of days between two dates, excluding any rest days.
+ *
+ * @param {string} startDate - The start date in string format (e.g., "2022-01-01").
+ * @param {string} endDate - The end date in string format (e.g., "2022-01-10").
+ * @param {number} [restDays=0] - CONSTANT - The number of rest days to exclude from the calculation.
+ * @returns {number} The absolute number of days between the start and end dates, excluding rest days.
+ */
 const getAbsoluteDays = (startDate, endDate, restDays) => {
   const oneDay = 24 * 60 * 60 * 1000;
   const isRestDays = restDays ? restDays : 0;
   return Math.round(Math.abs((new Date(startDate) - new Date(endDate)) / oneDay)) - isRestDays;
 };
 
+/**
+ * Retrieves the first and last dates from an array of dates.
+ *
+ * @param {Array} dates - An array of dates.
+ * @returns {Object} - An object containing the first and last dates.
+ */
 const getFirstAndLastDates = (dates) => {
   const sortDatesByStart = dates.map(date => Date.parse(date.startDate)).sort((a, b) => a - b);
   const sortDatesByEnd = dates.map(date => Date.parse(date.endDate)).sort((a, b) => a - b);
@@ -224,6 +260,13 @@ const getFirstAndLastDates = (dates) => {
   };
 }
 
+/**
+ * Calculates the weeks between two given dates.
+ *
+ * @param {string} startDate - The start date of the timeline.
+ * @param {string} endDate - The end date of the timeline.
+ * @returns {Array} An array of objects representing each week, with the firstDate, lastDate, and id properties.
+ */
 const getWeeks = (startDate, endDate) => {
   const firstDate = new Date(startDate);
   const lastDate = new Date(endDate);
@@ -243,6 +286,15 @@ const getWeeks = (startDate, endDate) => {
   return weeks;
 }
 
+/**
+ * Returns the index of the week based on a given date.
+ *
+ * @param {Date} date - The date to compare.
+ * @param {Array} weeks - An array of objects representing the weeks.
+ * @param {Date} weeks[].firstDate - The first date of the week.
+ * @param {Date} weeks[].lastDate - The last date of the week.
+ * @returns {number} - The index of the week.
+ */
 const getWeekBasedOnDay = (date, weeks) => {
   const dateToCompare = new Date(date);
   for (let i = 0; i < weeks.length; i++) {
@@ -253,6 +305,12 @@ const getWeekBasedOnDay = (date, weeks) => {
   }
 }
 
+/**
+ * Returns the first date of the week for a given date.
+ *
+ * @param {Date} date - The date for which to find the first date of the week.
+ * @returns {Date} The first date of the week.
+ */
 const getFirstDateOfTheWeek = (date) => {
   const firstDate = new Date(date);
   firstDate.setDate(firstDate.getDate() - firstDate.getDay());
@@ -260,18 +318,41 @@ const getFirstDateOfTheWeek = (date) => {
 
 }
 
+/**
+ * Returns the last date of the week for a given date.
+ *
+ * @param {Date} date - The date for which to find the last date of the week.
+ * @returns {Date} - The last date of the week.
+ */
 const getLastDateOfTheWeek = (date) => {
   const lastDate = new Date(date);
   lastDate.setDate(lastDate.getDate() + (6 - lastDate.getDay()));
   return lastDate;
 }
 
+/**
+ * Calculates a new date based on a sum of days added to a given start date.
+ *
+ * @param {Date} startDate - The start date.
+ * @param {number} days - The number of days to add to the start date.
+ * @returns {Date} - The new date after adding the specified number of days.
+ */
 function getDateBasedOnASumOfDays(startDate, days) {
   const newDate = new Date(startDate);
   newDate.setDate(newDate.getDate() + days);
   return newDate;
 }
 
+/**
+ * Retrieves the intersected activities and applies CSS classes based on their intersection.
+ * Uses IntersectionObserverAPI to detect the intersection of the activities with the viewport.
+ * @returns {void}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+ * Note: The IntersectionObserver API is not supported in IE11.
+ * Note: The IntersectionObserver API is not supported in Safari 12.1, 12.2.
+ * Note: If there is only one activity in the timeline, it will be displayed as a center activity.
+ * Note: If there are two or more activities in the timeline, they will be displayed in a cascade system of three activies.
+ */
 function getIntersectedActivities() {
   const timeline_activities = $(".activityCard_container");
   const list_activities = Array.from(timeline_activities);
@@ -283,7 +364,7 @@ function getIntersectedActivities() {
 
     entries.forEach(entry => {
       const activity = entry.target;
-      if (entry.isIntersecting && entry.intersectionRatio > 0.025) {
+      if (entry.isIntersecting) {
         activitiesIntersected.push(activity);
       }
       $(activity).parent().removeClass("activityFlexTop--1");
@@ -295,6 +376,8 @@ function getIntersectedActivities() {
       const rectB = b.getBoundingClientRect();
       return rectA.left - rectB.left;
     });
+
+    console.log(activitiesIntersected.length);
 
     activitiesIntersected.forEach(activity => {
       if(activitiesIntersected.length === 1){
@@ -316,17 +399,16 @@ function getIntersectedActivities() {
     switch(activitiesIntersected.length){
       case 1:
         if(document.documentElement.getBoundingClientRect().width > 1500){
-          timelineContainer.style.height = "18vh";
+          timelineContainer.style.height = "22vh";
         } else {
-          timelineContainer.style.height = "26vh";
+          timelineContainer.style.height = "32vh";
         }
-
         break;
       case 2:
         if(document.documentElement.getBoundingClientRect().width > 1500){
           timelineContainer.style.height = "24.5vh";
         } else {
-          timelineContainer.style.height = "30vh";
+          timelineContainer.style.height = "32vh";
         }
         list_activities.forEach(activity => {
           $(activity).parent().removeClass("activityUnique");
@@ -337,6 +419,8 @@ function getIntersectedActivities() {
       case 5:
       case 6:
       case 7:
+      case 8:
+      case 9:
         if(document.documentElement.getBoundingClientRect().width > 1500){
           timelineContainer.style.height = "31vh";
         } else {
@@ -357,37 +441,28 @@ function getIntersectedActivities() {
         break;
     }
 
-  },{});
+  },{
+    rootMargin: '0px',
+    threshold: 0.001,
+  });
 
-  
   list_activities.forEach(activity => { 
     observer.observe(activity);
   });
 
   setTimeout(() => {
     observer.disconnect();
-  }, 500); // Adjust the time as per your scroll smooth time
+  }, 25); // NOTE: Dont touch. Adjust the time to avoid the observer to be disconnected before the scroll stops.
 
 }
 
-function createDivTimes(totalWeeks, divClass) {
-  let arrayDays = [];
-  for (let i = 0; i < totalWeeks.length; i++) {
-    let newDiv = document.createElement('div');
-    newDiv.id = `time_${i}`
-    newDiv.className = divClass;
-    newDiv.style.width = setWidth();
-    newDiv.innerHTML = `
-    <div class="${divClass}_information">
-      	${convertDateToText(totalWeeks[i].firstDate)} 
-    </div>
-    
-    `;
-    arrayDays.push(newDiv);
-  }
-  return arrayDays;
-}
-
+/**
+ * Creates a div element representing an activity card.
+ * @param {Object} activity - The activity object {stardate,endDate,description}.
+ * @param {number} weeks - The number of weeks.
+ * @param {string} id - The ID of the activity card.
+ * @returns {HTMLElement} - The created div element.
+ */
 function createDivActivities(activity, weeks, id) {
 
   const status = setStatus(activity.startDate, activity.endDate);
@@ -428,6 +503,13 @@ function createDivActivities(activity, weeks, id) {
   return card;
 }
 
+/**
+ * Sets the status of the activity based on the given start and end dates to compare to the current date.
+ *
+ * @param {Date} startDate - The start date.
+ * @param {Date} endDate - The end date.
+ * @returns {string} The status based on the current date and the given start and end dates.
+ */
 const setStatus = (startDate, endDate) => {
   const today = convertDateToAfricanDate(new Date());
   const dateStatus = {
@@ -445,6 +527,12 @@ const setStatus = (startDate, endDate) => {
   }
 }
 
+/**
+ * Returns the color associated with the given status.
+ *
+ * @param {string} status - The status value.
+ * @returns {string} The color associated with the status.
+ */
 const setStatusColor = (status) => {
   const colorStatus = {
     "Completed": "#B5D08B",
@@ -455,6 +543,14 @@ const setStatusColor = (status) => {
   return colorStatus[status];
 }
 
+/**
+ * Calculates the amount for a given width based on the start and end dates and the number of weeks.
+ *
+ * @param {Date} startDate - The start date.
+ * @param {Date} endDate - The end date.
+ * @param {number} weeks - The number of weeks.
+ * @returns {number} - The calculated amount.
+ */
 function calculateAmountForWidth(startDate, endDate, weeks) {
   const startWeek = getWeekBasedOnDay(startDate, weeks);
   const endWeek = getWeekBasedOnDay(endDate, weeks);
@@ -470,6 +566,11 @@ function calculateAmountForWidth(startDate, endDate, weeks) {
   return Math.abs((endWeek - startWeek)) + decimalAmount;
 }
 
+/**
+ * Sets the width of an element based on the provided amount.
+ * @param {number} amount - The amount to calculate the width.
+ * @returns {string} The calculated width in CSS format.
+ */
 function setWidth(amount) {
 
   const extraAmount = amount > 1.5 ? -1/7 : 0;
@@ -477,7 +578,16 @@ function setWidth(amount) {
   const widthInPx = `${widthContainer * 0.95}px`;
   return `calc(${amount !== undefined ? (amount + extraAmount) + "*(" + widthInPx + " / 2)" : "calc(" + widthInPx + " / 2)"} )  `;
 }
-function setDistances(weeks, startDate, endDate, isToday) {
+
+/**
+ * Calculates the distances based on the given parameters.
+ * @param {number} weeks - The number of weeks.
+ * @param {Date} startDate - The start date.
+ * @param {Date} _endDate - The end date.
+ * @param {boolean} isToday - Indicates if it is today.
+ * @returns {string} - The calculated distance.
+ */
+function setDistances(weeks, startDate, _endDate, isToday) {
   const { lastDate } = getFirstAndLastDates(timelineElements);
 
   let today = convertDateToAfricanDate(new Date());
@@ -500,6 +610,9 @@ function setDistances(weeks, startDate, endDate, isToday) {
 }
 
 
+/**
+ * Sets the position of the timeline_today div based on the current date.
+ */
 function setTimelinePosition() {
   const getFirstDate = getFirstAndLastDates(timelineElements).firstDate;
   const getLastDate = getFirstAndLastDates(timelineElements).lastDate;
@@ -518,6 +631,14 @@ function setTimelinePosition() {
 
 
 
+/**
+ * Creates a timeline on the dashboard.
+ * @returns {void}
+ * Note: The timeline is created based on the timelineElements array.
+ * Note: It's the second version of the timeline.
+ * @author Jhon S. Garcia I.
+ * based on the first version made by @author Cristian Pizo
+ */
 function createTimeline2() {
   const getFirstDate = getFirstAndLastDates(timelineElements).firstDate;
   const getLastDate = getFirstAndLastDates(timelineElements).lastDate;
@@ -532,17 +653,6 @@ function createTimeline2() {
 	  		<b>Schedule</b>
 	  	</div>
 	  </div>
-    <div id="timelineContainer">
-      <div id="timeline_times">
-      	${createDivTimes(getWeeksArray, "timebox").reduce((acc, curr) => acc + curr.outerHTML, '')}
-      </div>
-      <div id="timeline_activities">
-      	${timelineElements.map((elem, id) => `
-      		${createDivActivities(elem, getWeeksArray, id).outerHTML}
-      	` ).join('')}
-      </div>
-      <div id="timeline_today" style="left: ${setDistances(getWeeksArray,null,null, true)}"></div>
-    </div>
     <div id="timelineAlert">
       <b>Progress status:</b>
       <section id="timelineAlert_container">
@@ -559,6 +669,17 @@ function createTimeline2() {
           <p>Completed</p>
         </article>
       </section>
+    </div>
+    <div id="timelineContainer">
+      <div id="timeline_times">
+      	${createDivTimes(getWeeksArray, "timebox").reduce((acc, curr) => acc + curr.outerHTML, '')}
+      </div>
+      <div id="timeline_activities">
+      	${timelineElements.map((elem, id) => `
+      		${createDivActivities(elem, getWeeksArray, id).outerHTML}
+      	` ).join('')}
+      </div>
+      <div id="timeline_today" style="left: ${setDistances(getWeeksArray,null,null, true)}"></div>
     </div>
   </div>
 	`
