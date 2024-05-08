@@ -199,6 +199,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     return deliverables;
   }
 
+
   @Override
   public List<Deliverable> getDeliverablesByPhase(long phase) {
     StringBuilder query = new StringBuilder();

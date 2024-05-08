@@ -404,32 +404,38 @@
           <input type="hidden" name="${customName}[${index}].project.id" value="${(cluster.project.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}"/>
           <div class="form-group row" clusterIdParticipant="${(cluster.project.id)!0}">
             <div class="col-md-2">
-              <div class="text-area-container">
+              <div class="text-area-container text-flex-column">
               [@customForm.text name=(list[index].project.acronym)!"" /]
+              [#if action.isSubmit(cluster.project.id)]
+                <p style="font-style: italic; font-size: 10px;">Cluster submitted.</p>
+              [/#if]
+                [#-- Allow to track if the cluster is submitted --]
+                [#assign isSubmit = action.isSubmit(cluster.project.id)?string('true', 'false') /]
+                <p style="display:none" class="clusterSubmitted" isSubmit="${isSubmit}" name="${(list[index].project.acronym)!''}"></p>
               </div>
               <br>
             </div>
             <div class="col-md-2 participantsNumbers">
               <div class="text-area-container">
-              [@customForm.input name="${customName}[${index}].participants" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+              [@customForm.input name="${customName}[${index}].participants"  placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
               </div>
               <br>
             </div>
             <div class="col-md-2 femaleNumbers">
               <div class="text-area-container">
-                [@customForm.input name="${customName}[${index}].females" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+                [@customForm.input name="${customName}[${index}].females" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
               </div>
               <br>
             </div>
             <div class="col-md-2 africanNumbers">
               <div class="text-area-container">
-                [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+                [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
               </div>
               <br>
             </div>
             <div class="col-md-2 youthNumbers">
               <div class="text-area-container">
-                [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+                [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
               </div>
               <br>
             </div>
@@ -519,7 +525,7 @@
     </div>
   </div>
       <div style="display: flex;" class="alertParticipant">
-        <div class="noteAlert" style="font-weight: 700;color: #ffc800;">Alert:&nbsp;</div>
+        <div class="noteAlert" style="font-weight: 700;color: #ECB00C;">Alert:&nbsp;</div>
         <div class="textNote">  The remaining fields must be 0, please distribute the trainees in the shared clusters</div>
       </div>
       <div style="display: none" class="doneParticipant">
