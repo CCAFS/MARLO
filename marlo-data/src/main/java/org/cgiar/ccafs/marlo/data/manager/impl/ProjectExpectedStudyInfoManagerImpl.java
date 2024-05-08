@@ -66,6 +66,17 @@ public class ProjectExpectedStudyInfoManagerImpl implements ProjectExpectedStudy
 
   }
 
+  /**
+   * This method gets a list of projectExpectedStudyInfo that are active, by project_expected_study_id
+   * 
+   * @return a list from ProjectExpectedStudyInfo null if no exist records
+   */
+  @Override
+  public List<ProjectExpectedStudyInfo> findAllByExpectedStudy(Long expectedStudy) {
+
+    return projectExpectedStudyInfoDAO.findAllByExpectedStudy(expectedStudy);
+
+  }
 
   @Override
   public ProjectExpectedStudyInfo getProjectExpectedStudyInfoById(long projectExpectedStudyInfoID) {

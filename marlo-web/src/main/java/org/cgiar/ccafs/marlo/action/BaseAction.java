@@ -3870,36 +3870,46 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<Integer> getExpectedStudiesYears(Long expectedStudy) {
-    List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList =
-      this.projectExpectedStudyInfoManager.findAll().stream()
+    List<Integer> allYears = new ArrayList<>();
+    try {
+
+      List<ProjectExpectedStudyInfo> projectExpectedStudyInfoListTemp =
+        projectExpectedStudyInfoManager.findAllByExpectedStudy(expectedStudy);
+      // cgamboa 08/05/2024 this.projectExpectedStudyInfoManager.findAll() is changed by
+      // projectExpectedStudyInfoListTemp
+      List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList = projectExpectedStudyInfoListTemp.stream()
         .filter(c -> c != null && c.getProjectExpectedStudy() != null
           && c.getProjectExpectedStudy().getId().longValue() == expectedStudy.longValue()
           && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
           && c.getPhase().getYear() == (this.getActualPhase().getYear()))
         .collect(Collectors.toList());
-    List<Integer> allYears = new ArrayList<>();
-    if (projectExpectedStudyInfoList.size() > 0) {
-      if (projectExpectedStudyInfoList.get(0).getYear() != this.getActualPhase().getYear()) {
-        allYears.add(projectExpectedStudyInfoList.get(0).getYear());
-      } else {
-        List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList2 =
-          this.projectExpectedStudyInfoManager.findAll().stream()
-            .filter(c -> c != null && c.getProjectExpectedStudy() != null
-              && c.getProjectExpectedStudy().getId().longValue() == expectedStudy.longValue()
-              && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
-              && c.getPhase().getYear() < (this.getActualPhase().getYear()))
-            .collect(Collectors.toList());
-        if (projectExpectedStudyInfoList2.size() > 0) {
-          allYears.add(projectExpectedStudyInfoList2.get(0).getYear());
+
+
+      if (projectExpectedStudyInfoList.size() > 0) {
+        if (projectExpectedStudyInfoList.get(0).getYear() != this.getActualPhase().getYear()) {
+          allYears.add(projectExpectedStudyInfoList.get(0).getYear());
+        } else {
+          List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList2 =
+            // this.projectExpectedStudyInfoManager.findAll()
+            projectExpectedStudyInfoListTemp.stream()
+              .filter(c -> c != null && c.getProjectExpectedStudy() != null
+                && c.getProjectExpectedStudy().getId().longValue() == expectedStudy.longValue()
+                && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
+                && c.getPhase().getYear() < (this.getActualPhase().getYear()))
+              .collect(Collectors.toList());
+          if (projectExpectedStudyInfoList2.size() > 0) {
+            allYears.add(projectExpectedStudyInfoList2.get(0).getYear());
+          }
         }
+
       }
-
+      // Avoid to duplicate the actual year phase in allYears List
+      if (allYears != null && !allYears.contains(this.getActualPhase().getYear())) {
+        allYears.add(this.getActualPhase().getYear());
+      }
+    } catch (Exception e) {
+      LOG.error(" unable to get years" + e.getMessage());
     }
-    // Avoid to duplicate the actual year phase in allYears List
-    if (allYears != null && !allYears.contains(this.getActualPhase().getYear())) {
-      allYears.add(this.getActualPhase().getYear());
-    }
-
     return allYears;
   }
 
