@@ -1116,6 +1116,44 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
+   * @author KTANAKA
+   * @param deliverableID
+   * @param phaseID
+   * @return boolean - true if the deliverable with shared clusters with trainees information can be deleted
+   */
+  public boolean canDeleteDeliverableWithSharedTrainees(long deliverableID, long phaseID) {
+    try {
+      // Check if the shared cluster trainees specificity is active
+      if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+        // Check if there is no submission in progress phase
+        if (!this.isProgressActive()) {
+          // Retrieve deliverable cluster participants
+          List<DeliverableClusterParticipant> deliverableClusterParticipants = deliverableClusterParticipantManager
+            .getDeliverableClusterParticipantByDeliverableAndPhase(deliverableID, phaseID);
+
+          // Check if the list is not empty and process each participant
+          if (deliverableClusterParticipants != null && !deliverableClusterParticipants.isEmpty()) {
+            for (DeliverableClusterParticipant deliverableShared : deliverableClusterParticipants) {
+              Project project = deliverableShared.getProject();
+              Deliverable deliverable = deliverableShared.getDeliverable();
+              // Ensure necessary objects are not null and IDs are different, then check submission status
+              if (this.isSubmit(project.getId())) {
+                // Return false if submission is found
+                return false;
+              }
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      // Log error if an exception occurs
+      LOG.error("Error getting shared clusters statuses", e);
+    }
+    // Return false if no submission is found or an error occurred
+    return true;
+  }
+
+  /**
    * Make the validation for CRP Admin, PMU or Finance Manager role to
    * determinate if a Funding source can be duplicated.
    *
@@ -1329,7 +1367,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return response;
   }
-
 
   /**
    * Validate the user permission to replay or react to a comment
@@ -2913,7 +2950,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public List<Deliverable> getDeliverableRelationsProject(Long id, String className, Long projectID) {
     Class<?> clazz;
     List<Deliverable> deliverables = null;
@@ -3457,7 +3493,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<HistoryDifference> getDifferences() {
     return this.differences;
   }
-
 
   /**
    * Get information for duplicated deliverables - Validation by DOI, Handle and Dissemination URL
@@ -6109,48 +6144,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
 
-    return false;
-  }
-
-  /**
-   * @author KTANAKA
-   * @param deliverableID
-   * @param phaseID
-   * @return boolean - true if the deliverable has submitted shared clusters with trainees information
-   */
-  public boolean hasSubmittedParticipantSharedCluster(long deliverableID, long phaseID) {
-
-
-    try {
-      // Check if the shared cluster trainees specificity is active
-      if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
-        // Check if there is no submission in progress phase
-        if (!this.isProgressActive()) {
-          // Retrieve deliverable cluster participants
-          List<DeliverableClusterParticipant> deliverableClusterParticipants = deliverableClusterParticipantManager
-            .getDeliverableClusterParticipantByDeliverableAndPhase(deliverableID, phaseID);
-
-          // Check if the list is not empty and process each participant
-          if (deliverableClusterParticipants != null && !deliverableClusterParticipants.isEmpty()) {
-            for (DeliverableClusterParticipant deliverableShared : deliverableClusterParticipants) {
-              Project project = deliverableShared.getProject();
-              Deliverable deliverable = deliverableShared.getDeliverable();
-              // Ensure necessary objects are not null and IDs are different, then check submission status
-              if (deliverableShared != null && project != null && project.getId() != null && deliverable != null
-                && deliverable.getProject() != null && project.getId() != deliverable.getProject().getId()
-                && this.isSubmit(project.getId())) {
-                // Return true if submission is found
-                return true;
-              }
-            }
-          }
-        }
-      }
-    } catch (Exception e) {
-      // Log error if an exception occurs
-      LOG.error("Error getting shared clusters statuses", e);
-    }
-    // Return false if no submission is found or an error occurred
     return false;
   }
 
