@@ -456,6 +456,24 @@ function getIntersectedActivities() {
 
 }
 
+function createDivTimes(totalWeeks, divClass) {
+  let arrayDays = [];
+  for (let i = 0; i < totalWeeks.length; i++) {
+    let newDiv = document.createElement('div');
+    newDiv.id = `time_${i}`
+    newDiv.className = divClass;
+    newDiv.style.width = setWidth();
+    newDiv.innerHTML = `
+    <div class="${divClass}_information">
+      	${convertDateToText(totalWeeks[i].firstDate)} 
+    </div>
+    
+    `;
+    arrayDays.push(newDiv);
+  }
+  return arrayDays;
+}
+
 /**
  * Creates a div element representing an activity card.
  * @param {Object} activity - The activity object {stardate,endDate,description}.
