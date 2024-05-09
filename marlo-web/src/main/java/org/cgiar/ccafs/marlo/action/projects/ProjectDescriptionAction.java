@@ -445,6 +445,8 @@ public class ProjectDescriptionAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
+    LOG.info("ProjectDescriptionAction linea 448");
+
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());

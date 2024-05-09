@@ -478,6 +478,8 @@ public class ProjectListAction extends BaseAction {
     List<GlobalUnitProject> globalUnitProjects = new ArrayList<>(loggedCrp.getGlobalUnitProjects().stream()
       .filter(gp -> gp.isActive() && !gp.isOrigin()).collect(Collectors.toList()));
 
+    logger.info(" linea 481 " + globalUnitProjects.size());
+
     for (GlobalUnitProject globalUnitProject : globalUnitProjects) {
 
       Project project = projectManager.getProjectById(globalUnitProject.getProject().getId());
@@ -511,6 +513,7 @@ public class ProjectListAction extends BaseAction {
    * @param list the list of project
    */
   public void loadFlagshipgsAndRegions(List<Project> list) {
+    logger.info(" linea 514 " + list.size());
     for (Project project : list) {
 
       try {
@@ -539,6 +542,7 @@ public class ProjectListAction extends BaseAction {
   }
 
   public void loadFlagshipgsAndRegionsCurrentPhase(List<Project> list) {
+    logger.info(" linea 543 " + list.size());
     for (Project project : list) {
 
       List<CrpProgram> programs = projectManager.getPrograms(project.getId(),
@@ -554,6 +558,7 @@ public class ProjectListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+    logger.info(" ProjectListAction linea 557 this.getActualPhase().getId() " + this.getActualPhase().getId());
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
@@ -561,8 +566,9 @@ public class ProjectListAction extends BaseAction {
     if (phase != null && phase.getId() != null && phaseManager.getPhaseById(phase.getId()) != null) {
       phase = phaseManager.getPhaseById(phase.getId());
     }
-
-    if (projectManager.findAll() != null && phase != null && phase.getProjectPhases() != null) {
+    logger.info(" ProjectListAction linea 565 " + phase.getProjectPhases().size());
+    // cgamboa 09/05/2024 projectManager.findAll() is changed by projectManager.findAllQuantity()
+    if (projectManager.findAllQuantity() > 0 && phase != null && phase.getProjectPhases() != null) {
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
         myProjects = new ArrayList<>();
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
@@ -570,6 +576,7 @@ public class ProjectListAction extends BaseAction {
             myProjects.add(projectPhase.getProject());
           }
         }
+        logger.info(" ProjectListAction linea 574 ");
         allProjects = new ArrayList<>();
       } else {
         allProjects = new ArrayList<>();
@@ -578,6 +585,8 @@ public class ProjectListAction extends BaseAction {
             allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
           }
         }
+
+        logger.info(" ProjectListAction linea 584 ");
 
         myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
           .filter(p -> p.isActive()).collect(Collectors.toList());
@@ -595,6 +604,8 @@ public class ProjectListAction extends BaseAction {
         allProjects.removeAll(myProjects);
       }
 
+      logger.info(" ProjectListAction linea 602 ");
+
       for (Project project : allProjects) {
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
 
@@ -605,9 +616,12 @@ public class ProjectListAction extends BaseAction {
 
       }
 
+      logger.info(" ProjectListAction linea 614 ");
+
       this.loadFlagshipgsAndRegions(myProjects);
       this.loadFlagshipgsAndRegions(allProjects);
     }
+    logger.info(" ProjectListAction linea 612 ");
     closedProjects = new ArrayList<>();
     List<Project> completedProjects = null;
     if (this.getCrpID() != null && this.getActualPhase() != null && this.getActualPhase().getId() != null) {
@@ -699,6 +713,8 @@ public class ProjectListAction extends BaseAction {
     // closedProjects.sort((p1, p2) -> p1.getStatus().compareTo(p2.getStatus()));
     String params[] = {loggedCrp.getAcronym() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_LIST_BASE_PERMISSION, params));
+
+    logger.info(" ProjectListAction linea 704 ");
   }
 
   @Override
