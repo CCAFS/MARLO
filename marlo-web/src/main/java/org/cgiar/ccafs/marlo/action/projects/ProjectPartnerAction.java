@@ -784,7 +784,7 @@ public class ProjectPartnerAction extends BaseAction {
     if (role.getId() == pcRole.getId().longValue()) {
       ProjectPartnerPerson projectLeader = project.getLeaderPersonDB(this.getActualPhase());
       if (projectLeader != null && projectLeader.getUser() != null && projectLeader.getUser().getEmail() != null) {
-        ccEmail +=", " +  projectLeader.getUser().getEmail();
+        ccEmail += ", " + projectLeader.getUser().getEmail();
       }
     }
 
@@ -900,7 +900,7 @@ public class ProjectPartnerAction extends BaseAction {
     if (role.getId() == pcRole.getId().longValue()) {
       ProjectPartnerPerson projectLeader = project.getLeaderPersonDB(this.getActualPhase());
       if (projectLeader != null && projectLeader.getUser() != null && projectLeader.getUser().getEmail() != null) {
-        ccEmail +=", " +  projectLeader.getUser().getEmail();
+        ccEmail += ", " + projectLeader.getUser().getEmail();
       }
     }
 
@@ -2308,15 +2308,6 @@ public class ProjectPartnerAction extends BaseAction {
 
       }
     }
-  }
-
-
-  private boolean validateEmailNotification() {
-    GlobalUnit globalUnit = loggedCrp;
-    Boolean crpNotification = globalUnit.getCustomParameters().stream()
-      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
-      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
-    return crpNotification;
   }
 
 }

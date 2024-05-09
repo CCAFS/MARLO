@@ -8804,6 +8804,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+  public boolean validateEmailNotification() {
+    GlobalUnit globalUnit = this.getCurrentCrp();
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
+  }
+
   public boolean validatePolicy(long policyID) {
     SectionStatus sectionStatus =
       this.sectionStatusManager.getSectionStatusByProjectPolicy(policyID, this.getCurrentCycle(),

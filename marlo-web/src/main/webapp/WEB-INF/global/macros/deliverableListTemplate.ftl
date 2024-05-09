@@ -178,7 +178,7 @@
                 </a>
               [#else]
                 <div class="icon-container remove-disabled">
-                  <span class="trash-icon glyphicon glyphicon-trash" title="This deliverable cannot be deleted [#if canDeleteDeliverableWithSharedTrainees]due it has trainees information from submitted shared clusters[/#if]"></span>
+                  <span class="trash-icon glyphicon glyphicon-trash" title="This deliverable cannot be deleted [#if !canDeleteDeliverableWithSharedTrainees]due it has trainees information from submitted shared clusters[/#if]"></span>
                 <div>
               [/#if]
               </td>
