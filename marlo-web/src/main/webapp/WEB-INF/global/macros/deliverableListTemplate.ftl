@@ -63,6 +63,8 @@
             [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
             [#-- Owner --]
             [#local isOwner = (deliverable.project.id == projectID)!false]
+            [#-- can delete deliverable with shared trainees --]
+            [#local canDeleteDeliverableWithSharedTrainees = (action.canDeleteDeliverableWithSharedTrainees(deliverable.id, actualPhase.id))!false]
 
             [#if deliverable.deliverableInfo.title?has_content]
               <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
@@ -169,13 +171,15 @@
               [/#if]
             </td>
             <td class="text-center">
-              [#-- Remove icon --]
-              [#if isDeliverableNew && isOwner]
+              [#-- Remove icon --]              
+              [#if isDeliverableNew && isOwner && canDeleteDeliverableWithSharedTrainees]             
                 <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}&phaseID=${(actualPhase.id)!}" title="Remove deliverable">
                   <div class="icon-container"><span class="trash-icon glyphicon glyphicon-trash"></span><div>
                 </a>
               [#else]
-                 <div class="icon-container remove-disabled"><span class="trash-icon glyphicon glyphicon-trash" title="This deliverable cannot be deleted"></span><div>
+                <div class="icon-container remove-disabled">
+                  <span class="trash-icon glyphicon glyphicon-trash" title="This deliverable cannot be deleted [#if canDeleteDeliverableWithSharedTrainees]due it has trainees information from submitted shared clusters[/#if]"></span>
+                <div>
               [/#if]
               </td>
           [/#if]

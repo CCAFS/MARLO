@@ -74,7 +74,13 @@ function init() {
     justificationByStatus(this.value);
   });
 
-  validateDeliverableStatus();
+  validatePermissionsToChangeStatus()
+    .then(function(canChangeStatus) {
+      validateDeliverableStatus(canChangeStatus);
+    })
+    .catch(function(error) {
+      console.error('Error checking permissions:', error);
+    });
 
 
   $('#doi-bridge').keydown(checkDOI);
@@ -277,6 +283,26 @@ function init() {
   deliverablePartnersModule.init();
   feedbackAutoImplementation();
   justificationByStatus($statuses.val())
+}
+
+function validatePermissionsToChangeStatus() {
+  return new Promise(function(resolve, reject) {
+    // Ajax
+    $.ajax({
+      url: baseURL + '/canDeleteDeliverableWithSharedTrainees.do',
+      data: {
+        deliverableId: $('input[name=deliverableID]').val(),
+        phaseID: phaseID
+      },   
+      success: function(data) {
+        var canChangeStatus = data.canDelete.response;
+        resolve(canChangeStatus);
+      },
+      error: function(xhr, status, error) {
+        reject(error);
+      }
+    });
+  });
 }
 
 function activeByNoDOIProvidedCheckbox() {
@@ -596,7 +622,7 @@ function showNewExpectedComponent(state) {
 
 }
 
-function validateDeliverableStatus() {
+function validateDeliverableStatus(canChangeStatus) {
   // New Expected year should be greater than current reporting cycle year
   if (reportingActive) {
     if (isDeliverableNew) {
@@ -610,6 +636,18 @@ function validateDeliverableStatus() {
 
     $('#deliverableYear .overlay').show();
     $statuses.trigger("change");
+  }
+  
+  // Validation when the deliverable has shared submitted clusters related with trainees information
+  if(canChangeStatus === false){
+    var isAdmin = document.getElementById("adminRole").value;    
+    if(isAdmin){
+       $statuses.find('option[value="4"]').prop("disabled", false); // Enable Extended
+       $statuses.find('option[value="5"]').prop("disabled", false); // Enable Cancelled
+    }else{
+       $statuses.find('option[value="4"]').prop("disabled", true); // Disable Extended
+       $statuses.find('option[value="5"]').prop("disabled", true); // Disable Cancelled
+    }
   }
 }
 
