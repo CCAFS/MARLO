@@ -1,0 +1,20 @@
+CREATE TABLE `disaggregated_target_crp_milestone` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `disaggregated_target_crp_program_outcome_id` bigint(20) NOT NULL,
+  `crp_milestone_id` bigint(20) NOT NULL,
+  `target_value` decimal(10,2) DEFAULT NULL,
+  `id_phase` bigint(20) DEFAULT NULL,
+  `modified_by` bigint(20) DEFAULT NULL,
+  `modification_justification` text,
+  `created_by` bigint(20) DEFAULT NULL,
+  `active_since` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `disaggregated_target_crp_milestone_outcome_FK` (`disaggregated_target_crp_program_outcome_id`),
+  KEY `disaggregated_target_crp_milestone_crp_milestones_FK` (`crp_milestone_id`),
+  KEY `disaggregated_target_crp_milestone_modified_by` (`modified_by`),
+  CONSTRAINT `disaggregated_target_crp_milestone_crp_milestones_FK` FOREIGN KEY (`crp_milestone_id`) REFERENCES `crp_milestones` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `disaggregated_target_crp_milestone_outcome_FK` FOREIGN KEY (`disaggregated_target_crp_program_outcome_id`) REFERENCES `disaggregated_target_crp_program_outcome` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `disaggregated_target_crp_milestone_ibfk` FOREIGN KEY (`modified_by`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `disaggregated_target_crp_milestone_phase` FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
