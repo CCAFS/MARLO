@@ -558,10 +558,6 @@ function validateCurrentDate() {
 
 function justificationByStatus(statusId) {
 
-  const $expectedYearBlock = $('#deliverableYear');
-  const $expectedYearSelect = $expectedYearBlock.find('select');
-  const expectedYear = $expectedYearSelect.val();
-
   var $newExpectedYearBlock = $('#newExpectedYear');
   var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
   var newExpectedYear = $newExpectedYearSelect.val();
@@ -585,6 +581,8 @@ function justificationByStatus(statusId) {
     if (isStatusOnGoing(statusId)) {
       console.log("if");
       showNewExpectedComponent(false);
+      $newExpectedYearSelect.val("-1").trigger("change.select2");
+      $statusDescription.find('textarea').val("");
     } else {
       console.log("else");
       if (statusId == 4) {
@@ -606,7 +604,7 @@ function justificationByStatus(statusId) {
 
 }
 
-//Display the overlay thaty block the possibility to change the expected year
+//Display the overlay that block the possibility to change the expected year
 function showNewExpectedComponent(state) {
   var $newExpectedYearBlock = $('#newExpectedYear');
   var $yearOverlay = $('#deliverableYear .overlay');
@@ -627,10 +625,6 @@ function validateDeliverableStatus(canChangeStatus) {
   const $expectedYearBlock = $('#deliverableYear');
   const $expectedYearSelect = $expectedYearBlock.find('select');
   const expectedYear = $expectedYearSelect.val();
-
-  var $newExpectedYearBlock = $('#newExpectedYear');
-  var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
-  var newExpectedYear = $newExpectedYearSelect.val();
 
   var isAdmin = document.getElementById("adminRole").value;   
 
