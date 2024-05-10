@@ -562,9 +562,7 @@ function justificationByStatus(statusId) {
   var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
   var newExpectedYear = $newExpectedYearSelect.val();
 
-  var hasExpectedYear =
-    ((newExpectedYear != "") && newExpectedYear != "-1") && (typeof newExpectedYear !== 'undefined');
-  var isCompletedWithoutExpectedYear = ((!reportingActive) && isStatusComplete(statusId) && hasExpectedYear);
+  var hasExpectedYear = ((newExpectedYear != "") && newExpectedYear != "-1") && (typeof newExpectedYear !== 'undefined');
 
   // Validate the justification
   if (isStatusCancelled(statusId) || isStatusExtended(statusId)) {
@@ -573,6 +571,7 @@ function justificationByStatus(statusId) {
   } else {
     $statusDescription.slideUp(400);
   }
+
   // Validate the new extended year
   if (isDeliverableNew) {
     showNewExpectedComponent(isStatusExtended(statusId) && upKeepActive);
@@ -585,11 +584,10 @@ function justificationByStatus(statusId) {
       $statusDescription.find('textarea').val("");
     } else {
       console.log("else");
-      if (statusId == 4) {
+      if (isStatusExtended(statusId)) {
         showNewExpectedComponent(true);
         $('.expectedDisabled').hide("slow");
-      } else if (statusId == 2 || statusId == 3 || statusId == 5 || statusId == 6) {
-
+      } else if ( isStatusComplete(statusId) || isStatusComplete(statusId) || statusId == 6) {
         if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {
           showNewExpectedComponent(true);
         } else {
@@ -601,7 +599,6 @@ function justificationByStatus(statusId) {
       }
     }
   }
-
 }
 
 //Display the overlay that block the possibility to change the expected year
