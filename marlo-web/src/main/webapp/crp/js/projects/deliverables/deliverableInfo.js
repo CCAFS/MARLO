@@ -557,13 +557,12 @@ function validateCurrentDate() {
 }
 
 function justificationByStatus(statusId) {
-  var $yearOverlay = $('#deliverableYear .overlay');
+
   var $newExpectedYearBlock = $('#newExpectedYear');
   var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
   var newExpectedYear = $newExpectedYearSelect.val();
-  var hasExpectedYear =
-    ((newExpectedYear != "") && newExpectedYear != "-1") && (typeof newExpectedYear !== 'undefined');
-  var isCompletedWithoutExpectedYear = ((!reportingActive) && isStatusComplete(statusId) && hasExpectedYear);
+
+  var hasExpectedYear = ((newExpectedYear != "") && newExpectedYear != "-1") && (typeof newExpectedYear !== 'undefined');
 
   // Validate the justification
   if (isStatusCancelled(statusId) || isStatusExtended(statusId)) {
@@ -573,40 +572,36 @@ function justificationByStatus(statusId) {
     $statusDescription.slideUp(400);
   }
 
-  if (true) {
-    // Validate the new extended year
-    if (isDeliverableNew) {
-      showNewExpectedComponent(isStatusExtended(statusId) && upKeepActive);
+  // Validate the new extended year
+  if (isDeliverableNew) {
+    showNewExpectedComponent(isStatusExtended(statusId) && upKeepActive);
+  } else {
+    console.log("hasExpectedYear", hasExpectedYear);
+    if (isStatusOnGoing(statusId)) {
+      console.log("if");
+      showNewExpectedComponent(false);
+      $newExpectedYearSelect.val("-1").trigger("change.select2");
+      $statusDescription.find('textarea').val("");
     } else {
-      console.log("hasExpectedYear", hasExpectedYear);
-      if (isStatusOnGoing(statusId)) {
-        console.log("if");
-        showNewExpectedComponent(false);
-      } else {
-        console.log("else");
-        if (statusId == 4) {
+      console.log("else");
+      if (isStatusExtended(statusId)) {
+        showNewExpectedComponent(true);
+        $('.expectedDisabled').hide("slow");
+      } else if ( isStatusComplete(statusId) || isStatusComplete(statusId) || statusId == 6) {
+        if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {
           showNewExpectedComponent(true);
-          $('.expectedDisabled').hide("slow");
-        } else if (statusId == 2 || statusId == 3 || statusId == 5 || statusId == 6) {
-
-          if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {
-            showNewExpectedComponent(true);
-          } else {
-            showNewExpectedComponent(false);
-          }
-          $('.expectedDisabled').show("slow");
         } else {
           showNewExpectedComponent(false);
         }
+        $('.expectedDisabled').show("slow");
+      } else {
+        showNewExpectedComponent(false);
       }
     }
-
-  } else {
-
   }
-
 }
 
+//Display the overlay that block the possibility to change the expected year
 function showNewExpectedComponent(state) {
   var $newExpectedYearBlock = $('#newExpectedYear');
   var $yearOverlay = $('#deliverableYear .overlay');
@@ -623,6 +618,13 @@ function showNewExpectedComponent(state) {
 }
 
 function validateDeliverableStatus(canChangeStatus) {
+
+  const $expectedYearBlock = $('#deliverableYear');
+  const $expectedYearSelect = $expectedYearBlock.find('select');
+  const expectedYear = $expectedYearSelect.val();
+
+  var isAdmin = document.getElementById("adminRole").value;   
+
   // New Expected year should be greater than current reporting cycle year
   if (reportingActive) {
     if (isDeliverableNew) {
@@ -640,7 +642,7 @@ function validateDeliverableStatus(canChangeStatus) {
   
   // Validation when the deliverable has shared submitted clusters related with trainees information
   if(canChangeStatus === false){
-    var isAdmin = document.getElementById("adminRole").value;    
+     
     if(isAdmin){
        $statuses.find('option[value="4"]').prop("disabled", false); // Enable Extended
        $statuses.find('option[value="5"]').prop("disabled", false); // Enable Cancelled
@@ -648,6 +650,14 @@ function validateDeliverableStatus(canChangeStatus) {
        $statuses.find('option[value="4"]').prop("disabled", true); // Disable Extended
        $statuses.find('option[value="5"]').prop("disabled", true); // Disable Cancelled
     }
+  }
+
+  //console.log("newExpectedYearCondition", newExpectedYear != "-1");
+  // Validate if the current cycle year is different or equal to the year expected to active On going status
+  if((expectedYear != currentCycleYear) && (isAdmin !== true) ){
+    $statuses.find('option[value="2"]').prop("disabled", true); // Disable On-going
+  } else {
+    $statuses.find('option[value="2"]').prop("disabled", false); // Enable On-going
   }
 }
 
