@@ -39,7 +39,8 @@ public class DisaggregatedTargetsBusinessRuleMySQLDAO extends AbstractMarloDAO<D
   @Override
   public void deleteDisaggregatedTargetsBusinessRule(long disaggregatedTargetsBusinessRuleId) {
     DisaggregatedTargetsBusinessRule disaggregatedTargetsBusinessRule = this.find(disaggregatedTargetsBusinessRuleId);
-    this.deleteDisaggregatedTargetsBusinessRule(disaggregatedTargetsBusinessRuleId);
+    disaggregatedTargetsBusinessRule.setActive(false);
+    this.update(disaggregatedTargetsBusinessRule);
   }
 
   @Override

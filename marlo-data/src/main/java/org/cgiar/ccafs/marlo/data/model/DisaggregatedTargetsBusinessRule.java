@@ -19,7 +19,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import com.google.gson.annotations.Expose;
 
-public class DisaggregatedTargetsBusinessRule extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
+public class DisaggregatedTargetsBusinessRule extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -963914989396761020L;
 
