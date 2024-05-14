@@ -21,7 +21,10 @@ function initDashboard() {
   $(".timelineRefresh").hide();
   $(".timeline").show();
   setTimelinePosition();
-  getIntersectedActivities();
+  setTimeout(() => {
+    getIntersectedActivities();
+  }, 200);
+ 
 
   $('.buttonRightTimeline').on("click", moveScrollRight);
 
@@ -456,6 +459,24 @@ function getIntersectedActivities() {
 
 }
 
+function createDivTimes(totalWeeks, divClass) {
+  let arrayDays = [];
+  for (let i = 0; i < totalWeeks.length; i++) {
+    let newDiv = document.createElement('div');
+    newDiv.id = `time_${i}`
+    newDiv.className = divClass;
+    newDiv.style.width = setWidth();
+    newDiv.innerHTML = `
+    <div class="${divClass}_information">
+      	${convertDateToText(totalWeeks[i].firstDate)} 
+    </div>
+    
+    `;
+    arrayDays.push(newDiv);
+  }
+  return arrayDays;
+}
+
 /**
  * Creates a div element representing an activity card.
  * @param {Object} activity - The activity object {stardate,endDate,description}.
@@ -863,7 +884,7 @@ $('table.projectsList').dataTable({
   "bFilter": true, // This option enable the search
   "bSort": true, // this option enable the sort of contents by columns
   "bAutoWidth": false, // This option enables the auto adjust columns width
-  "iDisplayLength": 5, // Number of rows to show on the table
+  "iDisplayLength": 25, // Number of rows to show on the table
   "pagingType": "simple",
   language: {
     searchPlaceholder: "Search..."
