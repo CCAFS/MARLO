@@ -1032,24 +1032,21 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       // Getting The list
       this.statuses = this.generalStatusManager.findByTable(APConstants.PROJECT_EXPECTED_STUDIES_TABLE);
 
+      // cgamboa 17/04/2024 the query will be call once
+      List<LocElement> LocElementTemp = this.locElementManager.findAll();
 
-      this.countries = this.locElementManager.findAllToCountries();
-
-      // cgamboa 17/04/2024 the query has been optimized to get fewer records
-      // this.countries = this.locElementManager.findAll().stream().filter(c -> c.getLocElementType().getId().intValue()
-      // == 2 &&
-      // c.isActive()).collect(Collectors.toList());
+      // this.locElementManager.findAll() is changed by LocElementTemp
+      this.countries = LocElementTemp.stream()
+        .filter(c -> c.getLocElementType().getId().intValue() == 2 && c.isActive()).collect(Collectors.toList());
 
 
       this.geographicScopes = this.geographicScopeManager.findAll();
-      this.regions = this.locElementManager.findAllToRegions();
 
-      // cgamboa 17/04/2024 the query has been optimized to get fewer records
-      /*
-       * this.regions = this.locElementManager.findAll().stream()
-       * .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
-       * .collect(Collectors.toList());
-       */
+      // this.locElementManager.findAll() is changed by LocElementTemp
+      this.regions = LocElementTemp.stream()
+        .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
+        .collect(Collectors.toList());
+
 
       this.organizationTypes = this.organizationTypeManager.findAll();
       // Focus levels and Too early to tell was removed
