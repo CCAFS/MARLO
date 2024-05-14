@@ -1,0 +1,1 @@
+ALTER TABLE disaggregated_target_crp_program_outcome MODIFY COLUMN target_value decimal(10,2) NULL;
