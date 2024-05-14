@@ -436,6 +436,7 @@
   <mapping resource="xmls/SoilIndicators.hbm.xml"/>
   <mapping resource="xmls/TipParameters.hbm.xml"/>
   <mapping resource="xmls/DisaggregatedTargetsBusinessRules.hbm.xml"/>
+  <mapping resource="xmls/DisaggregatedTargetCrpProgramOutcomes.hbm.xml"/>
 
  </session-factory>
 </hibernate-configuration>
