@@ -35,8 +35,8 @@
 		<property name="targetDescription" type="string">
 			<column name="target_description" sql-type="TEXT" />
 		</property>
-		<property name="targetValue" type="string">
-			<column name="target_value" sql-type="TEXT" />
+		<property name="targetValue" type="java.math.BigDecimal">
+			<column name="target_value" precision="10" />
 		</property>
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" sql-type="TEXT" />
