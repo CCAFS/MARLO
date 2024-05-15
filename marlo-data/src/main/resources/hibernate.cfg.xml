@@ -438,6 +438,7 @@
   <mapping resource="xmls/DisaggregatedTargetsBusinessRules.hbm.xml"/>
   <mapping resource="xmls/DisaggregatedTargetCrpProgramOutcomes.hbm.xml"/>
   <mapping resource="xmls/DisaggregatedTargetCrpMilestones.hbm.xml"/>
+  <mapping resource="xmls/ProjectMilestoneDisaggregatedTargets.hbm.xml"/>
 
  </session-factory>
 </hibernate-configuration>
