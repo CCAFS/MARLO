@@ -91,11 +91,37 @@ $('.listindicators .setSelect2').select2().on('change', function() {
 });
 
   // Validate indicator removed in select2
-  $(".listindicators .removeElement").on("click", function () {
+  $(".listindicators .removeElement").on("click",async function () {
 
-    // detects when an element is removed and checks if the IPI 2.3 flag is still in the list
-    $(this).closest("li").remove();
-    searchIndicator();
+    //These is validation for the IPI 2.3 indicator is selected and is able to be removed
+    if($(this).siblings('.elementRelationID').val() === "7505"){
+
+      const inputs = document.querySelectorAll("div.form-group.row[clusteridparticipant] .participantsNumbers input");
+    
+      const values = [];
+      inputs.forEach(input => {
+        values.push(parseInt(input.value));
+      });
+      var sumData = values.reduce((a, b) => a + b, 0);
+      if (sumData > 0) { 
+        // If the flag is still in the list, the user is notified that the element is related to the IPI 2.3 indicator
+        try {
+          await alertRemoveIndicatorIPI2_3();
+        } catch (error) {
+          return;
+        }
+      } else {
+        $(this).closest("li").remove();
+        searchIndicator();
+        return
+      }
+      
+    } else {
+      // detects when an element is removed and checks if the IPI 2.3 flag is still in the list
+      $(this).closest("li").remove();
+      searchIndicator();
+      return
+    }
   });
 
   // Validate which cluster is sectioned in select2
@@ -117,10 +143,16 @@ $('.listindicators .setSelect2').select2().on('change', function() {
   initialRemaining();
   });
 
-
+  // Validate cluster removed in select2
+/*   $(".listClusters .removeElement").on("click", function () {
+    console.log("Remove Shared from Select2");
+  }); */
 
   // close modal evidences
   $('.close-modal-evidences').on('click', closeModalEvidences);
+
+  // close modal indicator
+  $('.close-modal-indicator').on('click', closeModalIndicator);
 
   initialTotals();
   initialRemaining();
@@ -276,7 +308,7 @@ if(remainingYouth == 0 && remainingAfrican == 0 && remainingFemales == 0 && rema
   $('input[name="deliverable.deliverableInfo.remainingPending"]').val('false');
 }
 else{
-  $('.remaining-container').css('color', '#FFC300');
+  $('.remaining-container').css('color', '#ECB00C');
   $('.doneParticipant').css('display', 'none');
   $('.alertParticipant').css('display', 'flex');
   $('input[name="deliverable.deliverableInfo.remainingPending"]').val('true');
@@ -416,6 +448,12 @@ function closeModalEvidences(){
   let modal = $('.modal-evidences');
   modal.hide();
 
+}
+
+function closeModalIndicator(){
+  let modal = $('.modal-indicator');
+  console.log("close modal indicator");
+  modal.hide();
 }
 
 function validateRequiredTagToCategory() {
@@ -751,7 +789,9 @@ function updateReadOnly() {
     if ($('.deliverableDisseminationUrl ').prop('readonly')) {
       getWOSInfo();
     }
-    //if not
+    $('select[name="deliverable.dissemination.disseminationChannel"]').prop("disabled",true);
+    $('select').select2();
+  //if not
   } else {
 
     $('.WOS_tag').hide("slow");
@@ -788,6 +828,8 @@ function updateReadOnly() {
         hideOrShowCheckBoxIsOtherUrl(true);
       }
     }
+    $('select[name="deliverable.dissemination.disseminationChannel"]').prop("disabled",false);
+    $('select').select2();
 
   }
 
@@ -1482,8 +1524,8 @@ function setLicense(license) {
  * Sync the deliverable in the interface and set as synced
  */
 function syncDeliverable() {
-  // Hide Sync Button & dissemination channel
-  $('#fillMetadata .checkButton, .disseminationChannelBlock').hide('slow');
+  // Hide Sync Button
+  $('#fillMetadata .checkButton').hide('slow');
   // Show UnSync & Update Button
   $('#fillMetadata .unSyncBlock').show();
   // Set hidden inputs

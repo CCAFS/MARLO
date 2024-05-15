@@ -70,6 +70,17 @@ public class FeedbackQACommentMySQLDAO extends AbstractMarloDAO<FeedbackQACommen
   }
 
   @Override
+  public List<FeedbackQAComment> findAllByPhase(long phaseId) {
+    String query = "from " + FeedbackQAComment.class.getName() + " where id_phase = " + phaseId;
+    List<FeedbackQAComment> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
   public List<FeedbackQAComment> getFeedbackQACommentsByParentId(long parentID) {
     String query = "from " + FeedbackQAComment.class.getName() + " where parent_id=" + parentID;
     List<FeedbackQAComment> list = super.findAll(query);

@@ -5,7 +5,7 @@
 [#assign customJS = [ 
   "${baseUrlMedia}/js/projects/projectContributionCrp.js?20230310", 
   "${baseUrlCdn}/global/js/fieldsValidation.js?20221031",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20231017",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20240313",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
@@ -180,14 +180,14 @@
                   [#if editable]
                   
                     [#if (action.isAFPhase(actualPhase.id))!false]
-                      [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(afYear)!2023 type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
+                      [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(projectOutcome.crpProgramOutcome.year)!afYear type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                     [#else]
                       [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                     [/#if]
                     
                   [#else]
                     [#if (action.isAFPhase(actualPhase.id))!false]
-                      <label for="">[@s.text name="projectOutcome.expectedValueAF" /]${afYear}: </label>
+                      <label for="">[@s.text name="projectOutcome.expectedValueAF" /]${(projectOutcome.crpProgramOutcome.year)!afYear}: </label>
                     [#else]
                       <label for="">[@s.text name="projectOutcome.expectedValue" /]: </label>
                     [/#if]

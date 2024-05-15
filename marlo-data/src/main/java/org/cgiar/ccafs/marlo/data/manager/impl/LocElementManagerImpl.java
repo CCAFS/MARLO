@@ -29,62 +29,77 @@ import javax.inject.Named;
 @Named
 public class LocElementManagerImpl implements LocElementManager {
 
-	private LocElementDAO locElementDAO;
-	// Managers
+  private LocElementDAO locElementDAO;
+  // Managers
 
-	@Inject
-	public LocElementManagerImpl(LocElementDAO locElementDAO) {
-		this.locElementDAO = locElementDAO;
+  @Inject
+  public LocElementManagerImpl(LocElementDAO locElementDAO) {
+    this.locElementDAO = locElementDAO;
 
-	}
+  }
 
-	@Override
-	public void deleteLocElement(long locElementId) {
+  @Override
+  public void deleteLocElement(long locElementId) {
 
-		this.locElementDAO.deleteLocElement(locElementId);
-	}
+    this.locElementDAO.deleteLocElement(locElementId);
+  }
 
-	@Override
-	public boolean existLocElement(long locElementID) {
+  @Override
+  public boolean existLocElement(long locElementID) {
 
-		return this.locElementDAO.existLocElement(locElementID);
-	}
+    return this.locElementDAO.existLocElement(locElementID);
+  }
 
-	@Override
-	public List<LocElement> findAll() {
+  @Override
+  public List<LocElement> findAll() {
 
-		return this.locElementDAO.findAll();
+    return this.locElementDAO.findAll();
 
-	}
+  }
 
-	@Override
-	public List<LocElement> findLocElementByParent(long parentId) {
 
-		return this.locElementDAO.findLocElementByParent(parentId);
-	}
+  @Override
+  public List<LocElement> findAllToCountries() {
 
-	@Override
-	public LocElement getLocElementById(long locElementID) {
+    return this.locElementDAO.findAllToCountries();
 
-		return this.locElementDAO.find(locElementID);
-	}
+  }
 
-	@Override
-	public LocElement getLocElementByISOCode(String ISOCode) {
+  @Override
+  public List<LocElement> findAllToRegions() {
 
-		return this.locElementDAO.findISOCode(ISOCode);
-	}
+    return this.locElementDAO.findAllToRegions();
 
-	@Override
-	public LocElement getLocElementByNumericISOCode(Long ISOCode) {
+  }
 
-		return this.locElementDAO.findNumericISOCode(ISOCode);
-	}
+  @Override
+  public List<LocElement> findLocElementByParent(long parentId) {
 
-	@Override
-	public LocElement saveLocElement(LocElement locElement) {
+    return this.locElementDAO.findLocElementByParent(parentId);
+  }
 
-		return this.locElementDAO.save(locElement);
-	}
+  @Override
+  public LocElement getLocElementById(long locElementID) {
+
+    return this.locElementDAO.find(locElementID);
+  }
+
+  @Override
+  public LocElement getLocElementByISOCode(String ISOCode) {
+
+    return this.locElementDAO.findISOCode(ISOCode);
+  }
+
+  @Override
+  public LocElement getLocElementByNumericISOCode(Long ISOCode) {
+
+    return this.locElementDAO.findNumericISOCode(ISOCode);
+  }
+
+  @Override
+  public LocElement saveLocElement(LocElement locElement) {
+
+    return this.locElementDAO.save(locElement);
+  }
 
 }

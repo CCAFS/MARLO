@@ -211,6 +211,8 @@ div#impactGraphic-fullscreen {
     height: 100%;
 }
 
+  /*************** Timeline ********************/
+
 span.leftControl {
     left: 5px;
 }
@@ -241,12 +243,12 @@ span.timelineControl:hover {
   }
   
   .timeline{
+		position: static;
     margin: 30px 0;
     display: flex;
     justify-content: center;
     -webkit-box-shadow: 0px 0px 10px rgb(0 0 0 / 15%);
     border-radius: 5px;
-    height: 297px;
   }
 
   .porcentTimeLine {
@@ -273,7 +275,7 @@ span.timelineControl:hover {
     position: relative;
     scroll-behavior: smooth;
     overflow-x: scroll;
-    width: 100%;
+    width: 85%;
     margin-left: auto;
     margin-right: auto;
     margin: 0 auto;
@@ -292,7 +294,7 @@ span.timelineControl:hover {
   }
   
   .containerTimeline {
-    width: 90%;
+    width: 100%;
     position: relative;
   }
   
@@ -336,13 +338,13 @@ span.timelineControl:hover {
   
   .sideButtonTimeline {
     background:rgba(133, 133, 133, 0.5);
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     position: absolute;
-    top: 50%;
+    top: 12%;
     transform: translateY(-50%);
-    font-size: 27px;
+    font-size: 20px;
     font-weight: bold;
     font-family: monospace;
     text-align: center;
@@ -350,11 +352,11 @@ span.timelineControl:hover {
   }
   
   .buttonLeftTimeline {
-    left: -45px;
+    left: 39%;
   }
   
   .buttonRightTimeline {
-    right: -45px;
+    right: 39%;
   }
   
   .timelineBackSuccess {
@@ -395,67 +397,6 @@ span.timelineControl:hover {
     margin-top: 7px;
   }
 
-  @media (max-width:750px){
-
-    .buttonLeftTimeline {
-      left: -10px;
-    }
-
-    .buttonRightTimeline {
-      right: -10px;
-    }
-
-    .timelineAlert {
-      top: 325px !important;
-    }
-
-    .timelineAlertText {
-      font-size: 7px;
-    }
-
-    .infTimelineTimeline {
-      min-width: 180px;
-    }
-
-    .titleTimeline {
-      height: 142px;
-      font-size: 10px;
-    }
-
-    .timeline {
-      height: 243px;
-    }
-
-    .dateTimeline {
-      margin-right: -130px;
-      margin-top: -27px;
-      font-size: 13px;
-    }
-
-    
-    .timeline-line {
-      width: 180px;
-      margin-top: -48px;
-    }
-
-    .timeline-pointTimeline {      
-      bottom: 32px;
-    }
-
-    .sideButtonTimeline {      
-      width: 30px;
-      height: 30px;
-      font-size: 22px;
-      top: 40%;
-    }
-
-    .porcentTimeLine {      
-      margin-top: -48px;
-      max-width: 143px;
-  }
-    
-  }
-
   .timelineRefresh{
     margin: 30px 0;
     display: flex;
@@ -471,7 +412,298 @@ span.timelineControl:hover {
     height: 50px;
     align-self: center;
   }
+  
+  #timelineContainer {
+	  position: relative;
+	  overflow-x: scroll;
+	  overflow-y: visible;
+	  height: 32vh;
+	  width: 95%;
+	  margin: 0 auto;
+	}
 
+  #timelineContainer::-webkit-scrollbar {
+    display: block;
+    height: 0;            
+    width: 0;      
+    padding-left: 6px;         
+  }
+
+  #timelineContainer::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  #timelineContainer::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    background-color: #2c3e50;
+  }
+
+  #timelineContainer::-webkit-scrollbar:vertical{
+    width: 9px;
+  }
+
+  #timelineContainer::-webkit-scrollbar-track-piece:end {
+    background: transparent;
+    margin-bottom: 20px; 
+}
+
+#timelineContainer::-webkit-scrollbar-track-piece:start {
+    background: transparent;
+    margin-top: 20px;
+}
+	
+	#timelineDescription{
+		display: flex;
+    padding: 18px 30px 18px 30px;
+    width: 100%;
+    align-items: end;
+	}
+	
+	#timelineDescription_title{
+    font-size: 2.0em;
+    color: #333;
+    width: 100%;
+    text-align: center;
+	}
+	
+	#timelineDescription_range{
+		font-size: 1.5rem;
+		
+	}
+
+	#timeline_times {
+	  display: flex;
+	  width: max-content;
+	  padding: 5px 0;
+	  position: absolute;
+	  height: 100%;
+	}
+	
+	#timeline_activities {
+		position: relative;
+		font-size: 13.5px;
+	}
+	
+	@media only screen and (min-width:1545px){
+		#timeline_activities {
+			font-size: 19.5px;
+		}
+		
+		#timelineContainer{
+			height: 26vh;
+		}
+	}
+	
+	@media only screen and (min-width:2560px){
+		#timeline_activities {
+			font-size: 28px;
+		}
+	}
+	
+	#timeline_today {
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  width: 0.25rem;
+	  height: 80%;
+    border: 2px dashed red;
+    border-width: 0.5px 1.5px;
+	}
+	
+	.timebox {
+	  height: 80%;
+	  position: relative;
+    text-align: center;
+    border-right: 1px dashed #CCCCCC;
+		border-left: 1px dashed #CCCCCC;
+	}
+
+  .timebox_information {
+    position: absolute;
+    top: -3px;
+    left: 6px;  
+  }
+	
+	.timeNumber{
+		margin: 1.5px;
+	}
+	
+	.activityCard {
+		position: relative;
+    top: 1.5em;
+    transition: all 0.25s ease-out;
+	}
+	
+	.activityCard_container{
+		position: absolute;
+		display: flex;
+		padding: 0.5rem;
+		flex-direction: column;
+		gap: 0.5rem;
+		flex-shrink: 0;
+		border-radius: 0.75rem;
+		background: #E8F4FF;
+		margin-bottom: 1rem;
+    z-index: 4;
+	}
+	
+	.activityCard_content{
+		display: inline-flex;
+		flex-direction: column;
+		gap: 0.25rem;
+    left: 0;
+    overflow: hidden;
+    padding: 4px 6px;
+    position: sticky;
+    max-width: max-content;
+    z-index: 8;
+	}
+	
+	.activityCard_description {
+		overflow: hidden;
+		color: #000;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: 1.4rem;
+		font-style: normal;
+		font-weight: 700;
+		margin: 0;
+		padding: 0;
+	}
+	
+	.activityCard_details{
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		max-width: max-content;
+		gap: 2rem;
+	}
+	
+	.activityCard_details div{
+		display: flex;
+    align-items: center;
+    gap: 0 0.5rem;
+    max-width: 33.3%;
+    flex-wrap: wrap;
+	}
+
+  .activityCard_details div b{
+    font-size: 1rem;
+    color: #000;
+    line-height: 1.2em;
+  }
+	
+	.activityCard_details p{
+		font-size: 1rem;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 0.75rem;
+		margin: 0;
+		color: #000;
+	}
+
+  .activityCard_details--1{
+    display: flex;
+    max-width: max-content;
+    gap: 0.5rem;
+    flex-direction: column;
+    z-index: 4;
+  }
+
+  .activityCard_details--1 div{
+		display: flex;
+    align-items: center;
+    gap: 0 0.5rem;
+    flex-wrap: wrap;
+	}
+
+  .activityCard_viewMore p{
+    font-size: 10px;
+    color: #000;
+    cursor: pointer;
+    margin-top: 3px;
+    margin-bottom: 0;
+  }
+
+  .activityCard_details--1 div b{
+    font-size: 1rem;
+    color: #000;
+    line-height: 1.2em;
+  }
+	
+	.activityCard_details--1 p{
+		font-size: 1rem;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 0.75rem;
+		margin: 0;
+		color: #000;
+	}
+
+  #timeline_activities .activityFlexTop--1{
+    top: 1.5em;
+  }
+
+  #timeline_activities .activityFlexTop--2{
+    top: 6em;
+  }
+
+  #timeline_activities .activityFlexTop--3{
+    top: 10.5em;
+  }
+
+  #timeline_activities .activityUnique{
+    top: 4.5em;
+  }
+	
+	#timelineAlert{
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-end;
+    gap: 0.5rem;
+    align-items: end;
+    padding-bottom: 6px;
+    position: absolute;
+    right: 2.5%;
+    top: 10%;
+	}
+	
+	#timelineAlert_container{
+		display: flex;
+		flex-direction: row;
+		gap: 2rem;
+	}
+	
+	.timelineAlert_item{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	
+	.timelineAlert_item p{
+		font-size: 10px;
+		margin: 0;
+	}
+	
+	.timelineAlert_item_color{
+		width: 10px;
+		height: 10px;
+		border-radius: 12.5px;
+		background-color: #0377a3;
+	}
+
+	.timelineAlert_item_color--1{
+		background-color: #F9C786;
+	}
+	
+	.timelineAlert_item_color--2{
+		background-color: #81B8C1;
+	}
+	
+	.timelineAlert_item_color--3{
+		background-color: #B5D08B;
+	}
   /*************** sectionMap ********************/
 
   .sectionMap{
@@ -485,6 +717,7 @@ span.timelineControl:hover {
 
   .containerMapsection{
     display: flex;
+    position: relative;
   }
 
   .borderMap{
@@ -728,7 +961,6 @@ span.timelineControl:hover {
 
   .containerItems {
     flex-wrap: wrap;
-    width: 100%;
     display: table-cell;
     text-align: center;
     margin-left: 4px;
@@ -804,13 +1036,18 @@ span.timelineControl:hover {
     .tableItemsTitle{
       font-size: 1.1em;
     }
+    
+   	.itemsTablet{
+    	width: 45%;
+		}
   }
 
- @media (max-width:750px){
+ @media (max-width:768px){
 
   .containerItems {
     display: flex;
-    justify-content: center;
+    justify-content: start;
+    margin-left: 0%;
 }
 
 .sectionItems {
@@ -824,9 +1061,9 @@ span.timelineControl:hover {
   }
 
   .itemsTablet {
-    height: 80px;
-    width: 80px;
+    height: 100px;
     margin: 10px;
+    padding-top: 2rem;
   }
 
   .itemsTablet img {
@@ -849,8 +1086,196 @@ span.timelineControl:hover {
   table.dataTable {
     font-size: 0.7em;
   }
+  
+  #projects_filter{
+		width: 100%;
+	}
+	
+	#projects_filter label{
+		width: 100%;
+	}
+	
+	.iconSearch{
+		right: 1.5rem;
+		margin-top: 0;
+	}
+  
+  	/*************** sectionMap ********************/
+  .containerTextMap{
+		margin: 10px 20px 25px 20px;
+	}
+  .containerTextMap .titleMap{
+		font-size: 1.35rem;
+	}
+	
+	.containerTextMap .textMap{
+		font-size: 1.1rem;
+	}
+	.containerImgMap{
+		min-width: 17%;
+		display:flex;
+  	flex-direction: column;
+  	justify-content: center;
+	}
+	
+	.containerImgMap img{
+		width: 100%;
+	}
+	
+	
+	/*************** timeline ********************/
+	.homeTitleTimeline{
+		font-size: 1.1em;
+	}
+	
+	  .buttonLeftTimeline {
+      left: 2rem;
+    }
+
+    .buttonRightTimeline {
+      right: 2rem;
+    }
+
+    .timelineAlert {
+      top: 325px !important;
+    }
+
+    .timelineAlertText {
+      font-size: 7px;
+    }
+
+    .infTimelineTimeline {
+      min-width: 180px;
+    }
+
+    .titleTimeline {
+      height: 142px;
+      font-size: 10px;
+    }
+
+    .timeline {
+      height: 200px;
+    }
+
+    .dateTimeline {
+      margin-right: -130px;
+      margin-top: -27px;
+      font-size: 13px;
+    }
+
+    
+    .timeline-line {
+      width: 180px;
+      margin-top: -48px;
+    }
+
+    .timeline-pointTimeline {      
+      bottom: 32px;
+    }
+
+    .sideButtonTimeline {      
+      width: 30px;
+      height: 30px;
+      font-size: 22px;
+    }
+
+    .porcentTimeLine {      
+      margin-top: -48px;
+      max-width: 143px;
+  }
+  
+  	.scroll-x-containerTimeline{
+			width: 80%;
+			margin-top: 3rem;
+		}
  }
 
+@media only screen and (max-width:440px){
+	
+	#dashboardContent{
+		display: contents;
+	}
+	
+	.containerTabletItems{
+		height: 100%;
+	}
+	
+	/**************** Content Items Table **************/
+	
+	.sectionItems{
+		margin-left: 0%;
+	}
+	
+	.containerItems{
+		justify-content: center;
+		
+	}
+	
+	.itemsTablet{
+		padding-top: 1.5rem;
+    width: 40%;
+	}
+
+	.containerTabletItems #dashboardContent{
+		width: 100%;
+    width: -moz-available;         
+    width: -webkit-fill-available;  
+    width: fill-available;
+	}
+	
+	.tab-content{
+		width: auto;	
+	}
+	
+	/*************** sectionMap ********************/
+	
+	  .containerTextMap .titleMap{
+		font-size: 1.15em;
+	}
+	
+	.containerTextMap .textMap{
+		font-size: 0.95rem;
+	}
+	
+	.containerImgMap{
+		display: block;
+		position: absolute;
+		right: 10%;
+		top: 0;
+		width: 100%;
+		text-align: right;
+	}
+	
+	.containerImgMap img{
+		width: 8%;
+	}
+	
+	/*************** timeline ********************/
+	
+	.timeline{
+		position: relative;
+	}
+	
+	.timelineAlert{
+		bottom: 8px;
+		top: auto !important;
+		right: auto;
+	}
+	
+	.buttonRightTimeline{
+		right: 2rem;
+	}
+	
+	.buttonLeftTimeline{
+		left: 2rem;
+	}
+	
+	.scroll-x-containerTimeline{
+			width: 70%;
+			margin-top: 0;
+	}
+	
+}
  
 /* Add styles to the table */
 .dataTables_wrapper {
@@ -864,7 +1289,7 @@ span.timelineControl:hover {
 .dataTables_filter label input{
   height: 30px !important;
   width: 295px !important;
-  margin-left: -44px !important;
+  margin-left: 0 !important;
 }
 
 .iconSearch{
@@ -879,3 +1304,4 @@ span.timelineControl:hover {
  #guide-button{
   display: block;
 }
+

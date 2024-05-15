@@ -567,7 +567,8 @@ public class DeliverableValidator extends BaseValidator {
                   }
                   if (soilIndicator != null && soilIndicator.getIndicatorName() != null && indicator != null
                     && indicator.getCrpProgramOutcome() != null && indicator.getCrpProgramOutcome().getAcronym() != null
-                    && indicator.getCrpProgramOutcome().getAcronym().contains(soilIndicator.getIndicatorName())) {
+                    && indicator.getCrpProgramOutcome().getAcronym().trim()
+                      .contains(soilIndicator.getIndicatorName().trim())) {
                     containsIndicator = true;
                   }
                 }
@@ -583,14 +584,26 @@ public class DeliverableValidator extends BaseValidator {
           }
 
           // Validate contribution narrative
-          if (!(this
-            .isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative())
-            && this.wordCount(
-              deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative()) <= 200)) {
-            action.addMessage(action.getText("deliverable.deliverableInfo.shfrmContributionNarrative"));
-            action.addMissingField("deliverable.deliverableInfo.shfrmContributionNarrative");
-            action.getInvalidFields().put("input-deliverable.deliverableInfo.shfrmContributionNarrative",
-              InvalidFieldsMessages.EMPTYFIELD);
+          if (action.isReportingActive()) {
+            if (!(this
+              .isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrativeAR())
+              && this.wordCount(
+                deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrativeAR()) <= 200)) {
+              action.addMessage(action.getText("deliverable.deliverableInfo.shfrmContributionNarrativeAR"));
+              action.addMissingField("deliverable.deliverableInfo.shfrmContributionNarrativeAR");
+              action.getInvalidFields().put("input-deliverable.deliverableInfo.shfrmContributionNarrativeAR",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          } else {
+            if (!(this
+              .isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative())
+              && this.wordCount(
+                deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative()) <= 200)) {
+              action.addMessage(action.getText("deliverable.deliverableInfo.shfrmContributionNarrative"));
+              action.addMissingField("deliverable.deliverableInfo.shfrmContributionNarrative");
+              action.getInvalidFields().put("input-deliverable.deliverableInfo.shfrmContributionNarrative",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
           }
 
           // Validate priority actions
@@ -601,26 +614,22 @@ public class DeliverableValidator extends BaseValidator {
             action.getInvalidFields().put("list-deliverable.shfrmPriorityActions", InvalidFieldsMessages.EMPTYFIELD);
           } else if (deliverable.getShfrmPriorityActions() != null
             && !deliverable.getShfrmPriorityActions().isEmpty()) {
-            int indexJ = 0;
+            int indexI = 0;
 
             for (DeliverableShfrmPriorityAction priorityAction : deliverable.getShfrmPriorityActions()) {
               if (priorityAction != null && priorityAction.getShfrmSubActions() == null || (priorityAction != null
                 && priorityAction.getShfrmSubActions() != null && priorityAction.getShfrmSubActions().isEmpty())) {
                 action.addMessage(action.getText("deliverable.shfrmSubActions"));
-                action.addMissingField("deliverable.shfrmPriorityActions");
+                action.addMissingField("deliverable.shfrmSubActions");
                 action.getInvalidFields().put("list-deliverable.shfrmPriorityActions",
                   InvalidFieldsMessages.EMPTYFIELD);
-
-                action.getInvalidFields().put(
-                  "list-deliverable.shfrmPriorityActions[" + indexJ + "].shfrmSubActions[-1]",
-                  InvalidFieldsMessages.EMPTYFIELD);
                 /*
-                 * action.addMessage(action.getText("deliverable.shfrmSubActions[" + indexJ + "]"));
-                 * action.addMissingField("deliverable.shfrmSubActions[" + indexJ + "]");
-                 * action.getInvalidFields().put("list-deliverable.shfrmPriorityAction[" + indexJ + "].shfrmSubActions",
+                 * action.addMessage(action.getText("deliverable.shfrmSubActions[" + indexI + "]"));
+                 * action.addMissingField("deliverable.shfrmSubActions[" + indexI + "]");
+                 * action.getInvalidFields().put("list-deliverable.shfrmPriorityAction[" + indexI + "].shfrmSubActions",
                  * InvalidFieldsMessages.EMPTYFIELD);
                  */
-                indexJ++;
+                indexI++;
               }
             }
           }

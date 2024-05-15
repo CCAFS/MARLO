@@ -71,7 +71,9 @@
   [#-- SUMMARIES - ALL --]
   { 'slug': 'summaries', 'name': 'menu.summaries',      'namespace': '/summaries',       'action': '${(crpSession)!}/summaries',    'visible': logged, 'active': true }
   [#-- BI Module --]
-  { 'slug': 'bi', 'name': 'menu.bi',      'namespace': '/bi',       'action': '${(crpSession)!}/bi',    'visible': logged && biModuleActive, 'active': true }
+  { 'slug': 'bi', 'name': 'menu.bi',      'namespace': '/bi',       'action': '${(crpSession)!}/bi',    'visible': logged && biModuleActive, 'active': true },
+  [#-- TIP Module --]
+  { 'slug': 'tip', 'name': 'menu.tip',      'namespace': '/tip',       'action': '${(crpSession)!}/tip',    'visible': logged && action.hasSpecificities('tip_section_active'), 'active': true }
 ]/]
 
 
@@ -118,7 +120,7 @@
 <div class="menuContent">
 	<div class="container">
 	  <ul class="hidden-md hidden-lg">
-	   <li> <span class="glyphicon glyphicon-menu-hamburger"></span> Main menu
+	   <li> <span class="glyphicon glyphicon-menu-hamburger"></span> <span class="menuContentTitle">Main menu</span>
 	     <ul class="subMenu">
 	       [@mainMenuList /]
 	     </ul>
@@ -128,7 +130,7 @@
 	    [@mainMenuList /]
 	  </ul>
 
-	  [#if logged?? && logged]
+    [#if logged?? && logged]
       <div id="userInfo">
         <a id="userLogOut" href="[@s.url action="logout" namespace="/" /]">[@s.text name="header.logout" /]</a>
         <p class="userId" style="display:none">${(currentUser.id)!}</p>
@@ -136,7 +138,7 @@
         <p class="institution">${(currentUser.email)!}</p>
         <p class="roles"> [${(roles)!}${(roles?has_content && liasons?has_content)?string(',','')}${(liasons)!}]</p>
       </div>
-  	[/#if]
+    [/#if]
   </div>
 </div>
 </nav>

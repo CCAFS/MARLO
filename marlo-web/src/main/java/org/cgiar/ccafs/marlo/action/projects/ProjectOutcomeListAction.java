@@ -202,6 +202,12 @@ public class ProjectOutcomeListAction extends BaseAction {
       if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 3")) {
         orderIndex = 3;
       }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 4")) {
+        orderIndex = 4;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 5")) {
+        orderIndex = 5;
+      }
       if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.1")) {
         orderIndex = 11;
       }
@@ -234,6 +240,9 @@ public class ProjectOutcomeListAction extends BaseAction {
       }
       if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.5")) {
         orderIndex = 25;
+      }
+      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.6")) {
+        orderIndex = 26;
       }
       if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.1")) {
         orderIndex = 31;
@@ -451,6 +460,12 @@ public class ProjectOutcomeListAction extends BaseAction {
             }
           }
         }
+      }
+    }
+
+    if (project.getOutcomes() != null) {
+      for (ProjectOutcome projectOutcome : project.getOutcomes()) {
+        this.defineProjectOutcomeOrder(projectOutcome);
       }
     }
   }

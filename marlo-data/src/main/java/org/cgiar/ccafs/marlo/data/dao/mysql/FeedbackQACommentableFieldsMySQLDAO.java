@@ -19,8 +19,10 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.FeedbackQACommentableFieldsDAO;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -80,6 +82,71 @@ public class FeedbackQACommentableFieldsMySQLDAO extends AbstractMarloDAO<Feedba
     }
     return Collections.emptyList();
   }
+
+  /**
+   * Get the answered comment by phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverable list with the comment count. olny coment with answer
+   */
+  @Override
+  public List<String> getAnsweredCommentByPhaseToStudy(long phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT parent_id as parent_id,count(*) as count ");
+    query.append("FROM feedback_qa_comments fqc");
+    query.append(" WHERE id_phase=" + phase);
+    query.append(" and status_id = 1 ");
+    query.append(" and field_id in (select id from feedback_qa_commentable_fields fqcf ");
+    query.append(" where section_name = 'study') ");
+    query.append(" and reply_id is not null ");
+    query.append(" group by parent_id ");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<String> comments = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        String tmp = map.get("parent_id").toString() + "|" + map.get("count").toString();
+        comments.add(tmp);
+      }
+    }
+
+    return comments;
+  }
+
+
+  /**
+   * Get the commentstatus by phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverable list with the comment count
+   */
+  @Override
+  public List<String> getCommentStatusByPhaseToStudy(long phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT parent_id as parent_id,count(*) as count ");
+    query.append("FROM feedback_qa_comments fqc");
+    query.append(" WHERE id_phase=" + phase);
+    query.append(" and status_id <> 6 ");
+    query.append(" and field_id in (select id from feedback_qa_commentable_fields fqcf ");
+    query.append(" where section_name = 'study') ");
+    query.append(" group by parent_id ");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<String> comments = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        String tmp = map.get("parent_id").toString() + "|" + map.get("count").toString();
+        comments.add(tmp);
+      }
+    }
+
+    return comments;
+  }
+
 
   @Override
   public FeedbackQACommentableFields save(FeedbackQACommentableFields feedbackQACommentableFields) {

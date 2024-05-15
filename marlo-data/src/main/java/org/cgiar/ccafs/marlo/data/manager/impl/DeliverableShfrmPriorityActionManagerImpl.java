@@ -71,14 +71,19 @@ public class DeliverableShfrmPriorityActionManagerImpl implements DeliverableShf
     Phase phase = phaseDAO.find(next.getId());
 
     DeliverableShfrmPriorityAction deliverableShfrmPriorityActionDelete = new DeliverableShfrmPriorityAction();
-    deliverableShfrmPriorityActionDelete =
-      deliverableShfrmPriorityActionDAO.findByDeliverableAndPhase(deliverableId, phase.getId()).stream()
+
+    try {
+      deliverableShfrmPriorityActionDelete = deliverableShfrmPriorityActionDAO
+        .findByDeliverableAndPhase(deliverableId, phase.getId()).stream()
         .filter(d -> d != null && deliverableShfrmPriorityAction != null
           && deliverableShfrmPriorityAction.getShfrmPriorityAction() != null
           && deliverableShfrmPriorityAction.getShfrmPriorityAction().getId() != null
           && d.getShfrmPriorityAction() != null && d.getShfrmPriorityAction().getId() != null
           && d.getShfrmPriorityAction().getId().equals(deliverableShfrmPriorityAction.getShfrmPriorityAction().getId()))
         .collect(Collectors.toList()).get(0);
+    } catch (Exception e) {
+      logger.info("No priority actions " + e);
+    }
 
     if (deliverableShfrmPriorityActionDelete != null) {
       deliverableShfrmPriorityActionDAO
@@ -110,6 +115,15 @@ public class DeliverableShfrmPriorityActionManagerImpl implements DeliverableShf
   }
 
   @Override
+  public List<DeliverableShfrmPriorityAction> findByDeliverablePriorityActionAndPhase(long deliverableId,
+    long priorityActionId, long phaseId) {
+    return deliverableShfrmPriorityActionDAO.findByDeliverablePriorityActionAndPhase(deliverableId, priorityActionId,
+      phaseId);
+
+  }
+
+
+  @Override
   public DeliverableShfrmPriorityAction getDeliverableShfrmPriorityActionById(long deliverableShfrmPriorityActionID) {
 
     return deliverableShfrmPriorityActionDAO.find(deliverableShfrmPriorityActionID);
@@ -134,7 +148,7 @@ public class DeliverableShfrmPriorityActionManagerImpl implements DeliverableShf
   public void saveDeliverableShfrmPriorityActionPhase(Phase next, long deliverableId,
     DeliverableShfrmPriorityAction deliverableShfrmPriorityAction) {
     Phase phase = phaseDAO.find(next.getId());
-    DeliverableShfrmPriorityAction deliverableShfrmPriorityActionPhase = new DeliverableShfrmPriorityAction();
+    DeliverableShfrmPriorityAction deliverableShfrmPriorityActionPhase = null;
     try {
       deliverableShfrmPriorityActionPhase = deliverableShfrmPriorityActionDAO
         .findByDeliverableAndPhase(deliverableId, phase.getId()).stream()
@@ -148,18 +162,24 @@ public class DeliverableShfrmPriorityActionManagerImpl implements DeliverableShf
       logger.error("error getting deliverableShfrmPriorityActionPhase: " + e);
     }
 
-    if (deliverableShfrmPriorityActionPhase != null) {
-      DeliverableShfrmPriorityAction deliverableShfrmPriorityActionAdd = deliverableShfrmPriorityActionPhase;
-      deliverableShfrmPriorityActionAdd.setDeliverable(deliverableShfrmPriorityAction.getDeliverable());
-      deliverableShfrmPriorityActionAdd.setPhase(phase);
-      deliverableShfrmPriorityActionAdd.setShfrmPriorityAction(deliverableShfrmPriorityAction.getShfrmPriorityAction());
-      deliverableShfrmPriorityActionDAO.save(deliverableShfrmPriorityActionAdd);
-    } else {
-      DeliverableShfrmPriorityAction deliverableShfrmPriorityActionAdd = new DeliverableShfrmPriorityAction();
-      deliverableShfrmPriorityActionAdd.setDeliverable(deliverableShfrmPriorityAction.getDeliverable());
-      deliverableShfrmPriorityActionAdd.setPhase(phase);
-      deliverableShfrmPriorityActionAdd.setShfrmPriorityAction(deliverableShfrmPriorityAction.getShfrmPriorityAction());
-      deliverableShfrmPriorityActionDAO.save(deliverableShfrmPriorityActionAdd);
+    try {
+      if (deliverableShfrmPriorityActionPhase != null) {
+        DeliverableShfrmPriorityAction deliverableShfrmPriorityActionAdd = deliverableShfrmPriorityActionPhase;
+        deliverableShfrmPriorityActionAdd.setDeliverable(deliverableShfrmPriorityAction.getDeliverable());
+        deliverableShfrmPriorityActionAdd.setPhase(phase);
+        deliverableShfrmPriorityActionAdd
+          .setShfrmPriorityAction(deliverableShfrmPriorityAction.getShfrmPriorityAction());
+        deliverableShfrmPriorityActionDAO.save(deliverableShfrmPriorityActionAdd);
+      } else {
+        DeliverableShfrmPriorityAction deliverableShfrmPriorityActionAdd = new DeliverableShfrmPriorityAction();
+        deliverableShfrmPriorityActionAdd.setDeliverable(deliverableShfrmPriorityAction.getDeliverable());
+        deliverableShfrmPriorityActionAdd.setPhase(phase);
+        deliverableShfrmPriorityActionAdd
+          .setShfrmPriorityAction(deliverableShfrmPriorityAction.getShfrmPriorityAction());
+        deliverableShfrmPriorityActionDAO.save(deliverableShfrmPriorityActionAdd);
+      }
+    } catch (Exception e) {
+      logger.error("error saving replication in  DeliverableShfrmPriorityActionManagerImpl " + e);
     }
     if (phase.getNext() != null) {
       this.saveDeliverableShfrmPriorityActionPhase(phase.getNext(), deliverableId, deliverableShfrmPriorityAction);

@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/home/dashboard.js?20230824",
+  "${baseUrlMedia}/js/home/dashboard.js?20240514",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20230313",
+  "${baseUrlMedia}/css/home/dashboard.css?20240507",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -108,14 +108,8 @@
     <img class="itemimgdeliverables" src="${baseUrlCdn}/global/images/loading-loading-forever.gif" >    
 	</section>
   <section class="timeline" style="display: none">	
-    <div class="homeTitleTimeline"><b>Schedule</b></div>
-    <div class="timelineAlert">
-      <!--  <img src="${baseUrlCdn}/global/images/icon-transparent-warning.png" width="30">  -->
-      <p class="timelineAlertText"> days left until the end of the activity</p>
-    </div>
 		<div class="containerTimeline">
-			<!--  <a href="#item1">touch me</a>  -->
-			<div class="scroll-x-containerTimeline " id="listItemTimeline">
+			<div class="scroll-x-containerTimeline2 " id="listItemTimeline2">
 			</div>
 			<div class="sideButtonTimeline buttonLeftTimeline"><p><</p></div>
 			<div class="sideButtonTimeline buttonRightTimeline"><p>></p></div>

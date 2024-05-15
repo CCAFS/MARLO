@@ -53,17 +53,6 @@ body .WOS_tag p{
   margin-top: 60px;
 }
 
-.deliverableActivity {
-  list-style: none;
-  padding: 1px 4px 0px 6px;
-  background-color: #F7F7F7;
-  border: 1px solid #E0E0E0 !important;
-  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  margin-bottom: 5px;
-  position: relative;
-}
-
 /* Bootstrap Tabs */
 .tab-content>.active {
   display: block;
@@ -791,7 +780,7 @@ div#ccDimension-capacity {
 .dataTables_filter label input{
   height: 30px !important;
   width: 295px !important;
-  margin-left: -44px !important;
+  margin-left: 0 !important;
 }
 
 .iconSearch{
@@ -992,7 +981,7 @@ div.fieldFocus-deliverable {
   font-weight: 620;
 }
 
-.modal-evidences{
+.modal-deliverable{
   display: flex;
   background-color: #50505070;
   align-items: center;
@@ -1007,9 +996,11 @@ div.fieldFocus-deliverable {
 
 
 .button-exit{
- float: right;
- font-size: 18px;
- cursor: pointer;
+  position: absolute;
+  float: inline-end;
+  right: 10px;
+  font-size: 18px;
+  cursor: pointer;
 }
 
 .x-close-modal{
@@ -1023,42 +1014,47 @@ div.fieldFocus-deliverable {
   right: 0;
   border-radius: 0px 3px 0px 8px;
   cursor: pointer;
-  margin: -23px -40px 0px 0px;
+  margin: -23px 0px 0px 0px;
 }
 
 .title-modal-evidences{
-  font-size: 19px;
+  font-size: 16px;
   font-weight: 600;
-  margin-top: -8px;
+  margin: 0;
 }
 
 .text-modal-evidences{
   margin-top: 25px;
+  padding: .6em 2em .6em 2em;
 }
 
 .text-modal-evidences p{
-  max-width: 500px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .content-modal{
   background-color: #fff;
   width: 600px;
   max-width: 100%;
-  padding: 30px 50px;
   border-radius: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  /* text-align: center; */
+  border: 2px solid rgba(43, 166, 203, 1);
+  overflow: hidden;
 }
 
 .container-buttons-evidences{
   float: right;
   display: flex;
+  padding: .5em 1em 1em 1em;
+
 }
 
 .button-pdf-modal{
   background-color: #ffffff;
-  min-width: 160px;
-  height: 40px;
+  min-width: 100px;
+  height: 30px;
   text-align: center;
   display: flex;
   align-items: center;
@@ -1068,6 +1064,7 @@ div.fieldFocus-deliverable {
   font-weight: 600;
   border: #f79090 solid 2px;
   color: #ff6464;
+  
 }
 
 .button-pdf-modal p{
@@ -1081,8 +1078,8 @@ div.fieldFocus-deliverable {
 
 .button-close-modal{
   background-color: #0779a4;
-  min-width: 120px;
-  height: 40px;
+  min-width: 100px;
+  height: 30px;
   text-align: center;
   display: flex;
   align-items: center;
@@ -1118,10 +1115,62 @@ div.fieldFocus-deliverable {
   .textAchived{
     font-size: 10px;
   }
+  
+}
+
+ /*
+button.active {
+  background-color:green; 
+}
+*/
+.fieldFocus-deliverable {
+   border: 1px solid rgb(255, 170, 170)!important;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 1px rgb(255, 94, 94);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 1px rgb(255, 94, 94);
+}
+
+div.fieldFocus-deliverable {
+  padding: 10px 15px !important;
+  margin: 10px 0 !important;
+  background-color: rgba(230, 230, 230, 0.1);
+}
+
+
+.slide-transition {
+  transition: transform 0.5s ease;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.5s ease;
+}
+
+.slide-enter,
+.slide-leave-to {
+  transform: translateY(1%);
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.button-effect {
+  transition: background-color 0.3s ease; 
+}
+
+.button-effect:hover {
+  background-color: #2592b3;
 }
 
 @media (max-width:1520px){
   .containerShowHide{
     left: 610px;
+  }
+}
+
+@media (max-width:440px){
+  .containerShowHide{
+    position: static;
   }
 }

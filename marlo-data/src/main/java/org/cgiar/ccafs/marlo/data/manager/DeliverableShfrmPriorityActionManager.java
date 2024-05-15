@@ -53,6 +53,9 @@ public interface DeliverableShfrmPriorityActionManager {
 
   public List<DeliverableShfrmPriorityAction> findByDeliverableAndPhase(long deliverableId, long phaseId);
 
+  public List<DeliverableShfrmPriorityAction> findByDeliverablePriorityActionAndPhase(long deliverableId,
+    long priorityActionId, long phaseId);
+
 
   /**
    * This method gets a deliverableShfrmPriorityAction object by a given deliverableShfrmPriorityAction identifier.

@@ -728,7 +728,8 @@ public class ProjectOutcomeAction extends BaseAction {
     if (milestonesProject != null && !milestonesProject.isEmpty()) {
       milestonesProjectYear = new ArrayList<>();
       for (CrpMilestone milestoneElement : milestonesProject) {
-        if (milestoneElement != null && milestoneElement.getYear() != null && !milestoneElement.getYear().equals(0)) {
+        if (milestoneElement != null && milestoneElement.isActive() && milestoneElement.getYear() != null
+          && !milestoneElement.getYear().equals(0) && milestoneElement.getYear() <= this.getActualPhase().getYear()) {
           milestonesProjectYear.add(milestoneElement.getYear());
         }
       }
@@ -1064,7 +1065,8 @@ public class ProjectOutcomeAction extends BaseAction {
     if (milestonesProject != null && !milestonesProject.isEmpty()) {
       try {
         projectMilestoneElement = milestonesProject.stream()
-          .filter(m -> m != null && m.getYear() != null && m.getYear() == year).collect(Collectors.toList()).get(0);
+          .filter(m -> m != null && m.isActive() && m.getYear() != null && m.getYear() == year)
+          .collect(Collectors.toList()).get(0);
       } catch (Exception e) {
         LOG.error(e + "error to get milestone by year");
       }
@@ -1543,10 +1545,12 @@ public class ProjectOutcomeAction extends BaseAction {
     Set<CrpMilestone> crpMilestones = new HashSet<>();
     if (projectOutcome.getMilestones() != null) {
       for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
-        CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(crpMilestone.getCrpMilestone().getId());
+        if (crpMilestone != null && crpMilestone.getId() != null && crpMilestone.isActive()) {
+          CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(crpMilestone.getCrpMilestone().getId());
 
-        milestone.setIndex(crpMilestone.getId());
-        crpMilestones.add(milestone);
+          milestone.setIndex(crpMilestone.getId());
+          crpMilestones.add(milestone);
+        }
         // }
       }
     }

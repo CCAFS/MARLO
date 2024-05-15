@@ -404,32 +404,38 @@
           <input type="hidden" name="${customName}[${index}].project.id" value="${(cluster.project.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}"/>
           <div class="form-group row" clusterIdParticipant="${(cluster.project.id)!0}">
             <div class="col-md-2">
-              <div class="text-area-container">
+              <div class="text-area-container text-flex-column">
               [@customForm.text name=(list[index].project.acronym)!"" /]
+              [#if action.isSubmit(cluster.project.id)]
+                <p style="font-style: italic; font-size: 10px;">Cluster submitted.</p>
+              [/#if]
+                [#-- Allow to track if the cluster is submitted --]
+                [#assign isSubmit = action.isSubmit(cluster.project.id)?string('true', 'false') /]
+                <p style="display:none" class="clusterSubmitted" isSubmit="${isSubmit}" name="${(list[index].project.acronym)!''}"></p>
               </div>
               <br>
             </div>
             <div class="col-md-2 participantsNumbers">
               <div class="text-area-container">
-              [@customForm.input name="${customName}[${index}].participants" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+              [@customForm.input name="${customName}[${index}].participants"  placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
               </div>
               <br>
             </div>
             <div class="col-md-2 femaleNumbers">
               <div class="text-area-container">
-                [@customForm.input name="${customName}[${index}].females" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+                [@customForm.input name="${customName}[${index}].females" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
               </div>
               <br>
             </div>
             <div class="col-md-2 africanNumbers">
               <div class="text-area-container">
-                [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+                [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
               </div>
               <br>
             </div>
             <div class="col-md-2 youthNumbers">
               <div class="text-area-container">
-                [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false/]
+                [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
               </div>
               <br>
             </div>
@@ -519,7 +525,7 @@
     </div>
   </div>
       <div style="display: flex;" class="alertParticipant">
-        <div class="noteAlert" style="font-weight: 700;color: #ffc800;">Alert:&nbsp;</div>
+        <div class="noteAlert" style="font-weight: 700;color: #ECB00C;">Alert:&nbsp;</div>
         <div class="textNote">  The remaining fields must be 0, please distribute the trainees in the shared clusters</div>
       </div>
       <div style="display: none" class="doneParticipant">
@@ -575,7 +581,7 @@
 [#macro findableOptions ]
   [#local isSynced = (deliverable.dissemination.synced)!false ]
   [#local customName = "deliverable.dissemination" /]
-  <div class="disseminationChannelBlock" style="display:${isSynced?string('none','block')};">
+  <div class="disseminationChannelBlock" >
     [#-- Note 
     <div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
     --]
@@ -648,8 +654,8 @@
       </div>
       <div class="col-md-6 conditionalRequire doi-bridge text-area-container" style="position: relative;">
         [@customForm.input name="doi-bridge" required=require value="" className="metadataValue doiField" type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable id="doiField"/]
-        <p class="invalidDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(207, 40, 40); font-weight: 600; font-size: 0.8em; display: none;">Invalid DOI identifier.<br>Please use the correct format <strong>(e.g. 10.1109/5.771073)</strong></p>
-        <p class="validDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(50, 206, 45); font-weight: 600; font-size: 0.8em; display: none;">Valid DOI identifier</p>
+        <p class="invalidDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(207, 40, 40); font-weight: 600; font-size: 0.8em; display: none; bottom: -32px; margin: 12px 2px 0 12px;">Invalid DOI identifier.<br>Please use the correct format <strong>(e.g. 10.1109/5.771073)</strong></p>
+        <p class="validDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(50, 206, 45); font-weight: 600; font-size: 0.8em; display: none; bottom: -18px; margin: 12px 2px 0 12px;">Valid DOI identifier</p>
       </div>
     </div>
     <br>
@@ -1530,13 +1536,13 @@
       [#-- Shfrm Contribution Narrative --]
       [#if reportingActive]
         [#-- Previous narrative --]
-        [#if previousContribionNarrative?has_content]       
+        [#if deliverable.deliverableInfo.shfrmContributionNarrative?has_content]       
           <div class="form-group">
             [@customForm.textArea name="deliverable.deliverableInfo.shfrmContributionNarrative" value="${(deliverable.deliverableInfo.shfrmContributionNarrative)!}" i18nkey="deliverable.shfrmContribution.narrative.reporting"  placeholder="" className="limitWords-200" required=false editable=false /]
           </div>
         [/#if]
       <div class="form-group">
-        [@customForm.textArea name="deliverable.deliverableInfo.shfrmContributionNarrative" value="${(deliverable.deliverableInfo.shfrmContributionNarrative)!}" i18nkey="deliverable.shfrmContribution.narrative.reporting"  placeholder="" className="limitWords-200" required=true editable=editable /]
+        [@customForm.textArea name="deliverable.deliverableInfo.shfrmContributionNarrativeAR" value="${(deliverable.deliverableInfo.shfrmContributionNarrativeAR)!}" i18nkey="deliverable.shfrmContribution.narrative.reporting"  placeholder="" className="limitWords-200" required=true editable=editable /]
       </div>
       [#else]
       <div class="form-group">
@@ -1581,7 +1587,7 @@
     <input class="id" type="hidden" name="${deliverableCustomName}.shfrmSubAction.id" value="${(subActionItem.shfrmSubAction.id)!-1}" />
     <input class="name" type="hidden" name="${deliverableCustomName}.shfrmSubAction.name" value="${(subActionItem.shfrmSubAction.name)!'null'}" />
     [#--  <input class="idTable" type="hidden" name="${deliverableCustomName}.id" value="${(subActionItem.id)!-1}" />  --]
-    <span class="name">${(subActionItem.shfrmSubAction.name)!'null'}</span>
+    <span class="name">${(subActionItem.shfrmSubAction.composedName)!'null'}</span>
     <div class="clearfix"></div>
   </div>
 [/#macro]
