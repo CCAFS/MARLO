@@ -66,6 +66,8 @@ public interface CrpPpaPartnerDAO {
    */
   public List<CrpPpaPartner> findByCrpAndPhase(long crpID, long phaseID);
 
+  List<CrpPpaPartner> findByCrpAndPhaseComplete(long crpID, long phaseID);
+
   /**
    * This method saves the information of the given crpPpaPartner
    * 
