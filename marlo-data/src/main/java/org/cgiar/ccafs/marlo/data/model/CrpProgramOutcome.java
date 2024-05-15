@@ -61,6 +61,8 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
 
   @Expose
   private BigDecimal value;
+  @Expose
+  private BigDecimal baseline;
 
 
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
@@ -108,6 +110,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.setSrfTargetUnit(other.getSrfTargetUnit());
     this.setValue(other.getValue());
     this.setYear(other.getYear());
+    this.setBaseline(other.getBaseline());
   }
 
   @Override
@@ -135,6 +138,11 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
   }
 
 
+  public BigDecimal getBaseline() {
+    return baseline;
+  }
+
+
   public String getComposedName() {
     if (this.getCrpProgram() != null && this.getCrpProgram().getAcronym() != null && description != null) {
       return this.getCrpProgram().getAcronym() + " Outcome: " + description;
@@ -142,7 +150,6 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
       return "-";
     }
   }
-
 
   public String getComposeID() {
     if (composeID != null) {
@@ -163,19 +170,19 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return this.crpMilestones;
   }
 
+
   public Set<CrpOutcomeSubIdo> getCrpOutcomeSubIdos() {
     return this.crpOutcomeSubIdos;
   }
-
 
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
   }
 
+
   public Set<CrpProgramOutcomeIndicator> getCrpProgramOutcomeIndicators() {
     return crpProgramOutcomeIndicators;
   }
-
 
   public Set<Deliverable> getDeliverables() {
     return deliverables;
@@ -208,10 +215,10 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return sb.toString();
   }
 
+
   public List<CrpMilestone> getMilestones() {
     return milestones;
   }
-
 
   public String getPAcronym() {
     return this.getCrpProgram().getAcronym();
@@ -249,15 +256,19 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.acronym = acronym;
   }
 
+
+  public void setBaseline(BigDecimal baseline) {
+    this.baseline = baseline;
+  }
+
+
   public void setComposeID(String composeID) {
     this.composeID = composeID;
   }
 
-
   public void setCrpClusterKeyOutputOutcomes(Set<CrpClusterKeyOutputOutcome> crpClusterKeyOutputOutcomes) {
     this.crpClusterKeyOutputOutcomes = crpClusterKeyOutputOutcomes;
   }
-
 
   public void setCrpMilestones(Set<CrpMilestone> crpMilestones) {
     this.crpMilestones = crpMilestones;

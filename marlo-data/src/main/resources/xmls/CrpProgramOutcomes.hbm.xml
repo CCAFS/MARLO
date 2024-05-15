@@ -56,6 +56,9 @@
 		<property name="value" type="java.math.BigDecimal">
 			<column name="value" precision="20" not-null="false" />
 		</property>
+		<property name="baseline" type="java.math.BigDecimal">
+			<column name="baseline" precision="20" not-null="false" />
+		</property>
 		<set lazy="true" name="crpOutcomeSubIdos" table="crp_outcome_sub_idos"
 			order-by="id" inverse="true" fetch="select">
 			<key>
