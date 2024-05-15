@@ -1,0 +1,2 @@
+ALTER TABLE project_milestone_disaggregated_target CHANGE disaggregated_target_crp_program_outcome disaggregated_target_crp_program_outcome_id bigint(20) NOT NULL;
+ALTER TABLE project_milestone_disaggregated_target CHANGE project_milestone project_milestone_id bigint(20) NOT NULL;
