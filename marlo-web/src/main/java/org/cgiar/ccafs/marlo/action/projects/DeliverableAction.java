@@ -4806,6 +4806,9 @@ public class DeliverableAction extends BaseAction {
         // Store repeated values in local variables for better readability and performance
         int statusPrev = previousStatus;
         String statusPrevName = ProjectStatusEnum.getValue(statusPrev).name();
+        if (statusPrevName != null && statusPrevName.equals("Ongoing")) {
+          statusPrevName = "On-going";
+        }
         int currentPhaseStatus = deliverable.getDeliverableInfo(this.getActualPhase()).getStatus();
         String statusCurrentName = ProjectStatusEnum.getValue(currentPhaseStatus).name();
 
