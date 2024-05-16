@@ -884,7 +884,7 @@ $('table.projectsList').dataTable({
   "bFilter": true, // This option enable the search
   "bSort": true, // this option enable the sort of contents by columns
   "bAutoWidth": false, // This option enables the auto adjust columns width
-  "iDisplayLength": 5, // Number of rows to show on the table
+  "iDisplayLength": 25, // Number of rows to show on the table
   "pagingType": "simple",
   language: {
     searchPlaceholder: "Search..."
