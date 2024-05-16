@@ -5575,7 +5575,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return deliverablesRelated;
     } else {
       return null;
-    } ;
+    }
   }
 
   /**
