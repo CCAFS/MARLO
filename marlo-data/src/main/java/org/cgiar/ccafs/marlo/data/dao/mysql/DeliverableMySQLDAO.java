@@ -346,6 +346,39 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     return deliverables;
   }
 
+
+  @Override
+  public List<Deliverable> getDeliverablesLeadByInstitutionAndProject(long institutionId, long phaseId,
+    long projectId) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT ");
+    query.append("dup.deliverable_id as id ");
+    query.append("FROM ");
+    query.append("deliverable_user_partnerships AS dup ");
+    query.append("INNER JOIN deliverable_user_partnership_persons AS dupp ON dupp.user_partnership_id = dup.id ");
+    query.append("inner join deliverables d on dup.deliverable_id =d.id ");
+    query.append("WHERE ");
+    query.append("dup.is_active = 1 AND ");
+    query.append("dupp.is_active = 1 AND ");
+    query.append("dup.institution_id =" + institutionId + " AND ");
+    query.append("dup.id_phase = " + phaseId);
+    query.append(" and d.is_active =1 ");
+    query.append(" and d.project_id = " + projectId);
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<Deliverable> deliverables = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        Deliverable deliverable = this.find(Long.parseLong(map.get("id").toString()));
+        deliverables.add(deliverable);
+      }
+    }
+
+    return deliverables;
+  }
+
+
   @Override
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId) {
     StringBuilder query = new StringBuilder();

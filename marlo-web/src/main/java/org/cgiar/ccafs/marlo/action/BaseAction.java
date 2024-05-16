@@ -5546,6 +5546,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<Deliverable> getShfrmActionDeliverablesRelation(Long shfrmPrimaryActionId) {
+    LOG.info("BaseAction linea 5549");
 
     List<Deliverable> deliverablesRelated = new ArrayList<>();
     if (shfrmPrimaryActionId != null && shfrmPrimaryActionId != 0) {
@@ -5569,11 +5570,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
     }
+    LOG.info("BaseAction linea 5572");
     if (deliverablesRelated != null && !deliverablesRelated.isEmpty()) {
       return deliverablesRelated;
     } else {
       return null;
-    }
+    } ;
   }
 
   /**

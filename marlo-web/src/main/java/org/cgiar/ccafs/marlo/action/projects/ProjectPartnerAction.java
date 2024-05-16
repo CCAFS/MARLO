@@ -430,12 +430,20 @@ public class ProjectPartnerAction extends BaseAction {
 
 
   public List<Deliverable> getDeliverablesLedByPartner(Long projectPartnerID) {
+    LOG.info(" ProjectPartnerAction linea 433");
     List<Deliverable> deliverablesLeads = new ArrayList<>();
     if (projectPartnerID != null && projectPartnerID != 0) {
       ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
       if (projectPartner != null) {
         List<Deliverable> deliverables = deliverableManager
-          .getDeliverablesLeadByInstitution(projectPartner.getInstitution().getId(), this.getActualPhase().getId());
+          // .getDeliverablesLeadByInstitution(projectPartner.getInstitution().getId(), this.getActualPhase().getId());
+          .getDeliverablesLeadByInstitutionAndProject(projectPartner.getInstitution().getId(),
+            this.getActualPhase().getId(), projectID);
+        LOG.info(" ProjectPartnerAction linea 440 projectPartner.getInstitution().getId() "
+          + projectPartner.getInstitution().getId());
+        LOG.info(" ProjectPartnerAction linea 441 this.getActualPhase().getId() " + this.getActualPhase().getId());
+        LOG.info(" ProjectPartnerAction linea 442 projectID " + projectID);
+        LOG.info(" ProjectPartnerAction linea 440 deliverables.size() " + deliverables.size());
         for (Deliverable deliverable : deliverables) {
           if (deliverable.getProject() != null && deliverable.getProject().getId().equals(projectID)) {
             deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
@@ -464,20 +472,16 @@ public class ProjectPartnerAction extends BaseAction {
       }
 
     }
+    LOG.info(" ProjectPartnerAction linea 469 deliverablesLeads.size() " + deliverablesLeads.size());
     return deliverablesLeads;
   }
 
   public List<Deliverable> getDeliverablesLedByUser(long userID) {
-    LOG.info(" ProjectPartnerAction linea 471");
     List<Deliverable> deliverablesLeads = new ArrayList<>();
     List<Deliverable> deliverables =
       // cgamboa 16/05/2024 getDeliverablesLeadByUser was changed by getDeliverablesLeadByUser
       // deliverableManager.getDeliverablesLeadByUser(userID, this.getActualPhase().getId());
       deliverableManager.getDeliverablesLeadByUserAndProject(userID, this.getActualPhase().getId(), projectID);
-    LOG.info(" ProjectPartnerAction linea 475 deliverables.size() " + deliverables.size());
-    LOG.info(" ProjectPartnerAction linea 476 userID " + userID);
-    LOG.info(" ProjectPartnerAction linea 477 this.getActualPhase().getId() " + this.getActualPhase().getId());
-    LOG.info(" ProjectPartnerAction linea 478 projectID " + projectID);
     if (deliverables != null) {
       for (Deliverable deliverable : deliverables) {
         if (deliverable.getProject() != null && deliverable.getProject().getId().equals(projectID)) {
@@ -512,7 +516,6 @@ public class ProjectPartnerAction extends BaseAction {
 
       }
     }
-    LOG.info(" ProjectPartnerAction linea 509 deliverablesLeads.size() " + deliverablesLeads.size());
     return deliverablesLeads;
 
   }

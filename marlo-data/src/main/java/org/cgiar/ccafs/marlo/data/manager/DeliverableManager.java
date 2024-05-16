@@ -104,6 +104,8 @@ public interface DeliverableManager {
 
   public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
 
+  List<Deliverable> getDeliverablesLeadByInstitutionAndProject(long institutionId, long phaseId, long projectId);
+
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
 
   List<Deliverable> getDeliverablesLeadByUserAndProject(long userId, long phaseId, long projectId);
@@ -119,10 +121,11 @@ public interface DeliverableManager {
    */
   public List<Deliverable> getDeliverablesList(LiaisonInstitution liaisonInstitution, Phase phase);
 
+
   List<String> getDuplicatesDeliverablesByPhase(long phase);
 
-
   public List<Deliverable> getNotPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
+
 
   /**
    * This method gets a list of publications that are active by a given phase
@@ -131,7 +134,6 @@ public interface DeliverableManager {
    */
 
   public List<Deliverable> getPublicationsByPhase(long phase);
-
 
   /**
    * This method gets a list of publications that are active for an specific liaisonInstitution
@@ -143,6 +145,7 @@ public interface DeliverableManager {
    * @return a list from Deliverable null if no exist records
    */
   public List<Deliverable> getPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
+
 
   /**
    * get deliverables without activities
