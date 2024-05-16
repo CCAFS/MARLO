@@ -468,9 +468,15 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
   public List<Deliverable> getDeliverablesLedByUser(long userID) {
+    LOG.info(" ProjectPartnerAction linea 471");
     List<Deliverable> deliverablesLeads = new ArrayList<>();
     List<Deliverable> deliverables =
-      deliverableManager.getDeliverablesLeadByUser(userID, this.getActualPhase().getId());
+      // deliverableManager.getDeliverablesLeadByUser(userID, this.getActualPhase().getId());
+      deliverableManager.getDeliverablesLeadByUserAndProject(userID, this.getActualPhase().getId(), projectID);
+    LOG.info(" ProjectPartnerAction linea 475 deliverables.size() " + deliverables.size());
+    LOG.info(" ProjectPartnerAction linea 476 userID " + userID);
+    LOG.info(" ProjectPartnerAction linea 477 this.getActualPhase().getId() " + this.getActualPhase().getId());
+    LOG.info(" ProjectPartnerAction linea 478 projectID " + projectID);
     if (deliverables != null) {
       for (Deliverable deliverable : deliverables) {
         if (deliverable.getProject() != null && deliverable.getProject().getId().equals(projectID)) {
@@ -505,6 +511,7 @@ public class ProjectPartnerAction extends BaseAction {
 
       }
     }
+    LOG.info(" ProjectPartnerAction linea 509 deliverablesLeads.size() " + deliverablesLeads.size());
     return deliverablesLeads;
 
   }

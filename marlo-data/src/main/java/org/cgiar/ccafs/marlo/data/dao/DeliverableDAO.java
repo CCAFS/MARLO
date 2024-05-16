@@ -97,6 +97,8 @@ public interface DeliverableDAO {
 
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
 
+  List<Deliverable> getDeliverablesLeadByUserAndProject(long userId, long phaseId, long projectId);
+
   List<String> getDuplicatesDeliverablesByPhase(long phase);
 
   public List<Deliverable> getPublicationsByPhase(long phase);

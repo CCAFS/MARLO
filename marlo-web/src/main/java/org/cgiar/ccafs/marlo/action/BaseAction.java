@@ -704,6 +704,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     Class<?> clazz;
     try {
       clazz = Class.forName(className);
+      Log.info("BaseAction linea 707 " + clazz);
       /*
        * if (clazz == UserRole.class) {
        * UserRole userRole = this.userRoleManager.getUserRoleById(id);
@@ -841,6 +842,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
       if (clazz == ProjectPartnerPerson.class) {
+        Log.info("BaseAction linea 844");
 
         ProjectPartnerPerson partnerPerson = this.partnerPersonManager.getProjectPartnerPersonById(id);
 
@@ -889,7 +891,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (!deliverablesLeads.isEmpty()) {
           return false;
         }
-
+        Log.info("BaseAction linea 892");
       }
 
       if (clazz == ShfrmPriorityAction.class) {

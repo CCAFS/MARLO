@@ -373,6 +373,38 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     return deliverables;
   }
 
+  @Override
+  public List<Deliverable> getDeliverablesLeadByUserAndProject(long userId, long phaseId, long projectId) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT ");
+    query.append("dup.deliverable_id as id ");
+    query.append("FROM ");
+    query.append("deliverable_user_partnerships AS dup ");
+    query.append("INNER JOIN deliverable_user_partnership_persons AS dupp ON dupp.user_partnership_id = dup.id ");
+    query.append(" inner join deliverables as d on dup.deliverable_id = d.id ");
+    query.append(" inner join deliverables_info di on di.deliverable_id = d.id ");
+    query.append("WHERE ");
+    query.append("dupp.user_id =" + userId + " AND ");
+    query.append("dup.is_active = 1 AND ");
+    query.append("dupp.is_active = 1 AND ");
+    query.append("dup.id_phase =" + phaseId);
+    query.append(" and d.project_id =" + projectId);
+    query.append(" and di.status in (2,4) ");
+    query.append(" and d.is_active =1 ");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<Deliverable> deliverables = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        Deliverable deliverable = this.find(Long.parseLong(map.get("id").toString()));
+        deliverables.add(deliverable);
+      }
+    }
+
+    return deliverables;
+  }
+
   /**
    * Get listing to validate duplicate information (dissemination_URL,DIO, handle)
    * 
