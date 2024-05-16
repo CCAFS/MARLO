@@ -345,27 +345,44 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
+
+  // cgamboa 16/05/2024 getActivitiesLedByUser was be updated
   public List<Activity> getActivitiesLedByUser(long userID) {
-    LOG.info("ProjectPartnerAction linea 346");
-    // Project project = projectManager.getProjectById(projectID);
-    // LOG.info("ProjectPartnerAction linea 346 project.getActivities().size" + project.getActivities().size());
-    // cgamboa 15/05/2024 project.getActivities() was changed by activityManager.getActivitiesByProject
-    List<Activity> activities =
-      activityManager.getActivitiesByProject(projectID, this.getActualPhase().getId()).stream()
-        .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null && c.getActivityStatus() != null
-          && c.getActivityStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase().equals(this.getActualPhase()))
-        .collect(Collectors.toList());
-    LOG.info("ProjectPartnerAction linea 354 -----------------------------");
-    LOG.info("ProjectPartnerAction linea 353 userID" + userID);
-    LOG.info("ProjectPartnerAction linea 355 this.getActualPhase().getId()" + this.getActualPhase().getId());
-    LOG.info("ProjectPartnerAction linea 355 ProjectStatusEnum.Ongoing.getStatusId()"
-      + ProjectStatusEnum.Ongoing.getStatusId());
-    LOG.info("ProjectPartnerAction linea 353 projectID" + projectID);
-    LOG.info("ProjectPartnerAction linea 355 activities.size()" + activities.size());
-    LOG.info("ProjectPartnerAction linea 357 -----------------------------");
+    List<Activity> activities = new ArrayList<Activity>();
+    int qunatityActivity = 0;
+    try {
+      qunatityActivity =
+        activityManager.getActivitiesByProjectAndUserQuantity(projectID, this.getActualPhase().getId(), userID);
+      if (qunatityActivity > 0) {
+        activities = activityManager.getActivitiesByProject(projectID, this.getActualPhase().getId()).stream()
+          .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null && c.getActivityStatus() != null
+            && c.getActivityStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
+        LOG.info("ProjectPartnerAction linea 354 -----------------------------");
+        LOG.info("ProjectPartnerAction linea 353 userID" + userID);
+        LOG.info("ProjectPartnerAction linea 355 this.getActualPhase().getId()" + this.getActualPhase().getId());
+        LOG.info("ProjectPartnerAction linea 355 ProjectStatusEnum.Ongoing.getStatusId()"
+          + ProjectStatusEnum.Ongoing.getStatusId());
+        LOG.info("ProjectPartnerAction linea 353 projectID" + projectID);
+        LOG.info("ProjectPartnerAction linea 355 activities.size()" + activities.size());
+        LOG.info("ProjectPartnerAction linea 357 -----------------------------");
+      }
+    } catch (Exception e) {
+      LOG.error(" enable to get acitivities in getActivitiesLedByUser   function ");
+    }
+    return activities;
 
 
+  }
+
+  public List<Activity> getActivitiesLedByUserOld(long userID) {
+    Project project = projectManager.getProjectById(projectID);
+    List<Activity> activities = project.getActivities().stream()
+      .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null && c.getActivityStatus() != null
+        && c.getActivityStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+        && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase().equals(this.getActualPhase()))
+      .collect(Collectors.toList());
     return activities;
 
   }

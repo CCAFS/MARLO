@@ -63,6 +63,8 @@ public interface ActivityManager {
    */
   public List<Activity> getActivitiesByProject(long projectId, long phaseId);
 
+  int getActivitiesByProjectAndUserQuantity(long projectId, long phaseId, long projectPersonId);
+
   /**
    * This method gets a activity object by a given activity identifier.
    * 
@@ -70,6 +72,7 @@ public interface ActivityManager {
    * @return a Activity object.
    */
   public Activity getActivityById(long activityID);
+
 
   /**
    * This method saves the information of the given activity

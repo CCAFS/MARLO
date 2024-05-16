@@ -63,6 +63,8 @@ public interface ActivityDAO {
   public List<Activity> getActivitiesByProject(long projectId, long phaseId);
 
 
+  int getActivitiesByProjectAndUserQuantity(long projectId, long phaseId, long projectPersonId);
+
   /**
    * This method saves the information of the given activity
    * 
