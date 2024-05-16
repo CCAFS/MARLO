@@ -68,10 +68,6 @@ function init() {
 
   $("textarea[id!='justification']").autoGrow();
   $(".deliverableList").on("change", addSubactionsEvent);
-  $(".deliverableList").on("click", function () {
-    console.log("click in selection")
-  });
-  autoEnableOptions();
 }
 
 // Add a new subAction element
@@ -120,18 +116,13 @@ function addSubactionsEvent() {
 }
 
 function disabledOption(element, value) {
-  console.clear()
   $(element).find(`option[value="${value}"]`).attr('disabled', true);
-  $(element).select2("destroy").select2();
+  $(element).find('select').select2("destroy").select2();
 }
 
 function enablesOption(element, value) {
   $(element).parents('.subSectionsSelector').find('select').find(`option[value="${value}"]`).removeAttr('disabled');
   $(element).parents('.subSectionsSelector').find('select').select2("destroy").select2();
-}
-
-function autoEnableOptions() {
-  console.log("autoEnableOptions")
 }
 
 function checkItems(block) {
@@ -222,7 +213,7 @@ function attachEvents() {
    */
   // Add a project partner Event
   $(".elementType-shfrmPriorityAction-deliverablePriorityActions").on("change", addActionEvent);
-  $(".removeElementType-shfrmPriorityAction-deliverablePriorityActions").on('click', removePartnerEvent);
+  $(".removeElementType-shfrmPriorityAction-deliverablePriorityActions").on('click', removeActionEvent);
   $(".removeElementType-shfrmPriorityAction-deliverablePriorityActions").on('mouseenter', function () {
     currentDeleteActionId = $(this).parent('.relationElement').find('.elementRelationID').val();
   });
@@ -609,7 +600,7 @@ function setPartnerTypeToDefault(type) {
 }
 
 let currentDeleteActionId = null;
-function removePartnerEvent(e) {
+function removeActionEvent() {
   $(`input.actionidvalue[value="${currentDeleteActionId}"]`).parents('.projectPartner').remove();
   updateActionsAndSubActionsIndexes();
 }
