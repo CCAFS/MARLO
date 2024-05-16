@@ -471,6 +471,7 @@ public class ProjectPartnerAction extends BaseAction {
     LOG.info(" ProjectPartnerAction linea 471");
     List<Deliverable> deliverablesLeads = new ArrayList<>();
     List<Deliverable> deliverables =
+      // cgamboa 16/05/2024 getDeliverablesLeadByUser was changed by getDeliverablesLeadByUser
       // deliverableManager.getDeliverablesLeadByUser(userID, this.getActualPhase().getId());
       deliverableManager.getDeliverablesLeadByUserAndProject(userID, this.getActualPhase().getId(), projectID);
     LOG.info(" ProjectPartnerAction linea 475 deliverables.size() " + deliverables.size());

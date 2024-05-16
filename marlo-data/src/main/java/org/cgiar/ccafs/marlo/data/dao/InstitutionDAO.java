@@ -66,6 +66,8 @@ public interface InstitutionDAO {
   public List<Institution> findPPAInstitutions(long crpID);
 
 
+  int getQuantityInstitutionByCrpAndPhase(long institutionId, long phaseId, long crpId);
+
   /**
    * This method saves the information of the given institution
    * 

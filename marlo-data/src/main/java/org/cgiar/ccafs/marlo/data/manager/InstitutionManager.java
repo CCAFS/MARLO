@@ -68,6 +68,8 @@ public interface InstitutionManager {
    */
   public Institution getInstitutionById(long institutionId);
 
+  int getQuantityInstitutionByCrpAndPhase(long institutionId, long phaseId, long crpId);
+
   /**
    * This method saves the information of the given institution
    * 
@@ -77,6 +79,7 @@ public interface InstitutionManager {
    *         or -1 is some error occurred.
    */
   public Institution saveInstitution(Institution institution);
+
 
   /**
    * This method looks for the active Institutions that contains the

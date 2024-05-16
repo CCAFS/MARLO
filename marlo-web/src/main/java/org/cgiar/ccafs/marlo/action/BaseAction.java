@@ -7558,6 +7558,31 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (institution == null) {
       return false;
     }
+    LOG.info(" baseAction linea 7558 institution.getId()" + institution.getId());
+    LOG.info(" baseAction linea 7559 this.getCrpID() " + this.getCrpID());
+    LOG.info(" baseAction linea 7560 this.getActualPhase().getId() " + this.getActualPhase().getId());
+
+    if (institution.getId() != null) {
+      // institution = this.institutionManager.getInstitutionById(institution.getId());
+      int institutionQuantity = institutionManager.getQuantityInstitutionByCrpAndPhase(institution.getId(),
+        this.getActualPhase().getId(), this.getCrpID());
+      LOG.info(" baseAction linea 7570 A institutionQuantity " + institutionQuantity);
+      // if (institution != null) {
+      if (institutionQuantity > 0) {
+        LOG.info(" baseAction linea 7570  " + this.getActualPhase().getId());
+        return true;
+      }
+      // }
+
+    }
+
+    return false;
+  }
+
+  public boolean isPPAOld(Institution institution) {
+    if (institution == null) {
+      return false;
+    }
 
     if (institution.getId() != null) {
       institution = this.institutionManager.getInstitutionById(institution.getId());
