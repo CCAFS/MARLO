@@ -4405,7 +4405,7 @@ public class DeliverableAction extends BaseAction {
 
       String toEmail = sharedClusterLeaderEmail;
       // CC will be the user who is making the modification.
-      String ccEmail = this.getCurrentUser().getEmail();
+      String ccEmail = null; // this.getCurrentUser().getEmail();
       // BBC will be our gmail notification email.
       String bbcEmails = this.config.getEmailNotification();
       String subject = this.getText("email.change.deliverableStatus.subject",
@@ -4416,12 +4416,13 @@ public class DeliverableAction extends BaseAction {
       String[] values = new String[7];
 
       values[0] = sharedClusterLeaderName;
-      values[1] = deliverableID + "";
+      values[1] = deliverableID + "- [" + deliverable.getDeliverableInfo(this.getActualPhase()).getTitle() + "]";
       values[2] = deliverable.getProject().getAcronym();
       values[3] = statusPrevName;
       values[4] = statusCurrentName;
       values[5] = sharedClusterAcronym;
-      values[6] = deliverable.getProject().getLeaderPerson(this.getActualPhase()).getUser().getComposedName();
+      User user = deliverable.getProject().getLeaderPerson(this.getActualPhase()).getUser();
+      values[6] = user.getComposedNameWithoutEmail() + " [" + user.getEmail() + "]";
 
       message.append(this.getText("email.change.deliverableStatus.body", values));
       message.append(this.getText("email.support.noCrpAdmins"));
