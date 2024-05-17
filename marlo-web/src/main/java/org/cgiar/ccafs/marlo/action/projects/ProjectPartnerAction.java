@@ -526,12 +526,22 @@ public class ProjectPartnerAction extends BaseAction {
 
 
   public List<ProjectInnovation> getInnovationContributingByPartner(Long projectPartnerID) {
+    LOG.info(" ProjectPartnerAction linea 529");
+
     List<ProjectInnovation> innovationContributings = new ArrayList<>();
     if (projectPartnerID != null && projectPartnerID != 0) {
       ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
+      LOG.info(" ProjectPartnerAction linea 530 this.getActualPhase().getId() " + this.getActualPhase().getId());
+      LOG.info(" ProjectPartnerAction linea 535 projectPartner.getInstitution().getId())"
+        + projectPartner.getInstitution().getId());
+      LOG.info(" ProjectPartnerAction linea 536 project.getId()" + project.getId());
       if (projectPartner != null && projectPartner.getInstitution() != null) {
-        List<ProjectInnovationCenter> innovationCenters = projectInnovationCenterManager.findAll();
+        /// cgamboa 16/05/2024 findAll() was changed by findAllByInsitutionAndPhase(long institutionId, long phaseId)
+        List<ProjectInnovationCenter> innovationCenters = projectInnovationCenterManager
+          .findAllByInsitutionAndPhase(projectPartner.getInstitution().getId(), this.getActualPhase().getId());
+
         if (innovationCenters != null) {
+          LOG.info(" ProjectPartnerAction linea 539 innovationCenters.size()" + innovationCenters.size());
           innovationCenters = innovationCenters.stream()
             .filter(p -> p != null && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
               && p.getInstitution() != null
@@ -558,6 +568,7 @@ public class ProjectPartnerAction extends BaseAction {
       }
 
     }
+    LOG.info(" ProjectPartnerAction linea 562 innovationContributings.size()" + innovationContributings.size());
     return innovationContributings;
   }
 
@@ -576,6 +587,7 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
   public List<ProjectPolicy> getPolicyContributingByPartner(Long projectPartnerID) {
+    LOG.info(" ProjectPartnerAction linea 580");
     List<ProjectPolicy> policyContributings = new ArrayList<>();
     if (projectPartnerID != null && projectPartnerID != 0) {
       ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
@@ -620,11 +632,17 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
   public List<ProjectExpectedStudy> getStudyContributingByPartner(Long projectExpectedID) {
+    LOG.info(" ProjectPartnerAction linea 625");
     List<ProjectExpectedStudy> studyContributings = new ArrayList<>();
     if (projectExpectedID != null && projectExpectedID != 0) {
       ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectExpectedID);
       if (projectPartner != null && projectPartner.getInstitution() != null) {
-        List<ProjectExpectedStudyCenter> studyCenters = projectExpectedStudyCenterManager.findAll();
+        // cgamboa 16/05/2024 findAll() was changed by findAllByInsituttionAndPhase(long institutionId, long phaseId)
+        List<ProjectExpectedStudyCenter> studyCenters = projectExpectedStudyCenterManager
+          .findAllByInsituttionAndPhase(projectPartner.getInstitution().getId(), this.getActualPhase().getId());
+        LOG.info(" ProjectPartnerAction linea 641 projectPartner.getInstitution().getId() "
+          + projectPartner.getInstitution().getId());
+        LOG.info(" ProjectPartnerAction linea 643 this.getActualPhase().getId() " + this.getActualPhase().getId());
         if (studyCenters != null) {
           studyCenters = studyCenters.stream()
             .filter(p -> p != null && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
@@ -652,6 +670,7 @@ public class ProjectPartnerAction extends BaseAction {
       }
 
     }
+    LOG.info(" ProjectPartnerAction linea 668 studyContributings.size()" + studyContributings.size());
     return studyContributings;
   }
 

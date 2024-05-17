@@ -52,6 +52,8 @@ public interface ProjectInnovationCenterManager {
   public List<ProjectInnovationCenter> findAll();
 
 
+  List<ProjectInnovationCenter> findAllByInsitutionAndPhase(long institutionId, long phaseId);
+
   /**
    * This method gets a projectInnovationCenter object by a given projectInnovationCenter identifier.
    * 
@@ -59,6 +61,7 @@ public interface ProjectInnovationCenterManager {
    * @return a projectInnovationCenter object.
    */
   public ProjectInnovationCenter getProjectInnovationCenterById(long projectInnovationCenterID);
+
 
   public ProjectInnovationCenter getProjectInnovationCenterById(long innovationid, long globalUnitID, long phaseID);
 

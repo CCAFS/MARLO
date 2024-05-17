@@ -57,6 +57,8 @@ public interface ProjectInnovationCenterDAO {
   public List<ProjectInnovationCenter> findAll();
 
 
+  List<ProjectInnovationCenter> findAllByInsitutionAndPhase(long institutionId, long phaseId);
+
   public ProjectInnovationCenter getProjectInnovationCenterById(long innovationid, long globalUnitID, long phaseID);
 
   /**

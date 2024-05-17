@@ -45,6 +45,8 @@ public interface ProjectExpectedStudyCenterManager {
   public List<ProjectExpectedStudyCenter> findAll();
 
 
+  List<ProjectExpectedStudyCenter> findAllByInsituttionAndPhase(long institutionId, long phaseId);
+
   /**
    * This method gets a projectExpectedStudyCenter object by a given projectExpectedStudyCenter identifier.
    * 
@@ -52,6 +54,7 @@ public interface ProjectExpectedStudyCenterManager {
    * @return a ProjectExpectedStudyCenter object.
    */
   public ProjectExpectedStudyCenter getProjectExpectedStudyCenterById(long projectExpectedStudyCenterID);
+
 
   /**
    * This method saves the information of the given projectExpectedStudyCenter

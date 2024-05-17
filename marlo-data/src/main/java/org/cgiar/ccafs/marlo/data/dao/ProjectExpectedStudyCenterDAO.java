@@ -57,6 +57,8 @@ public interface ProjectExpectedStudyCenterDAO {
   public List<ProjectExpectedStudyCenter> findAll();
 
 
+  List<ProjectExpectedStudyCenter> findAllByInsituttionAndPhase(long institutionId, long phaseId);
+
   /**
    * This method saves the information of the given projectExpectedStudyCenter
    * 
