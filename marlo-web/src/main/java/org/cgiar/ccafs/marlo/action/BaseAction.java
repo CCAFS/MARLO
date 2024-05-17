@@ -704,7 +704,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     Class<?> clazz;
     try {
       clazz = Class.forName(className);
-      Log.info("BaseAction linea 707 " + clazz);
       /*
        * if (clazz == UserRole.class) {
        * UserRole userRole = this.userRoleManager.getUserRoleById(id);
@@ -842,7 +841,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
       if (clazz == ProjectPartnerPerson.class) {
-        Log.info("BaseAction linea 844");
 
         ProjectPartnerPerson partnerPerson = this.partnerPersonManager.getProjectPartnerPersonById(id);
 
@@ -891,7 +889,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (!deliverablesLeads.isEmpty()) {
           return false;
         }
-        Log.info("BaseAction linea 892");
       }
 
       if (clazz == ShfrmPriorityAction.class) {
@@ -2861,7 +2858,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<Deliverable> getDeliverableRelationsImpact(Long id, String className) {
-    LOG.info(" BaseAction linea 2864 " + className);
     Class<?> clazz;
     List<Deliverable> deliverables = null;
     try {
@@ -2914,7 +2910,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public List<Deliverable> getDeliverableRelationsProject(Long id, String className, Long projectID) {
-    LOG.info(" BaseAction linea 2916 " + className);
     Class<?> clazz;
     List<Deliverable> deliverables = null;
     try {
@@ -5548,7 +5543,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<Deliverable> getShfrmActionDeliverablesRelation(Long shfrmPrimaryActionId) {
-    LOG.info("BaseAction linea 5549");
 
     List<Deliverable> deliverablesRelated = new ArrayList<>();
     if (shfrmPrimaryActionId != null && shfrmPrimaryActionId != 0) {
@@ -5572,7 +5566,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
     }
-    LOG.info("BaseAction linea 5572");
     if (deliverablesRelated != null && !deliverablesRelated.isEmpty()) {
       return deliverablesRelated;
     } else {
@@ -7558,22 +7551,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+  // cgamboa 17/05/2024 isPPA function has been modifified
   public boolean isPPA(Institution institution) {
     if (institution == null) {
       return false;
     }
-    LOG.info(" baseAction linea 7558 institution.getId()" + institution.getId());
-    LOG.info(" baseAction linea 7559 this.getCrpID() " + this.getCrpID());
-    LOG.info(" baseAction linea 7560 this.getActualPhase().getId() " + this.getActualPhase().getId());
+
 
     if (institution.getId() != null) {
       // institution = this.institutionManager.getInstitutionById(institution.getId());
       int institutionQuantity = institutionManager.getQuantityInstitutionByCrpAndPhase(institution.getId(),
         this.getActualPhase().getId(), this.getCrpID());
-      LOG.info(" baseAction linea 7570 A institutionQuantity " + institutionQuantity);
       // if (institution != null) {
       if (institutionQuantity > 0) {
-        LOG.info(" baseAction linea 7570  " + this.getActualPhase().getId());
         return true;
       }
       // }

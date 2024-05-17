@@ -56,7 +56,14 @@ public interface ProjectInnovationCenterDAO {
    */
   public List<ProjectInnovationCenter> findAll();
 
-
+  /**
+   * get ProjectInnovationCenter list by instituion and phase
+   * 
+   * @author IBD
+   * @param phaseId phase id
+   * @param institutionId institution id
+   * @return ProjectInnovationCenter list
+   */
   List<ProjectInnovationCenter> findAllByInsitutionAndPhase(long institutionId, long phaseId);
 
   public ProjectInnovationCenter getProjectInnovationCenterById(long innovationid, long globalUnitID, long phaseID);

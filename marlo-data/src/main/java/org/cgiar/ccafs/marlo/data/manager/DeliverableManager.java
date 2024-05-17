@@ -104,10 +104,28 @@ public interface DeliverableManager {
 
   public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
 
+  /**
+   * get deliverables list by institution, phase an project
+   * 
+   * @author IBD
+   * @param phaseId phase id
+   * @param projectId project id
+   * @param institutionId institution id
+   * @return deliverables list
+   */
   List<Deliverable> getDeliverablesLeadByInstitutionAndProject(long institutionId, long phaseId, long projectId);
 
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
 
+  /**
+   * get deliverables list by user, phase and project
+   * 
+   * @author IBD
+   * @param phaseId phase id
+   * @param projectId project id
+   * @param userId user id
+   * @return deliverables list
+   */
   List<Deliverable> getDeliverablesLeadByUserAndProject(long userId, long phaseId, long projectId);
 
   /**

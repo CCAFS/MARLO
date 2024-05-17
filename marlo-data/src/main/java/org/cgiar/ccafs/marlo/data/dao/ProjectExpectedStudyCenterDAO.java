@@ -56,7 +56,14 @@ public interface ProjectExpectedStudyCenterDAO {
    */
   public List<ProjectExpectedStudyCenter> findAll();
 
-
+  /**
+   * get ProjectExpectedStudyCenter list by instituion and phase
+   * 
+   * @author IBD
+   * @param phaseId phase id
+   * @param institutionId institution id
+   * @return ProjectExpectedStudyCenter list
+   */
   List<ProjectExpectedStudyCenter> findAllByInsituttionAndPhase(long institutionId, long phaseId);
 
   /**

@@ -66,6 +66,14 @@ public interface CrpPpaPartnerDAO {
    */
   public List<CrpPpaPartner> findByCrpAndPhase(long crpID, long phaseID);
 
+  /**
+   * get CrpPpaPartner list by crp and phase
+   * 
+   * @author IBD
+   * @param phaseId phase id
+   * @param crpID crp id
+   * @return CrpPpaPartner list
+   */
   List<CrpPpaPartner> findByCrpAndPhaseComplete(long crpID, long phaseID);
 
   /**

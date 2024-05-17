@@ -68,6 +68,15 @@ public interface InstitutionManager {
    */
   public Institution getInstitutionById(long institutionId);
 
+  /**
+   * get intitution quantity by crp and phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @param institutionId intitution id
+   * @param crpId crp id
+   * @return quantity of intitutions
+   */
   int getQuantityInstitutionByCrpAndPhase(long institutionId, long phaseId, long crpId);
 
   /**
