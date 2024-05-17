@@ -496,6 +496,7 @@ public class ProjectPartnerAction extends BaseAction {
 
                 if (deliverable.isActive()) {
                   deliverablesLeads.add(deliverable);
+                  LOG.info(" PRE ProjectPartnerAction linea 519 deliverablesLeads.size() " + deliverablesLeads.size());
                 }
               } else {
 
@@ -516,8 +517,18 @@ public class ProjectPartnerAction extends BaseAction {
 
       }
     }
+    LOG.info(" ProjectPartnerAction linea 519  ---------------------");
+    LOG.info(" ProjectPartnerAction linea 519 userID " + userID);
+    LOG.info(" ProjectPartnerAction linea 519 this.getActualPhase().getId() " + this.getActualPhase().getId());
+    LOG.info(" ProjectPartnerAction linea 519 projectID " + projectID);
+    LOG.info(" ProjectPartnerAction linea 519 deliverablesLeads.size() " + deliverablesLeads.size());
+    LOG.info(" ProjectPartnerAction linea 519  ======================");
     return deliverablesLeads;
 
+  }
+
+  public int getDeliverablesLedByUserTest(long userID) {
+    return 1;
   }
 
   public List<PartnerDivision> getDivisions() {

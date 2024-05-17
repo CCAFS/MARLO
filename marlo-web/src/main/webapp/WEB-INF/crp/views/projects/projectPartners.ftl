@@ -524,23 +524,25 @@
       [#-- Activities leading and Deliverables with responsibilities --]
       <div class="contactTags fullPartBlock clearfix">
         [#if (element.id??)!false ]
-          [#if action.getActivitiesLedByUser(element.id)?has_content]
-            <div class="tag activities">[@s.text name="projectPartners.personActivities"][@s.param]${action.getActivitiesLedByUser(element.id)?size}[/@s.param][/@s.text]</div>
+          [#local activitiesLedByUserList = action.getActivitiesLedByUser(element.id)]
+          [#if activitiesLedByUserList?size>0]
+            <div class="tag activities">[@s.text name="projectPartners.personActivities"][@s.param]${activitiesLedByUserList?size}[/@s.param][/@s.text]</div>
             <div class="activitiesList"  style="display:none">
               <h3>Activities</h3>
               <ul>
-              [#list action.getActivitiesLedByUser(element.id) as activity]
+              [#list activitiesLedByUserList as activity]
                 <li>${activity.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/activities' ][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]#projectActivity-${activity.id}"><img class="external-link" src="${baseUrlCdn}/global/images/external-link.png" /></a></li>
               [/#list]
               </ul>
             </div>
           [/#if]
-          [#if action.getDeliverablesLedByUser(element.user.id)?has_content]
-            <div class="tag deliverables">[@s.text name="projectPartners.personDeliverables"][@s.param]${action.getDeliverablesLedByUser(element.user.id)?size}[/@s.param][/@s.text]</div>
+          [#local deliverablesLedByUserList = action.getDeliverablesLedByUser(element.user.id)]
+          [#if deliverablesLedByUserList?size>0]
+            <div class="tag deliverables">[@s.text name="projectPartners.personDeliverables"][@s.param]${deliverablesLedByUserList?size}[/@s.param][/@s.text]</div>
             <div class="deliverablesList" style="display:none">
               <h3>Deliverables</h3>
               <ul>
-              [#list action.getDeliverablesLedByUser(element.user.id) as deliverable]
+              [#list deliverablesLedByUserList as deliverable]
                 <li>${deliverable.deliverableInfo.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"><img class="external-link" src="${baseUrlCdn}/global/images/external-link.png" /></a></li>
               [/#list]
               </ul>

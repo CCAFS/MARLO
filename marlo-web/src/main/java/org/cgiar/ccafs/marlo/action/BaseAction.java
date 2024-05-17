@@ -2861,6 +2861,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<Deliverable> getDeliverableRelationsImpact(Long id, String className) {
+    LOG.info(" BaseAction linea 2864 " + className);
     Class<?> clazz;
     List<Deliverable> deliverables = null;
     try {
@@ -2913,6 +2914,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public List<Deliverable> getDeliverableRelationsProject(Long id, String className, Long projectID) {
+    LOG.info(" BaseAction linea 2916 " + className);
     Class<?> clazz;
     List<Deliverable> deliverables = null;
     try {
