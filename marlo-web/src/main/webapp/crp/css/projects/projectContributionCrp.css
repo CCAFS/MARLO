@@ -151,7 +151,7 @@ a#opener {
   .dataTables_filter label input{
     height: 30px !important;
     width: 295px !important;
-    margin-left: -44px !important;
+    margin-left: 0px !important;
   }
   
   .iconSearch{
