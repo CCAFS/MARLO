@@ -4416,7 +4416,7 @@ public class DeliverableAction extends BaseAction {
       String[] values = new String[7];
 
       values[0] = sharedClusterLeaderName;
-      values[1] = deliverableID + "- [" + deliverable.getDeliverableInfo(this.getActualPhase()).getTitle() + "]";
+      values[1] = deliverableID + " - [" + deliverable.getDeliverableInfo(this.getActualPhase()).getTitle() + "]";
       values[2] = deliverable.getProject().getAcronym();
       values[3] = statusPrevName;
       values[4] = statusCurrentName;
@@ -4802,7 +4802,8 @@ public class DeliverableAction extends BaseAction {
    */
   public void validateStatusChangeAndNotifySharedClusters() {
     try {
-      if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+      if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)
+        && this.hasSpecificities(APConstants.NOTIFY_DELIVERABLE_STATUS_CHANGE)) {
 
         // Store repeated values in local variables for better readability and performance
         int statusPrev = previousStatus;
