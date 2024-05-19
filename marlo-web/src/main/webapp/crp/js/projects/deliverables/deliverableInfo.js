@@ -82,6 +82,12 @@ function init() {
       console.error('Error checking permissions:', error);
     });
 
+  // Remove options in the new expected year to be lesser or equal than the expected year
+  // Trying to avoid human errors
+  if(!isDeliverableNew){
+    disabledDatesInNewExpectedYear();
+  }
+
 
   $('#doi-bridge').keydown(checkDOI);
   $('#doi-bridge').change(checkDOI);
@@ -537,6 +543,7 @@ function validateCurrentDate() {
     },
     success: function (data) {
       $.each(data.status, function (val, name) {
+        console.log(val + "-" + name);
         $statuses.addOption(val, name);
       });
       $statuses.val(statusValue);
@@ -599,6 +606,28 @@ function justificationByStatus(statusId) {
       }
     }
   }
+}
+
+// Disable the options of new expected year lesser or equal than the expected year
+function disabledDatesInNewExpectedYear() {
+  var $newExpectedYearBlock = $('#newExpectedYear');
+  var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
+  var $expectedYearBlock = $('#deliverableYear');
+  var $expectedYearSelect = $expectedYearBlock.find('select');
+  var expectedYear = $expectedYearSelect.val();
+  var newExpectedYearSelectOptions = $newExpectedYearSelect.find('option');
+
+  var isAdmin = document.getElementById("adminRole").value;   
+
+  if(isAdmin){
+    return;
+  }
+
+  newExpectedYearSelectOptions.each(function (i, option) {
+    if (option.value <= expectedYear) {
+      $(option).prop('disabled', true);
+    }
+  });
 }
 
 //Display the overlay that block the possibility to change the expected year
