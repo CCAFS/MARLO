@@ -364,18 +364,15 @@ public class ProjectPartnerAction extends BaseAction {
 
 
   public List<Activity> getActivitiesData(long id) {
-    LOG.info("ProjectPartnerAction linea 367");
     List<Activity> activities = new ArrayList<Activity>();
     for (ProjectPartnerDTO projectPartnerDTO : projectDTO.getProjectPartner()) {
       for (ProjectPartnerPersonDTO projectPartnerPersonDTO : projectPartnerDTO.getProjectPartnerPersonDTO()) {
         if (projectPartnerPersonDTO.getId() == id) {
-          LOG.info("ProjectPartnerAction linea 372");
           return projectPartnerPersonDTO.getActivity();
         }
       }
 
     }
-    LOG.info("ProjectPartnerAction linea 378");
     return activities;
   }
 
@@ -404,7 +401,6 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
   public List<Activity> getActivitiesLedByUserCustom(long userID, List<Activity> activitiesOut) {
-    LOG.info("ProjectPartnerAction linea 393");
     List<Activity> activities = new ArrayList<Activity>();
     try {
 
@@ -418,7 +414,6 @@ public class ProjectPartnerAction extends BaseAction {
     } catch (Exception e) {
       LOG.error(" enable to get acitivities in getActivitiesLedByUser   function ");
     }
-    LOG.info("ProjectPartnerAction linea 410 " + activities.size());
     return activities;
 
 
@@ -476,7 +471,6 @@ public class ProjectPartnerAction extends BaseAction {
   public List<LocElement> getCountries() {
     return countries;
   }
-
 
   public List<Deliverable> getDeliverablesLedByPartner(Long projectPartnerID) {
     List<Deliverable> deliverablesLeads = new ArrayList<>();
@@ -1510,58 +1504,10 @@ public class ProjectPartnerAction extends BaseAction {
       project.getPartners().clear();
     }
 
-    LOG.info("antes linea");
-    this.prepareTwo(project);
+    this.setCustomDataToPartnerShipPerson(project);
 
-    for (ProjectPartnerDTO projectPartner : projectDTO.getProjectPartner()) {
-
-      LOG.info("----------------------------------------------");
-      LOG.info("ProjectPartnerAction linea 1461" + projectPartner.getId());
-      for (ProjectPartnerPersonDTO string : projectPartner.getProjectPartnerPersonDTO()) {
-        LOG.info("ProjectPartnerAction linea 1506 " + string.getId());
-        LOG.info("ProjectPartnerAction linea 1507 " + string.getActivity().size());
-      }
-      LOG.info("----------------------------------------------");
-    }
 
   }
-
-  public void prepareTwo(Project project) {
-    List<Activity> activities = new ArrayList<Activity>();
-    try {
-      // puntobase
-      List<ProjectPartnerDTO> projectPartnerDTOList = new ArrayList<ProjectPartnerDTO>();
-      activities = activityManager.getActivitiesByProject(projectID, this.getActualPhase().getId());
-      LOG.info("ProjectPartnerAction linea 1516 projectID " + projectID);
-      LOG.info("ProjectPartnerAction linea 1517 this.getActualPhase().getId() " + this.getActualPhase().getId());
-      LOG.info("ProjectPartnerAction linea 1518 activities.size()" + activities.size());
-      for (ProjectPartner projectPartner : project.getPartners()) {
-
-        ProjectPartnerDTO projectPartnerDTO = new ProjectPartnerDTO();
-        projectPartnerDTO.setId(projectPartner.getId());
-
-        List<ProjectPartnerPersonDTO> projectPartnerPersonDTOList = new ArrayList<ProjectPartnerPersonDTO>();
-        for (ProjectPartnerPerson partnerPerson : projectPartner.getProjectPartnerPersons()) {
-          ProjectPartnerPersonDTO projectPartnerPersonDTOTmp = new ProjectPartnerPersonDTO();
-          projectPartnerPersonDTOTmp.setId(partnerPerson.getId());
-          projectPartnerPersonDTOTmp.setActivity(this.getActivitiesLedByUserCustom(partnerPerson.getId(), activities));
-
-
-          projectPartnerPersonDTOList.add(projectPartnerPersonDTOTmp);
-        }
-
-        projectPartnerDTO.setProjectPartnerPersonDTO(projectPartnerPersonDTOList);
-        projectPartnerDTOList.add(projectPartnerDTO);
-
-      }
-
-      projectDTO.setProjectPartner(projectPartnerDTOList);
-
-    } catch (Exception e) {
-      LOG.error(" unable to get custom data in prepareTwo function");
-    }
-  }
-
 
   /**
    * Delete projectPartner if it is not in the list of partners sent back from the UI.
@@ -1595,6 +1541,7 @@ public class ProjectPartnerAction extends BaseAction {
       }
     }
   }
+
 
   private void removeProjectExpectedEstudiesCenter(ProjectPartner previouslyEnteredPartner) {
     Project projectTemp = projectManager.getProjectById(projectID);
@@ -1884,7 +1831,6 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
-
   /**
    * @param partner - the projectPartner edited in the UI
    */
@@ -1929,6 +1875,7 @@ public class ProjectPartnerAction extends BaseAction {
 
 
   }
+
 
   private ProjectPartner saveProjectPartner(ProjectPartner projectPartnerClient, Project projectDB) {
     if (projectPartnerClient.getId() == null) {
@@ -2227,9 +2174,49 @@ public class ProjectPartnerAction extends BaseAction {
     this.allUsers = allUsers;
   }
 
-
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
+  }
+
+
+  /**
+   * set custom data to be used from partnershipperson section
+   * 
+   * @author IBD
+   * @param Project project
+   */
+
+  public void setCustomDataToPartnerShipPerson(Project project) {
+    List<Activity> activities = new ArrayList<Activity>();
+    try {
+      // puntobase
+      List<ProjectPartnerDTO> projectPartnerDTOList = new ArrayList<ProjectPartnerDTO>();
+      activities = activityManager.getActivitiesByProject(projectID, this.getActualPhase().getId());
+      for (ProjectPartner projectPartner : project.getPartners()) {
+
+        ProjectPartnerDTO projectPartnerDTO = new ProjectPartnerDTO();
+        projectPartnerDTO.setId(projectPartner.getId());
+
+        List<ProjectPartnerPersonDTO> projectPartnerPersonDTOList = new ArrayList<ProjectPartnerPersonDTO>();
+        for (ProjectPartnerPerson partnerPerson : projectPartner.getProjectPartnerPersons()) {
+          ProjectPartnerPersonDTO projectPartnerPersonDTOTmp = new ProjectPartnerPersonDTO();
+          projectPartnerPersonDTOTmp.setId(partnerPerson.getId());
+          projectPartnerPersonDTOTmp.setActivity(this.getActivitiesLedByUserCustom(partnerPerson.getId(), activities));
+
+
+          projectPartnerPersonDTOList.add(projectPartnerPersonDTOTmp);
+        }
+
+        projectPartnerDTO.setProjectPartnerPersonDTO(projectPartnerPersonDTOList);
+        projectPartnerDTOList.add(projectPartnerDTO);
+
+      }
+
+      projectDTO.setProjectPartner(projectPartnerDTOList);
+
+    } catch (Exception e) {
+      LOG.error(" unable to get custom data in prepareTwo function");
+    }
   }
 
 
