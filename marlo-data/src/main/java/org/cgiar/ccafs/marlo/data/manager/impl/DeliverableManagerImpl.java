@@ -203,6 +203,7 @@ public class DeliverableManagerImpl implements DeliverableManager {
     return deliverableDAO.getDeliverablesLeadByInstitutionAndProject(institutionId, phaseId, projectId);
   }
 
+
   @Override
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId) {
     return deliverableDAO.getDeliverablesLeadByUser(userId, phaseId);

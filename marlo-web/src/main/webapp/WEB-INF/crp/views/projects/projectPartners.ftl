@@ -28,6 +28,8 @@
 [/#if]
 
 [#assign partnerRespRequired = action.hasSpecificities('crp_nonPPAPartner_resp_required') ]
+[#assign permisionLeader=action.hasPermission("leader")]
+[#assign permisionCoordinator=action.hasPermission("coordinator")]  
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
@@ -417,7 +419,7 @@
           </div>
         </div>
       [/#if]
-      
+         
       [#-- Contacts person(s)  --]
       <div class="contactsPerson panel tertiary">
         <h5 class="sectionSubTitle">[@s.text name="projectPartners.projectPartnerContacts" /] <small>[@customForm.req required=isPPA /]</small></h5>
@@ -461,17 +463,20 @@
       <span class="index"></span>
     </div>
     <input id="id" class="partnerPersonId" type="hidden" name="${name}.id" value="${(element.id)!}" />
-    [#local canEditLeader=(editable && action.hasPermission("leader"))!false /]
-    [#local canEditCoordinator=(editable && action.hasPermission("coordinator"))!false /]
+    [#local canEditLeader=(editable && permisionLeader)!false /]
+    [#local canEditCoordinator=(editable && permisionCoordinator)!false /]
    
+
+
     [#local isPPA = (action.isPPA(element.projectPartner.institution))!false /]
     [#if (element.contactType == "PL")!false]
-      [#local canEditContactType = (editable && action.hasPermission("leader"))!false /]
+      [#local canEditContactType = (editable && permisionLeader)!false /]
     [#elseif (element.contactType == "PC")!false]
-      [#local canEditContactType = (editable && action.hasPermission("coordinator"))!false /]
+      [#local canEditContactType = (editable && permisionCoordinator)!false /]
     [#else]
       [#local canEditContactType = editable || isTemplate /]
     [/#if]
+  
     
     [#if customForm.changedField('${name}.id') != '']
       <span class="label label-info pull-right">Added/Updated</span> 
@@ -524,7 +529,7 @@
       [#-- Activities leading and Deliverables with responsibilities --]
       <div class="contactTags fullPartBlock clearfix">
         [#if (element.id??)!false ]
-          [#local activitiesLedByUserList = action.getActivitiesLedByUser(element.id)]
+          [#local activitiesLedByUserList = action.getActivitiesData(element.id)]
           [#if activitiesLedByUserList?size>0]
             <div class="tag activities">[@s.text name="projectPartners.personActivities"][@s.param]${activitiesLedByUserList?size}[/@s.param][/@s.text]</div>
             <div class="activitiesList"  style="display:none">

@@ -125,8 +125,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProjectPartnerAction extends BaseAction {
+class ProjectDTO {
 
+  List<ProjectPartnerDTO> projectPartnerDTO;
+
+  public List<ProjectPartnerDTO> getProjectPartner() {
+    return projectPartnerDTO;
+  }
+
+  public void setProjectPartner(List<ProjectPartnerDTO> projectPartnerDTO) {
+    this.projectPartnerDTO = projectPartnerDTO;
+  }
+
+
+}
+
+public class ProjectPartnerAction extends BaseAction {
 
   /**
    * 
@@ -135,6 +149,7 @@ public class ProjectPartnerAction extends BaseAction {
 
 
   private static Logger LOG = LoggerFactory.getLogger(ProjectPartnerAction.class);
+
 
   /**
    * Helper method to read a stream into memory.
@@ -155,6 +170,8 @@ public class ProjectPartnerAction extends BaseAction {
     }
     return baos.toByteArray();
   }
+
+  ProjectDTO projectDTO = new ProjectDTO();
 
   // Managers
   private final ProjectPartnerManager projectPartnerManager;
@@ -346,6 +363,23 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
 
+  public List<Activity> getActivitiesData(long id) {
+    LOG.info("ProjectPartnerAction linea 367");
+    List<Activity> activities = new ArrayList<Activity>();
+    for (ProjectPartnerDTO projectPartnerDTO : projectDTO.getProjectPartner()) {
+      for (ProjectPartnerPersonDTO projectPartnerPersonDTO : projectPartnerDTO.getProjectPartnerPersonDTO()) {
+        if (projectPartnerPersonDTO.getId() == id) {
+          LOG.info("ProjectPartnerAction linea 372");
+          return projectPartnerPersonDTO.getActivity();
+        }
+      }
+
+    }
+    LOG.info("ProjectPartnerAction linea 378");
+    return activities;
+  }
+
+
   // cgamboa 16/05/2024 getActivitiesLedByUser was be updated
   public List<Activity> getActivitiesLedByUser(long userID) {
     List<Activity> activities = new ArrayList<Activity>();
@@ -364,6 +398,27 @@ public class ProjectPartnerAction extends BaseAction {
     } catch (Exception e) {
       LOG.error(" enable to get acitivities in getActivitiesLedByUser   function ");
     }
+    return activities;
+
+
+  }
+
+  public List<Activity> getActivitiesLedByUserCustom(long userID, List<Activity> activitiesOut) {
+    LOG.info("ProjectPartnerAction linea 393");
+    List<Activity> activities = new ArrayList<Activity>();
+    try {
+
+      activities = activitiesOut.stream()
+        .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null && c.getActivityStatus() != null
+          && c.getActivityStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+          && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList());
+
+
+    } catch (Exception e) {
+      LOG.error(" enable to get acitivities in getActivitiesLedByUser   function ");
+    }
+    LOG.info("ProjectPartnerAction linea 410 " + activities.size());
     return activities;
 
 
@@ -400,10 +455,10 @@ public class ProjectPartnerAction extends BaseAction {
     return allRepIndResearchPhases;
   }
 
+
   public List<User> getAllUsers() {
     return allUsers;
   }
-
 
   private Path getAutoSaveFilePath() {
     // get the class simple name
@@ -416,6 +471,7 @@ public class ProjectPartnerAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
+
 
   public List<LocElement> getCountries() {
     return countries;
@@ -465,6 +521,7 @@ public class ProjectPartnerAction extends BaseAction {
     return deliverablesLeads;
   }
 
+
   public List<Deliverable> getDeliverablesLedByUser(long userID) {
     List<Deliverable> deliverablesLeads = new ArrayList<>();
     List<Deliverable> deliverables =
@@ -505,7 +562,6 @@ public class ProjectPartnerAction extends BaseAction {
 
       }
     }
-
     return deliverablesLeads;
 
   }
@@ -514,10 +570,10 @@ public class ProjectPartnerAction extends BaseAction {
     return 1;
   }
 
+
   public List<PartnerDivision> getDivisions() {
     return divisions;
   }
-
 
   public List<ProjectInnovation> getInnovationContributingByPartner(Long projectPartnerID) {
 
@@ -559,6 +615,7 @@ public class ProjectPartnerAction extends BaseAction {
     return innovationContributings;
   }
 
+
   public List<InstitutionType> getIntitutionTypes() {
     return intitutionTypes;
   }
@@ -568,10 +625,10 @@ public class ProjectPartnerAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public Map<String, String> getPartnerPersonTypes() {
     return partnerPersonTypes;
   }
+
 
   public List<ProjectPolicy> getPolicyContributingByPartner(Long projectPartnerID) {
     List<ProjectPolicy> policyContributings = new ArrayList<>();
@@ -608,7 +665,6 @@ public class ProjectPartnerAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
@@ -616,6 +672,7 @@ public class ProjectPartnerAction extends BaseAction {
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
   }
+
 
   public List<ProjectExpectedStudy> getStudyContributingByPartner(Long projectExpectedID) {
     List<ProjectExpectedStudy> studyContributings = new ArrayList<>();
@@ -660,7 +717,6 @@ public class ProjectPartnerAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
-
 
   /**
    * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
@@ -997,6 +1053,7 @@ public class ProjectPartnerAction extends BaseAction {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -1453,6 +1510,56 @@ public class ProjectPartnerAction extends BaseAction {
       project.getPartners().clear();
     }
 
+    LOG.info("antes linea");
+    this.prepareTwo(project);
+
+    for (ProjectPartnerDTO projectPartner : projectDTO.getProjectPartner()) {
+
+      LOG.info("----------------------------------------------");
+      LOG.info("ProjectPartnerAction linea 1461" + projectPartner.getId());
+      for (ProjectPartnerPersonDTO string : projectPartner.getProjectPartnerPersonDTO()) {
+        LOG.info("ProjectPartnerAction linea 1506 " + string.getId());
+        LOG.info("ProjectPartnerAction linea 1507 " + string.getActivity().size());
+      }
+      LOG.info("----------------------------------------------");
+    }
+
+  }
+
+  public void prepareTwo(Project project) {
+    List<Activity> activities = new ArrayList<Activity>();
+    try {
+      // puntobase
+      List<ProjectPartnerDTO> projectPartnerDTOList = new ArrayList<ProjectPartnerDTO>();
+      activities = activityManager.getActivitiesByProject(projectID, this.getActualPhase().getId());
+      LOG.info("ProjectPartnerAction linea 1516 projectID " + projectID);
+      LOG.info("ProjectPartnerAction linea 1517 this.getActualPhase().getId() " + this.getActualPhase().getId());
+      LOG.info("ProjectPartnerAction linea 1518 activities.size()" + activities.size());
+      for (ProjectPartner projectPartner : project.getPartners()) {
+
+        ProjectPartnerDTO projectPartnerDTO = new ProjectPartnerDTO();
+        projectPartnerDTO.setId(projectPartner.getId());
+
+        List<ProjectPartnerPersonDTO> projectPartnerPersonDTOList = new ArrayList<ProjectPartnerPersonDTO>();
+        for (ProjectPartnerPerson partnerPerson : projectPartner.getProjectPartnerPersons()) {
+          ProjectPartnerPersonDTO projectPartnerPersonDTOTmp = new ProjectPartnerPersonDTO();
+          projectPartnerPersonDTOTmp.setId(partnerPerson.getId());
+          projectPartnerPersonDTOTmp.setActivity(this.getActivitiesLedByUserCustom(partnerPerson.getId(), activities));
+
+
+          projectPartnerPersonDTOList.add(projectPartnerPersonDTOTmp);
+        }
+
+        projectPartnerDTO.setProjectPartnerPersonDTO(projectPartnerPersonDTOList);
+        projectPartnerDTOList.add(projectPartnerDTO);
+
+      }
+
+      projectDTO.setProjectPartner(projectPartnerDTOList);
+
+    } catch (Exception e) {
+      LOG.error(" unable to get custom data in prepareTwo function");
+    }
   }
 
 
@@ -2387,6 +2494,58 @@ public class ProjectPartnerAction extends BaseAction {
       .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
       .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
     return crpNotification;
+  }
+
+}
+
+class ProjectPartnerDTO {
+
+  Long id;
+
+  List<ProjectPartnerPersonDTO> projectPartnerPersonDTO;
+
+  public Long getId() {
+    return this.id;
+  }
+
+
+  public List<ProjectPartnerPersonDTO> getProjectPartnerPersonDTO() {
+    return projectPartnerPersonDTO;
+  }
+
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public void setProjectPartnerPersonDTO(List<ProjectPartnerPersonDTO> projectPartnerPersonDTO) {
+    this.projectPartnerPersonDTO = projectPartnerPersonDTO;
+  }
+}
+
+
+class ProjectPartnerPersonDTO {
+
+  Long id;
+
+  List<Activity> activities;
+
+  public List<Activity> getActivity() {
+    return activities;
+  }
+
+
+  public Long getId() {
+    return this.id;
+  }
+
+  public void setActivity(List<Activity> activities) {
+    this.activities = activities;
+  }
+
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
 }

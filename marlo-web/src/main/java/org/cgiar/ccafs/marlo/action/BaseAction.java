@@ -5853,17 +5853,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean hasPermission(String fieldName) {
+    LOG.info("BaseAction linea 5856 " + fieldName);
     if (this.basePermission == null) {
+      LOG.info("BaseAction linea 5858");
       return this.securityContext.hasPermission(fieldName);
     } else {
       if (this.getCrpSession() != null) {
         Phase phase = this.getActualPhase();
         String basePhase = this.getBasePermission().replaceAll(this.getCrpSession(),
           this.getCrpSession() + ":" + phase.getDescription() + ":" + phase.getYear());
+        LOG.info("BaseAction linea 5865");
         return this.securityContext.hasPermission(basePhase + ":" + fieldName)
           || this.securityContext.hasPermission(basePhase)
           || this.securityContext.hasPermission(this.getBasePermission() + ":" + fieldName);
       } else {
+        LOG.info("BaseAction linea 5870");
         return this.securityContext.hasPermission(this.getBasePermission() + ":" + fieldName);
       }
 
