@@ -341,17 +341,10 @@ public class OutcomesAction extends BaseAction {
 
     if (this.isAiccra()) {
 
-      // Adding the year to the list.
-      targetYears.add(2021);
-      targetYears.add(2022);
-      targetYears.add(2023);
-      targetYears.add(2024);
-      targetYears.add(2025);
-      targetYears.add(2026);
-      targetYears.add(2027);
-      targetYears.add(2028);
-      targetYears.add(2029);
-      targetYears.add(2030);
+      // Adding years directly to the list
+      for (int year = 2021; year <= 2030; year++) {
+        targetYears.add(year);
+      }
 
     } else {
       while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
