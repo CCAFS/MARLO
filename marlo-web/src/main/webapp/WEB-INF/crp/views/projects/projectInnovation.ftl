@@ -8,7 +8,7 @@
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20231017"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20230106"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20240517"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
 
