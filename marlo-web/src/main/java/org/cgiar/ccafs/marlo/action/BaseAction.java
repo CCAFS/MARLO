@@ -5853,6 +5853,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean hasPermission(String fieldName) {
+    LOG.info("BaseAction linea 5856 fieldName" + fieldName);
     if (this.basePermission == null) {
       return this.securityContext.hasPermission(fieldName);
     } else {
@@ -6360,7 +6361,42 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+  /**
+   * Validate section status based on program id
+   * 
+   * @param crpProgramID crpProgram id.
+   * @return validation boolean result.
+   */
   public boolean isCompleteImpact(long crpProgramID) {
+    LOG.info("BaseAction linea 6370");
+
+    int sectionsBD = this.sectionStatusManager.findAllQuantity();
+    if (sectionsBD == 0) {
+      return false;
+    }
+
+    CrpProgram cpCrpProgram = this.crpProgramManager.getCrpProgramById(crpProgramID);
+    List<SectionStatus> sections =
+      cpCrpProgram
+        .getSectionStatuses().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
+          && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
+        .collect(Collectors.toList());
+
+    for (SectionStatus sectionStatus : sections) {
+      if (sectionStatus.getMissingFields().length() > 0) {
+        return false;
+      }
+    }
+    if (sections.size() == 0) {
+      return false;
+    }
+    if (sections.size() < 2) {
+      return false;
+    }
+    return true;
+  }
+
+  public boolean isCompleteImpactOld(long crpProgramID) {
 
     List<SectionStatus> sectionsBD = this.sectionStatusManager.findAll();
     if (sectionsBD == null) {
