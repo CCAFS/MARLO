@@ -67,18 +67,21 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectDTO;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerDTO;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipResearchPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPersonDTO;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -125,20 +128,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ProjectDTO {
-
-  List<ProjectPartnerDTO> projectPartnerDTO;
-
-  public List<ProjectPartnerDTO> getProjectPartner() {
-    return projectPartnerDTO;
-  }
-
-  public void setProjectPartner(List<ProjectPartnerDTO> projectPartnerDTO) {
-    this.projectPartnerDTO = projectPartnerDTO;
-  }
-
-
-}
 
 public class ProjectPartnerAction extends BaseAction {
 
@@ -2485,54 +2474,3 @@ public class ProjectPartnerAction extends BaseAction {
 
 }
 
-class ProjectPartnerDTO {
-
-  Long id;
-
-  List<ProjectPartnerPersonDTO> projectPartnerPersonDTO;
-
-  public Long getId() {
-    return this.id;
-  }
-
-
-  public List<ProjectPartnerPersonDTO> getProjectPartnerPersonDTO() {
-    return projectPartnerPersonDTO;
-  }
-
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setProjectPartnerPersonDTO(List<ProjectPartnerPersonDTO> projectPartnerPersonDTO) {
-    this.projectPartnerPersonDTO = projectPartnerPersonDTO;
-  }
-}
-
-
-class ProjectPartnerPersonDTO {
-
-  Long id;
-
-  List<Activity> activities;
-
-  public List<Activity> getActivity() {
-    return activities;
-  }
-
-
-  public Long getId() {
-    return this.id;
-  }
-
-  public void setActivity(List<Activity> activities) {
-    this.activities = activities;
-  }
-
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-}
