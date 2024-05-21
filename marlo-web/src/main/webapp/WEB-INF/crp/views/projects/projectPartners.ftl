@@ -28,8 +28,7 @@
 [/#if]
 
 [#assign partnerRespRequired = action.hasSpecificities('crp_nonPPAPartner_resp_required') ]
-[#assign permisionLeader=action.hasPermission("leader")]
-[#assign permisionCoordinator=action.hasPermission("coordinator")]  
+
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
