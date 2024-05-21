@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class DisaggregatedTargetCrpProgramOutcomeMySQLDAO extends AbstractMarloDAO<DisaggregatedTargetCrpProgramOutcome, Long> implements DisaggregatedTargetCrpProgramOutcomeDAO {
+public class DisaggregatedTargetCrpProgramOutcomeMySQLDAO extends
+  AbstractMarloDAO<DisaggregatedTargetCrpProgramOutcome, Long> implements DisaggregatedTargetCrpProgramOutcomeDAO {
 
 
   @Inject
@@ -37,14 +38,16 @@ public class DisaggregatedTargetCrpProgramOutcomeMySQLDAO extends AbstractMarloD
 
   @Override
   public void deleteDisaggregatedTargetCrpProgramOutcome(long disaggregatedTargetCrpProgramOutcomeId) {
-    DisaggregatedTargetCrpProgramOutcome disaggregatedTargetCrpProgramOutcome = this.find(disaggregatedTargetCrpProgramOutcomeId);
+    DisaggregatedTargetCrpProgramOutcome disaggregatedTargetCrpProgramOutcome =
+      this.find(disaggregatedTargetCrpProgramOutcomeId);
     disaggregatedTargetCrpProgramOutcome.setActive(false);
     this.update(disaggregatedTargetCrpProgramOutcome);
   }
 
   @Override
   public boolean existDisaggregatedTargetCrpProgramOutcome(long disaggregatedTargetCrpProgramOutcomeID) {
-    DisaggregatedTargetCrpProgramOutcome disaggregatedTargetCrpProgramOutcome = this.find(disaggregatedTargetCrpProgramOutcomeID);
+    DisaggregatedTargetCrpProgramOutcome disaggregatedTargetCrpProgramOutcome =
+      this.find(disaggregatedTargetCrpProgramOutcomeID);
     if (disaggregatedTargetCrpProgramOutcome == null) {
       return false;
     }
@@ -70,7 +73,31 @@ public class DisaggregatedTargetCrpProgramOutcomeMySQLDAO extends AbstractMarloD
   }
 
   @Override
-  public DisaggregatedTargetCrpProgramOutcome save(DisaggregatedTargetCrpProgramOutcome disaggregatedTargetCrpProgramOutcome) {
+  public List<DisaggregatedTargetCrpProgramOutcome>
+    getDisaggregatedTargetCrpProgramOutcomeByOutcome(long crpProgramOutcomeID) {
+    String query = "from " + DisaggregatedTargetCrpProgramOutcome.class.getName()
+      + " where is_active=1 and crp_program_outcome_id=" + crpProgramOutcomeID;
+    List<DisaggregatedTargetCrpProgramOutcome> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+  }
+
+  @Override
+  public List<DisaggregatedTargetCrpProgramOutcome> getDisaggregatedTargetCrpProgramOutcomeByPhase(long phaseId) {
+    String query =
+      "from " + DisaggregatedTargetCrpProgramOutcome.class.getName() + " where is_active=1 and id_phase=" + phaseId;
+    List<DisaggregatedTargetCrpProgramOutcome> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+  }
+
+  @Override
+  public DisaggregatedTargetCrpProgramOutcome
+    save(DisaggregatedTargetCrpProgramOutcome disaggregatedTargetCrpProgramOutcome) {
     if (disaggregatedTargetCrpProgramOutcome.getId() == null) {
       super.saveEntity(disaggregatedTargetCrpProgramOutcome);
     } else {

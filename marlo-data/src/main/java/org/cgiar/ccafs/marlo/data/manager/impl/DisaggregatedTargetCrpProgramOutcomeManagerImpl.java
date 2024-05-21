@@ -36,7 +36,8 @@ public class DisaggregatedTargetCrpProgramOutcomeManagerImpl implements Disaggre
 
 
   @Inject
-  public DisaggregatedTargetCrpProgramOutcomeManagerImpl(DisaggregatedTargetCrpProgramOutcomeDAO disaggregatedTargetCrpProgramOutcomeDAO) {
+  public DisaggregatedTargetCrpProgramOutcomeManagerImpl(
+    DisaggregatedTargetCrpProgramOutcomeDAO disaggregatedTargetCrpProgramOutcomeDAO) {
     this.disaggregatedTargetCrpProgramOutcomeDAO = disaggregatedTargetCrpProgramOutcomeDAO;
 
 
@@ -45,13 +46,15 @@ public class DisaggregatedTargetCrpProgramOutcomeManagerImpl implements Disaggre
   @Override
   public void deleteDisaggregatedTargetCrpProgramOutcome(long disaggregatedTargetCrpProgramOutcomeId) {
 
-    disaggregatedTargetCrpProgramOutcomeDAO.deleteDisaggregatedTargetCrpProgramOutcome(disaggregatedTargetCrpProgramOutcomeId);
+    disaggregatedTargetCrpProgramOutcomeDAO
+      .deleteDisaggregatedTargetCrpProgramOutcome(disaggregatedTargetCrpProgramOutcomeId);
   }
 
   @Override
   public boolean existDisaggregatedTargetCrpProgramOutcome(long disaggregatedTargetCrpProgramOutcomeID) {
 
-    return disaggregatedTargetCrpProgramOutcomeDAO.existDisaggregatedTargetCrpProgramOutcome(disaggregatedTargetCrpProgramOutcomeID);
+    return disaggregatedTargetCrpProgramOutcomeDAO
+      .existDisaggregatedTargetCrpProgramOutcome(disaggregatedTargetCrpProgramOutcomeID);
   }
 
   @Override
@@ -62,13 +65,27 @@ public class DisaggregatedTargetCrpProgramOutcomeManagerImpl implements Disaggre
   }
 
   @Override
-  public DisaggregatedTargetCrpProgramOutcome getDisaggregatedTargetCrpProgramOutcomeById(long disaggregatedTargetCrpProgramOutcomeID) {
+  public DisaggregatedTargetCrpProgramOutcome
+    getDisaggregatedTargetCrpProgramOutcomeById(long disaggregatedTargetCrpProgramOutcomeID) {
 
     return disaggregatedTargetCrpProgramOutcomeDAO.find(disaggregatedTargetCrpProgramOutcomeID);
   }
 
   @Override
-  public DisaggregatedTargetCrpProgramOutcome saveDisaggregatedTargetCrpProgramOutcome(DisaggregatedTargetCrpProgramOutcome disaggregatedTargetCrpProgramOutcome) {
+  public List<DisaggregatedTargetCrpProgramOutcome>
+    getDisaggregatedTargetCrpProgramOutcomeByOutcome(long crpProgramOutcomeID) {
+    return disaggregatedTargetCrpProgramOutcomeDAO
+      .getDisaggregatedTargetCrpProgramOutcomeByOutcome(crpProgramOutcomeID);
+  }
+
+  @Override
+  public List<DisaggregatedTargetCrpProgramOutcome> getDisaggregatedTargetCrpProgramOutcomeByPhase(long phaseId) {
+    return disaggregatedTargetCrpProgramOutcomeDAO.getDisaggregatedTargetCrpProgramOutcomeByPhase(phaseId);
+  }
+
+  @Override
+  public DisaggregatedTargetCrpProgramOutcome saveDisaggregatedTargetCrpProgramOutcome(
+    DisaggregatedTargetCrpProgramOutcome disaggregatedTargetCrpProgramOutcome) {
 
     return disaggregatedTargetCrpProgramOutcomeDAO.save(disaggregatedTargetCrpProgramOutcome);
   }

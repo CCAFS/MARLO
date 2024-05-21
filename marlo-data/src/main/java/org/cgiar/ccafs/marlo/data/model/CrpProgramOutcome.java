@@ -30,50 +30,36 @@ import com.google.gson.annotations.Expose;
  */
 public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
-
   /**
    * 
    */
   private static final long serialVersionUID = 3014520962149158601L;
 
-
   @Expose
   private CrpProgram crpProgram;
-
-
   @Expose
   private SrfTargetUnit srfTargetUnit;
-
   @Expose
   private String description;
   @Expose
   private String acronym;
   @Expose
   private String instructions;
-
   @Expose
   private String indicator;
   @Expose
   private Integer year;
   @Expose
   private FileDB file;
-
-
   @Expose
   private BigDecimal value;
   @Expose
   private BigDecimal baseline;
 
-
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
-
   private Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
-
-
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
-
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
-
   private Set<CrpClusterKeyOutputOutcome> crpClusterKeyOutputOutcomes = new HashSet<CrpClusterKeyOutputOutcome>(0);
   private Set<ProjectFurtherContribution> projectFurtherContributions = new HashSet<ProjectFurtherContribution>(0);
   private Set<CrpProgramOutcomeIndicator> crpProgramOutcomeIndicators = new HashSet<CrpProgramOutcomeIndicator>(0);
@@ -81,14 +67,11 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
   @Expose
   private Phase phase;
 
-
   @Expose
   private String composeID;
 
   private List<CrpMilestone> milestones;
-
   private List<CrpOutcomeSubIdo> subIdos;
-
   private List<CrpProgramOutcomeIndicator> indicators;
 
   public CrpProgramOutcome() {
@@ -348,4 +331,3 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
       + ", description=" + description + ", year=" + year + ", value=" + value + "]";
   }
 }
-

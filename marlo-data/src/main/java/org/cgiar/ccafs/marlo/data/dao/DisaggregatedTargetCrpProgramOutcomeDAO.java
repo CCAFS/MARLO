@@ -39,8 +39,10 @@ public interface DisaggregatedTargetCrpProgramOutcomeDAO {
    */
   public boolean existDisaggregatedTargetCrpProgramOutcome(long disaggregatedTargetCrpProgramOutcomeID);
 
+
   /**
-   * This method gets a disaggregatedTargetCrpProgramOutcome object by a given disaggregatedTargetCrpProgramOutcome identifier.
+   * This method gets a disaggregatedTargetCrpProgramOutcome object by a given disaggregatedTargetCrpProgramOutcome
+   * identifier.
    * 
    * @param disaggregatedTargetCrpProgramOutcomeID is the disaggregatedTargetCrpProgramOutcome identifier.
    * @return a DisaggregatedTargetCrpProgramOutcome object.
@@ -54,14 +56,36 @@ public interface DisaggregatedTargetCrpProgramOutcomeDAO {
    */
   public List<DisaggregatedTargetCrpProgramOutcome> findAll();
 
+  /**
+   * This method gets a disaggregatedTargetCrpProgramOutcome object by a given disaggregatedTargetCrpProgramOutcome
+   * identifier.
+   * 
+   * @param crpProgramOutcomeID is the crpProgramOutcomeID identifier.
+   * @return a DisaggregatedTargetCrpProgramOutcome list.
+   */
+  public List<DisaggregatedTargetCrpProgramOutcome>
+    getDisaggregatedTargetCrpProgramOutcomeByOutcome(long crpProgramOutcomeID);
+
+  /**
+   * This method gets a disaggregatedTargetCrpProgramOutcome object by a given disaggregatedTargetCrpProgramOutcome
+   * identifier.
+   * 
+   * @param phaseId is the phase identifier.
+   * @return a DisaggregatedTargetCrpProgramOutcome list.
+   */
+  public List<DisaggregatedTargetCrpProgramOutcome> getDisaggregatedTargetCrpProgramOutcomeByPhase(long phaseId);
+
 
   /**
    * This method saves the information of the given disaggregatedTargetCrpProgramOutcome
    * 
-   * @param disaggregatedTargetCrpProgramOutcome - is the disaggregatedTargetCrpProgramOutcome object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the disaggregatedTargetCrpProgramOutcome was
+   * @param disaggregatedTargetCrpProgramOutcome - is the disaggregatedTargetCrpProgramOutcome object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         disaggregatedTargetCrpProgramOutcome was
    *         updated
    *         or -1 is some error occurred.
    */
-  public DisaggregatedTargetCrpProgramOutcome save(DisaggregatedTargetCrpProgramOutcome disaggregatedTargetCrpProgramOutcome);
+  public DisaggregatedTargetCrpProgramOutcome
+    save(DisaggregatedTargetCrpProgramOutcome disaggregatedTargetCrpProgramOutcome);
 }
