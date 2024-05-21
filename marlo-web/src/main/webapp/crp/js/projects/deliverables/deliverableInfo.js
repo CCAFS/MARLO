@@ -608,7 +608,13 @@ function justificationByStatus(statusId) {
   }
 }
 
-// Disable the options of new expected year lesser or equal than the expected year
+/**
+ * Disables dates in the new expected year select options based on the selected expected year.
+ * The new expected year should be greater than the selected expected year.
+ * Allow the select only to admin users.
+ * Selects the first option available.
+ * 
+ */
 function disabledDatesInNewExpectedYear() {
   var $newExpectedYearBlock = $('#newExpectedYear');
   var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
@@ -618,14 +624,18 @@ function disabledDatesInNewExpectedYear() {
   var newExpectedYearSelectOptions = $newExpectedYearSelect.find('option');
 
   var isAdmin = document.getElementById("adminRole").value;   
-
+  
   if(isAdmin){
     return;
   }
 
   newExpectedYearSelectOptions.each(function (i, option) {
-    if (option.value <= expectedYear) {
+
+    if (option.value <= expectedYear ) {
       $(option).prop('disabled', true);
+    }
+    if (option.value == "-1") {
+      $(option).prop('disabled', false);
     }
   });
 }
