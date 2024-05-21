@@ -463,16 +463,16 @@
       <span class="index"></span>
     </div>
     <input id="id" class="partnerPersonId" type="hidden" name="${name}.id" value="${(element.id)!}" />
-    [#local canEditLeader=(editable && permisionLeader)!false /]
-    [#local canEditCoordinator=(editable && permisionCoordinator)!false /]
+    [#local canEditLeader=(editable && action.hasPermission("leader"))!false /]
+    [#local canEditCoordinator=(editable && action.hasPermission("coordinator"))!false /]
    
 
 
     [#local isPPA = (action.isPPA(element.projectPartner.institution))!false /]
     [#if (element.contactType == "PL")!false]
-      [#local canEditContactType = (editable && permisionLeader)!false /]
+      [#local canEditContactType = (editable && action.hasPermission("leader"))!false /]
     [#elseif (element.contactType == "PC")!false]
-      [#local canEditContactType = (editable && permisionCoordinator)!false /]
+      [#local canEditContactType = (editable && action.hasPermission("coordinator"))!false /]
     [#else]
       [#local canEditContactType = editable || isTemplate /]
     [/#if]
