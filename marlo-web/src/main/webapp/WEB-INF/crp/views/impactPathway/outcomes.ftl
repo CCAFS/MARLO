@@ -7,7 +7,8 @@
   "${baseUrlMedia}/js/impactPathway/outcomes.js?20221103",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
-  "${baseUrlCdn}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/fieldsValidation.js",
+  "${baseUrlMedia}/js/impactPathway/outcomesDisaggregatedTargets.js"
   ]
 /]
 [#assign customCSS = [
@@ -168,6 +169,10 @@
 [#-- Outcome Template --]
 [@outcomeMacro outcome={} name="outcomes" index=-1 isTemplate=true /]
 
+[#if action.hasSpecificities('disaggregated_targets_active')]
+  [@disaggregatedTargetsOutcomesMacro element={} name="outcomes[-1].disagreggatedTargetsOutcomes" index=-1 isTemplate=true /]
+[/#if]
+
 [#-- Milestone Template --]
 [@milestoneMacro milestone={} name="outcomes[0].milestones" index=-1 isTemplate=true  /]
 
@@ -222,8 +227,24 @@
       [@customForm.textArea name="${outcomeCustomName}.indicator"  i18nkey="outcome.inidicator" required=false className="outcome-inidicator limitWords-100" editable=editable /]
     </div>
     [/#if]
-
+      [#-- Disaggregated Targets Outcomes --]
+      [#if action.hasSpecificities('disaggregated_targets_active')]
+        [#if outcome.disaggregatedTargets?has_content]
+          [#list outcome.disaggregatedTargets as disaggregatedTargetOutcome]
+            [@disaggregatedTargetsOutcomesMacro element=disaggregatedTargetOutcome name="${outcomeCustomName}.disaggregatedTargets" index=disaggregatedTargets_index /]           
+          [/#list]
+        [#else]
+          <br><p class="message text-center">[@s.text name="No disaggregated targets addded"/]</p>
+        [/#if] 
+            [#if editable]
+              <div id="addPartnerBlock" class="addPerson text-center">
+                <div class="bigAddButton addActivity"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addDisaggregatedTargetOutcome" /]</div>
+              </div>
+            [/#if]
+            <br>
+      [/#if]    
     <div class="row form-group target-block to-minimize-outcome">
+             
       [#-- Target Year --]
       <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" value="${(outcome.year)!2023}" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
@@ -241,9 +262,8 @@
       <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
         [@customForm.input name="${outcomeCustomName}.value" i18nkey="outcome.targetValue" help="outcomes.addNewTargetUnit"  placeholder="outcome.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]
       </div>
-
-    </div>
-
+    </div>    
+            
     <!-- Nav tabs -->
     <ul class="nav nav-tabs to-minimize-outcome" role="tablist">
       <li role="presentation" class="active"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">Intermediate Targets <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
@@ -637,5 +657,51 @@
       [/#if]
     [/#if]
     <div class="clearfix"></div>
+  </div>
+[/#macro]
+
+[#macro disaggregatedTargetsOutcomesMacro element name index=0 isTemplate=false isActive=false]
+  <br>
+  [#assign customName = "${name}[${index}]" /]
+    <div id="projectActivity-${isTemplate?string('template',(element.id)!)}" class="projectActivity expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">    
+    [#if editable && (action.canAccessSuperAdmin())]
+      <div class="removeLink">
+        <div id="removeActivity" class="removeActivityBtnInList removeElement removeLink" data-toggle="modal" data-target="#removeactivityModal" title="[@s.text name='project.activities.removeActivity' /]"></div>
+      </div>
+    [/#if]
+    [#-- Partner Title --]
+    <div class="blockTitle closed">
+      [#if element.targetName?has_content]${(element.targetName)!'New Disaggregated Target'}[#else]New Disaggregated Target[/#if]
+      <div class="clearfix"></div>
+    </div>
+
+    <div class="blockContent" style="display:none">
+      <br>
+      [#-- Title --]
+      <input class="activityId" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
+      <span class="index hidden">${index}</span>    
+      [#-- Target Name --]
+      <div class="form-group">
+        [@customForm.input name="${customName}.targetName" className="activityTitle" i18nkey="project.activities.inputTitle" required=true editable=editable /]
+      </div>
+      [#-- Target Description --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.targetDescription" className="activityTitle" i18nkey="project.activities.inputTitle" required=true editable=editable/]
+      </div>   
+      
+      <div class="col-md-4 form-group">
+        [#-- SRF Target Unit --]
+        [@customForm.select name="${customName}.srfTargetUnit.id" label=""  i18nkey="outcome.selectTargetUnit" listName="targetUnitList" keyFieldName=""  displayFieldName=""   placeholder="outcome.selectTargetUnit.placeholder" multiple=false required=true header=false className=" targetUnit" editable=editable/]
+      </div>
+      <div class="col-md-4 form-group">
+        [#-- Target Value --]
+        [@customForm.input  name="${customName}.targetValue" i18nkey="project.activities.inputDescription" required=true className="limitWords-150 activityDescription" editable=editable /]
+      </div>      
+      <div class="col-md-4 form-group">
+        [#--Bussiness Rule--]  
+        [@customForm.select name="${customName}.disaggregatedTargetBussinessRule.id" label=""  i18nkey="project.activities.inputStatus" listName="disaggregatedTargetsBusinessRules" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className=" targetUnit" editable=editable/]
+      </div>           
+      <br>
+    </div>
   </div>
 [/#macro]

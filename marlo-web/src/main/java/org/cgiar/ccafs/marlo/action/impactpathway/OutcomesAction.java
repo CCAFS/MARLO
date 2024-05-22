@@ -24,6 +24,9 @@ import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DisaggregatedTargetCrpMilestoneManager;
+import org.cgiar.ccafs.marlo.data.manager.DisaggregatedTargetCrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DisaggregatedTargetsBusinessRuleManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -43,6 +46,9 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
+import org.cgiar.ccafs.marlo.data.model.DisaggregatedTargetCrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.DisaggregatedTargetCrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.DisaggregatedTargetsBusinessRule;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -96,57 +102,34 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class OutcomesAction extends BaseAction {
 
-
   private static final long serialVersionUID = -793652591843623397L;
-
 
   // FIXME remove this variable. create an specificity for each crp/platform
   private static final Integer END_YEAR = 2030;
 
-
   private AuditLogManager auditLogManager;
-
-
   private CrpAssumptionManager crpAssumptionManager;
-
-
   private HistoryComparator historyComparator;
 
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
-
-
   private CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicatorManager;
-
-
   private CrpMilestoneManager crpMilestoneManager;
-
-
   private CrpOutcomeSubIdoManager crpOutcomeSubIdoManager;
-
-
   private long crpProgramID;
-
-
   private FileDBManager fileDBManager;
-
   private CrpProgramManager crpProgramManager;
-
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
-
-
   private GeneralStatusManager generalStatusManager;
-
   private HashMap<Long, String> idoList;
-
-
   private GlobalUnit loggedCrp;
-
 
   private List<Integer> milestoneYears;
   private List<CrpProgramOutcome> outcomes;
   private List<CrpProgram> programs;
-
+  private List<DisaggregatedTargetCrpProgramOutcome> disaggregatedTargetOutcomes;
+  private List<DisaggregatedTargetCrpMilestone> disaggregatedTargetMilestones;
+  private List<DisaggregatedTargetsBusinessRule> disaggregatedTargetsBusinessRules;
   private CrpProgram selectedProgram;
   private SrfIdoManager srfIdoManager;
   private List<SrfIdo> srfIdos;
@@ -166,6 +149,9 @@ public class OutcomesAction extends BaseAction {
   private PowbIndMilestoneRiskManager powbIndMilestoneRiskManager;
   private List<PowbIndFollowingMilestone> followingMilestones;
   private PowbIndFollowingMilestoneManager powbIndFollowingMilestoneManager;
+  private DisaggregatedTargetCrpProgramOutcomeManager disaggregatedTargetCrpProgramOutcomeManager;
+  private DisaggregatedTargetCrpMilestoneManager disaggregatedTargetCrpMilestoneManager;
+  private DisaggregatedTargetsBusinessRuleManager disaggregatedTargetsBusinessRuleManager;
 
   private List<GeneralStatus> generalStatuses;
 
@@ -179,7 +165,10 @@ public class OutcomesAction extends BaseAction {
     PowbIndAssesmentRiskManager powbIndAssesmentRiskManager,
     RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
     PowbIndMilestoneRiskManager powbIndMilestoneRiskManager,
-    PowbIndFollowingMilestoneManager powbIndFollowingMilestoneManager, GeneralStatusManager generalStatusManager) {
+    PowbIndFollowingMilestoneManager powbIndFollowingMilestoneManager, GeneralStatusManager generalStatusManager,
+    DisaggregatedTargetCrpProgramOutcomeManager disaggregatedTargetCrpProgramOutcomeManager,
+    DisaggregatedTargetCrpMilestoneManager disaggregatedTargetCrpMilestoneManager,
+    DisaggregatedTargetsBusinessRuleManager disaggregatedTargetsBusinessRuleManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
@@ -201,8 +190,10 @@ public class OutcomesAction extends BaseAction {
     this.powbIndMilestoneRiskManager = powbIndMilestoneRiskManager;
     this.powbIndFollowingMilestoneManager = powbIndFollowingMilestoneManager;
     this.generalStatusManager = generalStatusManager;
+    this.disaggregatedTargetCrpProgramOutcomeManager = disaggregatedTargetCrpProgramOutcomeManager;
+    this.disaggregatedTargetCrpMilestoneManager = disaggregatedTargetCrpMilestoneManager;
+    this.disaggregatedTargetsBusinessRuleManager = disaggregatedTargetsBusinessRuleManager;
   }
-
 
   @Override
   public String cancel() {
@@ -266,6 +257,18 @@ public class OutcomesAction extends BaseAction {
     return crpProgramID;
   }
 
+  public List<DisaggregatedTargetCrpMilestone> getDisaggregatedTargetMilestones() {
+    return disaggregatedTargetMilestones;
+  }
+
+  public List<DisaggregatedTargetCrpProgramOutcome> getDisaggregatedTargetOutcomes() {
+    return disaggregatedTargetOutcomes;
+  }
+
+  public List<DisaggregatedTargetsBusinessRule> getDisaggregatedTargetsBusinessRules() {
+    return disaggregatedTargetsBusinessRules;
+  }
+
   public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
     return focusLevels;
   }
@@ -286,6 +289,7 @@ public class OutcomesAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public List<PowbIndMilestoneRisk> getMilestoneRisks() {
     return milestoneRisks;
   }
@@ -298,7 +302,6 @@ public class OutcomesAction extends BaseAction {
     return outcomes;
   }
 
-
   public PowbIndAssesmentRiskManager getPowbIndAssesmentRiskManager() {
     return powbIndAssesmentRiskManager;
   }
@@ -307,9 +310,11 @@ public class OutcomesAction extends BaseAction {
     return powbIndMilestoneRiskManager;
   }
 
+
   public List<CrpProgram> getPrograms() {
     return programs;
   }
+
 
   public RepIndGenderYouthFocusLevelManager getRepIndGenderYouthFocusLevelManager() {
     return repIndGenderYouthFocusLevelManager;
@@ -319,15 +324,14 @@ public class OutcomesAction extends BaseAction {
     return selectedProgram;
   }
 
-
   public List<SrfIdo> getSrfIdos() {
     return srfIdos;
   }
 
-
   public HashMap<Long, String> getTargetUnitList() {
     return targetUnitList;
   }
+
 
   public List<Integer> getTargetYears() {
     List<Integer> targetYears = new ArrayList<>();
@@ -362,6 +366,7 @@ public class OutcomesAction extends BaseAction {
     return targetYears;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
@@ -371,6 +376,27 @@ public class OutcomesAction extends BaseAction {
       .thenComparing(new MilestoneComparators.ComposedIdComparator());
 
     for (CrpProgramOutcome crpProgramOutcome : outcomes) {
+
+      /*
+       * Get Disaggregated Targets Outcomes
+       */
+      if (this.hasSpecificities(APConstants.DISAGGREGATED_TARGETS_ACTIVE)) {
+        disaggregatedTargetOutcomes = disaggregatedTargetCrpProgramOutcomeManager
+          .getDisaggregatedTargetCrpProgramOutcomeByOutcome(crpProgramOutcome.getId());
+
+
+        if (disaggregatedTargetOutcomes != null && !disaggregatedTargetOutcomes.isEmpty()) {
+          List<DisaggregatedTargetCrpProgramOutcome> disaggregatedTargets = new ArrayList<>();
+          for (DisaggregatedTargetCrpProgramOutcome disaggregatedTargetOutcome : disaggregatedTargetOutcomes) {
+            if (disaggregatedTargetOutcome != null && disaggregatedTargetOutcome.getId() != null) {
+              disaggregatedTargets.add(disaggregatedTargetOutcome);
+            }
+          }
+          if (disaggregatedTargets != null) {
+            crpProgramOutcome.setDisaggregatedTargets(disaggregatedTargets);
+          }
+        }
+      }
 
       crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive())
         .sorted(milestoneComparator::compare).collect(Collectors.toList()));
@@ -413,20 +439,21 @@ public class OutcomesAction extends BaseAction {
     }
   }
 
-
   @Override
   public void prepare() throws Exception {
-
 
     // IAuditLog ia = auditLogManager.getHistory(4);
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     outcomes = new ArrayList<CrpProgramOutcome>();
+    disaggregatedTargetsBusinessRules = new ArrayList<DisaggregatedTargetsBusinessRule>();
+    if (this.hasSpecificities(APConstants.DISAGGREGATED_TARGETS_ACTIVE)) {
+      disaggregatedTargetsBusinessRules = disaggregatedTargetsBusinessRuleManager.findAll();
+    }
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     targetUnitList = new HashMap<>();
     if (srfTargetUnitManager.findAll() != null) {
 
       List<SrfTargetUnit> targetUnits = new ArrayList<>();
-
       List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
         loggedCrp.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
 
@@ -446,7 +473,6 @@ public class OutcomesAction extends BaseAction {
     }
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
-
 
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
       CrpProgram history = (CrpProgram) auditLogManager.getHistory(transaction);
@@ -475,8 +501,6 @@ public class OutcomesAction extends BaseAction {
           for (CrpMilestone crpMilestone : crpProgramOutcome.getMilestones()) {
             differences.addAll(historyComparator.getDifferencesList(crpMilestone, transaction, specialList,
               "outcomes[" + i + "].milestones[" + j + "]", "outcomes", 2));
-
-
             j++;
           }
           j = 0;
@@ -485,7 +509,6 @@ public class OutcomesAction extends BaseAction {
               "outcomes[" + i + "].subIdos[" + j + "]", "outcomes", 2));
             j++;
             int k = 0;
-
 
             for (CrpAssumption crpAssumption : crpOutcomeSubIdo.getAssumptions()) {
               differences.addAll(historyComparator.getDifferencesList(crpAssumption, transaction, specialList,
@@ -498,15 +521,12 @@ public class OutcomesAction extends BaseAction {
 
         i = 0;
 
-
         this.setDifferences(differences);
       } else {
         programs = new ArrayList<>();
         this.transaction = null;
-
         this.setTransaction("-1");
       }
-
       Collections.sort(outcomes, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
     } else {
 
@@ -536,35 +556,24 @@ public class OutcomesAction extends BaseAction {
             crpProgramID = this.programs.get(0).getId();
           }
         }
-
       }
 
       if (crpProgramID != -1) {
         selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
         outcomes.addAll(selectedProgram.getCrpProgramOutcomes().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
-
       }
 
       if (selectedProgram != null) {
-
         milestoneYears = this.getTargetYears();
-
         Path path = this.getAutoSaveFilePath();
 
         if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
-
           BufferedReader reader = null;
-
           reader = new BufferedReader(new FileReader(path.toFile()));
-
           Gson gson = new GsonBuilder().create();
-
-
           JsonObject jReader = gson.fromJson(reader, JsonObject.class);
           reader.close();
-
-
           AutoSaveReader autoSaveReader = new AutoSaveReader();
 
           selectedProgram = (CrpProgram) autoSaveReader.readFromJson(jReader);
@@ -576,6 +585,7 @@ public class OutcomesAction extends BaseAction {
           if (outcomes == null) {
             outcomes = new ArrayList<>();
           }
+
           for (CrpProgramOutcome outcome : outcomes) {
 
             if (outcome.getSubIdos() != null) {
@@ -585,6 +595,7 @@ public class OutcomesAction extends BaseAction {
                 }
               }
             }
+
             if (outcome.getFile() != null) {
               if (outcome.getFile().getId() != null) {
                 outcome.setFile(fileDBManager.getFileDBById(outcome.getFile().getId()));
@@ -603,10 +614,7 @@ public class OutcomesAction extends BaseAction {
                 }
               }
             }
-
           }
-
-
           this.setDraft(true);
         } else {
           this.loadInfo();
@@ -625,17 +633,27 @@ public class OutcomesAction extends BaseAction {
             this.setEditable(false);
           }
 
-
           this.setSubmission(selectedProgram
             .getSubmissions().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
               && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
             .collect(Collectors.toList()).get(0));
         }
-
       }
 
       if (this.isHttpPost()) {
         outcomes.clear();
+        if (disaggregatedTargetOutcomes != null) {
+          disaggregatedTargetOutcomes.clear();
+        }
+        if (disaggregatedTargetMilestones != null) {
+          disaggregatedTargetMilestones.clear();
+        }
+        if (disaggregatedTargetsBusinessRules != null) {
+          disaggregatedTargetsBusinessRules.clear();
+        }
+        if (targetUnitList != null) {
+          targetUnitList.clear();
+        }
       }
     }
 
@@ -644,25 +662,20 @@ public class OutcomesAction extends BaseAction {
 
     /** POWB 2019 List */
     assessmentRisks = powbIndAssesmentRiskManager.findAll();
-
     focusLevels = repIndGenderYouthFocusLevelManager.findAll();
-
     milestoneRisks = powbIndMilestoneRiskManager.findAll();
-
-    followingMilestones = powbIndFollowingMilestoneManager.findAll();
-
-    /** */
+    followingMilestones = powbIndFollowingMilestoneManager.findAll();/** */
 
     idoList = new HashMap<>();
     srfIdos = new ArrayList<>();
-    for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
-      idoList.put(srfIdo.getId(), srfIdo.getDescription());
+    for (
 
+    SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+      idoList.put(srfIdo.getId(), srfIdo.getDescription());
       srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       srfIdos.add(srfIdo);
     }
   }
-
 
   @Override
   public String save() {
@@ -697,7 +710,6 @@ public class OutcomesAction extends BaseAction {
           for (String key : keys) {
             this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
           }
-
         } else {
           this.addActionMessage("message:" + this.getText("saving.saved"));
         }
@@ -756,7 +768,6 @@ public class OutcomesAction extends BaseAction {
 
         crpAssumption.copyFields(incomingAssumption);
         crpAssumption.setCrpOutcomeSubIdo(oldOutcomeSubIdo);
-
         crpAssumption = crpAssumptionManager.saveCrpAssumption(crpAssumption);
         // TODO pending. Replication not implemented yet.
         crpAssumptionManager.replicate(crpAssumption, this.getActualPhase().getNext());
@@ -1094,9 +1105,25 @@ public class OutcomesAction extends BaseAction {
     this.assessmentRisks = assessmentRisks;
   }
 
+
   public void setCrpProgramID(long crpProgramID) {
     this.crpProgramID = crpProgramID;
   }
+
+
+  public void setDisaggregatedTargetMilestones(List<DisaggregatedTargetCrpMilestone> disaggregatedTargetMilestones) {
+    this.disaggregatedTargetMilestones = disaggregatedTargetMilestones;
+  }
+
+  public void setDisaggregatedTargetOutcomes(List<DisaggregatedTargetCrpProgramOutcome> disaggregatedTargetOutcomes) {
+    this.disaggregatedTargetOutcomes = disaggregatedTargetOutcomes;
+  }
+
+  public void
+    setDisaggregatedTargetsBusinessRules(List<DisaggregatedTargetsBusinessRule> disaggregatedTargetsBusinessRules) {
+    this.disaggregatedTargetsBusinessRules = disaggregatedTargetsBusinessRules;
+  }
+
 
   public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
     this.focusLevels = focusLevels;
@@ -1105,7 +1132,6 @@ public class OutcomesAction extends BaseAction {
   public void setFollowingMilestones(List<PowbIndFollowingMilestone> followingMilestones) {
     this.followingMilestones = followingMilestones;
   }
-
 
   public void setGeneralStatuses(List<GeneralStatus> generalStatuses) {
     this.generalStatuses = generalStatuses;
@@ -1116,14 +1142,15 @@ public class OutcomesAction extends BaseAction {
     this.idoList = idoList;
   }
 
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
+
   public void setMilestoneRisks(List<PowbIndMilestoneRisk> milestoneRisks) {
     this.milestoneRisks = milestoneRisks;
   }
-
 
   public void setMilestoneYears(List<Integer> milestoneYears) {
     this.milestoneYears = milestoneYears;
@@ -1133,20 +1160,18 @@ public class OutcomesAction extends BaseAction {
     this.outcomes = outcomes;
   }
 
+
   public void setPowbIndAssesmentRiskManager(PowbIndAssesmentRiskManager powbIndAssesmentRiskManager) {
     this.powbIndAssesmentRiskManager = powbIndAssesmentRiskManager;
   }
-
 
   public void setPowbIndMilestoneRiskManager(PowbIndMilestoneRiskManager powbIndMilestoneRiskManager) {
     this.powbIndMilestoneRiskManager = powbIndMilestoneRiskManager;
   }
 
-
   public void setPrograms(List<CrpProgram> programs) {
     this.programs = programs;
   }
-
 
   public void
     setRepIndGenderYouthFocusLevelManager(RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager) {
@@ -1160,7 +1185,6 @@ public class OutcomesAction extends BaseAction {
   public void setSrfIdos(List<SrfIdo> srfIdos) {
     this.srfIdos = srfIdos;
   }
-
 
   public void setTargetUnitList(HashMap<Long, String> targetUnitList) {
     this.targetUnitList = targetUnitList;
@@ -1199,5 +1223,4 @@ public class OutcomesAction extends BaseAction {
       validator.validate(this, outcomes, selectedProgram, true);
     }
   }
-
 }
