@@ -229,12 +229,13 @@
     [/#if]
       [#-- Disaggregated Targets Outcomes --]
       [#if action.hasSpecificities('disaggregated_targets_active')]
+      <br>
         [#if outcome.disaggregatedTargets?has_content]
           [#list outcome.disaggregatedTargets as disaggregatedTargetOutcome]
             [@disaggregatedTargetsOutcomesMacro element=disaggregatedTargetOutcome name="${outcomeCustomName}.disaggregatedTargets" index=disaggregatedTargets_index /]           
           [/#list]
         [#else]
-          <br><p class="message text-center">[@s.text name="No disaggregated targets addded"/]</p>
+          <br><p class="message text-center">[@s.text name="outcome.disaggregatedTarget.section.notInfo.span"/]</p>
         [/#if] 
             [#if editable]
               <div id="addPartnerBlock" class="addPerson text-center">
@@ -661,47 +662,47 @@
 [/#macro]
 
 [#macro disaggregatedTargetsOutcomesMacro element name index=0 isTemplate=false isActive=false]
-  <br>
+
   [#assign customName = "${name}[${index}]" /]
     <div id="projectActivity-${isTemplate?string('template',(element.id)!)}" class="projectActivity expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">    
-    [#if editable && (action.canAccessSuperAdmin())]
+    [#if editable]
       <div class="removeLink">
-        <div id="removeActivity" class="removeActivityBtnInList removeElement removeLink" data-toggle="modal" data-target="#removeactivityModal" title="[@s.text name='project.activities.removeActivity' /]"></div>
+        <div id="removeActivity" class="removeActivityBtnInList removeElement removeLink" data-toggle="modal" data-target="#removeactivityModal" title="[@s.text name='button.remove.disaggregatedTarget' /]"></div>
       </div>
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle closed">
-      [#if element.targetName?has_content]${(element.targetName)!'New Disaggregated Target'}[#else]New Disaggregated Target[/#if]
+      [#if element.targetName?has_content]Target ${(index+1)}: ${(element.targetName)!'New Disaggregated Target'}[#else]New Disaggregated Target[/#if]
       <div class="clearfix"></div>
     </div>
 
     <div class="blockContent" style="display:none">
-      <br>
+
       [#-- Title --]
       <input class="activityId" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
-      <span class="index hidden">${index}</span>    
+      <span class="index hidden">${index}</span>   
+      <br> 
       [#-- Target Name --]
       <div class="form-group">
-        [@customForm.input name="${customName}.targetName" className="activityTitle" i18nkey="project.activities.inputTitle" required=true editable=editable /]
+        [@customForm.input name="${customName}.targetName" className="activityTitle" i18nkey="outcome.disaggregatedTarget.name" required=true editable=editable /]
       </div>
       [#-- Target Description --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.targetDescription" className="activityTitle" i18nkey="project.activities.inputTitle" required=true editable=editable/]
-      </div>   
-      
+        [@customForm.textArea name="${customName}.targetDescription" className="limitWords-150 activityTitle" i18nkey="outcome.disaggregatedTarget.description" required=true editable=editable/]
+      </div>         
       <div class="col-md-4 form-group">
         [#-- SRF Target Unit --]
-        [@customForm.select name="${customName}.srfTargetUnit.id" label=""  i18nkey="outcome.selectTargetUnit" listName="targetUnitList" keyFieldName=""  displayFieldName=""   placeholder="outcome.selectTargetUnit.placeholder" multiple=false required=true header=false className=" targetUnit" editable=editable/]
+        [@customForm.select name="${customName}.srfTargetUnit.id" label=""  i18nkey="outcome.disaggregatedTarget.unit" listName="targetUnitList" keyFieldName=""  displayFieldName=""   placeholder="outcome.selectTargetUnit.placeholder" multiple=false required=true header=false className=" targetUnit" editable=editable/]
       </div>
       <div class="col-md-4 form-group">
         [#-- Target Value --]
-        [@customForm.input  name="${customName}.targetValue" i18nkey="project.activities.inputDescription" required=true className="limitWords-150 activityDescription" editable=editable /]
+        [@customForm.input  name="${customName}.targetValue" i18nkey="outcome.disaggregatedTarget.value" required=true className="activityDescription" editable=editable /]
       </div>      
       <div class="col-md-4 form-group">
-        [#--Bussiness Rule--]  
-        [@customForm.select name="${customName}.disaggregatedTargetBussinessRule.id" label=""  i18nkey="project.activities.inputStatus" listName="disaggregatedTargetsBusinessRules" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className=" targetUnit" editable=editable/]
+        [#--Business Rule--]  
+        [@customForm.select name="${customName}.disaggregatedTargetBusinessRule.id" label=""  i18nkey="outcome.disaggregatedTarget.businessRules" listName="disaggregatedTargetsBusinessRules" keyFieldName="id"  displayFieldName="name"  multiple=false required=true header=false className=" targetUnit" editable=editable/]
       </div>           
-      <br>
+
     </div>
   </div>
 [/#macro]

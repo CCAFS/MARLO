@@ -22,7 +22,7 @@ public class DisaggregatedTargetCrpProgramOutcome extends MarloAuditableEntity
   @Expose
   private String targetDescription;
   @Expose
-  private DisaggregatedTargetsBusinessRule disaggregatedTargetBussinessRule;
+  private DisaggregatedTargetsBusinessRule disaggregatedTargetBusinessRule;
   @Expose
   private BigDecimal targetValue;
 
@@ -33,8 +33,8 @@ public class DisaggregatedTargetCrpProgramOutcome extends MarloAuditableEntity
     return crpProgramOutcome;
   }
 
-  public DisaggregatedTargetsBusinessRule getDisaggregatedTargetBussinessRule() {
-    return disaggregatedTargetBussinessRule;
+  public DisaggregatedTargetsBusinessRule getDisaggregatedTargetBusinessRule() {
+    return disaggregatedTargetBusinessRule;
   }
 
   @Override
@@ -67,8 +67,8 @@ public class DisaggregatedTargetCrpProgramOutcome extends MarloAuditableEntity
     this.crpProgramOutcome = crpProgramOutcome;
   }
 
-  public void setDisaggregatedTargetBussinessRule(DisaggregatedTargetsBusinessRule disaggregatedTargetBussinessRule) {
-    this.disaggregatedTargetBussinessRule = disaggregatedTargetBussinessRule;
+  public void setDisaggregatedTargetBusinessRule(DisaggregatedTargetsBusinessRule disaggregatedTargetBusinessRule) {
+    this.disaggregatedTargetBusinessRule = disaggregatedTargetBusinessRule;
   }
 
   public void setPhase(Phase phase) {
@@ -90,6 +90,4 @@ public class DisaggregatedTargetCrpProgramOutcome extends MarloAuditableEntity
   public void setTargetValue(BigDecimal targetValue) {
     this.targetValue = targetValue;
   }
-
 }
-
