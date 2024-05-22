@@ -463,13 +463,10 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
   public List<Deliverable> getDeliverablesLedByPartner(Long projectPartnerID) {
-    LOG.info(" ProjectPartnerAction linea 466 projectID " + projectID);
-    LOG.info(" ProjectPartnerAction linea 467 this.getActualPhase().getId() " + this.getActualPhase().getId());
     List<Deliverable> deliverablesLeads = new ArrayList<>();
     if (projectPartnerID != null && projectPartnerID != 0) {
       ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
-      LOG.info(" ProjectPartnerAction linea 471 projectPartner.getInstitution().getId() "
-        + projectPartner.getInstitution().getId());
+
       if (projectPartner != null) {
         /// cgamboa 17/05/2024 getDeliverablesLeadByInstitution was changed by
         /// getDeliverablesLeadByInstitutionAndProject
@@ -477,7 +474,6 @@ public class ProjectPartnerAction extends BaseAction {
           // .getDeliverablesLeadByInstitution(projectPartner.getInstitution().getId(), this.getActualPhase().getId());
           .getDeliverablesLeadByInstitutionAndProject(projectPartner.getInstitution().getId(),
             this.getActualPhase().getId(), projectID);
-        LOG.info(" ProjectPartnerAction linea 480 deliverables.size() " + deliverables.size());
         for (Deliverable deliverable : deliverables) {
           if (deliverable.getProject() != null && deliverable.getProject().getId().equals(projectID)) {
             deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
@@ -506,10 +502,16 @@ public class ProjectPartnerAction extends BaseAction {
       }
 
     }
-    LOG.info(" ProjectPartnerAction linea 505 deliverablesLeads.size() " + deliverablesLeads.size());
     return deliverablesLeads;
   }
 
+  /**
+   * get deliverables list by user
+   * 
+   * @author IBD
+   * @param userId user id
+   * @return deliverables (DTO) list
+   */
   public List<DeliverableDTO> getDeliverablesLedByUser(long userID) {
     List<DeliverableDTO> deliverablesLeadsTmp = new ArrayList<>();
     try {
@@ -1513,9 +1515,7 @@ public class ProjectPartnerAction extends BaseAction {
       project.getPartners().clear();
     }
 
-    LOG.info(" ProjectPartnerAction linea 1516");
     this.setCustomDataToPartnerShipPerson(project);
-    LOG.info(" ProjectPartnerAction linea 1518");
 
 
   }
@@ -1830,7 +1830,6 @@ public class ProjectPartnerAction extends BaseAction {
         } else {
           this.addActionMessage("message:" + this.getText("saving.saved"));
         }
-
         return SUCCESS;
       } else {
         this.addActionMessage("");

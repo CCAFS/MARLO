@@ -221,6 +221,15 @@ public class DeliverableManagerImpl implements DeliverableManager {
     return deliverableDAO.getDeliverablesLeadByUserAndProjectWithConditions(userId, phaseId, projectId);
   }
 
+  /**
+   * get deliverables list by user, phase and project
+   * 
+   * @author IBD
+   * @param phaseId phase id
+   * @param projectId project id
+   * @param userId user id
+   * @return deliverables (DTO) list
+   */
   @Override
   public List<DeliverableDTO> getDeliverablesLeadByUserAndProjectWithSimpleConditions(long userId, long phaseId,
     long projectId) {
