@@ -58,6 +58,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDTO;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -462,6 +463,7 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
   public List<Deliverable> getDeliverablesLedByPartner(Long projectPartnerID) {
+    LOG.info(" ProjectPartnerAction linea 465 projectID " + projectID);
     List<Deliverable> deliverablesLeads = new ArrayList<>();
     if (projectPartnerID != null && projectPartnerID != 0) {
       ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
@@ -501,11 +503,28 @@ public class ProjectPartnerAction extends BaseAction {
       }
 
     }
+    LOG.info(" ProjectPartnerAction linea 505 projectID " + deliverablesLeads.size());
     return deliverablesLeads;
   }
 
+  public List<DeliverableDTO> getDeliverablesLedByUser(long userID) {
+    List<DeliverableDTO> deliverablesLeadsTmp = new ArrayList<>();
+    try {
 
-  public List<Deliverable> getDeliverablesLedByUser(long userID) {
+      deliverablesLeadsTmp = deliverableManager.getDeliverablesLeadByUserAndProjectWithSimpleConditions(userID,
+        this.getActualPhase().getId(), projectID);
+      for (DeliverableDTO deliverable : deliverablesLeadsTmp) {
+        LOG.info(" ProjectPartnerAction linea 519 deliverable " + deliverable.toString());
+      }
+    } catch (Exception e) {
+      LOG.error(" unable to get deliverables - getDeliverablesLedByUser function ");
+    }
+    return deliverablesLeadsTmp;
+
+  }
+
+
+  public List<Deliverable> getDeliverablesLedByUserOld(long userID) {
     List<Deliverable> deliverablesLeads = new ArrayList<>();
     List<Deliverable> deliverables =
       // cgamboa 16/05/2024 getDeliverablesLeadByUser was changed by getDeliverablesLeadByUser
