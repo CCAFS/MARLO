@@ -73,6 +73,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
   private List<CrpMilestone> milestones;
   private List<CrpOutcomeSubIdo> subIdos;
   private List<CrpProgramOutcomeIndicator> indicators;
+  private List<DisaggregatedTargetCrpProgramOutcome> disaggregatedTargets;
 
   public CrpProgramOutcome() {
   }
@@ -175,6 +176,10 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return this.description;
   }
 
+  public List<DisaggregatedTargetCrpProgramOutcome> getDisaggregatedTargets() {
+    return disaggregatedTargets;
+  }
+
   public FileDB getFile() {
     return file;
   }
@@ -191,13 +196,13 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return instructions;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   public List<CrpMilestone> getMilestones() {
     return milestones;
@@ -235,6 +240,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return this.year;
   }
 
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
@@ -243,7 +249,6 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
   public void setBaseline(BigDecimal baseline) {
     this.baseline = baseline;
   }
-
 
   public void setComposeID(String composeID) {
     this.composeID = composeID;
@@ -275,6 +280,10 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public void setDisaggregatedTargets(List<DisaggregatedTargetCrpProgramOutcome> disaggregatedTargets) {
+    this.disaggregatedTargets = disaggregatedTargets;
   }
 
   public void setFile(FileDB file) {
