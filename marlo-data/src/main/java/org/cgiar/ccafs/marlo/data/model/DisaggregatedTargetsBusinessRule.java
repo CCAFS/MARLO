@@ -28,6 +28,10 @@ public class DisaggregatedTargetsBusinessRule extends MarloAuditableEntity imple
   @Expose
   private String description;
 
+  public String getComposedName() {
+    return name + ": " + description;
+  }
+
   public String getDescription() {
     return description;
   }
@@ -38,40 +42,15 @@ public class DisaggregatedTargetsBusinessRule extends MarloAuditableEntity imple
     return null;
   }
 
-  @Override
-  public String getModificationJustification() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public User getModifiedBy() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
   public String getName() {
     return name;
-  }
-
-  @Override
-  public boolean isActive() {
-    // TODO Auto-generated method stub
-    return false;
   }
 
   public void setDescription(String description) {
     this.description = description;
   }
 
-  @Override
-  public void setModifiedBy(User modifiedBy) {
-    // TODO Auto-generated method stub
-  }
-
-
   public void setName(String name) {
     this.name = name;
   }
-
 }
