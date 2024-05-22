@@ -362,6 +362,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     query.append("dup.is_active = 1 AND ");
     query.append("dupp.is_active = 1 AND ");
     query.append("dup.institution_id =" + institutionId + " AND ");
+    query.append("dup.id_phase = d.id_phase and ");
     query.append("dup.id_phase = " + phaseId);
     query.append(" and d.is_active =1 ");
     query.append(" and d.project_id = " + projectId);
