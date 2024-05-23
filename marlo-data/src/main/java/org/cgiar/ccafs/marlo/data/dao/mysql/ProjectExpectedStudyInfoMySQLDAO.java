@@ -72,6 +72,19 @@ public class ProjectExpectedStudyInfoMySQLDAO extends AbstractMarloDAO<ProjectEx
 
   }
 
+
+  @Override
+  public List<ProjectExpectedStudyInfo> findAllByExpectedStudy(Long expectedStudy) {
+    String query =
+      "from " + ProjectExpectedStudyInfo.class.getName() + " where project_expected_study_id = " + expectedStudy;
+    List<ProjectExpectedStudyInfo> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
   @Override
   public List<ProjectExpectedStudyInfo> getProjectExpectedStudyInfoByPhase(Phase phase) {
     StringBuilder query = new StringBuilder();

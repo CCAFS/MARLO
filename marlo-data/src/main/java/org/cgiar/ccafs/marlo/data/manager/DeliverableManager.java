@@ -86,7 +86,11 @@ public interface DeliverableManager {
    */
   public List<Deliverable> getDeliverablesByPhase(long phase);
 
+  List<Deliverable> getDeliverablesByPhaseAndUrlAndDoiAndHandel(long phase, String disseminationURL, String handle,
+    String DOI);
+
   public List<Deliverable> getDeliverablesByProjectAndPhase(Long phaseId, Long projectId);
+
 
   /**
    * Gets a list of all the deliverables from a project planned for the phase's year
@@ -98,10 +102,33 @@ public interface DeliverableManager {
    */
   public List<DeliverableHomeDTO> getDeliverablesByProjectAndPhaseHome(Long phaseId, Long projectId);
 
-
   public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
 
+  /**
+   * get deliverables list by institution, phase an project
+   * 
+   * @author IBD
+   * @param phaseId phase id
+   * @param projectId project id
+   * @param institutionId institution id
+   * @return deliverables list
+   */
+  List<Deliverable> getDeliverablesLeadByInstitutionAndProject(long institutionId, long phaseId, long projectId);
+
+
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
+
+  /**
+   * get deliverables list by user, phase and project
+   * 
+   * @author IBD
+   * @param phaseId phase id
+   * @param projectId project id
+   * @param userId user id
+   * @return deliverables list
+   */
+  List<Deliverable> getDeliverablesLeadByUserAndProject(long userId, long phaseId, long projectId);
+
 
   /**
    * This method gets a list of deliverables that are active for an specific liaisonInstitution
@@ -115,6 +142,7 @@ public interface DeliverableManager {
   public List<Deliverable> getDeliverablesList(LiaisonInstitution liaisonInstitution, Phase phase);
 
   List<String> getDuplicatesDeliverablesByPhase(long phase);
+
 
   public List<Deliverable> getNotPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
 
@@ -138,6 +166,7 @@ public interface DeliverableManager {
    */
   public List<Deliverable> getPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
 
+
   /**
    * get deliverables without activities
    * 
@@ -147,6 +176,7 @@ public interface DeliverableManager {
    * @return quantity deliverables without activities
    */
   int getQuantityDeliverablesWithActivities(long phase, long projectId);
+
 
   public Boolean isDeliverableExcluded(Long deliverableId, Long phaseId);
 

@@ -58,6 +58,13 @@ public interface ProjectDAO {
   public List<Project> findAll();
 
   /**
+   * This method gets the quantity of project that are active
+   * 
+   * @return quantity of projects
+   */
+  Integer findAllQuantity();
+
+  /**
    * This method gets a list of project that are active by a given Phase and statuses identifier. With the start and end
    * date of the project within the given year.
    * year = 0 ignore year filter

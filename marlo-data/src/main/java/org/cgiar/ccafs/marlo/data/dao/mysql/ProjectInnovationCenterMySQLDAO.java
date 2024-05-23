@@ -71,6 +71,18 @@ public class ProjectInnovationCenterMySQLDAO extends AbstractMarloDAO<ProjectInn
   }
 
   @Override
+  public List<ProjectInnovationCenter> findAllByInsitutionAndPhase(long institutionId, long phaseId) {
+    String query = "from " + ProjectInnovationCenter.class.getName() + " where id_phase =" + phaseId
+      + " and institution_id =" + institutionId;
+    List<ProjectInnovationCenter> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+  }
+
+
+  @Override
   public ProjectInnovationCenter getProjectInnovationCenterById(long innovationid, long globalUnitID, long phaseID) {
     String query = "from " + ProjectInnovationCenter.class.getName() + " where project_innovation_id='" + innovationid
       + "' AND global_unit_id='" + globalUnitID + "' AND id_phase='" + phaseID + "'";

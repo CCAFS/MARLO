@@ -53,6 +53,12 @@ public interface ProjectManager {
    */
   public List<Project> findAll();
 
+  /**
+   * This method gets the quantity of project that are active
+   * 
+   * @return quantity of projects
+   */
+  Integer findAllQuantity();
 
   /**
    * This method gets a list of project that are active by a given Phase and statuses identifier. With the start and end
@@ -64,13 +70,13 @@ public interface ProjectManager {
    */
   public List<Project> getActiveProjectsByPhase(Phase phase, int year, String[] projectStatuses);
 
-  public List<Project> getCompletedProjects(long crpId, long idPhase);
 
+  public List<Project> getCompletedProjects(long crpId, long idPhase);
 
   public List<Project> getNoPhaseProjects(long crpId, Phase phase);
 
-  public List<CrpProgram> getPrograms(long projectID, int type, long idPhase);
 
+  public List<CrpProgram> getPrograms(long projectID, int type, long idPhase);
 
   /**
    * This method gets a project object by a given project identifier.
@@ -109,6 +115,7 @@ public interface ProjectManager {
   public Project saveProject(Project project);
 
   public Project saveProject(Project project, String section, List<String> relationsName);
+
 
   public Project saveProject(Project project, String sectionName, List<String> relationsName, Phase phase);
 

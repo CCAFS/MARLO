@@ -64,6 +64,11 @@ public class InstitutionManagerImpl implements InstitutionManager {
   }
 
   @Override
+  public int getQuantityInstitutionByCrpAndPhase(long institutionId, long phaseId, long crpId) {
+    return institutionDao.getQuantityInstitutionByCrpAndPhase(institutionId, phaseId, crpId);
+  }
+
+  @Override
   public Institution saveInstitution(Institution institution) {
     return institutionDao.save(institution);
   }

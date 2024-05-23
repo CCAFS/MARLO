@@ -69,6 +69,17 @@ public class ProjectExpectedStudyCenterMySQLDAO extends AbstractMarloDAO<Project
   }
 
   @Override
+  public List<ProjectExpectedStudyCenter> findAllByInsituttionAndPhase(long institutionId, long phaseId) {
+    String query = "from " + ProjectExpectedStudyCenter.class.getName() + " where id_phase =" + phaseId
+      + " and institution_id =" + institutionId;
+    List<ProjectExpectedStudyCenter> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+  }
+
+  @Override
   public ProjectExpectedStudyCenter save(ProjectExpectedStudyCenter projectExpectedStudyCenter) {
     if (projectExpectedStudyCenter.getId() == null) {
       super.saveEntity(projectExpectedStudyCenter);

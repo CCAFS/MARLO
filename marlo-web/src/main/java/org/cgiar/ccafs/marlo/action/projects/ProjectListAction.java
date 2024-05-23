@@ -478,6 +478,7 @@ public class ProjectListAction extends BaseAction {
     List<GlobalUnitProject> globalUnitProjects = new ArrayList<>(loggedCrp.getGlobalUnitProjects().stream()
       .filter(gp -> gp.isActive() && !gp.isOrigin()).collect(Collectors.toList()));
 
+
     for (GlobalUnitProject globalUnitProject : globalUnitProjects) {
 
       Project project = projectManager.getProjectById(globalUnitProject.getProject().getId());
@@ -561,8 +562,8 @@ public class ProjectListAction extends BaseAction {
     if (phase != null && phase.getId() != null && phaseManager.getPhaseById(phase.getId()) != null) {
       phase = phaseManager.getPhaseById(phase.getId());
     }
-
-    if (projectManager.findAll() != null && phase != null && phase.getProjectPhases() != null) {
+    // cgamboa 09/05/2024 projectManager.findAll() != null is changed by projectManager.findAllQuantity() >0
+    if (projectManager.findAllQuantity() > 0 && phase != null && phase.getProjectPhases() != null) {
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
         myProjects = new ArrayList<>();
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
@@ -578,6 +579,7 @@ public class ProjectListAction extends BaseAction {
             allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
           }
         }
+
 
         myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
           .filter(p -> p.isActive()).collect(Collectors.toList());
@@ -595,6 +597,7 @@ public class ProjectListAction extends BaseAction {
         allProjects.removeAll(myProjects);
       }
 
+
       for (Project project : allProjects) {
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
 
@@ -604,6 +607,7 @@ public class ProjectListAction extends BaseAction {
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
 
       }
+
 
       this.loadFlagshipgsAndRegions(myProjects);
       this.loadFlagshipgsAndRegions(allProjects);
@@ -699,6 +703,7 @@ public class ProjectListAction extends BaseAction {
     // closedProjects.sort((p1, p2) -> p1.getStatus().compareTo(p2.getStatus()));
     String params[] = {loggedCrp.getAcronym() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_LIST_BASE_PERMISSION, params));
+
   }
 
   @Override

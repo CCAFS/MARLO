@@ -82,6 +82,31 @@ public class DeliverableUserPartnershipMySQLDAO extends AbstractMarloDAO<Deliver
 
   }
 
+
+  @Override
+  public List<DeliverableUserPartnership> findByDeliverableIDAndPhase(long deliverableID, long phaseId) {
+    String query = "from " + DeliverableUserPartnership.class.getName() + " where is_active=1 and deliverable_id = "
+      + deliverableID + " and id_phase = " + phaseId;
+    List<DeliverableUserPartnership> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
+  public List<DeliverableUserPartnership> findByDeliverableIDCustom(long deliverableID) {
+    String query =
+      "from " + DeliverableUserPartnership.class.getName() + " where is_active=1 and deliverable_id = " + deliverableID;
+    List<DeliverableUserPartnership> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return null;
+
+  }
+
   @Override
   public DeliverableUserPartnership save(DeliverableUserPartnership deliverableUserPartnership) {
     if (deliverableUserPartnership.getId() == null) {

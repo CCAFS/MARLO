@@ -90,6 +90,27 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
   }
 
   @Override
+  public int getQuantityInstitutionByCrpAndPhase(long institutionId, long phaseId, long crpId) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT count(*) as count from crp_ppa_partners cpp ");
+    query.append(" where institution_id =" + institutionId);
+    query.append(" and id_phase =" + phaseId);
+    query.append(" and global_unit_id =" + crpId);
+
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    int institution = 0;
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        institution = Integer.parseInt(map.get("count").toString());
+      }
+    }
+
+    return institution;
+  }
+
+  @Override
   public Institution save(Institution institution) {
 
     if (institution.getId() == null) {

@@ -78,6 +78,13 @@ public class ProjectManagerImpl implements ProjectManager {
   }
 
   @Override
+  public Integer findAllQuantity() {
+
+    return projectDAO.findAllQuantity();
+
+  }
+
+  @Override
   public List<Project> getActiveProjectsByPhase(Phase phase, int year, String[] projectStatuses) {
     return projectDAO.getActiveProjectsByPhase(phase, year, projectStatuses);
   }

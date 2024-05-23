@@ -101,6 +101,11 @@ public class ProjectInnovationCenterManagerImpl implements ProjectInnovationCent
   }
 
   @Override
+  public List<ProjectInnovationCenter> findAllByInsitutionAndPhase(long institutionId, long phaseId) {
+    return projectInnovationCenterDAO.findAllByInsitutionAndPhase(institutionId, phaseId);
+  }
+
+  @Override
   public ProjectInnovationCenter getProjectInnovationCenterById(long projectInnovationCenterID) {
     return projectInnovationCenterDAO.find(projectInnovationCenterID);
   }

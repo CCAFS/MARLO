@@ -65,6 +65,16 @@ public interface InstitutionDAO {
    */
   public List<Institution> findPPAInstitutions(long crpID);
 
+  /**
+   * get intitution quantity by crp and phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @param institutionId intitution id
+   * @param crpId crp id
+   * @return quantity of intitutions
+   */
+  int getQuantityInstitutionByCrpAndPhase(long institutionId, long phaseId, long crpId);
 
   /**
    * This method saves the information of the given institution
