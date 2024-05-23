@@ -171,6 +171,23 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
 
   }
 
+
+  @Override
+  public Integer findAllQuantity() {
+    StringBuilder query = new StringBuilder();
+    query.append("select count(*) as count from projects p where is_active =1 ");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    int result = 0;
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        result = Integer.parseInt(map.get("count").toString());
+      }
+    }
+
+    return result;
+  }
+
   @Override
   public List<Project> getActiveProjectsByPhase(Phase phase, int year, String[] projectStatuses) {
     StringBuilder query = new StringBuilder();

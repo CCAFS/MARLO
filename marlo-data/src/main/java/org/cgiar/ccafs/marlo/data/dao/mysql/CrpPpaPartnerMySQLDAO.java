@@ -98,6 +98,20 @@ public class CrpPpaPartnerMySQLDAO extends AbstractMarloDAO<CrpPpaPartner, Long>
   }
 
   @Override
+  public List<CrpPpaPartner> findByCrpAndPhaseComplete(long crpID, long phaseID) {
+    String query = "from " + CrpPpaPartner.class.getName() + " where is_active=1 and global_unit_id =" + crpID
+      + " and id_phase = " + phaseID;
+    List<CrpPpaPartner> list;
+    list = super.findAll(query);
+    if (list != null && !list.isEmpty()) {
+      return list;
+    } else {
+      list = new ArrayList<>();
+      return list;
+    }
+  }
+
+  @Override
   public CrpPpaPartner save(CrpPpaPartner crpPpaPartner) {
     if (crpPpaPartner.getId() == null) {
       super.saveEntity(crpPpaPartner);
