@@ -255,7 +255,6 @@ public class DeliverableMetadataByWOS extends BaseAction {
       this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
     }
 
-
   }
 
   private JsonElement readWOSDataFromClarisa() throws IOException {

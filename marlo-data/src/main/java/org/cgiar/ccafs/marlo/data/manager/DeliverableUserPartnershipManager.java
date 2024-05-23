@@ -65,12 +65,31 @@ public interface DeliverableUserPartnershipManager {
   List<DeliverableUserPartnership> findByDeliverableID(long deliverableID);
 
   /**
+   * This method gets a deliverableUserPartnership list by a given deliverableUserPartnership identifier and a phase id.
+   * 
+   * @param deliverableID is the deliverable identifier.
+   * @param phaseId is the phase identifier.
+   * @return a DeliverableUserPartnership object.
+   */
+  List<DeliverableUserPartnership> findByDeliverableIDAndPhase(long deliverableID, long phaseId);
+
+  /**
+   * This method gets a deliverableUserPartnership list by a given deliverableUserPartnership identifier.
+   * 
+   * @param deliverableID is the deliverable identifier.
+   * @return a DeliverableUserPartnership object.
+   */
+  List<DeliverableUserPartnership> findByDeliverableIDCustom(long deliverableID);
+
+
+  /**
    * This method gets a deliverableUserPartnership object by a given deliverableUserPartnership identifier.
    * 
    * @param deliverableUserPartnershipID is the deliverableUserPartnership identifier.
    * @return a DeliverableUserPartnership object.
    */
   public DeliverableUserPartnership getDeliverableUserPartnershipById(long deliverableUserPartnershipID);
+
 
   /**
    * This method saves the information of the given deliverableUserPartnership

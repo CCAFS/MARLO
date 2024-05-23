@@ -78,6 +78,9 @@ public interface DeliverableDAO {
    */
   public List<Deliverable> getDeliverablesByPhase(long phase);
 
+  List<Deliverable> getDeliverablesByPhaseAndUrlAndDoiAndHandel(long phase, String disseminationURL, String handle,
+    String DOI);
+
   public List<Deliverable> getDeliverablesByProjectAndPhase(long phaseId, long projectId);
 
   /**
@@ -92,7 +95,30 @@ public interface DeliverableDAO {
 
   public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
 
+  /**
+   * get deliverables list by institution, phase and project
+   * 
+   * @author IBD
+   * @param phaseId phase id
+   * @param projectId project id
+   * @param institutionId institution id
+   * @return deliverables list
+   */
+  List<Deliverable> getDeliverablesLeadByInstitutionAndProject(long institutionId, long phaseId, long projectId);
+
+
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
+
+  /**
+   * get deliverables list by user, phase and project
+   * 
+   * @author IBD
+   * @param phaseId phase id
+   * @param projectId project id
+   * @param userId user id
+   * @return deliverables list
+   */
+  List<Deliverable> getDeliverablesLeadByUserAndProject(long userId, long phaseId, long projectId);
 
   List<String> getDuplicatesDeliverablesByPhase(long phase);
 
