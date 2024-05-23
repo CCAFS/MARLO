@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.ActivityDAO;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -79,6 +80,30 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
       return list;
     }
     return null;
+
+  }
+
+  @Override
+  public int getActivitiesByProjectAndUserQuantity(long projectId, long phaseId, long projectPersonId) {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT count(*) as count from activities as a  ");
+    query.append(" join project_partner_persons as ppp ");
+    query.append(" on a.leader_id = PPP.ID ");
+    query.append(" where project_id =" + projectId);
+    query.append(" and id_phase =" + phaseId);
+    query.append(" and ppp.id= " + projectPersonId);
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    int activity = 0;
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        activity = Integer.parseInt(map.get("count").toString());
+      }
+    }
+
+    return activity;
 
   }
 

@@ -512,9 +512,9 @@
             [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesEvidenceCited" help="study.referencesCited.help2" helpIcon=false className="" required=false editable=editable oldReference=true /]        
             </div>
         [#else]
-          <!--  <div class="feedback-flex-items">  -->
+          <!-- <div class="feedback-flex-items"> -->
             [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesEvidenceCited" help="study.referencesCited.help2" helpIcon=false className="" required=false editable=editable oldReference=false /]        
-          <!--  </div>  -->
+          <!-- </div> -->
         [/#if]      
           
             <label style="margin-top: 5px;">[@s.text name="${customName}.multireferences"][/@s.text]</label>

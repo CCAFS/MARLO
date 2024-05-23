@@ -55,6 +55,12 @@ public interface ProjectExpectedStudyInfoDAO {
    */
   public List<ProjectExpectedStudyInfo> findAll();
 
+  /**
+   * This method gets a list of projectExpectedStudyInfo that are active, by project_expected_study_id
+   * 
+   * @return a list from ProjectExpectedStudyInfo null if no exist records
+   */
+  List<ProjectExpectedStudyInfo> findAllByExpectedStudy(Long expectedStudy);
 
   /**
    * This method gets a list of projectExpectedStudyInfo that are active given a phase identifier

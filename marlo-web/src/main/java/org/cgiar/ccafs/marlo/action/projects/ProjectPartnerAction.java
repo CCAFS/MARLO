@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
@@ -66,18 +67,21 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectDTO;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerDTO;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipResearchPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPersonDTO;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -124,8 +128,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProjectPartnerAction extends BaseAction {
 
+public class ProjectPartnerAction extends BaseAction {
 
   /**
    * 
@@ -134,6 +138,7 @@ public class ProjectPartnerAction extends BaseAction {
 
 
   private static Logger LOG = LoggerFactory.getLogger(ProjectPartnerAction.class);
+
 
   /**
    * Helper method to read a stream into memory.
@@ -154,6 +159,8 @@ public class ProjectPartnerAction extends BaseAction {
     }
     return baos.toByteArray();
   }
+
+  ProjectDTO projectDTO = new ProjectDTO();
 
   // Managers
   private final ProjectPartnerManager projectPartnerManager;
@@ -188,6 +195,7 @@ public class ProjectPartnerAction extends BaseAction {
   private final ProjectInnovationManager projectInnovationManager;
   private final ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager;
   private final ProjectExpectedStudyManager projectExpectedStudyManager;
+  private final ActivityManager activityManager;
 
 
   // Variables
@@ -234,7 +242,7 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPolicyCenterManager projectPolicyCenterManager, ProjectPolicyManager projectPolicyManager,
     ProjectInnovationCenterManager projectInnovationCenterManager, ProjectInnovationManager projectInnovationManager,
     ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager) {
+    ProjectExpectedStudyManager projectExpectedStudyManager, ActivityManager activityManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
@@ -271,6 +279,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.projectInnovationManager = projectInnovationManager;
     this.projectExpectedStudyCenterManager = projectExpectedStudyCenterManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.activityManager = activityManager;
   }
 
   public void addCrpUser(User user) {
@@ -342,7 +351,64 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
+
+  public List<Activity> getActivitiesData(long id) {
+    List<Activity> activities = new ArrayList<Activity>();
+    for (ProjectPartnerDTO projectPartnerDTO : projectDTO.getProjectPartner()) {
+      for (ProjectPartnerPersonDTO projectPartnerPersonDTO : projectPartnerDTO.getProjectPartnerPersonDTO()) {
+        if (projectPartnerPersonDTO.getId() == id) {
+          return projectPartnerPersonDTO.getActivity();
+        }
+      }
+
+    }
+    return activities;
+  }
+
+
+  // cgamboa 16/05/2024 getActivitiesLedByUser was be updated
   public List<Activity> getActivitiesLedByUser(long userID) {
+    List<Activity> activities = new ArrayList<Activity>();
+    int qunatityActivity = 0;
+    try {
+      qunatityActivity =
+        activityManager.getActivitiesByProjectAndUserQuantity(projectID, this.getActualPhase().getId(), userID);
+      if (qunatityActivity > 0) {
+        activities = activityManager.getActivitiesByProject(projectID, this.getActualPhase().getId()).stream()
+          .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null && c.getActivityStatus() != null
+            && c.getActivityStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
+
+      }
+    } catch (Exception e) {
+      LOG.error(" enable to get acitivities in getActivitiesLedByUser   function ");
+    }
+    return activities;
+
+
+  }
+
+  public List<Activity> getActivitiesLedByUserCustom(long userID, List<Activity> activitiesOut) {
+    List<Activity> activities = new ArrayList<Activity>();
+    try {
+
+      activities = activitiesOut.stream()
+        .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null && c.getActivityStatus() != null
+          && c.getActivityStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+          && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList());
+
+
+    } catch (Exception e) {
+      LOG.error(" enable to get acitivities in getActivitiesLedByUser   function ");
+    }
+    return activities;
+
+
+  }
+
+  public List<Activity> getActivitiesLedByUserOld(long userID) {
     Project project = projectManager.getProjectById(projectID);
     List<Activity> activities = project.getActivities().stream()
       .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null && c.getActivityStatus() != null
@@ -373,10 +439,10 @@ public class ProjectPartnerAction extends BaseAction {
     return allRepIndResearchPhases;
   }
 
+
   public List<User> getAllUsers() {
     return allUsers;
   }
-
 
   private Path getAutoSaveFilePath() {
     // get the class simple name
@@ -390,18 +456,23 @@ public class ProjectPartnerAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public List<LocElement> getCountries() {
     return countries;
   }
-
 
   public List<Deliverable> getDeliverablesLedByPartner(Long projectPartnerID) {
     List<Deliverable> deliverablesLeads = new ArrayList<>();
     if (projectPartnerID != null && projectPartnerID != 0) {
       ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
       if (projectPartner != null) {
+        /// cgamboa 17/05/2024 getDeliverablesLeadByInstitution was changed by
+        /// getDeliverablesLeadByInstitutionAndProject
         List<Deliverable> deliverables = deliverableManager
-          .getDeliverablesLeadByInstitution(projectPartner.getInstitution().getId(), this.getActualPhase().getId());
+          // .getDeliverablesLeadByInstitution(projectPartner.getInstitution().getId(), this.getActualPhase().getId());
+          .getDeliverablesLeadByInstitutionAndProject(projectPartner.getInstitution().getId(),
+            this.getActualPhase().getId(), projectID);
+
         for (Deliverable deliverable : deliverables) {
           if (deliverable.getProject() != null && deliverable.getProject().getId().equals(projectID)) {
             deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
@@ -433,10 +504,13 @@ public class ProjectPartnerAction extends BaseAction {
     return deliverablesLeads;
   }
 
+
   public List<Deliverable> getDeliverablesLedByUser(long userID) {
     List<Deliverable> deliverablesLeads = new ArrayList<>();
     List<Deliverable> deliverables =
-      deliverableManager.getDeliverablesLeadByUser(userID, this.getActualPhase().getId());
+      // cgamboa 16/05/2024 getDeliverablesLeadByUser was changed by getDeliverablesLeadByUser
+      // deliverableManager.getDeliverablesLeadByUser(userID, this.getActualPhase().getId());
+      deliverableManager.getDeliverablesLeadByUserAndProject(userID, this.getActualPhase().getId(), projectID);
     if (deliverables != null) {
       for (Deliverable deliverable : deliverables) {
         if (deliverable.getProject() != null && deliverable.getProject().getId().equals(projectID)) {
@@ -475,17 +549,25 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
+  public int getDeliverablesLedByUserTest(long userID) {
+    return 1;
+  }
+
+
   public List<PartnerDivision> getDivisions() {
     return divisions;
   }
 
-
   public List<ProjectInnovation> getInnovationContributingByPartner(Long projectPartnerID) {
+
     List<ProjectInnovation> innovationContributings = new ArrayList<>();
     if (projectPartnerID != null && projectPartnerID != 0) {
       ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
       if (projectPartner != null && projectPartner.getInstitution() != null) {
-        List<ProjectInnovationCenter> innovationCenters = projectInnovationCenterManager.findAll();
+        /// cgamboa 16/05/2024 findAll() was changed by findAllByInsitutionAndPhase(long institutionId, long phaseId)
+        List<ProjectInnovationCenter> innovationCenters = projectInnovationCenterManager
+          .findAllByInsitutionAndPhase(projectPartner.getInstitution().getId(), this.getActualPhase().getId());
+
         if (innovationCenters != null) {
           innovationCenters = innovationCenters.stream()
             .filter(p -> p != null && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
@@ -516,6 +598,7 @@ public class ProjectPartnerAction extends BaseAction {
     return innovationContributings;
   }
 
+
   public List<InstitutionType> getIntitutionTypes() {
     return intitutionTypes;
   }
@@ -525,10 +608,10 @@ public class ProjectPartnerAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public Map<String, String> getPartnerPersonTypes() {
     return partnerPersonTypes;
   }
+
 
   public List<ProjectPolicy> getPolicyContributingByPartner(Long projectPartnerID) {
     List<ProjectPolicy> policyContributings = new ArrayList<>();
@@ -565,7 +648,6 @@ public class ProjectPartnerAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
@@ -574,12 +656,16 @@ public class ProjectPartnerAction extends BaseAction {
     return projectPPAPartners;
   }
 
+
   public List<ProjectExpectedStudy> getStudyContributingByPartner(Long projectExpectedID) {
     List<ProjectExpectedStudy> studyContributings = new ArrayList<>();
     if (projectExpectedID != null && projectExpectedID != 0) {
       ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectExpectedID);
       if (projectPartner != null && projectPartner.getInstitution() != null) {
-        List<ProjectExpectedStudyCenter> studyCenters = projectExpectedStudyCenterManager.findAll();
+        // cgamboa 16/05/2024 findAll() was changed by findAllByInsituttionAndPhase(long institutionId, long phaseId)
+        List<ProjectExpectedStudyCenter> studyCenters = projectExpectedStudyCenterManager
+          .findAllByInsituttionAndPhase(projectPartner.getInstitution().getId(), this.getActualPhase().getId());
+
         if (studyCenters != null) {
           studyCenters = studyCenters.stream()
             .filter(p -> p != null && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
@@ -614,7 +700,6 @@ public class ProjectPartnerAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
-
 
   /**
    * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
@@ -784,7 +869,7 @@ public class ProjectPartnerAction extends BaseAction {
     if (role.getId() == pcRole.getId().longValue()) {
       ProjectPartnerPerson projectLeader = project.getLeaderPersonDB(this.getActualPhase());
       if (projectLeader != null && projectLeader.getUser() != null && projectLeader.getUser().getEmail() != null) {
-        ccEmail +=", " +  projectLeader.getUser().getEmail();
+        ccEmail += ", " + projectLeader.getUser().getEmail();
       }
     }
 
@@ -900,7 +985,7 @@ public class ProjectPartnerAction extends BaseAction {
     if (role.getId() == pcRole.getId().longValue()) {
       ProjectPartnerPerson projectLeader = project.getLeaderPersonDB(this.getActualPhase());
       if (projectLeader != null && projectLeader.getUser() != null && projectLeader.getUser().getEmail() != null) {
-        ccEmail +=", " +  projectLeader.getUser().getEmail();
+        ccEmail += ", " + projectLeader.getUser().getEmail();
       }
     }
 
@@ -952,8 +1037,10 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
+
   @Override
   public void prepare() throws Exception {
+
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
@@ -1317,13 +1404,22 @@ public class ProjectPartnerAction extends BaseAction {
     Boolean isAdministrative = projectDb.getProjecInfoPhase(this.getActualPhase()).getAdministrative();
     project.getProjectInfo().setProjectEditLeader(isLeaderEdit);
     project.getProjectInfo().setAdministrative(isAdministrative);
+
     if (!isLeaderEdit) {
       allInstitutions = new ArrayList<>();
-      for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream()
-        .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive()
-          && c.getPhase().equals(this.getActualPhase()))
-        .collect(Collectors.toList())) {
-        allInstitutions.add(crpPpaPartner.getInstitution());
+      try {
+        /// cgamboa 15/05/2024 crpPpaPartnerManager.findAll().stream()
+        // .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive()
+        // && c.getPhase().equals(this.getActualPhase()) was changed by CrpPpaPartnerList
+        List<CrpPpaPartner> CrpPpaPartnerList =
+          crpPpaPartnerManager.findByCrpAndPhaseComplete(loggedCrp.getId().longValue(), this.getActualPhase().getId());
+        for (CrpPpaPartner crpPpaPartner : CrpPpaPartnerList.stream().collect(Collectors.toList())) {
+          allInstitutions.add(crpPpaPartner.getInstitution());
+        }
+
+
+      } catch (Exception e) {
+        LOG.error(" unable to get allInstitutions ");
       }
 
     } else {
@@ -1333,16 +1429,28 @@ public class ProjectPartnerAction extends BaseAction {
     allInstitutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
     // Getting the list of all PPA institutions
     allPPAInstitutions = new ArrayList<>();
-    for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream()
-      .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive()
-        && c.getPhase().equals(this.getActualPhase()))
-      .collect(Collectors.toList())) {
-      allPPAInstitutions.add(crpPpaPartner.getInstitution());
+
+    try {
+      List<CrpPpaPartner> CrpPpaPartnerList =
+        crpPpaPartnerManager.findByCrpAndPhaseComplete(loggedCrp.getId().longValue(), this.getActualPhase().getId());
+
+      /// cgamboa 15/05/2024 crpPpaPartnerManager.findAll().stream()
+      // .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive()
+      // && c.getPhase().equals(this.getActualPhase()) was changed by CrpPpaPartnerList
+      for (CrpPpaPartner crpPpaPartner : CrpPpaPartnerList.stream().collect(Collectors.toList())) {
+        allPPAInstitutions.add(crpPpaPartner.getInstitution());
+      }
+      allPPAInstitutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+    } catch (Exception e) {
+      LOG.error(" unable to get allPPAInstitutions ");
     }
-    allPPAInstitutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+
+
+    /// cgamboa 15/05/2024 locationManager.findAll .stream().filter(c -> c.isActive() && c.getLocElementType().getId()
+    /// == 2)function was changed by findAllToCountries
     // Getting all the countries
-    countries = locationManager.findAll().stream().filter(c -> c.isActive() && c.getLocElementType().getId() == 2)
-      .collect(Collectors.toList());
+    countries = locationManager.findAllToCountries().stream().collect(Collectors.toList());
+
 
     // Getting all partner types
     intitutionTypes = institutionTypeManager.findAll();
@@ -1364,6 +1472,7 @@ public class ProjectPartnerAction extends BaseAction {
       project.getPartners().add(0, leader);
     }
 
+
     if (project.getPartners() != null) {
       Collections.sort(project.getPartners(),
         (p1, p2) -> Boolean.compare(this.isPPA(p2.getInstitution()), this.isPPA(p1.getInstitution())));
@@ -1379,12 +1488,15 @@ public class ProjectPartnerAction extends BaseAction {
       partnerPersonTypes.put(APConstants.PROJECT_PARTNER_PC, this.getText("projectPartners.types.PC"));
     }
 
+
     if (this.isHttpPost()) {
       project.getPartners().clear();
     }
 
-  }
+    this.setCustomDataToPartnerShipPerson(project);
 
+
+  }
 
   /**
    * Delete projectPartner if it is not in the list of partners sent back from the UI.
@@ -1418,6 +1530,7 @@ public class ProjectPartnerAction extends BaseAction {
       }
     }
   }
+
 
   private void removeProjectExpectedEstudiesCenter(ProjectPartner previouslyEnteredPartner) {
     Project projectTemp = projectManager.getProjectById(projectID);
@@ -1707,7 +1820,6 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
-
   /**
    * @param partner - the projectPartner edited in the UI
    */
@@ -1752,6 +1864,7 @@ public class ProjectPartnerAction extends BaseAction {
 
 
   }
+
 
   private ProjectPartner saveProjectPartner(ProjectPartner projectPartnerClient, Project projectDB) {
     if (projectPartnerClient.getId() == null) {
@@ -2050,9 +2163,49 @@ public class ProjectPartnerAction extends BaseAction {
     this.allUsers = allUsers;
   }
 
-
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
+  }
+
+
+  /**
+   * set custom data to be used from partnershipperson section
+   * 
+   * @author IBD
+   * @param Project project
+   */
+
+  public void setCustomDataToPartnerShipPerson(Project project) {
+    List<Activity> activities = new ArrayList<Activity>();
+    try {
+      // puntobase
+      List<ProjectPartnerDTO> projectPartnerDTOList = new ArrayList<ProjectPartnerDTO>();
+      activities = activityManager.getActivitiesByProject(projectID, this.getActualPhase().getId());
+      for (ProjectPartner projectPartner : project.getPartners()) {
+
+        ProjectPartnerDTO projectPartnerDTO = new ProjectPartnerDTO();
+        projectPartnerDTO.setId(projectPartner.getId());
+
+        List<ProjectPartnerPersonDTO> projectPartnerPersonDTOList = new ArrayList<ProjectPartnerPersonDTO>();
+        for (ProjectPartnerPerson partnerPerson : projectPartner.getProjectPartnerPersons()) {
+          ProjectPartnerPersonDTO projectPartnerPersonDTOTmp = new ProjectPartnerPersonDTO();
+          projectPartnerPersonDTOTmp.setId(partnerPerson.getId());
+          projectPartnerPersonDTOTmp.setActivity(this.getActivitiesLedByUserCustom(partnerPerson.getId(), activities));
+
+
+          projectPartnerPersonDTOList.add(projectPartnerPersonDTOTmp);
+        }
+
+        projectPartnerDTO.setProjectPartnerPersonDTO(projectPartnerPersonDTOList);
+        projectPartnerDTOList.add(projectPartnerDTO);
+
+      }
+
+      projectDTO.setProjectPartner(projectPartnerDTOList);
+
+    } catch (Exception e) {
+      LOG.error(" unable to get custom data in prepareTwo function");
+    }
   }
 
 
@@ -2320,3 +2473,4 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
 }
+
