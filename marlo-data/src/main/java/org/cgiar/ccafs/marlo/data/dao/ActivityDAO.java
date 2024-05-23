@@ -62,6 +62,17 @@ public interface ActivityDAO {
    */
   public List<Activity> getActivitiesByProject(long projectId, long phaseId);
 
+  /**
+   * get quantity of activities by project and user
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @param projectId project id
+   * @param projectPersonId projectPerson id
+   * @return quantity of activities
+   */
+
+  int getActivitiesByProjectAndUserQuantity(long projectId, long phaseId, long projectPersonId);
 
   /**
    * This method saves the information of the given activity

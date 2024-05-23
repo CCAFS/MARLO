@@ -75,6 +75,32 @@ public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, L
   }
 
   @Override
+  public List<DeliverableInfo> getDeliverablesInfoByDeliverableId(long deliverableId) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("di.id as id ");
+    query.append("FROM ");
+    query.append("deliverables_info AS di ");
+    query.append("INNER JOIN deliverables AS d ON d.id = di.deliverable_id ");
+    query.append("WHERE d.is_active = 1 AND ");
+    query.append("d.project_id IS NOT NULL AND ");
+    query.append("di.is_active = 1 AND ");
+    query.append("di.`deliverable_id` =" + deliverableId);
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<DeliverableInfo> deliverableInfos = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        DeliverableInfo deliverableInfo = this.find(Long.parseLong(map.get("id").toString()));
+        deliverableInfos.add(deliverableInfo);
+      }
+    }
+
+    return deliverableInfos;
+  }
+
+  @Override
   public List<DeliverableInfo> getDeliverablesInfoByPhase(Phase phase) {
     StringBuilder query = new StringBuilder();
     query.append("SELECT DISTINCT  ");

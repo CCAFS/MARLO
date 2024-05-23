@@ -175,6 +175,13 @@ public class DeliverableManagerImpl implements DeliverableManager {
     return deliverableDAO.getDeliverablesByPhase(phase);
   }
 
+
+  @Override
+  public List<Deliverable> getDeliverablesByPhaseAndUrlAndDoiAndHandel(long phase, String disseminationURL,
+    String handle, String DOI) {
+    return deliverableDAO.getDeliverablesByPhaseAndUrlAndDoiAndHandel(phase, disseminationURL, handle, DOI);
+  }
+
   @Override
   public List<Deliverable> getDeliverablesByProjectAndPhase(Long phaseId, Long projectId) {
     return deliverableDAO.getDeliverablesByProjectAndPhase(phaseId, projectId);
@@ -191,8 +198,20 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
+  public List<Deliverable> getDeliverablesLeadByInstitutionAndProject(long institutionId, long phaseId,
+    long projectId) {
+    return deliverableDAO.getDeliverablesLeadByInstitutionAndProject(institutionId, phaseId, projectId);
+  }
+
+
+  @Override
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId) {
     return deliverableDAO.getDeliverablesLeadByUser(userId, phaseId);
+  }
+
+  @Override
+  public List<Deliverable> getDeliverablesLeadByUserAndProject(long userId, long phaseId, long projectId) {
+    return deliverableDAO.getDeliverablesLeadByUserAndProject(userId, phaseId, projectId);
   }
 
   @Override

@@ -228,6 +228,57 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
 
 
   @Override
+  public List<Deliverable> getDeliverablesByPhaseAndUrlAndDoiAndHandel(long phase, String disseminationURL,
+    String handle, String DOI) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("d.id as id ");
+    query.append("FROM ");
+    query.append("deliverables AS d ");
+    query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");
+    query.append("INNER JOIN deliverable_dissemination AS dv ON d.id = dv.deliverable_id ");
+    query.append(
+      "WHERE d.is_active = 1 AND d.project_id IS NOT NULL AND (d.is_publication IS NULL OR d.is_publication = 0) AND ");
+    query.append("di.is_active = 1 AND ");
+    query.append("di.`id_phase` =" + phase);
+    query.append(" and dv.dissemination_URL is not null ");
+    query.append(" and length(dissemination_URL)>0 ");
+    query.append(" and di.id_phase = dv.id_phase ");
+    query.append(" and dv.dissemination_URL ='" + disseminationURL + "' ");
+    query.append(" UNION ");
+    query.append("SELECT DISTINCT  ");
+    query.append("d.id as id ");
+    query.append("FROM ");
+    query.append("deliverables AS d ");
+    query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");
+    query.append("INNER JOIN deliverable_metadata_elements AS dme ON d.id = dme.deliverable_id ");
+    query.append(
+      "WHERE d.is_active = 1 AND d.project_id IS NOT NULL AND (d.is_publication IS NULL OR d.is_publication = 0) AND ");
+    query.append("di.is_active = 1 AND ");
+    query.append("di.`id_phase` =" + phase);
+    query.append(" and element_value is not null ");
+    query.append(" and length(element_value)>0 ");
+    query.append(" and dme.element_id in(35,36) ");
+    query.append(" and di.id_phase = dme.id_phase ");
+    query.append(" and (dme.element_value = '" + handle + "' ");
+    query.append(" or dme.element_value = '" + DOI + "') ");
+
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<Deliverable> deliverables = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        Deliverable deliverable = this.find(Long.parseLong(map.get("id").toString()));
+        deliverables.add(deliverable);
+      }
+    }
+
+    return deliverables;
+  }
+
+
+  @Override
   public List<Deliverable> getDeliverablesByProjectAndPhase(long phaseId, long projectId) {
     String query = "select d from Deliverable d, DeliverableInfo di "
       + "join d.project pr with pr.id = :projectId and pr.active = true join di.phase ph with ph.id = :phaseId "
@@ -295,6 +346,39 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     return deliverables;
   }
 
+
+  @Override
+  public List<Deliverable> getDeliverablesLeadByInstitutionAndProject(long institutionId, long phaseId,
+    long projectId) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT ");
+    query.append("dup.deliverable_id as id ");
+    query.append("FROM ");
+    query.append("deliverable_user_partnerships AS dup ");
+    query.append("INNER JOIN deliverable_user_partnership_persons AS dupp ON dupp.user_partnership_id = dup.id ");
+    query.append("inner join deliverables d on dup.deliverable_id =d.id ");
+    query.append("WHERE ");
+    query.append("dup.is_active = 1 AND ");
+    query.append("dupp.is_active = 1 AND ");
+    query.append("dup.institution_id =" + institutionId + " AND ");
+    query.append("dup.id_phase = " + phaseId);
+    query.append(" and d.is_active =1 ");
+    query.append(" and d.project_id = " + projectId);
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<Deliverable> deliverables = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        Deliverable deliverable = this.find(Long.parseLong(map.get("id").toString()));
+        deliverables.add(deliverable);
+      }
+    }
+
+    return deliverables;
+  }
+
+
   @Override
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId) {
     StringBuilder query = new StringBuilder();
@@ -308,6 +392,38 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     query.append("dup.is_active = 1 AND ");
     query.append("dupp.is_active = 1 AND ");
     query.append("dup.id_phase =" + phaseId);
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<Deliverable> deliverables = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        Deliverable deliverable = this.find(Long.parseLong(map.get("id").toString()));
+        deliverables.add(deliverable);
+      }
+    }
+
+    return deliverables;
+  }
+
+  @Override
+  public List<Deliverable> getDeliverablesLeadByUserAndProject(long userId, long phaseId, long projectId) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT ");
+    query.append("dup.deliverable_id as id ");
+    query.append("FROM ");
+    query.append("deliverable_user_partnerships AS dup ");
+    query.append("INNER JOIN deliverable_user_partnership_persons AS dupp ON dupp.user_partnership_id = dup.id ");
+    query.append(" inner join deliverables as d on dup.deliverable_id = d.id ");
+    query.append(" inner join deliverables_info di on di.deliverable_id = d.id ");
+    query.append("WHERE ");
+    query.append("dupp.user_id =" + userId + " AND ");
+    query.append("dup.is_active = 1 AND ");
+    query.append("dupp.is_active = 1 AND ");
+    query.append("dup.id_phase =" + phaseId);
+    query.append(" and d.project_id =" + projectId);
+    query.append(" and di.status in (2,4) ");
+    query.append(" and d.is_active =1 ");
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<Deliverable> deliverables = new ArrayList<>();

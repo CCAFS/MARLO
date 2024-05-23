@@ -53,6 +53,8 @@ public interface ProjectExpectedStudyInfoManager {
   public List<ProjectExpectedStudyInfo> findAll();
 
 
+  List<ProjectExpectedStudyInfo> findAllByExpectedStudy(Long expectedStudy);
+
   /**
    * This method gets a projectExpectedStudyInfo object by a given projectExpectedStudyInfo identifier.
    * 
@@ -67,6 +69,7 @@ public interface ProjectExpectedStudyInfoManager {
    * @return a list from ProjectExpectedStudyInfo null if no exist records
    */
   public List<ProjectExpectedStudyInfo> getProjectExpectedStudyInfoByPhase(Phase phase);
+
 
   /**
    * This method saves the information of the given projectExpectedStudyInfo

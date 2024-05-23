@@ -106,6 +106,11 @@ public class CrpPpaPartnerManagerImpl implements CrpPpaPartnerManager {
     return crpPpaPartnerDao.findByCrpAndPhase(crpID, phaseID);
   }
 
+  @Override
+  public List<CrpPpaPartner> findByCrpAndPhaseComplete(long crpID, long phaseID) {
+    return crpPpaPartnerDao.findByCrpAndPhaseComplete(crpID, phaseID);
+  }
+
 
   @Override
   public CrpPpaPartner getCrpPpaPartnerById(long crpPpaPartnerId) {
