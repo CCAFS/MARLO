@@ -89,6 +89,8 @@ import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.GregorianCalendar;
 import org.apache.commons.collections4.comparators.ComparatorChain;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -98,6 +100,8 @@ public class OutcomesAction extends BaseAction {
 
 
   private static final long serialVersionUID = -793652591843623397L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(OutcomesAction.class);
 
 
   // FIXME remove this variable. create an specificity for each crp/platform
@@ -424,7 +428,7 @@ public class OutcomesAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-
+    LOG.info("Outcomes 2 linea 431");
     // IAuditLog ia = auditLogManager.getHistory(4);
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     outcomes = new ArrayList<CrpProgramOutcome>();
@@ -441,6 +445,8 @@ public class OutcomesAction extends BaseAction {
         targetUnits.add(crpTargetUnit.getSrfTargetUnit());
       }
 
+      LOG.info("Outcomes 2 linea 448");
+
       Collections.sort(targetUnits,
         (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
 
@@ -448,8 +454,11 @@ public class OutcomesAction extends BaseAction {
         targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
       }
 
+      LOG.info("Outcomes 2 linea 457");
+
       // TODO
       targetUnitList = this.sortByComparator(targetUnitList);
+      LOG.info("Outcomes 2 linea 461");
     }
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -515,14 +524,17 @@ public class OutcomesAction extends BaseAction {
       }
 
       Collections.sort(outcomes, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
+      LOG.info("Outcomes 2 linea 527");
     } else {
-
+      LOG.info("Outcomes 2 linea 529");
       List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
         .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive()
           && c.getResearchArea() == null)
         .collect(Collectors.toList());
       allPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
       crpProgramID = -1;
+
+      LOG.info("Outcomes 2 linea 537");
 
       this.programs = allPrograms;
       try {
@@ -536,6 +548,8 @@ public class OutcomesAction extends BaseAction {
             && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
             && c.getCrpProgram().getResearchArea() == null)
           .collect(Collectors.toList());
+
+        LOG.info("Outcomes 2 linea 552");
         if (!userLeads.isEmpty()) {
           crpProgramID = userLeads.get(0).getCrpProgram().getId();
         } else {
@@ -632,7 +646,7 @@ public class OutcomesAction extends BaseAction {
             this.setEditable(false);
           }
 
-
+          LOG.info("Outcomes 2 linea 649");
           this.setSubmission(selectedProgram
             .getSubmissions().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
               && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
@@ -644,6 +658,7 @@ public class OutcomesAction extends BaseAction {
       if (this.isHttpPost()) {
         outcomes.clear();
       }
+      LOG.info("Outcomes 2 linea 661");
     }
 
     // General Status List
@@ -668,6 +683,7 @@ public class OutcomesAction extends BaseAction {
       srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       srfIdos.add(srfIdo);
     }
+    LOG.info("Outcomes 2 linea 686");
   }
 
 
