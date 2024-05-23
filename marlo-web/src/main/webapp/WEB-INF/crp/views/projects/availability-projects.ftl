@@ -1,6 +1,5 @@
 [#ftl]
 [#assign title = "Information not available in this phase!"]
-[#assign customCSS = [ "${baseUrlCdn}/global/css/404.css" ] /]
 
 <section class="content">
   <br />
