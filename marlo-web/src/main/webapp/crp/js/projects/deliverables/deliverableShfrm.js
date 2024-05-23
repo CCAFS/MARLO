@@ -64,12 +64,14 @@ function init() {
     setViewMore();
   });
 
+ // $(".deliverableList").select2();
+
   $("textarea[id!='justification']").autoGrow();
-  $(".deliverableList").on("change", addDeliverable);
+  $(".deliverableList").on("change", addSubactionsEvent);
 }
 
-// Add a new deliverable element
-function addDeliverable() {
+// Add a new subAction element
+function addSubactionsEvent() {
   var option = $(this).find("option:selected");
   var canAdd = true;
   if (option.val() == "-1") {
@@ -90,6 +92,7 @@ function addDeliverable() {
   // Reset select
   $(this).val("-1");
   $(this).trigger('change.select2');
+  $(this).select2("destroy").select2();
 
   if (!canAdd) {
     return;
@@ -102,12 +105,24 @@ function addDeliverable() {
   $item.find(".id").val(option.val());
   $list.append($item);
   $item.show('slow');
+  
   // var $actionContainer = $(this).parents(".fullPartBlock");
   // var activityIndex = $activity.find(".index").html();
   // updateDeliverable(this);
   updateActionsAndSubActionsIndexes();
   checkItems($list);
 
+  disabledOption(this, option.val());
+}
+
+function disabledOption(element, value) {
+  $(element).find(`option[value="${value}"]`).attr('disabled', true);
+  $(element).find('select').select2("destroy").select2();
+}
+
+function enablesOption(element, value) {
+  $(element).parents('.subSectionsSelector').find('select').find(`option[value="${value}"]`).removeAttr('disabled');
+  $(element).parents('.subSectionsSelector').find('select').select2("destroy").select2();
 }
 
 function checkItems(block) {
@@ -197,8 +212,8 @@ function attachEvents() {
    * Project partner Events
    */
   // Add a project partner Event
-  $(".elementType-shfrmPriorityAction-deliverablePriorityActions").on("change", addPartnerEvent);
-  $(".removeElementType-shfrmPriorityAction-deliverablePriorityActions").on('click', removePartnerEvent);
+  $(".elementType-shfrmPriorityAction-deliverablePriorityActions").on("change", addActionEvent);
+  $(".removeElementType-shfrmPriorityAction-deliverablePriorityActions").on('click', removeActionEvent);
   $(".removeElementType-shfrmPriorityAction-deliverablePriorityActions").on('mouseenter', function () {
     currentDeleteActionId = $(this).parent('.relationElement').find('.elementRelationID').val();
   });
@@ -585,7 +600,7 @@ function setPartnerTypeToDefault(type) {
 }
 
 let currentDeleteActionId = null;
-function removePartnerEvent(e) {
+function removeActionEvent() {
   $(`input.actionidvalue[value="${currentDeleteActionId}"]`).parents('.projectPartner').remove();
   updateActionsAndSubActionsIndexes();
 }
@@ -603,11 +618,14 @@ function updateActionsAndSubActionsIndexes() {
 }
 
 function removeSubActionEvent() {
-  $(this).parents('.deliverableActivity').remove();
+  const value = $(this).parents('.deliverableActivity').find('input.id').val();
   updateActionsAndSubActionsIndexes();
+  enablesOption(this, value);
+  $(this).parents('.deliverableActivity').remove();
+
 }
 
-function addPartnerEvent(e) {
+function addActionEvent(e) {
   var option = $(this).find("option:selected");
   var $newElement = $("#projectPartner-template").clone(true).removeAttr("id");
   $newElement.find(".actionidvalue").val(option.val());
@@ -615,23 +633,31 @@ function addPartnerEvent(e) {
   let itemsSize = Number($('#projectPartnersBlock').find('.projectPartner').length ?? 0);
   itemsSize && itemsSize++;
 
+  $newElement.find(".id").val(option.val());
   $newElement.find(".index_number").html(itemsSize);
   $newElement.find(".priorityActionTitle").html($(option).text());
   $newElement.find(".subActionsSelector").html(cloneSubActionSelect(option.val()));
 
   console.log($('#projectPartnersBlock'))
   $('#projectPartnersBlock').append($newElement);
+  $newElement.find("select").find('select').select2("destroy").select2();
+  
   $newElement.show("slow", function () {
     $(document).trigger('updateComponent');
-    $newElement.find("select").select2();
+    $newElement.trigger('change.select2');
   });
 
   updateActionsAndSubActionsIndexes();
+  checkItems($('#projectPartnersBlock'));
 }
 
 function cloneSubActionSelect(value) {
-  var $select = $(`#subactionSelect-${value}`).find('.baseselect').clone(true);
+  var $original =$(`#subactionSelect-${value}`).find('.baseselect');
+  $original.find('select').select2("destroy");
+  var $select = $original.clone(true);
   $select.removeClass('hideSelect');
+  $original.find('select').select2();
+  $select.find('select').select2();
   return $select;
 }
 
@@ -800,7 +826,6 @@ function addSelect2() {
   $("form select.setSelect2 ").select2({
     width: '100%'
   });
-
 }
 
 /**
