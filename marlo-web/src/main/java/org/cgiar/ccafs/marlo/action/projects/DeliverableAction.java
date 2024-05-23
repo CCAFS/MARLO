@@ -1753,7 +1753,6 @@ public class DeliverableAction extends BaseAction {
             deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
           }
-
           try {
             DOI = deliverable.getDeliverableMetadataElements().stream()
               .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
@@ -1764,6 +1763,7 @@ public class DeliverableAction extends BaseAction {
             Log.info(e);
           }
 
+
           try {
             handle = deliverable.getDeliverableMetadataElements().stream()
               .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
@@ -1773,6 +1773,7 @@ public class DeliverableAction extends BaseAction {
           } catch (Exception e) {
             Log.info(e);
           }
+
 
           if (deliverable.getDeliverableDisseminations() != null) {
             deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations().stream()
@@ -1866,7 +1867,6 @@ public class DeliverableAction extends BaseAction {
             }
           }
         }
-
         // Cgiar Cross Cutting Markers List
         if (deliverable.getCrossCuttingMarkers() != null) {
           deliverable.setCrossCuttingMarkers(new ArrayList<>(deliverable.getDeliverableCrossCuttingMarkers().stream()
@@ -1915,7 +1915,6 @@ public class DeliverableAction extends BaseAction {
         } catch (Exception e) {
           logger.error("unable to get projectPhases", e);
         }
-
 
         if (this.myProjects != null && !this.myProjects.isEmpty()) {
           this.myProjects.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
@@ -1986,15 +1985,15 @@ public class DeliverableAction extends BaseAction {
         }
         this.setDraft(false);
       }
-
       this.setRepIndGeographicScopes(repIndGeographicScopeManager.findAll().stream()
         .sorted((g1, g2) -> g1.getName().compareTo(g2.getName())).collect(Collectors.toList()));
-      repIndRegions = locElementManager.findAll().stream()
+      // cgamboa 03/05/2024 function locElementManager.findAll() will be used once time
+      List<LocElement> listLocElementPrevious = locElementManager.findAll();
+      repIndRegions = listLocElementPrevious.stream()
         .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
         .collect(Collectors.toList());
-      this.setCountries(locElementManager.findAll().stream()
-        .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
-
+      this.setCountries(listLocElementPrevious.stream().filter(c -> c.isActive() && c.getLocElementType().getId() == 2)
+        .collect(Collectors.toList()));
       if (deliverable.getGenderLevels() != null) {
         for (DeliverableGenderLevel deliverableGenderLevel : deliverable.getGenderLevels()) {
           try {
@@ -2008,7 +2007,6 @@ public class DeliverableAction extends BaseAction {
           }
         }
       }
-
 
       genderLevels = new ArrayList<>();
       List<GenderType> genderTypes = null;
@@ -2080,7 +2078,6 @@ public class DeliverableAction extends BaseAction {
       }
       crps.sort((c1, c2) -> c1.getComposedName().compareTo(c2.getComposedName()));
 
-
       programs = new ArrayList<CrpProgram>();
       for (CrpProgram program : crpProgramManager.findAll().stream().filter(c -> c.isActive()
         && c.getCrp().equals(this.loggedCrp) && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
@@ -2088,7 +2085,6 @@ public class DeliverableAction extends BaseAction {
         programs.add(program);
       }
       programs.sort((f1, f2) -> f1.getAcronym().compareTo(f2.getAcronym()));
-
       deliverableTypeParent = new ArrayList<>(
         deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null
           && dt.getCrp() == null && !dt.getAdminType().booleanValue()).collect(Collectors.toList()));
@@ -2112,7 +2108,6 @@ public class DeliverableAction extends BaseAction {
             && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && dt.getAdminType().booleanValue())
           .collect(Collectors.toList())));
       }
-
       if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType() != null
         && deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() != null
         && deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId().longValue() != -1) {
@@ -2126,7 +2121,6 @@ public class DeliverableAction extends BaseAction {
           deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() != null
             && dt.getDeliverableCategory().getId() == deliverableTypeParentId).collect(Collectors.toList()));
       }
-
       projectOutcomes = new ArrayList<>();
 
       if (project.getProjectOutcomes() != null) {
@@ -2165,7 +2159,6 @@ public class DeliverableAction extends BaseAction {
        * projectPartnerManager.findAll().stream().filter(pp -> pp.isActive() && pp.getProject().getId() == projectID
        * && pp.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList());
        */
-
       List<ProjectPartner> partnersTmp =
         projectPartnerManager.findAllByPhaseProject(projectID, this.getActualPhase().getId());
 
@@ -2188,7 +2181,6 @@ public class DeliverableAction extends BaseAction {
        * repeated for each partner that has been consulted. The partner
        * object of the cycle is not being used within it. jurodca 20180129
        */
-
       partnerPersons =
         partners.stream().flatMap(e -> e.getProjectPartnerPersons().stream()).collect(Collectors.toList());
 
@@ -2217,7 +2209,6 @@ public class DeliverableAction extends BaseAction {
 
       // Add Activities
       this.activities = new ArrayList<>();
-
       for (Activity activity : project.getActivities()) {
         if (activity.isActive() && !this.activities.contains(activity)
           && activity.getPhase().getId().compareTo(this.getActualPhase().getId()) == 0) {
@@ -2248,13 +2239,11 @@ public class DeliverableAction extends BaseAction {
        * }
        * }
        */
-
       if (activities != null && !activities.isEmpty()) {
         activities = activities.stream().filter(c -> c.isActive() && c.getActivityTitle() != null)
           .sorted((a1, a2) -> a1.getActivityTitle().getTitle().compareTo(a2.getActivityTitle().getTitle()))
           .collect(Collectors.toList());
       }
-
 
       List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
       if (this.hasSpecificities(APConstants.DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE)) {
@@ -2280,7 +2269,6 @@ public class DeliverableAction extends BaseAction {
         }
 
       }
-
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
 
@@ -2347,7 +2335,6 @@ public class DeliverableAction extends BaseAction {
       /*
        * get feedback comments
        */
-
       try {
         if (this.hasSpecificities(this.feedbackModule())) {
 
@@ -2355,10 +2342,16 @@ public class DeliverableAction extends BaseAction {
           feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
             .filter(f -> f.getSectionName() != null && f.getSectionName().equals("deliverable"))
             .collect(Collectors.toList());
+
+          List<FeedbackQAComment> FeedbackQACommentTemp =
+            feedbackQACommentManager.findAllByPhase(this.getActualPhase().getId());
           if (feedbackComments != null) {
             for (FeedbackQACommentableFields field : feedbackComments) {
               List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
-              comments = feedbackQACommentManager.findAll().stream()
+              // cgamboa 06/05/2024 feedbackQACommentManager.findAll() function is changed to
+              // feedbackQACommentManager.findAllByPhase.
+              // this function will be called once
+              comments = FeedbackQACommentTemp.stream()
                 .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
                   && f.getPhase().getId().equals(this.getActualPhase().getId())
                   && f.getParentId() == deliverable.getId() && f.getField() != null && f.getField().getId() != null
@@ -2370,7 +2363,6 @@ public class DeliverableAction extends BaseAction {
         }
       } catch (Exception e) {
       }
-
 
       // Deliverable remaining value
       if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getRemainingPending() == null) {
@@ -2523,9 +2515,11 @@ public class DeliverableAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
+
       this.getSession().put("indexTab", indexTab);
       // we update the mofification Justification only here.
       this.saveProjectAuditData();
+
 
       Deliverable deliverableManagedState = this.updateDeliverableInfo();
       this.updateDeliverableFundingSources(deliverableManagedState);
@@ -2545,7 +2539,6 @@ public class DeliverableAction extends BaseAction {
        */
       this.saveDeliverablePartnershipResponsible(deliverableDB);
       this.saveDeliverablePartnershipOther(deliverableDB);
-
       // Save Geographic Scope Data
       this.saveGeographicScope(deliverableManagedState, this.getActualPhase());
 
@@ -2603,6 +2596,7 @@ public class DeliverableAction extends BaseAction {
         this.saveUsers();
         this.saveParticipant();
         this.saveDuplicated();
+
         if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
           this.saveDeliverableClusterParticipant();
         }
@@ -2678,6 +2672,7 @@ public class DeliverableAction extends BaseAction {
         }
         relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
       }
+
 
       /**
        * The following is required because we need to update something on
@@ -2844,17 +2839,14 @@ public class DeliverableAction extends BaseAction {
 
     // Save form Information
     if (this.deliverable.getCrpOutcomes() != null) {
-
       if (!this.isDeliverableMappedToTrainessIndicator() && addIPI) {
         DeliverableCrpOutcome deliverableCrpOutcome = new DeliverableCrpOutcome();
         deliverableCrpOutcome.setDeliverable(deliverable);
         deliverableCrpOutcome.setCrpProgramOutcome(crpProgramOutcomeIPI);
         this.deliverable.getCrpOutcomes().add(deliverableCrpOutcome);
       }
-
       for (DeliverableCrpOutcome deliverableOutcome : this.deliverable.getCrpOutcomes()) {
         DeliverableCrpOutcome deliverableOutcomeSave = new DeliverableCrpOutcome();
-
         if (deliverableOutcome != null) {
           // For new crp outcomes
           if (deliverableOutcome.getId() == null) {
@@ -3233,13 +3225,24 @@ public class DeliverableAction extends BaseAction {
 
     if (deliverableDB.getDeliverableUserPartnerships() != null
       && deliverableDB.getDeliverableUserPartnerships().size() > 0) {
-
-      List<DeliverableUserPartnership> deliverableUserPartnershipPrev =
-        deliverableDB.getDeliverableUserPartnerships().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
-            && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
-          .collect(Collectors.toList());
-
+      List<DeliverableUserPartnership> deliverableUserPartnershipsCustom = null;
+      try {
+        deliverableUserPartnershipsCustom = deliverableUserPartnershipManager
+          .findByDeliverableIDAndPhase(deliverableDB.getId(), this.getActualPhase().getId());
+      } catch (Exception e) {
+        // TODO: handle exception
+        logger.info(e.getMessage());
+      }
+      List<DeliverableUserPartnership> deliverableUserPartnershipPrev = null;
+      if (deliverableUserPartnershipsCustom != null && !deliverableUserPartnershipsCustom.isEmpty()) {
+        // cgamboa 26/04/2024 the query has been optimized
+        deliverableUserPartnershipPrev =
+          // deliverableDB.getDeliverableUserPartnerships()
+          deliverableUserPartnershipsCustom.stream()
+            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+              && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+            .collect(Collectors.toList());
+      }
       for (DeliverableUserPartnership deliverableUserPartnership : deliverableUserPartnershipPrev) {
         if (this.deliverable.getResponsiblePartnership() == null
           || !this.deliverable.getResponsiblePartnership().contains(deliverableUserPartnership)) {
@@ -3309,6 +3312,7 @@ public class DeliverableAction extends BaseAction {
 
         }
       }
+
 
     }
 
@@ -3566,6 +3570,7 @@ public class DeliverableAction extends BaseAction {
    * Check Deliverable duplicated status
    */
   public void saveDuplicated() {
+
     if (this.hasSpecificities(APConstants.DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE)) {
       Deliverable deliverableBase = deliverableManager.getDeliverableById(deliverableID);
       DeliverableInfo deliverableInfoDb = deliverableBase.getDeliverableInfo(this.getActualPhase());
@@ -3593,27 +3598,38 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
+
       if (deliverable.getDissemination() != null && deliverable.getDissemination().getDisseminationUrl() != null
         && !deliverable.getDissemination().getDisseminationUrl().isEmpty()) {
         disseminationURL = deliverable.getDissemination().getDisseminationUrl();
       }
 
-
       List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
 
-      deliverableDTOs = this.getDuplicatedDeliverableInformation(doi, handle, disseminationURL, deliverableID);
-      if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
-        // Set is duplicated field in true
-        isDuplicated = true;
-      } else {
-        isDuplicated = false;
+      try {
+        List<String> deliverables = null;
+        // cgamboa change is made to obtain deliverables only for the phase 08/04/2024
+        deliverables = deliverableManager.getDuplicatesDeliverablesByPhase(this.getActualPhase().getId());
+        // deliverableDTOs = this.getDuplicatedDeliverableInformation(DOI, handle, disseminationURL, deliverableID);
+        deliverableDTOs =
+          this.getDuplicatedDeliverableInformationNew(DOI, handle, disseminationURL, deliverableID, deliverables);
+        if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
+          // Set is duplicated field in true
+          isDuplicated = true;
+        } else {
+          isDuplicated = false;
+        }
+
+        if (deliverableInfoDb != null) {
+          deliverableInfoDb.setDuplicated(isDuplicated);
+          deliverableBase.setDeliverableInfo(deliverableInfoDb);
+          deliverableInfoManager.saveDeliverableInfo(deliverableBase.getDeliverableInfo());
+        }
+      } catch (Exception e) {
+        logger.error("unable to get duplivated deliverables", e);
       }
 
-      if (deliverableInfoDb != null) {
-        deliverableInfoDb.setDuplicated(isDuplicated);
-        deliverableBase.setDeliverableInfo(deliverableInfoDb);
-        deliverableInfoManager.saveDeliverableInfo(deliverableBase.getDeliverableInfo());
-      }
+
     }
   }
 

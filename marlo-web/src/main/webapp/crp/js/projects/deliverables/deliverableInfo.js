@@ -787,7 +787,12 @@ var deliverablePartnersModule = (function () {
 
   function addPartnerItem() {
     var $listBlock = $('.otherDeliverablePartners');
-    var $newItem = $('#deliverablePartnerItem-template').clone(true).removeAttr('id');
+    var $template = $('#deliverablePartnerItem-template');
+    $template.find('select').select2("destroy");
+    var $newItem = $template.clone(true).removeAttr('id');
+
+    $template.find('select').select2();
+    $newItem.find('select').select2();
     $listBlock.append($newItem);
     $newItem.show();
     updateIndexes();

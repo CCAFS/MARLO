@@ -1641,19 +1641,26 @@ public class ProjectOutcomeAction extends BaseAction {
         feedbackComments = feedbackQACommentableFieldsManager.findBySectionName("projectContributionCrp");
 
         if (feedbackComments != null) {
-          for (FeedbackQACommentableFields field : feedbackComments) {
-            List<FeedbackQAComment> comments = new ArrayList<>();
-            comments = feedbackQACommentManager
-              .getFeedbackQACommentsByParentId(projectOutcome.getId()).stream().filter(f -> f != null
-                && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
-              .collect(Collectors.toList());
-            field.setQaComments(comments);
+          List<FeedbackQAComment> feedbackQACommentToSearchComments =
+            feedbackQACommentManager.getFeedbackQACommentsByParentId(projectOutcome.getId());
+          if (feedbackQACommentToSearchComments != null) {
+            for (FeedbackQACommentableFields field : feedbackComments) {
+              List<FeedbackQAComment> comments = new ArrayList<>();
+              // cgamboa feedbackQACommentManager.getFeedbackQACommentsByParentId list is changed by
+              // feedbackQACommentToSearchComments list
+              // feedbackQACommentManager.getFeedbackQACommentsByParentId(projectOutcome.getId())
+              comments = feedbackQACommentToSearchComments.stream().filter(f -> f != null && f.getField() != null
+                && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
+                .collect(Collectors.toList());
+              field.setQaComments(comments);
+            }
           }
         }
       }
     } catch (Exception e) {
       LOG.error(e + " error getting commentable fields");
     }
+
 
     /*
      * Loading basic List
@@ -1720,6 +1727,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
   @Override
   public String save() {
+
 
     if (this.hasPermission("canEdit")) {
       this.saveMilestones(projectOutcomeDB);

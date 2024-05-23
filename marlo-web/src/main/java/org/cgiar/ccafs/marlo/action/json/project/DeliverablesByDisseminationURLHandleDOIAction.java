@@ -60,6 +60,7 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
   private PhaseManager phaseManager;
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
 
+
   public DeliverablesByDisseminationURLHandleDOIAction() {
   }
 
@@ -79,13 +80,20 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
     Phase phase = phaseManager.getPhaseById(phaseID);
     List<Deliverable> deliverables = null;
 
+
     if ((disseminationURL != null || handle != null || DOI != null) && phaseID != 0 && deliverableID != 0) {
-      deliverables = deliverableManager.getDeliverablesByPhase(phaseID);
+      // cgamboa 30/04/2024 the query to get duplicate records has been modified
+      // deliverables = deliverableManager.getDeliverablesByPhase(phaseID);
+      deliverables =
+        deliverableManager.getDeliverablesByPhaseAndUrlAndDoiAndHandel(phase.getId(), disseminationURL, handle, DOI);
+
     }
+
 
     if (deliverables != null && !deliverables.isEmpty() && phase != null) {
       deliverables = deliverables.stream().filter(d -> d != null && d.getId() != deliverableID)
         .sorted(Comparator.comparing(Deliverable::getId)).collect(Collectors.toList());
+
 
       if (deliverables != null && !deliverables.isEmpty()) {
 
@@ -153,6 +161,7 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
             } catch (Exception e) {
               Log.info(e);
             }
+
 
             try {
               if (deliverableDOI != null && !deliverableDOI.isEmpty()) {
@@ -240,6 +249,7 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
                   + phase.toString());
               }
               DeliverableUserPartnership responisble = deliverablePartnershipResponsibles.get(0);
+
 
               if (responisble != null) {
                 if (responisble.getDeliverableUserPartnershipPersons() != null) {
@@ -383,6 +393,7 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
           }
         } // End deliverables for
 
+
         if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
           deliverableDTOs = deliverableDTOs.stream()
             .sorted(Comparator.comparing(DeliverableSearchSummary::getDeliverableID)).collect(Collectors.toList());
@@ -416,6 +427,7 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
         }
       }
     }
+
 
     return SUCCESS;
 

@@ -69,6 +69,17 @@ public interface InstitutionManager {
   public Institution getInstitutionById(long institutionId);
 
   /**
+   * get intitution quantity by crp and phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @param institutionId intitution id
+   * @param crpId crp id
+   * @return quantity of intitutions
+   */
+  int getQuantityInstitutionByCrpAndPhase(long institutionId, long phaseId, long crpId);
+
+  /**
    * This method saves the information of the given institution
    * 
    * @param institution - is the Institution object with the new information to be added/updated.
@@ -77,6 +88,7 @@ public interface InstitutionManager {
    *         or -1 is some error occurred.
    */
   public Institution saveInstitution(Institution institution);
+
 
   /**
    * This method looks for the active Institutions that contains the

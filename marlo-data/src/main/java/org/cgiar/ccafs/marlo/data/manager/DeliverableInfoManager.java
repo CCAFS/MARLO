@@ -62,6 +62,8 @@ public interface DeliverableInfoManager {
    */
   public DeliverableInfo getDeliverableInfoById(long deliverableInfoID);
 
+  List<DeliverableInfo> getDeliverablesInfoByDeliverableId(long deliverableId);
+
   public List<DeliverableInfo> getDeliverablesInfoByPhase(Phase phase);
 
   /**
@@ -79,6 +81,7 @@ public interface DeliverableInfoManager {
   public List<DeliverableInfo> getDeliverablesInfoByType(Phase phase, DeliverableType deliverableType);
 
   public boolean isDeliverableSubcategoryIncludedWebsite(long deliverableID, Phase phase);
+
 
   /**
    * This method saves the information of the given deliverableInfo
