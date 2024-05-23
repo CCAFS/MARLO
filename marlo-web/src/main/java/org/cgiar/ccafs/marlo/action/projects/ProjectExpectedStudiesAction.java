@@ -1032,24 +1032,21 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       // Getting The list
       this.statuses = this.generalStatusManager.findByTable(APConstants.PROJECT_EXPECTED_STUDIES_TABLE);
 
+      // cgamboa 17/04/2024 the query will be call once
+      List<LocElement> LocElementTemp = this.locElementManager.findAll();
 
-      this.countries = this.locElementManager.findAllToCountries();
-
-      // cgamboa 17/04/2024 the query has been optimized to get fewer records
-      // this.countries = this.locElementManager.findAll().stream().filter(c -> c.getLocElementType().getId().intValue()
-      // == 2 &&
-      // c.isActive()).collect(Collectors.toList());
+      // this.locElementManager.findAll() is changed by LocElementTemp
+      this.countries = LocElementTemp.stream()
+        .filter(c -> c.getLocElementType().getId().intValue() == 2 && c.isActive()).collect(Collectors.toList());
 
 
       this.geographicScopes = this.geographicScopeManager.findAll();
-      this.regions = this.locElementManager.findAllToRegions();
 
-      // cgamboa 17/04/2024 the query has been optimized to get fewer records
-      /*
-       * this.regions = this.locElementManager.findAll().stream()
-       * .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
-       * .collect(Collectors.toList());
-       */
+      // this.locElementManager.findAll() is changed by LocElementTemp
+      this.regions = LocElementTemp.stream()
+        .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
+        .collect(Collectors.toList());
+
 
       this.organizationTypes = this.organizationTypeManager.findAll();
       // Focus levels and Too early to tell was removed
@@ -1341,20 +1338,26 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
           .filter(f -> f.getSectionName() != null && f.getSectionName().equals("study")).collect(Collectors.toList());
         if (feedbackComments != null) {
-          for (FeedbackQACommentableFields field : feedbackComments) {
-            List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
-            comments = feedbackQACommentManager.findAll().stream()
-              .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
-                && f.getPhase().getId().equals(this.getActualPhase().getId())
-                && f.getParentId() == expectedStudy.getId() && f.getField() != null && f.getField().getId() != null
-                && f.getField().getId().equals(field.getId()))
-              .collect(Collectors.toList());
-            field.setQaComments(comments);
+          List<FeedbackQAComment> FeedbackQACommentToSearchComments =
+            feedbackQACommentManager.findAllByPhase(this.getActualPhase().getId());
+          if (FeedbackQACommentToSearchComments != null) {
+            for (FeedbackQACommentableFields field : feedbackComments) {
+              List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
+              // cgamboa 08/05/2024 feedbackQACommentManager.findAll() is changed by FeedbackQACommentToSearchComments
+              comments = FeedbackQACommentToSearchComments.stream()
+                .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+                  && f.getPhase().getId().equals(this.getActualPhase().getId())
+                  && f.getParentId() == expectedStudy.getId() && f.getField() != null && f.getField().getId() != null
+                  && f.getField().getId().equals(field.getId()))
+                .collect(Collectors.toList());
+              field.setQaComments(comments);
+            }
           }
         }
 
       } catch (Exception e) {
       }
+
 
       if (this.project != null) {
         String params[] = {this.loggedCrp.getAcronym(), this.project.getId() + ""};
@@ -1461,7 +1464,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(null);
 
     }
-
 
   }
 
