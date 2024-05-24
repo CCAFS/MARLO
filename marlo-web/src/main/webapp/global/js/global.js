@@ -27,9 +27,11 @@ var notyDefaultOptions = {
  */
 $(document).ready(function () {
 
-  showNotificationMessages();
+  
   showHelpText();
-  validatePhase();
+  validatePhase().then(function(isProgress){
+    showNotificationMessages();
+  }).catch(function(error){});
 
   // Set elementsListComponent
   setElementsListComponent();
@@ -186,9 +188,8 @@ $(document).ready(function () {
       $.ajax({
         url: baseURL + '/isProgressActive.do',   
         success: function(data) {
-          var isProgress = data.status.isProgress;
-          resolve(isProgress);
-          console.log('Valor fase ' + isProgress);
+          isProgress = data.status.isProgress;
+          resolve();
         },
         error: function(xhr, status, error) {
           reject(error);
