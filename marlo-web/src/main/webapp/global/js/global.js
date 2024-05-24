@@ -221,8 +221,11 @@ $(document).ready(function () {
       } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message" && messageSelector.html().split(":")[1] === " deliverable.status.remaining") {
         // SHOW CLUSTER SUBMITTED BASED ON THE DISABLED INPUT
         var $clusterSubmitted = $(`.clusterSubmitted`);
+        var $clusterSubmittedFilter = $clusterSubmitted.filter((index, ele) => $(ele).attr("issubmit") === "true").get();
         var message = "";
-        if ($clusterSubmitted.length > 0) {
+        console.log("ClusterSubmitted Lenght",$clusterSubmitted.length);
+        console.log("ClusterSubmitted", $clusterSubmitted);
+        if ($clusterSubmittedFilter.length > 0) {
           // $clusterSubmitted exists, do something
           const $mapClusterSubmit = $clusterSubmitted.filter((index, ele) => $(ele).attr("issubmit") === "true").get();
           const $stringClusterSubmit = $mapClusterSubmit.reduce((prev,curr) => prev +$(curr).attr("name")+",","");
