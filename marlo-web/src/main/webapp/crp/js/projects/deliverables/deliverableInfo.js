@@ -71,7 +71,7 @@ function init() {
 
   // Event when status is changed
   $statuses.on("change", function () {
-    justificationByStatus(this.value);
+    validateVisualJustifAndCompnsByStatusAndYear(this.value);
   });
 
   validatePermissionsToChangeStatus()
@@ -99,8 +99,6 @@ function init() {
 
   $('input.isOtherUrl').on("click", activeByNoDOIProvidedCheckbox);
   activeByNoDOIProvidedCheckbox();
-  // justificationByStatus($statuses.val());
-  // validateCurrentDate();
 
   /** Activities * */
 
@@ -288,7 +286,7 @@ function init() {
 
   deliverablePartnersModule.init();
   feedbackAutoImplementation();
-  justificationByStatus($statuses.val())
+  validateVisualJustifAndCompnsByStatusAndYear($statuses.val())
 }
 
 function validatePermissionsToChangeStatus() {
@@ -548,14 +546,7 @@ function validateCurrentDate() {
       });
       $statuses.val(statusValue);
       $statuses.trigger("change.select2");
-      justificationByStatus(statusValue);
-
-      // Check year and status
-      if ((year() < currentCycleYear) && (status() == 4)) {
-        // $('#newExpectedYear').show();
-      } else {
-        // $('#newExpectedYear').hide();
-      }
+      validateVisualJustifAndCompnsByStatusAndYear(statusValue);
 
     }
   });
@@ -563,11 +554,19 @@ function validateCurrentDate() {
   $statuses.trigger("change.select2");
 }
 
-function justificationByStatus(statusId) {
+/**
+ * Validates the visual justification and components(overlay and block) based on the status and  expected year.
+ *
+ * @param {number} statusId - The ID of the status.
+ */
+function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
 
   var $newExpectedYearBlock = $('#newExpectedYear');
   var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
   var newExpectedYear = $newExpectedYearSelect.val();
+
+  var $yearOverlay = $('#deliverableYear .overlay');
+  var $newYearOverlay = $('#newExpectedYear .overlay');
 
   var hasExpectedYear = ((newExpectedYear != "") && newExpectedYear != "-1") && (typeof newExpectedYear !== 'undefined');
 
@@ -579,30 +578,34 @@ function justificationByStatus(statusId) {
     $statusDescription.slideUp(400);
   }
 
+  console.log("isDeliverableNew", isDeliverableNew);
+
+  // Show overlay in the expected year
+  showComponent(!isDeliverableNew, $yearOverlay, "overlay");
+
   // Validate the new extended year
   if (isDeliverableNew) {
-    showNewExpectedComponent(isStatusExtended(statusId) && upKeepActive);
+    
+    showComponent(isStatusExtended(statusId) && upKeepActive, $newExpectedYearBlock);
   } else {
     console.log("hasExpectedYear", hasExpectedYear);
     if (isStatusOnGoing(statusId)) {
-      console.log("if");
-      showNewExpectedComponent(false);
+      showComponent(false, $newExpectedYearBlock);
       $newExpectedYearSelect.val("-1").trigger("change.select2");
       $statusDescription.find('textarea').val("");
     } else {
-      console.log("else");
       if (isStatusExtended(statusId)) {
-        showNewExpectedComponent(true);
-        $('.expectedDisabled').hide("slow");
-      } else if ( isStatusComplete(statusId) || isStatusComplete(statusId) || statusId == 6) {
+        showComponent(true, $newExpectedYearBlock);
+        showComponent(false, $newYearOverlay, "overlay");
+      } else if ( isStatusComplete(statusId) || isStatusCancelled(statusId) || statusId == 6) {
         if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {
-          showNewExpectedComponent(true);
+          showComponent(true, $newExpectedYearBlock);
         } else {
-          showNewExpectedComponent(false);
+          showComponent(false, $newExpectedYearBlock);
         }
-        $('.expectedDisabled').show("slow");
+        showComponent(true, $newYearOverlay, "overlay");
       } else {
-        showNewExpectedComponent(false);
+        showComponent(false, $newExpectedYearBlock);
       }
     }
   }
@@ -625,7 +628,7 @@ function disabledDatesInNewExpectedYear() {
 
   var isAdmin = document.getElementById("adminRole").value;   
   
-  if(isAdmin){
+  if(isAdmin === "true"){
     return;
   }
 
@@ -640,21 +643,40 @@ function disabledDatesInNewExpectedYear() {
   });
 }
 
-//Display the overlay that block the possibility to change the expected year
-function showNewExpectedComponent(state) {
-  var $newExpectedYearBlock = $('#newExpectedYear');
-  var $yearOverlay = $('#deliverableYear .overlay');
-  if (state) {
-    $newExpectedYearBlock.show();
-    $yearOverlay.show();
-  } else {
-    $newExpectedYearBlock.hide();
-    if (isDeliverableNew) {
-      $yearOverlay.hide();
+/**
+ * Shows or hides a component based on the given state.
+ * The component could be a block or an overlay.
+ * The overlay is a div that blocks the possibility to change the below component.
+ * The admin has available all the fields
+ *
+ * @param {boolean} state - The state indicating whether to show or hide the component.
+ * @param {jQuery} $component - The jQuery object representing the component to show or hide.
+ * @param {string} componentType - The type of component to show or hide. Default is "block", could be "overlay".
+ */
+function showComponent(state, $component, componentType = "block") {
+
+  var isAdmin = document.getElementById("adminRole").value;
+
+  if (isAdmin === "true") {  
+    if(componentType == "block"){
+      $component.show();
     }
+    if(componentType == "overlay"){
+      $component.hide();
+    }
+    
+    return;
+  }
+
+  if (state) {
+    $component.show();
+  } else {
+    $component.hide();
   }
 
 }
+
+//Display the overlay that block the possibility to change the expected year
 
 function validateDeliverableStatus(canChangeStatus) {
 
@@ -682,7 +704,7 @@ function validateDeliverableStatus(canChangeStatus) {
   // Validation when the deliverable has shared submitted clusters related with trainees information
   if(canChangeStatus === false){
      
-    if(isAdmin){
+    if(isAdmin === "true"){
        $statuses.find('option[value="4"]').prop("disabled", false); // Enable Extended
        $statuses.find('option[value="5"]').prop("disabled", false); // Enable Cancelled
     }else{
