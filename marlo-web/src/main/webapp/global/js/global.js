@@ -244,14 +244,17 @@ $(document).ready(function () {
       } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message") {
         // WARNING MESSAGE
         var message = ""
-        console.log('valor antes de metodo save' + isProgress);
+        var messageType = "warning";
         if(isProgress == 'true'){
-          message += "Test message. <br> ";
+          message += "The Information was correctly saved. <br> ";
+          message += "Some of the fields could be missing or incorrect. <br>";
+          message += "Don't worry! Some information is not necessary at this phase, but it will be required in the next phase.";
+          messageType = "info";
         }else{
           message += "The Information was correctly saved. <br> ";
           message += "Please keep in mind that the fields highlighted below are missing or incorrect.";
         }
-        var messageType = "warning";
+        
         notifyErrorMessage(messageType, message);
       }
     } else if ($(messageSelector).hasClass("error")) {
@@ -286,6 +289,14 @@ $(document).ready(function () {
         $(containerAlert).addClass("alertColorBackgroundWarning");
         $(containerLine).addClass("alertColorWarning");
         $(containerIcon).addClass("alertColorWarning");
+        $(messages).removeClass("displayNone");
+        break;
+      case "info":
+        $(element).find('.alertText').html(message);
+        $(iconAlert).attr("src", baseURL + '/global/images/icon-info.png');
+        $(containerAlert).addClass("alertColorBackgroundInfo");
+        $(containerLine).addClass("alertColorInfo");
+        $(containerIcon).addClass("alertColorInfo");
         $(messages).removeClass("displayNone");
         break;
       case "error":
