@@ -4,6 +4,7 @@ $.widget.bridge('uitooltip', $.ui.tooltip);
 
 // Global Vars
 var yesnoEvent;
+var isProgress;
 var notyDefaultOptions = {
   text: '',
   layout: 'bottomRight',
@@ -20,6 +21,7 @@ var notyDefaultOptions = {
   ]
 };
 
+
 /**
  * Global javascript must be here.
  */
@@ -27,6 +29,7 @@ $(document).ready(function () {
 
   showNotificationMessages();
   showHelpText();
+  validatePhase();
 
   // Set elementsListComponent
   setElementsListComponent();
@@ -176,6 +179,23 @@ $(document).ready(function () {
       $buttons.find('.buttons-content').removeClass('positionFixedBot animated flipInX');
     }
   }
+  
+  function validatePhase() {
+    return new Promise(function(resolve, reject) {
+      // Ajax
+      $.ajax({
+        url: baseURL + '/isProgressActive.do',   
+        success: function(data) {
+          var isProgress = data.status.isProgress;
+          resolve(isProgress);
+          console.log('Valor fase ' + isProgress);
+        },
+        error: function(xhr, status, error) {
+          reject(error);
+        }
+      });
+    });
+  }
 
   // Animate help text
   function showHelpText() {
@@ -223,8 +243,13 @@ $(document).ready(function () {
       } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message") {
         // WARNING MESSAGE
         var message = ""
-        message += "The Information was correctly saved. <br> ";
-        message += "Please keep in mind that the fields highlighted below are missing or incorrect.";
+        console.log('valor antes de metodo save' + isProgress);
+        if(isProgress == 'true'){
+          message += "Test message. <br> ";
+        }else{
+          message += "The Information was correctly saved. <br> ";
+          message += "Please keep in mind that the fields highlighted below are missing or incorrect.";
+        }
         var messageType = "warning";
         notifyErrorMessage(messageType, message);
       }
