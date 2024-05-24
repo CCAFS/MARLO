@@ -434,7 +434,14 @@ public class OutcomesAction extends BaseAction {
     outcomes = new ArrayList<CrpProgramOutcome>();
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     targetUnitList = new HashMap<>();
-    if (srfTargetUnitManager.findAll() != null) {
+    // cgamboa 24/05/2024 srfTargetUnitManager.findAll() was changed by srfTargetUnitManager.findAllQauntity()
+    int srfTargetUnitQuantity = 0;
+    try {
+      srfTargetUnitQuantity = srfTargetUnitManager.findAllQauntity();
+    } catch (Exception e) {
+      LOG.info("unable to get srfTargetUnitQuantity in preparefunction ");
+    }
+    if (srfTargetUnitQuantity > 0) {
 
       List<SrfTargetUnit> targetUnits = new ArrayList<>();
 
@@ -541,7 +548,11 @@ public class OutcomesAction extends BaseAction {
         crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
       } catch (Exception e) {
 
+        LOG.info("Outcomes 2 linea 551 this.getCurrentUser().getId() " + this.getCurrentUser().getId());
         User user = userManager.getUser(this.getCurrentUser().getId());
+        LOG.info("Outcomes 2 linea 553 user.getCrpProgramLeaders().size()" + user.getCrpProgramLeaders().size());
+        LOG.info("Outcomes 2 linea 554 ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()"
+          + ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
         List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
           .filter(c -> c.isActive() && c.getCrpProgram().isActive() && c.getCrpProgram() != null
 
@@ -566,7 +577,7 @@ public class OutcomesAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
       }
-
+      LOG.info("Outcomes 2 linea 569");
       if (selectedProgram != null) {
 
         milestoneYears = this.getTargetYears();

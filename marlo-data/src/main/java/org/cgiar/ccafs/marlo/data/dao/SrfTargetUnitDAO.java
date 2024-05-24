@@ -54,6 +54,12 @@ public interface SrfTargetUnitDAO {
    */
   public List<SrfTargetUnit> findAll();
 
+  /**
+   * This method gets srfTargetUnit quantity that are active
+   * 
+   * @return srfTargetUnit quantity
+   */
+  int findAllQauntity();
 
   /**
    * This method saves the information of the given srfTargetUnit

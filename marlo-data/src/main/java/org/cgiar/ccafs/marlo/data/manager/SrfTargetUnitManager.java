@@ -51,6 +51,12 @@ public interface SrfTargetUnitManager {
    */
   public List<SrfTargetUnit> findAll();
 
+  /**
+   * This method gets srfTargetUnit quantity that are active
+   * 
+   * @return srfTargetUnit quantity
+   */
+  int findAllQauntity();
 
   /**
    * This method gets a srfTargetUnit object by a given srfTargetUnit identifier.
@@ -59,6 +65,7 @@ public interface SrfTargetUnitManager {
    * @return a SrfTargetUnit object.
    */
   public SrfTargetUnit getSrfTargetUnitById(long srfTargetUnitID);
+
 
   /**
    * This method saves the information of the given srfTargetUnit

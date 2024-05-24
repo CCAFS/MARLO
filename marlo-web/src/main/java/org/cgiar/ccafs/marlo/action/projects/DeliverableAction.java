@@ -1707,6 +1707,7 @@ public class DeliverableAction extends BaseAction {
 
         List<DeliverableActivity> deliverableActivities = new ArrayList<>();
         deliverableActivities = deliverableActivityManager.getDeliverableActivitiesByDeliverableID(deliverable.getId());
+        logger.info("DeliverableAction linea 1710 deliverableActivities.size()" + deliverableActivities.size());
         if (deliverableActivities != null && !deliverableActivities.isEmpty()) {
           deliverableActivities = deliverableActivities.stream()
             .filter(da -> da.isActive() && da.getPhase() != null
@@ -1716,6 +1717,7 @@ public class DeliverableAction extends BaseAction {
             .collect(Collectors.toList());
 
           deliverable.setActivities(deliverableActivities);
+          logger.info("DeliverableAction linea 1720 deliverableActivities.size()" + deliverableActivities.size());
         }
         for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
 

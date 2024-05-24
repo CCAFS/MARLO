@@ -2858,11 +2858,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<Deliverable> getDeliverableRelationsImpact(Long id, String className) {
+    LOG.info(" BaseAction linea 2861 ");
     Class<?> clazz;
     List<Deliverable> deliverables = null;
     try {
       clazz = Class.forName(className);
       if (clazz == CrpClusterKeyOutput.class) {
+        LOG.info(" BaseAction linea 2867 ");
         CrpClusterKeyOutput crpClusterKeyOutput = this.crpClusterKeyOutputManager.getCrpClusterKeyOutputById(id);
         List<DeliverableInfo> deList = crpClusterKeyOutput.getDeliverables().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
@@ -2899,6 +2901,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         deliverables = new ArrayList<>();
         deliverables.addAll(deSet);
       }
+      LOG.info(" BaseAction linea 2904 ");
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -2910,6 +2913,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public List<Deliverable> getDeliverableRelationsProject(Long id, String className, Long projectID) {
+
+    LOG.info("BaseAction linea 2914 ");
     Class<?> clazz;
     List<Deliverable> deliverables = null;
     try {
