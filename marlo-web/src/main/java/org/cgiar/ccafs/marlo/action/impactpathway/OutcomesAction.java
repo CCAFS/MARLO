@@ -428,7 +428,6 @@ public class OutcomesAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-    LOG.info("Outcomes 2 linea 431");
     // IAuditLog ia = auditLogManager.getHistory(4);
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     outcomes = new ArrayList<CrpProgramOutcome>();
@@ -452,7 +451,6 @@ public class OutcomesAction extends BaseAction {
         targetUnits.add(crpTargetUnit.getSrfTargetUnit());
       }
 
-      LOG.info("Outcomes 2 linea 448");
 
       Collections.sort(targetUnits,
         (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
@@ -461,11 +459,9 @@ public class OutcomesAction extends BaseAction {
         targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
       }
 
-      LOG.info("Outcomes 2 linea 457");
 
       // TODO
       targetUnitList = this.sortByComparator(targetUnitList);
-      LOG.info("Outcomes 2 linea 461");
     }
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -531,9 +527,7 @@ public class OutcomesAction extends BaseAction {
       }
 
       Collections.sort(outcomes, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
-      LOG.info("Outcomes 2 linea 527");
     } else {
-      LOG.info("Outcomes 2 linea 529");
       List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
         .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive()
           && c.getResearchArea() == null)
@@ -541,18 +535,14 @@ public class OutcomesAction extends BaseAction {
       allPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
       crpProgramID = -1;
 
-      LOG.info("Outcomes 2 linea 537");
 
       this.programs = allPrograms;
       try {
         crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
       } catch (Exception e) {
 
-        LOG.info("Outcomes 2 linea 551 this.getCurrentUser().getId() " + this.getCurrentUser().getId());
         User user = userManager.getUser(this.getCurrentUser().getId());
-        LOG.info("Outcomes 2 linea 553 user.getCrpProgramLeaders().size()" + user.getCrpProgramLeaders().size());
-        LOG.info("Outcomes 2 linea 554 ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()"
-          + ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
+
         List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
           .filter(c -> c.isActive() && c.getCrpProgram().isActive() && c.getCrpProgram() != null
 
@@ -560,7 +550,6 @@ public class OutcomesAction extends BaseAction {
             && c.getCrpProgram().getResearchArea() == null)
           .collect(Collectors.toList());
 
-        LOG.info("Outcomes 2 linea 552");
         if (!userLeads.isEmpty()) {
           crpProgramID = userLeads.get(0).getCrpProgram().getId();
         } else {
@@ -577,7 +566,6 @@ public class OutcomesAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
       }
-      LOG.info("Outcomes 2 linea 569");
       if (selectedProgram != null) {
 
         milestoneYears = this.getTargetYears();
@@ -657,7 +645,6 @@ public class OutcomesAction extends BaseAction {
             this.setEditable(false);
           }
 
-          LOG.info("Outcomes 2 linea 649");
           this.setSubmission(selectedProgram
             .getSubmissions().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
               && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
@@ -669,7 +656,6 @@ public class OutcomesAction extends BaseAction {
       if (this.isHttpPost()) {
         outcomes.clear();
       }
-      LOG.info("Outcomes 2 linea 661");
     }
 
     // General Status List
@@ -694,7 +680,6 @@ public class OutcomesAction extends BaseAction {
       srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       srfIdos.add(srfIdo);
     }
-    LOG.info("Outcomes 2 linea 686");
   }
 
 

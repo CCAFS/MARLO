@@ -1086,7 +1086,6 @@ public class DeliverableAction extends BaseAction {
    * @return CrpProgramOutcome IPI 2.x object
    */
   public CrpProgramOutcome getTraineesIndicator() {
-    logger.info("DeliverableAction linea 1089");
     CrpProgramOutcome crpProgramOutcomeIPI = new CrpProgramOutcome();
 
     try {
@@ -1111,7 +1110,6 @@ public class DeliverableAction extends BaseAction {
       logger.error("unable to get IPI 2.x", e);
       return null;
     }
-    logger.info("DeliverableAction linea 1114");
     return crpProgramOutcomeIPI;
 
   }
@@ -1697,7 +1695,6 @@ public class DeliverableAction extends BaseAction {
         // Expected Study Geographic Regions List
         if (deliverable.getDeliverableGeographicRegions() != null
           && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
-          logger.info("DeliverableAction linea 1700");
           deliverable.setDeliverableRegions(new ArrayList<>(deliverableGeographicRegionManager
             .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getActualPhase().getId()).stream()
             .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
@@ -1713,10 +1710,6 @@ public class DeliverableAction extends BaseAction {
         List<DeliverableActivity> deliverableActivities = new ArrayList<>();
         deliverableActivities = deliverableActivityManager
           .getDeliverableActivitiesByDeliverableIDAndPhase(deliverable.getId(), this.getActualPhase().getId());
-        logger.info("DeliverableAction linea 1710 deliverableActivities.size()" + deliverableActivities.size());
-        logger.info("DeliverableAction linea 1710 deliverable.getId()" + deliverable.getId());
-        logger.info("DeliverableAction linea 1710 this.getActualPhase().getId()" + this.getActualPhase().getId());
-        logger.info("DeliverableAction linea 1710 project.getId()" + project.getId());
 
 
         if (deliverableActivities != null && !deliverableActivities.isEmpty()) {
@@ -1728,7 +1721,6 @@ public class DeliverableAction extends BaseAction {
             .collect(Collectors.toList());
 
           deliverable.setActivities(deliverableActivities);
-          logger.info("DeliverableAction linea 1720 deliverableActivities.size()" + deliverableActivities.size());
         }
         for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
 
@@ -2516,7 +2508,6 @@ public class DeliverableAction extends BaseAction {
 
   @Override
   public String save() {
-    logger.info(" DeliverableAction linea 2508");
     if (this.hasPermission("canEdit")) {
 
       this.getSession().put("indexTab", indexTab);
@@ -2541,16 +2532,12 @@ public class DeliverableAction extends BaseAction {
        * 08/01 - HJ - Save the Deliverables Part Responsible
        */
       this.saveDeliverablePartnershipResponsible(deliverableDB);
-      logger.info(" DeliverableAction linea 2533");
       this.saveDeliverablePartnershipOther(deliverableDB);
-      logger.info(" DeliverableAction linea 2535");
       // Save Geographic Scope Data
       this.saveGeographicScope(deliverableManagedState, this.getActualPhase());
-      logger.info(" DeliverableAction linea 2538");
 
       // this.saveProjectOutcomes(deliverableDB, this.getActualPhase());
       this.saveCrpOutcomes(deliverableDB, this.getActualPhase());
-      logger.info(" DeliverableAction linea 2542");
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -2570,12 +2557,10 @@ public class DeliverableAction extends BaseAction {
           }
         }
       }
-      logger.info(" DeliverableAction linea 2562");
 
       if (haveRegions) {
         // Save the Regions List
         this.saveDeliverableRegions(deliverableDB, this.getActualPhase(), deliverableManagedState);
-        logger.info(" DeliverableAction linea 2564");
       } else {
         this.deleteLocElements(deliverableManagedState, this.getActualPhase(), false);
       }
@@ -2584,35 +2569,27 @@ public class DeliverableAction extends BaseAction {
 
         // Save Countries list
         this.saveDeliverableCountries(deliverableManagedState);
-        logger.info(" DeliverableAction linea 2573");
       } else {
         this.deleteLocElements(deliverableManagedState, this.getActualPhase(), true);
       }
 
       this.saveCrossCutting();
       this.saveProjects(deliverableDB);
-      logger.info(" DeliverableAction linea 2580");
 
       // Reporting and upkeep
       if (this.isReportingActive() || this.isUpKeepActive()) {
         if (deliverable.getQualityCheck() != null) {
           this.saveQualityCheck();
-          logger.info(" DeliverableAction linea 2586");
         }
         this.saveDissemination();
-        logger.info(" DeliverableAction linea 2588");
         this.saveMetadata();
-        logger.info(" DeliverableAction linea 2591");
         this.saveCrps();
         this.savePublicationMetadata();
-        logger.info(" DeliverableAction linea 2594");
         // Data Sharing is not longer used.
         this.saveDataSharing();
         this.saveUsers();
-        logger.info(" DeliverableAction linea 2598");
         this.saveParticipant();
         this.saveDuplicated();
-        logger.info(" DeliverableAction linea 2601");
 
         if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
           this.saveDeliverableClusterParticipant();
@@ -2716,17 +2693,14 @@ public class DeliverableAction extends BaseAction {
         } else {
           this.addActionMessage("message:" + this.getText("saving.saved"));
         }
-        logger.info(" DeliverableAction linea 2694");
         return SUCCESS;
       } else {
         this.addActionMessage("");
         this.setActionMessages(null);
-        logger.info(" DeliverableAction linea 2699");
         return REDIRECT;
       }
 
     } else {
-      logger.info(" DeliverableAction linea 2704");
       return NOT_AUTHORIZED;
     }
 
@@ -2819,7 +2793,6 @@ public class DeliverableAction extends BaseAction {
    * @param phase
    */
   public void saveCrpOutcomes(Deliverable deliverable, Phase phase) {
-    logger.info("DeliverableAction linea 2813");
     // Get the IPI 2.3 object
     CrpProgramOutcome crpProgramOutcomeIPI = this.getTraineesIndicator();
     boolean addIPI = false;
@@ -2851,14 +2824,11 @@ public class DeliverableAction extends BaseAction {
     try {
       // cgamboa 27/05/2024 deliverable.getDeliverableCrpOutcomes() will be used once
       Set<DeliverableCrpOutcome> deliverableCrpOutcomes = deliverable.getDeliverableCrpOutcomes();
-      logger.info("DeliverableAction linea 2836 deliverableCrpOutcomes.size()" + deliverableCrpOutcomes.size());
       if (deliverableCrpOutcomes != null && !deliverableCrpOutcomes.isEmpty()) {
-        logger.info("DeliverableAction linea 2836");
 
         List<DeliverableCrpOutcome> outcomePrev = new ArrayList<>(deliverableCrpOutcomes.stream()
           .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
-        logger.info("DeliverableAction linea 2843 outcomePrev.size()" + outcomePrev.size());
         for (DeliverableCrpOutcome deliverableOutcome : outcomePrev) {
           if (deliverableCrpOutcomeList == null || !deliverableCrpOutcomeList.contains(deliverableOutcome)) {
             this.deliverableCrpOutcomeManager.deleteDeliverableCrpOutcome(deliverableOutcome.getId(),
@@ -2879,7 +2849,6 @@ public class DeliverableAction extends BaseAction {
         deliverableCrpOutcomeList.add(deliverableCrpOutcome);
       }
       for (DeliverableCrpOutcome deliverableOutcome : deliverableCrpOutcomeList) {
-        logger.info("DeliverableAction linea 2873 deliverableOutcome.getId()" + deliverableOutcome.getId());
         DeliverableCrpOutcome deliverableOutcomeSave = new DeliverableCrpOutcome();
         if (deliverableOutcome != null) {
           // For new crp outcomes
@@ -2917,8 +2886,7 @@ public class DeliverableAction extends BaseAction {
         }
       }
     }
-    logger.info("DeliverableAction linea 2895 this.deliverable.getCrpOutcomes().size()"
-      + this.deliverable.getCrpOutcomes().size());
+    
   }
 
   public void saveCrps() {
