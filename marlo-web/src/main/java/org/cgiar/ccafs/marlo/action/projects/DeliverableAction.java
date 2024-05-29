@@ -1314,6 +1314,7 @@ public class DeliverableAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
+
     existCurrentCluster = false;
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -2482,6 +2483,7 @@ public class DeliverableAction extends BaseAction {
 
     }
 
+
   }
 
   /**
@@ -2886,7 +2888,7 @@ public class DeliverableAction extends BaseAction {
         }
       }
     }
-    
+
   }
 
   public void saveCrps() {
