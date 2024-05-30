@@ -591,8 +591,7 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
     console.log("hasExpectedYear", hasExpectedYear);
     if (isStatusOnGoing(statusId)) {
       showComponent(false, $newExpectedYearBlock);
-      $newExpectedYearSelect.val("-1").trigger("change.select2");
-      $statusDescription.find('textarea').val("");
+      removeInformationOfNewExpectedYear();
     } else {
       if (isStatusExtended(statusId)) {
         showComponent(true, $newExpectedYearBlock);
@@ -603,11 +602,26 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
         } else {
           showComponent(false, $newExpectedYearBlock);
         }
+        removeInformationOfNewExpectedYear();
         showComponent(true, $newYearOverlay, "overlay");
       } else {
         showComponent(false, $newExpectedYearBlock);
       }
     }
+  }
+}
+
+function removeInformationOfNewExpectedYear() {
+  var $expectedYearBlock = $('#deliverableYear');
+  var $expectedYearSelect = $expectedYearBlock.find('select');
+  var expectedYear = $expectedYearSelect.val();
+
+  if(expectedYear == currentCycleYear){
+    var $newExpectedYearBlock = $('#newExpectedYear');
+    var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
+    var $statusDescription = $('#statusDescription');
+    $newExpectedYearSelect.val("-1").trigger("change.select2");
+    $statusDescription.find('textarea').val("");
   }
 }
 
