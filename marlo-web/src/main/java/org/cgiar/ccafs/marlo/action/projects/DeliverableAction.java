@@ -2056,12 +2056,7 @@ public class DeliverableAction extends BaseAction {
             status.remove(ProjectStatusEnum.Extended.getStatusId());
 
           }
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
-            if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-              status.remove(ProjectStatusEnum.Ongoing.getStatusId());
-            }
-          }
+
         }
         if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
           if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer

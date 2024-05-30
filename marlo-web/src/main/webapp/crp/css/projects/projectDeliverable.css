@@ -53,6 +53,17 @@ body .WOS_tag p{
   margin-top: 60px;
 }
 
+.deliverableActivity {
+  list-style: none;
+  padding: 1px 4px 0px 6px;
+  background-color: #F7F7F7;
+  border: 1px solid #E0E0E0 !important;
+  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  margin-bottom: 5px;
+  position: relative;
+}
+
 /* Bootstrap Tabs */
 .tab-content>.active {
   display: block;
