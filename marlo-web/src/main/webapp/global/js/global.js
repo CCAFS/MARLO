@@ -1004,6 +1004,21 @@ function alertRemoveIndicatorIPI2_3() {
       modal.hide();
       reject(true);
     });
+
+
+  });
+}
+
+function alertChangeStatusWithSubmittedCluster() {
+  return new Promise(function (resolve, reject) {
+    let modal = $('.modal-status');
+    modal.show();
+
+    $('.close-modal-status').on('click', function () {
+      modal.hide();
+      reject(true);
+    });
+
   });
 }
 

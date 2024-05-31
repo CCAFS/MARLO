@@ -69,9 +69,31 @@ function init() {
   // Event to validate the expected date
   $(".yearExpected").on("change", validateCurrentDate);
 
-  // Event when status is changed
-  $statuses.on("change", function () {
-    validateVisualJustifAndCompnsByStatusAndYear(this.value);
+
+  $prevValueSelectStatus = $statuses.val();
+
+  $statuses.on("click", function () {
+
+    $prevValueSelectStatus = $statuses.val();
+
+  }).on("change", function () {
+
+    if(isStatusCancelled($statuses.val()) || isStatusExtended($statuses.val())) {
+      validatePermissionsToChangeStatus()
+      .then(function(canChangeStatus) {
+        displayModalForAdmin(canChangeStatus, $prevValueSelectStatus).then(function() {
+          validateVisualJustifAndCompnsByStatusAndYear($statuses.val());
+        });
+      })
+      .catch(function(error) {
+        console.error('Error checking permissions:', error);
+      });
+    } else {
+      validateVisualJustifAndCompnsByStatusAndYear(this.value);
+    }
+
+
+
   });
 
   validatePermissionsToChangeStatus()
@@ -300,6 +322,7 @@ function validatePermissionsToChangeStatus() {
       },   
       success: function(data) {
         var canChangeStatus = data.canDelete.response;
+        console.log('canChangeStatus:', canChangeStatus);
         resolve(canChangeStatus);
       },
       error: function(xhr, status, error) {
@@ -607,6 +630,21 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
       } else {
         showComponent(false, $newExpectedYearBlock);
       }
+    }
+  }
+}
+
+async function displayModalForAdmin(canChangeStatus, prevValueSelectStatus) {
+  var isAdmin = document.getElementById("adminRole").value;
+
+  if(isAdmin === "true" && canChangeStatus === false){
+    try {
+      // Wait for the user to click on the modal
+      $statuses.val(prevValueSelectStatus).trigger("change.select2");
+      await alertChangeStatusWithSubmittedCluster();
+    } catch (error) {
+      // User clicked on the close button instead of the remove button
+      return;
     }
   }
 }
