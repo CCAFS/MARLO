@@ -152,6 +152,27 @@
     </div>   
   </div>
 
+    <div class=" modal-deliverable ui-dialog modal-status" style="display: none;  background-color: #50505070 !important;">
+    <div class="content-modal">
+      <div class="ui-dialog-titlebar">
+        <p class="title-modal-evidences title-modal-status">Change Status</p>
+        <div class="button-exit close-modal-indicator">
+          <div class="x-close-modal" ></div>
+        </div>
+      </div>
+      
+      <div class="text-modal-evidences text-modal-status">
+        <p>It is not possible to change the status of this deliverable as it contains related information about trainees for clusters that have already submitted.</p>
+
+      </div>                
+      <div class="container-buttons-evidences"> 
+        <div class="button-close-modal close-modal-status">
+          <p>Close</p>
+        </div>
+      </div> 
+    </div>   
+  </div>
+
     <div class="row">
       [#-- Project Menu --]
       <div class="col-md-3">

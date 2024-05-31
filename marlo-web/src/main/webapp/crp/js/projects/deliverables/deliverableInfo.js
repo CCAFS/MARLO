@@ -69,9 +69,31 @@ function init() {
   // Event to validate the expected date
   $(".yearExpected").on("change", validateCurrentDate);
 
-  // Event when status is changed
-  $statuses.on("change", function () {
-    validateVisualJustifAndCompnsByStatusAndYear(this.value);
+
+  $prevValueSelectStatus = $statuses.val();
+
+  $statuses.on("click", function () {
+
+    $prevValueSelectStatus = $statuses.val();
+
+  }).on("change", function () {
+
+    if(isStatusCancelled($statuses.val()) || isStatusExtended($statuses.val())) {
+      validatePermissionsToChangeStatus()
+      .then(function(canChangeStatus) {
+        displayModalForAdmin(canChangeStatus, $prevValueSelectStatus).then(function() {
+          validateVisualJustifAndCompnsByStatusAndYear($statuses.val());
+        });
+      })
+      .catch(function(error) {
+        console.error('Error checking permissions:', error);
+      });
+    } else {
+      validateVisualJustifAndCompnsByStatusAndYear(this.value);
+    }
+
+
+
   });
 
   validatePermissionsToChangeStatus()
@@ -578,8 +600,6 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
     $statusDescription.slideUp(400);
   }
 
-  console.log("isDeliverableNew", isDeliverableNew);
-
   // Show overlay in the expected year
   showComponent(!isDeliverableNew, $yearOverlay, "overlay");
 
@@ -588,11 +608,9 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
     
     showComponent(isStatusExtended(statusId) && upKeepActive, $newExpectedYearBlock);
   } else {
-    console.log("hasExpectedYear", hasExpectedYear);
     if (isStatusOnGoing(statusId)) {
       showComponent(false, $newExpectedYearBlock);
-      $newExpectedYearSelect.val("-1").trigger("change.select2");
-      $statusDescription.find('textarea').val("");
+      removeInformationOfNewExpectedYear();
     } else {
       if (isStatusExtended(statusId)) {
         showComponent(true, $newExpectedYearBlock);
@@ -603,11 +621,41 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
         } else {
           showComponent(false, $newExpectedYearBlock);
         }
+        removeInformationOfNewExpectedYear();
         showComponent(true, $newYearOverlay, "overlay");
       } else {
         showComponent(false, $newExpectedYearBlock);
       }
     }
+  }
+}
+
+async function displayModalForAdmin(canChangeStatus, prevValueSelectStatus) {
+  var isAdmin = document.getElementById("adminRole").value;
+
+  if(isAdmin === "true" && canChangeStatus === false){
+    try {
+      // Wait for the user to click on the modal
+      $statuses.val(prevValueSelectStatus).trigger("change.select2");
+      await alertChangeStatusWithSubmittedCluster();
+    } catch (error) {
+      // User clicked on the close button instead of the remove button
+      return;
+    }
+  }
+}
+
+function removeInformationOfNewExpectedYear() {
+  var $expectedYearBlock = $('#deliverableYear');
+  var $expectedYearSelect = $expectedYearBlock.find('select');
+  var expectedYear = $expectedYearSelect.val();
+
+  if(expectedYear == currentCycleYear){
+    var $newExpectedYearBlock = $('#newExpectedYear');
+    var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
+    var $statusDescription = $('#statusDescription');
+    $newExpectedYearSelect.val("-1").trigger("change.select2");
+    $statusDescription.find('textarea').val("");
   }
 }
 
