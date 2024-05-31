@@ -322,7 +322,6 @@ function validatePermissionsToChangeStatus() {
       },   
       success: function(data) {
         var canChangeStatus = data.canDelete.response;
-        console.log('canChangeStatus:', canChangeStatus);
         resolve(canChangeStatus);
       },
       error: function(xhr, status, error) {
@@ -601,8 +600,6 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
     $statusDescription.slideUp(400);
   }
 
-  console.log("isDeliverableNew", isDeliverableNew);
-
   // Show overlay in the expected year
   showComponent(!isDeliverableNew, $yearOverlay, "overlay");
 
@@ -611,7 +608,6 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
     
     showComponent(isStatusExtended(statusId) && upKeepActive, $newExpectedYearBlock);
   } else {
-    console.log("hasExpectedYear", hasExpectedYear);
     if (isStatusOnGoing(statusId)) {
       showComponent(false, $newExpectedYearBlock);
       removeInformationOfNewExpectedYear();
