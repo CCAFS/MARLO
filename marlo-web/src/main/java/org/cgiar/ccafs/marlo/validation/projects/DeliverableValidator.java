@@ -109,6 +109,9 @@ public class DeliverableValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, Deliverable deliverable, boolean saving) {
+
+    boolean resultProgessValidate = this.validateIsProgressAndNotStatus(action, deliverable);
+
     action.setInvalidFields(new HashMap<>());
 
     boolean validate = false;
@@ -118,29 +121,31 @@ public class DeliverableValidator extends BaseValidator {
         for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
           if (deliverableMetadataElement != null) {
             if (deliverableMetadataElement.getMetadataElement().getId() != null) {
-
-              // Validate metadata title
-              if (deliverableMetadataElement.getMetadataElement().getId() != null
-                && 1 == deliverableMetadataElement.getMetadataElement().getId()) {
-                if ((deliverableMetadataElement.getElementValue() != null
-                  && deliverableMetadataElement.getElementValue().isEmpty())
-                  || deliverableMetadataElement.getElementValue() == null) {
-                  action.addMessage(action.getText("project.deliverable.metadata.v.title"));
-                  action.getInvalidFields().put("input-deliverable.metadataElements[0].elementValue",
-                    InvalidFieldsMessages.EMPTYFIELD);
+              if (!resultProgessValidate) {
+                // Validate metadata title
+                if (deliverableMetadataElement.getMetadataElement().getId() != null
+                  && 1 == deliverableMetadataElement.getMetadataElement().getId()) {
+                  if ((deliverableMetadataElement.getElementValue() != null
+                    && deliverableMetadataElement.getElementValue().isEmpty())
+                    || deliverableMetadataElement.getElementValue() == null) {
+                    action.addMessage(action.getText("project.deliverable.metadata.v.title"));
+                    action.getInvalidFields().put("input-deliverable.metadataElements[0].elementValue",
+                      InvalidFieldsMessages.EMPTYFIELD);
+                  }
                 }
-              }
 
-              // Validate metadata publication date
-              if (deliverableMetadataElement.getMetadataElement().getId() != null
-                && 17 == deliverableMetadataElement.getMetadataElement().getId()) {
-                if ((deliverableMetadataElement.getElementValue() != null
-                  && deliverableMetadataElement.getElementValue().isEmpty())
-                  || deliverableMetadataElement.getElementValue() == null) {
-                  action.addMessage(action.getText("project.deliverable.metadata.v.publicationDate"));
-                  action.getInvalidFields().put("input-deliverable.metadataElements[16].elementValue",
-                    InvalidFieldsMessages.EMPTYFIELD);
+                // Validate metadata publication date
+                if (deliverableMetadataElement.getMetadataElement().getId() != null
+                  && 17 == deliverableMetadataElement.getMetadataElement().getId()) {
+                  if ((deliverableMetadataElement.getElementValue() != null
+                    && deliverableMetadataElement.getElementValue().isEmpty())
+                    || deliverableMetadataElement.getElementValue() == null) {
+                    action.addMessage(action.getText("project.deliverable.metadata.v.publicationDate"));
+                    action.getInvalidFields().put("input-deliverable.metadataElements[16].elementValue",
+                      InvalidFieldsMessages.EMPTYFIELD);
+                  }
                 }
+
               }
             }
           }
@@ -1123,6 +1128,26 @@ public class DeliverableValidator extends BaseValidator {
       action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
         InvalidFieldsMessages.EMPTYFIELD);
 
+    }
+  }
+
+  public boolean validateIsProgressAndNotStatus(BaseAction action, Deliverable deliverable) {
+    boolean result = false;
+    try {
+      LOG.info("DeliverableValidator linea 112 deliverable.getId() " + deliverable.getId());
+      LOG.info("DeliverableValidator linea 112 deliverable.getDeliverableInfo().getId() "
+        + deliverable.getDeliverableInfo().getId());
+      LOG.info("DeliverableValidator linea 115 " + action.isProgressActive());
+      LOG.info("DeliverableValidator linea 116 " + deliverable.getDeliverableInfo().getStatus());
+
+      if (action.isProgressActive()
+        && deliverable.getDeliverableInfo().getStatus() != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        result = true;
+      }
+      return result;
+    } catch (Exception e) {
+      LOG.error(" error in validateIsProgressAndNotStatus function [DeliverableValidator]");
+      return result;
     }
   }
 
