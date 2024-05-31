@@ -46,17 +46,21 @@ import org.cgiar.ccafs.marlo.utils.ExternalPostUtils;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -448,13 +452,6 @@ public class PartnersSaveAction extends BaseAction {
     boolean postFailed = false;
     if (this.isAiccra()) {
 
-      Map<String, Object> request = new HashMap<>();
-      request.put("name", partnerRequest.getPartnerName());
-      request.put("acronym", partnerRequest.getAcronym());
-      request.put("websiteLink", partnerRequest.getWebPage());
-      request.put("institutionTypeCode", partnerRequest.getInstitutionType().getId());
-      request.put("hqCountryIso", partnerRequest.getLocElement().getIsoAlpha2());
-
       // setting requestSource CLARISA parameter
       String requestSource;
       if (project != null && project.getAcronym() != null) {
@@ -464,30 +461,8 @@ public class PartnersSaveAction extends BaseAction {
       } else {
         requestSource = "Request made from AICCRA";
       }
-      request.put("requestSource", requestSource);
 
-      request.put("misAcronym", "aiccra");
-      request.put("userId", this.getCurrentUser().getId());
-      request.put("externalUserMail", this.getCurrentUser().getEmail());
-      request.put("externalUserName", this.getCurrentUser().getUsername());
-      request.put("externalUserComments", "Request made from AICCRA");
-
-      ObjectMapper mapper = new ObjectMapper();
-
-      try {
-        String requestStr = mapper.writeValueAsString(request);
-
-        ExternalPostUtils epu = new ExternalPostUtils();
-        epu.setUsername(config.getClarisaAPIUsername());
-        epu.setPassword(config.getClarisaAPIPassword());
-        String responseStr = epu.postJson(config.getClarisaAPIHost() + "/api/partner-requests/create", requestStr);
-
-        if (responseStr.isEmpty()) {
-          postFailed = true;
-        }
-      } catch (JsonProcessingException ex) {
-        java.util.logging.Logger.getLogger(PartnersSaveAction.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      this.sendPartnerRequest(partnerRequestModifications, requestSource, postFailed);
 
     } else {
       partnerRequest = partnerRequestManager.savePartnerRequest(partnerRequest);
@@ -533,6 +508,60 @@ public class PartnersSaveAction extends BaseAction {
       messages = this.getActionMessages();
       return SUCCESS;
     }
+  }
+
+  /**
+   * send request to CLARISA,to create a partner
+   *
+   * @param PartnerRequest partnerRequest
+   * @param String requestSource
+   * @param boolean postFailed
+   * @author IBD
+   */
+  public void sendPartnerRequest(PartnerRequest partnerRequest, String requestSource, boolean postFailed) {
+
+    try {
+
+      ExternalPostUtils epu = new ExternalPostUtils();
+      epu.setUsername(config.getClarisaAPIUsername());
+      epu.setPassword(config.getClarisaAPIPassword());
+      JSONObject jsonObject = new JSONObject();
+
+
+      jsonObject.put("name", partnerRequest.getPartnerName());
+      jsonObject.put("acronym", partnerRequest.getAcronym());
+      jsonObject.put("websiteLink", partnerRequest.getWebPage());
+      jsonObject.put("institutionTypeCode", partnerRequest.getInstitutionType().getId());
+      jsonObject.put("hqCountryIso", partnerRequest.getLocElement().getIsoAlpha2());
+
+      jsonObject.put("requestSource", requestSource);
+
+      jsonObject.put("misAcronym", "aiccra");
+      jsonObject.put("userId", this.getCurrentUser().getId());
+      jsonObject.put("externalUserMail", this.getCurrentUser().getEmail());
+      jsonObject.put("externalUserName", this.getCurrentUser().getUsername());
+      jsonObject.put("externalUserComments", "Request made from AICCRA");
+
+      HttpPost httpPost = new HttpPost(config.getClarisaAPIHost() + "/api/partner-requests/create");
+
+      httpPost.setEntity(new StringEntity(jsonObject.toString()));
+
+      httpPost.setHeader("Accept", "application/json");
+      httpPost.setHeader("Content-Type", "application/json");
+      httpPost.addHeader(BasicScheme.authenticate(new UsernamePasswordCredentials(epu.getUsername(), epu.getPassword()),
+        "UTF-8", false));
+
+      CloseableHttpClient httpClient = HttpClients.createDefault();
+
+      CloseableHttpResponse response = httpClient.execute(httpPost);
+
+      LOG.info(" Class [" + PartnersSaveAction.class.getName()
+        + "] - function [sendPartnerRequest] - variable [response] " + response);
+    } catch (Exception e) {
+      postFailed = true;
+      java.util.logging.Logger.getLogger(PartnersSaveAction.class.getName()).log(Level.SEVERE, null, e);
+    }
+
   }
 
   public void setActivityID(int activityID) {

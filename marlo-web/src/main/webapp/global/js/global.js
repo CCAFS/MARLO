@@ -4,6 +4,7 @@ $.widget.bridge('uitooltip', $.ui.tooltip);
 
 // Global Vars
 var yesnoEvent;
+var isProgress;
 var notyDefaultOptions = {
   text: '',
   layout: 'bottomRight',
@@ -20,13 +21,17 @@ var notyDefaultOptions = {
   ]
 };
 
+
 /**
  * Global javascript must be here.
  */
 $(document).ready(function () {
 
-  showNotificationMessages();
+  
   showHelpText();
+  validatePhase().then(function(isProgress){
+    showNotificationMessages();
+  }).catch(function(error){});
 
   // Set elementsListComponent
   setElementsListComponent();
@@ -176,6 +181,22 @@ $(document).ready(function () {
       $buttons.find('.buttons-content').removeClass('positionFixedBot animated flipInX');
     }
   }
+  
+  function validatePhase() {
+    return new Promise(function(resolve, reject) {
+      // Ajax
+      $.ajax({
+        url: baseURL + '/isProgressActive.do',   
+        success: function(data) {
+          isProgress = data.status.isProgress;
+          resolve();
+        },
+        error: function(xhr, status, error) {
+          reject(error);
+        }
+      });
+    });
+  }
 
   // Animate help text
   function showHelpText() {
@@ -200,8 +221,11 @@ $(document).ready(function () {
       } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message" && messageSelector.html().split(":")[1] === " deliverable.status.remaining") {
         // SHOW CLUSTER SUBMITTED BASED ON THE DISABLED INPUT
         var $clusterSubmitted = $(`.clusterSubmitted`);
+        var $clusterSubmittedFilter = $clusterSubmitted.filter((index, ele) => $(ele).attr("issubmit") === "true").get();
         var message = "";
-        if ($clusterSubmitted.length > 0) {
+        console.log("ClusterSubmitted Lenght",$clusterSubmitted.length);
+        console.log("ClusterSubmitted", $clusterSubmitted);
+        if ($clusterSubmittedFilter.length > 0) {
           // $clusterSubmitted exists, do something
           const $mapClusterSubmit = $clusterSubmitted.filter((index, ele) => $(ele).attr("issubmit") === "true").get();
           const $stringClusterSubmit = $mapClusterSubmit.reduce((prev,curr) => prev +$(curr).attr("name")+",","");
@@ -223,9 +247,17 @@ $(document).ready(function () {
       } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message") {
         // WARNING MESSAGE
         var message = ""
-        message += "The Information was correctly saved. <br> ";
-        message += "Please keep in mind that the fields highlighted below are missing or incorrect.";
         var messageType = "warning";
+        if(isProgress == 'true'){
+          message += "The Information was correctly saved. <br> ";
+          message += "Some of the fields could be missing or incorrect. <br>";
+          message += "Don't worry! Some information is not necessary at this phase, but it will be required in the next phase.";
+          messageType = "info";
+        }else{
+          message += "The Information was correctly saved. <br> ";
+          message += "Please keep in mind that the fields highlighted below are missing or incorrect.";
+        }
+        
         notifyErrorMessage(messageType, message);
       }
     } else if ($(messageSelector).hasClass("error")) {
@@ -260,6 +292,14 @@ $(document).ready(function () {
         $(containerAlert).addClass("alertColorBackgroundWarning");
         $(containerLine).addClass("alertColorWarning");
         $(containerIcon).addClass("alertColorWarning");
+        $(messages).removeClass("displayNone");
+        break;
+      case "info":
+        $(element).find('.alertText').html(message);
+        $(iconAlert).attr("src", baseURL + '/global/images/icon-info.png');
+        $(containerAlert).addClass("alertColorBackgroundInfo");
+        $(containerLine).addClass("alertColorInfo");
+        $(containerIcon).addClass("alertColorInfo");
         $(messages).removeClass("displayNone");
         break;
       case "error":
