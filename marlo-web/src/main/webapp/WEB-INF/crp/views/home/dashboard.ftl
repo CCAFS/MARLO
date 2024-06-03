@@ -110,6 +110,41 @@
   <section class="timeline" style="display: none">	
 		<div class="containerTimeline">
 			<div class="scroll-x-containerTimeline2 " id="listItemTimeline2">
+        <div id="timelineInfo">
+          <div id="timelineDescription">
+            <div id="timelineDescription_zoom">
+              <button class="sideButtonZoom buttonZoomPlus">+</button>
+              <p id="timelineDescription_zoom_weeks"> Weeks displayed </p>
+              <button class="sideButtonZoom buttonZoomLess">-</button>
+            </div>
+
+            <div id="timelineDescription_title">
+              <div class="sideButtonTimeline buttonLeftTimeline"><p><</p></div>
+              <b>Schedule</b>
+              <div class="sideButtonTimeline buttonRightTimeline"><p>></p></div>
+              
+            </div>
+
+            <div id="timelineAlert">
+              <b>Progress status:</b>
+              <section id="timelineAlert_container">
+                <article class="timelineAlert_item">
+                  <div class="timelineAlert_item_color timelineAlert_item_color--1"></div>
+                  <p>Not started</p>
+                </article>
+                <article class="timelineAlert_item">
+                  <div class="timelineAlert_item_color timelineAlert_item_color--2"></div>
+                  <p>In progress</p>
+                </article>
+                <article class="timelineAlert_item">
+                  <div class="timelineAlert_item_color timelineAlert_item_color--3"></div>
+                  <p>Completed</p>
+                </article>
+              </section>
+            </div>
+
+        </div>
+  </div>
 			</div>
 		</div>
 	</section>

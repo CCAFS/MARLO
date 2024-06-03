@@ -1,7 +1,17 @@
 // $.fn.dataTableExt.sErrMode = 'throw';
 $(document).ready(initDashboard);
 
+// Set the timeline information from server;
 let timelineElements;
+
+/**
+ * The zoom level of the timeline.
+ * Establish the default configuration for the weeks visibles in the timeline.
+ * Available values: 0.25, 0.5, 1, 2, 3.
+ * default: 1.
+ * @type {number}
+ */
+let timelineZoom = 1;
 
 setTimeout(() => {
   getIntersectedActivities();
@@ -19,15 +29,18 @@ function initDashboard() {
   $('.loadingBlock').hide().next().fadeIn(500);
 
   getTimeline();
-  createTimeline2();
+  addActivitiesToTimeline2();
   $(".timelineRefresh").hide();
   $(".timeline").show();
-  setTimelinePosition();
-  getIntersectedActivities()
+
 
   $('.buttonRightTimeline').on("click", moveScrollRight);
 
   $('.buttonLeftTimeline').on("click", moveScrollLeft);
+
+  $('.buttonZoomPlus').on("click", zoomIn);
+
+  $('.buttonZoomLess').on("click", zoomOut); 
 
   $('.itemsTablet').on("click", updateTable);
 
@@ -211,6 +224,21 @@ function moveScrollLeft() {
     }
     
   }, 500);
+}
+
+function zoomIn() {
+  timelineZoom > 0.25 || timelineZoom < 3 ? timelineZoom = timelineZoom / 2 : timelineZoom = timelineZoom;
+  console.log("timelineZoom", timelineZoom);
+  
+  addActivitiesToTimeline2();
+
+}
+
+function zoomOut() {
+  timelineZoom > 0.25 || timelineZoom < 3 ? timelineZoom = timelineZoom * 2 : timelineZoom = timelineZoom;
+  console.log("timelineZoom", timelineZoom);
+
+  addActivitiesToTimeline2(); 
 }
 
 /**
@@ -592,11 +620,11 @@ function calculateAmountForWidth(startDate, endDate, weeks) {
  * @returns {string} The calculated width in CSS format.
  */
 function setWidth(amount) {
-
+  const dividerWidth = 2/timelineZoom;
   const extraAmount = amount > 1.5 ? -1/7 : 0;
   const widthContainer = $('.sectionMap').width();
   const widthInPx = `${widthContainer * 0.95}px`;
-  return `calc(${amount !== undefined ? (amount + extraAmount) + "*(" + widthInPx + " / 2)" : "calc(" + widthInPx + " / 2)"} )  `;
+  return `calc(${amount !== undefined ? (amount + extraAmount) + "*(" + widthInPx + " / "+dividerWidth+")" : "calc(" + widthInPx + " / "+dividerWidth+")"} )  `;
 }
 
 /**
@@ -609,6 +637,8 @@ function setWidth(amount) {
  */
 function setDistances(weeks, startDate, _endDate, isToday) {
   const { lastDate } = getFirstAndLastDates(timelineElements);
+
+  const dividerWidth = 2/timelineZoom;
 
   let today = convertDateToAfricanDate(new Date());
   today = today.getDate() > lastDate ? convertDateToAfricanDate(lastDate) : today;
@@ -624,9 +654,9 @@ function setDistances(weeks, startDate, _endDate, isToday) {
   const getDayDistance = (getAbsoluteDays(startDate, getFirstDateOfTheWeek(startDate))) / 7;
   if(isToday){
 
-    return `calc(${getWeekDistanceFromToday + getDayDistanceFromToday + percentageCompletion}px * (${containerSize} / 2) )`
+    return `calc(${getWeekDistanceFromToday + getDayDistanceFromToday + percentageCompletion}px * (${containerSize / dividerWidth}) )`
   }
-  return `calc(${getWeekDistance + getDayDistance}px * (${containerSize} / 2))`;
+  return `calc(${getWeekDistance + getDayDistance}px * (${containerSize/dividerWidth}))`;
 }
 
 
@@ -659,50 +689,18 @@ function setTimelinePosition() {
  * @author Jhon S. Garcia I.
  * based on the first version made by @author Cristian Pizo
  */
-function createTimeline2() {
+
+function addActivitiesToTimeline2() {
+  const timeline = document.getElementById("timelineInfo");
+  timeline.children[1]? timeline.removeChild(timeline.children[1]): null;
   const getFirstDate = getFirstAndLastDates(timelineElements).firstDate;
   const getLastDate = getFirstAndLastDates(timelineElements).lastDate;
 
   const getWeeksArray = getWeeks(getFirstDate, getLastDate);
+  const template = document.createElement('template');
 
-  const listItemTimeline = document.getElementById("listItemTimeline2");
-  listItemTimeline.innerHTML = `
-	<div>
-	  <div id="timelineDescription">
-      <div id="timelineDescription_zoom">
-        <button class="sideButtonZoom buttonZoomPlus">+</button>
-        <p id="timelineDescription_zoom_weeks"> Weeks displayed </p>
-        <button class="sideButtonZoom buttonZoomLess">-</button>
-      </div>
-
-	  	<div id="timelineDescription_title">
-        <div class="sideButtonTimeline buttonLeftTimeline"><p><</p></div>
-        <b>Schedule</b>
-        <div class="sideButtonTimeline buttonRightTimeline"><p>></p></div>
-	  		
-	  	</div>
-
-      <div id="timelineAlert">
-        <b>Progress status:</b>
-        <section id="timelineAlert_container">
-          <article class="timelineAlert_item">
-            <div class="timelineAlert_item_color timelineAlert_item_color--1"></div>
-            <p>Not started</p>
-          </article>
-          <article class="timelineAlert_item">
-            <div class="timelineAlert_item_color timelineAlert_item_color--2"></div>
-            <p>In progress</p>
-          </article>
-          <article class="timelineAlert_item">
-            <div class="timelineAlert_item_color timelineAlert_item_color--3"></div>
-            <p>Completed</p>
-          </article>
-        </section>
-      </div>
-
-	  </div>
-
-    <div id="timelineContainer">
+  const content = `
+  <div id="timelineContainer">
       <div id="timeline_times">
       	${createDivTimes(getWeeksArray, "timebox").reduce((acc, curr) => acc + curr.outerHTML, '')}
       </div>
@@ -712,9 +710,20 @@ function createTimeline2() {
       	` ).join('')}
       </div>
       <div id="timeline_today" style="left: ${setDistances(getWeeksArray,null,null, true)}"></div>
-    </div>
   </div>
-	`
+
+  `; 
+
+  template.innerHTML = content;
+  const result = template.content.children[0];
+
+  timeline.appendChild(result);
+
+  setTimeout(() => {
+    setTimelinePosition();
+    getIntersectedActivities();
+  }, 500);
+
 }
 
 function updateTable() {
