@@ -3,7 +3,9 @@ $(document).ready(initDashboard);
 
 let timelineElements;
 
-
+setTimeout(() => {
+  getIntersectedActivities();
+}, 500);
 
 function initDashboard() {
 
@@ -21,10 +23,7 @@ function initDashboard() {
   $(".timelineRefresh").hide();
   $(".timeline").show();
   setTimelinePosition();
-  setTimeout(() => {
-    getIntersectedActivities();
-  }, 200);
- 
+  getIntersectedActivities()
 
   $('.buttonRightTimeline').on("click", moveScrollRight);
 
