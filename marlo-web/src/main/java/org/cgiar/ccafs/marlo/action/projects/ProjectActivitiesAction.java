@@ -53,6 +53,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -273,6 +274,7 @@ public class ProjectActivitiesAction extends BaseAction {
       Project history = (Project) auditLogManager.getHistory(transaction);
 
       if (history != null) {
+        logger.info(" ProjectActivitiesAction linea 277");
         project = history;
 
         List<HistoryDifference> differences = new ArrayList<>();
@@ -293,14 +295,18 @@ public class ProjectActivitiesAction extends BaseAction {
           }
           if (activity.getDeliverableActivities() != null && !activity.getDeliverableActivities().isEmpty()) {
             for (DeliverableActivity deliverableActivity : activity.getDeliverableActivities()) {
+              logger.info(" ProjectActivitiesAction linea 296");
               if (deliverableActivity.getDeliverable() != null
                 && deliverableActivity.getDeliverable().getId() != null) {
+
+                logger.info(" ProjectActivitiesAction linea 299");
 
                 if (deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId()) != null) {
                   Deliverable deliverable =
                     deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
                   deliverableActivity.setDeliverable(deliverable);
                   deliverableActivity.getDeliverable().getDeliverableInfo(this.getActualPhase());
+                  logger.info(" ProjectActivitiesAction linea 304");
                 }
 
               }
@@ -323,6 +329,8 @@ public class ProjectActivitiesAction extends BaseAction {
       project = projectManager.getProjectById(projectID);
     }
     if (project != null) {
+
+      logger.info(" ProjectActivitiesAction linea 331");
 
       Path path = this.getAutoSaveFilePath();
 
@@ -348,6 +356,7 @@ public class ProjectActivitiesAction extends BaseAction {
 
 
         for (Activity activity : project.getProjectActivities()) {
+          logger.info(" ProjectActivitiesAction linea 355");
           if (activity.getDeliverables() != null) {
             List<DeliverableActivity> deliverableActivities = new ArrayList<>();
             for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
@@ -396,8 +405,12 @@ public class ProjectActivitiesAction extends BaseAction {
       }
       status.remove(ProjectStatusEnum.Extended.getStatusId());
       List<Deliverable> deliverables = new ArrayList<>();
-      if (project.getDeliverables() != null) {
-        if (project.getDeliverables().isEmpty()) {
+      logger.info(" ProjectActivitiesAction linea 406");
+
+      Set<Deliverable> deliverablesTmp = project.getDeliverables();
+      // 04/06/2024 cgamboa project.getDeliverables() was changed by
+      if (deliverablesTmp != null) {
+        if (deliverablesTmp.isEmpty()) {
           /*
            * project.setProjectDeliverables(new ArrayList<Deliverable>(projectManager.getProjectById(projectID)
            * .getDeliverables().stream().filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) !=
@@ -407,17 +420,21 @@ public class ProjectActivitiesAction extends BaseAction {
           deliverables = projectManager.getProjectById(projectID).getDeliverables().stream()
             .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
             .collect(Collectors.toList());
+          logger.info(" ProjectActivitiesAction linea 418");
         } else {
           /*
            * project.setProjectDeliverables(new ArrayList<Deliverable>(project.getDeliverables().stream()
            * .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
            * .collect(Collectors.toList())));
            */
-          deliverables = project.getDeliverables().stream()
-            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
-            .collect(Collectors.toList());
+          deliverables =
+            deliverablesTmp.stream().filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
+              .collect(Collectors.toList());
+          logger.info(" ProjectActivitiesAction linea 428");
         }
       }
+
+      logger.info(" ProjectActivitiesAction linea 432 deliverables.size() " + deliverables.size());
 
       for (Deliverable deliverable : deliverables) {
         deliverable.setTagTitle(deliverable.getComposedName());
