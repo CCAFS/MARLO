@@ -49,13 +49,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -155,6 +155,22 @@ public class ProjectActivitiesAction extends BaseAction {
     return SUCCESS;
   }
 
+  // Helper function to extract the number from the title
+  private int extractActivityNumber(Activity activity) {
+    Pattern pattern = Pattern.compile("(\\d+(\\.\\d+)*)");
+    Matcher matcher = pattern.matcher(activity.getTitle());
+    if (matcher.find()) {
+      String numberStr = matcher.group(1);
+      String[] numberParts = numberStr.split("\\.");
+      int number = 0;
+      for (String part : numberParts) {
+        number = number * 100 + Integer.parseInt(part);
+      }
+      return number;
+    }
+    return 0; // Default if no number is found
+  }
+
   public List<Activity> getActivities(boolean open) {
 
     try {
@@ -166,7 +182,7 @@ public class ProjectActivitiesAction extends BaseAction {
             a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
               || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
           .collect(Collectors.toList());
-          //return openA;
+        // return openA;
 
       } else {
 
@@ -175,30 +191,14 @@ public class ProjectActivitiesAction extends BaseAction {
             a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
               || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
           .collect(Collectors.toList());
-          //return openA;
+        // return openA;
       }
-      //sort activities by title number
+      // sort activities by title number
       openA.sort(Comparator.comparing(this::extractActivityNumber));
       return openA;
     } catch (Exception e) {
       return new ArrayList<>();
     }
-  }
-  
-  //Helper function to extract the number from the title
-  private int extractActivityNumber(Activity activity) {
-     Pattern pattern = Pattern.compile("(\\d+(\\.\\d+)*)");
-     Matcher matcher = pattern.matcher(activity.getTitle());
-     if (matcher.find()) {
-         String numberStr = matcher.group(1);
-         String[] numberParts = numberStr.split("\\.");
-         int number = 0;
-         for (String part : numberParts) {
-             number = number * 100 + Integer.parseInt(part);
-         }
-         return number;
-     }
-     return 0; // Default if no number is found
   }
 
 
@@ -456,10 +456,23 @@ public class ProjectActivitiesAction extends BaseAction {
        * logger.error("unable to get shared deliverables", e);
        * }
        */
+      logger.info("ProjectActivitiesAction linea 460 projectID " + projectID);
+      logger.info("ProjectActivitiesAction linea 461 this.getActualPhase().getId() " + this.getActualPhase().getId());
       project.setProjectDeliverables(deliverables);
 
+
+      List<ProjectPartner> ProjectPartnerList = new ArrayList<>();
+
+      try {
+        ProjectPartnerList = projectPartnerManager.findAllByPhaseProject(projectID, this.getActualPhase().getId());
+      } catch (Exception e) {
+        logger.error("unable to get ProjectPartner list in prepapre function ");
+      }
+
+      // 04/06/2024 cgamboa findAll() was changed by ProjectPartnerList
+
       partnerPersons = new ArrayList<>();
-      for (ProjectPartner partner : projectPartnerManager.findAll().stream()
+      for (ProjectPartner partner : ProjectPartnerList.stream()
         .filter(
           pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getPhase().equals(this.getActualPhase()))
         .collect(Collectors.toList())) {
@@ -471,10 +484,15 @@ public class ProjectActivitiesAction extends BaseAction {
         }
       }
 
+      logger.info("ProjectActivitiesAction linea 473 partnerPersons.size() " + partnerPersons.size());
+
+      List<ActivityTitle> ActivityTitleList = new ArrayList<>();
+      ActivityTitleList = activityTitleManager.findAll();
+
       activityTitles = new ArrayList<>();
 
       if (this.isAiccra()) {
-        if (activityTitleManager.findAll() != null && !activityTitleManager.findAll().isEmpty()) {
+        if (ActivityTitleList != null && !ActivityTitleList.isEmpty()) {
 
 
           try {
@@ -484,7 +502,7 @@ public class ProjectActivitiesAction extends BaseAction {
           }
 
           if (activityTitles == null || (activityTitles != null && activityTitles.isEmpty())) {
-            activityTitles = activityTitleManager.findAll();
+            activityTitles = ActivityTitleList;// activityTitleManager.findAll();
           }
           /*
            * List<ActivityTitle> tempActivityTitles = new ArrayList<>();
@@ -507,6 +525,8 @@ public class ProjectActivitiesAction extends BaseAction {
           }
         }
       }
+
+      logger.info("ProjectActivitiesAction linea 529 activityTitles.size() " + activityTitles.size());
 
       deliverablesMissingActivity = new ArrayList<>();
       List<Deliverable> prevMissingActivity = new ArrayList<>();
