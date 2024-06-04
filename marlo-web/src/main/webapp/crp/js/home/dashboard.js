@@ -228,7 +228,7 @@ function moveScrollLeft() {
 
 function zoomIn() {
   console.log("prevtimelineZoom", timelineZoom);
-  timelineZoom = timelineZoom > 0.25 ? timelineZoom / 2 :  timelineZoom;
+  timelineZoom = timelineZoom < 3 ? timelineZoom * 2 :  timelineZoom;
   console.log("timelineZoom", timelineZoom);
   
   addActivitiesToTimeline2();
@@ -237,10 +237,42 @@ function zoomIn() {
 
 function zoomOut() {
   console.log("prevtimelineZoom", timelineZoom);
-  timelineZoom = timelineZoom < 3 ? timelineZoom * 2 :  timelineZoom;
+  timelineZoom = timelineZoom > 0.25 ? timelineZoom / 2 :  timelineZoom;
   console.log("timelineZoom", timelineZoom);
 
   addActivitiesToTimeline2(); 
+}
+
+/**
+ * Based on the timelineZoom value, return the number of weeks visible in the timeline.
+ */
+function getNumberOfWeeksVisible() {
+
+  var $weeks_displayed = $("#timelineDescription_zoom_weeks");
+  var info = "";
+
+  switch(timelineZoom){
+    case 0.25:
+      info = "8 week displayed";
+      break;
+    case 0.5:
+      info = "4 week displayed";
+      break;
+    case 1:
+      info = "2 weeks displayed";
+      break;
+    case 2:
+      info = "1 week displayed";
+      break;
+    case 3:
+      info = "0.5 week displayed";
+      break;
+    default:
+      info = "2 weeks displayed";
+      break;
+  }
+
+  $weeks_displayed.text(info);
 }
 
 /**
@@ -408,8 +440,6 @@ function getIntersectedActivities() {
       const rectB = b.getBoundingClientRect();
       return rectA.left - rectB.left;
     });
-
-    console.log(activitiesIntersected.length);
 
     activitiesIntersected.forEach(activity => {
       if(activitiesIntersected.length === 1){
@@ -725,6 +755,7 @@ function addActivitiesToTimeline2() {
   setTimeout(() => {
     setTimelinePosition();
     getIntersectedActivities();
+    getNumberOfWeeksVisible();
   }, 500);
 
 }
