@@ -227,7 +227,8 @@ function moveScrollLeft() {
 }
 
 function zoomIn() {
-  timelineZoom > 0.25 || timelineZoom < 3 ? timelineZoom = timelineZoom / 2 : timelineZoom = timelineZoom;
+  console.log("prevtimelineZoom", timelineZoom);
+  timelineZoom = timelineZoom > 0.25 ? timelineZoom / 2 :  timelineZoom;
   console.log("timelineZoom", timelineZoom);
   
   addActivitiesToTimeline2();
@@ -235,7 +236,8 @@ function zoomIn() {
 }
 
 function zoomOut() {
-  timelineZoom > 0.25 || timelineZoom < 3 ? timelineZoom = timelineZoom * 2 : timelineZoom = timelineZoom;
+  console.log("prevtimelineZoom", timelineZoom);
+  timelineZoom = timelineZoom < 3 ? timelineZoom * 2 :  timelineZoom;
   console.log("timelineZoom", timelineZoom);
 
   addActivitiesToTimeline2(); 
@@ -666,6 +668,7 @@ function setDistances(weeks, startDate, _endDate, isToday) {
 function setTimelinePosition() {
   const getFirstDate = getFirstAndLastDates(timelineElements).firstDate;
   const getLastDate = getFirstAndLastDates(timelineElements).lastDate;
+  const dividerWidth = 2/timelineZoom;
 
   const getWeeksArray = getWeeks(getFirstDate, getLastDate);
 
@@ -675,7 +678,7 @@ function setTimelinePosition() {
   const widthContainer = $('.sectionMap').width();
   const containerSize = widthContainer * 0.95;
 
-  timelineContainer.scrollLeft += ((getWeekBasedOnDay(today, getWeeksArray)/2) * (containerSize));
+  timelineContainer.scrollLeft += ((getWeekBasedOnDay(today, getWeeksArray)/dividerWidth) * (containerSize));
 
 }
 
