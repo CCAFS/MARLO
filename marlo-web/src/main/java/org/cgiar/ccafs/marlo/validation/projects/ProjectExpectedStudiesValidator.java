@@ -67,8 +67,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
   public void validate(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy, boolean saving) {
 
-    boolean resultProgessValidate = false;
-    resultProgessValidate = this.validateIsProgressAndNotStatus(action, projectExpectedStudy);
+
     action.setInvalidFields(new HashMap<>());
 
     baseAction = action;
@@ -80,7 +79,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       }
     }
 
-    this.validateProjectExpectedStudy(projectExpectedStudy, action, resultProgessValidate);
+    this.validateProjectExpectedStudy(projectExpectedStudy, action);
 
 
     if (!action.getFieldErrors().isEmpty()) {
@@ -119,8 +118,10 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
   }
 
 
-  public void validateProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy, BaseAction action,
-    boolean resultProgessValidate) {
+  public void validateProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy, BaseAction action) {
+
+    boolean resultProgessValidate = false;
+    resultProgessValidate = this.validateIsProgressAndNotStatus(action, projectExpectedStudy);
 
     // Validate Study type
     if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStudyType() != null) {

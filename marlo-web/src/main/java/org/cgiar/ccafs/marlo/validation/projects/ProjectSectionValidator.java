@@ -1020,12 +1020,21 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
     if (project.getDeliverables() != null) {
 
-      List<DeliverableInfo> infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
+      List<DeliverableInfo> infos = new ArrayList<DeliverableInfo>();
+
+      if (action.isProgressActive()) {
+        infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhaseWithSharedProjects(phase, project);
+      } else {
+        infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
+      }
+
+
       deliverables = new ArrayList<>();
       if (infos != null && !infos.isEmpty()) {
         for (DeliverableInfo deliverableInfo : infos) {
           Deliverable deliverable = deliverableInfo.getDeliverable();
           deliverable.setDeliverableInfo(deliverableInfo);
+          logger.info(" ProjectSectionValidator linea 1029 deliverable.getId() " + deliverable.getId());
           deliverables.add(deliverable);
         }
       }

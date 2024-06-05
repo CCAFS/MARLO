@@ -7593,7 +7593,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isProgressActive() {
-    return this.getActualPhase().getUpkeep();
+    try {
+      return this.getActualPhase().getUpkeep();
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   /**

@@ -1137,8 +1137,9 @@ public class DeliverableValidator extends BaseValidator {
       LOG.info("DeliverableValidator linea 112 deliverable.getId() " + deliverable.getId());
       LOG.info("DeliverableValidator linea 112 deliverable.getDeliverableInfo().getId() "
         + deliverable.getDeliverableInfo().getId());
-      LOG.info("DeliverableValidator linea 115 " + action.isProgressActive());
+      LOG.info("DeliverableValidator linea 115 action.isProgressActive() " + action.isProgressActive());
       LOG.info("DeliverableValidator linea 116 " + deliverable.getDeliverableInfo().getStatus());
+      LOG.info("DeliverableValidator linea 117 action.getPhaseID() " + action.getPhaseID());
 
       if (action.isProgressActive()
         && deliverable.getDeliverableInfo().getStatus() != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
