@@ -48,22 +48,6 @@ function initDashboard() {
 
   $('.circleMap').hover(itemMapHover, itemMap);
 
-  $(".activityCard_toggle").on("click", function(){
-    let $x = $(this).parents(':has(.activityCard_details--1)').first().find('.activityCard_details--1');
-    console.log($x);
-    if ($x.css("display") === "none") {
-      $x.css("display", "flex");
-      $(this).find('.activityCard_toggle--deactive').css("display", "none");
-      $(this).find('.activityCard_toggle--active').css("display", "block");
-      $(this).closest('.activityCard').css("z-index", 8);
-    } else {
-      $x.css("display", "none");  
-      $(this).find('.activityCard_toggle--deactive').css("display", "block");
-      $(this).find('.activityCard_toggle--active').css("display", "none");
-      $(this).closest('.activityCard').css("z-index");
-    }
-  });
-
   $('.activityCard_container').hover(function(){
     const $info = $(this).find('.activityCard_description');
     $info.tooltip();
@@ -550,6 +534,7 @@ function createDivActivities(activity, weeks, id) {
   card.className = 'activityCard';
   card.id = `activityCard_${id}`;
   const width = calculateAmountForWidth(activity.startDate, activity.endDate, weeks);
+  const validator = validatorActiveViewMore(width);
   card.innerHTML = `
     <div class="activityCard_container" 
     style="left: ${setDistances(weeks,activity.startDate, activity.endDate,false )}; 
@@ -559,7 +544,7 @@ function createDivActivities(activity, weeks, id) {
     
       <div class="activityCard_content"> 
         <h3 class="user-badge activityCard_description" title="${activity.description}">${activity.description}</h3>
-        <div class="${width === (1/7)?"activityCard_details--1":"activityCard_details"}" id="activityCardDetails" style="${width === (1/7)? "display: none;": ""}">
+        <div class="${validator?"activityCard_details--1":"activityCard_details"}" id="activityCardDetails" style="${validator? "display: none;": ""}">
           <div>
             <p><b>Start date:</b> ${convertDateToText(activity.startDate)}</p>
           </div>
@@ -572,7 +557,7 @@ function createDivActivities(activity, weeks, id) {
             <p><b>End date:</b> ${convertDateToText(activity.endDate)}</p>
           </div>
         </div>
-        <div class="activityCard_viewMore" style="display:${width === (1/7)? "block;": "none"}">
+        <div class="activityCard_viewMore" style="display:${validator? "block;": "none"}">
           <p class="activityCard_toggle">
             <u class="activityCard_toggle--deactive">View more</u>
             <u class="activityCard_toggle--active" style="display:none">View less</u>
@@ -581,6 +566,24 @@ function createDivActivities(activity, weeks, id) {
     </div>
   `;
   return card;
+}
+
+const validatorActiveViewMore = (width) => {
+  if(timelineZoom >= 1){
+    if(width === 1/7){
+      return true;
+    } else{
+      return false;
+    }
+  } else {
+    if(width <=  3/7){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  return false;
 }
 
 /**
@@ -756,23 +759,24 @@ function addActivitiesToTimeline2() {
     setTimelinePosition();
     getIntersectedActivities();
     getNumberOfWeeksVisible();
-  }, 500);
 
-  $(".activityCard_toggle").on("click", function(){
-    let $x = $(this).parents(':has(.activityCard_details--1)').first().find('.activityCard_details--1');
-    console.log($x);
-    if ($x.css("display") === "none") {
-      $x.css("display", "flex");
-      $(this).find('.activityCard_toggle--deactive').css("display", "none");
-      $(this).find('.activityCard_toggle--active').css("display", "block");
-      $(this).closest('.activityCard').css("z-index", 8);
-    } else {
-      $x.css("display", "none");  
-      $(this).find('.activityCard_toggle--deactive').css("display", "block");
-      $(this).find('.activityCard_toggle--active').css("display", "none");
-      $(this).closest('.activityCard').css("z-index");
-    }
-  });
+    
+    $(".activityCard_toggle").on("click", function(){
+      let $x = $(this).parents(':has(.activityCard_details--1)').first().find('.activityCard_details--1');
+      console.log($x);
+      if ($x.css("display") === "none") {
+        $x.css("display", "flex");
+        $(this).find('.activityCard_toggle--deactive').css("display", "none");
+        $(this).find('.activityCard_toggle--active').css("display", "block");
+        $(this).closest('.activityCard').css("z-index", 8);
+      } else {
+        $x.css("display", "none");  
+        $(this).find('.activityCard_toggle--deactive').css("display", "block");
+        $(this).find('.activityCard_toggle--active').css("display", "none");
+        $(this).closest('.activityCard').css("z-index");
+      }
+    });
+  }, 500);
 
 }
 
