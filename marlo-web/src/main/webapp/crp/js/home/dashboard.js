@@ -758,6 +758,22 @@ function addActivitiesToTimeline2() {
     getNumberOfWeeksVisible();
   }, 500);
 
+  $(".activityCard_toggle").on("click", function(){
+    let $x = $(this).parents(':has(.activityCard_details--1)').first().find('.activityCard_details--1');
+    console.log($x);
+    if ($x.css("display") === "none") {
+      $x.css("display", "flex");
+      $(this).find('.activityCard_toggle--deactive').css("display", "none");
+      $(this).find('.activityCard_toggle--active').css("display", "block");
+      $(this).closest('.activityCard').css("z-index", 8);
+    } else {
+      $x.css("display", "none");  
+      $(this).find('.activityCard_toggle--deactive').css("display", "block");
+      $(this).find('.activityCard_toggle--active').css("display", "none");
+      $(this).closest('.activityCard').css("z-index");
+    }
+  });
+
 }
 
 function updateTable() {
