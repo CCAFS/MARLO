@@ -535,8 +535,9 @@ function createDivActivities(activity, weeks, id) {
   card.id = `activityCard_${id}`;
   const width = calculateAmountForWidth(activity.startDate, activity.endDate, weeks);
   const validator = validatorActiveViewMore(width);
+  const normalSize = timelineZoom < 1 ? "activityCard_container--zoom" : "";
   card.innerHTML = `
-    <div class="activityCard_container" 
+    <div class="activityCard_container ${normalSize}" 
     style="left: ${setDistances(weeks,activity.startDate, activity.endDate,false )}; 
     width: ${setWidth(width)}; 
     background: ${setStatusColor(status)}

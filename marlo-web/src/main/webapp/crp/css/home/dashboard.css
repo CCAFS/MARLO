@@ -673,6 +673,26 @@ span.timelineControl:hover {
 		color: #000;
 	}
 
+  .activityCard_container--zoom .activityCard_description{
+    font-size: 1.2rem;
+  }
+
+  .activityCard_container--zoom .activityCard_details div b{
+    font-size: 0.8rem;
+  }
+
+  .activityCard_container--zoom .activityCard_details p{
+    font-size: 0.8rem;
+  }
+
+  .activityCard_container--zoom .activityCard_details--1 div b{
+    font-size: 0.8rem;
+  }
+
+  .activityCard_container--zoom .activityCard_details--1 p{
+    font-size: 0.8rem;
+  } 
+
   #timeline_activities .activityFlexTop--1{
     top: 1.5em;
   }
