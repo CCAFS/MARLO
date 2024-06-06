@@ -673,6 +673,10 @@ span.timelineControl:hover {
 		color: #000;
 	}
 
+  .activityCard_container--zoom{
+    padding: 0.4rem;
+  }
+
   .activityCard_container--zoom .activityCard_description{
     font-size: 1.2rem;
   }
