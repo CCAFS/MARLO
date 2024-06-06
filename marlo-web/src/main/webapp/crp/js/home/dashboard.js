@@ -1,9 +1,21 @@
 // $.fn.dataTableExt.sErrMode = 'throw';
 $(document).ready(initDashboard);
 
+// Set the timeline information from server;
 let timelineElements;
 
+/**
+ * The zoom level of the timeline.
+ * Establish the default configuration for the weeks visibles in the timeline.
+ * Available values: 0.25, 0.5, 1, 2, 3.
+ * default: 1.
+ * @type {number}
+ */
+let timelineZoom = 1;
 
+setTimeout(() => {
+  getIntersectedActivities();
+}, 500);
 
 function initDashboard() {
 
@@ -17,40 +29,24 @@ function initDashboard() {
   $('.loadingBlock').hide().next().fadeIn(500);
 
   getTimeline();
-  createTimeline2();
+  addActivitiesToTimeline2();
   $(".timelineRefresh").hide();
   $(".timeline").show();
-  setTimelinePosition();
-  setTimeout(() => {
-    getIntersectedActivities();
-  }, 200);
- 
+
 
   $('.buttonRightTimeline').on("click", moveScrollRight);
 
   $('.buttonLeftTimeline').on("click", moveScrollLeft);
+
+  $('.buttonZoomPlus').on("click", zoomIn);
+
+  $('.buttonZoomLess').on("click", zoomOut); 
 
   $('.itemsTablet').on("click", updateTable);
 
   $('.itemsTablet').hover(updateGif, updateImg);
 
   $('.circleMap').hover(itemMapHover, itemMap);
-
-  $(".activityCard_toggle").on("click", function(){
-    let $x = $(this).parents(':has(.activityCard_details--1)').first().find('.activityCard_details--1');
-    console.log($x);
-    if ($x.css("display") === "none") {
-      $x.css("display", "flex");
-      $(this).find('.activityCard_toggle--deactive').css("display", "none");
-      $(this).find('.activityCard_toggle--active').css("display", "block");
-      $(this).closest('.activityCard').css("z-index", 8);
-    } else {
-      $x.css("display", "none");  
-      $(this).find('.activityCard_toggle--deactive').css("display", "block");
-      $(this).find('.activityCard_toggle--active').css("display", "none");
-      $(this).closest('.activityCard').css("z-index");
-    }
-  });
 
   $('.activityCard_container').hover(function(){
     const $info = $(this).find('.activityCard_description');
@@ -212,6 +208,55 @@ function moveScrollLeft() {
     }
     
   }, 500);
+}
+
+function zoomIn() {
+  console.log("prevtimelineZoom", timelineZoom);
+  timelineZoom = timelineZoom < 3 ? timelineZoom * 2 :  timelineZoom;
+  console.log("timelineZoom", timelineZoom);
+  
+  addActivitiesToTimeline2();
+
+}
+
+function zoomOut() {
+  console.log("prevtimelineZoom", timelineZoom);
+  timelineZoom = timelineZoom > 0.25 ? timelineZoom / 2 :  timelineZoom;
+  console.log("timelineZoom", timelineZoom);
+
+  addActivitiesToTimeline2(); 
+}
+
+/**
+ * Based on the timelineZoom value, return the number of weeks visible in the timeline.
+ */
+function getNumberOfWeeksVisible() {
+
+  var $weeks_displayed = $("#timelineDescription_zoom_weeks");
+  var info = "";
+
+  switch(timelineZoom){
+    case 0.25:
+      info = "8 week displayed";
+      break;
+    case 0.5:
+      info = "4 week displayed";
+      break;
+    case 1:
+      info = "2 weeks displayed";
+      break;
+    case 2:
+      info = "1 week displayed";
+      break;
+    case 3:
+      info = "0.5 week displayed";
+      break;
+    default:
+      info = "2 weeks displayed";
+      break;
+  }
+
+  $weeks_displayed.text(info);
 }
 
 /**
@@ -380,8 +425,6 @@ function getIntersectedActivities() {
       return rectA.left - rectB.left;
     });
 
-    console.log(activitiesIntersected.length);
-
     activitiesIntersected.forEach(activity => {
       if(activitiesIntersected.length === 1){
         $(activity).parent().addClass("activityUnique");
@@ -491,8 +534,10 @@ function createDivActivities(activity, weeks, id) {
   card.className = 'activityCard';
   card.id = `activityCard_${id}`;
   const width = calculateAmountForWidth(activity.startDate, activity.endDate, weeks);
+  const validator = validatorActiveViewMore(width);
+  const normalSize = timelineZoom < 1 ? "activityCard_container--zoom" : "";
   card.innerHTML = `
-    <div class="activityCard_container" 
+    <div class="activityCard_container ${normalSize}" 
     style="left: ${setDistances(weeks,activity.startDate, activity.endDate,false )}; 
     width: ${setWidth(width)}; 
     background: ${setStatusColor(status)}
@@ -500,7 +545,7 @@ function createDivActivities(activity, weeks, id) {
     
       <div class="activityCard_content"> 
         <h3 class="user-badge activityCard_description" title="${activity.description}">${activity.description}</h3>
-        <div class="${width === (1/7)?"activityCard_details--1":"activityCard_details"}" id="activityCardDetails" style="${width === (1/7)? "display: none;": ""}">
+        <div class="${validator?"activityCard_details--1":"activityCard_details"}" id="activityCardDetails" style="${validator? "display: none;": ""}">
           <div>
             <p><b>Start date:</b> ${convertDateToText(activity.startDate)}</p>
           </div>
@@ -513,7 +558,7 @@ function createDivActivities(activity, weeks, id) {
             <p><b>End date:</b> ${convertDateToText(activity.endDate)}</p>
           </div>
         </div>
-        <div class="activityCard_viewMore" style="display:${width === (1/7)? "block;": "none"}">
+        <div class="activityCard_viewMore" style="display:${validator? "block;": "none"}">
           <p class="activityCard_toggle">
             <u class="activityCard_toggle--deactive">View more</u>
             <u class="activityCard_toggle--active" style="display:none">View less</u>
@@ -522,6 +567,24 @@ function createDivActivities(activity, weeks, id) {
     </div>
   `;
   return card;
+}
+
+const validatorActiveViewMore = (width) => {
+  if(timelineZoom >= 1){
+    if(width === 1/7){
+      return true;
+    } else{
+      return false;
+    }
+  } else {
+    if(width <=  3/7){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  return false;
 }
 
 /**
@@ -593,11 +656,11 @@ function calculateAmountForWidth(startDate, endDate, weeks) {
  * @returns {string} The calculated width in CSS format.
  */
 function setWidth(amount) {
-
+  const dividerWidth = 2/timelineZoom;
   const extraAmount = amount > 1.5 ? -1/7 : 0;
   const widthContainer = $('.sectionMap').width();
   const widthInPx = `${widthContainer * 0.95}px`;
-  return `calc(${amount !== undefined ? (amount + extraAmount) + "*(" + widthInPx + " / 2)" : "calc(" + widthInPx + " / 2)"} )  `;
+  return `calc(${amount !== undefined ? (amount + extraAmount) + "*(" + widthInPx + " / "+dividerWidth+")" : "calc(" + widthInPx + " / "+dividerWidth+")"} )  `;
 }
 
 /**
@@ -610,6 +673,8 @@ function setWidth(amount) {
  */
 function setDistances(weeks, startDate, _endDate, isToday) {
   const { lastDate } = getFirstAndLastDates(timelineElements);
+
+  const dividerWidth = 2/timelineZoom;
 
   let today = convertDateToAfricanDate(new Date());
   today = today.getDate() > lastDate ? convertDateToAfricanDate(lastDate) : today;
@@ -625,9 +690,9 @@ function setDistances(weeks, startDate, _endDate, isToday) {
   const getDayDistance = (getAbsoluteDays(startDate, getFirstDateOfTheWeek(startDate))) / 7;
   if(isToday){
 
-    return `calc(${getWeekDistanceFromToday + getDayDistanceFromToday + percentageCompletion}px * (${containerSize} / 2) )`
+    return `calc(${getWeekDistanceFromToday + getDayDistanceFromToday + percentageCompletion}px * (${containerSize / dividerWidth}) )`
   }
-  return `calc(${getWeekDistance + getDayDistance}px * (${containerSize} / 2))`;
+  return `calc(${getWeekDistance + getDayDistance}px * (${containerSize/dividerWidth}))`;
 }
 
 
@@ -637,6 +702,7 @@ function setDistances(weeks, startDate, _endDate, isToday) {
 function setTimelinePosition() {
   const getFirstDate = getFirstAndLastDates(timelineElements).firstDate;
   const getLastDate = getFirstAndLastDates(timelineElements).lastDate;
+  const dividerWidth = 2/timelineZoom;
 
   const getWeeksArray = getWeeks(getFirstDate, getLastDate);
 
@@ -646,7 +712,7 @@ function setTimelinePosition() {
   const widthContainer = $('.sectionMap').width();
   const containerSize = widthContainer * 0.95;
 
-  timelineContainer.scrollLeft += ((getWeekBasedOnDay(today, getWeeksArray)/2) * (containerSize));
+  timelineContainer.scrollLeft += ((getWeekBasedOnDay(today, getWeeksArray)/dividerWidth) * (containerSize));
 
 }
 
@@ -660,38 +726,18 @@ function setTimelinePosition() {
  * @author Jhon S. Garcia I.
  * based on the first version made by @author Cristian Pizo
  */
-function createTimeline2() {
+
+function addActivitiesToTimeline2() {
+  const timeline = document.getElementById("timelineInfo");
+  timeline.children[1]? timeline.removeChild(timeline.children[1]): null;
   const getFirstDate = getFirstAndLastDates(timelineElements).firstDate;
   const getLastDate = getFirstAndLastDates(timelineElements).lastDate;
 
   const getWeeksArray = getWeeks(getFirstDate, getLastDate);
+  const template = document.createElement('template');
 
-  const listItemTimeline = document.getElementById("listItemTimeline2");
-  listItemTimeline.innerHTML = `
-	  <div>
-	  <div id="timelineDescription">
-	  	<div id="timelineDescription_title">
-	  		<b>Schedule</b>
-	  	</div>
-	  </div>
-    <div id="timelineAlert">
-      <b>Progress status:</b>
-      <section id="timelineAlert_container">
-        <article class="timelineAlert_item">
-          <div class="timelineAlert_item_color timelineAlert_item_color--1"></div>
-          <p>Not started</p>
-        </article>
-        <article class="timelineAlert_item">
-          <div class="timelineAlert_item_color timelineAlert_item_color--2"></div>
-          <p>In progress</p>
-        </article>
-        <article class="timelineAlert_item">
-          <div class="timelineAlert_item_color timelineAlert_item_color--3"></div>
-          <p>Completed</p>
-        </article>
-      </section>
-    </div>
-    <div id="timelineContainer">
+  const content = `
+  <div id="timelineContainer">
       <div id="timeline_times">
       	${createDivTimes(getWeeksArray, "timebox").reduce((acc, curr) => acc + curr.outerHTML, '')}
       </div>
@@ -701,9 +747,38 @@ function createTimeline2() {
       	` ).join('')}
       </div>
       <div id="timeline_today" style="left: ${setDistances(getWeeksArray,null,null, true)}"></div>
-    </div>
   </div>
-	`
+
+  `; 
+
+  template.innerHTML = content;
+  const result = template.content.children[0];
+
+  timeline.appendChild(result);
+
+  setTimeout(() => {
+    setTimelinePosition();
+    getIntersectedActivities();
+    getNumberOfWeeksVisible();
+
+    
+    $(".activityCard_toggle").on("click", function(){
+      let $x = $(this).parents(':has(.activityCard_details--1)').first().find('.activityCard_details--1');
+      console.log($x);
+      if ($x.css("display") === "none") {
+        $x.css("display", "flex");
+        $(this).find('.activityCard_toggle--deactive').css("display", "none");
+        $(this).find('.activityCard_toggle--active').css("display", "block");
+        $(this).closest('.activityCard').css("z-index", 8);
+      } else {
+        $x.css("display", "none");  
+        $(this).find('.activityCard_toggle--deactive').css("display", "block");
+        $(this).find('.activityCard_toggle--active').css("display", "none");
+        $(this).closest('.activityCard').css("z-index");
+      }
+    });
+  }, 500);
+
 }
 
 function updateTable() {
