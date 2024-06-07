@@ -117,7 +117,7 @@ public class DeliverableValidator extends BaseValidator {
 
   public void validate(BaseAction action, Deliverable deliverable, boolean saving) {
 
-    boolean resultProgessValidate = this.validateIsProgressAndNotStatus(action, deliverable);
+    boolean resultProgessValidate = this.validateIsProgressAndNotCompleteStatus(action, deliverable);
 
     action.setInvalidFields(new HashMap<>());
 
@@ -1158,7 +1158,15 @@ public class DeliverableValidator extends BaseValidator {
     }
   }
 
-  public boolean validateIsProgressAndNotStatus(BaseAction action, Deliverable deliverable) {
+  /**
+   * Validate if the current phase is progress
+   *
+   * @param action base action
+   * @param deliverable An specific deliverable
+   * @return validation result
+   */
+
+  public boolean validateIsProgressAndNotCompleteStatus(BaseAction action, Deliverable deliverable) {
     boolean result = false;
     try {
 

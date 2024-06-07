@@ -95,7 +95,14 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
   }
 
-  public boolean validateIsProgressAndNotStatus(BaseAction action, ProjectExpectedStudy projectExpectedStudy) {
+  /**
+   * Validate if the current phase is progress
+   *
+   * @param action base action
+   * @param projectExpectedStudy An specific projectExpectedStudy
+   * @return validation result
+   */
+  public boolean validateIsProgressAndNotCompleteStatus(BaseAction action, ProjectExpectedStudy projectExpectedStudy) {
     boolean result = false;
     try {
       if (action.isProgressActive() && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus().getId() != Integer
@@ -113,7 +120,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
   public void validateProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy, BaseAction action) {
 
     boolean resultProgessValidate = false;
-    resultProgessValidate = this.validateIsProgressAndNotStatus(action, projectExpectedStudy);
+    resultProgessValidate = this.validateIsProgressAndNotCompleteStatus(action, projectExpectedStudy);
 
     // Validate Study type
     if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStudyType() != null) {
