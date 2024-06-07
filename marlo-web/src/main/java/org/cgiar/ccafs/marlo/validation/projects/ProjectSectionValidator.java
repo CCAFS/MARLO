@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
@@ -59,6 +60,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
+import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -213,6 +215,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private final ProjectImpactsValidator projectImpactsValidator;
   private final Logger logger = LoggerFactory.getLogger(ProjectSectionValidator.class);
+  private ExpectedStudyProjectManager expectedStudyProjectManager;
 
 
   @Inject
@@ -242,7 +245,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager,
     ProjectInnovationRegionManager projectInnovationRegionManager, ProjectImpactsManager projectImpactsManager,
     ProjectImpactsValidator projectImpactsValidator, SafeguardValidator safeguardValidator,
-    FeedbackStatusValidator feedbackStatusValidator) {
+    FeedbackStatusValidator feedbackStatusValidator, ExpectedStudyProjectManager expectedStudyProjectManager) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -289,6 +292,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.safeguardValidator = safeguardValidator;
     this.safeguardsManager = safeguardsManager;
     this.feedbackStatusValidator = feedbackStatusValidator;
+    this.expectedStudyProjectManager = expectedStudyProjectManager;
   }
 
 
@@ -1034,7 +1038,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         for (DeliverableInfo deliverableInfo : infos) {
           Deliverable deliverable = deliverableInfo.getDeliverable();
           deliverable.setDeliverableInfo(deliverableInfo);
-          logger.info(" ProjectSectionValidator linea 1029 deliverable.getId() " + deliverable.getId());
           deliverables.add(deliverable);
         }
       }
@@ -1366,6 +1369,25 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           && ps.getProjectExpectedStudyInfo().getStatus() != null
           && ps.getProjectExpectedStudyInfo().getYear() >= action.getCurrentCycleYear())
         .collect(Collectors.toList());
+
+      // 2024/07/06 cgamboa add shared expetec studies
+      if (action.isProgressActive()) {
+        List<ExpectedStudyProject> expectedStudyProject = this.expectedStudyProjectManager
+          .getByProjectAndPhase(project.getId(), action.getActualPhase().getId()) != null
+            ? this.expectedStudyProjectManager.getByProjectAndPhase(project.getId(), action.getActualPhase().getId())
+              .stream()
+              .filter(px -> px.isActive() && px.getProjectExpectedStudy().isActive()
+                && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(action.getActualPhase()) != null)
+              .collect(Collectors.toList())
+            : Collections.emptyList();
+        if (expectedStudyProject != null && !expectedStudyProject.isEmpty()) {
+          for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
+            if (!allProjectStudies.contains(expectedStudy.getProjectExpectedStudy())) {
+              projectStudies.add(expectedStudy.getProjectExpectedStudy());
+            }
+          }
+        }
+      }
     }
 
 

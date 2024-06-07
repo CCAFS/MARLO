@@ -98,14 +98,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
   public boolean validateIsProgressAndNotStatus(BaseAction action, ProjectExpectedStudy projectExpectedStudy) {
     boolean result = false;
     try {
-      LOG.info("DeliverableValidator linea 112 deliverable.getId() " + projectExpectedStudy.getId());
-      LOG.info("DeliverableValidator linea 112 deliverable.getDeliverableInfo().getId() "
-        + projectExpectedStudy.getProjectExpectedStudyInfo().getId());
-      LOG.info("DeliverableValidator linea 115 " + action.isProgressActive());
-      LOG.info("DeliverableValidator linea 116 " + projectExpectedStudy.getProjectExpectedStudyInfo().getStatus());
-      LOG.info(
-        "DeliverableValidator linea 104 " + projectExpectedStudy.getProjectExpectedStudyInfo().getStatus().getId());
-
       if (action.isProgressActive() && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus().getId() != Integer
         .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
         result = true;
