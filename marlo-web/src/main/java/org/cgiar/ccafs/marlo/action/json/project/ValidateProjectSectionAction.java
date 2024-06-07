@@ -320,7 +320,13 @@ public class ValidateProjectSectionAction extends BaseAction {
               if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
                 .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
                 if (deliverable.getDeliverableInfo(phase).getYear() > this.getActualPhase().getYear()) {
-                  sectionStatus.setMissingFields("");
+
+                  // 2024/06/07 cgamboa Functionality is added to validate all deliverables regardless of the year, in
+                  // progress phase
+                  if (!deliverable.getDeliverableInfo().getPhase().getUpkeep()) {
+                    sectionStatus.setMissingFields("");
+                  }
+
                 }
               }
 
@@ -334,7 +340,11 @@ public class ValidateProjectSectionAction extends BaseAction {
 
               if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
                 .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
-                sectionStatus.setMissingFields("");
+                // 2024/06/07 cgamboa Functionality is added to validate all deliverables regardless of the year, in
+                // progress phase
+                if (!deliverable.getDeliverableInfo().getPhase().getUpkeep()) {
+                  sectionStatus.setMissingFields("");
+                }
               }
 
             }

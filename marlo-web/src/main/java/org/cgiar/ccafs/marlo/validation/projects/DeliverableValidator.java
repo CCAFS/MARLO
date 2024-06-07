@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
@@ -25,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.SoilIndicatorManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -79,6 +81,8 @@ public class DeliverableValidator extends BaseValidator {
   private RepIndTypeActivityManager repIndTypeActivityManager;
   private SoilIndicatorManager soilIndicatorManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private ActivityManager activityManager;
+  private SectionStatusManager sectionStatusManager;
 
   Boolean doesNotHaveDOI;
 
@@ -87,7 +91,8 @@ public class DeliverableValidator extends BaseValidator {
     ProjectPartnerPersonManager projectPartnerPersonManager,
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager, RepIndTypeActivityManager repIndTypeActivityManager,
     DeliverableUserManager deliverableUserManager, SoilIndicatorManager soilIndicatorManager,
-    CrpProgramOutcomeManager crpProgramOutcomeManager) {
+    CrpProgramOutcomeManager crpProgramOutcomeManager, ActivityManager activityManager,
+    SectionStatusManager sectionStatusManager) {
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
@@ -96,6 +101,8 @@ public class DeliverableValidator extends BaseValidator {
     this.repIndTypeActivityManager = repIndTypeActivityManager;
     this.soilIndicatorManager = soilIndicatorManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.activityManager = activityManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID, BaseAction action) {
@@ -355,10 +362,13 @@ public class DeliverableValidator extends BaseValidator {
                 InvalidFieldsMessages.EMPTYFIELD);
             }
 
+
             if (deliverable.getActivities() == null || deliverable.getActivities().isEmpty()) {
               action.addMessage(action.getText("project.deliverable.activity"));
               action.getInvalidFields().put("list-deliverable.activities",
                 action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"activities"}));
+
+
             }
 
           }
@@ -477,7 +487,7 @@ public class DeliverableValidator extends BaseValidator {
          */
         if (!action.isPOWB()) {
           if (deliverable.getDeliverableParticipant() != null && deliverable.getDeliverableParticipant() != null) {
-            this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
+            this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action, resultProgessValidate);
           } else {
             action.addMessage("hasParticipants");
             action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
@@ -650,9 +660,20 @@ public class DeliverableValidator extends BaseValidator {
       }
     }
 
+    if (resultProgessValidate) {
+      int activitiesByDeliverableAndPhaseQuantity = activityManager
+        .getActivitiesByDeliverableAndPhaseQuantity(deliverable.getId(), action.getActualPhase().getId());
+      if (activitiesByDeliverableAndPhaseQuantity == 0
+        && !action.getMissingFields().toString().contains("project.deliverable.activity")) {
+        action.addMissingField("project.deliverable.activity");
+      }
+    }
+
 
     this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
+
+
   }
 
   private void validateDeliverableInfo(DeliverableInfo deliverableInfo, Deliverable deliverable, Project project,
@@ -947,87 +968,93 @@ public class DeliverableValidator extends BaseValidator {
 
   }
 
-  private void validateDeliverableParticipant(DeliverableParticipant deliverableParticipant, BaseAction action) {
-    if (deliverableParticipant.getHasParticipants() != null && deliverableParticipant.getHasParticipants()) {
-      if (deliverableParticipant.getEventActivityName() != null
-        && !this.isValidString(deliverableParticipant.getEventActivityName())) {
-        action.addMessage(action.getText("involveParticipants.title"));
-        action.getInvalidFields().put("input-deliverable.deliverableParticipant.eventActivityName",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-      if (deliverableParticipant.getRepIndTypeActivity() == null
-        || deliverableParticipant.getRepIndTypeActivity().getId() == -1) {
-        action.addMessage(action.getText("involveParticipants.typeActivity"));
-        action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTypeActivity.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-        deliverableParticipant.setRepIndTypeActivity(null);
-      } else {
-        RepIndTypeActivity repIndTypeActivity =
-          repIndTypeActivityManager.getRepIndTypeActivityById(deliverableParticipant.getRepIndTypeActivity().getId());
+  private void validateDeliverableParticipant(DeliverableParticipant deliverableParticipant, BaseAction action,
+    boolean resultProgessValidate) {
 
-        if (repIndTypeActivity.getId().equals(action.getReportingIndTypeActivityAcademicDegree())) {
-          if (!this.isValidString(deliverableParticipant.getAcademicDegree())) {
-            action.addMessage(action.getText("involveParticipants.academicDegree"));
-            action.getInvalidFields().put("input-deliverable.deliverableParticipant.academicDegree",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
-        if (repIndTypeActivity.getIsFormal()) {
-          if (deliverableParticipant.getRepIndTrainingTerm() == null
-            || deliverableParticipant.getRepIndTrainingTerm().getId() == -1) {
-            action.addMessage(action.getText("involveParticipants.trainingPeriod"));
-            action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTrainingTerm.id",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
-      }
-      if (deliverableParticipant.getParticipants() == null
-        || !this.isValidNumber(deliverableParticipant.getParticipants().toString())
-        || deliverableParticipant.getParticipants() < 0) {
-        action.addMessage(action.getText("involveParticipants.participants"));
-        action.getInvalidFields().put("input-deliverable.deliverableParticipant.participants",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-      if (deliverableParticipant.getDontKnowFemale() == null || !deliverableParticipant.getDontKnowFemale()) {
-        if (deliverableParticipant.getFemales() == null
-          || !this.isValidNumber(deliverableParticipant.getFemales().toString())
-          || deliverableParticipant.getFemales() < 0) {
-          action.addMessage(action.getText("involveParticipants.females"));
-          action.getInvalidFields().put("input-deliverable.deliverableParticipant.females",
+    if (!resultProgessValidate) {
+      if (deliverableParticipant.getHasParticipants() != null && deliverableParticipant.getHasParticipants()) {
+        if (deliverableParticipant.getEventActivityName() != null
+          && !this.isValidString(deliverableParticipant.getEventActivityName())) {
+          action.addMessage(action.getText("involveParticipants.title"));
+          action.getInvalidFields().put("input-deliverable.deliverableParticipant.eventActivityName",
             InvalidFieldsMessages.EMPTYFIELD);
         }
-      }
-      if (deliverableParticipant.getAfrican() == null
-        || !this.isValidNumber(deliverableParticipant.getAfrican().toString())
-        || deliverableParticipant.getAfrican().intValue() < 0) {
-        action.addMessage(action.getText("involveParticipants.african"));
-        action.getInvalidFields().put("input-deliverable.deliverableParticipant.african",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-      if (deliverableParticipant.getYouth() == null || !this.isValidNumber(deliverableParticipant.getYouth().toString())
-        || deliverableParticipant.getYouth().intValue() < 0) {
-        action.addMessage(action.getText("involveParticipants.youth"));
-        action.getInvalidFields().put("input-deliverable.deliverableParticipant.youth",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
+        if (deliverableParticipant.getRepIndTypeActivity() == null
+          || deliverableParticipant.getRepIndTypeActivity().getId() == -1) {
+          action.addMessage(action.getText("involveParticipants.typeActivity"));
+          action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTypeActivity.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+          deliverableParticipant.setRepIndTypeActivity(null);
+        } else {
+          RepIndTypeActivity repIndTypeActivity =
+            repIndTypeActivityManager.getRepIndTypeActivityById(deliverableParticipant.getRepIndTypeActivity().getId());
 
-      if (!this.isValidString(deliverableParticipant.getFocus())) {
-        action.addMessage(action.getText("involveParticipants.focus"));
-        action.getInvalidFields().put("input-deliverable.deliverableParticipant.focus",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
+          if (repIndTypeActivity.getId().equals(action.getReportingIndTypeActivityAcademicDegree())) {
+            if (!this.isValidString(deliverableParticipant.getAcademicDegree())) {
+              action.addMessage(action.getText("involveParticipants.academicDegree"));
+              action.getInvalidFields().put("input-deliverable.deliverableParticipant.academicDegree",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+          if (repIndTypeActivity.getIsFormal()) {
+            if (deliverableParticipant.getRepIndTrainingTerm() == null
+              || deliverableParticipant.getRepIndTrainingTerm().getId() == -1) {
+              action.addMessage(action.getText("involveParticipants.trainingPeriod"));
+              action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTrainingTerm.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+        }
+        if (deliverableParticipant.getParticipants() == null
+          || !this.isValidNumber(deliverableParticipant.getParticipants().toString())
+          || deliverableParticipant.getParticipants() < 0) {
+          action.addMessage(action.getText("involveParticipants.participants"));
+          action.getInvalidFields().put("input-deliverable.deliverableParticipant.participants",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        if (deliverableParticipant.getDontKnowFemale() == null || !deliverableParticipant.getDontKnowFemale()) {
+          if (deliverableParticipant.getFemales() == null
+            || !this.isValidNumber(deliverableParticipant.getFemales().toString())
+            || deliverableParticipant.getFemales() < 0) {
+            action.addMessage(action.getText("involveParticipants.females"));
+            action.getInvalidFields().put("input-deliverable.deliverableParticipant.females",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+        if (deliverableParticipant.getAfrican() == null
+          || !this.isValidNumber(deliverableParticipant.getAfrican().toString())
+          || deliverableParticipant.getAfrican().intValue() < 0) {
+          action.addMessage(action.getText("involveParticipants.african"));
+          action.getInvalidFields().put("input-deliverable.deliverableParticipant.african",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        if (deliverableParticipant.getYouth() == null
+          || !this.isValidNumber(deliverableParticipant.getYouth().toString())
+          || deliverableParticipant.getYouth().intValue() < 0) {
+          action.addMessage(action.getText("involveParticipants.youth"));
+          action.getInvalidFields().put("input-deliverable.deliverableParticipant.youth",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
 
-      if (!this.isValidString(deliverableParticipant.getLikelyOutcomes())) {
-        action.addMessage(action.getText("involveParticipants.likelyOutcomes"));
-        action.getInvalidFields().put("input-deliverable.deliverableParticipant.likelyOutcomes",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
+        if (!this.isValidString(deliverableParticipant.getFocus())) {
+          action.addMessage(action.getText("involveParticipants.focus"));
+          action.getInvalidFields().put("input-deliverable.deliverableParticipant.focus",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
 
-      if (deliverableParticipant.getRepIndTypeParticipant() == null
-        || deliverableParticipant.getRepIndTypeParticipant().getId() == -1) {
-        action.addMessage(action.getText("involveParticipants.participantsType"));
-        action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTypeParticipant.id",
-          InvalidFieldsMessages.EMPTYFIELD);
+        if (!this.isValidString(deliverableParticipant.getLikelyOutcomes())) {
+          action.addMessage(action.getText("involveParticipants.likelyOutcomes"));
+          action.getInvalidFields().put("input-deliverable.deliverableParticipant.likelyOutcomes",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+
+        if (deliverableParticipant.getRepIndTypeParticipant() == null
+          || deliverableParticipant.getRepIndTypeParticipant().getId() == -1) {
+          action.addMessage(action.getText("involveParticipants.participantsType"));
+          action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTypeParticipant.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
     }
   }
@@ -1134,12 +1161,6 @@ public class DeliverableValidator extends BaseValidator {
   public boolean validateIsProgressAndNotStatus(BaseAction action, Deliverable deliverable) {
     boolean result = false;
     try {
-      LOG.info("DeliverableValidator linea 112 deliverable.getId() " + deliverable.getId());
-      LOG.info("DeliverableValidator linea 112 deliverable.getDeliverableInfo().getId() "
-        + deliverable.getDeliverableInfo().getId());
-      LOG.info("DeliverableValidator linea 115 action.isProgressActive() " + action.isProgressActive());
-      LOG.info("DeliverableValidator linea 116 " + deliverable.getDeliverableInfo().getStatus());
-      LOG.info("DeliverableValidator linea 117 action.getPhaseID() " + action.getPhaseID());
 
       if (action.isProgressActive()
         && deliverable.getDeliverableInfo().getStatus() != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
