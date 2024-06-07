@@ -471,7 +471,6 @@ public class ProjectInnovationValidator extends BaseValidator {
   public boolean validateIsProgress(BaseAction action) {
     boolean result = false;
     try {
-      LOG.info("DeliverableValidator linea 115 " + action.isProgressActive());
       if (action.isProgressActive()) {
         result = true;
       }

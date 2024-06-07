@@ -660,13 +660,18 @@ public class DeliverableValidator extends BaseValidator {
       }
     }
 
-    if (resultProgessValidate) {
-      int activitiesByDeliverableAndPhaseQuantity = activityManager
-        .getActivitiesByDeliverableAndPhaseQuantity(deliverable.getId(), action.getActualPhase().getId());
-      if (activitiesByDeliverableAndPhaseQuantity == 0
-        && !action.getMissingFields().toString().contains("project.deliverable.activity")) {
-        action.addMissingField("project.deliverable.activity");
+    // 2024/06/07 cgamboa functionality to validate activities, from the general check
+    try {
+      if (resultProgessValidate && !saving) {
+        int activitiesByDeliverableAndPhaseQuantity = activityManager
+          .getActivitiesByDeliverableAndPhaseQuantity(deliverable.getId(), action.getActualPhase().getId());
+        if (activitiesByDeliverableAndPhaseQuantity == 0
+          && !action.getMissingFields().toString().contains("project.deliverable.activity")) {
+          action.addMissingField("project.deliverable.activity");
+        }
       }
+    } catch (Exception e) {
+      LOG.error(" unable to getActivitiesByDeliverableAndPhaseQuantity in validate function [DeliverableValidator]");
     }
 
 
