@@ -618,8 +618,16 @@ public class ProjectActivitiesAction extends BaseAction {
       List<Activity> activitiesDB = projectBD.getActivities().stream()
         .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
       this.activitiesPreviousData(projectBD);
+
+      // cgamboa 11/06/2024 project.getProjectActivities() will be call once and used sometimes
+      List<Activity> projectActivities = new ArrayList<Activity>();
+      try {
+        projectActivities = project.getProjectActivities();
+      } catch (Exception e) {
+        logger.info(" unable to get activities in save function ");
+      }
       // Check activities from UI
-      if (project.getProjectActivities() != null && !project.getProjectActivities().isEmpty()) {
+      if (projectActivities != null && !projectActivities.isEmpty()) {
         this.saveActivitiesNewData();
       } else {
         // Delete activities
