@@ -8801,6 +8801,29 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
+  /**
+   * Validate if the current phase is progress, with status
+   *
+   * @param status entity status
+   * @return validation result
+   */
+
+  public boolean validateIsProgressWithStatus(String status) {
+    boolean result = true;
+    try {
+
+      if (this.isProgressActive()
+        && status.toLowerCase().equals(ProjectStatusEnum.Complete.getStatus().toLowerCase())) {
+        result = false;
+      }
+      return result;
+    } catch (Exception e) {
+      LOG.error(" error in validateIsProgressAndNotStatus function [BaseAction]");
+      return result;
+    }
+  }
+
+
   public boolean validatePolicy(long policyID) {
     SectionStatus sectionStatus =
       this.sectionStatusManager.getSectionStatusByProjectPolicy(policyID, this.getCurrentCycle(),
@@ -8814,6 +8837,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
+
 
   //
   public boolean validURL(String URL) {
