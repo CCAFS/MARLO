@@ -233,7 +233,8 @@ public class DeliverableValidator extends BaseValidator {
         && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
           .parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
 
-        this.validateDeliverableInfo(deliverable.getDeliverableInfo(), deliverable, project, action);
+        this.validateDeliverableInfo(deliverable.getDeliverableInfo(), deliverable, project, action,
+          resultProgessValidate);
 
         Boolean isManagingPartnerPersonRequerid =
           action.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
@@ -682,7 +683,7 @@ public class DeliverableValidator extends BaseValidator {
   }
 
   private void validateDeliverableInfo(DeliverableInfo deliverableInfo, Deliverable deliverable, Project project,
-    BaseAction action) {
+    BaseAction action, boolean resultProgessValidate) {
     if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getTitle())
       && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getTitle()) <= 25)) {
       action.addMessage(action.getText("project.deliverable.generalInformation.title"));
@@ -708,16 +709,38 @@ public class DeliverableValidator extends BaseValidator {
         action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableCategory.id",
           InvalidFieldsMessages.EMPTYFIELD);
         deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
+
+        // [start] cgamboa 12/06/2024 conditional is added to mark the category and the subcategory, in red
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() == null) {
+          action.addMessage(action.getText("project.deliverable.generalInformation.subType"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        // [end]
       }
 
       if (deliverable.getDeliverableInfo(action.getActualPhase()) != null
         && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
         && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != null
         && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == -1) {
+
+        // [start] cgamboa 12/06/2024 conditional is added to mark the category and the subcategory, in red
+        action.addMessage(action.getText("project.deliverable.generalInformation.category"));
+        action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableCategory.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+        // [end]
+
         action.addMessage(action.getText("project.deliverable.generalInformation.subType"));
         action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.id",
           InvalidFieldsMessages.EMPTYFIELD);
         deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
+
+        // [start] cgamboa 12/06/2024 conditional is added to mark the category and the subcategory, in red
+        action.addMessage(action.getText("project.deliverable.generalInformation.type"));
+        action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableType.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+        // [end]
+
 
       } else {
         if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null && deliverable
@@ -731,6 +754,7 @@ public class DeliverableValidator extends BaseValidator {
 
           }
         } else {
+
           action.addMessage(action.getText("project.deliverable.generalInformation.type"));
           action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableType.id",
             InvalidFieldsMessages.EMPTYFIELD);
