@@ -418,7 +418,9 @@
           </div>
         </div>
       [/#if]
-         
+      
+      [#assign permissionLeader = action.hasPermission("leader")]
+      [#assign permissionCoordinator = action.hasPermission("coordinator")]     
       [#-- Contacts person(s)  --]
       <div class="contactsPerson panel tertiary">
         <h5 class="sectionSubTitle">[@s.text name="projectPartners.projectPartnerContacts" /] <small>[@customForm.req required=isPPA /]</small></h5>
@@ -462,16 +464,16 @@
       <span class="index"></span>
     </div>
     <input id="id" class="partnerPersonId" type="hidden" name="${name}.id" value="${(element.id)!}" />
-    [#local canEditLeader=(editable && action.hasPermission("leader"))!false /]
-    [#local canEditCoordinator=(editable && action.hasPermission("coordinator"))!false /]
+    [#local canEditLeader=(editable && permissionLeader)!false /]
+    [#local canEditCoordinator=(editable && permissionCoordinator)!false /]
    
 
 
     [#local isPPA = (action.isPPA(element.projectPartner.institution))!false /]
     [#if (element.contactType == "PL")!false]
-      [#local canEditContactType = (editable && action.hasPermission("leader"))!false /]
+      [#local canEditContactType = (editable && permissionLeader)!false /]
     [#elseif (element.contactType == "PC")!false]
-      [#local canEditContactType = (editable && action.hasPermission("coordinator"))!false /]
+      [#local canEditContactType = (editable && permissionCoordinator)!false /]
     [#else]
       [#local canEditContactType = editable || isTemplate /]
     [/#if]
@@ -547,7 +549,7 @@
               <h3>Deliverables</h3>
               <ul>
               [#list deliverablesLedByUserList as deliverable]
-                <li>${deliverable.deliverableInfo.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"><img class="external-link" src="${baseUrlCdn}/global/images/external-link.png" /></a></li>
+                <li>${deliverable.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"><img class="external-link" src="${baseUrlCdn}/global/images/external-link.png" /></a></li>
               [/#list]
               </ul>
             </div>
