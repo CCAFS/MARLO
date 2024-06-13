@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDTO;
 import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -130,6 +131,12 @@ public interface DeliverableManager {
   List<Deliverable> getDeliverablesLeadByUserAndProject(long userId, long phaseId, long projectId);
 
 
+  List<Deliverable> getDeliverablesLeadByUserAndProjectWithConditions(long userId, long phaseId, long projectId);
+
+  List<DeliverableDTO> getDeliverablesLeadByUserAndProjectWithSimpleConditions(long userId, long phaseId,
+    long projectId);
+
+
   /**
    * This method gets a list of deliverables that are active for an specific liaisonInstitution
    * Flagship: Get the list of projects that have project_focus equal to the liaisonInstitution
@@ -145,6 +152,7 @@ public interface DeliverableManager {
 
 
   public List<Deliverable> getNotPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
+
 
   /**
    * This method gets a list of publications that are active by a given phase
