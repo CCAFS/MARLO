@@ -8808,12 +8808,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return validation result
    */
 
-  public boolean validateIsProgressWithStatus(String status) {
+  public boolean validateIsProgressWithStatus(int status) {
     boolean result = true;
     try {
 
-      if (this.isProgressActive()
-        && status.toLowerCase().equals(ProjectStatusEnum.Complete.getStatus().toLowerCase())) {
+      if (this.isProgressActive() && status != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
         result = false;
       }
       return result;
