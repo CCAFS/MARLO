@@ -241,6 +241,7 @@
                 [/#if]
 
             </ul>
+              [#assign validateIsProgressWithStatus = action.validateIsProgressWithStatus(deliverable.deliverableInfo.status)]
             <div class="tab-content ">
               [#-- Deliverable Information --]
               <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade [#if indexTab==1 || indexTab==0]in active[/#if]">
