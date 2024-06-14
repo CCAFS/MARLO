@@ -74,7 +74,7 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
   @Override
   public List<Activity> getActivitiesByProject(long projectId, long phaseId) {
     String query = "from " + Activity.class.getName() + " where project_id=" + projectId + " and id_phase=" + phaseId
-      + " and is_active=1";
+      + " and is_active=1 and activityStatus=2";
     List<Activity> list = super.findAll(query);
     if (!list.isEmpty()) {
       return list;
