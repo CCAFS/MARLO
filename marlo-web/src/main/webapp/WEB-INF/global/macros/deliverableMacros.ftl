@@ -872,7 +872,7 @@
   </div>
 [/#macro]
 
-[#macro deliverableMetadataMacro flagshipslistName="programs" crpsListName="crps" allowFlagships=true]
+[#macro deliverableMetadataMacro flagshipslistName="programs" crpsListName="crps" allowFlagships=true validateIsProgressWithStatus=true]
   <div class="form-group">
     [@metadataField title="title" encodedName="dc.title" type="input" require=validateIsProgressWithStatus /]
   </div>
@@ -1272,11 +1272,11 @@
     <input type="hidden" class="hide" name="${customName}.hide" value="${mElementHide?string}" />
     <input type="hidden" name="${customName}.metadataElement.id" value="${metadataID}" />
     [#if type == "input"]
-      [@customForm.input name="${customName}.elementValue" required=(require!false && validateIsProgressWithStatus!true) value="${metadataValue}" className="metadataValue "  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
+      [@customForm.input name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue "  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
     [#elseif type == "textArea"]
-      [@customForm.textArea name="${customName}.elementValue" required=(require!false && validateIsProgressWithStatus!true) value="${metadataValue}" className="metadataValue " i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
+      [@customForm.textArea name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue " i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
     [#elseif type == "select"]
-      [@customForm.select name="${customName}.elementValue" required=(require!false && validateIsProgressWithStatus!true) value="${metadataValue}" className="metadataValue " i18nkey="metadata.${title}" listName=list disabled=mElementHide editable=editable /]
+      [@customForm.select name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue " i18nkey="metadata.${title}" listName=list disabled=mElementHide editable=editable /]
     [#elseif type == "hidden"]
       <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue "/>
     [#elseif type == "text"]
