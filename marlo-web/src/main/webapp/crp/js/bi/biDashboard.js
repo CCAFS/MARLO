@@ -1,7 +1,9 @@
 $(document).ready(init);
 
 function init() {
-  addEvents();
+  //addEvents();
+  pbiwidget.init('dashboard-embed', "https://bitest.ciat.cgiar.org/bi/AICCRA-by-numbers-test");
+
 }
 
 function addEvents() {

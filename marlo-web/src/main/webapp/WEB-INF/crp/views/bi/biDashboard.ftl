@@ -67,19 +67,12 @@
       </div>
 
         [#--  Reports Content --]
-        <div class="summariesContent col-md-12" style="min-height:550px;">
-          <div class="">
-            [#list (biReports)?sort_by("reportOrder")![] as report]
-                <div id="BIreport-${report.id}-contentOptions" class="" style="display:[#if report?index !=0]none[/#if];">
-                  <div id="dashboardContainer-${report.id}" class="dashboardContainer-${report.id}"></div>
-                  <input type="hidden" id="reportName-${report.id}" name="reportName" value=${report.reportName} />
-                  <input type="hidden" id="embeUrl-${report.id}" name="embedUrl" value=${report.embedUrl} /> 
-                  <input type="hidden" id="reportID-${report.id}" name="reportId" value=${report.reportId} />
-                </div>
-            [/#list] 
-          </div>
-        </div>
+<#--          
+        </div>  -->
+        <div id="dashboard-embed"></div>
       [/#if]
     </section>
+
+    <script src="https://bitest.ciat.cgiar.org/widget/main.js" charset="utf-8"></script>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
