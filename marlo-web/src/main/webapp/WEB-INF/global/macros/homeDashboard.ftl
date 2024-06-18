@@ -17,7 +17,7 @@
     [#if deliverables?has_content]
       [#list deliverables as deliverable]
         [#-- Is New --]
-        [#assign isDeliverableNew = action.isDeliverableNew(deliverable.deliverableId) /]
+        [#assign isDeliverableNew = action.isDeliverableNewDashboard(deliverable.deliverableId) /]
         [#-- Has draft version (Auto-save) --]
         [#--assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /--]
         [#-- Is Complete --]

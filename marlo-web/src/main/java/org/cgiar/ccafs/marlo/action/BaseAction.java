@@ -472,11 +472,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private StringBuilder synthesisFlagships = new StringBuilder();
 
+  private HashMap<Integer, Integer> deliverableListbyPhase = new HashMap<Integer, Integer>();
+
+
   public BaseAction() {
     this.saveable = true;
     this.fullEditable = true;
     this.justification = "";
   }
+
 
   public BaseAction(APConfig config) {
     this();
@@ -515,7 +519,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * This method add a missing field separated by a semicolon (;).
    *
@@ -541,6 +544,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     this.synthesisFlagships.append(flagship);
   }
+
 
   public void addUsers() {
     if (this.usersToActive != null) {
@@ -1325,7 +1329,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return response;
   }
 
-
   /**
    * Validate the user permission to replay or react to a comment
    * 
@@ -1395,6 +1398,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
+
 
   public boolean canProjectSubmited(long projectID) {
     String params[] = {this.crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), projectID + ""};
@@ -2853,6 +2857,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return APConstants.DELIVERABLE_RULE_JORNAL_ARTICLES;
   }
 
+  public HashMap<Integer, Integer> getDeliverableListbyPhase() {
+    return deliverableListbyPhase;
+  }
+
   public String getDeliverablePublicationMetadata() {
     return APConstants.DELIVERABLE_RULE_PUBLICATION_METADATA;
   }
@@ -2907,7 +2915,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return deliverables;
 
   }
-
 
   public List<Deliverable> getDeliverableRelationsProject(Long id, String className, Long projectID) {
     Class<?> clazz;
@@ -3175,6 +3182,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return deliverables;
 
   }
+
 
   public List<Deliverable> getDeliverableRelationsProjectOld(Long id, String className, Long projectID) {
     Class<?> clazz;
@@ -3452,7 +3460,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<HistoryDifference> getDifferences() {
     return this.differences;
   }
-
 
   /**
    * Get information for duplicated deliverables - Validation by DOI, Handle and Dissemination URL
@@ -3741,6 +3748,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return deliverableDTOs;
   }
+
 
   /**
    * Get listing to validate duplicate information (dissemination_URL,DIO, handle)
@@ -7135,6 +7143,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public Boolean isDeliverableNew(Long deliverableID) {
     if (deliverableID != null) {
       Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
@@ -7148,6 +7157,35 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } else {
       return false;
     }
+  }
+
+  /**
+   * Validate if a deliverable belongs to the phase
+   * 
+   * @author IBD
+   * @param deliverableID deliverable identifier
+   * @return validation result
+   */
+  public Boolean isDeliverableNewDashboard(Long deliverableID) {
+    try {
+      if (deliverableID == null) {
+        return false;
+      }
+      int result = 0;
+      int deliveableInteger = (int) (long) deliverableID;
+      result = this.getDeliverableListbyPhase().get(deliveableInteger);
+
+      if (result == 0) {
+        return false;
+      } else {
+        return true;
+      }
+
+
+    } catch (Exception e) {
+      return false;
+    }
+
   }
 
   public boolean isDraft() {
@@ -8409,6 +8447,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setDelete(boolean delete) {
     this.delete = delete;
+  }
+
+  public void setDeliverableListbyPhase(HashMap<Integer, Integer> deliverableListbyPhase) {
+    this.deliverableListbyPhase = deliverableListbyPhase;
   }
 
   public void setDifferences(List<HistoryDifference> differences) {

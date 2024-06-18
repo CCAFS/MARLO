@@ -37,12 +37,15 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -50,6 +53,8 @@ import org.apache.shiro.authz.AuthorizationInfo;
 public class DashboardAction extends BaseAction {
 
   private static final long serialVersionUID = 6686785556753962379L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(DashboardAction.class);
 
   // Managers
   private PhaseManager phaseManager;
@@ -82,9 +87,32 @@ public class DashboardAction extends BaseAction {
     this.projectPolicyManager = projectPolicyManager;
   }
 
+  /**
+   * Get deliverables by phase
+   * 
+   * @author IBD
+   */
+  public void getDeliverableListByPhase() {
+    try {
+      List<Integer> deliverableListbyPhase =
+        deliverableManager.getDeliverableListByPhase(this.getActualPhase().getId());
+      HashMap<Integer, Integer> tmpDeliverableList = new HashMap<Integer, Integer>();
+      for (Integer integer : deliverableListbyPhase) {
+        tmpDeliverableList.put(integer, integer);
+
+      }
+
+      this.setDeliverableListbyPhase(tmpDeliverableList);
+
+    } catch (Exception e) {
+      LOG.error(" unable to get deliverable in the getDeliverableListByPhase function");
+    }
+  }
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   /**
    * Get the value of myDeliverables
@@ -104,7 +132,6 @@ public class DashboardAction extends BaseAction {
   public List<Project> getMyProjects() {
     return myProjects;
   }
-
 
   public List<StudyHomeDTO> getMyStudies() {
     return myStudies;
@@ -220,6 +247,9 @@ public class DashboardAction extends BaseAction {
       .flatMap(p -> projectInnovationManager
         .getInnovationsByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
       .collect(Collectors.toList());
+
+    this.getDeliverableListByPhase();
+
 
   }
 
