@@ -110,7 +110,7 @@
             <div class="clearfix"></div>
             [#if showOutcomeValue]
               <div class="form-group">          
-                <div class="col-md-4"><strong>AICCRA Target Value:</strong> ${projectOutcome.crpProgramOutcome.value} </div>
+                <div class="col-md-4"><strong>AICCRA Target Value:</strong> ${projectOutcome.crpProgramOutcome.value?string(",##0")} </div>
                 <div class="col-md-6"><strong>Target Unit:</strong> ${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</div>
               </div>
             [/#if]
@@ -191,7 +191,7 @@
                     [#else]
                       <label for="">[@s.text name="projectOutcome.expectedValue" /]: </label>
                     [/#if]
-                    <div class="input"><p class="text">${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
+                    <div class="input"><p class="text"> ${(projectOutcome.expectedValue?string(",##0"))!'No expected value indicated'}</p></div>
                   [/#if]               
                 </div>
 
@@ -213,7 +213,7 @@
                     [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue ${reportingActive?string('fieldFocus','')}" required=true /]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.achievedValue" /]:</label>
-                    <div class="input"><p>${(projectOutcome.achievedValue)!'No achieved value indicated'}</p></div>
+                    <div class="input"><p>${(projectOutcome.achievedValue?string(",##0"))!'No achieved value indicated'}</p></div>
                   [/#if]
                 </div>
                 <div class="col-md-7">
@@ -510,7 +510,7 @@
         
         <div class="row">
           <div class="col-md-12">
-            <strong>Overall AICCRA target to ${(element.year)!}:</strong> ${(element.value)!}
+            <strong>Overall AICCRA target to ${(element.year)!}:</strong> ${(element.value?string(",##0"))!}
             </br>           
             </br>
           </div>
