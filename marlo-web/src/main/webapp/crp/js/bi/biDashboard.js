@@ -2,7 +2,9 @@ $(document).ready(init);
 
 function init() {
   //addEvents();
-  pbiwidget.init('dashboard-embed', "https://bitest.ciat.cgiar.org/bi/AICCRA-by-numbers-test");
+  pbiwidget.init('dashboard-embed', {
+    reportName: 'aiccra-bi-module', // Report name
+  });
 
 }
 
