@@ -44,7 +44,7 @@
               <div class="menuList col-md-12" style="padding:0">
               [#list (biReports)?sort_by("reportOrder")![] as report]
                   <div id="BIreport-${report.id}" report-title="${report.reportTitle}"  has-filters="${report.hasFilters?c}" has-role-authorization="${report.hasRoleAuthorization?c}" class="button-bg reportSection [#if report?index == 0]current[/#if]">
-                  <a index="${report?index+1}" class="BIreport-${report.id}" href="">[@s.text name=report.reportName /]</a>
+                  <a index="${report?index+1}" class="BIreport-${report.id}" id="BIreport-${report.embedUrl}" href="">[@s.text name=report.reportName /]</a>
                   </div>
               [/#list]
               </div>
@@ -66,8 +66,29 @@
           [#--  Reports header  --]
       </div>
 
-        [#--  Reports Content --]
-      <div id="dashboard-embed"></div>
+      <div>
+        [#list biReports as report]
+          <div id="BIreport-${report.id}">
+            <p><strong> ${report.reportName!"null"}</strong></p>
+            <p>${report.reportTitel!"null"}</p>
+            <p> ${report.embedUrl!"null"}</p>
+          </div>
+        [/#list]
+      </div>
+
+      [#--  Reports Content --]
+      <div class="summariesContent col-md-12" style="min-height:550px;">
+        <div class="">
+          [#list (biReports)?sort_by("reportOrder")![] as report]
+              <div id="BIreport-${report.id}-contentOptions" class="" style="display:[#if report?index !=0]none[/#if];">
+                <div id="dashboardContainer-${report.id}" class="dashboardContainer-${report.id}"></div>
+                <input type="hidden" id="reportName-${report.id}" name="reportName" value=${report.reportName} />
+                <input type="hidden" id="embeUrl-${report.id}" name="embedUrl" value=${report.embedUrl} /> 
+                <input type="hidden" id="reportID-${report.id}" name="reportId" value=${report.reportId} />
+              </div>
+          [/#list] 
+        </div>
+      </div>
       [/#if]
     </section>
 
