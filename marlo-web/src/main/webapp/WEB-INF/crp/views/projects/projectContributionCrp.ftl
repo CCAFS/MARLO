@@ -180,9 +180,9 @@
                   [#if editable]
                   
                     [#if (action.isAFPhase(actualPhase.id))!false]
-                      [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(projectOutcome.crpProgramOutcome.year)!afYear type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
+                      [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(projectOutcome.crpProgramOutcome.year)!afYear type="text"  placeholder="" className="targetValue targetValueNumber" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                     [#else]
-                      [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
+                      [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue targetValueNumber" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                     [/#if]
                     
                   [#else]
@@ -518,11 +518,11 @@
         
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
           <div class="col-md-4 input-container" style="padding-top:3px">
-            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) help="projectOutcomeMilestone.pmcValue.helpText" helpIcon=true/]
+            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue targetValueNumber" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) help="projectOutcomeMilestone.pmcValue.helpText" helpIcon=true/]
           </div>
           
           <div class="col-md-4 input-container">
-            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
+            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue targetValueNumber" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
           </div>
           
           [#if (!action.isUpKeepActive() && !isYearRequired(milestoneYear) && action.isPOWB()) || action.isReportingActive()]
@@ -544,7 +544,7 @@
                     </div>
                   </div> 
                  [/#if]       
-                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')} targetValue" required=isYearRequired(milestoneYear) && reportingActive editable=reportingActive && (editable || isTemplate) && isYearRequired(milestoneYear) /]
+                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')} targetValue targetValueNumber" required=isYearRequired(milestoneYear) && reportingActive editable=reportingActive && (editable || isTemplate) && isYearRequired(milestoneYear) /]
               </div>
            [#else]
              [#if action.isUpKeepActive() ]
