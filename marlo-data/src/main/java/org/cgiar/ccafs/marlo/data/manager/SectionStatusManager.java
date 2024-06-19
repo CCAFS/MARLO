@@ -51,9 +51,18 @@ public interface SectionStatusManager {
    */
   public List<SectionStatus> findAll();
 
+  /**
+   * This method allows you to consult the deliverables, associated with the info deliverables that are in on_going
+   * state and do not have reports in the session_status table
+   * 
+   * @param phase phase
+   * @return list of completed deliverables
+   */
+  List<Integer> getCompleteDeliverableListByPhase(long phase);
 
   public List<SectionStatus> getSectionsStatusByReportSynthesis(long powbSynthesisID, String cycle, int year,
     Boolean upkeep, String sectionName);
+
 
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
@@ -67,7 +76,6 @@ public interface SectionStatusManager {
 
   public SectionStatus getSectionStatusByCrpIndicators(long liaisonInstitutionID, String cycle, int year,
     Boolean upkeep, String sectionName);
-
 
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
@@ -119,6 +127,7 @@ public interface SectionStatusManager {
   public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
+
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
    * 
@@ -148,7 +157,6 @@ public interface SectionStatusManager {
   public SectionStatus getSectionStatusByProjectExpectedStudy(long expectedID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
-
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
    * 
@@ -158,6 +166,7 @@ public interface SectionStatusManager {
   public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
     Boolean upkeep, String sectionName);
 
+
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
    * 
@@ -166,7 +175,6 @@ public interface SectionStatusManager {
    */
   public SectionStatus getSectionStatusByProjectImpacts(Long id, String cycle, int year, Boolean upkeep,
     String sectionName);
-
 
   public SectionStatus getSectionStatusByProjectInnovation(long projectInnovationID, String cycle, int year,
     Boolean upkeep, String sectionName);
@@ -185,6 +193,7 @@ public interface SectionStatusManager {
 
   public SectionStatus getSectionStatusByReportSynthesis(long powbSynthesisID, String cycle, int year, Boolean upkeep,
     String sectionName);
+
 
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.

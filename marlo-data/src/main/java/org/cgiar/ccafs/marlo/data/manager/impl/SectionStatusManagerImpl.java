@@ -62,6 +62,11 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
+  public List<Integer> getCompleteDeliverableListByPhase(long phase) {
+    return sectionStatusDAO.getCompleteDeliverableListByPhase(phase);
+  }
+
+  @Override
   public List<SectionStatus> getSectionsStatusByReportSynthesis(long powbSynthesisID, String cycle, int year,
     Boolean upkeep, String sectionName) {
     return sectionStatusDAO.getSectionsStatusByReportSynthesis(powbSynthesisID, cycle, year, upkeep, sectionName);

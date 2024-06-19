@@ -54,6 +54,15 @@ public interface SectionStatusDAO {
    */
   public List<SectionStatus> findAll();
 
+  /**
+   * This method allows you to consult the deliverables, associated with the info deliverables that are in on_going
+   * state and do not have reports in the session_status table
+   * 
+   * @param phase phase
+   * @return list of completed deliverables
+   */
+  List<Integer> getCompleteDeliverableListByPhase(long phase);
+
   public List<SectionStatus> getSectionsStatusByReportSynthesis(long synthesisID, String cycle, int year,
     Boolean upkeep, String sectionName);
 

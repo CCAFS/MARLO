@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.InnovationHomeDTO;
@@ -65,6 +66,8 @@ public class DashboardAction extends BaseAction {
   private ProjectInnovationManager projectInnovationManager;
   private ProjectPolicyManager projectPolicyManager;
 
+  private SectionStatusManager sectionStatusManager;
+
   // Variables
   private GlobalUnit loggedCrp;
 
@@ -76,7 +79,8 @@ public class DashboardAction extends BaseAction {
   @Inject
   public DashboardAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, DeliverableManager deliverableManager, ProjectPolicyManager projectPolicyManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationManager projectInnovationManager) {
+    ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationManager projectInnovationManager,
+    SectionStatusManager sectionStatusManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -85,14 +89,40 @@ public class DashboardAction extends BaseAction {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectInnovationManager = projectInnovationManager;
     this.projectPolicyManager = projectPolicyManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
+
+  /**
+   * Get completed deliverables by phase
+   * This function should only be used to load the dashboard
+   * 
+   * @author IBD
+   */
+  public void getCompleteDeliverableListByPhaseFunction() {
+    try {
+      List<Integer> deliverableListbyPhase =
+        sectionStatusManager.getCompleteDeliverableListByPhase(this.getActualPhase().getId());
+      HashMap<Integer, Integer> tmpDeliverableList = new HashMap<Integer, Integer>();
+      for (Integer integer : deliverableListbyPhase) {
+        LOG.info("DashboardAction linea 101 " + integer);
+        tmpDeliverableList.put(integer, integer);
+
+      }
+
+      this.setCompletedeliverableListbyPhase(tmpDeliverableList);
+
+    } catch (Exception e) {
+      LOG.error(" unable to get deliverable in the getCompleteDeliverableListByPhase function " + e.getMessage());
+    }
+  }
+
 
   /**
    * Get deliverables by phase
    * 
    * @author IBD
    */
-  public void getDeliverableListByPhase() {
+  public void getDeliverableListByPhaseFunction() {
     try {
       List<Integer> deliverableListbyPhase =
         deliverableManager.getDeliverableListByPhase(this.getActualPhase().getId());
@@ -109,10 +139,10 @@ public class DashboardAction extends BaseAction {
     }
   }
 
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   /**
    * Get the value of myDeliverables
@@ -132,6 +162,7 @@ public class DashboardAction extends BaseAction {
   public List<Project> getMyProjects() {
     return myProjects;
   }
+
 
   public List<StudyHomeDTO> getMyStudies() {
     return myStudies;
@@ -232,11 +263,15 @@ public class DashboardAction extends BaseAction {
           .collect(Collectors.toList());
     }
 
+    LOG.info("dashboarAction linea 258 " + myProjects.size());
+
 
     myDeliverables = myProjects.stream().filter(p -> p != null && p.getId() != null)
       .flatMap(
         p -> deliverableManager.getDeliverablesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
       .collect(Collectors.toList());
+
+    LOG.info("dashboarAction linea 266 myDeliverables " + myDeliverables.size());
 
     myStudies = myProjects.stream().filter(p -> p != null && p.getId() != null)
       .flatMap(p -> projectExpectedStudyManager
@@ -248,7 +283,8 @@ public class DashboardAction extends BaseAction {
         .getInnovationsByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
       .collect(Collectors.toList());
 
-    this.getDeliverableListByPhase();
+    this.getDeliverableListByPhaseFunction();
+    this.getCompleteDeliverableListByPhaseFunction();
 
 
   }
