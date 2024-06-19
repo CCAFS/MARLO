@@ -1,17 +1,23 @@
 $(document).ready(init);
 
 function init() {
+
   addEvents();
+
+
 }
 
 function addEvents() {
   var idReport = $('.reportSection').children().first().attr('class');
-  executePetition(idReport);
+  var urlReport= $('.reportSection').children().first().attr('id');
+
+  executePetition(idReport,urlReport);
   $('.reportSection').on('click', function () {
     var idReport = $(this).children().first().attr('class');
+    var urlReport= $(this).children().first().attr('id');
     var inputsContainer = $('#' + idReport + '-contentOptions');
     if (!($(inputsContainer).hasClass('loaded'))) {
-      executePetition(idReport);
+      executePetition(idReport,urlReport);
     }
   });
   $('.reportSection a, .reportSection span').on('click', selectBIReport);
@@ -60,90 +66,24 @@ function fullScreenDashboard() {
     });
 }
 
-//Request to BireportsTokenAction
-function executePetition(idReport) {
-  var $inputsContainer = $('#' + idReport + '-contentOptions');
-  var data = {
-    id: idReport.replace("BIreport-", "")
-  }
+// get the embedUrl from the id to pass to the reportName in the widgetInit and reload the page with the information
+function executePetition(idReport, urlReport) {
+  var url = urlReport.replace("BIreport-", "");
+  var inputsContainer = idReport + '-contentOptions';
 
-  //Ajax request to back for PowerBi
-  $.ajax({
-    'url': baseURL + '/biReportsTokenAction.do',
-    'type': "GET",
-    'data': data,
-    'dataType': "json",
-    success: function (metadata) {
-      var embedUrl = $inputsContainer.find('input[name=embedUrl]').val();
-      var reportId = $inputsContainer.find('input[name=reportId]').val();
-      // console.log(metadata.token, embedUrl, reportId, idReport);
-      setReportTitle();
-      embedPBI(metadata.token, embedUrl, reportId, idReport);
-    },
-    error: function (e) {
-      console.log("error");
-    }
-  });
+  pbiwidget.init(inputsContainer, {
+     reportName: url
+   });
+
+   setReportTitle();
+   $(`#${inputsContainer}`).addClass('loaded');
+  
 }
 
 // Set the report title and description
 function setReportTitle() {
   var reportTitle = $("div[class$='current']").attr("report-title");
   $('.headTitle.text-left').text(reportTitle + '');
-}
-
-// Embed Dashboard
-function embedPBI(embedToken, embededURL, dashboardId, contentId) {
-  // Get models. models contains enums that can be used.
-  var models = window['powerbi-client'].models;
-  var permissions = models.Permissions.All;
-  var hasFilters = $("div[class$='current']").attr("has-filters");
-  if (hasFilters == 'true') {
-    hasFilters = true;
-  } else {
-    hasFilters = false;
-  }
-
-  // Embed configuration used to describe the what and how to embed.
-  // This object is used when calling powerbi.embed.
-  // This also includes settings and options such as filters.
-  // You can find more information at https://github.com/Microsoft/PowerBI-JavaScript/wiki/Embed-Configuration-Details.
-
-  var config = {
-    type: 'report',
-    tokenType: models.TokenType.Embed,
-    accessToken: embedToken,
-    embedUrl: embededURL,
-    id: dashboardId,
-    permissions: permissions,
-    settings: {
-      filterPaneEnabled: hasFilters,
-      navContentPaneEnabled: true
-    }
-  };
-
-  // Get a reference to the embedded dashboard HTML element
-  //$embedContainer =
-  var $dashboardContainer = $("#" + contentId + '-contentOptions').children().first();
-  var dashboard = powerbi.embed($dashboardContainer.get(0), config);
-  var $dashboard = $("#" + contentId + '-contentOptions');
-
-  // Dashboard.off removes a given event handler if it exists.
-  dashboard.off("loaded");
-
-  // Dashboard.on will add an event handler which prints to Log window.
-  dashboard.on("loaded", function () {
-    $dashboard.addClass('loaded');
-    removeNavPanel(contentId);
-    //removeFilterPanel(contentId);
-  });
-
-  dashboard.on("error", function (event) {
-    console.log(event.detail);
-    dashboard.off("error");
-  });
-
-  dashboard.off("tileClicked");
 }
 
 //Function to set a value for the acronym filter, value is an array
@@ -269,6 +209,7 @@ function selectBIReport(e) {
   e.preventDefault();
   var $section = $(e.target).parents('.reportSection');
   var $content = $('#' + $section.attr('id') + '-contentOptions');
+  console.log($content);
   $section.siblings().removeClass('current');
   $section.addClass('current');
   $content.siblings().hide();
