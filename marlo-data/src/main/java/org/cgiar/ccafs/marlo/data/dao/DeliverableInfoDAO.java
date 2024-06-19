@@ -70,6 +70,13 @@ public interface DeliverableInfoDAO {
   public List<DeliverableInfo> getDeliverablesInfoByProjectAndPhase(Phase phase, Project project);
 
   /**
+   * This method gets a list of DeliverableInfo that are active by a given phase and project (including shared projects)
+   * 
+   * @return a list from DeliverableInfo null if no exist records
+   */
+  List<DeliverableInfo> getDeliverablesInfoByProjectAndPhaseWithSharedProjects(Phase phase, Project project);
+
+  /**
    * This method gets a list of DeliverableInfo that are active by a given phase and type
    * 
    * @return a list from DeliverableInfo null if no exist records
