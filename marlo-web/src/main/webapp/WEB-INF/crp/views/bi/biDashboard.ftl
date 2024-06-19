@@ -55,6 +55,12 @@
         
       </div>
 
+      [#--  Reports header  --]
+         <div class="headTitle-row-container">
+          <h3 class="headTitle text-left col-md-8"></h3>
+         </div>
+      [#--  Reports header  --]
+
       [#--  Reports Content --]
       <div class="summariesContent col-md-12" style="min-height:550px;">
         <div class="">
