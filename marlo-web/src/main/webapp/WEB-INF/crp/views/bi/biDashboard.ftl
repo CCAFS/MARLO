@@ -55,16 +55,6 @@
         
       </div>
 
-      <div>
-        [#list biReports as report]
-          <div id="BIreport-${report.id}">
-            <p><strong> ${report.reportName!"null"}</strong></p>
-            <p>${report.reportTitel!"null"}</p>
-            <p> ${report.embedUrl!"null"}</p>
-          </div>
-        [/#list]
-      </div>
-
       [#--  Reports Content --]
       <div class="summariesContent col-md-12" style="min-height:550px;">
         <div class="">
