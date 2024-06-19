@@ -73,9 +73,9 @@
 
         [#-- BI Widget variable --]
     [#if config.production]
-      [#assign biWidgetMain = "https://bitest.ciat.cgiar.org/widget/main.js"]
+      [#assign biWidgetMain = "https://bi.prms.cgiar.org/widget/main.js"] 
     [#else]
-      [#assign biWidgetMain = "https://bi.prms.cgiar.org/widget/main.js"]
+      [#assign biWidgetMain = "https://bitest.ciat.cgiar.org/widget/main.js"]
     [/#if]
 
     <script src="${biWidgetMain}" charset="utf-8"></script>
