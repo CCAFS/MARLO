@@ -53,17 +53,6 @@
         
           </div>
         
-          [#--  Reports header  --]
-         <div class="headTitle-row-container">
-  
-          <h3 class="headTitle text-left col-md-8">
-          </h3>
-          <span class="setFullScreen col-md-1 btn button-bg">
-              <p class="menu-item-title">Fullscreen</p>
-              <span class="glyphicon reportsButtonsIconFS glyphicon-fullscreen" style="color: #1da5ce"></span>
-          </span>
-         </div>
-          [#--  Reports header  --]
       </div>
 
       <div>
