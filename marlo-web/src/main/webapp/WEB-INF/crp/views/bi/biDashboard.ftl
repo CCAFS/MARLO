@@ -1,8 +1,7 @@
 [#ftl]
 [#assign title = "MARLO BI" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["powerbi-client"] /]
-[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20230824", "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js" ] /]
+[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20230824" ] /]
 [#assign customCSS = [
   "${baseUrl}/crp/css/bi/biDashboard.css?20230627a"
   ] 
@@ -77,13 +76,9 @@
       [/#if]
     </section>
 
-        [#-- BI Widget variable --]
-    [#if config.production]
-      [#assign biWidgetMain = "https://bi.prms.cgiar.org/widget/main.js"] 
-    [#else]
-      [#assign biWidgetMain = "https://bitest.ciat.cgiar.org/widget/main.js"]
-    [/#if]
+    [#assign BiAppURL = biParameters?filter(param -> param.parameterName = "bi_widget_url" )]
 
-    <script src="${biWidgetMain}" charset="utf-8"></script>
+
+    <script src="${BiAppURL[0].parameterValue}" charset="utf-8"></script>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
