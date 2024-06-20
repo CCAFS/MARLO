@@ -248,15 +248,9 @@ $(document).ready(function () {
         // WARNING MESSAGE
         var message = ""
         var messageType = "warning";
-        if(isProgress == 'true'){
-          message += "The Information was correctly saved. <br> ";
-          message += "Some of the fields could be missing or incorrect. <br>";
-          message += "Don't worry! Some information is not necessary at this phase, but it will be required in the next phase.";
-          messageType = "info";
-        }else{
-          message += "The Information was correctly saved. <br> ";
-          message += "Please keep in mind that the fields highlighted below are missing or incorrect.";
-        }
+
+        message += "The Information was correctly saved. <br> ";
+        message += "Please keep in mind that the fields highlighted below are missing or incorrect.";
         
         notifyErrorMessage(messageType, message);
       }
@@ -292,14 +286,6 @@ $(document).ready(function () {
         $(containerAlert).addClass("alertColorBackgroundWarning");
         $(containerLine).addClass("alertColorWarning");
         $(containerIcon).addClass("alertColorWarning");
-        $(messages).removeClass("displayNone");
-        break;
-      case "info":
-        $(element).find('.alertText').html(message);
-        $(iconAlert).attr("src", baseURL + '/global/images/icon-info.png');
-        $(containerAlert).addClass("alertColorBackgroundInfo");
-        $(containerLine).addClass("alertColorInfo");
-        $(containerIcon).addClass("alertColorInfo");
         $(messages).removeClass("displayNone");
         break;
       case "error":
