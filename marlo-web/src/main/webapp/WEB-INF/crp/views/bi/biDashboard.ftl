@@ -43,7 +43,7 @@
               <div class="menuList col-md-12" style="padding:0">
               [#list (biReports)?sort_by("reportOrder")![] as report]
                   <div id="BIreport-${report.id}" report-title="${report.reportTitle}"  has-filters="${report.hasFilters?c}" has-role-authorization="${report.hasRoleAuthorization?c}" class="button-bg reportSection [#if report?index == 0]current[/#if]">
-                  <a index="${report?index+1}" class="BIreport-${report.id}" id="BIreport-${report.embedUrl}" href="">[@s.text name=report.reportName /]</a>
+                  <a index="${report?index+1}" class="BIreport-${report.id}" id="BIreport-${report.embedReport}" href="">[@s.text name=report.reportName /]</a>
                   </div>
               [/#list]
               </div>
@@ -67,8 +67,7 @@
               <div id="BIreport-${report.id}-contentOptions" class="" style="display:[#if report?index !=0]none[/#if];">
                 <div id="dashboardContainer-${report.id}" class="dashboardContainer-${report.id}"></div>
                 <input type="hidden" id="reportName-${report.id}" name="reportName" value=${report.reportName} />
-                <input type="hidden" id="embeUrl-${report.id}" name="embedUrl" value=${report.embedUrl} /> 
-                <input type="hidden" id="reportID-${report.id}" name="reportId" value=${report.reportId} />
+                <input type="hidden" id="embeUrl-${report.id}" name="embedReport" value=${report.embedReport} /> 
               </div>
           [/#list] 
         </div>
