@@ -6,12 +6,15 @@ function init() {
 
 function addEvents() {
   var idReport = $('.reportSection').children().first().attr('class');
-  executePetition(idReport);
+  var urlReport= $('.reportSection').children().first().attr('id');
+
+  executePetition(idReport,urlReport);
   $('.reportSection').on('click', function () {
     var idReport = $(this).children().first().attr('class');
     var inputsContainer = $('#' + idReport + '-contentOptions');
+    var urlReport= $(this).children().first().attr('id');
     if (!($(inputsContainer).hasClass('loaded'))) {
-      executePetition(idReport);
+      executePetition(idReport,urlReport);
     }
   });
   $('.reportSection a, .reportSection span').on('click', selectBIReport);
@@ -57,30 +60,20 @@ function fullScreenDashboard() {
 }
 
 //Request to BireportsTokenAction
-function executePetition(idReport) {
-  var $inputsContainer = $('#' + idReport + '-contentOptions');
-  var data = {
-    id: idReport.replace("BIreport-", "")
-  }
+function executePetition(idReport, urlReport) {
+  var url = urlReport.replace("BIreport-", "");
+  var inputsContainer = idReport + '-contentOptions';
 
-  //Ajax request to back for PowerBi
-  $.ajax({
-    'url': baseURL + '/biReportsTokenAction.do',
-    'type': "GET",
-    'data': data,
-    'dataType': "json",
-    success: function (metadata) {
-      console.log(metadata)
-      var embedUrl = $inputsContainer.find('input[name=embedUrl]').val();
-      var reportId = $inputsContainer.find('input[name=reportId]').val();
-      // console.log(metadata.token, embedUrl, reportId, idReport);
-      setReportTitle();
-      embedPBI(metadata.token, embedUrl, reportId, idReport);
-    },
-    error: function (e) {
-      console.log("error");
-    }
-  });
+  culterId =  Number($('input[name=projectID]').attr("value"));
+
+  pbiwidget.init(inputsContainer, {
+     reportName: url,
+     cluster_id: culterId
+   });
+
+   setReportTitle();
+   $(`#${inputsContainer}`).addClass('loaded');
+  
 }
 
 // Set the report title and description
