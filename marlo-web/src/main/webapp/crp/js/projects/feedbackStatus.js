@@ -59,7 +59,7 @@ function fullScreenDashboard() {
     });
 }
 
-//Request to BireportsTokenAction
+//Request the petition to the embbed report
 function executePetition(idReport, urlReport) {
   var url = urlReport.replace("BIreport-", "");
   var inputsContainer = idReport + '-contentOptions';
