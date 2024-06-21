@@ -104,7 +104,6 @@ public class DashboardAction extends BaseAction {
         sectionStatusManager.getCompleteDeliverableListByPhase(this.getActualPhase().getId());
       HashMap<Integer, Integer> tmpDeliverableList = new HashMap<Integer, Integer>();
       for (Integer integer : deliverableListbyPhase) {
-        LOG.info("DashboardAction linea 101 " + integer);
         tmpDeliverableList.put(integer, integer);
 
       }
@@ -263,15 +262,12 @@ public class DashboardAction extends BaseAction {
           .collect(Collectors.toList());
     }
 
-    LOG.info("dashboarAction linea 258 " + myProjects.size());
-
 
     myDeliverables = myProjects.stream().filter(p -> p != null && p.getId() != null)
       .flatMap(
         p -> deliverableManager.getDeliverablesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
       .collect(Collectors.toList());
 
-    LOG.info("dashboarAction linea 266 myDeliverables " + myDeliverables.size());
 
     myStudies = myProjects.stream().filter(p -> p != null && p.getId() != null)
       .flatMap(p -> projectExpectedStudyManager

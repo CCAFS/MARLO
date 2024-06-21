@@ -7123,36 +7123,29 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return Boolean object with the status of the deliverable
    */
   public Boolean isDeliverableComplete(Long deliverableID, Long phaseID) {
-    LOG.info(" linea 7117 deliverable " + deliverableID + " phase " + phaseID);
     if (deliverableID != null && phaseID != null) {
       Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
       Phase phase = this.phaseManager.getPhaseById(phaseID);
 
       if (deliverable.getDeliverableInfo(phase) != null) {
-        LOG.info(" linea 7123 deliverable " + deliverableID + " phase " + phaseID);
         DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
 
         if (deliverableInfo.isRequiredToComplete() || deliverableInfo.isStatusCompleteInNextPhases()) {
           SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
             phase.getDescription(), phase.getYear(), phase.getUpkeep(), "deliverableList");
           if (sectionStatus == null) {
-            LOG.info(" linea 7130 false " + deliverableID);
             return false;
           }
 
           if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
-            LOG.info(" linea 7135 false " + deliverableID);
             return false;
           }
         } else {
-          LOG.info(" linea 7139 true " + deliverableID);
           return true;
         }
       }
-      LOG.info(" linea 7143 true " + deliverableID);
       return true;
     } else {
-      LOG.info(" linea 7130 false " + deliverableID);
       return false;
     }
 
@@ -7170,7 +7163,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     // [start] 19/06/2024 cgamboa This fragment contributes to reducing the number of queries executed, executing two of
     // the conditions for all the deliverables, in a single moment (prepare from the dashboard)
-    LOG.info(" linea 7173 deliverable " + deliverableID + " phase " + phaseID);
     try {
       int result = 0;
       int deliveableInteger = (int) (long) deliverableID;
@@ -7187,36 +7179,29 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     // aqui se debe aplicar la nueva funcion getCompleteDeliverableListByPhase
 
-    LOG.info(" linea 7117 deliverable " + deliverableID + " phase " + phaseID);
     if (deliverableID != null && phaseID != null) {
       Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
       Phase phase = this.phaseManager.getPhaseById(phaseID);
 
       if (deliverable.getDeliverableInfo(phase) != null) {
-        LOG.info(" linea 7123 deliverable " + deliverableID + " phase " + phaseID);
         DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
 
         if (deliverableInfo.isRequiredToComplete() || deliverableInfo.isStatusCompleteInNextPhases()) {
           SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
             phase.getDescription(), phase.getYear(), phase.getUpkeep(), "deliverableList");
           if (sectionStatus == null) {
-            LOG.info(" linea 7130 false " + deliverableID);
             return false;
           }
 
           if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
-            LOG.info(" linea 7135 false " + deliverableID);
             return false;
           }
         } else {
-          LOG.info(" linea 7139 true " + deliverableID);
           return true;
         }
       }
-      LOG.info(" linea 7143 true " + deliverableID);
       return true;
     } else {
-      LOG.info(" linea 7130 false " + deliverableID);
       return false;
     }
 
