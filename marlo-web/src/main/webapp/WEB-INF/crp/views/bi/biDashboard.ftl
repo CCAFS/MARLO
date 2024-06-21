@@ -1,8 +1,7 @@
 [#ftl]
 [#assign title = "MARLO BI" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["powerbi-client"] /]
-[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20230824", "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js" ] /]
+[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20230824" ] /]
 [#assign customCSS = [
   "${baseUrl}/crp/css/bi/biDashboard.css?20230627a"
   ] 
@@ -44,7 +43,7 @@
               <div class="menuList col-md-12" style="padding:0">
               [#list (biReports)?sort_by("reportOrder")![] as report]
                   <div id="BIreport-${report.id}" report-title="${report.reportTitle}"  has-filters="${report.hasFilters?c}" has-role-authorization="${report.hasRoleAuthorization?c}" class="button-bg reportSection [#if report?index == 0]current[/#if]">
-                  <a index="${report?index+1}" class="BIreport-${report.id}" id="BIreport-${report.embedUrl}" href="">[@s.text name=report.reportName /]</a>
+                  <a index="${report?index+1}" class="BIreport-${report.id}" id="BIreport-${report.embedReport}" href="">[@s.text name=report.reportName /]</a>
                   </div>
               [/#list]
               </div>
@@ -55,6 +54,12 @@
         
       </div>
 
+      [#--  Reports header  --]
+         <div class="headTitle-row-container">
+          <h3 class="headTitle text-left col-md-8"></h3>
+         </div>
+      [#--  Reports header  --]
+
       [#--  Reports Content --]
       <div class="summariesContent col-md-12" style="min-height:550px;">
         <div class="">
@@ -62,8 +67,7 @@
               <div id="BIreport-${report.id}-contentOptions" class="" style="display:[#if report?index !=0]none[/#if];">
                 <div id="dashboardContainer-${report.id}" class="dashboardContainer-${report.id}"></div>
                 <input type="hidden" id="reportName-${report.id}" name="reportName" value=${report.reportName} />
-                <input type="hidden" id="embeUrl-${report.id}" name="embedUrl" value=${report.embedUrl} /> 
-                <input type="hidden" id="reportID-${report.id}" name="reportId" value=${report.reportId} />
+                <input type="hidden" id="embeUrl-${report.id}" name="embedReport" value=${report.embedReport} /> 
               </div>
           [/#list] 
         </div>
@@ -71,13 +75,9 @@
       [/#if]
     </section>
 
-        [#-- BI Widget variable --]
-    [#if config.production]
-      [#assign biWidgetMain = "https://bi.prms.cgiar.org/widget/main.js"] 
-    [#else]
-      [#assign biWidgetMain = "https://bitest.ciat.cgiar.org/widget/main.js"]
-    [/#if]
+    [#assign BiAppURL = biParameters?filter(param -> param.parameterName = "bi_widget_url" )]
 
-    <script src="${biWidgetMain}" charset="utf-8"></script>
+
+    <script src="${BiAppURL[0].parameterValue}" charset="utf-8"></script>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]

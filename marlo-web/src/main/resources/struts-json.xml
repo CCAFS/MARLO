@@ -1207,14 +1207,6 @@
       </result>
     </action>
     
-    <action name="biReportsTokenAction"
-      class="org.cgiar.ccafs.marlo.action.json.bi.BiReportsTokenAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
     <action name="tipGenerateUrlAction"
       class="org.cgiar.ccafs.marlo.action.json.tip.TipDinamicUrlGenerationAction">
       <result type="json">
