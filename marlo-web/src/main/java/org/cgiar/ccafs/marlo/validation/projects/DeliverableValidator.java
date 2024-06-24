@@ -21,12 +21,13 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmPriorityActionManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmSubActionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
-import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.SoilIndicatorManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -82,7 +83,8 @@ public class DeliverableValidator extends BaseValidator {
   private SoilIndicatorManager soilIndicatorManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private ActivityManager activityManager;
-  private SectionStatusManager sectionStatusManager;
+  private DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
+  private DeliverableShfrmSubActionManager deliverableShfrmSubActionManager;
 
   Boolean doesNotHaveDOI;
 
@@ -92,7 +94,8 @@ public class DeliverableValidator extends BaseValidator {
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager, RepIndTypeActivityManager repIndTypeActivityManager,
     DeliverableUserManager deliverableUserManager, SoilIndicatorManager soilIndicatorManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, ActivityManager activityManager,
-    SectionStatusManager sectionStatusManager) {
+    DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager,
+    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager) {
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
@@ -102,7 +105,8 @@ public class DeliverableValidator extends BaseValidator {
     this.soilIndicatorManager = soilIndicatorManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.activityManager = activityManager;
-    this.sectionStatusManager = sectionStatusManager;
+    this.deliverableShfrmPriorityActionManager = deliverableShfrmPriorityActionManager;
+    this.deliverableShfrmSubActionManager = deliverableShfrmSubActionManager;
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID, BaseAction action) {
@@ -623,6 +627,26 @@ public class DeliverableValidator extends BaseValidator {
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
+
+          // [start] 2024/06/24 cgamboa Add functionality to give a search for the actions and subaction, when it is
+          // detected to be null. This is done because the general validator does not load it
+          try {
+            if (action.isProgressActive() && deliverable.getShfrmPriorityActions() == null) {
+              deliverable.setShfrmPriorityActions(deliverableShfrmPriorityActionManager
+                .findByDeliverableAndPhase(deliverable.getId(), action.getActualPhase().getId()));
+
+              for (DeliverableShfrmPriorityAction priorityAction : deliverable.getShfrmPriorityActions()) {
+                priorityAction.setShfrmSubActions(deliverableShfrmSubActionManager
+                  .findByPriorityActionAndPhase(priorityAction.getId(), action.getActualPhase().getId()));
+              }
+
+
+            }
+          } catch (Exception e) {
+            // TODO: handle exception
+          }
+          // [end]
+
 
           // Validate priority actions
           if (deliverable.getShfrmPriorityActions() == null
