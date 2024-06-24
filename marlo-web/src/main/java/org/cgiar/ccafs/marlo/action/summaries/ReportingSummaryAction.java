@@ -1153,9 +1153,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info(
-      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+    try {
+      LOG.info(
+        "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+          + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+    } catch (Exception e) {
+      LOG.error("Error generating LOG info " + e.getMessage());
+    }
 
     try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
       String masterQueryName = "Main_Query";
