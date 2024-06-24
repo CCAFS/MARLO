@@ -581,6 +581,7 @@
 [#macro findableOptions ]
   [#local isSynced = (deliverable.dissemination.synced)!false ]
   [#local customName = "deliverable.dissemination" /]
+  [#local validateIsProgressWithStatus = action.validateIsProgressWithStatus(deliverable.deliverableInfo.status)]
   <div class="disseminationChannelBlock" >
     [#-- Note 
     <div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
