@@ -119,6 +119,8 @@ public class DeliverableValidator extends BaseValidator {
 
     boolean resultProgessValidate = this.validateIsProgressAndNotCompleteStatus(action, deliverable);
 
+    boolean resultProgessValidateOnlyComplete = this.validateIsProgressAndOnlyCompleteStatus(action, deliverable);
+
     action.setInvalidFields(new HashMap<>());
 
     boolean validate = false;
@@ -675,6 +677,31 @@ public class DeliverableValidator extends BaseValidator {
       LOG.error(" unable to getActivitiesByDeliverableAndPhaseQuantity in validate function [DeliverableValidator]");
     }
 
+    // [start] 2024/06/24 cgamboa Functionality is added to validate Chanel dissemination, when the response has the
+    // value yes.
+    if (resultProgessValidateOnlyComplete) {
+      if (action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)) {
+        boolean isPRP = false;
+        // type 63 = Peer-reviewed publication (PRP). doi should only be mandatory for PRPs
+        if (action.getActualPhase() != null && deliverable.getDeliverableInfo(action.getActualPhase()) != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().longValue() == 63L) {
+          isPRP = true;
+        }
+
+        // Deliverable Dissemination
+        if (deliverable.getDissemination() != null) {
+          this.validateDissemination(deliverable.getDissemination(), saving, action, isPRP);
+        } else {
+          action.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+    }
+    /// [end]
+
 
     this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
@@ -1206,6 +1233,28 @@ public class DeliverableValidator extends BaseValidator {
       return result;
     } catch (Exception e) {
       LOG.error(" error in validateIsProgressAndNotStatus function [DeliverableValidator]");
+      return result;
+    }
+  }
+
+  /**
+   * Validate if the current phase is progress, only complete deliverable
+   *
+   * @param action base action
+   * @param deliverable An specific deliverable
+   * @return validation result
+   */
+  public boolean validateIsProgressAndOnlyCompleteStatus(BaseAction action, Deliverable deliverable) {
+    boolean result = false;
+    try {
+
+      if (action.isProgressActive()
+        && deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        result = true;
+      }
+      return result;
+    } catch (Exception e) {
+      LOG.error(" error in validateIsProgressAndOnlyCompleteStatus function [DeliverableValidator]");
       return result;
     }
   }
