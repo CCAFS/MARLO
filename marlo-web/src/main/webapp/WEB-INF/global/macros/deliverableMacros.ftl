@@ -141,9 +141,11 @@
 [/#macro]
 
 [#macro deliverableLicenseMacro ]
+[#local validateIsProgressWithStatus = action.validateIsProgressWithStatus(deliverable.deliverableInfo.status)]
+
 <div class="simpleBox">
   <div class="form-group row yesNoInputDeliverable">
-    <label class="col-md-9 yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]</label>
+    <label class="col-md-9 yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req required=(validateIsProgressWithStatus) /]</label>
     <div class="col-md-3">[@customForm.yesNoInputDeliverable name="deliverable.deliverableInfo.adoptedLicense"  editable=editable inverse=false  cssClass="type-license text-center" /] </div>  
   </div>  
 </div>
@@ -152,11 +154,13 @@
 
 [#macro isOpenaccessMacro ]
   [#local customName = "deliverable.dissemination"]
+  [#local validateIsProgressWithStatus = action.validateIsProgressWithStatus(deliverable.deliverableInfo.status)]
+
   <div class="simpleBox form-group">
     <input type="hidden"  name="${customName}.id" value="${(deliverable.dissemination.id)!}" />
     <div class="row yesNoInputDeliverable">
     <span class="col-md-9">
-      <label class=" yesNoLabel" for="">Is this deliverable Open Access? [@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]</label>
+      <label class=" yesNoLabel" for="">Is this deliverable Open Access? [@customForm.req required=(validateIsProgressWithStatus) /]</label>
       <p><small>Please make sure the information from the repository you chose and the one on Web of Science match. </small></p>
       <div class="WOS_tag" style="display: none;">
         <p>According to Web of Science you should select: <span id="WOS_tag_IOA_yes" style="color: rgb(9, 211, 70); font-weight: 700;">Yes</span><span id="WOS_tag_IOA_no" style="color: rgb(207, 42, 42); font-weight: 700;">No</span></p>
@@ -199,6 +203,7 @@
 [#local customName = "deliverable.deliverableParticipant" /]
 [#local capacityEventType = ((deliverable.deliverableInfo?has_content) && (deliverable.deliverableInfo.deliverableType?has_content) && (deliverable.deliverableInfo.deliverableType.id?has_content) && deliverable.deliverableInfo.deliverableType.id == 145)!false]
 
+[#local validateIsProgressWithStatus = action.validateIsProgressWithStatus(deliverable.deliverableInfo.status)]
 [#local hasParticipants = (deliverable.deliverableParticipant.hasParticipants?string)!""/]
   
 [#if capacityEventType]
@@ -208,7 +213,7 @@
 <div class="simpleBox">
   <div class="form-group row yesNoInputDeliverable yesNoTrainees">
   <span class="col-md-9">
-    <label class="yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]</label>
+    <label class="yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=(validateIsProgressWithStatus) /]</label>
     [#if (action.isAFPhase(actualPhase.id))!false]
       <p><small>[@s.text name="project.deliverable.dissemination.involveParticipantsSub.AF" /] </small></p>
     [#else]
@@ -542,10 +547,12 @@
 
 [#macro alreadyDisseminatedMacro ]
   [#local name = "deliverable.dissemination"  /]
+  [#local validateIsProgressWithStatus = action.validateIsProgressWithStatus(deliverable.deliverableInfo.status)]
+
   <div class="simpleBox form-group">
     <div class=" row yesNoInputDeliverable">
       <span class="col-md-9">
-        <label class="yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.alreadyDisseminatedQuestion" /] [@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]</label>
+        <label class="yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.alreadyDisseminatedQuestion" /] [@customForm.req required=(validateIsProgressWithStatus) /]</label>
         <p><small>[@s.text name="project.deliverable.dissemination.alreadyDisseminatedSubQ" /] </small></p>
       </span>
       <div class="col-md-3">
@@ -581,6 +588,7 @@
 [#macro findableOptions ]
   [#local isSynced = (deliverable.dissemination.synced)!false ]
   [#local customName = "deliverable.dissemination" /]
+  [#local validateIsProgressWithStatus = action.validateIsProgressWithStatus(deliverable.deliverableInfo.status)]
   <div class="disseminationChannelBlock" >
     [#-- Note 
     <div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>

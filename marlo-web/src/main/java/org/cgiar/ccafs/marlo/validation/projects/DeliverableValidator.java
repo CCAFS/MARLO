@@ -21,12 +21,13 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmPriorityActionManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmSubActionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
-import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.SoilIndicatorManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -82,7 +83,8 @@ public class DeliverableValidator extends BaseValidator {
   private SoilIndicatorManager soilIndicatorManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private ActivityManager activityManager;
-  private SectionStatusManager sectionStatusManager;
+  private DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
+  private DeliverableShfrmSubActionManager deliverableShfrmSubActionManager;
 
   Boolean doesNotHaveDOI;
 
@@ -92,7 +94,8 @@ public class DeliverableValidator extends BaseValidator {
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager, RepIndTypeActivityManager repIndTypeActivityManager,
     DeliverableUserManager deliverableUserManager, SoilIndicatorManager soilIndicatorManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, ActivityManager activityManager,
-    SectionStatusManager sectionStatusManager) {
+    DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager,
+    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager) {
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
@@ -102,7 +105,8 @@ public class DeliverableValidator extends BaseValidator {
     this.soilIndicatorManager = soilIndicatorManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.activityManager = activityManager;
-    this.sectionStatusManager = sectionStatusManager;
+    this.deliverableShfrmPriorityActionManager = deliverableShfrmPriorityActionManager;
+    this.deliverableShfrmSubActionManager = deliverableShfrmSubActionManager;
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID, BaseAction action) {
@@ -118,6 +122,8 @@ public class DeliverableValidator extends BaseValidator {
   public void validate(BaseAction action, Deliverable deliverable, boolean saving) {
 
     boolean resultProgessValidate = this.validateIsProgressAndNotCompleteStatus(action, deliverable);
+
+    boolean resultProgessValidateOnlyComplete = this.validateIsProgressAndOnlyCompleteStatus(action, deliverable);
 
     action.setInvalidFields(new HashMap<>());
 
@@ -622,6 +628,26 @@ public class DeliverableValidator extends BaseValidator {
             }
           }
 
+          // [start] 2024/06/24 cgamboa Add functionality to give a search for the actions and subaction, when it is
+          // detected to be null. This is done because the general validator does not load it
+          try {
+            if (action.isProgressActive() && deliverable.getShfrmPriorityActions() == null) {
+              deliverable.setShfrmPriorityActions(deliverableShfrmPriorityActionManager
+                .findByDeliverableAndPhase(deliverable.getId(), action.getActualPhase().getId()));
+
+              for (DeliverableShfrmPriorityAction priorityAction : deliverable.getShfrmPriorityActions()) {
+                priorityAction.setShfrmSubActions(deliverableShfrmSubActionManager
+                  .findByPriorityActionAndPhase(priorityAction.getId(), action.getActualPhase().getId()));
+              }
+
+
+            }
+          } catch (Exception e) {
+            // TODO: handle exception
+          }
+          // [end]
+
+
           // Validate priority actions
           if (deliverable.getShfrmPriorityActions() == null
             || (deliverable.getShfrmPriorityActions() != null && deliverable.getShfrmPriorityActions().isEmpty())) {
@@ -674,6 +700,31 @@ public class DeliverableValidator extends BaseValidator {
     } catch (Exception e) {
       LOG.error(" unable to getActivitiesByDeliverableAndPhaseQuantity in validate function [DeliverableValidator]");
     }
+
+    // [start] 2024/06/24 cgamboa Functionality is added to validate Chanel dissemination, when the response has the
+    // value yes.
+    if (resultProgessValidateOnlyComplete) {
+      if (action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)) {
+        boolean isPRP = false;
+        // type 63 = Peer-reviewed publication (PRP). doi should only be mandatory for PRPs
+        if (action.getActualPhase() != null && deliverable.getDeliverableInfo(action.getActualPhase()) != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().longValue() == 63L) {
+          isPRP = true;
+        }
+
+        // Deliverable Dissemination
+        if (deliverable.getDissemination() != null) {
+          this.validateDissemination(deliverable.getDissemination(), saving, action, isPRP);
+        } else {
+          action.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+    }
+    /// [end]
 
 
     this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
@@ -1206,6 +1257,28 @@ public class DeliverableValidator extends BaseValidator {
       return result;
     } catch (Exception e) {
       LOG.error(" error in validateIsProgressAndNotStatus function [DeliverableValidator]");
+      return result;
+    }
+  }
+
+  /**
+   * Validate if the current phase is progress, only complete deliverable
+   *
+   * @param action base action
+   * @param deliverable An specific deliverable
+   * @return validation result
+   */
+  public boolean validateIsProgressAndOnlyCompleteStatus(BaseAction action, Deliverable deliverable) {
+    boolean result = false;
+    try {
+
+      if (action.isProgressActive()
+        && deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        result = true;
+      }
+      return result;
+    } catch (Exception e) {
+      LOG.error(" error in validateIsProgressAndOnlyCompleteStatus function [DeliverableValidator]");
       return result;
     }
   }
