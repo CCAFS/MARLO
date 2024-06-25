@@ -69,6 +69,11 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
     return deliverableActivityDAO.getDeliverableActivitiesByDeliverableID(deliverableID);
   }
 
+  @Override
+  public List<DeliverableActivity> getDeliverableActivitiesByDeliverableIDAndPhase(long deliverableID, long phaseId) {
+    return deliverableActivityDAO.getDeliverableActivitiesByDeliverableIDAndPhase(deliverableID, phaseId);
+  }
+
 
   @Override
   public DeliverableActivity getDeliverableActivityById(long deliverableActivityID) {
