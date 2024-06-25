@@ -11,7 +11,7 @@ let timelineElements;
  * default: 1.
  * @type {number}
  */
-let timelineZoom = 1;
+let timelineZoom = 0.5;
 
 setTimeout(() => {
   getIntersectedActivities();
