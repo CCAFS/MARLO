@@ -59,7 +59,7 @@ public interface SrfTargetUnitDAO {
    * 
    * @return srfTargetUnit quantity
    */
-  int findAllQauntity();
+  public int findAllQauntity();
 
   /**
    * This method saves the information of the given srfTargetUnit

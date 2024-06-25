@@ -56,7 +56,7 @@ public interface SrfTargetUnitManager {
    * 
    * @return srfTargetUnit quantity
    */
-  int findAllQauntity();
+  public int findAllQauntity();
 
   /**
    * This method gets a srfTargetUnit object by a given srfTargetUnit identifier.
