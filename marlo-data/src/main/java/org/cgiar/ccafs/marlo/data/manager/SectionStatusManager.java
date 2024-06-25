@@ -51,8 +51,12 @@ public interface SectionStatusManager {
    */
   public List<SectionStatus> findAll();
 
-
-  int findAllQuantity();
+  /**
+   * This method gets the count of SectionStatus, to replace find all
+   * 
+   * @return quantity of SectionStatus
+   */
+  public int findAllQuantity();
 
   public List<SectionStatus> getSectionsStatusByReportSynthesis(long powbSynthesisID, String cycle, int year,
     Boolean upkeep, String sectionName);

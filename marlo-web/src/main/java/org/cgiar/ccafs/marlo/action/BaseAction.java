@@ -6373,6 +6373,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Validate section status based on program id
+   * In this version the use of findall is avoided
    * 
    * @param crpProgramID crpProgram id.
    * @return validation boolean result.
