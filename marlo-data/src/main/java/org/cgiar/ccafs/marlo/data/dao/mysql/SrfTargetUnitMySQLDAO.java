@@ -20,9 +20,11 @@ import org.cgiar.ccafs.marlo.data.dao.SrfTargetUnitDAO;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 
 import java.util.List;
+import java.util.Map;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -65,6 +67,26 @@ public class SrfTargetUnitMySQLDAO extends AbstractMarloDAO<SrfTargetUnit, Long>
       return list;
     }
     return null;
+
+  }
+
+  @Override
+  public int findAllQauntity() {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT count(*) as count from srf_target_units stu where is_active =1  ");
+
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    int targetUnit = 0;
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        targetUnit = Integer.parseInt(map.get("count").toString());
+      }
+    }
+
+    return targetUnit;
 
   }
 
