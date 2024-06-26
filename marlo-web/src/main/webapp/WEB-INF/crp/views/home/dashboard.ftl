@@ -176,9 +176,7 @@
               [/#if]
             </div>
 
-            <div role="tabpanel" class="tab-pane fade" id="myDeliverables">
-              [@indicatorLists.deliverablesHomeList deliverables=myDeliverables canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" /]
-            </div>
+   
             
             <div role="tabpanel" class="tab-pane fade" id="myStudies">
               [@indicatorLists.studiesHomeList studies=myStudies canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/study" /]
