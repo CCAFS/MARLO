@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -69,6 +70,27 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     return new ArrayList<SectionStatus>();
 
   }
+
+  @Override
+  public int findAllQuantity() {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT count(*) as count from section_statuses as ss  ");
+
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    int sesionQuantity = 0;
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        sesionQuantity = Integer.parseInt(map.get("count").toString());
+      }
+    }
+
+    return sesionQuantity;
+
+  }
+
 
   @Override
   public List<SectionStatus> getSectionsStatusByReportSynthesis(long synthesisID, String cycle, int year,

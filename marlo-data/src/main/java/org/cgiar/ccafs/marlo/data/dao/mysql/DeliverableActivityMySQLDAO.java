@@ -94,6 +94,17 @@ public class DeliverableActivityMySQLDAO extends AbstractMarloDAO<DeliverableAct
   }
 
   @Override
+  public List<DeliverableActivity> getDeliverableActivitiesByDeliverableIDAndPhase(long deliverableID, long phaseId) {
+    String query = "from " + DeliverableActivity.class.getName() + " where is_active=1 and deliverable_id = "
+      + deliverableID + " and id_phase =" + phaseId;
+    List<DeliverableActivity> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
+  }
+
+  @Override
   public DeliverableActivity save(DeliverableActivity deliverableActivity) {
     if (deliverableActivity.getId() == null) {
       super.saveEntity(deliverableActivity);
