@@ -438,6 +438,7 @@ public class DeliverableValidator extends BaseValidator {
                 InvalidFieldsMessages.EMPTYFIELD);
             }
 
+
             // DOI Validator
             /*
              * if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().intValue() ==
@@ -714,6 +715,8 @@ public class DeliverableValidator extends BaseValidator {
           isPRP = true;
         }
 
+        // [start]2024/06/26 cgamboa changes to validate metadata
+
         // Deliverable Dissemination
         if (deliverable.getDissemination() != null) {
           this.validateDissemination(deliverable.getDissemination(), saving, action, isPRP);
@@ -722,8 +725,50 @@ public class DeliverableValidator extends BaseValidator {
           action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
             InvalidFieldsMessages.EMPTYFIELD);
         }
+
+
+        // Deliverable Meta-data Elements
+        if (deliverable.getMetadataElements() != null) {
+          this.validateMetadata(deliverable.getMetadataElements(), action, isPRP);
+        } else {
+          action.addMessage(action.getText("project.deliverable.v.metadata"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+
+        // Deliverable Publication Meta-data
+        // Validate Publication Meta-data
+        this.validatePublicationMetadata(deliverable.getPublication(), deliverable.getDeliverableInfo(), action);
+
+        // Deliverable Licenses
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense() != null) {
+          this.validateLicense(deliverable, action);
+        } else {
+          action.addMessage(action.getText("project.deliverable.v.ALicense"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.adoptedLicense",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        // [end]2024/06/26 cgamboa changes to validate metadata
+
+
       }
+
+      // [start]2024/06/26 cgamboa changes to validate metadata
+
+      if (!action.isPOWB()) {
+        if (deliverable.getDeliverableParticipant() != null && deliverable.getDeliverableParticipant() != null) {
+          this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action, resultProgessValidate);
+        } else {
+          action.addMessage("hasParticipants");
+          action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+      // [end]2024/06/26 cgamboa changes to validate metadata
+
     }
+
     /// [end]
 
 
@@ -1234,6 +1279,15 @@ public class DeliverableValidator extends BaseValidator {
       action.addMessage(action.getText("project.deliverable.dissemination.v.alreadyDisseminated"));
       action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
         InvalidFieldsMessages.EMPTYFIELD);
+
+      // [start]2024/06/24 cgamboa changes to validate openacces
+      if (dissemination.getIsOpenAccess() == null) {
+
+        action.addMessage(action.getText("project.deliverable.dissemination.v.isOpenAccess"));
+        action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
+      }
+      // [end]2024/06/24 cgamboa changes to validate openacces
+
 
     }
   }
