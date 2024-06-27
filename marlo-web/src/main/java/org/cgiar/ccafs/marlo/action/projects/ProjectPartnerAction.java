@@ -58,6 +58,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDTO;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -465,6 +466,7 @@ public class ProjectPartnerAction extends BaseAction {
     List<Deliverable> deliverablesLeads = new ArrayList<>();
     if (projectPartnerID != null && projectPartnerID != 0) {
       ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
+
       if (projectPartner != null) {
         /// cgamboa 17/05/2024 getDeliverablesLeadByInstitution was changed by
         /// getDeliverablesLeadByInstitutionAndProject
@@ -472,7 +474,6 @@ public class ProjectPartnerAction extends BaseAction {
           // .getDeliverablesLeadByInstitution(projectPartner.getInstitution().getId(), this.getActualPhase().getId());
           .getDeliverablesLeadByInstitutionAndProject(projectPartner.getInstitution().getId(),
             this.getActualPhase().getId(), projectID);
-
         for (Deliverable deliverable : deliverables) {
           if (deliverable.getProject() != null && deliverable.getProject().getId().equals(projectID)) {
             deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
@@ -504,8 +505,29 @@ public class ProjectPartnerAction extends BaseAction {
     return deliverablesLeads;
   }
 
+  /**
+   * get deliverables list by user
+   * 
+   * @author IBD
+   * @param userId user id
+   * @return deliverables (DTO) list
+   */
+  public List<DeliverableDTO> getDeliverablesLedByUser(long userID) {
+    List<DeliverableDTO> deliverablesLeadsTmp = new ArrayList<>();
+    try {
 
-  public List<Deliverable> getDeliverablesLedByUser(long userID) {
+      deliverablesLeadsTmp = deliverableManager.getDeliverablesLeadByUserAndProjectWithSimpleConditions(userID,
+        this.getActualPhase().getId(), projectID);
+
+    } catch (Exception e) {
+      LOG.error(" unable to get deliverables - getDeliverablesLedByUser function ");
+    }
+    return deliverablesLeadsTmp;
+
+  }
+
+
+  public List<Deliverable> getDeliverablesLedByUserOld(long userID) {
     List<Deliverable> deliverablesLeads = new ArrayList<>();
     List<Deliverable> deliverables =
       // cgamboa 16/05/2024 getDeliverablesLeadByUser was changed by getDeliverablesLeadByUser
@@ -1808,7 +1830,6 @@ public class ProjectPartnerAction extends BaseAction {
         } else {
           this.addActionMessage("message:" + this.getText("saving.saved"));
         }
-
         return SUCCESS;
       } else {
         this.addActionMessage("");
