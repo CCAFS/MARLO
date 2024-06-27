@@ -11,7 +11,7 @@ let timelineElements;
  * default: 1.
  * @type {number}
  */
-let timelineZoom = 0.5;
+let timelineZoom = 0.25;
 
 setTimeout(() => {
   getIntersectedActivities();
@@ -237,22 +237,22 @@ function getNumberOfWeeksVisible() {
 
   switch(timelineZoom){
     case 0.25:
-      info = "8 week displayed";
+      info = "8 Week(s) displayed";
       break;
     case 0.5:
-      info = "4 week displayed";
+      info = "4 Week(s) displayed";
       break;
     case 1:
-      info = "2 weeks displayed";
+      info = "2 Week(s) displayed";
       break;
     case 2:
-      info = "1 week displayed";
+      info = "1 Week(s) displayed";
       break;
     case 3:
       info = "0.5 week displayed";
       break;
     default:
-      info = "2 weeks displayed";
+      info = "8 Week(s) displayed";
       break;
   }
 
