@@ -414,7 +414,7 @@ span.timelineControl:hover {
 	  position: relative;
 	  overflow-x: scroll;
 	  overflow-y: visible;
-	  height: 32vh;
+	  height: 31.5vh;
 	  width: 95%;
 	  margin: 0 auto;
 	}
@@ -526,7 +526,7 @@ span.timelineControl:hover {
 		}
 		
 		#timelineContainer{
-			height: 26vh;
+			height: 24vh;
 		}
 	}
 	
@@ -705,15 +705,15 @@ span.timelineControl:hover {
   }
 
   #timeline_activities .activityFlexTop--2{
-    top: 6em;
+    top: 5.8em;
   }
 
   #timeline_activities .activityFlexTop--3{
-    top: 10.5em;
+    top: 10.3em;
   }
 
   #timeline_activities .activityUnique{
-    top: 4.5em;
+    top: 4.3em;
   }
 	
 	#timelineAlert{
