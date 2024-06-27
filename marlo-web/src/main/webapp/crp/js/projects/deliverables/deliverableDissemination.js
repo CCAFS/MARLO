@@ -789,8 +789,8 @@ function updateReadOnly() {
     if ($('.deliverableDisseminationUrl ').prop('readonly')) {
       getWOSInfo();
     }
-    $('select[name="deliverable.dissemination.disseminationChannel"]').prop("disabled",true);
-    $('select').select2();
+/*     $('select[name="deliverable.dissemination.disseminationChannel"]').prop("disabled",true);
+    $('select').select2(); */
   //if not
   } else {
 
@@ -828,8 +828,8 @@ function updateReadOnly() {
         hideOrShowCheckBoxIsOtherUrl(true);
       }
     }
-    $('select[name="deliverable.dissemination.disseminationChannel"]').prop("disabled",false);
-    $('select').select2();
+/*     $('select[name="deliverable.dissemination.disseminationChannel"]').prop("disabled",false);
+    $('select').select2(); */
 
   }
 
