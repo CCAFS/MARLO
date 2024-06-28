@@ -118,6 +118,8 @@ public class ProjectManagerImpl implements ProjectManager {
 
   @Override
   public List<Project> getUserProjects(long userId, String crp) {
+    System.out.println(" ProjectManagerImpl linea 121 " + userId);
+    System.out.println(" ProjectManagerImpl linea 122 " + crp);
     List<Project> projects = new ArrayList<>();
 
     List<Map<String, Object>> view = projectDAO.getUserProjects(userId, crp);
@@ -150,6 +152,10 @@ public class ProjectManagerImpl implements ProjectManager {
             .filter(r -> r != null && r.getCrp() != null && globalUnit != null
               && r.getCrp().getId().equals(globalUnit.getId()) && r.getAcronym().equals("FPL"))
             .collect(Collectors.toList()).get(0);
+
+          System.out.println(" ProjectManagerImpl linea 154 globalUnit.getId()" + globalUnit.getId());
+          System.out.println(" ProjectManagerImpl linea 154 " + roleFPM);
+          System.out.println(" ProjectManagerImpl linea 155 " + roleFPL);
 
           if (roles.contains(roleFPM) || roles.contains(roleFPL)) {
             projectsTemp =

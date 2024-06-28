@@ -7207,6 +7207,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  // linea borrar
+  public Boolean isDeliverableCompleteDashboardTest(Long deliverableID, Long phaseID) {
+    return false;
+  }
+
   public Boolean isDeliverableNew(Long deliverableID) {
     if (deliverableID != null) {
       Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
@@ -7249,6 +7254,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } catch (Exception e) {
       return false;
     }
+
+  }
+
+  // liena borar
+  public Boolean isDeliverableNewDashboardTest(Long deliverableID) {
+    return false;
 
   }
 

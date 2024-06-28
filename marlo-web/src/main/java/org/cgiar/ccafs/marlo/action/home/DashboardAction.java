@@ -283,6 +283,9 @@ public class DashboardAction extends BaseAction {
     this.getCompleteDeliverableListByPhaseFunction();
 
 
+    LOG.info(" DashboardAction linea 286");
+
+
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
