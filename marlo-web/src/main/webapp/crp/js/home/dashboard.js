@@ -13,7 +13,7 @@ let timelineElements;
  * -------------------------------------
  * @type {number}
  */
-let timelineZoom = 8;
+let timelineZoom;
 
 setTimeout(() => {
   getIntersectedActivities();
