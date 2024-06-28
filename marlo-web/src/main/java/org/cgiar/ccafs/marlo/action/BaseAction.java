@@ -674,7 +674,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       response = true;
     }
 
-    if (this.getRolesList() != null && !this.getRolesList().isEmpty()) {
+    // cagmboa 29/05/2024 this.getRolesList() function is called once and it is reused
+    List<Role> roles = new ArrayList<>();
+    roles = this.getRolesList();
+    if (roles != null && !roles.isEmpty()) {
 
       Project project = projectManager.getProjectById(projectID);
       project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
@@ -682,7 +685,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (project.getProjectInfo() != null && project.getProjectInfo().getClusterType() != null
         && project.getProjectInfo().getClusterType().getName() != null) {
         String clusterType = project.getProjectInfo().getClusterType().getName();
-        for (Role role : this.getRolesList()) {
+        for (Role role : roles) {
           if (role != null && role.getAcronym() != null) {
 
             switch (role.getAcronym()) {
@@ -1353,8 +1356,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       response = true;
     }
 
-    if (this.getRolesList() != null && !this.getRolesList().isEmpty()) {
-      for (Role role : this.getRolesList()) {
+    // cagmboa 29/05/2024 this.getRolesList() function is called once and it is reused
+    List<Role> roles = new ArrayList<>();
+    roles = this.getRolesList();
+    if (roles != null && !roles.isEmpty()) {
+      for (Role role : roles) {
         if (role != null && role.getAcronym() != null) {
           // FPL & FPM roles can comment
 
@@ -1455,8 +1461,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       response = true;
     }
 
-    if (this.getRolesList() != null && !this.getRolesList().isEmpty()) {
-      for (Role role : this.getRolesList()) {
+
+    // cagmboa 29/05/2024 this.getRolesList() function is called once and it is reused
+    List<Role> roles = new ArrayList<>();
+    roles = this.getRolesList();
+    if (roles != null && !roles.isEmpty()) {
+      for (Role role : roles) {
         if (role != null && role.getAcronym() != null) {
           // FPL & FPM roles can comment
 
@@ -2950,6 +2960,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<Deliverable> getDeliverableRelationsProject(Long id, String className, Long projectID) {
+
     Class<?> clazz;
     List<Deliverable> deliverables = null;
     try {
@@ -6399,7 +6410,42 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+  /**
+   * Validate section status based on program id
+   * In this version the use of findall is avoided
+   * 
+   * @param crpProgramID crpProgram id.
+   * @return validation boolean result.
+   */
   public boolean isCompleteImpact(long crpProgramID) {
+
+    int sectionsBD = this.sectionStatusManager.findAllQuantity();
+    if (sectionsBD == 0) {
+      return false;
+    }
+
+    CrpProgram cpCrpProgram = this.crpProgramManager.getCrpProgramById(crpProgramID);
+    List<SectionStatus> sections =
+      cpCrpProgram
+        .getSectionStatuses().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
+          && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
+        .collect(Collectors.toList());
+
+    for (SectionStatus sectionStatus : sections) {
+      if (sectionStatus.getMissingFields().length() > 0) {
+        return false;
+      }
+    }
+    if (sections.size() == 0) {
+      return false;
+    }
+    if (sections.size() < 2) {
+      return false;
+    }
+    return true;
+  }
+
+  public boolean isCompleteImpactOld(long crpProgramID) {
 
     List<SectionStatus> sectionsBD = this.sectionStatusManager.findAll();
     if (sectionsBD == null) {
@@ -7632,7 +7678,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isProgressActive() {
-    return this.getActualPhase().getUpkeep();
+    try {
+      return this.getActualPhase().getUpkeep();
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   /**
@@ -8843,6 +8893,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return crpNotification;
   }
 
+  /**
+   * Validate if the current phase is progress, with status
+   *
+   * @param status entity status
+   * @return validation result
+   */
+
+  public boolean validateIsProgressWithStatus(int status) {
+    boolean result = true;
+    try {
+
+      if (this.isProgressActive() && status != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        result = false;
+      }
+      return result;
+    } catch (Exception e) {
+      LOG.error(" error in validateIsProgressAndNotStatus function [BaseAction]");
+      return result;
+    }
+  }
+
+
   public boolean validatePolicy(long policyID) {
     SectionStatus sectionStatus =
       this.sectionStatusManager.getSectionStatusByProjectPolicy(policyID, this.getCurrentCycle(),
@@ -8856,6 +8928,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
+
 
   //
   public boolean validURL(String URL) {

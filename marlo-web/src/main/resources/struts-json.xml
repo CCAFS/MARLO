@@ -34,6 +34,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="getTimelineWeeksParameter"
+			class="org.cgiar.ccafs.marlo.action.json.global.TimelineVisualizationWeeksParameterAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="uploadFundingSource"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadFundingSourceFileAction">
@@ -1201,14 +1209,6 @@
     
     <action name="deliverableUserList"
       class="org.cgiar.ccafs.marlo.action.json.project.DeliverableUserPartnershipListAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
-    <action name="biReportsTokenAction"
-      class="org.cgiar.ccafs.marlo.action.json.bi.BiReportsTokenAction">
       <result type="json">
         <param name="noCache">true</param>
         <param name="excludeNullProperties">true</param>

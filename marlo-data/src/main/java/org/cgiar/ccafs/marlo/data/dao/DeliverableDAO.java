@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDTO;
 import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
@@ -119,6 +120,20 @@ public interface DeliverableDAO {
    * @return deliverables list
    */
   List<Deliverable> getDeliverablesLeadByUserAndProject(long userId, long phaseId, long projectId);
+
+  List<Deliverable> getDeliverablesLeadByUserAndProjectWithConditions(long userId, long phaseId, long projectId);
+
+  /**
+   * get deliverables list by user, phase and project
+   * 
+   * @author IBD
+   * @param phaseId phase id
+   * @param projectId project id
+   * @param userId user id
+   * @return deliverables (DTO) list
+   */
+  List<DeliverableDTO> getDeliverablesLeadByUserAndProjectWithSimpleConditions(long userId, long phaseId,
+    long projectId);
 
   List<String> getDuplicatesDeliverablesByPhase(long phase);
 
