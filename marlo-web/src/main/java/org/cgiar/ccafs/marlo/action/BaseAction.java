@@ -7207,10 +7207,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-  // linea borrar
-  public Boolean isDeliverableCompleteDashboardTest(Long deliverableID, Long phaseID) {
-    return false;
-  }
 
   public Boolean isDeliverableNew(Long deliverableID) {
     if (deliverableID != null) {
@@ -7257,11 +7253,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-  // liena borar
-  public Boolean isDeliverableNewDashboardTest(Long deliverableID) {
-    return false;
-
-  }
 
   public boolean isDraft() {
     return this.draft;

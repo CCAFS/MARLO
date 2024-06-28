@@ -17,11 +17,11 @@
     [#if deliverables?has_content]
       [#list deliverables as deliverable]
         [#-- Is New --]
-        [#assign isDeliverableNew = action.isDeliverableNewDashboardTest(deliverable.deliverableId) /]
+        [#assign isDeliverableNew = action.isDeliverableNewDashboard(deliverable.deliverableId) /]
         [#-- Has draft version (Auto-save) --]
         [#--assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /--]
         [#-- Is Complete --]
-        [#assign isDeliverableComplete = action.isDeliverableCompleteDashboardTest(deliverable.deliverableId, actualPhase.id)!false /]
+        [#assign isDeliverableComplete = action.isDeliverableCompleteDashboard(deliverable.deliverableId, actualPhase.id)!false /]
         [#-- To Report --]
         [#local toReport = reportingActive && !isDeliverableComplete ]
 

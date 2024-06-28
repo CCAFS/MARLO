@@ -413,9 +413,7 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
 
 
   public DeliverableInfo getDeliverableInfo(Phase phase) {
-    System.out.println(" Deliverable linea 416");
     if (this.getDeliverableInfo() != null) {
-      System.out.println(" Deliverable linea 418 " + this.getDeliverableInfo().getDeliverable().getId());
       return this.getDeliverableInfo();
     } else {
       List<DeliverableInfo> infos = this
@@ -424,7 +422,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
         .collect(Collectors.toList());
       if (!infos.isEmpty()) {
         this.setDeliverableInfo(infos.get(0));
-        System.out.println(" Deliverable linea 418 " + this.getDeliverableInfo().getDeliverable().getId());
         return this.getDeliverableInfo();
       }
     }

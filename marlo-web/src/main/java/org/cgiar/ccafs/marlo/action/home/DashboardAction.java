@@ -188,7 +188,6 @@ public class DashboardAction extends BaseAction {
 
 
     } else {
-
       List<Project> allProjects = new ArrayList<>();
       if (phase != null) {
         /*
@@ -281,9 +280,6 @@ public class DashboardAction extends BaseAction {
 
     this.getDeliverableListByPhaseFunction();
     this.getCompleteDeliverableListByPhaseFunction();
-
-
-    LOG.info(" DashboardAction linea 286");
 
 
   }
