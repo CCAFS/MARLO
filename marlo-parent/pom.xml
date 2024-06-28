@@ -13,7 +13,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<ciat-adauth.version>5.5</ciat-adauth.version>
 		<hibernate-core-version>4.3.5.Final</hibernate-core-version>
-		<org.springframework-version>4.3.24.RELEASE</org.springframework-version>
+		<org.springframework-version>5.3.34</org.springframework-version>
 		<junit.version>4.13.1</junit.version>
 		<logback-classic.version>1.1.7</logback-classic.version>
 		<janino.version>2.7.8</janino.version>
@@ -34,7 +34,7 @@
 		<apache-shiro-version>1.7.1</apache-shiro-version>
 		<groovy-version>2.4.6</groovy-version>
 		<jasperreports-fonts-version>6.0.0</jasperreports-fonts-version>
-		<jasper-reports-version>6.2.2</jasper-reports-version>
+		<jasper-reports-version>7.0.0</jasper-reports-version>
 		<com.google.code.gson-version>2.6.2</com.google.code.gson-version>
 		<pusher-http-java>1.0.0</pusher-http-java>
 		<pentaho-report.version>6.1.0.1-196</pentaho-report.version>
