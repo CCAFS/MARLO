@@ -215,18 +215,14 @@ function moveScrollLeft() {
 }
 
 function zoomIn() {
-  console.log("prevtimelineZoom", timelineZoom);
   timelineZoom = timelineZoom < 8 ? timelineZoom * 2 :  timelineZoom;
-  console.log("timelineZoom", timelineZoom);
   
   addActivitiesToTimeline2();
 
 }
 
 function zoomOut() {
-  console.log("prevtimelineZoom", timelineZoom);
   timelineZoom = timelineZoom > 1 ? timelineZoom / 2 :  timelineZoom;
-  console.log("timelineZoom", timelineZoom);
 
   addActivitiesToTimeline2(); 
 }
@@ -765,7 +761,6 @@ function addActivitiesToTimeline2() {
     
     $(".activityCard_toggle").on("click", function(){
       let $x = $(this).parents(':has(.activityCard_details--1)').first().find('.activityCard_details--1');
-      console.log($x);
       if ($x.css("display") === "none") {
         $x.css("display", "flex");
         $(this).find('.activityCard_toggle--deactive').css("display", "none");
@@ -783,7 +778,6 @@ function addActivitiesToTimeline2() {
 }
 
 function updateTable() {
-  // console.log(this.attr("id"))
   let nameId = $(this).attr("id");
   // let activeCurrent = $('a#'+nameId).parent().addClass('active');
   $("li.active").removeClass('active');
@@ -1086,9 +1080,7 @@ function getWeeksDisplay() {
     url: baseURL + finalAjaxURL,
     async: false,
     success: function (data) {
-      console.log("data", data); 
       timelineZoom = data['parameter'].weeks;	
-      console.log("timelineZoom", timelineZoom);
     }
   });
 }
