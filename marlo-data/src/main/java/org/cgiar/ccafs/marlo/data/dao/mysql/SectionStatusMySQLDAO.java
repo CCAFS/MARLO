@@ -106,6 +106,26 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     return deliverables;
   }
 
+  public int findAllQuantity() {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT count(*) as count from section_statuses as ss  ");
+
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    int sesionQuantity = 0;
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        sesionQuantity = Integer.parseInt(map.get("count").toString());
+      }
+    }
+
+    return sesionQuantity;
+
+  }
+
+
   @Override
   public List<SectionStatus> getSectionsStatusByReportSynthesis(long synthesisID, String cycle, int year,
     Boolean upkeep, String sectionName) {

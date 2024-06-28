@@ -51,6 +51,12 @@ public interface SectionStatusManager {
    */
   public List<SectionStatus> findAll();
 
+  /*
+   * This method gets the count of SectionStatus, to replace find all
+   * @return quantity of SectionStatus
+   */
+  public int findAllQuantity();
+
   /**
    * This method allows you to consult the deliverables, associated with the info deliverables that are in on_going
    * state and do not have reports in the session_status table

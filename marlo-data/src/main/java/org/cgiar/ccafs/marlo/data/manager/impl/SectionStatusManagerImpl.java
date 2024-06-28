@@ -61,6 +61,15 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
 
   }
 
+
+  @Override
+  public int findAllQuantity() {
+
+    return sectionStatusDAO.findAllQuantity();
+
+  }
+
+
   @Override
   public List<Integer> getCompleteDeliverableListByPhase(long phase) {
     return sectionStatusDAO.getCompleteDeliverableListByPhase(phase);

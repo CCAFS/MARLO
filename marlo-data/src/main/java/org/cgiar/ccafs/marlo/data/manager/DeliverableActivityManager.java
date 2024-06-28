@@ -64,12 +64,22 @@ public interface DeliverableActivityManager {
   public List<DeliverableActivity> getDeliverableActivitiesByDeliverableID(long deliverableID);
 
   /**
+   * This method gets deliverableActivity list by a given deliverable and phase identifier.
+   * 
+   * @param deliverableId - deliverable identifier
+   * @param phaseId - activity identifier
+   * @return DeliverableActivity list.
+   */
+  List<DeliverableActivity> getDeliverableActivitiesByDeliverableIDAndPhase(long deliverableID, long phaseId);
+
+  /**
    * This method gets a deliverableActivity object by a given deliverableActivity identifier.
    * 
    * @param deliverableActivityID is the deliverableActivity identifier.
    * @return a DeliverableActivity object.
    */
   public DeliverableActivity getDeliverableActivityById(long deliverableActivityID);
+
 
   /**
    * This method saves the information of the given deliverableActivity
