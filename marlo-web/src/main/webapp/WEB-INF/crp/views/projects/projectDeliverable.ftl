@@ -225,6 +225,9 @@
           [#-- Is deliverable new --]
           [#assign isDeliverableNew = action.isDeliverableNew(deliverable.id) /]
 
+          [#-- Is deliverable in progress phase and is not completed --]
+          [#assign validateIsProgressWithStatus = action.validateIsProgressWithStatus(deliverable.deliverableInfo.status)]
+
           <input id="indexTab" name="indexTab" type="hidden" value="${(indexTab)!0}">
           <div class="deliverableTabs">
             [#--  Deliverable Menu  --]
@@ -244,6 +247,7 @@
                 [/#if]
 
             </ul>
+              
             <div class="tab-content ">
               [#-- Deliverable Information --]
               <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade [#if indexTab==1 || indexTab==0]in active[/#if]">
@@ -267,7 +271,7 @@
                 [#-- Metadata (included publications) --]
                 <h3 class="headTitle">[@s.text name="project.deliverable.dissemination.metadataSubtitle" /]</h3>
                 <div class="simpleBox">
-                  [@deliverableMacros.deliverableMetadataMacro /]
+                  [@deliverableMacros.deliverableMetadataMacro validateIsProgressWithStatus=validateIsProgressWithStatus/]
                 </div>
               </div>
               [#-- Deliverable qualityCheck --]

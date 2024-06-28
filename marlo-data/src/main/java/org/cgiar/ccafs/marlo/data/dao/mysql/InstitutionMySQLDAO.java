@@ -64,7 +64,7 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
 
   @Override
   public List<Institution> findAll() {
-    String query = "from " + Institution.class.getName();
+    String query = "from " + Institution.class.getName() + " where is_active=1";
     List<Institution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
