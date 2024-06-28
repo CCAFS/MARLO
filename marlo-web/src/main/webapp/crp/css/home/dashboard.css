@@ -414,7 +414,7 @@ span.timelineControl:hover {
 	  position: relative;
 	  overflow-x: scroll;
 	  overflow-y: visible;
-	  height: 32vh;
+	  height: 31.5vh;
 	  width: 95%;
 	  margin: 0 auto;
 	}
@@ -482,26 +482,29 @@ span.timelineControl:hover {
 
   #timelineDescription_zoom_weeks{
     font-size: 14px;
+    margin: 0;
+    line-height: 3rem;
   }
 
   .sideButtonZoom{
-    width: 24px;
-    height: 24px;
-    border: 2px solid #545454;
+    width: 36px;
+    height: 36px;
     color: #545454;
     background-color: transparent;
-    border-radius: 100%;
     padding: 0;
     font-size: 20px;
     font-weight: bolder;
     text-align: center;
     line-height: 0;
     padding-bottom: 3px;
+    cursor: pointer;
+    border-radius: 100%;
+    padding: 0.5rem;
   }
 
   .sideButtonZoom:hover{
-    border-color: #b3b3b3;
-    color: #b3b3b3;
+    background-color: #54545425;
+    opacity: 0.4;
   }
 
 	#timeline_times {
@@ -523,7 +526,7 @@ span.timelineControl:hover {
 		}
 		
 		#timelineContainer{
-			height: 26vh;
+			height: 24vh;
 		}
 	}
 	
@@ -702,15 +705,15 @@ span.timelineControl:hover {
   }
 
   #timeline_activities .activityFlexTop--2{
-    top: 6em;
+    top: 5.8em;
   }
 
   #timeline_activities .activityFlexTop--3{
-    top: 10.5em;
+    top: 10.3em;
   }
 
   #timeline_activities .activityUnique{
-    top: 4.5em;
+    top: 4.3em;
   }
 	
 	#timelineAlert{

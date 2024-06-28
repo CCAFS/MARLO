@@ -7,11 +7,13 @@ let timelineElements;
 /**
  * The zoom level of the timeline.
  * Establish the default configuration for the weeks visibles in the timeline.
- * Available values: 0.25, 0.5, 1, 2, 3.
- * default: 1.
+ * Available values: 1,2,3,4,5,6,7,8.
+ * default: 8.
+ * Its then obtain from the user preferences with the @method getWeeksDisplay().
+ * -------------------------------------
  * @type {number}
  */
-let timelineZoom = 0.5;
+let timelineZoom;
 
 setTimeout(() => {
   getIntersectedActivities();
@@ -28,6 +30,7 @@ function initDashboard() {
 
   $('.loadingBlock').hide().next().fadeIn(500);
 
+  getWeeksDisplay();
   getTimeline();
   addActivitiesToTimeline2();
   $(".timelineRefresh").hide();
@@ -212,7 +215,7 @@ function moveScrollLeft() {
 
 function zoomIn() {
   console.log("prevtimelineZoom", timelineZoom);
-  timelineZoom = timelineZoom < 3 ? timelineZoom * 2 :  timelineZoom;
+  timelineZoom = timelineZoom < 8 ? timelineZoom * 2 :  timelineZoom;
   console.log("timelineZoom", timelineZoom);
   
   addActivitiesToTimeline2();
@@ -221,7 +224,7 @@ function zoomIn() {
 
 function zoomOut() {
   console.log("prevtimelineZoom", timelineZoom);
-  timelineZoom = timelineZoom > 0.25 ? timelineZoom / 2 :  timelineZoom;
+  timelineZoom = timelineZoom > 1 ? timelineZoom / 2 :  timelineZoom;
   console.log("timelineZoom", timelineZoom);
 
   addActivitiesToTimeline2(); 
@@ -236,23 +239,20 @@ function getNumberOfWeeksVisible() {
   var info = "";
 
   switch(timelineZoom){
-    case 0.25:
-      info = "8 week displayed";
-      break;
-    case 0.5:
-      info = "4 week displayed";
-      break;
     case 1:
-      info = "2 weeks displayed";
+      info = "1 Week(s) displayed";
       break;
     case 2:
-      info = "1 week displayed";
+      info = "2 Week(s) displayed";
       break;
-    case 3:
-      info = "0.5 week displayed";
+    case 4:
+      info = "4 Week(s) displayed";
+      break;
+    case 8:
+      info = "8 Week(s) displayed";
       break;
     default:
-      info = "2 weeks displayed";
+      info = "8 Week(s) displayed";
       break;
   }
 
@@ -445,16 +445,16 @@ function getIntersectedActivities() {
     switch(activitiesIntersected.length){
       case 1:
         if(document.documentElement.getBoundingClientRect().width > 1500){
-          timelineContainer.style.height = "22vh";
+          timelineContainer.style.height = "21.5vh";
         } else {
-          timelineContainer.style.height = "32vh";
+          timelineContainer.style.height = "31.5vh";
         }
         break;
       case 2:
         if(document.documentElement.getBoundingClientRect().width > 1500){
-          timelineContainer.style.height = "24.5vh";
+          timelineContainer.style.height = "24vh";
         } else {
-          timelineContainer.style.height = "32vh";
+          timelineContainer.style.height = "31.5vh";
         }
         list_activities.forEach(activity => {
           $(activity).parent().removeClass("activityUnique");
@@ -468,9 +468,9 @@ function getIntersectedActivities() {
       case 8:
       case 9:
         if(document.documentElement.getBoundingClientRect().width > 1500){
-          timelineContainer.style.height = "31vh";
+          timelineContainer.style.height = "30vh";
         } else {
-          timelineContainer.style.height = "37vh";
+          timelineContainer.style.height = "35vh";
         }
         list_activities.forEach(activity => {
           $(activity).parent().removeClass("activityUnique");
@@ -535,7 +535,7 @@ function createDivActivities(activity, weeks, id) {
   card.id = `activityCard_${id}`;
   const width = calculateAmountForWidth(activity.startDate, activity.endDate, weeks);
   const validator = validatorActiveViewMore(width);
-  const normalSize = timelineZoom < 1 ? "activityCard_container--zoom" : "";
+  const normalSize = timelineZoom > 4 ? "activityCard_container--zoom" : "";
   card.innerHTML = `
     <div class="activityCard_container ${normalSize}" 
     style="left: ${setDistances(weeks,activity.startDate, activity.endDate,false )}; 
@@ -570,7 +570,7 @@ function createDivActivities(activity, weeks, id) {
 }
 
 const validatorActiveViewMore = (width) => {
-  if(timelineZoom >= 1){
+  if(timelineZoom >= 2){
     if(width === 1/7){
       return true;
     } else{
@@ -656,7 +656,7 @@ function calculateAmountForWidth(startDate, endDate, weeks) {
  * @returns {string} The calculated width in CSS format.
  */
 function setWidth(amount) {
-  const dividerWidth = 2/timelineZoom;
+  const dividerWidth = timelineZoom;
   const extraAmount = amount > 1.5 ? -1/7 : 0;
   const widthContainer = $('.sectionMap').width();
   const widthInPx = `${widthContainer * 0.95}px`;
@@ -674,7 +674,7 @@ function setWidth(amount) {
 function setDistances(weeks, startDate, _endDate, isToday) {
   const { lastDate } = getFirstAndLastDates(timelineElements);
 
-  const dividerWidth = 2/timelineZoom;
+  const dividerWidth = timelineZoom;
 
   let today = convertDateToAfricanDate(new Date());
   today = today.getDate() > lastDate ? convertDateToAfricanDate(lastDate) : today;
@@ -702,7 +702,7 @@ function setDistances(weeks, startDate, _endDate, isToday) {
 function setTimelinePosition() {
   const getFirstDate = getFirstAndLastDates(timelineElements).firstDate;
   const getLastDate = getFirstAndLastDates(timelineElements).lastDate;
-  const dividerWidth = 2/timelineZoom;
+  const dividerWidth = timelineZoom;
 
   const getWeeksArray = getWeeks(getFirstDate, getLastDate);
 
@@ -1074,6 +1074,20 @@ function getTimeline() {
       if (data && Object.keys(data).length != 0) {
         timelineElements = data['information'];
       }
+    }
+  });
+}
+
+function getWeeksDisplay() {
+  var finalAjaxURL = '/getTimelineWeeksParameter.do';
+
+  $.ajax({
+    url: baseURL + finalAjaxURL,
+    async: false,
+    success: function (data) {
+      console.log("data", data); 
+      timelineZoom = data['parameter'].weeks;	
+      console.log("timelineZoom", timelineZoom);
     }
   });
 }
