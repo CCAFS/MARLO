@@ -89,6 +89,8 @@ import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.GregorianCalendar;
 import org.apache.commons.collections4.comparators.ComparatorChain;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -98,6 +100,8 @@ public class OutcomesAction extends BaseAction {
 
 
   private static final long serialVersionUID = -793652591843623397L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(OutcomesAction.class);
 
 
   // FIXME remove this variable. create an specificity for each crp/platform
@@ -424,13 +428,19 @@ public class OutcomesAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-
     // IAuditLog ia = auditLogManager.getHistory(4);
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     outcomes = new ArrayList<CrpProgramOutcome>();
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     targetUnitList = new HashMap<>();
-    if (srfTargetUnitManager.findAll() != null) {
+    // cgamboa 24/05/2024 srfTargetUnitManager.findAll() was changed by srfTargetUnitManager.findAllQauntity()
+    int srfTargetUnitQuantity = 0;
+    try {
+      srfTargetUnitQuantity = srfTargetUnitManager.findAllQauntity();
+    } catch (Exception e) {
+      LOG.info("unable to get srfTargetUnitQuantity in preparefunction ");
+    }
+    if (srfTargetUnitQuantity > 0) {
 
       List<SrfTargetUnit> targetUnits = new ArrayList<>();
 
@@ -441,12 +451,14 @@ public class OutcomesAction extends BaseAction {
         targetUnits.add(crpTargetUnit.getSrfTargetUnit());
       }
 
+
       Collections.sort(targetUnits,
         (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
 
       for (SrfTargetUnit srfTargetUnit : targetUnits) {
         targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
       }
+
 
       // TODO
       targetUnitList = this.sortByComparator(targetUnitList);
@@ -516,7 +528,6 @@ public class OutcomesAction extends BaseAction {
 
       Collections.sort(outcomes, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
     } else {
-
       List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
         .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive()
           && c.getResearchArea() == null)
@@ -524,18 +535,21 @@ public class OutcomesAction extends BaseAction {
       allPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
       crpProgramID = -1;
 
+
       this.programs = allPrograms;
       try {
         crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
       } catch (Exception e) {
 
         User user = userManager.getUser(this.getCurrentUser().getId());
+
         List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
           .filter(c -> c.isActive() && c.getCrpProgram().isActive() && c.getCrpProgram() != null
 
             && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
             && c.getCrpProgram().getResearchArea() == null)
           .collect(Collectors.toList());
+
         if (!userLeads.isEmpty()) {
           crpProgramID = userLeads.get(0).getCrpProgram().getId();
         } else {
@@ -552,7 +566,6 @@ public class OutcomesAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
       }
-
       if (selectedProgram != null) {
 
         milestoneYears = this.getTargetYears();
@@ -631,7 +644,6 @@ public class OutcomesAction extends BaseAction {
             this.setCanEdit(false);
             this.setEditable(false);
           }
-
 
           this.setSubmission(selectedProgram
             .getSubmissions().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()

@@ -61,6 +61,15 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
 
   }
 
+
+  @Override
+  public int findAllQuantity() {
+
+    return sectionStatusDAO.findAllQuantity();
+
+  }
+
+
   @Override
   public List<SectionStatus> getSectionsStatusByReportSynthesis(long powbSynthesisID, String cycle, int year,
     Boolean upkeep, String sectionName) {
