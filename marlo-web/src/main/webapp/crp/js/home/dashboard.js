@@ -17,6 +17,7 @@ let timelineZoom;
 
 setTimeout(() => {
   getIntersectedActivities();
+  
 }, 500);
 
 function initDashboard() {
@@ -252,7 +253,7 @@ function getNumberOfWeeksVisible() {
       info = "8 Week(s) displayed";
       break;
     default:
-      info = "8 Week(s) displayed";
+      info = `${timelineZoom} Week(s) displayed`;
       break;
   }
 
