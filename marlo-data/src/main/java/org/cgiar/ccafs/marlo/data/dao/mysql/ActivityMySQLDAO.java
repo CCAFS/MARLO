@@ -71,6 +71,29 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
 
   }
 
+
+  @Override
+  public int getActivitiesByDeliverableAndPhaseQuantity(long deliverableId, long phaseId) {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT count(*) as count from deliverable_activities da  ");
+    query.append(" where deliverable_id= " + deliverableId);
+    query.append(" and id_phase = " + phaseId);
+    query.append(" and is_active =1 ");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    int activity = 0;
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        activity = Integer.parseInt(map.get("count").toString());
+      }
+    }
+
+    return activity;
+
+  }
+
   @Override
   public List<Activity> getActivitiesByProject(long projectId, long phaseId) {
     String query = "from " + Activity.class.getName() + " where project_id=" + projectId + " and id_phase=" + phaseId
@@ -82,6 +105,7 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
     return null;
 
   }
+
 
   @Override
   public int getActivitiesByProjectAndUserQuantity(long projectId, long phaseId, long projectPersonId) {
