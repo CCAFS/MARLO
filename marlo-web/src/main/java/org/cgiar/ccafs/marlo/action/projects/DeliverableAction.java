@@ -2675,6 +2675,10 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
       }
 
+      // [start]2024/07/02 cgamboa function to validate extended status
+
+      this.validateExtendedStatus(deliverableManagedState);
+      // [end]2024/07/02 cgamboa function to validate extended status
 
       /**
        * The following is required because we need to update something on
@@ -2713,6 +2717,7 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
+
 
   /**
    * Save Deliverable CrossCutting Information
@@ -4829,6 +4834,27 @@ public class DeliverableAction extends BaseAction {
   public void validate() {
     if (save) {
       deliverableValidator.validate(this, deliverable, true);
+    }
+  }
+
+  /**
+   * Function that allows validating when a deliverable changes from extended to another state, and the year is the same
+   * as the phase
+   *
+   * @param deliverable staging deliverable
+   */
+  public void validateExtendedStatus(Deliverable deliverable) {
+    try {
+      DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getActualPhase());
+      if (deliverableInfo.getStatus() != Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+        && deliverableInfo.getYear() == this.getActualPhase().getYear()) {
+        deliverableInfo.setNewExpectedYear(-1);
+        deliverableInfo.setStatusDescription("");
+
+
+      }
+    } catch (Exception e) {
+      logger.error(" unable to validate the extended status in validateExtendedStatus function ");
     }
   }
 
