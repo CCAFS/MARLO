@@ -596,6 +596,7 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
       if (isStatusExtended(statusId)) {
         showComponent(true, $newExpectedYearBlock);
         showComponent(false, $newYearOverlay, "overlay");
+        selectADefaultValueNewExpectedYear();
       } else if ( isStatusComplete(statusId) || isStatusCancelled(statusId) || statusId == 6) {
         if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {
           showComponent(true, $newExpectedYearBlock);
@@ -623,6 +624,25 @@ function removeInformationOfNewExpectedYear() {
     $newExpectedYearSelect.val("-1").trigger("change.select2");
     $statusDescription.find('textarea').val("");
   }
+}
+
+function selectADefaultValueNewExpectedYear() {
+  var $expectedYearBlock = $('#deliverableYear');
+  var $expectedYearSelect = $expectedYearBlock.find('select');
+  var expectedYear = $expectedYearSelect.val();
+  const newDefaultValue = parseInt(expectedYear) + 1;
+
+  var $newExpectedYearBlock = $('#newExpectedYear');
+  var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
+  const options = [...document.querySelectorAll('#newExpectedYear select option')];
+
+
+  if(!options.some(option => option.value == newDefaultValue)){
+    return;
+  }
+
+  $newExpectedYearSelect.val(newDefaultValue).trigger("change.select2");
+
 }
 
 /**
