@@ -591,7 +591,7 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
     console.log("hasExpectedYear", hasExpectedYear);
     if (isStatusOnGoing(statusId)) {
       showComponent(false, $newExpectedYearBlock);
-      removeInformationOfNewExpectedYear();
+      //removeInformationOfNewExpectedYear();
     } else {
       if (isStatusExtended(statusId)) {
         showComponent(true, $newExpectedYearBlock);
@@ -603,7 +603,7 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
         } else {
           showComponent(false, $newExpectedYearBlock);
         }
-        removeInformationOfNewExpectedYear();
+        //removeInformationOfNewExpectedYear();
         showComponent(true, $newYearOverlay, "overlay");
       } else {
         showComponent(false, $newExpectedYearBlock);
@@ -612,7 +612,13 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
   }
 }
 
-function removeInformationOfNewExpectedYear() {
+/**
+ * Removes information of new expected year if the selected expected year is equal to the current cycle year.
+ * The validation is made when another state different to EXTENDED is selected. 
+ * Unless the user is an admin.
+ * UNUSED FUNCTION - The following function is not used in the current implementation is made in Backend when is "Save" a deliverable.
+ */
+/* function removeInformationOfNewExpectedYear() {
   var $expectedYearBlock = $('#deliverableYear');
   var $expectedYearSelect = $expectedYearBlock.find('select');
   var expectedYear = $expectedYearSelect.val();
@@ -624,8 +630,12 @@ function removeInformationOfNewExpectedYear() {
     $newExpectedYearSelect.val("-1").trigger("change.select2");
     $statusDescription.find('textarea').val("");
   }
-}
+} */
 
+/**
+ * Selects a default value for the new expected year.
+ * Avoid the selection of the current year and not available options.
+ */
 function selectADefaultValueNewExpectedYear() {
   var $expectedYearBlock = $('#deliverableYear');
   var $expectedYearSelect = $expectedYearBlock.find('select');
