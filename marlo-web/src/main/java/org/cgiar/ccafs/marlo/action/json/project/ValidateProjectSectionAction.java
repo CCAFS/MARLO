@@ -20,12 +20,14 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -45,6 +47,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectSectionValidator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -93,14 +96,14 @@ public class ValidateProjectSectionAction extends BaseAction {
   private final ProjectSectionValidator<ValidateProjectSectionAction> projectSectionValidator;
   private final GlobalUnitProjectManager globalUnitProjectManager;
   private final DeliverableInfoManager deliverableInfoManager;
-
+  private ExpectedStudyProjectManager expectedStudyProjectManager;
 
   @Inject
   public ValidateProjectSectionAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
     SectionStatusManager sectionStatusManager,
     ProjectSectionValidator<ValidateProjectSectionAction> projectSectionValidator,
     LocalizedTextProvider localizedTextProvider, GlobalUnitProjectManager globalUnitProjectManager,
-    DeliverableInfoManager deliverableInfoManager) {
+    DeliverableInfoManager deliverableInfoManager, ExpectedStudyProjectManager expectedStudyProjectManager) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
@@ -109,6 +112,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     this.localizedTextProvider = localizedTextProvider;
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.deliverableInfoManager = deliverableInfoManager;
+    this.expectedStudyProjectManager = expectedStudyProjectManager;
   }
 
 
@@ -320,7 +324,13 @@ public class ValidateProjectSectionAction extends BaseAction {
               if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
                 .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
                 if (deliverable.getDeliverableInfo(phase).getYear() > this.getActualPhase().getYear()) {
-                  sectionStatus.setMissingFields("");
+
+                  // 2024/06/07 cgamboa Functionality is added to validate all deliverables regardless of the year, in
+                  // progress phase
+                  if (!deliverable.getDeliverableInfo().getPhase().getUpkeep()) {
+                    sectionStatus.setMissingFields("");
+                  }
+
                 }
               }
 
@@ -334,7 +344,11 @@ public class ValidateProjectSectionAction extends BaseAction {
 
               if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
                 .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
-                sectionStatus.setMissingFields("");
+                // 2024/06/07 cgamboa Functionality is added to validate all deliverables regardless of the year, in
+                // progress phase
+                if (!deliverable.getDeliverableInfo().getPhase().getUpkeep()) {
+                  sectionStatus.setMissingFields("");
+                }
               }
 
             }
@@ -381,16 +395,40 @@ public class ValidateProjectSectionAction extends BaseAction {
                 && ps.getProjectExpectedStudyInfo().getStatus() != null
                 && ps.getProjectExpectedStudyInfo().getYear() >= this.getCurrentCycleYear())
               .collect(Collectors.toList());
+
+            // 2024/07/06 cgamboa add shared expetec studies
+            if (this.getActualPhase().getUpkeep()) {
+              List<ExpectedStudyProject> expectedStudyProject = this.expectedStudyProjectManager
+                .getByProjectAndPhase(project.getId(), this.getActualPhase().getId()) != null
+                  ? this.expectedStudyProjectManager
+                    .getByProjectAndPhase(project.getId(), this.getActualPhase().getId()).stream()
+                    .filter(px -> px.isActive() && px.getProjectExpectedStudy().isActive()
+                      && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+                    .collect(Collectors.toList())
+                  : Collections.emptyList();
+              if (expectedStudyProject != null && !expectedStudyProject.isEmpty()) {
+                for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
+                  if (!allProjectStudies.contains(expectedStudy.getProjectExpectedStudy())) {
+                    projectStudies.add(expectedStudy.getProjectExpectedStudy());
+                  }
+                }
+              }
+            }
+
+
           }
 
 
           for (ProjectExpectedStudy projectExpectedStudy : projectStudies) {
             sectionStatus = sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
               cycle, this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);
+
             if (sectionStatus == null) {
               sectionStatus = new SectionStatus();
               sectionStatus.setMissingFields("No section");
             }
+
+
             if (sectionStatus.getMissingFields().length() > 0) {
               section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
             }
