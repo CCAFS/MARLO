@@ -630,7 +630,7 @@
     <input type="hidden"  name="${customName}.composeID" value="${(indicator.composeID)!}"/>
 
     [#if editable]
-      [@customForm.input name="${customName}.indicator" value=indicator.title i18nkey="baselineIndicator.title" type="text" showTitle=true placeholder="" className="statement limitWords-50" required=true editable=editable /]
+      [@customForm.textArea name="${customName}.indicator" value=indicator.title i18nkey="baselineIndicator.title" showTitle=true className="statement limitWords-50" required=true editable=editable allowTextEditor=true/]
     [#else]
       [#if indicator.indicator?has_content]
         <div class="input"><p>${(indicator.indicator)!}</p></div>
