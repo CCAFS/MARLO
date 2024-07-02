@@ -4793,13 +4793,10 @@ public class DeliverableAction extends BaseAction {
    * @param deliverable staging deliverable
    */
   public void validateExtendedStatus(Deliverable deliverable) {
-    logger.info(" DeliverableAction linea 2715 " + deliverable.getDeliverableInfo(this.getActualPhase()).getStatus());
-    logger.info(" DeliverableAction linea 4789 " + this.getActualPhase().getYear());
     try {
       DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getActualPhase());
       if (deliverableInfo.getStatus() != Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
         && deliverableInfo.getYear() == this.getActualPhase().getYear()) {
-        logger.info(" DeliverableAction linea 4789 " + this.getActualPhase().getYear());
         deliverableInfo.setNewExpectedYear(-1);
         deliverableInfo.setStatusDescription("");
 
