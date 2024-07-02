@@ -163,6 +163,8 @@ divDataTables_length.css("bottom", "8px");
 divDataTables_length.css("margin-left", "43%");
 divDataTables_length.css("z-index", "1");
 
+setFormatInput();
+
 }
 
 //add target="blank" element a in popup
