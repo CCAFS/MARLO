@@ -610,18 +610,19 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
   } else {
     if (isStatusOnGoing(statusId)) {
       showComponent(false, $newExpectedYearBlock);
-      removeInformationOfNewExpectedYear();
+      //removeInformationOfNewExpectedYear();
     } else {
       if (isStatusExtended(statusId)) {
         showComponent(true, $newExpectedYearBlock);
         showComponent(false, $newYearOverlay, "overlay");
+        selectADefaultValueNewExpectedYear();
       } else if ( isStatusComplete(statusId) || isStatusCancelled(statusId) || statusId == 6) {
         if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {
           showComponent(true, $newExpectedYearBlock);
         } else {
           showComponent(false, $newExpectedYearBlock);
         }
-        removeInformationOfNewExpectedYear();
+        //removeInformationOfNewExpectedYear();
         showComponent(true, $newYearOverlay, "overlay");
       } else {
         showComponent(false, $newExpectedYearBlock);
@@ -645,7 +646,13 @@ async function displayModalForAdmin(canChangeStatus, prevValueSelectStatus) {
   }
 }
 
-function removeInformationOfNewExpectedYear() {
+/**
+ * Removes information of new expected year if the selected expected year is equal to the current cycle year.
+ * The validation is made when another state different to EXTENDED is selected. 
+ * Unless the user is an admin.
+ * UNUSED FUNCTION - The following function is not used in the current implementation is made in Backend when is "Save" a deliverable.
+ */
+/* function removeInformationOfNewExpectedYear() {
   var $expectedYearBlock = $('#deliverableYear');
   var $expectedYearSelect = $expectedYearBlock.find('select');
   var expectedYear = $expectedYearSelect.val();
@@ -657,6 +664,29 @@ function removeInformationOfNewExpectedYear() {
     $newExpectedYearSelect.val("-1").trigger("change.select2");
     $statusDescription.find('textarea').val("");
   }
+} */
+
+/**
+ * Selects a default value for the new expected year.
+ * Avoid the selection of the current year and not available options.
+ */
+function selectADefaultValueNewExpectedYear() {
+  var $expectedYearBlock = $('#deliverableYear');
+  var $expectedYearSelect = $expectedYearBlock.find('select');
+  var expectedYear = $expectedYearSelect.val();
+  const newDefaultValue = parseInt(expectedYear) + 1;
+
+  var $newExpectedYearBlock = $('#newExpectedYear');
+  var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
+  const options = [...document.querySelectorAll('#newExpectedYear select option')];
+
+
+  if(!options.some(option => option.value == newDefaultValue)){
+    return;
+  }
+
+  $newExpectedYearSelect.val(newDefaultValue).trigger("change.select2");
+
 }
 
 /**
