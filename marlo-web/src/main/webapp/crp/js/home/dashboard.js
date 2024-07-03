@@ -42,9 +42,9 @@ function initDashboard() {
 
   $('.buttonLeftTimeline').on("click", moveScrollLeft);
 
-  $('.buttonZoomPlus').on("click", zoomIn);
+  $('.buttonZoomOut').on("click", zoomOut);
 
-  $('.buttonZoomLess').on("click", zoomOut); 
+  $('.buttonZoomIn').on("click", zoomIn); 
 
   $('.itemsTablet').on("click", updateTable);
 
@@ -52,10 +52,7 @@ function initDashboard() {
 
   $('.circleMap').hover(itemMapHover, itemMap);
 
-  $('.activityCard_container').hover(function(){
-    const $info = $(this).find('.activityCard_description');
-    $info.tooltip();
-  })
+
 }
 
 function itemMapHover() {
@@ -215,18 +212,14 @@ function moveScrollLeft() {
 }
 
 function zoomIn() {
-  console.log("prevtimelineZoom", timelineZoom);
   timelineZoom = timelineZoom < 8 ? timelineZoom * 2 :  timelineZoom;
-  console.log("timelineZoom", timelineZoom);
   
   addActivitiesToTimeline2();
 
 }
 
 function zoomOut() {
-  console.log("prevtimelineZoom", timelineZoom);
   timelineZoom = timelineZoom > 1 ? timelineZoom / 2 :  timelineZoom;
-  console.log("timelineZoom", timelineZoom);
 
   addActivitiesToTimeline2(); 
 }
@@ -542,7 +535,9 @@ function createDivActivities(activity, weeks, id) {
     style="left: ${setDistances(weeks,activity.startDate, activity.endDate,false )}; 
     width: ${setWidth(width)}; 
     background: ${setStatusColor(status)}
-    " >
+    "
+    data_width="${width}"
+     >
     
       <div class="activityCard_content"> 
         <h3 class="user-badge activityCard_description" title="${activity.description}">${activity.description}</h3>
@@ -664,6 +659,17 @@ function setWidth(amount) {
   return `calc(${amount !== undefined ? (amount + extraAmount) + "*(" + widthInPx + " / "+dividerWidth+")" : "calc(" + widthInPx + " / "+dividerWidth+")"} )  `;
 }
 
+function setWidthHover($context){
+  const activityWidthCont = parseInt($context.css("width"));
+  const widthContainer = parseInt($('.sectionMap').css("width"));
+  const dividerWidth = timelineZoom;
+  const widthDivide = (widthContainer/dividerWidth);
+  if( activityWidthCont < widthDivide){
+    $context.css("width", "auto");
+  }
+  
+}
+
 /**
  * Calculates the distances based on the given parameters.
  * @param {number} weeks - The number of weeks.
@@ -765,7 +771,6 @@ function addActivitiesToTimeline2() {
     
     $(".activityCard_toggle").on("click", function(){
       let $x = $(this).parents(':has(.activityCard_details--1)').first().find('.activityCard_details--1');
-      console.log($x);
       if ($x.css("display") === "none") {
         $x.css("display", "flex");
         $(this).find('.activityCard_toggle--deactive').css("display", "none");
@@ -778,12 +783,28 @@ function addActivitiesToTimeline2() {
         $(this).closest('.activityCard').css("z-index");
       }
     });
+
+    $('.activityCard_container').hover(function(){
+    
+      const $info = $(this).find('.activityCard_description');
+      $info.tooltip();
+    });
+
+    
+    $(".activityCard_container").mouseenter(function(){
+      setWidthHover($(this));
+    });
+
+    $(".activityCard_container").mouseleave(function(){
+      $(this).css("width", setWidth($(this).attr("data_width")));
+    });
+
+
   }, 500);
 
 }
 
 function updateTable() {
-  // console.log(this.attr("id"))
   let nameId = $(this).attr("id");
   // let activeCurrent = $('a#'+nameId).parent().addClass('active');
   $("li.active").removeClass('active');
@@ -1086,9 +1107,7 @@ function getWeeksDisplay() {
     url: baseURL + finalAjaxURL,
     async: false,
     success: function (data) {
-      console.log("data", data); 
       timelineZoom = data['parameter'].weeks;	
-      console.log("timelineZoom", timelineZoom);
     }
   });
 }

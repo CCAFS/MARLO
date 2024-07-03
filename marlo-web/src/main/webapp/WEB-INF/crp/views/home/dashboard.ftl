@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/home/dashboard.js?20240514",
+  "${baseUrlMedia}/js/home/dashboard.js?20240628",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20240507",
+  "${baseUrlMedia}/css/home/dashboard.css?20240628",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -113,9 +113,9 @@
         <div id="timelineInfo">
           <div id="timelineDescription">
             <div id="timelineDescription_zoom">
-              <img src="${baseUrlCdn}/global/images/zoom_in.png" class="sideButtonZoom buttonZoomPlus" name="zoom-in" >
+              <img src="${baseUrlCdn}/global/images/zoom_in.png" class="sideButtonZoom buttonZoomOut" name="zoom-in" >
               <p id="timelineDescription_zoom_weeks"> Week(s) displayed </p>
-              <img src="${baseUrlCdn}/global/images/zoom_out.png" class="sideButtonZoom buttonZoomLess" name="zoom-out" >
+              <img src="${baseUrlCdn}/global/images/zoom_out.png" class="sideButtonZoom buttonZoomIn" name="zoom-out" >
             </div>
 
             <div id="timelineDescription_title">
