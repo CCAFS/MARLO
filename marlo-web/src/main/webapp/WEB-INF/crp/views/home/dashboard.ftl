@@ -113,9 +113,9 @@
         <div id="timelineInfo">
           <div id="timelineDescription">
             <div id="timelineDescription_zoom">
-              <img src="${baseUrlCdn}/global/images/zoom_in.png" class="sideButtonZoom buttonZoomPlus" name="zoom-in" >
+              <img src="${baseUrlCdn}/global/images/zoom_in.png" class="sideButtonZoom buttonZoomOut" name="zoom-in" >
               <p id="timelineDescription_zoom_weeks"> Week(s) displayed </p>
-              <img src="${baseUrlCdn}/global/images/zoom_out.png" class="sideButtonZoom buttonZoomLess" name="zoom-out" >
+              <img src="${baseUrlCdn}/global/images/zoom_out.png" class="sideButtonZoom buttonZoomIn" name="zoom-out" >
             </div>
 
             <div id="timelineDescription_title">

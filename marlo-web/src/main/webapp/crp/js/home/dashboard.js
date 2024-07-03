@@ -42,9 +42,9 @@ function initDashboard() {
 
   $('.buttonLeftTimeline').on("click", moveScrollLeft);
 
-  $('.buttonZoomPlus').on("click", zoomIn);
+  $('.buttonZoomOut').on("click", zoomOut);
 
-  $('.buttonZoomLess').on("click", zoomOut); 
+  $('.buttonZoomIn').on("click", zoomIn); 
 
   $('.itemsTablet').on("click", updateTable);
 
