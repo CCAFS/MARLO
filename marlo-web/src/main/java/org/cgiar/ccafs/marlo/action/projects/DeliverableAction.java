@@ -185,6 +185,7 @@ import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author avalencia - CCAFS
@@ -326,6 +327,7 @@ public class DeliverableAction extends BaseAction {
   private boolean existCurrentCluster;
   private final SendMailS sendMail;
   private int previousStatus;
+  boolean completeInPreviousPhase = false;
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -540,6 +542,19 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+  public void checkDeliverableStatusInPreviousPhases(Deliverable deliverable) {
+    int status1 = this.getStatusFromPreviousPhase(deliverable, this.getActualPhase().getId());
+    // int status2 = this.getStatusFromPreviousPhase(deliverable,
+    // phaseManager.findPreviousPhase(phase.getId()).getId());
+
+    if (status1 == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      // Set deliverable Not editable
+      completeInPreviousPhase = true;
+    } else {
+      completeInPreviousPhase = false;
+    }
+  }
+
   public void deleteAllActionsAndSubActions() {
     try {
       deliverable.getDeliverableInfo().setShfrmContributionNarrative(null);
@@ -619,6 +634,22 @@ public class DeliverableAction extends BaseAction {
 
       }
     }
+  }
+
+  public DeliverableInfo deliverableInfoByPhase(Deliverable deliverable, Phase phase) {
+    DeliverableInfo deliverableInfoPhase = new DeliverableInfo();
+    try {
+      List<DeliverableInfo> deliverableInfos =
+        deliverableInfoManager.getDeliverablesInfoByDeliverableId(deliverable.getId());
+      if (deliverableInfos != null) {
+        deliverableInfoPhase =
+          deliverableInfos.stream().filter(di -> di != null && di.getPhase() != null && di.getPhase().getId() != null
+            && di.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()).get(0);
+      }
+    } catch (Exception e) {
+      Log.error(e + " error getting deliverable info by phase");
+    }
+    return deliverableInfoPhase;
   }
 
   /**
@@ -823,7 +854,6 @@ public class DeliverableAction extends BaseAction {
     return answers;
   }
 
-
   public List<DeliverableQualityAnswer> getAnswersDataDic() {
     return answersDataDic;
   }
@@ -974,7 +1004,6 @@ public class DeliverableAction extends BaseAction {
     return partnerInstitutions;
   }
 
-
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
@@ -1085,6 +1114,17 @@ public class DeliverableAction extends BaseAction {
     return statuses;
   }
 
+  public int getStatusFromPreviousPhase(Deliverable deliverable, long phaseId) {
+    Phase previousPhase = phaseManager.findPreviousPhase(phaseId);
+    if (previousPhase != null) {
+      DeliverableInfo deliverableInfo = this.deliverableInfoByPhase(deliverable, previousPhase);
+      if (deliverableInfo != null && deliverableInfo.getStatus() != null) {
+        return deliverableInfo.getStatus();
+      }
+    }
+    return 0;
+  }
+
   /**
    * Get Trainees indicator - IPI 2.x
    * 
@@ -1145,7 +1185,6 @@ public class DeliverableAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
-
 
   /**
    * cgamboa 10/04/2024
@@ -1215,6 +1254,10 @@ public class DeliverableAction extends BaseAction {
   public boolean hasDeliverableCapdevCategory() {
     return (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getDeliverableType() != null
       && deliverable.getDeliverableInfo().getDeliverableType().getId() == 145);
+  }
+
+  public boolean isCompleteInPreviousPhase() {
+    return completeInPreviousPhase;
   }
 
   /**
@@ -2364,6 +2407,8 @@ public class DeliverableAction extends BaseAction {
         }
       } catch (Exception e) {
       }
+
+      this.checkDeliverableStatusInPreviousPhases(deliverable);
 
       // Deliverable remaining value
       if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getRemainingPending() == null) {
@@ -4492,6 +4537,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
     this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
+  }
+
+  public void setCompleteInPreviousPhase(boolean completeInPreviousPhase) {
+    this.completeInPreviousPhase = completeInPreviousPhase;
   }
 
   public void setCountries(List<LocElement> countries) {
