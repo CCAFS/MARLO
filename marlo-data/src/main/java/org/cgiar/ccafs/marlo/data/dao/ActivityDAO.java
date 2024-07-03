@@ -55,6 +55,15 @@ public interface ActivityDAO {
   public List<Activity> findAll();
 
   /**
+   * This method gets actives activities by a given activity identifier and project.
+   * 
+   * @param projectID is the project/cluster identifier.
+   * @param phaseId is the phase identifier.
+   * @return a list from Activity null if no exist records
+   */
+  List<Activity> getActiveActivitiesByProject(long projectId, long phaseId);
+
+  /**
    * This method validate if the activity identify with the given id exists in the system.
    * 
    * @param projectID is a project/cluster identifier.

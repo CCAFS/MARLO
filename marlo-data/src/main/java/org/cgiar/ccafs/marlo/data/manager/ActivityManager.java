@@ -55,6 +55,16 @@ public interface ActivityManager {
    */
   public List<Activity> findAll();
 
+
+  /**
+   * This method gets actives activities by a given activity identifier and project.
+   * 
+   * @param projectID is the project/cluster identifier.
+   * @param phaseId is the phase identifier.
+   * @return a list from Activity null if no exist records
+   */
+  public List<Activity> getActiveActivitiesByProject(long projectId, long phaseId);
+
   /**
    * This method gets a activity object by a given activity identifier.
    * 

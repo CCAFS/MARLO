@@ -615,8 +615,19 @@ public class ProjectActivitiesAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       Project projectBD = projectManager.getProjectById(projectID);
-      List<Activity> activitiesDB = projectBD.getActivities().stream()
-        .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+      // 2024/07/03 gamboa projectBD.getActivities() was changed by this.activityManager.getActiveActivitiesByProject to
+      // improve performance
+      List<Activity> activitiesDB = new ArrayList<Activity>();
+      try {
+        activitiesDB =
+          this.activityManager.getActiveActivitiesByProject(projectBD.getId(), this.getActualPhase().getId()).stream()
+            .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+      } catch (Exception e) {
+        logger.info(" unable to get activities from the BD in save function ");
+      }
+
+
       this.activitiesPreviousData(projectBD);
 
       // cgamboa 11/06/2024 project.getProjectActivities() will be call once and used sometimes
@@ -626,6 +637,7 @@ public class ProjectActivitiesAction extends BaseAction {
       } catch (Exception e) {
         logger.info(" unable to get activities in save function ");
       }
+
       // Check activities from UI
       if (projectActivities != null && !projectActivities.isEmpty()) {
         this.saveActivitiesNewData();
