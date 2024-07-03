@@ -52,10 +52,7 @@ function initDashboard() {
 
   $('.circleMap').hover(itemMapHover, itemMap);
 
-  $('.activityCard_container').hover(function(){
-    const $info = $(this).find('.activityCard_description');
-    $info.tooltip();
-  })
+
 }
 
 function itemMapHover() {
@@ -538,7 +535,9 @@ function createDivActivities(activity, weeks, id) {
     style="left: ${setDistances(weeks,activity.startDate, activity.endDate,false )}; 
     width: ${setWidth(width)}; 
     background: ${setStatusColor(status)}
-    " >
+    "
+    data_width="${width}"
+     >
     
       <div class="activityCard_content"> 
         <h3 class="user-badge activityCard_description" title="${activity.description}">${activity.description}</h3>
@@ -660,6 +659,17 @@ function setWidth(amount) {
   return `calc(${amount !== undefined ? (amount + extraAmount) + "*(" + widthInPx + " / "+dividerWidth+")" : "calc(" + widthInPx + " / "+dividerWidth+")"} )  `;
 }
 
+function setWidthHover($context){
+  const activityWidthCont = parseInt($context.css("width"));
+  const widthContainer = parseInt($('.sectionMap').css("width"));
+  const dividerWidth = timelineZoom;
+  const widthDivide = (widthContainer/dividerWidth);
+  if( activityWidthCont < widthDivide){
+    $context.css("width", "auto");
+  }
+  
+}
+
 /**
  * Calculates the distances based on the given parameters.
  * @param {number} weeks - The number of weeks.
@@ -773,6 +783,23 @@ function addActivitiesToTimeline2() {
         $(this).closest('.activityCard').css("z-index");
       }
     });
+
+    $('.activityCard_container').hover(function(){
+    
+      const $info = $(this).find('.activityCard_description');
+      $info.tooltip();
+    });
+
+    
+    $(".activityCard_container").mouseenter(function(){
+      setWidthHover($(this));
+    });
+
+    $(".activityCard_container").mouseleave(function(){
+      $(this).css("width", setWidth($(this).attr("data_width")));
+    });
+
+
   }, 500);
 
 }
