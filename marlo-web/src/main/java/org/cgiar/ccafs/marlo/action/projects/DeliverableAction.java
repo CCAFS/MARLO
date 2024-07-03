@@ -185,7 +185,6 @@ import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -4938,6 +4937,5 @@ public class DeliverableAction extends BaseAction {
       logger.error("Error occurred while processing shared cluster information and sending email: " + e);
     }
   }
-
 
 }
