@@ -110,7 +110,7 @@
             <div class="clearfix"></div>
             [#if showOutcomeValue]
               <div class="form-group">          
-                <div class="col-md-4"><strong>AICCRA Target Value:</strong> ${projectOutcome.crpProgramOutcome.value} </div>
+                <div class="col-md-4"><strong>AICCRA Target Value:</strong> ${projectOutcome.crpProgramOutcome.value?string(",##0")} </div>
                 <div class="col-md-6"><strong>Target Unit:</strong> ${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</div>
               </div>
             [/#if]
@@ -180,9 +180,9 @@
                   [#if editable]
                   
                     [#if (action.isAFPhase(actualPhase.id))!false]
-                      [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(projectOutcome.crpProgramOutcome.year)!afYear type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
+                      [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(projectOutcome.crpProgramOutcome.year)!afYear type="text"  placeholder="" className="targetValue targetValueNumber" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                     [#else]
-                      [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
+                      [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue targetValueNumber" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                     [/#if]
                     
                   [#else]
@@ -191,7 +191,7 @@
                     [#else]
                       <label for="">[@s.text name="projectOutcome.expectedValue" /]: </label>
                     [/#if]
-                    <div class="input"><p class="text">${(projectOutcome.expectedValue)!'No expected value indicated'}</p></div>
+                    <div class="input"><p class="text"> ${(projectOutcome.expectedValue?string(",##0"))!'No expected value indicated'}</p></div>
                   [/#if]               
                 </div>
 
@@ -210,10 +210,10 @@
               <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
                 <div class="col-md-5">
                   [#if editable]
-                    [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue ${reportingActive?string('fieldFocus','')}" required=true /]
+                    [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue targetValueNumber ${reportingActive?string('fieldFocus','')}" required=true /]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.achievedValue" /]:</label>
-                    <div class="input"><p>${(projectOutcome.achievedValue)!'No achieved value indicated'}</p></div>
+                    <div class="input"><p>${(projectOutcome.achievedValue?string(",##0"))!'No achieved value indicated'}</p></div>
                   [/#if]
                 </div>
                 <div class="col-md-7">
@@ -510,7 +510,7 @@
         
         <div class="row">
           <div class="col-md-12">
-            <strong>Overall AICCRA target to ${(element.year)!}:</strong> ${(element.value)!}
+            <strong>Overall AICCRA target to ${(element.year)!}:</strong> ${(element.value?string(",##0"))!}
             </br>           
             </br>
           </div>
@@ -518,11 +518,11 @@
         
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
           <div class="col-md-4 input-container" style="padding-top:3px">
-            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) help="projectOutcomeMilestone.pmcValue.helpText" helpIcon=true/]
+            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue targetValueNumber" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) help="projectOutcomeMilestone.pmcValue.helpText" helpIcon=true/]
           </div>
           
           <div class="col-md-4 input-container">
-            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
+            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue targetValueNumber" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
           </div>
           
           [#if (!action.isUpKeepActive() && !isYearRequired(milestoneYear) && action.isPOWB()) || action.isReportingActive()]
@@ -544,7 +544,7 @@
                     </div>
                   </div> 
                  [/#if]       
-                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')} targetValue" required=isYearRequired(milestoneYear) && reportingActive editable=reportingActive && (editable || isTemplate) && isYearRequired(milestoneYear) /]
+                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')} targetValue targetValueNumber" required=isYearRequired(milestoneYear) && reportingActive editable=reportingActive && (editable || isTemplate) && isYearRequired(milestoneYear) /]
               </div>
            [#else]
              [#if action.isUpKeepActive() ]
@@ -566,7 +566,7 @@
                      </div>
                    </div> 
                  [/#if]   
-                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedSoFar" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')} targetValue" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) && (reportingActive || action.isUpKeepActive()) /]
+                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedSoFar" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')} targetValue targetValueNumber" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) && (reportingActive || action.isUpKeepActive()) /]
               </div>
              [/#if]
           [/#if]
@@ -1035,7 +1035,7 @@
       <span class="index">${index+1}</span>
     </div>
     <div class="form-group grayBox">
-      <strong>${element.indicator}</strong>
+      ${element.indicator}
     </div>
     <input type="hidden" name="${customName}.id" value="${(projectOutcomeIndicator.id)!}" >
     <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomeIndicator.crpProgramOutcomeIndicator.id)!}" >

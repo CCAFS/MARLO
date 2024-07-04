@@ -1319,6 +1319,7 @@ public class DeliverableAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
+
     existCurrentCluster = false;
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -1716,8 +1717,13 @@ public class DeliverableAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList()));
 
+        // cgamboa 27/05/2024 deliverableActivityManager.getDeliverableActivitiesByDeliverableID was changed by
+        // getDeliverableActivitiesByDeliverableIDAndPhase
         List<DeliverableActivity> deliverableActivities = new ArrayList<>();
-        deliverableActivities = deliverableActivityManager.getDeliverableActivitiesByDeliverableID(deliverable.getId());
+        deliverableActivities = deliverableActivityManager
+          .getDeliverableActivitiesByDeliverableIDAndPhase(deliverable.getId(), this.getActualPhase().getId());
+
+
         if (deliverableActivities != null && !deliverableActivities.isEmpty()) {
           deliverableActivities = deliverableActivities.stream()
             .filter(da -> da.isActive() && da.getPhase() != null
@@ -2488,6 +2494,7 @@ public class DeliverableAction extends BaseAction {
 
     }
 
+
   }
 
   /**
@@ -2818,16 +2825,25 @@ public class DeliverableAction extends BaseAction {
       logger.error("unable to map IPI 2.3", e);
     }
 
+    List<DeliverableCrpOutcome> deliverableCrpOutcomeList = new ArrayList<DeliverableCrpOutcome>();
+    try {
+      // cgamboa 27/05/2024 this.deliverable.getCrpOutcomes() will be used once
+      deliverableCrpOutcomeList = this.deliverable.getCrpOutcomes();
+    } catch (Exception e) {
+      logger.error("unable to get CrpOutcomes in funvtion  saveCrpOutcomes", e);
+    }
+
     // Search and deleted form Information
     try {
-      if (deliverable.getDeliverableCrpOutcomes() != null && !deliverable.getDeliverableCrpOutcomes().isEmpty()) {
+      // cgamboa 27/05/2024 deliverable.getDeliverableCrpOutcomes() will be used once
+      Set<DeliverableCrpOutcome> deliverableCrpOutcomes = deliverable.getDeliverableCrpOutcomes();
+      if (deliverableCrpOutcomes != null && !deliverableCrpOutcomes.isEmpty()) {
 
-        List<DeliverableCrpOutcome> outcomePrev = new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
+        List<DeliverableCrpOutcome> outcomePrev = new ArrayList<>(deliverableCrpOutcomes.stream()
           .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (DeliverableCrpOutcome deliverableOutcome : outcomePrev) {
-          if (this.deliverable.getCrpOutcomes() == null
-            || !this.deliverable.getCrpOutcomes().contains(deliverableOutcome)) {
+          if (deliverableCrpOutcomeList == null || !deliverableCrpOutcomeList.contains(deliverableOutcome)) {
             this.deliverableCrpOutcomeManager.deleteDeliverableCrpOutcome(deliverableOutcome.getId(),
               this.getActualPhase().getId());
           }
@@ -2838,14 +2854,14 @@ public class DeliverableAction extends BaseAction {
     }
 
     // Save form Information
-    if (this.deliverable.getCrpOutcomes() != null) {
+    if (deliverableCrpOutcomeList != null) {
       if (!this.isDeliverableMappedToTrainessIndicator() && addIPI) {
         DeliverableCrpOutcome deliverableCrpOutcome = new DeliverableCrpOutcome();
         deliverableCrpOutcome.setDeliverable(deliverable);
         deliverableCrpOutcome.setCrpProgramOutcome(crpProgramOutcomeIPI);
-        this.deliverable.getCrpOutcomes().add(deliverableCrpOutcome);
+        deliverableCrpOutcomeList.add(deliverableCrpOutcome);
       }
-      for (DeliverableCrpOutcome deliverableOutcome : this.deliverable.getCrpOutcomes()) {
+      for (DeliverableCrpOutcome deliverableOutcome : deliverableCrpOutcomeList) {
         DeliverableCrpOutcome deliverableOutcomeSave = new DeliverableCrpOutcome();
         if (deliverableOutcome != null) {
           // For new crp outcomes
@@ -2874,13 +2890,16 @@ public class DeliverableAction extends BaseAction {
 
             this.deliverableCrpOutcomeManager.saveDeliverableCrpOutcome(deliverableOutcomeSave);
             // This is to add studyCrpSave to generate correct auditlog.
-            if (!this.deliverable.getDeliverableCrpOutcomes().contains(deliverableOutcomeSave)) {
-              this.deliverable.getDeliverableCrpOutcomes().add(deliverableOutcomeSave);
+
+            Set<DeliverableCrpOutcome> deliverableCrpOutcomesSet = this.deliverable.getDeliverableCrpOutcomes();
+            if (!deliverableCrpOutcomesSet.contains(deliverableOutcomeSave)) {
+              deliverableCrpOutcomesSet.add(deliverableOutcomeSave);
             }
           }
         }
       }
     }
+
   }
 
   public void saveCrps() {
@@ -3320,46 +3339,52 @@ public class DeliverableAction extends BaseAction {
 
   public void saveDeliverableRegions(Deliverable deliverable, Phase phase, Deliverable deliverableManagedState) {
 
-    // Search and deleted form Information
-    if (deliverable.getDeliverableGeographicRegions() != null
-      && deliverable.getDeliverableGeographicRegions().size() > 0) {
+    try {
+      Set<DeliverableGeographicRegion> deliverableGeographicRegions = deliverable.getDeliverableGeographicRegions();
+      List<DeliverableGeographicRegion> deliverableGeographicRegionList = deliverable.getDeliverableRegions();
 
-      List<DeliverableGeographicRegion> regionPrev =
-        deliverableGeographicRegionManager.getDeliverableGeographicRegionbyPhase(deliverable.getId(), phase.getId())
-          .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
-          .collect(Collectors.toList());
-      //
-      // new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyRegions().stream()
-      // .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+      // Search and deleted form Information
+      if (deliverableGeographicRegions != null && deliverableGeographicRegions.size() > 0) {
 
-      for (DeliverableGeographicRegion deliverableRegion : regionPrev) {
-        if (deliverable.getDeliverableRegions() == null
-          || !deliverable.getDeliverableRegions().contains(deliverableRegion)) {
-          deliverableGeographicRegionManager.deleteDeliverableGeographicRegion(deliverableRegion.getId());
-        }
-      }
-    }
+        List<DeliverableGeographicRegion> regionPrev =
+          deliverableGeographicRegionManager.getDeliverableGeographicRegionbyPhase(deliverable.getId(), phase.getId())
+            .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
+            .collect(Collectors.toList());
+        //
+        // new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyRegions().stream()
+        // .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
-    // Save form Information
-    if (deliverable.getDeliverableRegions() != null) {
-      for (DeliverableGeographicRegion deliverableRegion : deliverable.getDeliverableRegions()) {
-        if (deliverableRegion != null) {
-          if (deliverableRegion.getId() == null && deliverableRegion.getLocElement() != null) {
-            DeliverableGeographicRegion deliverableRegionSave = new DeliverableGeographicRegion();
-            deliverableRegionSave.setDeliverable(deliverable);
-            deliverableRegionSave.setPhase(phase);
-
-            LocElement locElement = locElementManager.getLocElementById(deliverableRegion.getLocElement().getId());
-
-            deliverableRegionSave.setLocElement(locElement);
-
-            deliverableGeographicRegionManager.saveDeliverableGeographicRegion(deliverableRegionSave);
-            // This is to add regions to generate correct auditlog.
-            deliverableManagedState.getDeliverableGeographicRegions().add(deliverableRegionSave);
+        for (DeliverableGeographicRegion deliverableRegion : regionPrev) {
+          if (deliverableGeographicRegionList == null || !deliverableGeographicRegionList.contains(deliverableRegion)) {
+            deliverableGeographicRegionManager.deleteDeliverableGeographicRegion(deliverableRegion.getId());
           }
         }
       }
+
+      // Save form Information
+      if (deliverableGeographicRegionList != null) {
+        for (DeliverableGeographicRegion deliverableRegion : deliverableGeographicRegionList) {
+          if (deliverableRegion != null) {
+            if (deliverableRegion.getId() == null && deliverableRegion.getLocElement() != null) {
+              DeliverableGeographicRegion deliverableRegionSave = new DeliverableGeographicRegion();
+              deliverableRegionSave.setDeliverable(deliverable);
+              deliverableRegionSave.setPhase(phase);
+
+              LocElement locElement = locElementManager.getLocElementById(deliverableRegion.getLocElement().getId());
+
+              deliverableRegionSave.setLocElement(locElement);
+
+              deliverableGeographicRegionManager.saveDeliverableGeographicRegion(deliverableRegionSave);
+              // This is to add regions to generate correct auditlog.
+              deliverableManagedState.getDeliverableGeographicRegions().add(deliverableRegionSave);
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.error(" unable to save DeliverableRegions in saveDeliverableRegions function ");
     }
+
   }
 
   private void saveDeliverableUserPartnershipsPersons(DeliverableUserPartnership deliverableUserPartnership,

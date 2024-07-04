@@ -1,10 +1,8 @@
 [#ftl]
 [#assign title = "Feedback Status" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["powerbi-client"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/feedbackStatus.js?20230201",
-  "${baseUrlCdn}/global/bower_components/powerbi-client/dist/powerbi.min.js"
+  "${baseUrlMedia}/js/projects/feedbackStatus.js?20230201"
   ]
 /]
 [#assign customCSS = [
@@ -62,7 +60,7 @@
                       <div class="menuList col-md-12" style="padding:0">
                       [#list (biReports)?sort_by("reportOrder")![] as report]
                           <div id="BIreport-${report.id}" report-title="${report.reportTitle}"  has-filters="${report.hasFilters?c}" class="button-bg reportSection [#if report?index == 0]current[/#if]">
-                          <a index="${report?index+1}" class="BIreport-${report.id}" href="">[@s.text name=report.reportName /]</a>
+                          <a index="${report?index+1}" class="BIreport-${report.id}" id="BIreport-${report.embedReport}" href="">[@s.text name=report.reportName /]</a>
                           </div>
                       [/#list]
                       </div>
@@ -89,10 +87,9 @@
                   <div class="">
                     [#list (biReports)?sort_by("reportOrder")![] as report]
                         <div id="BIreport-${report.id}-contentOptions" class="" style="display:[#if report?index !=0]none[/#if];">
-                          <div id="dashboardContainer-${report.id}" class="dashboardContainer-${report.id} feedbackSize"></div>
+                          <div id="dashboardContainer-${report.id}" class="dashboardContainer-${report.id}"></div>
                           <input type="hidden" id="reportName-${report.id}" name="reportName" value=${report.reportName} />
-                          <input type="hidden" id="embeUrl-${report.id}" name="embedUrl" value=${report.embedUrl} /> 
-                          <input type="hidden" id="reportID-${report.id}" name="reportId" value=${report.reportId} />
+                          <input type="hidden" id="embeUrl-${report.id}" name="embedReport" value=${report.embedReport} /> 
                           <input type="hidden" id="projectID-${project.id}" name="projectID" value=${project.id} />
                         </div>
                     [/#list] 
@@ -107,6 +104,11 @@
     </div>
 </section>
 [/#if]
+
+    [#assign BiAppURL = biParameters?filter(param -> param.parameterName = "bi_widget_url" )]
+
+
+    <script src="${BiAppURL[0].parameterValue}" charset="utf-8"></script>
     
 
 [#include "/WEB-INF/global/pages/footer.ftl"]

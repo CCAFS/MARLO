@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDTO;
 import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
@@ -61,6 +62,15 @@ public interface DeliverableDAO {
   List<String> getCommentStatusByPhase(long phase);
 
   /**
+   * get deliverables by phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverables list
+   */
+  List<Integer> getDeliverableListByPhase(long phase);
+
+  /**
    * This method gets a list of Deliverable that are active by a given parameters
    * 
    * @param filterPhaseYear: true for specific phase year (excluding cancelled), false for all years and statuses
@@ -95,6 +105,7 @@ public interface DeliverableDAO {
 
   public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
 
+
   /**
    * get deliverables list by institution, phase and project
    * 
@@ -105,7 +116,6 @@ public interface DeliverableDAO {
    * @return deliverables list
    */
   List<Deliverable> getDeliverablesLeadByInstitutionAndProject(long institutionId, long phaseId, long projectId);
-
 
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
 
@@ -119,6 +129,20 @@ public interface DeliverableDAO {
    * @return deliverables list
    */
   List<Deliverable> getDeliverablesLeadByUserAndProject(long userId, long phaseId, long projectId);
+
+  List<Deliverable> getDeliverablesLeadByUserAndProjectWithConditions(long userId, long phaseId, long projectId);
+
+  /**
+   * get deliverables list by user, phase and project
+   * 
+   * @author IBD
+   * @param phaseId phase id
+   * @param projectId project id
+   * @param userId user id
+   * @return deliverables (DTO) list
+   */
+  List<DeliverableDTO> getDeliverablesLeadByUserAndProjectWithSimpleConditions(long userId, long phaseId,
+    long projectId);
 
   List<String> getDuplicatesDeliverablesByPhase(long phase);
 
