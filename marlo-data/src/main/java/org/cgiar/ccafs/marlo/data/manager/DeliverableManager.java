@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDTO;
 import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -69,6 +70,15 @@ public interface DeliverableManager {
   public Deliverable getDeliverableById(long deliverableID);
 
   /**
+   * get deliverables by phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverables list
+   */
+  List<Integer> getDeliverableListByPhase(long phase);
+
+  /**
    * This method gets a list of Deliverable that are active by a given parameters
    * 
    * @param filterPhaseYear: true for specific phase year (excluding cancelled), false for all years and statuses
@@ -89,8 +99,8 @@ public interface DeliverableManager {
   List<Deliverable> getDeliverablesByPhaseAndUrlAndDoiAndHandel(long phase, String disseminationURL, String handle,
     String DOI);
 
-  public List<Deliverable> getDeliverablesByProjectAndPhase(Long phaseId, Long projectId);
 
+  public List<Deliverable> getDeliverablesByProjectAndPhase(Long phaseId, Long projectId);
 
   /**
    * Gets a list of all the deliverables from a project planned for the phase's year
@@ -104,6 +114,7 @@ public interface DeliverableManager {
 
   public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
 
+
   /**
    * get deliverables list by institution, phase an project
    * 
@@ -115,8 +126,8 @@ public interface DeliverableManager {
    */
   List<Deliverable> getDeliverablesLeadByInstitutionAndProject(long institutionId, long phaseId, long projectId);
 
-
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
+
 
   /**
    * get deliverables list by user, phase and project
@@ -129,6 +140,11 @@ public interface DeliverableManager {
    */
   List<Deliverable> getDeliverablesLeadByUserAndProject(long userId, long phaseId, long projectId);
 
+  List<Deliverable> getDeliverablesLeadByUserAndProjectWithConditions(long userId, long phaseId, long projectId);
+
+
+  List<DeliverableDTO> getDeliverablesLeadByUserAndProjectWithSimpleConditions(long userId, long phaseId,
+    long projectId);
 
   /**
    * This method gets a list of deliverables that are active for an specific liaisonInstitution
@@ -141,10 +157,12 @@ public interface DeliverableManager {
    */
   public List<Deliverable> getDeliverablesList(LiaisonInstitution liaisonInstitution, Phase phase);
 
+
   List<String> getDuplicatesDeliverablesByPhase(long phase);
 
 
   public List<Deliverable> getNotPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
+
 
   /**
    * This method gets a list of publications that are active by a given phase

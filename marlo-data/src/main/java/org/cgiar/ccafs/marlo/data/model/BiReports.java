@@ -36,13 +36,7 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
   private String reportDescription;
 
   @Expose
-  private String reportId;
-
-  @Expose
-  private String datasetId;
-
-  @Expose
-  private String embedUrl;
+  private String embedReport;
 
   @Expose
   private Boolean isActive;
@@ -66,14 +60,8 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
     return crp;
   }
 
-
-  public String getDatasetId() {
-    return datasetId;
-  }
-
-
-  public String getEmbedUrl() {
-    return embedUrl;
+  public String getEmbedReport() {
+    return embedReport;
   }
 
 
@@ -125,11 +113,6 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
   }
 
 
-  public String getReportId() {
-    return reportId;
-  }
-
-
   public String getReportName() {
     return reportName;
   }
@@ -154,13 +137,8 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
   }
 
 
-  public void setDatasetId(String datasetId) {
-    this.datasetId = datasetId;
-  }
-
-
-  public void setEmbedUrl(String embedUrl) {
-    this.embedUrl = embedUrl;
+  public void setEmbedReport(String embedReport) {
+    this.embedReport = embedReport;
   }
 
 
@@ -193,11 +171,6 @@ public class BiReports extends MarloBaseEntity implements java.io.Serializable, 
 
   public void setReportDescription(String reportDescription) {
     this.reportDescription = reportDescription;
-  }
-
-
-  public void setReportId(String reportId) {
-    this.reportId = reportId;
   }
 
   public void setReportName(String reportName) {

@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDTO;
 import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableProgram;
@@ -164,6 +165,12 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
+  public List<Integer> getDeliverableListByPhase(long phase) {
+    return deliverableDAO.getDeliverableListByPhase(phase);
+  }
+
+
+  @Override
   public List<Deliverable> getDeliverablesByParameters(Phase phase, boolean filterPhaseYear, boolean filterParticipants,
     Boolean filterPublications) {
     return deliverableDAO.getDeliverablesByParameters(phase, filterPhaseYear, filterParticipants, filterPublications);
@@ -174,7 +181,6 @@ public class DeliverableManagerImpl implements DeliverableManager {
   public List<Deliverable> getDeliverablesByPhase(long phase) {
     return deliverableDAO.getDeliverablesByPhase(phase);
   }
-
 
   @Override
   public List<Deliverable> getDeliverablesByPhaseAndUrlAndDoiAndHandel(long phase, String disseminationURL,
@@ -213,6 +219,28 @@ public class DeliverableManagerImpl implements DeliverableManager {
   public List<Deliverable> getDeliverablesLeadByUserAndProject(long userId, long phaseId, long projectId) {
     return deliverableDAO.getDeliverablesLeadByUserAndProject(userId, phaseId, projectId);
   }
+
+  @Override
+  public List<Deliverable> getDeliverablesLeadByUserAndProjectWithConditions(long userId, long phaseId,
+    long projectId) {
+    return deliverableDAO.getDeliverablesLeadByUserAndProjectWithConditions(userId, phaseId, projectId);
+  }
+
+  /**
+   * get deliverables list by user, phase and project
+   * 
+   * @author IBD
+   * @param phaseId phase id
+   * @param projectId project id
+   * @param userId user id
+   * @return deliverables (DTO) list
+   */
+  @Override
+  public List<DeliverableDTO> getDeliverablesLeadByUserAndProjectWithSimpleConditions(long userId, long phaseId,
+    long projectId) {
+    return deliverableDAO.getDeliverablesLeadByUserAndProjectWithSimpleConditions(userId, phaseId, projectId);
+  }
+
 
   @Override
   public List<Deliverable> getDeliverablesList(LiaisonInstitution liaisonInstitution, Phase phase) {

@@ -22,6 +22,8 @@ function init() {
     $('[data-toggle="popover"]').popover();   
 });
 
+setFormatInput();
+
 }
 
 function attachEvents() {

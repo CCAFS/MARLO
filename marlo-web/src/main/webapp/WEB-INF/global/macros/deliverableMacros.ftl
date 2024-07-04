@@ -32,7 +32,7 @@
 [#macro deliverableCrossCuttingMacroOld label="deliverable.crossCuttingDimensions" ]
   [#-- Does this deliverable have a cross-cutting dimension --]
   <div class="form-group">
-    <label for="">[@customForm.text name=label readText=!editable/] [@customForm.req required=editable/]</label>
+    <label for="">[@customForm.text name=label readText=!editable/] [@customForm.req required=(editable && validateIsProgressWithStatus!true)/]</label>
     [#assign crossCuttingMarkers = [
         { "id":"gender",    "name": "crossCuttingGender",   "scoreName": "crossCuttingScoreGender" },
         { "id":"youth",     "name": "crossCuttingYouth",    "scoreName": "crossCuttingScoreYouth" },
@@ -141,9 +141,11 @@
 [/#macro]
 
 [#macro deliverableLicenseMacro ]
+[#local validateIsProgressWithStatus = action.validateIsProgressWithStatus(deliverable.deliverableInfo.status)]
+
 <div class="simpleBox">
   <div class="form-group row yesNoInputDeliverable">
-    <label class="col-md-9 yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req required=reportingActive /]</label>
+    <label class="col-md-9 yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req required=(validateIsProgressWithStatus!true) /]</label>
     <div class="col-md-3">[@customForm.yesNoInputDeliverable name="deliverable.deliverableInfo.adoptedLicense"  editable=editable inverse=false  cssClass="type-license text-center" /] </div>  
   </div>  
 </div>
@@ -152,11 +154,13 @@
 
 [#macro isOpenaccessMacro ]
   [#local customName = "deliverable.dissemination"]
+  [#local validateIsProgressWithStatus = action.validateIsProgressWithStatus(deliverable.deliverableInfo.status)]
+
   <div class="simpleBox form-group">
     <input type="hidden"  name="${customName}.id" value="${(deliverable.dissemination.id)!}" />
     <div class="row yesNoInputDeliverable">
     <span class="col-md-9">
-      <label class=" yesNoLabel" for="">Is this deliverable Open Access? [@customForm.req required=reportingActive /]</label>
+      <label class=" yesNoLabel" for="">Is this deliverable Open Access? [@customForm.req required=(validateIsProgressWithStatus!true) /]</label>
       <p><small>Please make sure the information from the repository you chose and the one on Web of Science match. </small></p>
       <div class="WOS_tag" style="display: none;">
         <p>According to Web of Science you should select: <span id="WOS_tag_IOA_yes" style="color: rgb(9, 211, 70); font-weight: 700;">Yes</span><span id="WOS_tag_IOA_no" style="color: rgb(207, 42, 42); font-weight: 700;">No</span></p>
@@ -199,6 +203,7 @@
 [#local customName = "deliverable.deliverableParticipant" /]
 [#local capacityEventType = ((deliverable.deliverableInfo?has_content) && (deliverable.deliverableInfo.deliverableType?has_content) && (deliverable.deliverableInfo.deliverableType.id?has_content) && deliverable.deliverableInfo.deliverableType.id == 145)!false]
 
+[#local validateIsProgressWithStatus = action.validateIsProgressWithStatus(deliverable.deliverableInfo.status)]
 [#local hasParticipants = (deliverable.deliverableParticipant.hasParticipants?string)!""/]
   
 [#if capacityEventType]
@@ -208,7 +213,7 @@
 <div class="simpleBox">
   <div class="form-group row yesNoInputDeliverable yesNoTrainees">
   <span class="col-md-9">
-    <label class="yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=(reportingActive) /]</label>
+    <label class="yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=(validateIsProgressWithStatus!true) /]</label>
     [#if (action.isAFPhase(actualPhase.id))!false]
       <p><small>[@s.text name="project.deliverable.dissemination.involveParticipantsSub.AF" /] </small></p>
     [#else]
@@ -230,18 +235,18 @@
     <hr />
     [#-- Title Event/Activity --]
     <div class="form-group text-area-container">
-      [@customForm.input name="${customName}.eventActivityName" i18nkey="involveParticipants.title" className="limitWords-20" required=editable editable=editable /]
+      [@customForm.input name="${customName}.eventActivityName" i18nkey="involveParticipants.title" className="limitWords-20" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
     </div>
     
     [#-- Type of activity --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.repIndTypeActivity.id" className="setSelect2 trainingType" i18nkey="involveParticipants.typeActivity" listName="repIndTypeActivities" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
+        [@customForm.select name="${customName}.repIndTypeActivity.id" className="setSelect2 trainingType" i18nkey="involveParticipants.typeActivity" listName="repIndTypeActivities" keyFieldName="id"  displayFieldName="name" editable=editable required=(editable!false && validateIsProgressWithStatus!true) /]
       </div>
       [#-- Formal training: Academic Degree --]
       [#local isAcademicDegree = (deliverable.deliverableParticipant.repIndTypeActivity.id == 1)!false /]
       <div class="col-md-6 block-academicDegree" style="display:${isAcademicDegree?string('block','none')}">
-        [@customForm.input name="${customName}.academicDegree" i18nkey="involveParticipants.academicDegree" help="involveParticipants.academicDegree.help" className="" required=true editable=editable /]
+        [@customForm.input name="${customName}.academicDegree" i18nkey="involveParticipants.academicDegree" help="involveParticipants.academicDegree.help" className="" required=validateIsProgressWithStatus!true editable=editable /]
       </div>
     </div>
      <div class="note left">
@@ -272,7 +277,7 @@
     <div class="form-group row">
       <div class="col-md-6">
         <div class="text-area-container">
-         [@customForm.input name="${customName}.participants" i18nkey="involveParticipants.participants" help="involveParticipants.participants.help" placeholder="global.number" className="numericInput" required=editable editable=editable /]
+         [@customForm.input name="${customName}.participants" i18nkey="involveParticipants.participants" help="involveParticipants.participants.help" placeholder="global.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
         </div>
         <br>
         <div class="dottedBox">
@@ -281,7 +286,7 @@
       </div>
       <div class="col-md-6 femaleNumbers">
         <div class="text-area-container">
-          [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="global.number" className="numericInput" required=true editable=editable disabled=(deliverable.deliverableParticipant.dontKnowFemale)!false /]
+          [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="global.number" className="numericInput" required=validateIsProgressWithStatus!true editable=editable disabled=(deliverable.deliverableParticipant.dontKnowFemale)!false /]
         </div>
         <br>
         <div class="dottedBox">
@@ -294,14 +299,14 @@
     [#-- Type of Participant(s): --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.repIndTypeParticipant.id" className="setSelect2" i18nkey="involveParticipants.participantsType" listName="repIndTypeParticipants" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
+        [@customForm.select name="${customName}.repIndTypeParticipant.id" className="setSelect2" i18nkey="involveParticipants.participantsType" listName="repIndTypeParticipants" keyFieldName="id"  displayFieldName="name" editable=editable required=(editable!false && validateIsProgressWithStatus!true) /]
       </div>
     </div>
     
     [#-- Training period of time: (Only if formal training) --]
     [#local isFormal = ([1, 3, 2, 4]?seq_contains(deliverable.deliverableParticipant.repIndTypeActivity.id))!false /]
     <div class="form-group block-periodTime" style="display:${isFormal?string('block','none')}">
-      <label for="">[@s.text name="involveParticipants.trainingPeriod" /]:[@customForm.req required=editable /]
+      <label for="">[@s.text name="involveParticipants.trainingPeriod" /]:[@customForm.req required=(editable!false && validateIsProgressWithStatus!true)  /]
         [@customForm.helpLabel name="involveParticipants.trainingPeriod.help" showIcon=false editable=editable/] 
       </label><br />
       [#list (repIndTrainingTerms)![] as item]
@@ -315,7 +320,7 @@
     <div class="form-group row">
       <div class="col-md-6">
         <div class="text-area-container">
-          [@customForm.input name="${customName}.african" i18nkey="involveParticipants.african" help="involveParticipants.african.help" placeholder="global.number" className="numericInput" required=editable editable=editable /]
+          [@customForm.input name="${customName}.african" i18nkey="involveParticipants.african" help="involveParticipants.african.help" placeholder="global.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
         </div>
         <br>
         <div class="dottedBox">
@@ -324,7 +329,7 @@
       </div>
       <div class="col-md-6 femaleNumbers">
         <div class="text-area-container">
-          [@customForm.input name="${customName}.youth" i18nkey="involveParticipants.youth" help="involveParticipants.youth.help" placeholder="global.number" className="numericInput" required=true editable=editable /]
+          [@customForm.input name="${customName}.youth" i18nkey="involveParticipants.youth" help="involveParticipants.youth.help" placeholder="global.number" className="numericInput" required=validateIsProgressWithStatus!true editable=editable /]
         </div>
         <br>
         <div class="dottedBox">
@@ -339,7 +344,7 @@
     </div>
     [#-- Likely Outcomes --]
     <div class="form-group text-area-container">
-      [@customForm.textArea name="${customName}.likelyOutcomes" i18nkey="involveParticipants.likelyOutcomes" className="" required=editable editable=editable /]
+      [@customForm.textArea name="${customName}.likelyOutcomes" i18nkey="involveParticipants.likelyOutcomes" className="" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
     </div>
     
     [@deliverableMacros.deliverableClusterParticipantsMacro /]
@@ -374,25 +379,25 @@
             </div>
             <div class="col-md-2">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.participants" /][@customForm.req required=reportingActive /]
+              [@customForm.text name="involveParticipants.sharedClusters.participants" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
               </div>
               <br>
             </div>
             <div class="col-md-2 femaleNumbers">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.females" /][@customForm.req required=reportingActive /]
+              [@customForm.text name="involveParticipants.sharedClusters.females" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
               </div>
               <br>
             </div>
             <div class="col-md-2">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.africans" /][@customForm.req required=reportingActive /]
+              [@customForm.text name="involveParticipants.sharedClusters.africans" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
               </div>
               <br>
             </div>
             <div class="col-md-2 femaleNumbers">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.youth" /][@customForm.req required=reportingActive /]
+              [@customForm.text name="involveParticipants.sharedClusters.youth" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
               </div>
               <br>
             </div>
@@ -542,10 +547,12 @@
 
 [#macro alreadyDisseminatedMacro ]
   [#local name = "deliverable.dissemination"  /]
+  [#local validateIsProgressWithStatus = action.validateIsProgressWithStatus(deliverable.deliverableInfo.status)]
+
   <div class="simpleBox form-group">
     <div class=" row yesNoInputDeliverable">
       <span class="col-md-9">
-        <label class="yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.alreadyDisseminatedQuestion" /] [@customForm.req required=reportingActive /]</label>
+        <label class="yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.alreadyDisseminatedQuestion" /] [@customForm.req required=(validateIsProgressWithStatus!true) /]</label>
         <p><small>[@s.text name="project.deliverable.dissemination.alreadyDisseminatedSubQ" /] </small></p>
       </span>
       <div class="col-md-3">
@@ -561,7 +568,7 @@
       <hr />
       [#-- Is this deliverable confidential and/or a management/internal deliverable? --]
       <div class="form-group">
-        <label for="">[@s.text name="project.deliverable.dissemination.confidential" /]?[@customForm.req required=editable /]</label> <br />
+        <label for="">[@s.text name="project.deliverable.dissemination.confidential" /]? [@customForm.req required=(reportingActive && validateIsProgressWithStatus!true!true) /]</label> <br />
         [#assign isConfidential = (deliverable.dissemination.confidential?string)!""]
         [@customForm.radioFlat id="confidetial-yes" name="${name}.confidential" label="Yes" value="true"  checked=(isConfidential == "true")  cssClass="radioType-confidential" cssClassLabel="radio-label-yes" editable=editable /]
         [@customForm.radioFlat id="confidetial-no"  name="${name}.confidential" label="No"  value="false" checked=(isConfidential == "false") cssClass="radioType-confidential" cssClassLabel="radio-label-no"  editable=editable /]
@@ -569,7 +576,7 @@
       
       [#-- Confidential URL --]
       <div class="form-group confidentialBlock-true text-area-container" style="display:${(isConfidential == "true")?string('block', 'none')}">
-        [@customForm.input name="${name}.confidentialUrl" type="text" i18nkey="project.deliverable.dissemination.confidentialUrl" help="project.deliverable.dissemination.confidentialUrl.help" helpIcon=false placeholder="global.webSiteLink.placeholder" className="" required=true editable=editable /]
+        [@customForm.input name="${name}.confidentialUrl" type="text" i18nkey="project.deliverable.dissemination.confidentialUrl" help="project.deliverable.dissemination.confidentialUrl.help" helpIcon=false placeholder="global.webSiteLink.placeholder" className="" required=validateIsProgressWithStatus!true editable=editable /]
       </div>
       <div class="form-group confidentialBlock-false" style="display:${(isConfidential == "false")?string('block', 'none')}">
         <p class="note"> [@s.text name="project.deliverable.dissemination.confidentialNoMessage" /] </p>
@@ -581,6 +588,7 @@
 [#macro findableOptions ]
   [#local isSynced = (deliverable.dissemination.synced)!false ]
   [#local customName = "deliverable.dissemination" /]
+  [#local validateIsProgressWithStatus = action.validateIsProgressWithStatus(deliverable.deliverableInfo.status)]
   <div class="disseminationChannelBlock" >
     [#-- Note 
     <div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
@@ -588,7 +596,7 @@
     <div class="form-group row">
       <div class="col-md-4">
         [#if editable]
-          [@customForm.select name="${customName}.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="repositoryChannels" displayFieldName="name" keyFieldName="shortName" className="disseminationChannel"   multiple=false required=true   editable=editable/]
+          [@customForm.select name="${customName}.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="repositoryChannels" displayFieldName="name" keyFieldName="shortName" className="disseminationChannel"   multiple=false required=validateIsProgressWithStatus!true   editable=editable/]
         [#else]
         <div class="input">
           <label for="disChannel" style="display:block;">Dissemination channel:</label>
@@ -625,7 +633,7 @@
   <div id="disseminationUrl" style="display:[#if channelsArray?seq_contains(channelSelected) || (channelSelected == "other") ]block[#else]none[/#if];">
     <div class="form-group" > 
       <div class="url-field text-area-container">
-        [@customForm.input name="${customName}.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true readOnly=isSynced editable=editable /]
+        [@customForm.input name="${customName}.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=validateIsProgressWithStatus!true readOnly=isSynced editable=editable /]
       </div>
       <div class="buttons-field">
         [#if editable]
@@ -650,10 +658,10 @@
 
     <div class="form-group row ifIsReadOnly" style="margin-top: 10px;">
       <div class="col-md-6 conditionalRequire handle-bridge text-area-container">
-        [@customForm.input name="handle-bridge" required=require value="" className="metadataValue handleField"  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable id="handleField"/]
+        [@customForm.input name="handle-bridge" required=(require!false && validateIsProgressWithStatus!true)value="" className="metadataValue handleField"  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable id="handleField"/]
       </div>
       <div class="col-md-6 conditionalRequire doi-bridge text-area-container" style="position: relative;">
-        [@customForm.input name="doi-bridge" required=require value="" className="metadataValue doiField" type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable id="doiField"/]
+        [@customForm.input name="doi-bridge" required=(require!false && validateIsProgressWithStatus!true) value="" className="metadataValue doiField" type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable id="doiField"/]
         <p class="invalidDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(207, 40, 40); font-weight: 600; font-size: 0.8em; display: none; bottom: -32px; margin: 12px 2px 0 12px;">Invalid DOI identifier.<br>Please use the correct format <strong>(e.g. 10.1109/5.771073)</strong></p>
         <p class="validDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(50, 206, 45); font-weight: 600; font-size: 0.8em; display: none; bottom: -18px; margin: 12px 2px 0 12px;">Valid DOI identifier</p>
       </div>
@@ -672,7 +680,7 @@
       </div>
       [#-- Alternative url TextField --]
       <div class="col-md-6 other-url" style="display:${(isOtherUrl)?string('block','none')}">
-        [@customForm.input name="deliverable.dissemination.articleUrl" type="text" i18nkey="project.deliverable.articleURL"  placeholder="" required=true editable=editable /]
+        [@customForm.input name="deliverable.dissemination.articleUrl" type="text" i18nkey="project.deliverable.articleURL"  placeholder="" required=validateIsProgressWithStatus!true editable=editable /]
       </div>
    </div>
 
@@ -872,16 +880,16 @@
   </div>
 [/#macro]
 
-[#macro deliverableMetadataMacro flagshipslistName="programs" crpsListName="crps" allowFlagships=true]
+[#macro deliverableMetadataMacro flagshipslistName="programs" crpsListName="crps" allowFlagships=true validateIsProgressWithStatus=true]
   <div class="form-group">
-    [@metadataField title="title" encodedName="dc.title" type="input" require=true/]
+    [@metadataField title="title" encodedName="dc.title" type="input" require=validateIsProgressWithStatus /]
   </div>
   <div class="form-group">
     [@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
   </div>
   <div class="form-group row">
     <div class="col-md-6">
-      [@metadataField title="publicationDate" encodedName="dc.date" type="input" require=true/]
+      [@metadataField title="publicationDate" encodedName="dc.date" type="input" require=validateIsProgressWithStatus/]
     </div>
     [#if !action.isAiccra()]
     <div class="col-md-6">
@@ -909,7 +917,7 @@
 
     <div class="col-md-6 conditionalRequire">
        [#assign isOtherUrl = (deliverable.dissemination.hasDOI)!false /]
-       [@metadataField title="doi" encodedName="marlo.doi" type="input" require=!(isOtherUrl)/]
+       [@metadataField title="doi" encodedName="marlo.doi" type="input" require=(!isOtherUrl && validateIsProgressWithStatus!true)/]
     </div>
   </div>
   
@@ -969,22 +977,22 @@
     [#if editable] <p class="note">[@s.text name="project.deliverable.dissemination.journalFields" /]</p> [/#if]
     <div class="form-group row">
       <div class="col-md-4 metadataElement metadataElement-volume no-lock">
-        [@customForm.input name="deliverable.publication.volume" i18nkey="project.deliverable.dissemination.volume" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
+        [@customForm.input name="deliverable.publication.volume" i18nkey="project.deliverable.dissemination.volume" className="metadataValue" type="text" disabled=!editable  required=validateIsProgressWithStatus editable=editable /]
       </div> 
       <div class="col-md-4 metadataElement metadataElement-issue no-lock">
-        [@customForm.input name="deliverable.publication.issue" i18nkey="project.deliverable.dissemination.issue" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
+        [@customForm.input name="deliverable.publication.issue" i18nkey="project.deliverable.dissemination.issue" className="metadataValue" type="text" disabled=!editable  required=validateIsProgressWithStatus editable=editable /]
       </div>
       <div class="col-md-4 metadataElement metadataElement-pages no-lock">
-        [@customForm.input name="deliverable.publication.pages" i18nkey="project.deliverable.dissemination.pages" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
+        [@customForm.input name="deliverable.publication.pages" i18nkey="project.deliverable.dissemination.pages" className="metadataValue" type="text" disabled=!editable  required=validateIsProgressWithStatus editable=editable /]
       </div>
     </div>
     <div class="form-group metadataElement metadataElement-journal no-lock">
-      [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
+      [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="metadataValue" type="text" disabled=!editable  required=validateIsProgressWithStatus editable=editable /]
     </div>
     
     [#-- Is ISI Journal--]
     <div class="form-group isIsiJournal">
-      <label for="">[@s.text name="deliverable.isiPublication" /] [@customForm.req required=editable /]
+      <label for="">[@s.text name="deliverable.isiPublication" /] [@customForm.req required=(editable && validateIsProgressWithStatus!true) /]
       <p><i class="helpLabel">Please make sure the information from the repository you chose and the one on Web of Science match.</i></p></label> <br />
       [#local isISI = (deliverable.publication.isiPublication?string)!"" /]
       [@customForm.radioFlat id="optionISI-yes"  name="deliverable.publication.isiPublication" i18nkey="Yes"  value="true"  checked=(isISI == "true")  cssClass="radioType-optionISI" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
@@ -1346,7 +1354,7 @@
   
   <div id="deliverablePartnerItem-${isTemplate?string('template', (element.id)! )}" class="simpleBox deliverablePartnerItem" style="display:${isTemplate?string('none', 'block')}">
     [#-- Remove --]
-    [#if editable && !isResponsable]<div class="removePartnerItem removeElement removeLink sm" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> [/#if]
+    [#if editable!false && !isResponsable]<div class="removePartnerItem removeElement removeLink sm" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> [/#if]
     [#-- Deliverable Partner ID --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Type --] 
@@ -1519,9 +1527,9 @@
     <div class=" row yesNoInputDeliverable">
       <span class="col-md-9">
       [#if reportingActive]
-        <label class="yesNoLabel" for="">[@s.text name="deliverable.shfrmContribution.question.reporting" /] [@customForm.req required=true /]</label>
+        <label class="yesNoLabel" for="">[@s.text name="deliverable.shfrmContribution.question.reporting" /] [@customForm.req required=validateIsProgressWithStatus!true /]</label>
       [#else]
-        <label class="yesNoLabel" for="">[@s.text name="deliverable.shfrmContribution.question.planning" /] [@customForm.req required=true /]</label>
+        <label class="yesNoLabel" for="">[@s.text name="deliverable.shfrmContribution.question.planning" /] [@customForm.req required=validateIsProgressWithStatus!true /]</label>
       [/#if]
         <p><small>[@s.text name="deliverable.shfrmContribution.question.help" /] </small></p>
       </span>
@@ -1542,11 +1550,11 @@
           </div>
         [/#if]
       <div class="form-group">
-        [@customForm.textArea name="deliverable.deliverableInfo.shfrmContributionNarrativeAR" value="${(deliverable.deliverableInfo.shfrmContributionNarrativeAR)!}" i18nkey="deliverable.shfrmContribution.narrative.reporting"  placeholder="" className="limitWords-200" required=true editable=editable /]
+        [@customForm.textArea name="deliverable.deliverableInfo.shfrmContributionNarrativeAR" value="${(deliverable.deliverableInfo.shfrmContributionNarrativeAR)!}" i18nkey="deliverable.shfrmContribution.narrative.reporting"  placeholder="" className="limitWords-200" required=validateIsProgressWithStatus!true editable=editable /]
       </div>
       [#else]
       <div class="form-group">
-        [@customForm.textArea name="deliverable.deliverableInfo.shfrmContributionNarrative" value="${(deliverable.deliverableInfo.shfrmContributionNarrative)!}" i18nkey="deliverable.shfrmContribution.narrative.planning"  placeholder="" className="limitWords-200" required=true editable=editable /]
+        [@customForm.textArea name="deliverable.deliverableInfo.shfrmContributionNarrative" value="${(deliverable.deliverableInfo.shfrmContributionNarrative)!}" i18nkey="deliverable.shfrmContribution.narrative.planning"  placeholder="" className="limitWords-200" required=validateIsProgressWithStatus!true editable=editable /]
       </div>
       [/#if]
       <br>    
@@ -1554,7 +1562,7 @@
       <div class="form-group">
 
         <div id="actionsListReference">
-          [@customForm.elementsListComponent id="deliverablePriorityActions" name="deliverable.shfrmPriorityActions" elementType="shfrmPriorityAction" help="deliverable.shfrmContribution.priorityAction.help" helpIcon=false elementList=(deliverable.shfrmPriorityActions)![] label="deliverable.shfrmContribution.priorityAction" listName="shfrmPriorityActions" keyFieldName="id" displayFieldName="composedName" required=true /]
+          [@customForm.elementsListComponent id="deliverablePriorityActions" name="deliverable.shfrmPriorityActions" elementType="shfrmPriorityAction" help="deliverable.shfrmContribution.priorityAction.help" helpIcon=false elementList=(deliverable.shfrmPriorityActions)![] label="deliverable.shfrmContribution.priorityAction" listName="shfrmPriorityActions" keyFieldName="id" displayFieldName="composedName" required=validateIsProgressWithStatus!true /]
         </div>
        
       </div>

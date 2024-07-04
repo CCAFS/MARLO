@@ -17,14 +17,8 @@
         <property name="reportDescription" type="string">
             <column name="report_description" />
         </property>
-        <property name="reportId" type="string">
-            <column name="report_id" />
-        </property>
-        <property name="datasetId" type="string">
-            <column name="dataset_id" />
-        </property>
-        <property name="embedUrl" type="string">
-            <column name="embed_url" />
+        <property name="embedReport" type="string">
+            <column name="embed_report" />
         </property>
         <property name="isActive" type="boolean">
             <column name="is_active" not-null="true" />

@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -69,6 +70,61 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     return new ArrayList<SectionStatus>();
 
   }
+
+  @Override
+  public List<Integer> getCompleteDeliverableListByPhase(long phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT di.deliverable_id as deliverable_id ");
+    query.append("FROM deliverables_info di ");
+    query.append("JOIN phases p ON p.id = di.id_phase ");
+    query.append("JOIN deliverables d ON d.id = di.deliverable_id ");
+    query.append(" WHERE di.id_phase =" + phase);
+    query.append(" AND d.is_active = 1  ");
+    query.append(" AND di.is_active = d.is_active ");
+    query.append(" AND EXISTS (  ");
+    query.append(" SELECT 1  ");
+    query.append(" FROM section_statuses ss  ");
+    query.append(" WHERE ss.deliverable_id = di.deliverable_id  ");
+    query.append(" AND ss.`year` = p.`year` ");
+    query.append(" AND ss.cycle = p.description ");
+    query.append(" AND ss.upkeep = p.upkeep ");
+    query.append(" AND ss.section_name = 'deliverableList' ");
+    query.append(" AND length(ss.missing_fields) = 0 ");
+    query.append(" ) ");
+    query.append(" AND di.status = 2 ");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<Integer> deliverables = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        String tmp = map.get("deliverable_id").toString();
+        deliverables.add(Integer.parseInt(tmp));
+      }
+    }
+
+    return deliverables;
+  }
+
+  public int findAllQuantity() {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT count(*) as count from section_statuses as ss  ");
+
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    int sesionQuantity = 0;
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        sesionQuantity = Integer.parseInt(map.get("count").toString());
+      }
+    }
+
+    return sesionQuantity;
+
+  }
+
 
   @Override
   public List<SectionStatus> getSectionsStatusByReportSynthesis(long synthesisID, String cycle, int year,
@@ -145,6 +201,7 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     return null;
   }
 
+
   @Override
   public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, Boolean upkeep,
     String sectionName) {
@@ -170,7 +227,6 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     return null;
   }
 
-
   @Override
   public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, Boolean upkeep,
     String sectionName) {
@@ -183,6 +239,7 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     return null;
   }
 
+
   @Override
   public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, Boolean upkeep,
     String sectionName) {
@@ -194,7 +251,6 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     }
     return null;
   }
-
 
   @Override
   public SectionStatus getSectionStatusByProjectContributionToLP6(long projectLp6ContributionID, String cycle, int year,
@@ -304,6 +360,7 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     }
     return null;
   }
+
 
   @Override
   public SectionStatus save(SectionStatus sectionStatus) {

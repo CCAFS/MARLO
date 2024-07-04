@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableDAO;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDTO;
 import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -139,6 +140,28 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
 
     return comments;
   }
+
+
+  @Override
+  public List<Integer> getDeliverableListByPhase(long phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT id as id ");
+    query.append("from deliverables d ");
+    query.append(" WHERE id_phase=" + phase);
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<Integer> deliverables = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        String tmp = map.get("id").toString();
+        deliverables.add(Integer.parseInt(tmp));
+      }
+    }
+
+    return deliverables;
+  }
+
 
   @Override
   public List<Deliverable> getDeliverablesByParameters(Phase phase, boolean filterPhaseYear, boolean filterParticipants,
@@ -361,6 +384,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     query.append("dup.is_active = 1 AND ");
     query.append("dupp.is_active = 1 AND ");
     query.append("dup.institution_id =" + institutionId + " AND ");
+    query.append("dup.id_phase = d.id_phase and ");
     query.append("dup.id_phase = " + phaseId);
     query.append(" and d.is_active =1 ");
     query.append(" and d.project_id = " + projectId);
@@ -431,6 +455,126 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     if (rList != null) {
       for (Map<String, Object> map : rList) {
         Deliverable deliverable = this.find(Long.parseLong(map.get("id").toString()));
+        deliverables.add(deliverable);
+      }
+    }
+
+    return deliverables;
+  }
+
+
+  @Override
+  public List<Deliverable> getDeliverablesLeadByUserAndProjectWithConditions(long userId, long phaseId,
+    long projectId) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT ");
+    query.append("dup.deliverable_id as id ");
+    query.append("FROM ");
+    query.append("deliverable_user_partnerships AS dup ");
+    query.append("INNER JOIN deliverable_user_partnership_persons AS dupp ON dupp.user_partnership_id = dup.id ");
+    query.append(" inner join deliverables as d on dup.deliverable_id = d.id ");
+    query.append(" inner join deliverables_info di on di.deliverable_id = d.id ");
+    query.append(" inner join phases p on p.id = d.id_phase ");
+    query.append("WHERE ");
+    query.append("dupp.user_id =" + userId + " AND ");
+    query.append("dup.is_active = 1 AND ");
+    query.append("dupp.is_active = 1 AND ");
+    query.append(" dup.id_phase = d.id_phase AND ");
+    query.append("d.id_phase = di.id_phase AND ");
+    query.append("dup.id_phase =" + phaseId);
+    query.append(" and d.project_id =" + projectId);
+    query.append(" and di.status in (2,4) ");
+    query.append(" and d.is_active =1 ");
+    query.append(" and di.year >= p.year ");
+    query.append(" union ");
+    query.append("SELECT DISTINCT ");
+    query.append("dup.deliverable_id as id ");
+    query.append("FROM ");
+    query.append("deliverable_user_partnerships AS dup ");
+    query.append("INNER JOIN deliverable_user_partnership_persons AS dupp ON dupp.user_partnership_id = dup.id ");
+    query.append(" inner join deliverables as d on dup.deliverable_id = d.id ");
+    query.append(" inner join deliverables_info di on di.deliverable_id = d.id ");
+    query.append(" inner join phases p on p.id = d.id_phase ");
+    query.append("WHERE ");
+    query.append("dupp.user_id =" + userId + " AND ");
+    query.append("dup.is_active = 1 AND ");
+    query.append("dupp.is_active = 1 AND ");
+    query.append(" dup.id_phase = d.id_phase AND ");
+    query.append("d.id_phase = di.id_phase AND ");
+    query.append("dup.id_phase =" + phaseId);
+    query.append(" and d.project_id =" + projectId);
+    query.append(" and di.status in (4) ");
+    query.append(" and d.is_active =1 ");
+    query.append(" and di.new_expected_year >= p.year ");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<Deliverable> deliverables = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        Deliverable deliverable = this.find(Long.parseLong(map.get("id").toString()));
+        deliverables.add(deliverable);
+      }
+    }
+
+    return deliverables;
+  }
+
+
+  @Override
+  public List<DeliverableDTO> getDeliverablesLeadByUserAndProjectWithSimpleConditions(long userId, long phaseId,
+    long projectId) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT ");
+    query.append("dup.deliverable_id as id ");
+    query.append(",di.title as tittle ");
+    query.append("FROM ");
+    query.append("deliverable_user_partnerships AS dup ");
+    query.append("INNER JOIN deliverable_user_partnership_persons AS dupp ON dupp.user_partnership_id = dup.id ");
+    query.append(" inner join deliverables as d on dup.deliverable_id = d.id ");
+    query.append(" inner join deliverables_info di on di.deliverable_id = d.id ");
+    query.append(" inner join phases p on p.id = d.id_phase ");
+    query.append("WHERE ");
+    query.append("dupp.user_id =" + userId + " AND ");
+    query.append("dup.is_active = 1 AND ");
+    query.append("dupp.is_active = 1 AND ");
+    query.append(" dup.id_phase = d.id_phase AND ");
+    query.append("d.id_phase = di.id_phase AND ");
+    query.append("dup.id_phase =" + phaseId);
+    query.append(" and d.project_id =" + projectId);
+    query.append(" and di.status in (2,4) ");
+    query.append(" and d.is_active =1 ");
+    query.append(" and di.year >= p.year ");
+    query.append(" union ");
+    query.append("SELECT DISTINCT ");
+    query.append("dup.deliverable_id as id ");
+    query.append(",di.title as tittle ");
+    query.append("FROM ");
+    query.append("deliverable_user_partnerships AS dup ");
+    query.append("INNER JOIN deliverable_user_partnership_persons AS dupp ON dupp.user_partnership_id = dup.id ");
+    query.append(" inner join deliverables as d on dup.deliverable_id = d.id ");
+    query.append(" inner join deliverables_info di on di.deliverable_id = d.id ");
+    query.append(" inner join phases p on p.id = d.id_phase ");
+    query.append("WHERE ");
+    query.append("dupp.user_id =" + userId + " AND ");
+    query.append("dup.is_active = 1 AND ");
+    query.append("dupp.is_active = 1 AND ");
+    query.append(" dup.id_phase = d.id_phase AND ");
+    query.append("d.id_phase = di.id_phase AND ");
+    query.append("dup.id_phase =" + phaseId);
+    query.append(" and d.project_id =" + projectId);
+    query.append(" and di.status in (4) ");
+    query.append(" and d.is_active =1 ");
+    query.append(" and di.new_expected_year >= p.year ");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<DeliverableDTO> deliverables = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        DeliverableDTO deliverable = new DeliverableDTO();
+        deliverable.setId(Long.parseLong(map.get("id").toString()));
+        deliverable.setTitle(map.get("tittle").toString());
         deliverables.add(deliverable);
       }
     }
