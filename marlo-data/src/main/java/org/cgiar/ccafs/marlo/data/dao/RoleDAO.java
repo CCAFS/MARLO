@@ -56,6 +56,16 @@ public interface RoleDAO {
 
 
   /**
+   * This method gets a list of role that are active
+   * 
+   * @param globalUnitId globaUnit identifier
+   * @param acronym acronym
+   * @return a list from Role null if no exist records
+   */
+  public List<Role> findByGloablUnitAndAcronym(long globalUnitId, String acronym);
+
+
+  /**
    * This method saves the information of the given role
    * 
    * @param role - is the role object with the new information to be added/updated.
