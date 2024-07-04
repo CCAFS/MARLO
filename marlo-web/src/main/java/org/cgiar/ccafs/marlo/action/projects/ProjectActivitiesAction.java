@@ -120,6 +120,7 @@ public class ProjectActivitiesAction extends BaseAction {
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
   }
 
+
   public void activitiesPreviousData(Project projectBD) {
     List<Activity> activitiesPrew;
     activitiesPrew = projectBD.getActivities().stream()
@@ -129,6 +130,26 @@ public class ProjectActivitiesAction extends BaseAction {
         activityManager.deleteActivity(activity.getId());
       }
     }
+
+
+  }
+
+  public void activitiesPreviousDataCustom(Project projectBD) {
+    try {
+      List<Activity> activitiesPrew;
+      activitiesPrew =
+        this.activityManager.getActiveActivitiesByProject(projectBD.getId(), this.getActualPhase().getId()).stream()
+          .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+      for (Activity activity : activitiesPrew) {
+        if (!project.getProjectActivities().contains(activity)) {
+          activityManager.deleteActivity(activity.getId());
+        }
+      }
+    } catch (Exception e) {
+      logger.error(" unable to get activities in activitiesPreviousDataCustom function ");
+    }
+
+
   }
 
 
@@ -628,7 +649,7 @@ public class ProjectActivitiesAction extends BaseAction {
       }
 
 
-      this.activitiesPreviousData(projectBD);
+      this.activitiesPreviousDataCustom(projectBD);
 
       // cgamboa 11/06/2024 project.getProjectActivities() will be call once and used sometimes
       List<Activity> projectActivities = new ArrayList<Activity>();
