@@ -802,3 +802,42 @@ function setCustomEvent(event_category,eventName,event_label) {
       'value': 1
   });
 }
+
+
+/**
+ * Sets the format for input fields with numbers to have commas and separators.
+ */
+function setFormatInput() {
+      
+    $("input.targetValueNumber").each(function (i, ele) {
+
+      if($(ele).attr('type')=='hidden'){
+        return;
+      }
+      let clone=$(ele).clone(false);
+      clone.attr("type","text");
+      clone.removeAttr('id');
+      clone.removeAttr('name');
+      let ele1=$(ele);
+      clone.val(Number(ele1.val()).toLocaleString("en"));
+      $(ele).after(clone);
+      $(ele).hide();
+      clone.mouseenter(()=>{
+  
+        ele1.show();
+        clone.hide();
+      })
+      setInterval(()=>{
+        let newv=Number(ele1.val()).toLocaleString("en");
+        if(clone.val()!=newv){
+          clone.val(newv);
+        }
+      },10)
+  
+      $(ele).mouseleave(()=>{
+        $(clone).show();
+        $(ele1).hide();
+      })
+    });
+
+}
