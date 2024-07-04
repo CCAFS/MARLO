@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.Role;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -60,6 +61,18 @@ public class RoleMySQLDAO extends AbstractMarloDAO<Role, Long> implements RoleDA
   @Override
   public List<Role> findAll() {
     String query = "from " + Role.class.getName();
+    List<Role> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
+  public List<Role> findByGloablUnitAndAcronym(long globalUnitId, String acronym) {
+    String query =
+      "from " + Role.class.getName() + " where global_unit_id =" + globalUnitId + " and acronym ='" + acronym + "'";
     List<Role> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

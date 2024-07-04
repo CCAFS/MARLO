@@ -127,8 +127,9 @@ public class UnhandledExceptionAction extends BaseAction {
       actionNameSubject += " - " + this.getActualPhase().getComposedName();
     }
 
-    if (this.getCurrentUser() != null && this.getCurrentUser().getFirstName() != null) {
-      actionNameSubject += " - " + this.getCurrentUser().getFirstName();
+    if (this.getCurrentUser() != null && this.getCurrentUser().getFirstName() != null
+      && this.getCurrentUser().getLastName() != null) {
+      actionNameSubject += " - " + this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName();
     }
     subject += actionNameSubject;
 
