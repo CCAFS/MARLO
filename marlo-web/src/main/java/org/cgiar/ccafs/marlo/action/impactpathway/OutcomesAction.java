@@ -106,12 +106,8 @@ public class OutcomesAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
 
-<<<<<<< HEAD
-=======
   private static final Logger LOG = LoggerFactory.getLogger(OutcomesAction.class);
 
-
->>>>>>> aiccra-staging
   // FIXME remove this variable. create an specificity for each crp/platform
   private static final Integer END_YEAR = 2030;
 
