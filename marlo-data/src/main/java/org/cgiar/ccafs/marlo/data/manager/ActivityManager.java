@@ -66,6 +66,15 @@ public interface ActivityManager {
   public List<Activity> getActiveActivitiesByProject(long projectId, long phaseId);
 
   /**
+   * This method obtains the number of existing activities, by deliverable and phase
+   * 
+   * @param deliverableId deliverable identifier.
+   * @param phaseId phase identifier.
+   * @return number of existing activities
+   */
+  int getActivitiesByDeliverableAndPhaseQuantity(long deliverableId, long phaseId);
+
+  /**
    * This method gets a activity object by a given activity identifier.
    * 
    * @param projectID is the project/cluster identifier.
@@ -84,6 +93,7 @@ public interface ActivityManager {
    */
 
   int getActivitiesByProjectAndUserQuantity(long projectId, long phaseId, long projectPersonId);
+
 
   /**
    * This method gets a activity object by a given activity identifier.

@@ -62,6 +62,13 @@ public interface ActivityDAO {
    * @return a list from Activity null if no exist records
    */
   List<Activity> getActiveActivitiesByProject(long projectId, long phaseId);
+   /* This method obtains the number of existing activities, by deliverable and phase
+   * 
+   * @param deliverableId deliverable identifier.
+   * @param phaseId phase identifier.
+   * @return number of existing activities
+   */
+  int getActivitiesByDeliverableAndPhaseQuantity(long deliverableId, long phaseId);
 
   /**
    * This method validate if the activity identify with the given id exists in the system.

@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
+ * 0 * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@ public final class APConstants {
   public static final String CRP_PROJECT_BUDGET_ZERO = "crp_project_budget_zero";
   public static final String CRP_LOGIN_HEADER_TEXT = "crp_login_header_text";
   public static final String CRP_AICCRA_AF_START_PHASE = "crp_aiccra_af_start_phase";
+  public static final String CRP_TIMELINE_WEEK_PARAMETER_VISUALIZATION = "crp_timeline_week_parameter_visualization";
 
   public static final String CRP_HAS_REGIONS = "crp_has_regions";
   public static final String CRP_ID = "crpID";
