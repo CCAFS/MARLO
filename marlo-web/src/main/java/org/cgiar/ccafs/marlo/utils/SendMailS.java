@@ -182,7 +182,7 @@ public class SendMailS extends BaseAction {
         testingHeader.append("CC: " + ccEmail + "<br>");
         testingHeader.append("BBC: " + bbcEmail + "<br>");
         testingHeader.append("----------------------------------------------------<br><br>");
-        subject = "TEST " + subject;
+        subject = "(TESTING ENVIRONMENT) " + subject;
         messageContent = testingHeader.toString() + messageContent;
         if (toEmail != null) {
           msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
