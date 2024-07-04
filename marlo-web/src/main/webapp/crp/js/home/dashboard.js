@@ -15,10 +15,7 @@ let timelineElements;
  */
 let timelineZoom;
 
-setTimeout(() => {
-  getIntersectedActivities();
-  
-}, 500);
+
 
 function initDashboard() {
 
@@ -52,7 +49,9 @@ function initDashboard() {
 
   $('.circleMap').hover(itemMapHover, itemMap);
 
-
+  setTimeout(() => {
+    getIntersectedActivities();
+  }, 5000);
 }
 
 function itemMapHover() {
