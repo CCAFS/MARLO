@@ -165,6 +165,12 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
+  public List<Integer> getDeliverableListByPhase(long phase) {
+    return deliverableDAO.getDeliverableListByPhase(phase);
+  }
+
+
+  @Override
   public List<Deliverable> getDeliverablesByParameters(Phase phase, boolean filterPhaseYear, boolean filterParticipants,
     Boolean filterPublications) {
     return deliverableDAO.getDeliverablesByParameters(phase, filterPhaseYear, filterParticipants, filterPublications);
@@ -175,7 +181,6 @@ public class DeliverableManagerImpl implements DeliverableManager {
   public List<Deliverable> getDeliverablesByPhase(long phase) {
     return deliverableDAO.getDeliverablesByPhase(phase);
   }
-
 
   @Override
   public List<Deliverable> getDeliverablesByPhaseAndUrlAndDoiAndHandel(long phase, String disseminationURL,

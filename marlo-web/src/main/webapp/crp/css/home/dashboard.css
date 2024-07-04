@@ -341,9 +341,6 @@ span.timelineControl:hover {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    position: absolute;
-    top: 12%;
-    transform: translateY(-50%);
     font-size: 20px;
     font-weight: bold;
     font-family: monospace;
@@ -417,7 +414,7 @@ span.timelineControl:hover {
 	  position: relative;
 	  overflow-x: scroll;
 	  overflow-y: visible;
-	  height: 32vh;
+	  height: 31.5vh;
 	  width: 95%;
 	  margin: 0 auto;
 	}
@@ -458,18 +455,57 @@ span.timelineControl:hover {
     width: 100%;
     align-items: end;
 	}
+
+  #timelineDescription > div{
+    width: 33.3%;
+  }
 	
 	#timelineDescription_title{
     font-size: 2.0em;
     color: #333;
-    width: 100%;
     text-align: center;
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    align-items: center;
 	}
 	
 	#timelineDescription_range{
 		font-size: 1.5rem;
 		
 	}
+
+  #timelineDescription_zoom{
+    display: flex;
+    gap: 1rem;
+  }
+
+  #timelineDescription_zoom_weeks{
+    font-size: 14px;
+    margin: 0;
+    line-height: 3rem;
+  }
+
+  .sideButtonZoom{
+    width: 36px;
+    height: 36px;
+    color: #545454;
+    background-color: transparent;
+    padding: 0;
+    font-size: 20px;
+    font-weight: bolder;
+    text-align: center;
+    line-height: 0;
+    padding-bottom: 3px;
+    cursor: pointer;
+    border-radius: 100%;
+    padding: 0.5rem;
+  }
+
+  .sideButtonZoom:hover{
+    background-color: #54545425;
+    opacity: 0.4;
+  }
 
 	#timeline_times {
 	  display: flex;
@@ -490,7 +526,7 @@ span.timelineControl:hover {
 		}
 		
 		#timelineContainer{
-			height: 26vh;
+			height: 24vh;
 		}
 	}
 	
@@ -640,30 +676,53 @@ span.timelineControl:hover {
 		color: #000;
 	}
 
+  .activityCard_container--zoom{
+    padding: 0.4rem;
+  }
+
+  .activityCard_container--zoom .activityCard_description{
+    font-size: 1.2rem;
+  }
+
+  .activityCard_container--zoom .activityCard_details div b{
+    font-size: 0.8rem;
+  }
+
+  .activityCard_container--zoom .activityCard_details p{
+    font-size: 0.8rem;
+  }
+
+  .activityCard_container--zoom .activityCard_details--1 div b{
+    font-size: 0.8rem;
+  }
+
+  .activityCard_container--zoom .activityCard_details--1 p{
+    font-size: 0.8rem;
+  } 
+
   #timeline_activities .activityFlexTop--1{
     top: 1.5em;
   }
 
   #timeline_activities .activityFlexTop--2{
-    top: 6em;
+    top: 5.8em;
   }
 
   #timeline_activities .activityFlexTop--3{
-    top: 10.5em;
+    top: 10.3em;
   }
 
   #timeline_activities .activityUnique{
-    top: 4.5em;
+    top: 4.3em;
   }
 	
 	#timelineAlert{
 		display: flex;
-		flex-direction: row;
+		flex-direction: column;
 		justify-content: flex-end;
     gap: 0.5rem;
     align-items: end;
     padding-bottom: 6px;
-    position: absolute;
     right: 2.5%;
     top: 10%;
 	}
