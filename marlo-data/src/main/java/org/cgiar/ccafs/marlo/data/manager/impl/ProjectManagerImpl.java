@@ -142,14 +142,18 @@ public class ProjectManagerImpl implements ProjectManager {
         }
         if (roles != null) {
           GlobalUnit globalUnit = globalUnitDAO.findGlobalUnitByAcronym(crp);
-          Role roleFPM = roleDAO.findAll().stream()
-            .filter(r -> r != null && r.getCrp() != null && globalUnit != null
-              && r.getCrp().getId().equals(globalUnit.getId()) && r.getAcronym().equals("FPM"))
-            .collect(Collectors.toList()).get(0);
-          Role roleFPL = roleDAO.findAll().stream()
-            .filter(r -> r != null && r.getCrp() != null && globalUnit != null
-              && r.getCrp().getId().equals(globalUnit.getId()) && r.getAcronym().equals("FPL"))
-            .collect(Collectors.toList()).get(0);
+
+          /// 2024/06/28 cgamboa findAll was changed by findByGloablUnitAndAcronym - (FPM role)
+          Role roleFPM = roleDAO.findByGloablUnitAndAcronym(globalUnit.getId(), "FPM").get(0);
+          /*
+           * roleDAO.findAll().stream()
+           * .filter(r -> r != null && r.getCrp() != null && globalUnit != null
+           * && r.getCrp().getId().equals(globalUnit.getId()) && r.getAcronym().equals("FPM"))
+           * .collect(Collectors.toList()).get(0);
+           */
+          /// 2024/06/28 cgamboa findAll was changed by findByGloablUnitAndAcronym - (FPL role)
+          Role roleFPL = roleDAO.findByGloablUnitAndAcronym(globalUnit.getId(), "FPL").get(0);
+
 
           if (roles.contains(roleFPM) || roles.contains(roleFPL)) {
             projectsTemp =
