@@ -476,21 +476,29 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private StringBuilder synthesisFlagships = new StringBuilder();
 
+  private HashMap<Integer, Integer> deliverableListbyPhase = new HashMap<Integer, Integer>();
+
+  private HashMap<Integer, Integer> completedeliverableListbyPhase = new HashMap<Integer, Integer>();
+
+
   public BaseAction() {
     this.saveable = true;
     this.fullEditable = true;
     this.justification = "";
   }
 
+
   public BaseAction(APConfig config) {
     this();
     this.config = config;
   }
 
+
   /* Override this method depending of the save action. */
   public String add() {
     return SUCCESS;
   }
+
 
   @Override
   public void addActionError(String anErrorMessage) {
@@ -518,7 +526,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       this.addMissingField(message);
     }
   }
-
 
   /**
    * This method add a missing field separated by a semicolon (;).
@@ -569,6 +576,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean canAccessSuperAdmin() {
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
+
 
   /**
    * ***********************CENTER METHOD********************* return true if
@@ -1479,6 +1487,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return response;
   }
+
 
   /**
    ************************ CENTER METHOD ********************* return true
@@ -2569,6 +2578,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return clusterOfActivities;
   }
 
+  public HashMap<Integer, Integer> getCompletedeliverableListbyPhase() {
+    return completedeliverableListbyPhase;
+  }
+
   public APConfig getConfig() {
     return this.config;
   }
@@ -2902,6 +2915,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public String getDeliverableJournalArticles() {
     return APConstants.DELIVERABLE_RULE_JORNAL_ARTICLES;
+  }
+
+  public HashMap<Integer, Integer> getDeliverableListbyPhase() {
+    return deliverableListbyPhase;
   }
 
   public String getDeliverablePublicationMetadata() {
@@ -3489,6 +3506,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public List<String> getDeliverableTypesByRule(String rule) {
     List<String> rules = new ArrayList<>();
     List<DeliverableTypeRule> deliverableTypeRules =
@@ -3857,6 +3875,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return deliverableDTOs;
   }
+
 
   public List<ProjectExpectedStudy> getexpectedCrpOutcomes(Long id) {
     List<ProjectExpectedStudy> expectedStudies = new ArrayList<>();
@@ -7182,6 +7201,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.dataSaved;
   }
 
+
   /**
    * This method get the status of an specific deliverable depending of the
    * sectionStatuses and the year Previous deliverable will be marked as
@@ -7212,13 +7232,69 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return true;
         }
       }
-
       return true;
     } else {
       return false;
     }
 
   }
+
+  /**
+   * This method get the status of an specific deliverable depending of the
+   * sectionStatuses and the year Previous deliverable will be marked as
+   * completed
+   *
+   * @param deliverableID is the deliverable ID to be identified.
+   * @return Boolean object with the status of the deliverable
+   */
+  public Boolean isDeliverableCompleteDashboard(Long deliverableID, Long phaseID) {
+
+    // [start] 19/06/2024 cgamboa This fragment contributes to reducing the number of queries executed, executing two of
+    // the conditions for all the deliverables, in a single moment (prepare from the dashboard)
+    try {
+      int result = 0;
+      int deliveableInteger = (int) (long) deliverableID;
+      result = this.getCompletedeliverableListbyPhase().get(deliveableInteger);
+      if (result != 0) {
+        return true;
+      }
+    } catch (Exception e) {
+      // TODO: handle exception
+    }
+
+    // [end] 19/06/2024 cgamboa
+
+
+    // aqui se debe aplicar la nueva funcion getCompleteDeliverableListByPhase
+
+    if (deliverableID != null && phaseID != null) {
+      Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
+      Phase phase = this.phaseManager.getPhaseById(phaseID);
+
+      if (deliverable.getDeliverableInfo(phase) != null) {
+        DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
+
+        if (deliverableInfo.isRequiredToComplete() || deliverableInfo.isStatusCompleteInNextPhases()) {
+          SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
+            phase.getDescription(), phase.getYear(), phase.getUpkeep(), "deliverableList");
+          if (sectionStatus == null) {
+            return false;
+          }
+
+          if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
+            return false;
+          }
+        } else {
+          return true;
+        }
+      }
+      return true;
+    } else {
+      return false;
+    }
+
+  }
+
 
   public Boolean isDeliverableNew(Long deliverableID) {
     if (deliverableID != null) {
@@ -7234,6 +7310,37 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
+
+
+  /**
+   * Validate if a deliverable belongs to the phase
+   * 
+   * @author IBD
+   * @param deliverableID deliverable identifier
+   * @return validation result
+   */
+  public Boolean isDeliverableNewDashboard(Long deliverableID) {
+    try {
+      if (deliverableID == null) {
+        return false;
+      }
+      int result = 0;
+      int deliveableInteger = (int) (long) deliverableID;
+      result = this.getDeliverableListbyPhase().get(deliveableInteger);
+
+      if (result == 0) {
+        return false;
+      } else {
+        return true;
+      }
+
+
+    } catch (Exception e) {
+      return false;
+    }
+
+  }
+
 
   public boolean isDraft() {
     return this.draft;
@@ -8472,6 +8579,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.centerSubmission = centerSubmission;
   }
 
+  public void setCompletedeliverableListbyPhase(HashMap<Integer, Integer> completedeliverableListbyPhase) {
+    this.completedeliverableListbyPhase = completedeliverableListbyPhase;
+  }
+
   public void setConfig(APConfig config) {
     this.config = config;
   }
@@ -8498,6 +8609,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setDelete(boolean delete) {
     this.delete = delete;
+  }
+
+  public void setDeliverableListbyPhase(HashMap<Integer, Integer> deliverableListbyPhase) {
+    this.deliverableListbyPhase = deliverableListbyPhase;
   }
 
   public void setDifferences(List<HistoryDifference> differences) {

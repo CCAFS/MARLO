@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.InnovationHomeDTO;
@@ -37,12 +38,15 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -50,6 +54,8 @@ import org.apache.shiro.authz.AuthorizationInfo;
 public class DashboardAction extends BaseAction {
 
   private static final long serialVersionUID = 6686785556753962379L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(DashboardAction.class);
 
   // Managers
   private PhaseManager phaseManager;
@@ -59,6 +65,8 @@ public class DashboardAction extends BaseAction {
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ProjectInnovationManager projectInnovationManager;
   private ProjectPolicyManager projectPolicyManager;
+
+  private SectionStatusManager sectionStatusManager;
 
   // Variables
   private GlobalUnit loggedCrp;
@@ -71,7 +79,8 @@ public class DashboardAction extends BaseAction {
   @Inject
   public DashboardAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, DeliverableManager deliverableManager, ProjectPolicyManager projectPolicyManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationManager projectInnovationManager) {
+    ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationManager projectInnovationManager,
+    SectionStatusManager sectionStatusManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -80,7 +89,55 @@ public class DashboardAction extends BaseAction {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectInnovationManager = projectInnovationManager;
     this.projectPolicyManager = projectPolicyManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
+
+  /**
+   * Get completed deliverables by phase
+   * This function should only be used to load the dashboard
+   * 
+   * @author IBD
+   */
+  public void getCompleteDeliverableListByPhaseFunction() {
+    try {
+      List<Integer> deliverableListbyPhase =
+        sectionStatusManager.getCompleteDeliverableListByPhase(this.getActualPhase().getId());
+      HashMap<Integer, Integer> tmpDeliverableList = new HashMap<Integer, Integer>();
+      for (Integer integer : deliverableListbyPhase) {
+        tmpDeliverableList.put(integer, integer);
+
+      }
+
+      this.setCompletedeliverableListbyPhase(tmpDeliverableList);
+
+    } catch (Exception e) {
+      LOG.error(" unable to get deliverable in the getCompleteDeliverableListByPhase function " + e.getMessage());
+    }
+  }
+
+
+  /**
+   * Get deliverables by phase
+   * 
+   * @author IBD
+   */
+  public void getDeliverableListByPhaseFunction() {
+    try {
+      List<Integer> deliverableListbyPhase =
+        deliverableManager.getDeliverableListByPhase(this.getActualPhase().getId());
+      HashMap<Integer, Integer> tmpDeliverableList = new HashMap<Integer, Integer>();
+      for (Integer integer : deliverableListbyPhase) {
+        tmpDeliverableList.put(integer, integer);
+
+      }
+
+      this.setDeliverableListbyPhase(tmpDeliverableList);
+
+    } catch (Exception e) {
+      LOG.error(" unable to get deliverable in the getDeliverableListByPhase function");
+    }
+  }
+
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -131,7 +188,6 @@ public class DashboardAction extends BaseAction {
 
 
     } else {
-
       List<Project> allProjects = new ArrayList<>();
       if (phase != null) {
         /*
@@ -211,6 +267,7 @@ public class DashboardAction extends BaseAction {
         p -> deliverableManager.getDeliverablesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
       .collect(Collectors.toList());
 
+
     myStudies = myProjects.stream().filter(p -> p != null && p.getId() != null)
       .flatMap(p -> projectExpectedStudyManager
         .getStudiesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
@@ -220,6 +277,10 @@ public class DashboardAction extends BaseAction {
       .flatMap(p -> projectInnovationManager
         .getInnovationsByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
       .collect(Collectors.toList());
+
+    this.getDeliverableListByPhaseFunction();
+    this.getCompleteDeliverableListByPhaseFunction();
+
 
   }
 

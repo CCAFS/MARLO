@@ -62,6 +62,15 @@ public interface DeliverableDAO {
   List<String> getCommentStatusByPhase(long phase);
 
   /**
+   * get deliverables by phase
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverables list
+   */
+  List<Integer> getDeliverableListByPhase(long phase);
+
+  /**
    * This method gets a list of Deliverable that are active by a given parameters
    * 
    * @param filterPhaseYear: true for specific phase year (excluding cancelled), false for all years and statuses
@@ -96,6 +105,7 @@ public interface DeliverableDAO {
 
   public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
 
+
   /**
    * get deliverables list by institution, phase and project
    * 
@@ -106,7 +116,6 @@ public interface DeliverableDAO {
    * @return deliverables list
    */
   List<Deliverable> getDeliverablesLeadByInstitutionAndProject(long institutionId, long phaseId, long projectId);
-
 
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
 

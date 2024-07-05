@@ -251,12 +251,12 @@
         [#local isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
         [#local isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
         
-        <label for="">[@s.text name="study.geographicScopeTopic" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus) /] </label>
+        <label for="">[@s.text name="study.geographicScopeTopic" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /] </label>
         <div class="form-group simpleBox">
           <div class="form-group row">
             <div class="col-md-6">
               [#-- Geographic Scope --]
-              [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes  label="study.geographicScope" listName="geographicScopes" keyFieldName="id" displayFieldName="name" required=(!action.isPOWB() && validateIsProgressWithStatus) /]
+              [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes  label="study.geographicScope" listName="geographicScopes" keyFieldName="id" displayFieldName="name" required=(!action.isPOWB() && validateIsProgressWithStatus!true) /]
             </div>
           </div>
           <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
@@ -265,7 +265,7 @@
           </div>
           <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
             [#-- Multinational, National and Subnational scope --]
-            [@customForm.select name="${customName}.countriesIds" label="" i18nkey="study.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=(!action.isPOWB() && validateIsProgressWithStatus) className="countriesSelect" disabled=!editable/]
+            [@customForm.select name="${customName}.countriesIds" label="" i18nkey="study.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=(!action.isPOWB() && validateIsProgressWithStatus!true) className="countriesSelect" disabled=!editable/]
           </div>
           <div class="form-group">
             [#-- Comment box --]
@@ -281,7 +281,7 @@
           [#-- Does this outcome reflect a contribution of the CGIAR in influencing or modifying policies/ strategies / laws/ regulations/ budgets/ investments or  curricula?  --]
           <div class="form-group">
             
-            <label for="">[@s.text name="study.reportingIndicatorThree" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus) /][@customForm.helpLabel name="study.reportingIndicatorThree.help" showIcon=false editable=editable/]</label>
+            <label for="">[@s.text name="study.reportingIndicatorThree" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /][@customForm.helpLabel name="study.reportingIndicatorThree.help" showIcon=false editable=editable/]</label>
             [#assign studyIndicatorThree = "studyIndicatorThree"]
             [#assign showPolicyIndicator = (element.projectExpectedStudyInfo.isContribution?string)!"" /]
             [@customForm.radioFlat id="${studyIndicatorThree}-yes" name="${name}.projectExpectedStudyInfo.isContribution" label="Yes" value="true" checked=(showPolicyIndicator == "true") cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-yes" editable=editable /]
@@ -303,7 +303,7 @@
       [#-- 4.  Maturity of change reported (tick-box)  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        <label for="">[@s.text name="study.maturityChange" /]:[@customForm.req required=(editable && !action.isPOWB() && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus) /]
+        <label for="">[@s.text name="study.maturityChange" /]:[@customForm.req required=(editable && !action.isPOWB() && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) /]
           <div class="feedback-flex-items">
             [@customForm.helpLabel name="study.maturityChange.help" showIcon=false editable=editable/][@customForm.helpLabel name="study.maturityChange.help2" showIcon=true editable=editable/]
           </div>
@@ -319,11 +319,11 @@
       [#-- 5. Links to the Strategic Results Framework  --]
       <div class="form-group">
         [#if isOutcomeCaseStudy]
-          <label for="">[@s.text name="study.stratgicResultsLink" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus) /]
+          <label for="">[@s.text name="study.stratgicResultsLink" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
             [@customForm.helpLabel name="study.stratgicResultsLink.help" showIcon=false editable=editable/]
           </label>
         [#elseif !action.isAiccra()]
-          <label for="">[@s.text name="study.relevantTo" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus)/]
+          <label for="">[@s.text name="study.relevantTo" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true)/]
           </label> 
         [/#if]
         [#-- Sub IDOs (maxLimit=3) --]
@@ -340,7 +340,7 @@
         
         [#-- SRF Targets (maxLimit=2)  --]
         <div class="form-group simpleBox stageProcessOne">
-            <label for="">[@s.text name="study.targetsOption" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus) /]
+            <label for="">[@s.text name="study.targetsOption" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
             <div class="feedback-flex-items">
               [@customForm.helpLabel name="study.targetsOption.help" showIcon=false editable=editable/]
             </div>            
@@ -351,7 +351,7 @@
           [/#list]
           [#local showTargetsComponent = (element.projectExpectedStudyInfo.isSrfTarget == "targetsOptionYes")!false /]
           <div class="srfTargetsComponent" style="display:${showTargetsComponent?string('block', 'none')}">
-            [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.stratgicResultsLink.srfTargets" listName="targets" maxLimit=2  keyFieldName="id" displayFieldName="title" required=(editable && !action.isPOWB() && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus)/]          
+            [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.stratgicResultsLink.srfTargets" listName="targets" maxLimit=2  keyFieldName="id" displayFieldName="title" required=(editable && !action.isPOWB() && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true)/]          
           </div>
         </div>
         
@@ -366,7 +366,7 @@
       [#-- Milestones --]
         [#--[#if isOutcomeCaseStudy]  --]
         <div class="form-group">          
-          <label for="">[@s.text name="study.outcomes" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus) /]
+          <label for="">[@s.text name="study.outcomes" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
             <div class="feedback-flex-items">
               [@customForm.helpLabel name="study.outcomes.help" showIcon=false editable=editable/]
             </div>
@@ -392,7 +392,7 @@
        --]
        
        <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
-          [@customForm.elementsListComponent name="${customName}.crpOutcomes" elementType="crpOutcome" elementList=(element.crpOutcomes)![] label="study.outcomes"  listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=(!action.isPOWB() && validateIsProgressWithStatus)/]
+          [@customForm.elementsListComponent name="${customName}.crpOutcomes" elementType="crpOutcome" elementList=(element.crpOutcomes)![] label="study.outcomes"  listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=(!action.isPOWB() && validateIsProgressWithStatus!true)/]
           <div class="note left">
             <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="_blank">
               <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.keyOutputNotice" /]
@@ -433,7 +433,7 @@
         [#-- Centers --]
         [#if isOutcomeCaseStudy]
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="study.keyContributors.centers"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=(!action.isPOWB() && validateIsProgressWithStatus)/]
+          [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="study.keyContributors.centers"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=(!action.isPOWB() && validateIsProgressWithStatus!true)/]
           <div class="note">[@s.text name="study.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
         </div>
         [/#if]
@@ -477,7 +477,7 @@
       [#--  CGIAR innovation(s) or findings that have resulted in this outcome or impact.   --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.cgiarInnovation" i18nkey="study.innovationsNarrative" help="study.innovationsNarrative.help" helpIcon=false className="" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus) editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.cgiarInnovation" i18nkey="study.innovationsNarrative" help="study.innovationsNarrative.help" helpIcon=false className="" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable /]
          
         [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="study.innovationsList"  listName="innovationsList" keyFieldName="id" displayFieldName="composedNameAlternative" required=false /]
       </div>
@@ -486,7 +486,7 @@
       [#--  Elaboration of Outcome/Impact Statement  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.elaborationOutcomeImpactStatement" i18nkey="study.elaborationStatement" help="study.elaborationStatement.help" helpIcon=false className="limitWords-400" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus) editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.elaborationOutcomeImpactStatement" i18nkey="study.elaborationStatement" help="study.elaborationStatement.help" helpIcon=false className="limitWords-400" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable /]
       </div>
       [/#if]
       
@@ -524,8 +524,8 @@
             <div class="referenceBlock ">
               <div class="referenceList">
                 <div class="row">
-                  <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Reference[@customForm.req required=(editable && validateIsProgressWithStatus)  /]</div>
-                  <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=(editable && validateIsProgressWithStatus)  /]</div>
+                  <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Reference[@customForm.req required=(editable && validateIsProgressWithStatus!true)  /]</div>
+                  <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=(editable && validateIsProgressWithStatus!true)  /]</div>
                   <div class="col-sm-2 colTitleCenter" style="font-weight: 600; text-align: center;">External Author[@customForm.req required=false  /]</div>
                 </div>
                 [#list (element.references)![{}] as link ]
@@ -600,7 +600,7 @@
         </label>
         [#-- Gender --]
         <div class="simpleBox ccRelevanceBlock">
-          <label for="">[@s.text name="study.genderRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus) /]</label>
+          <label for="">[@s.text name="study.genderRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
           <div class="form-group">
             [#assign genderLevel = (element.projectExpectedStudyInfo.genderLevel.id)!1 ]
             [#list focusLevels  as cc]
@@ -609,13 +609,13 @@
           </div>
           <div class="ccCommentBox" style="display:${((genderLevel == 2) || (genderLevel == 3))?string('block', 'none')}">
             <div class="form-group stageProcessOne">
-              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeGender" i18nkey="study.achievementsGenderRelevance" className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus) editable=editable /]
+              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeGender" i18nkey="study.achievementsGenderRelevance" className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=editable /]
             </div>
           </div>
         </div>
         [#-- Youth  --]
         <div class="simpleBox ccRelevanceBlock">
-          <label for="">[@s.text name="study.youthRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus) /]</label>
+          <label for="">[@s.text name="study.youthRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
           <div class="form-group">
             [#assign youthLevel = (element.projectExpectedStudyInfo.youthLevel.id)!1 ]
             [#list focusLevels  as cc]
@@ -624,13 +624,13 @@
           </div> 
           <div class="ccCommentBox" style="display:${((youthLevel == 2) || (youthLevel == 3))?string('block', 'none')}">
             <div class="form-group stageProcessOne">
-              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeYouth" i18nkey="study.achievementsYouthRelevance"  className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus) editable=editable /]
+              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeYouth" i18nkey="study.achievementsYouthRelevance"  className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=editable /]
             </div>
           </div>
         </div>
         [#-- CapDev   --]
         <div class="simpleBox ccRelevanceBlock">
-          <label for="">[@s.text name="study.capDevRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus) /]</label>
+          <label for="">[@s.text name="study.capDevRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
           <div class="form-group">
             [#assign capdevLevel = (element.projectExpectedStudyInfo.capdevLevel.id)!1 ]
             [#list focusLevels  as cc]
@@ -639,13 +639,13 @@
           </div>
           <div class="ccCommentBox" style="display:${((capdevLevel == 2) || (capdevLevel == 3))?string('block', 'none')}">
             <div class="form-group stageProcessOne">
-              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeCapdev" i18nkey="study.achievementsCapDevRelevance"  className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus) editable=editable /]
+              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeCapdev" i18nkey="study.achievementsCapDevRelevance"  className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=editable /]
             </div>
           </div>
         </div>
         [#-- Climate Change  --]
         <div class="simpleBox ccRelevanceBlock">
-          <label for="">[@s.text name="study.climateChangeRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus) /]</label>
+          <label for="">[@s.text name="study.climateChangeRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
           <div class="form-group">
             [#assign climateChangeLevel = (element.projectExpectedStudyInfo.climateChangeLevel.id)!1 ]
             [#list focusLevels  as cc]
@@ -654,7 +654,7 @@
           </div>
           <div class="ccCommentBox" style="display:${((climateChangeLevel == 2) || (climateChangeLevel == 3))?string('block', 'none')}">
             <div class="form-group stageProcessOne">
-              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeClimateChange" i18nkey="study.achievementsClimateChangeRelevance"  className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus) editable=editable /]
+              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeClimateChange" i18nkey="study.achievementsClimateChangeRelevance"  className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=editable /]
             </div>
           </div>
         </div> 
@@ -705,14 +705,14 @@
       [#--  Contact person    --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.contacts" help="study.contacts.help" className="" helpIcon=false required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus) editable=editable && !action.isPOWB() /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.contacts" help="study.contacts.help" className="" helpIcon=false required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=editable && !action.isPOWB() /]
       </div>
       [/#if]
       
       [#--  Comments for other studies--]
       [#if !isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.activityDescription"  placeholder="" className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus) editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.activityDescription"  placeholder="" className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable /]
       </div>
       
       <div class="form-group stageProcessOne">
@@ -786,7 +786,7 @@
       [#if editable]<div class="removeIcon removeElement removeQuantification" title="Remove"></div>[/#if]
       [#-- Quantification type --]
       <div class="form-group">
-        <label for="">[@s.text name="study.quantificationType" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus) /]</label>
+        <label for="">[@s.text name="study.quantificationType" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
         <br />[@customForm.radioFlat id="quantificationType-1" name="${customName}.typeQuantification" i18nkey="study.quantification.quantificationType-1" value="A" checked=((element.typeQuantification == "A")!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
         <br />[@customForm.radioFlat id="quantificationType-2" name="${customName}.typeQuantification" i18nkey="study.quantification.quantificationType-2" value="B" checked=((element.typeQuantification == "B")!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
       </div>
@@ -794,15 +794,15 @@
     [#-- Units --]
     <div class="form-group row">
       <div class="col-md-4">
-        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" className="numericInput" required=(!action.isPOWB() && validateIsProgressWithStatus) editable=editable /]
+        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" className="numericInput" required=(!action.isPOWB() && validateIsProgressWithStatus!true) editable=editable /]
       </div>
       <div class="col-md-4"> 
-        [@customForm.input name="${customName}.targetUnit" i18nkey="study.quantification.targetUnit" className="" required=(!action.isPOWB() && validateIsProgressWithStatus) editable=editable /]
+        [@customForm.input name="${customName}.targetUnit" i18nkey="study.quantification.targetUnit" className="" required=(!action.isPOWB() && validateIsProgressWithStatus!true) editable=editable /]
       </div> 
     </div>
     [#-- Comments --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.comments" i18nkey="study.quantification.comments" help="study.quantification.comments.help"  placeholder="" className="" required=(!action.isPOWB() && validateIsProgressWithStatus) editable=editable /]
+      [@customForm.textArea name="${customName}.comments" i18nkey="study.quantification.comments" help="study.quantification.comments.help"  placeholder="" className="" required=(!action.isPOWB() && validateIsProgressWithStatus!true) editable=editable /]
     </div>
   </div>
 [/#macro]
