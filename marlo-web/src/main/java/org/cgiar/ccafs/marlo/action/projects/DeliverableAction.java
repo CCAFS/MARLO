@@ -542,14 +542,24 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+  /**
+   * Check if the deliverable was completed in a previous phase
+   * 
+   * @param deliverable
+   * @return true If the deliverable was completed in a previous phase and the user does not have an admin role
+   **/
   public void checkDeliverableStatusInPreviousPhases(Deliverable deliverable) {
-    int status1 = this.getStatusFromPreviousPhase(deliverable, this.getActualPhase().getId());
-    // int status2 = this.getStatusFromPreviousPhase(deliverable,
-    // phaseManager.findPreviousPhase(phase.getId()).getId());
+    if (!this.canEditCrpAdmin() && !this.canAccessSuperAdmin()) {
+      int status1 = this.getStatusFromPreviousPhase(deliverable, this.getActualPhase().getId());
+      // int status2 = this.getStatusFromPreviousPhase(deliverable,
+      // phaseManager.findPreviousPhase(phase.getId()).getId());
 
-    if (status1 == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-      // Set deliverable Not editable
-      completeInPreviousPhase = true;
+      if (status1 == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        // Set deliverable Not editable
+        completeInPreviousPhase = true;
+      } else {
+        completeInPreviousPhase = false;
+      }
     } else {
       completeInPreviousPhase = false;
     }
