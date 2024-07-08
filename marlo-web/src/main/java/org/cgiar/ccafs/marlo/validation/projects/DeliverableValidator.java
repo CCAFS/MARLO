@@ -516,7 +516,6 @@ public class DeliverableValidator extends BaseValidator {
           if (dInfo.getStatus() != Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
             && dInfo.getYear() == action.getActualPhase().getYear()) {
             dInfo.setNewExpectedYear(-1);
-            dInfo.setStatusDescription("");
             newExpectedYear = dInfo.getNewExpectedYear();
           }
         } catch (Exception e) {
