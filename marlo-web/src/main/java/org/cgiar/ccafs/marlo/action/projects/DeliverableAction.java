@@ -4904,8 +4904,14 @@ public class DeliverableAction extends BaseAction {
       if (deliverableInfo.getStatus() != Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
         && deliverableInfo.getYear() == this.getActualPhase().getYear()) {
         deliverableInfo.setNewExpectedYear(-1);
+      }
+
+      if (deliverableInfo.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+        || deliverableInfo.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
         deliverableInfo.setStatusDescription("");
       }
+
+
     } catch (Exception e) {
       logger.error(" unable to validate the extended status in validateExtendedStatus function ");
     }
