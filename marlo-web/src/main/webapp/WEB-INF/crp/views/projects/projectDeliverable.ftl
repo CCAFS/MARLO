@@ -71,6 +71,22 @@
   </div>
 </div>
 
+[#if completeInPreviousPhase]
+  <div class="animated flipInX container  viewMore-block containerAlertMargin">
+    <div class=" containerAlert  alert-leftovers alertColorBackgroundWarning"  id="containerAlert">
+      <div class="containerLine alertColorWarning"></div>
+      <div class="containerIcon">
+        <div class="containerIcon alertColorWarning">
+          <img src="${baseUrlCdn}/global/images/icon-alert.png" />      
+        </div>
+      </div>
+      <div class="containerText col-md-12">
+        <p class="alertText"> [@s.text name="project.deliverable.completePreviousPhase" /]</p>
+      </div>
+    </div>
+  </div>
+[/#if]
+
 [#if !((deliverable.deliverableInfo.id??)!false)]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
