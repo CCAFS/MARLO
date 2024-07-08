@@ -759,10 +759,18 @@ function validateDeliverableStatus(canChangeStatus) {
 
   //console.log("newExpectedYearCondition", newExpectedYear != "-1");
   // Validate if the current cycle year is different or equal to the year expected to active On going status
-  if((expectedYear != currentCycleYear) && (isAdmin !== true) ){
-    $statuses.find('option[value="2"]').prop("disabled", true); // Disable On-going
-  } else {
+  console.log("expectedYear", expectedYear);
+  console.log("currentCycleYear", currentCycleYear);
+  console.log("isAdmin", isAdmin);
+  console.log("reportingActive", reportingActive);
+  console.log("condition", (expectedYear != currentCycleYear) && (isAdmin !== true) && (reportingActive === true));
+  if(expectedYear != currentCycleYear){
     $statuses.find('option[value="2"]').prop("disabled", false); // Enable On-going
+    if((isAdmin !== true) && (reportingActive === true)){
+      $statuses.find('option[value="2"]').prop("disabled", true); // Disable On-going
+    } else {
+      $statuses.find('option[value="2"]').prop("disabled", false); // Enable On-going
+    }
   }
 }
 
