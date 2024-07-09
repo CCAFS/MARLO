@@ -3385,6 +3385,20 @@ button.ipGraph-btn {
 	font-style: italic;
 }
 
+.note--2{
+	display: flex;
+	border-radius: 0.5rem;
+	border-right: 5px solid #8DC955;
+	border-left: 5px solid #8DC955;
+	background: rgba(232, 247, 227, 0.40);
+	padding: 0.3125rem 0.625rem 0.3125rem 0.9375rem;
+	justify-content: center;
+	align-items: center;
+	gap: 0.625rem;
+	font-style: normal;
+	margin-bottom: 5px;
+}
+
 .topNote {
 	margin: 0;
 }
