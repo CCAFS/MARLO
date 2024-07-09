@@ -599,7 +599,12 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
       if (isStatusExtended(statusId)) {
         showComponent(true, $newExpectedYearBlock);
         showComponent(false, $newYearOverlay, "overlay");
-        selectADefaultValueNewExpectedYear();
+
+        // Validate if the new expected year contains information to avoid overlay information
+        if($newExpectedYearBlock.find('select').val() == "-1"){
+          selectADefaultValueNewExpectedYear();
+        }
+
       } else if (isStatusComplete(statusId) || isStatusCancelled(statusId) || statusId == 6) {
         if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {
           showComponent(true, $newExpectedYearBlock);
