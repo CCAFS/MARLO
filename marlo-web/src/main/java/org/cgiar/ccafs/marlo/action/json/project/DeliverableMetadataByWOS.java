@@ -467,6 +467,84 @@ public class DeliverableMetadataByWOS extends BaseAction {
     }
   }
 
+  private void saveAffiliationsNotMappedToHandle(Phase phase, Deliverable deliverable) {
+    DeliverableMetadataExternalSources externalSource =
+      this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
+    List<WOSInstitutionToHandle> incomingInstitutions = this.responseToHandle.getInstitutions();
+
+    if (incomingInstitutions != null) {
+      List<DeliverableAffiliationsNotMapped> dbAffiliationsNotMapped =
+        this.deliverableAffiliationsNotMappedManager.findAll() != null
+          ? this.deliverableAffiliationsNotMappedManager.findAll().stream()
+            .filter(danm -> danm != null && danm.getId() != null && danm.getDeliverableMetadataExternalSources() != null
+              && danm.getDeliverableMetadataExternalSources().getId() != null
+              && danm.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId()))
+            .collect(Collectors.toList())
+          : Collections.emptyList();
+
+      for (DeliverableAffiliationsNotMapped dbDeliverableAffiliationNotMapped : dbAffiliationsNotMapped) {
+        if (dbDeliverableAffiliationNotMapped != null
+          && dbDeliverableAffiliationNotMapped.getPossibleInstitution() != null
+          && (incomingInstitutions.stream()
+            .filter(i -> i != null && i.getFullName() != null
+              && i.getFullName().equals(dbDeliverableAffiliationNotMapped.getPossibleInstitution().getName())
+              && i.getPrediction().getConfidant() >= APConstants.ACCEPTATION_PERCENTAGE)
+            .count() == 0)) {
+          this.deliverableAffiliationsNotMappedManager
+            .deleteDeliverableAffiliationsNotMapped(dbDeliverableAffiliationNotMapped.getId());
+          if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+            this.deliverableAffiliationsNotMappedManager.replicate(dbDeliverableAffiliationNotMapped,
+              phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+          }
+        }
+      }
+
+      // save
+      for (WOSInstitutionToHandle incomingAffiliation : incomingInstitutions) {
+        if (incomingAffiliation.getPrediction().getConfidant() < APConstants.ACCEPTATION_PERCENTAGE) {
+          DeliverableAffiliationsNotMapped newDeliverableAffiliationNotMapped =
+            this.deliverableAffiliationsNotMappedManager.findAll() != null
+              ? this.deliverableAffiliationsNotMappedManager.findAll().stream()
+                .filter(nda -> nda != null && nda.getDeliverableMetadataExternalSources() != null
+                  && nda.getDeliverableMetadataExternalSources().getId() != null
+                  && nda.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId())
+                  && nda.getName() != null
+                  && StringUtils.equalsIgnoreCase(incomingAffiliation.getFullName(), nda.getName()))
+                .findFirst().orElse(null)
+              : null;
+          if (newDeliverableAffiliationNotMapped == null) {
+            newDeliverableAffiliationNotMapped = new DeliverableAffiliationsNotMapped();
+            newDeliverableAffiliationNotMapped.setDeliverableMetadataExternalSources(externalSource);
+            newDeliverableAffiliationNotMapped.setCreateDate(new Date());
+            newDeliverableAffiliationNotMapped.setCreatedBy(this.getCurrentUser());
+          }
+
+          Institution incomingInstitution = (incomingAffiliation.getPrediction().getValue().getCode() != 0)
+            ? this.institutionManager.getInstitutionById(incomingAffiliation.getPrediction().getValue().getCode())
+            : null;
+
+          newDeliverableAffiliationNotMapped.setPossibleInstitution(incomingInstitution);
+          newDeliverableAffiliationNotMapped
+            .setInstitutionMatchConfidence(incomingAffiliation.getPrediction().getConfidant());
+          newDeliverableAffiliationNotMapped.setName(incomingAffiliation.getPrediction().getValue().getName());
+          newDeliverableAffiliationNotMapped.setCountry(incomingAffiliation.getPrediction().getValue().getCountry());
+          newDeliverableAffiliationNotMapped.setFullAddress("");
+          newDeliverableAffiliationNotMapped
+            .setInstitutionMatchConfidence(incomingAffiliation.getPrediction().getConfidant());
+          newDeliverableAffiliationNotMapped.setActive(true);
+
+          newDeliverableAffiliationNotMapped = this.deliverableAffiliationsNotMappedManager
+            .saveDeliverableAffiliationsNotMapped(newDeliverableAffiliationNotMapped);
+
+          if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+            this.deliverableAffiliationsNotMappedManager.replicate(newDeliverableAffiliationNotMapped,
+              phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+          }
+        }
+      }
+    }
+  }
+
   private void saveAffiliationsToHandle(Phase phase, Deliverable deliverable) {
     DeliverableMetadataExternalSources externalSource =
       this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
@@ -896,6 +974,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
     this.saveExternalSourcesToHandle(phase, deliverable);
     this.saveAffiliationsToHandle(phase, deliverable);
+    this.saveAffiliationsNotMappedToHandle(phase, deliverable);
 
   }
 }

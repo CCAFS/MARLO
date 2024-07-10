@@ -28,13 +28,37 @@ public class PredictionValue implements Serializable {
   @SerializedName("code")
   private int code;
 
+
+  private String name;
+
+  @SerializedName("hqLocation")
+  private String country;
+
+
   // Getters and setters
   public int getCode() {
     return code;
   }
 
+
+  public String getCountry() {
+    return country;
+  }
+
+  public String getName() {
+    return name;
+  }
+
   public void setCode(int code) {
     this.code = code;
+  }
+
+  public void setCountry(String country) {
+    this.country = country;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   @Override
