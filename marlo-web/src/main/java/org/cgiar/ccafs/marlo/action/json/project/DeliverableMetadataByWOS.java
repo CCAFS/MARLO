@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataAltmetricM
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataGardianModel;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataReadersModel;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataWOSModel;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataWOSModelToHandle;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSAuthor;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSInstitution;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -84,9 +85,11 @@ public class DeliverableMetadataByWOS extends BaseAction {
   private String link;
   private String jsonStringResponse;
   private MetadataWOSModel response;
+  private MetadataWOSModelToHandle responseToHandle;
   // private MetadataWOSModel response2;
   private Long deliverableId;
   private Long phaseId;
+  private boolean hasHandle;
 
   // Managers
   private DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager;
@@ -118,17 +121,28 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    LOG.info("linea 121");
     /*
      * if (this.jsonStringResponse == null || StringUtils.equalsIgnoreCase(this.jsonStringResponse, "null")) {
      * return NOT_FOUND;
      * }
      */
     if (this.jsonStringResponse != null && !StringUtils.equalsIgnoreCase(this.jsonStringResponse, "null")) {
-      this.response = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
-      // this.response2 = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
-      this.phaseId = this.getActualPhase().getId();
 
-      this.saveInfo();
+      this.phaseId = this.getActualPhase().getId();
+      if (!hasHandle) {
+        this.response = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
+        LOG.info("linea 135");
+        this.saveInfo();
+        LOG.info("linea 136");
+      } else {
+        this.responseToHandle = new Gson().fromJson(jsonStringResponse, MetadataWOSModelToHandle.class);
+        LOG.info("linea 138");
+        this.saveInfoToHandle();
+      }
+      // this.response2 = new Gson().fromJson(jsonStringResponse, MetadataWOSModel.class);
+
+
       // this.manualSetAlmetricInfo();
     }
 
@@ -242,6 +256,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
       this.link = DOIService.tryGetDoiName(incomingUrl);
       this.deliverableId = Long.valueOf(
         StringUtils.stripToEmpty(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
+
+      hasHandle = false;
     } catch (Exception e) {
       this.link = null;
       this.deliverableId = 0L;
@@ -253,6 +269,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
     } else if (!this.link.isEmpty() && this.link.contains("handle")) {
       JsonElement response = this.readWOSDataFromClarisa2();
       this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
+      hasHandle = true;
     }
 
   }
@@ -690,7 +707,61 @@ public class DeliverableMetadataByWOS extends BaseAction {
     }
   }
 
+
+  private void saveExternalSourcesToHandle(Phase phase, Deliverable deliverable) {
+    LOG.info(" linea 711");
+    DeliverableMetadataExternalSources externalSource =
+      this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
+    MetadataGardianModel gardianInfo = this.responseToHandle.getGardianInfo();
+
+    if (externalSource == null) {
+      externalSource = new DeliverableMetadataExternalSources();
+      externalSource.setPhase(phase);
+      externalSource.setDeliverable(deliverable);
+      externalSource.setCreateDate(new Date());
+      externalSource.setCreatedBy(this.getCurrentUser());
+      externalSource =
+        this.deliverableMetadataExternalSourcesManager.saveDeliverableMetadataExternalSources(externalSource);
+    }
+
+    externalSource.setUrl(this.responseToHandle.getHandle());
+    externalSource.setTitle(this.responseToHandle.getTitle());
+
+    externalSource.setPublicationType(this.responseToHandle.getPublicationType());
+    // externalSource.setPublicationYear(this.response.getPublicationYear());
+    // externalSource.setOpenAccessStatus(this.getBooleanStringOrNotAvailable(this.response.getIsOpenAccess()));
+    // externalSource.setOpenAccessLink(this.response.getOpenAcessLink());
+    // externalSource.setIsiStatus(this.getBooleanStringOrNotAvailable(this.response.getIsISI()));
+    // externalSource.setJournalName(this.response.getJournalName());
+    // externalSource.setVolume(this.response.getVolume());
+
+    externalSource.setIssue(this.responseToHandle.getIssue());
+    externalSource.setPages(this.responseToHandle.getPages());
+    externalSource.setSource(this.responseToHandle.getSource());
+
+
+    if (gardianInfo != null) {
+      externalSource.setGardianFindability(gardianInfo.getFindability());
+      externalSource.setGardianAccessibility(gardianInfo.getAccessibility());
+      externalSource.setGardianInteroperability(gardianInfo.getInteroperability());
+      externalSource.setGardianReusability(gardianInfo.getReusability());
+      externalSource.setGardianTitle(gardianInfo.getTitle());
+    }
+
+
+    externalSource =
+      this.deliverableMetadataExternalSourcesManager.saveDeliverableMetadataExternalSources(externalSource);
+
+
+    if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+      this.deliverableMetadataExternalSourcesManager.replicate(externalSource,
+        phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+    }
+
+  }
+
   private void saveInfo() {
+    LOG.info("linea 694");
     Deliverable deliverable = this.deliverableManager.getDeliverableById(this.deliverableId);
     Phase phase = this.phaseManager.getPhaseById(this.phaseId);
 
@@ -711,6 +782,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
    * @throws IOException
    */
   public boolean saveInfo(Long phaseId, Long deliverableId, String link) throws IOException {
+    LOG.info("linea 714");
     this.phaseId = phaseId;
     this.deliverableId = deliverableId;
     this.link = link;
@@ -739,5 +811,15 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
 
     return false;
+  }
+
+  private void saveInfoToHandle() {
+    LOG.info("linea 722");
+    Deliverable deliverable = this.deliverableManager.getDeliverableById(this.deliverableId);
+    Phase phase = this.phaseManager.getPhaseById(this.phaseId);
+
+    this.saveExternalSourcesToHandle(phase, deliverable);
+    // this.saveAffiliations(phase, deliverable);
+
   }
 }
