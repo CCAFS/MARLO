@@ -41,6 +41,7 @@ import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataWOSModel;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataWOSModelToHandle;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSAuthor;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSInstitution;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSInstitutionToHandle;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 
@@ -388,6 +389,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
     }
   }
 
+
   private void saveAffiliationsNotMapped(Phase phase, Deliverable deliverable) {
     DeliverableMetadataExternalSources externalSource =
       this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
@@ -462,6 +464,80 @@ public class DeliverableMetadataByWOS extends BaseAction {
           }
         }
       }
+    }
+  }
+
+  private void saveAffiliationsToHandle(Phase phase, Deliverable deliverable) {
+    DeliverableMetadataExternalSources externalSource =
+      this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
+    List<WOSInstitutionToHandle> incomingInstitutions = this.responseToHandle.getInstitutions();
+
+    LOG.info("Linea 474 " + incomingInstitutions.size());
+    LOG.info("Linea 476 " + incomingInstitutions.toString());
+
+    if (incomingInstitutions != null) {
+      List<DeliverableAffiliation> dbAffiliations =
+        this.deliverableAffiliationManager.findAll() != null ? this.deliverableAffiliationManager.findAll().stream()
+          .filter(da -> da != null && da.getId() != null && da.getPhase() != null && da.getDeliverable() != null
+            && da.getPhase().equals(phase) && da.getDeliverable().getId() != null
+            && da.getDeliverable().getId().equals(deliverable.getId())
+            && da.getDeliverableMetadataExternalSources() != null
+            && da.getDeliverableMetadataExternalSources().getId() != null
+            && da.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId()))
+          .collect(Collectors.toList()) : Collections.emptyList();
+
+      for (DeliverableAffiliation dbDeliverableAffiliation : dbAffiliations) {
+        if (dbDeliverableAffiliation != null && dbDeliverableAffiliation.getInstitution() != null
+          && (incomingInstitutions.stream().filter(i -> i != null && i.getFullName() != null
+            && StringUtils.equalsIgnoreCase(i.getFullName(), dbDeliverableAffiliation.getInstitutionNameWebOfScience())
+            && i.getPrediction().getConfidant() < APConstants.ACCEPTATION_PERCENTAGE).count() == 0)) {
+          this.deliverableAffiliationManager.deleteDeliverableAffiliation(dbDeliverableAffiliation.getId());
+          if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+            this.deliverableAffiliationManager.replicate(dbDeliverableAffiliation,
+              phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+          }
+        }
+      }
+
+      // save
+
+      for (WOSInstitutionToHandle incomingAffiliation : incomingInstitutions) {
+        if (incomingAffiliation.getPrediction().getConfidant() >= APConstants.ACCEPTATION_PERCENTAGE) {
+          DeliverableAffiliation newDeliverableAffiliation =
+            this.deliverableAffiliationManager.findByPhaseAndDeliverable(phase, deliverable).stream()
+              .filter(nda -> nda != null && nda.getDeliverableMetadataExternalSources() != null
+                && nda.getDeliverableMetadataExternalSources().getId() != null
+                && nda.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId())
+                && nda.getInstitutionNameWebOfScience() != null && StringUtils
+                  .equalsIgnoreCase(incomingAffiliation.getFullName(), nda.getInstitutionNameWebOfScience()))
+              .findFirst().orElse(null);
+          if (newDeliverableAffiliation == null) {
+            newDeliverableAffiliation = new DeliverableAffiliation();
+            newDeliverableAffiliation.setPhase(phase);
+            newDeliverableAffiliation.setDeliverable(deliverable);
+            newDeliverableAffiliation.setCreateDate(new Date());
+            newDeliverableAffiliation.setCreatedBy(this.getCurrentUser());
+          }
+          Institution incomingInstitution = (incomingAffiliation.getPrediction().getValue().getCode() != 0)
+            ? this.institutionManager.getInstitutionById(incomingAffiliation.getPrediction().getValue().getCode())
+            : null;
+          if (incomingInstitution != null) {
+            newDeliverableAffiliation.setInstitution(incomingInstitution);
+            newDeliverableAffiliation.setInstitutionMatchConfidence(incomingAffiliation.getPrediction().getConfidant());
+            newDeliverableAffiliation.setDeliverableMetadataExternalSources(externalSource);
+            newDeliverableAffiliation.setInstitutionNameWebOfScience(incomingAffiliation.getFullName());
+            newDeliverableAffiliation.setInstitutionMatchConfidence(incomingAffiliation.getPrediction().getConfidant());
+            newDeliverableAffiliation.setActive(true);
+            newDeliverableAffiliation =
+              this.deliverableAffiliationManager.saveDeliverableAffiliation(newDeliverableAffiliation);
+            if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+              this.deliverableAffiliationManager.replicate(newDeliverableAffiliation,
+                phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+            }
+          }
+        }
+      }
+
     }
   }
 
@@ -819,7 +895,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
     Phase phase = this.phaseManager.getPhaseById(this.phaseId);
 
     this.saveExternalSourcesToHandle(phase, deliverable);
-    // this.saveAffiliations(phase, deliverable);
+    this.saveAffiliationsToHandle(phase, deliverable);
 
   }
 }

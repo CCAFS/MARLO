@@ -66,8 +66,8 @@ public class MetadataWOSModelToHandle implements Serializable {
 
   private List<WOSAuthor> authors;
 
-  @SerializedName("organizations")
-  private List<WOSInstitution> institutions;
+  @SerializedName("Affiliation")
+  private List<WOSInstitutionToHandle> institutions;
 
   @SerializedName("gardian")
   MetadataGardianModel gardianInfo;
@@ -113,7 +113,7 @@ public class MetadataWOSModelToHandle implements Serializable {
     return handle;
   }
 
-  public List<WOSInstitution> getInstitutions() {
+  public List<WOSInstitutionToHandle> getInstitutions() {
     return institutions;
   }
 
@@ -190,7 +190,7 @@ public class MetadataWOSModelToHandle implements Serializable {
     this.handle = handle;
   }
 
-  public void setInstitutions(List<WOSInstitution> organizations) {
+  public void setInstitutions(List<WOSInstitutionToHandle> organizations) {
     this.institutions = organizations;
   }
 
