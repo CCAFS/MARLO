@@ -444,6 +444,14 @@
               </div>
               <br>
             </div>
+            <div class="col-md-2">
+              <div class="text-area-container">
+                <button type="button" class="btn btn-danger removeCluster" clusterIdParticipant="${(cluster.project.id)!0}" disabled=action.isSubmit((cluster.project.id))>
+                 <span class="glyphicon glyphicon-trash"></span> Remove
+                </button>
+              </div>
+              <br>
+            </div>
           </div>
         [#assign index = index + 1]
         [/#list]
