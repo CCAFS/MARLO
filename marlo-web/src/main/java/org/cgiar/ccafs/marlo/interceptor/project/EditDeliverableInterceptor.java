@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
@@ -24,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -48,6 +50,7 @@ import javax.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
+import org.jfree.util.Log;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -69,17 +72,21 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
   private GlobalUnit loggedCrp;
   private GlobalUnitProjectManager globalUnitProjectManager;
   private final LiaisonUserManager liaisonUserManager;
+  private DeliverableInfoManager deliverableInfoManager;
+  boolean completeInPreviousPhase = false;
+
 
   @Inject
   public EditDeliverableInterceptor(DeliverableManager deliverableManager, ProjectManager projectManager,
     PhaseManager phaseManager, GlobalUnitManager crpManager, GlobalUnitProjectManager globalUnitProjectManager,
-    LiaisonUserManager liaisonUserManager) {
+    LiaisonUserManager liaisonUserManager, DeliverableInfoManager deliverableInfoManager) {
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
     this.projectManager = projectManager;
     this.deliverableManager = deliverableManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.liaisonUserManager = liaisonUserManager;
+    this.deliverableInfoManager = deliverableInfoManager;
   }
 
   public Boolean canEditDeliverable(Deliverable deliverable, Phase phase) {
@@ -110,6 +117,47 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
   }
 
+  public void checkDeliverableStatusInPreviousPhases(Deliverable deliverable) {
+    int status1 = this.getStatusFromPreviousPhase(deliverable, phase.getId());
+    // int status2 = this.getStatusFromPreviousPhase(deliverable,
+    // phaseManager.findPreviousPhase(phase.getId()).getId());
+
+    if (status1 == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      // Set deliverable Not editable
+      completeInPreviousPhase = true;
+    } else {
+      completeInPreviousPhase = false;
+    }
+  }
+
+  public DeliverableInfo deliverableInfoByPhase(Deliverable deliverable, Phase phase) {
+    DeliverableInfo deliverableInfoPhase = new DeliverableInfo();
+    try {
+      List<DeliverableInfo> deliverableInfos =
+        deliverableInfoManager.getDeliverablesInfoByDeliverableId(deliverable.getId());
+      if (deliverableInfos != null) {
+        deliverableInfoPhase =
+          deliverableInfos.stream().filter(di -> di != null && di.getPhase() != null && di.getPhase().getId() != null
+            && di.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()).get(0);
+      }
+    } catch (Exception e) {
+      Log.error(e + " error getting deliverable info by phase");
+    }
+    return deliverableInfoPhase;
+  }
+
+
+  public int getStatusFromPreviousPhase(Deliverable deliverable, long phaseId) {
+    Phase previousPhase = phaseManager.findPreviousPhase(phaseId);
+    if (previousPhase != null) {
+      DeliverableInfo deliverableInfo = this.deliverableInfoByPhase(deliverable, previousPhase);
+      if (deliverableInfo != null && deliverableInfo.getStatus() != null) {
+        return deliverableInfo.getStatus();
+      }
+    }
+    return 0;
+  }
+
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
 
@@ -127,7 +175,6 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
   }
 
   void setPermissionParameters(ActionInvocation invocation) throws NoPhaseException {
-
     User user = (User) session.get(APConstants.SESSION_USER);
     BaseAction baseAction = (BaseAction) invocation.getAction();
     baseAction.setSession(session);
@@ -149,6 +196,8 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableId);
 
     Project project = projectManager.getProjectById(deliverable.getProject().getId());
+
+    this.checkDeliverableStatusInPreviousPhases(deliverable);
 
     // Get The Crp/Center/Platform where the project was created
     GlobalUnitProject globalUnitProject =
@@ -350,6 +399,11 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         canEdit = false;
         baseAction.setCanEditPhase(false);
         baseAction.setEditStatus(false);
+      }
+      // Set canEdit variable if the deliverable is not completed in previous phases
+      if (completeInPreviousPhase && (!baseAction.canAccessSuperAdmin() && !baseAction.canAcessCrpAdmin())) {
+        canEdit = false;
+        editParameter = false;
       }
       // Set the variable that indicates if the user can edit the section
       if (!editParameter) {

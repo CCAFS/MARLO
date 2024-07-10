@@ -239,7 +239,7 @@
       [#-- Target Value --]
       [#local showTargetValue = (targetUnitList?has_content) && (outcome.srfTargetUnit??) && (outcome.srfTargetUnit.id??) && (outcome.srfTargetUnit.id != -1) /]
       <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
-        [@customForm.input name="${outcomeCustomName}.value" i18nkey="outcome.targetValue" help="outcomes.addNewTargetUnit"  placeholder="outcome.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]
+        [@customForm.input name="${outcomeCustomName}.value" i18nkey="outcome.targetValue" help="outcomes.addNewTargetUnit"  placeholder="outcome.inputTargetValue.placeholder" className="targetValue targetValueNumber" required=true editable=editable /]
       </div>
 
     </div>
@@ -464,7 +464,7 @@
           [#-- Target Value --]
           [#local showTargetValue = (targetUnitList?has_content) && (milestone.srfTargetUnit??) && (milestone.srfTargetUnit.id??) && (milestone.srfTargetUnit.id != -1) /]
           <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
-            [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editableMilestone /]
+            [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue targetValueNumber" required=true editable=editableMilestone /]
           </div>
         </div>
 

@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/home/dashboard.js?20240514",
+  "${baseUrlMedia}/js/home/dashboard.js?20240628",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20240507",
+  "${baseUrlMedia}/css/home/dashboard.css?20240628",
   "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -110,9 +110,42 @@
   <section class="timeline" style="display: none">	
 		<div class="containerTimeline">
 			<div class="scroll-x-containerTimeline2 " id="listItemTimeline2">
+        <div id="timelineInfo">
+          <div id="timelineDescription">
+            <div id="timelineDescription_zoom">
+              <img src="${baseUrlCdn}/global/images/zoom_in.png" class="sideButtonZoom buttonZoomOut" name="zoom-in" >
+              <p id="timelineDescription_zoom_weeks"> Week(s) displayed </p>
+              <img src="${baseUrlCdn}/global/images/zoom_out.png" class="sideButtonZoom buttonZoomIn" name="zoom-out" >
+            </div>
+
+            <div id="timelineDescription_title">
+              <div class="sideButtonTimeline buttonLeftTimeline"><p><</p></div>
+              <b>Schedule</b>
+              <div class="sideButtonTimeline buttonRightTimeline"><p>></p></div>
+              
+            </div>
+
+            <div id="timelineAlert">
+              <b>Progress status:</b>
+              <section id="timelineAlert_container">
+                <article class="timelineAlert_item">
+                  <div class="timelineAlert_item_color timelineAlert_item_color--1"></div>
+                  <p>Not started</p>
+                </article>
+                <article class="timelineAlert_item">
+                  <div class="timelineAlert_item_color timelineAlert_item_color--2"></div>
+                  <p>In progress</p>
+                </article>
+                <article class="timelineAlert_item">
+                  <div class="timelineAlert_item_color timelineAlert_item_color--3"></div>
+                  <p>Completed</p>
+                </article>
+              </section>
+            </div>
+
+        </div>
+  </div>
 			</div>
-			<div class="sideButtonTimeline buttonLeftTimeline"><p><</p></div>
-			<div class="sideButtonTimeline buttonRightTimeline"><p>></p></div>
 		</div>
 	</section>
 [/#if]
