@@ -32,7 +32,6 @@ public class MetadataWOSModelToHandle implements Serializable {
    */
   private static final long serialVersionUID = 4540658318954192431L;
 
-  private String url;
 
   @SerializedName("Title")
   private String title;
@@ -80,7 +79,7 @@ public class MetadataWOSModelToHandle implements Serializable {
   MetadataAltmetricModel2 altmetricInfo2;
 
   @SerializedName("Handle")
-  private String handle;
+  private String url;
 
 
   public MetadataWOSModelToHandle() {
@@ -111,7 +110,7 @@ public class MetadataWOSModelToHandle implements Serializable {
   }
 
   public String getHandle() {
-    return handle;
+    return url;
   }
 
   public List<WOSInstitutionToHandle> getInstitutions() {
@@ -188,7 +187,7 @@ public class MetadataWOSModelToHandle implements Serializable {
   }
 
   public void setHandle(String handle) {
-    this.handle = handle;
+    this.url = handle;
   }
 
   public void setInstitutions(List<WOSInstitutionToHandle> organizations) {

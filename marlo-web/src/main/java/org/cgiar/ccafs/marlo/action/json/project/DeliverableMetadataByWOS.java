@@ -60,8 +60,10 @@ import javax.inject.Inject;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -137,6 +139,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
         this.saveInfo();
         LOG.info("linea 136");
       } else {
+        LOG.info("linea 140 jsonStringResponse " + jsonStringResponse);
         this.responseToHandle = new Gson().fromJson(jsonStringResponse, MetadataWOSModelToHandle.class);
         LOG.info("linea 138");
         this.saveInfoToHandle();
@@ -146,6 +149,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
       // this.manualSetAlmetricInfo();
     }
+
+    LOG.info("linea 150");
 
     return SUCCESS;
   }
@@ -276,6 +281,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
   }
 
   private JsonElement readWOSDataFromClarisa() throws IOException {
+    LOG.info(" liena 283");
     URL clarisaUrl = new URL(config.getClarisaWOSLink().replace("{1}", this.link));
     String loginData = config.getClarisaWOSUser() + ":" + config.getClarisaWOSPassword();
     String encoded = Base64.encodeBase64String(loginData.getBytes());
@@ -308,7 +314,11 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
     if (conn != null && conn.getResponseCode() < 300) {
       try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
-        element = new JsonParser().parse(reader);
+        JsonParser parser = new JsonParser();
+        JsonObject jsonObject = parser.parse(reader).getAsJsonObject();
+
+        element = this.transformObjectToHandle(jsonObject);
+
       } catch (FileNotFoundException fnfe) {
         element = JsonNull.INSTANCE;
       }
@@ -316,6 +326,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
     return element;
   }
+
 
   private void saveAffiliations(Phase phase, Deliverable deliverable) {
     DeliverableMetadataExternalSources externalSource =
@@ -388,7 +399,6 @@ public class DeliverableMetadataByWOS extends BaseAction {
       }
     }
   }
-
 
   private void saveAffiliationsNotMapped(Phase phase, Deliverable deliverable) {
     DeliverableMetadataExternalSources externalSource =
@@ -466,6 +476,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
       }
     }
   }
+
 
   private void saveAffiliationsNotMappedToHandle(Phase phase, Deliverable deliverable) {
     DeliverableMetadataExternalSources externalSource =
@@ -815,7 +826,6 @@ public class DeliverableMetadataByWOS extends BaseAction {
     }
   }
 
-
   private void saveExternalSourceAuthorsToHandle(Phase phase, Deliverable deliverable) {
     DeliverableMetadataExternalSources externalSource =
       this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
@@ -842,6 +852,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
       }
     }
   }
+
 
   private void saveExternalSources(Phase phase, Deliverable deliverable) {
     DeliverableMetadataExternalSources externalSource =
@@ -888,7 +899,6 @@ public class DeliverableMetadataByWOS extends BaseAction {
         phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
     }
   }
-
 
   private void saveExternalSourcesToHandle(Phase phase, Deliverable deliverable) {
     LOG.info(" linea 711");
@@ -941,6 +951,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
     }
 
   }
+
 
   private void saveInfo() {
     LOG.info("linea 694");
@@ -1006,5 +1017,89 @@ public class DeliverableMetadataByWOS extends BaseAction {
     this.saveExternalSourceAuthorsToHandle(phase, deliverable);
     LOG.info("linea 1007");
 
+  }
+
+  public JsonElement transformObjectToHandle(JsonObject jsonObject) {
+    try {
+      JsonElement element = null;
+      LOG.info(" liena 318");
+      if (jsonObject.has("Handle")) {
+        String tmpValue = jsonObject.get("Handle").getAsString();
+        jsonObject.addProperty("url", tmpValue);
+        element = jsonObject;
+      }
+
+      if (jsonObject.has("Title")) {
+        String tmpValue = jsonObject.get("Title").getAsString();
+        jsonObject.addProperty("title", tmpValue);
+        element = jsonObject;
+      }
+
+
+      if (jsonObject.has("Type")) {
+        String tmpValue = jsonObject.get("Type").getAsString();
+        jsonObject.addProperty("publicationType", tmpValue);
+        element = jsonObject;
+      }
+
+
+      if (jsonObject.has("Pages")) {
+        String tmpValue = jsonObject.get("Pages").getAsString();
+        jsonObject.addProperty("pages", tmpValue);
+        element = jsonObject;
+      }
+
+
+      if (jsonObject.has("Authors")) {
+        JsonArray authorsArray = new JsonArray();
+        for (JsonElement authorElement : jsonObject.getAsJsonArray("Authors")) {
+          String authorName = authorElement.getAsString();
+          JsonObject author = new JsonObject();
+          author.addProperty("fullName", authorName);
+          authorsArray.add(author);
+        }
+        jsonObject.add("authors", authorsArray);
+
+        element = jsonObject;
+      }
+
+      if (jsonObject.has("Affiliation")) {
+        JsonArray institutionArray = new JsonArray();
+        for (JsonElement institutionElement : jsonObject.getAsJsonArray("Affiliation")) {
+          LOG.info(" linea 1069" + institutionElement);
+          JsonObject jsonObjectTmp = institutionElement.getAsJsonObject();
+
+          LOG.info(" linea 1072");
+          if (jsonObjectTmp.has("prediction")) {
+            JsonElement predictionElement = jsonObjectTmp.get("prediction");
+            LOG.info(" linea 1073" + predictionElement);
+            JsonObject jsonObjectValueTmp = predictionElement.getAsJsonObject();
+            String confidant = jsonObjectValueTmp.get("confidant").getAsString();
+            if (jsonObjectValueTmp.has("value")) {
+              JsonElement valueElement = jsonObjectValueTmp.get("value");
+              LOG.info(" linea 1078" + valueElement);
+              JsonObject jsonObjectNameTmp = valueElement.getAsJsonObject();
+              JsonObject oneInstitution = new JsonObject();
+              oneInstitution.addProperty("fullName", jsonObjectNameTmp.get("name").getAsString());
+              oneInstitution.addProperty("clarisaMatchConfidence", confidant);
+              oneInstitution.addProperty("clarisaId", jsonObjectNameTmp.get("code").getAsString());
+              institutionArray.add(oneInstitution);
+            }
+          }
+          LOG.info(" linea 1076");
+
+
+        }
+        jsonObject.add("institutions", institutionArray);
+        element = jsonObject;
+      }
+
+
+      LOG.info(" liena 326");
+      return element;
+    } catch (Exception e) {
+      LOG.error(" unable to get transform object in transformObjectToHandle function " + e.getMessage());
+      return null;
+    }
   }
 }
