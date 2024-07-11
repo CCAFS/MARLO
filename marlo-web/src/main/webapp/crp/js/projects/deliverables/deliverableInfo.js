@@ -541,7 +541,6 @@ function validateCurrentDate() {
     },
     success: function (data) {
       $.each(data.status, function (val, name) {
-        console.log(val + "-" + name);
         $statuses.addOption(val, name);
       });
       $statuses.val(statusValue);
@@ -591,7 +590,7 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
 
     showComponent(isStatusExtended(statusId) && upKeepActive, $newExpectedYearBlock);
   } else {
-    console.log("hasExpectedYear", hasExpectedYear);
+    // Validate avaialble options in the status select
     if (isStatusOnGoing(statusId)) {
       showComponent(false, $newExpectedYearBlock);
       //removeInformationOfNewExpectedYear();
