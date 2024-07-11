@@ -1021,32 +1021,31 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
   public JsonElement transformObjectToHandle(JsonObject jsonObject) {
     try {
-      JsonElement element = null;
+
+      if (jsonObject == null) {
+        return null;
+      }
       LOG.info(" liena 318");
       if (jsonObject.has("Handle")) {
         String tmpValue = jsonObject.get("Handle").getAsString();
         jsonObject.addProperty("url", tmpValue);
-        element = jsonObject;
       }
 
       if (jsonObject.has("Title")) {
         String tmpValue = jsonObject.get("Title").getAsString();
         jsonObject.addProperty("title", tmpValue);
-        element = jsonObject;
       }
 
 
       if (jsonObject.has("Type")) {
         String tmpValue = jsonObject.get("Type").getAsString();
         jsonObject.addProperty("publicationType", tmpValue);
-        element = jsonObject;
       }
 
 
       if (jsonObject.has("Pages")) {
         String tmpValue = jsonObject.get("Pages").getAsString();
         jsonObject.addProperty("pages", tmpValue);
-        element = jsonObject;
       }
 
 
@@ -1060,7 +1059,6 @@ public class DeliverableMetadataByWOS extends BaseAction {
         }
         jsonObject.add("authors", authorsArray);
 
-        element = jsonObject;
       }
 
       if (jsonObject.has("Affiliation")) {
@@ -1091,12 +1089,11 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
         }
         jsonObject.add("institutions", institutionArray);
-        element = jsonObject;
       }
 
 
       LOG.info(" liena 326");
-      return element;
+      return jsonObject;
     } catch (Exception e) {
       LOG.error(" unable to get transform object in transformObjectToHandle function " + e.getMessage());
       return null;
