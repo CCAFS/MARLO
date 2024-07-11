@@ -23,10 +23,10 @@
   
   <div id="${customId}" class="caseStudy evidenceBlock isNew-${isNew?string}" style="display:${template?string('none','block')}">
 
-    [#if (element.projectExpectedStudyInfo.status.id)?has_content]
-      [#assign validateIsProgressWithStatus = action.validateIsProgressWithStatus(element.projectExpectedStudyInfo.status.id)]
+    [#if ((element.projectExpectedStudyInfo.status)?has_content) && ((element.projectExpectedStudyInfo.status.id)?has_content)]
+      [#assign validateIsProgressWithStatus = action.validateIsProgressWithStatus(element.projectExpectedStudyInfo.status.id) /]
     [#else]
-      [#assign validateIsProgressWithStatus = true]
+      [#assign validateIsProgressWithStatus = true /]
     [/#if]
 
     <div class="borderBox">
