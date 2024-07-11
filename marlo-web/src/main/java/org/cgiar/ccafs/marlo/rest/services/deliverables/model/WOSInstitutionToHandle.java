@@ -21,10 +21,6 @@ import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
-/**************
- * @author German C. Martinez - CIAT/CCAFS
- **************/
-
 public class WOSInstitutionToHandle implements Serializable {
 
   /**

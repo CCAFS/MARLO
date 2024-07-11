@@ -815,6 +815,34 @@ public class DeliverableMetadataByWOS extends BaseAction {
     }
   }
 
+
+  private void saveExternalSourceAuthorsToHandle(Phase phase, Deliverable deliverable) {
+    DeliverableMetadataExternalSources externalSource =
+      this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
+    List<String> incomingAuthors = this.responseToHandle.getAuthors();
+
+    if (incomingAuthors != null) {
+      // we are going to remove all of them and just accept the incoming authors
+      this.externalSourceAuthorManager.deleteAllAuthorsFromPhase(deliverable, phase);
+
+      // save
+      for (String incomingAuthor : incomingAuthors) {
+        ExternalSourceAuthor externalSourceAuthor = new ExternalSourceAuthor();
+        externalSourceAuthor.setCreateDate(new Date());
+        externalSourceAuthor.setCreatedBy(this.getCurrentUser());
+        externalSourceAuthor.setDeliverableMetadataExternalSources(externalSource);
+        externalSourceAuthor.setFullName(incomingAuthor);
+
+        externalSourceAuthor = this.externalSourceAuthorManager.saveExternalSourceAuthor(externalSourceAuthor);
+
+        if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+          this.externalSourceAuthorManager.replicate(externalSourceAuthor,
+            phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+        }
+      }
+    }
+  }
+
   private void saveExternalSources(Phase phase, Deliverable deliverable) {
     DeliverableMetadataExternalSources externalSource =
       this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
@@ -968,13 +996,15 @@ public class DeliverableMetadataByWOS extends BaseAction {
   }
 
   private void saveInfoToHandle() {
-    LOG.info("linea 722");
+    LOG.info("linea 999");
     Deliverable deliverable = this.deliverableManager.getDeliverableById(this.deliverableId);
     Phase phase = this.phaseManager.getPhaseById(this.phaseId);
 
     this.saveExternalSourcesToHandle(phase, deliverable);
     this.saveAffiliationsToHandle(phase, deliverable);
     this.saveAffiliationsNotMappedToHandle(phase, deliverable);
+    this.saveExternalSourceAuthorsToHandle(phase, deliverable);
+    LOG.info("linea 1007");
 
   }
 }

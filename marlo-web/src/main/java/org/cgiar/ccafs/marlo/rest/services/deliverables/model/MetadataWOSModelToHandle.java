@@ -64,7 +64,8 @@ public class MetadataWOSModelToHandle implements Serializable {
   @SerializedName("repo")
   private String source;
 
-  private List<WOSAuthor> authors;
+  @SerializedName("Authors")
+  private List<String> authors;
 
   @SerializedName("Affiliation")
   private List<WOSInstitutionToHandle> institutions;
@@ -97,7 +98,7 @@ public class MetadataWOSModelToHandle implements Serializable {
   }
 
 
-  public List<WOSAuthor> getAuthors() {
+  public List<String> getAuthors() {
     return authors;
   }
 
@@ -174,7 +175,7 @@ public class MetadataWOSModelToHandle implements Serializable {
     this.altmetricInfo2 = altmetricInfo2;
   }
 
-  public void setAuthors(List<WOSAuthor> authors) {
+  public void setAuthors(List<String> authors) {
     this.authors = authors;
   }
 
