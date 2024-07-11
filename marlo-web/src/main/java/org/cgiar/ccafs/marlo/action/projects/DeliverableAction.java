@@ -153,6 +153,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
 
@@ -323,6 +324,8 @@ public class DeliverableAction extends BaseAction {
   private Integer acceptationPercentage;
   private List<ProjectOutcome> projectOutcomes;
   private boolean existCurrentCluster;
+  private final SendMailS sendMail;
+  private int previousStatus;
   boolean completeInPreviousPhase = false;
 
   @Inject
@@ -367,7 +370,8 @@ public class DeliverableAction extends BaseAction {
     DeliverableTraineesIndicatorManager deliverableTraineesIndicatorManager,
     ShfrmPriorityActionManager shfrmPriorityActionManager, ShfrmSubActionManager shfrmSubActionManager,
     DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager,
-    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager, SoilIndicatorManager soilIndicatorManager) {
+    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager, SoilIndicatorManager soilIndicatorManager,
+    SendMailS sendMail) {
     super(config);
     this.activityManager = activityManager;
     this.deliverableManager = deliverableManager;
@@ -434,6 +438,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverableShfrmPriorityActionManager = deliverableShfrmPriorityActionManager;
     this.deliverableShfrmSubActionManager = deliverableShfrmSubActionManager;
     this.soilIndicatorManager = soilIndicatorManager;
+    this.sendMail = sendMail;
   }
 
   /**
@@ -1657,6 +1662,12 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getDeliverableInfo(this.getActualPhase()) == null) {
           deliverable.setDeliverableInfo(new DeliverableInfo());
         }
+
+        // Status prev
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
+          previousStatus = deliverable.getDeliverableInfo(this.getActualPhase()).getStatus();
+        }
+
         // Deliverable shared Projects List
         if (this.deliverable.getProjectDeliverableShareds() != null) {
           this.deliverable.setSharedDeliverables(new ArrayList<>(this.deliverable.getProjectDeliverableShareds()
@@ -2103,12 +2114,7 @@ public class DeliverableAction extends BaseAction {
             status.remove(ProjectStatusEnum.Extended.getStatusId());
 
           }
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
-            if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-              status.remove(ProjectStatusEnum.Ongoing.getStatusId());
-            }
-          }
+
         }
         if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
           if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
@@ -2724,6 +2730,12 @@ public class DeliverableAction extends BaseAction {
       }
 
 
+      // [start]2024/07/02 cgamboa function to validate extended status
+
+      this.validateExtendedStatus(deliverableManagedState);
+      // [end]2024/07/02 cgamboa function to validate extended status
+
+
       /**
        * The following is required because we need to update something on
        * the @Deliverable if we want a row created in the auditlog table.
@@ -2761,6 +2773,7 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
+
 
   /**
    * Save Deliverable CrossCutting Information
@@ -4474,6 +4487,46 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  /**
+   * Notify to shared clusters with trainees information if the status of the current deliverable change
+   * 
+   * @param statusPrevName - The previous deliverable status name.
+   * @param statusCurrentName The current deliverable status name.
+   * @param sharedClusterAcronym The acronym of the shared cluster.
+   * @param sharedClusterLeaderName The name of the shared cluster leader.
+   * @param sharedClusterLeaderEmail The email of the shared cluster leader.
+   */
+  public void sendNotificationEmail(String statusPrevName, String statusCurrentName, String sharedClusterAcronym,
+    String sharedClusterLeaderName, String sharedClusterLeaderEmail) {
+
+    String toEmail = sharedClusterLeaderEmail;
+    // CC will be the user who is making the modification.
+    String ccEmail = this.getCurrentUser().getEmail();
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+    String subject = this.getText("email.change.deliverableStatus.subject",
+      new String[] {deliverableID + "", statusPrevName, statusCurrentName});
+
+    // Building the email message
+    StringBuilder message = new StringBuilder();
+    String[] values = new String[7];
+
+    values[0] = sharedClusterLeaderName;
+    values[1] = deliverableID + "";
+    values[2] = deliverable.getProject().getAcronym();
+    values[3] = statusPrevName;
+    values[4] = statusCurrentName;
+    values[5] = sharedClusterAcronym;
+    values[6] = deliverable.getProject().getLeaderPerson(this.getActualPhase()).getUser().getComposedName();
+
+    message.append(this.getText("email.change.deliverableStatus.body", values));
+    message.append(this.getText("email.support.noCrpAdmins"));
+    message.append(this.getText("email.getStarted"));
+    message.append(this.getText("email.bye"));
+
+    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+  }
+
   public void setAcceptationPercentage(Integer acceptationPercentage) {
     this.acceptationPercentage = acceptationPercentage;
   }
@@ -4718,6 +4771,8 @@ public class DeliverableAction extends BaseAction {
     Deliverable deliverableBase = deliverableManager.getDeliverableById(deliverableID);
     DeliverableInfo deliverableInfoDb = deliverableBase.getDeliverableInfo(this.getActualPhase());
 
+    this.validateStatusChangeAndNotifySharedClusters();
+
     deliverableInfoDb.setTitle(deliverable.getDeliverableInfo(this.getActualPhase()).getTitle());
     deliverableInfoDb.setDescription(deliverable.getDeliverableInfo(this.getActualPhase()).getDescription());
 
@@ -4838,4 +4893,83 @@ public class DeliverableAction extends BaseAction {
       deliverableValidator.validate(this, deliverable, true);
     }
   }
+
+  /**
+   * Function that allows validating when a deliverable changes from extended to another state, and the year is the same
+   * as the phase
+   *
+   * @param deliverable staging deliverable
+   */
+  public void validateExtendedStatus(Deliverable deliverableTmp) {
+    try {
+      DeliverableInfo deliverableInfo = deliverableTmp.getDeliverableInfo(this.getActualPhase());
+      if (deliverableInfo.getStatus() != Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+        && deliverableInfo.getYear() == this.getActualPhase().getYear()) {
+        deliverableInfo.setNewExpectedYear(-1);
+      }
+
+      if (deliverableInfo.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+        || deliverableInfo.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        deliverableInfo.setStatusDescription("");
+      }
+
+
+    } catch (Exception e) {
+      logger.error(" unable to validate the extended status in validateExtendedStatus function ");
+    }
+  }
+
+  /**
+   * Validate if the status change for the current deliverable and notify via email to shared clusters with trainees
+   * information
+   */
+  public void validateStatusChangeAndNotifySharedClusters() {
+    try {
+      if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+
+        // Store repeated values in local variables for better readability and performance
+        int statusPrev = previousStatus;
+        String statusPrevName = ProjectStatusEnum.getValue(statusPrev).name();
+        int currentPhaseStatus = deliverable.getDeliverableInfo(this.getActualPhase()).getStatus();
+        String statusCurrentName = ProjectStatusEnum.getValue(currentPhaseStatus).name();
+
+        // Validate previous deliverable status
+        boolean isNotExtendedOrCancelled = statusPrev != Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+          && statusPrev != Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId());
+        boolean isCurrentlyExtendedOrCancelled =
+          currentPhaseStatus == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || currentPhaseStatus == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId());
+
+        if (isNotExtendedOrCancelled && isCurrentlyExtendedOrCancelled && deliverable.getClusterParticipant() != null
+          && !deliverable.getClusterParticipant().isEmpty()) {
+
+          for (DeliverableClusterParticipant deliverableParticipant : deliverable.getClusterParticipant()) {
+            if (deliverableParticipant != null && deliverableParticipant.getProject() != null
+              && deliverableParticipant.getProject().getId() != null
+              && !deliverableParticipant.getProject().getId().equals(deliverable.getProject().getId())) {
+
+              // Get shared cluster leader information
+              Project sharedCluster = new Project();
+              if (deliverableParticipant.getProject().getId() != null) {
+                sharedCluster = projectManager.getProjectById(deliverableParticipant.getProject().getId());
+              }
+              String sharedClusterLeaderName = null, sharedClusterLeaderEmail = null;
+              User lead = sharedCluster.getLeaderPerson(this.getActualPhase()).getUser();
+              if (lead != null) {
+                sharedClusterLeaderName = lead.getFirstName();
+                sharedClusterLeaderEmail = lead.getEmail();
+              }
+
+              // Send notification email
+              this.sendNotificationEmail(statusPrevName, statusCurrentName, sharedCluster.getAcronym(),
+                sharedClusterLeaderName, sharedClusterLeaderEmail);
+            }
+          }
+        }
+      }
+    } catch (NumberFormatException | NullPointerException e) {
+      logger.error("Error occurred while processing shared cluster information and sending email: " + e);
+    }
+  }
+
 }

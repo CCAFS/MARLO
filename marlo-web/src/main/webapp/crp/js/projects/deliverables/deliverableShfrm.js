@@ -49,6 +49,8 @@ function init() {
   // Attaching listeners
   attachEvents();
 
+  updateDeliverable();
+
   // Set the unique person as leader
   /*
     * if(editable){ var contactPeople = $partnersBlock.find('.projectPartner'); if ((contactPeople.length == 1)){ var
@@ -67,7 +69,7 @@ function init() {
  // $(".deliverableList").select2();
 
   $("textarea[id!='justification']").autoGrow();
-  $(".deliverableList").on("change", addSubactionsEvent);
+  
 }
 
 // Add a new subAction element
@@ -108,7 +110,6 @@ function addSubactionsEvent() {
   
   // var $actionContainer = $(this).parents(".fullPartBlock");
   // var activityIndex = $activity.find(".index").html();
-  // updateDeliverable(this);
   updateActionsAndSubActionsIndexes();
   checkItems($list);
 
@@ -136,30 +137,22 @@ function checkItems(block) {
 }
 
 
-function updateDeliverable(currentElement) {
+function updateDeliverable() {
 
 
-  var $subSectionsSelector = $(currentElement).parents(".subSectionsSelector");
-  var actionindex = $subSectionsSelector.attr("actionindex");
-  console.log($subSectionsSelector)
-  console.log(actionindex)
+  var $subSectionsOptions = $("select.deliverableList option");
+  var $subSectionsWrapper = $(".deliverableWrapper .deliverableActivity input.id");
 
+  if($subSectionsWrapper.length > 0){
+    $subSectionsWrapper.each(function(_, eleDisplay){
+      $subSectionsOptions.each(function(_, eleOption){
+        if($(eleDisplay).val() == $(eleOption).val()){
+          $(eleOption).attr('disabled', true);
+        }
+      });
+    });
+  }
 
-  let itemsSize = Number($('#actionsListReference').find('.list').length ?? 0);
-  itemsSize && itemsSize++;
-
-  console.log(itemsSize)
-
-
-  $subSectionsSelector.find('.deliverableActivity').each(function (indexDeliverable, deliverableItem) {
-    // console.log(indexDeliverable);
-    // console.log(deliverableItem);
-    console.log(actionindex)
-    // Set activity indexes
-    $(deliverableItem).setNameIndexes(1, actionindex);
-    // Set indexes
-    $(deliverableItem).setNameIndexes(2, indexDeliverable);
-  });
 }
 
 function attachEvents() {
@@ -217,6 +210,7 @@ function attachEvents() {
   $(".removeElementType-shfrmPriorityAction-deliverablePriorityActions").on('mouseenter', function () {
     currentDeleteActionId = $(this).parent('.relationElement').find('.elementRelationID').val();
   });
+  $(".deliverableList").on("change", addSubactionsEvent);
   $(".removeDeliverable ").on('click', removeSubActionEvent);
 
 
