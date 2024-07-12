@@ -447,6 +447,14 @@
               </div>
               <br>
             </div>
+            <div class="col-md-2">
+              <div class="text-area-container">
+                <button class="btn btn-danger removeInformationClusterTrainnes btn-remove" title="Remove ${(list[index].project.acronym)!''} information" clusterIdParticipant="${(cluster.project.id)!0}" ${action.isSubmit(cluster.project.id)?then('disabled','')}>
+                 <span class="glyphicon glyphicon-trash"></span>
+                </button>
+              </div>
+              <br>
+            </div>
           </div>
         [#assign index = index + 1]
         [/#list]

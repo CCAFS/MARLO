@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmPriorityActionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableShfrmSubActionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
@@ -85,6 +86,7 @@ public class DeliverableValidator extends BaseValidator {
   private ActivityManager activityManager;
   private DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
   private DeliverableShfrmSubActionManager deliverableShfrmSubActionManager;
+  private DeliverableInfoManager deliverableInfoManager;
 
   Boolean doesNotHaveDOI;
 
@@ -95,7 +97,7 @@ public class DeliverableValidator extends BaseValidator {
     DeliverableUserManager deliverableUserManager, SoilIndicatorManager soilIndicatorManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, ActivityManager activityManager,
     DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager,
-    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager) {
+    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager, DeliverableInfoManager deliverableInfoManager) {
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
@@ -107,6 +109,7 @@ public class DeliverableValidator extends BaseValidator {
     this.activityManager = activityManager;
     this.deliverableShfrmPriorityActionManager = deliverableShfrmPriorityActionManager;
     this.deliverableShfrmSubActionManager = deliverableShfrmSubActionManager;
+    this.deliverableInfoManager = deliverableInfoManager;
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID, BaseAction action) {
@@ -509,6 +512,15 @@ public class DeliverableValidator extends BaseValidator {
       if (dInfo != null) {
         Integer status = dInfo.getStatus();
         Integer newExpectedYear = dInfo.getNewExpectedYear();
+        try {
+          if (dInfo.getStatus() != Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && dInfo.getYear() == action.getActualPhase().getYear()) {
+            dInfo.setNewExpectedYear(-1);
+            newExpectedYear = dInfo.getNewExpectedYear();
+          }
+        } catch (Exception e) {
+          LOG.error("unable to get newExpetedyear from no extended deliverable");
+        }
         Integer statusExtendedId = Integer.parseInt(ProjectStatusEnum.Extended.getStatusId());
         if (status != null && newExpectedYear != null && (status.intValue() != statusExtendedId)
           && (newExpectedYear > action.getCurrentCycleYear())) {
