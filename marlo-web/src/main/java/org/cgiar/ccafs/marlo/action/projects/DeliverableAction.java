@@ -2114,12 +2114,7 @@ public class DeliverableAction extends BaseAction {
             status.remove(ProjectStatusEnum.Extended.getStatusId());
 
           }
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
-            if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-              status.remove(ProjectStatusEnum.Ongoing.getStatusId());
-            }
-          }
+
         }
         if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
           if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
@@ -2733,6 +2728,12 @@ public class DeliverableAction extends BaseAction {
         }
         relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
       }
+
+
+      // [start]2024/07/02 cgamboa function to validate extended status
+
+      this.validateExtendedStatus(deliverableManagedState);
+      // [end]2024/07/02 cgamboa function to validate extended status
 
 
       /**
@@ -4505,6 +4506,7 @@ public class DeliverableAction extends BaseAction {
       String bbcEmails = this.config.getEmailNotification();
       String subject = this.getText("email.change.deliverableStatus.subject",
         new String[] {deliverableID + "", statusPrevName, statusCurrentName});
+   
 
       // Building the email message
       StringBuilder message = new StringBuilder();
@@ -4772,7 +4774,7 @@ public class DeliverableAction extends BaseAction {
     Deliverable deliverableBase = deliverableManager.getDeliverableById(deliverableID);
     DeliverableInfo deliverableInfoDb = deliverableBase.getDeliverableInfo(this.getActualPhase());
 
-    this.validateStatusChangeAndNotifySharedClusters();
+    // this.validateStatusChangeAndNotifySharedClusters();
 
     deliverableInfoDb.setTitle(deliverable.getDeliverableInfo(this.getActualPhase()).getTitle());
     deliverableInfoDb.setDescription(deliverable.getDeliverableInfo(this.getActualPhase()).getDescription());
@@ -4894,6 +4896,30 @@ public class DeliverableAction extends BaseAction {
       deliverableValidator.validate(this, deliverable, true);
     }
   }
+  /**
+   * Function that allows validating when a deliverable changes from extended to another state, and the year is the same
+   * as the phase
+   *
+   * @param deliverable staging deliverable
+   */
+  public void validateExtendedStatus(Deliverable deliverableTmp) {
+    try {
+      DeliverableInfo deliverableInfo = deliverableTmp.getDeliverableInfo(this.getActualPhase());
+      if (deliverableInfo.getStatus() != Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+        && deliverableInfo.getYear() == this.getActualPhase().getYear()) {
+        deliverableInfo.setNewExpectedYear(-1);
+      }
+
+      if (deliverableInfo.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+        || deliverableInfo.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        deliverableInfo.setStatusDescription("");
+      }
+
+
+    } catch (Exception e) {
+      logger.error(" unable to validate the extended status in validateExtendedStatus function ");
+    }
+  }
 
   /**
    * Validate if the status change for the current deliverable and notify via email to shared clusters with trainees
@@ -4951,4 +4977,5 @@ public class DeliverableAction extends BaseAction {
       logger.error("Error occurred while processing shared cluster information and sending email: " + e);
     }
   }
+
 }
