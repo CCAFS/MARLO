@@ -901,53 +901,74 @@ public class DeliverableMetadataByWOS extends BaseAction {
   }
 
   private void saveExternalSourcesToHandle(Phase phase, Deliverable deliverable) {
-    LOG.info(" linea 711");
-    DeliverableMetadataExternalSources externalSource =
-      this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
-    MetadataGardianModel gardianInfo = this.responseToHandle.getGardianInfo();
+    try {
+      LOG.info(" linea 711");
+      DeliverableMetadataExternalSources externalSource =
+        this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
+      MetadataGardianModel gardianInfo = this.responseToHandle.getGardianInfo();
 
-    if (externalSource == null) {
-      externalSource = new DeliverableMetadataExternalSources();
-      externalSource.setPhase(phase);
-      externalSource.setDeliverable(deliverable);
-      externalSource.setCreateDate(new Date());
-      externalSource.setCreatedBy(this.getCurrentUser());
+      if (externalSource == null) {
+        externalSource = new DeliverableMetadataExternalSources();
+        externalSource.setPhase(phase);
+        externalSource.setDeliverable(deliverable);
+        externalSource.setCreateDate(new Date());
+        externalSource.setCreatedBy(this.getCurrentUser());
+        externalSource =
+          this.deliverableMetadataExternalSourcesManager.saveDeliverableMetadataExternalSources(externalSource);
+      }
+
+      externalSource.setUrl(this.responseToHandle.getHandle());
+      externalSource.setTitle(this.responseToHandle.getTitle());
+
+      externalSource.setPublicationType(this.responseToHandle.getPublicationType());
+
+      try {
+        externalSource.setPublicationYear(Integer.parseInt(this.responseToHandle.getPublicationYear().split("-")[0]));
+      } catch (Exception e) {
+        LOG.error("unable to get publication year in saveExternalSourcesToHandle [function]");
+      }
+
+      String openAcess = this.responseToHandle.getIsOpenAccess();
+      String resultOpenAcess = "false";
+      if (openAcess != null) {
+        if (StringUtils.equalsIgnoreCase(openAcess, "Open Access")) {
+          resultOpenAcess = "true";
+        }
+      } else {
+        resultOpenAcess = "false";
+      }
+
+      externalSource.setOpenAccessStatus(resultOpenAcess);
+
+      // externalSource.setOpenAccessLink(this.response.getOpenAcessLink());
+      // externalSource.setIsiStatus(this.getBooleanStringOrNotAvailable(this.response.getIsISI()));
+      // externalSource.setJournalName(this.response.getJournalName());
+      // externalSource.setVolume(this.response.getVolume());
+
+      externalSource.setIssue(this.responseToHandle.getIssue());
+      externalSource.setPages(this.responseToHandle.getPages());
+      externalSource.setSource(this.responseToHandle.getSource());
+
+
+      if (gardianInfo != null) {
+        externalSource.setGardianFindability(gardianInfo.getFindability());
+        externalSource.setGardianAccessibility(gardianInfo.getAccessibility());
+        externalSource.setGardianInteroperability(gardianInfo.getInteroperability());
+        externalSource.setGardianReusability(gardianInfo.getReusability());
+        externalSource.setGardianTitle(gardianInfo.getTitle());
+      }
+
+
       externalSource =
         this.deliverableMetadataExternalSourcesManager.saveDeliverableMetadataExternalSources(externalSource);
-    }
-
-    externalSource.setUrl(this.responseToHandle.getHandle());
-    externalSource.setTitle(this.responseToHandle.getTitle());
-
-    externalSource.setPublicationType(this.responseToHandle.getPublicationType());
-    // externalSource.setPublicationYear(this.response.getPublicationYear());
-    // externalSource.setOpenAccessStatus(this.getBooleanStringOrNotAvailable(this.response.getIsOpenAccess()));
-    // externalSource.setOpenAccessLink(this.response.getOpenAcessLink());
-    // externalSource.setIsiStatus(this.getBooleanStringOrNotAvailable(this.response.getIsISI()));
-    // externalSource.setJournalName(this.response.getJournalName());
-    // externalSource.setVolume(this.response.getVolume());
-
-    externalSource.setIssue(this.responseToHandle.getIssue());
-    externalSource.setPages(this.responseToHandle.getPages());
-    externalSource.setSource(this.responseToHandle.getSource());
 
 
-    if (gardianInfo != null) {
-      externalSource.setGardianFindability(gardianInfo.getFindability());
-      externalSource.setGardianAccessibility(gardianInfo.getAccessibility());
-      externalSource.setGardianInteroperability(gardianInfo.getInteroperability());
-      externalSource.setGardianReusability(gardianInfo.getReusability());
-      externalSource.setGardianTitle(gardianInfo.getTitle());
-    }
-
-
-    externalSource =
-      this.deliverableMetadataExternalSourcesManager.saveDeliverableMetadataExternalSources(externalSource);
-
-
-    if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
-      this.deliverableMetadataExternalSourcesManager.replicate(externalSource,
-        phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+      if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+        this.deliverableMetadataExternalSourcesManager.replicate(externalSource,
+          phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+      }
+    } catch (Exception e) {
+      LOG.error("unable to save the external source data in saveExternalSourcesToHandle [function]");
     }
 
   }
@@ -1089,6 +1110,26 @@ public class DeliverableMetadataByWOS extends BaseAction {
 
         }
         jsonObject.add("institutions", institutionArray);
+      }
+
+      if (jsonObject.has("Open Access")) {
+
+        String tmpValue = jsonObject.get("Open Access").getAsString();
+        String resultOpenAcess = "false";
+        if (tmpValue != null) {
+          if (StringUtils.equalsIgnoreCase(tmpValue, "Open Access")) {
+            resultOpenAcess = "true";
+          }
+        } else {
+          resultOpenAcess = "false";
+        }
+        jsonObject.addProperty("isOpenAccess", resultOpenAcess);
+      }
+
+
+      if (jsonObject.has("Online publication date")) {
+        String tmpValue = jsonObject.get("Online publication date").getAsString();
+        jsonObject.addProperty("publicationYear", Integer.parseInt(tmpValue.split("-")[0]));
       }
 
 
