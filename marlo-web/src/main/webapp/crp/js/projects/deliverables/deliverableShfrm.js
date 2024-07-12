@@ -142,7 +142,6 @@ function updateDeliverable() {
 
   var $subSectionsOptions = $("select.deliverableList option");
   var $subSectionsWrapper = $(".deliverableWrapper .deliverableActivity input.id");
-  console.log($subSectionsOptions);
 
   if($subSectionsWrapper.length > 0){
     $subSectionsWrapper.each(function(_, eleDisplay){

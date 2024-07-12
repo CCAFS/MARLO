@@ -7251,6 +7251,10 @@ button.btn.btn-primary {
 	border-color: #267d9e;
 }
 
+button.btn.btn-remove {
+	padding: 3px 12px;
+}
+
 article#mainInformation {
 	min-height: 100px;
 }

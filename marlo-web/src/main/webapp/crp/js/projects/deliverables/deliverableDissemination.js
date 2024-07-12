@@ -352,6 +352,7 @@ function addcluster(infoCluster){
     lastValueId = 0;
   }
 
+
   var hiddenInputId = $('<input>').attr({
     type: 'hidden',
     class: 'valueId',
@@ -373,11 +374,12 @@ function addcluster(infoCluster){
     clusteridparticipant: idCluster
   });
   var col1 = $('<div>').addClass('col-md-2');
-  var textArea1 = $('<div>').addClass('text-area-container').text(infoCluster.acronym);
+  var textArea1 = $('<div>').addClass('text-area-container text-flex-column').text(infoCluster.acronym);
   col1.append(textArea1);
   div.append(col1);
   div.css('margin-bottom', '30px');
-  var col2 = $('<div>').addClass('col-md-2');
+
+  var col2 = $('<div>').addClass('col-md-2 participantsNumbers');
   var textArea2 = $('<div>').addClass('text-area-container');
   var input2 = $('<input>').attr({
     type: 'text',
@@ -406,7 +408,7 @@ function addcluster(infoCluster){
   col3.append(textArea3);
   div.append(col3);
 
-  var col4 = $('<div>').addClass('col-md-2');
+  var col4 = $('<div>').addClass('col-md-2 africanNumbers');
   var textArea4 = $('<div>').addClass('text-area-container');
   var input4 = $('<input>').attr({
     type: 'text',
@@ -420,7 +422,7 @@ function addcluster(infoCluster){
   col4.append(textArea4);
   div.append(col4);
 
-  var col5 = $('<div>').addClass('col-md-2 femaleNumbers');
+  var col5 = $('<div>').addClass('col-md-2 youthNumbers');
   var textArea5 = $('<div>').addClass('text-area-container');
   var input5 = $('<input>').attr({
     type: 'text',
@@ -434,12 +436,43 @@ function addcluster(infoCluster){
   col5.append(textArea5);
   div.append(col5);
 
+  var col6 = $('<div>').addClass('col-md-2');
+  var textArea6 = $('<div>').addClass('text-area-container');
+  var button6 = $('<button>').attr({
+    type: 'button',
+    class: 'btn btn-danger removeInformationClusterTrainnes btn-remove',
+    clusteridparticipant: idCluster,
+    title: `Remove ${infoCluster.acronym} information` 
+  });
+  button6.append($('<span>').addClass('glyphicon glyphicon-trash'));
+  textArea6.append($('<div>').addClass('input fieldReference').css('display', 'block').append(button6));
+  col6.append(textArea6);
+  div.append(col6);
+
 
   // Agregamos los elementos al contenedor adecuado
   $('.block-involveParticipants .listClusterDM').append(hiddenInputId);
   $('.block-involveParticipants .listClusterDM').append(hiddenInputProjectId);
   $('.block-involveParticipants .listClusterDM').append(div);
+  button6.on('click', removeInformationClusterTrainnes);
   initialTotals()
+}
+
+function removeInformationClusterTrainnes(){
+  event.preventDefault();
+  let clusterIdParticipant;
+  clusterIdParticipant = $(this).attr('clusteridparticipant');
+  console.log("clusterIdParticipant: "+clusterIdParticipant);
+  const $divElement = document.querySelector(`.listClusterDM div[clusteridparticipant="${clusterIdParticipant}"]`);
+  console.log("divElement: "+$divElement);
+  const inputs = $divElement.querySelectorAll('input');
+  console.log("inputs: "+inputs);
+  inputs.forEach(input => {
+    input.value = 0;
+  });
+
+  initialRemaining();	
+  initialTotals();
 }
 
 
@@ -1149,6 +1182,8 @@ function addDisseminationEvents() {
       displayExtraFieldUrl(false, false);
     }
   });
+
+  $('.removeInformationClusterTrainnes').on('click', removeInformationClusterTrainnes);	
 
 }
 
