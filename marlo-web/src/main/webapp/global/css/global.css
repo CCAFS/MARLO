@@ -3396,7 +3396,8 @@ button.ipGraph-btn {
 	align-items: center;
 	gap: 0.625rem;
 	font-style: normal;
-	margin-bottom: 5px;
+	margin-bottom: 18px;
+	margin-top: 12px;
 }
 
 .topNote {
