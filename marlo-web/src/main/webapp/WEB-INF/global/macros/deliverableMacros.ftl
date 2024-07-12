@@ -415,7 +415,7 @@
               <div class="text-area-container text-flex-column">
               [@customForm.text name=(list[index].project.acronym)!"" /]
               [#if action.isSubmit(cluster.project.id)]
-                <p style="font-style: italic; font-size: 10px;">Cluster submitted.</p>
+                <p style="font-style: italic; font-size: 10px;" title=[@s.text name="involveParticipants.sharedClusters.submittedHover" /]>Cluster submitted.</p>
               [/#if]
                 [#-- Allow to track if the cluster is submitted --]
                 [#assign isSubmit = action.isSubmit(cluster.project.id)?string('true', 'false') /]
