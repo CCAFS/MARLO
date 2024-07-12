@@ -446,8 +446,8 @@
             </div>
             <div class="col-md-2">
               <div class="text-area-container">
-                <button type="button" class="btn btn-danger removeCluster" clusterIdParticipant="${(cluster.project.id)!0}" disabled=action.isSubmit((cluster.project.id))>
-                 <span class="glyphicon glyphicon-trash"></span> Remove
+                <button class="btn btn-danger removeInformationClusterTrainnes btn-remove" title="Remove ${(list[index].project.acronym)!''}" clusterIdParticipant="${(cluster.project.id)!0}" ${action.isSubmit(cluster.project.id)?then('disabled','')}>
+                 <span class="glyphicon glyphicon-trash"></span>
                 </button>
               </div>
               <br>
