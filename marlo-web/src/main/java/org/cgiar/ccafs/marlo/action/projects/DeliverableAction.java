@@ -4501,7 +4501,7 @@ public class DeliverableAction extends BaseAction {
 
     String toEmail = sharedClusterLeaderEmail;
     // CC will be the user who is making the modification.
-    String ccEmail = this.getCurrentUser().getEmail();
+    String ccEmail = null;
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
     String subject = this.getText("email.change.deliverableStatus.subject",
