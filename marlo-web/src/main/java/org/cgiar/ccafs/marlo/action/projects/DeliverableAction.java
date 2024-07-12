@@ -4771,7 +4771,7 @@ public class DeliverableAction extends BaseAction {
     Deliverable deliverableBase = deliverableManager.getDeliverableById(deliverableID);
     DeliverableInfo deliverableInfoDb = deliverableBase.getDeliverableInfo(this.getActualPhase());
 
-    this.validateStatusChangeAndNotifySharedClusters();
+    // this.validateStatusChangeAndNotifySharedClusters();
 
     deliverableInfoDb.setTitle(deliverable.getDeliverableInfo(this.getActualPhase()).getTitle());
     deliverableInfoDb.setDescription(deliverable.getDeliverableInfo(this.getActualPhase()).getDescription());
