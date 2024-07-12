@@ -352,6 +352,7 @@ function addcluster(infoCluster){
     lastValueId = 0;
   }
 
+
   var hiddenInputId = $('<input>').attr({
     type: 'hidden',
     class: 'valueId',
@@ -373,7 +374,7 @@ function addcluster(infoCluster){
     clusteridparticipant: idCluster
   });
   var col1 = $('<div>').addClass('col-md-2');
-  var textArea1 = $('<div>').addClass('text-area-container').text(infoCluster.acronym);
+  var textArea1 = $('<div>').addClass('text-area-container text-flex-column').text(infoCluster.acronym);
   col1.append(textArea1);
   div.append(col1);
   div.css('margin-bottom', '30px');
@@ -439,12 +440,11 @@ function addcluster(infoCluster){
   var textArea6 = $('<div>').addClass('text-area-container');
   var button6 = $('<button>').attr({
     type: 'button',
-    class: 'btn btn-danger removeCluster',
-    onclick: '',
-    clusteridparticipant: idCluster
+    class: 'btn btn-danger removeInformationClusterTrainnes btn-remove',
+    clusteridparticipant: idCluster,
+    title: `Remove ${infoCluster.acronym} information` 
   });
   button6.append($('<span>').addClass('glyphicon glyphicon-trash'));
-  button6.append(' Remove');
   textArea6.append($('<div>').addClass('input fieldReference').css('display', 'block').append(button6));
   col6.append(textArea6);
   div.append(col6);
@@ -454,7 +454,25 @@ function addcluster(infoCluster){
   $('.block-involveParticipants .listClusterDM').append(hiddenInputId);
   $('.block-involveParticipants .listClusterDM').append(hiddenInputProjectId);
   $('.block-involveParticipants .listClusterDM').append(div);
+  button6.on('click', removeInformationClusterTrainnes);
   initialTotals()
+}
+
+function removeInformationClusterTrainnes(){
+  event.preventDefault();
+  let clusterIdParticipant;
+  clusterIdParticipant = $(this).attr('clusteridparticipant');
+  console.log("clusterIdParticipant: "+clusterIdParticipant);
+  const $divElement = document.querySelector(`.listClusterDM div[clusteridparticipant="${clusterIdParticipant}"]`);
+  console.log("divElement: "+$divElement);
+  const inputs = $divElement.querySelectorAll('input');
+  console.log("inputs: "+inputs);
+  inputs.forEach(input => {
+    input.value = 0;
+  });
+
+  initialRemaining();	
+  initialTotals();
 }
 
 
@@ -1164,6 +1182,8 @@ function addDisseminationEvents() {
       displayExtraFieldUrl(false, false);
     }
   });
+
+  $('.removeInformationClusterTrainnes').on('click', removeInformationClusterTrainnes);	
 
 }
 
