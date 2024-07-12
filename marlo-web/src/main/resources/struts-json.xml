@@ -606,6 +606,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="canDeleteDeliverableWithSharedTrainees"
+			class="org.cgiar.ccafs.marlo.action.json.project.CanDeleteDeliverableWithSharedTrainees">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="unsubmitImpactpathway"
 			class="org.cgiar.ccafs.marlo.action.json.impactpathway.UnSubmitImpactpathwayAction">
