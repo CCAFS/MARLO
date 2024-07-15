@@ -557,16 +557,20 @@ public class DeliverableMetadataByWOS extends BaseAction {
   }
 
   private void saveAffiliationsToHandle(Phase phase, Deliverable deliverable) {
-    DeliverableMetadataExternalSources externalSource =
-      this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
-    List<WOSInstitutionToHandle> incomingInstitutions = this.responseToHandle.getInstitutions();
+    try {
+      DeliverableMetadataExternalSources externalSource =
+        this.deliverableMetadataExternalSourcesManager.findByPhaseAndDeliverable(phase, deliverable);
+      List<WOSInstitutionToHandle> incomingInstitutions = this.responseToHandle.getInstitutions();
 
-    LOG.info("Linea 474 " + incomingInstitutions.size());
-    LOG.info("Linea 476 " + incomingInstitutions.toString());
+      LOG.info("Linea 474 " + incomingInstitutions.size());
+      LOG.info("Linea 476 " + incomingInstitutions.toString());
 
-    if (incomingInstitutions != null) {
-      List<DeliverableAffiliation> dbAffiliations =
-        this.deliverableAffiliationManager.findAll() != null ? this.deliverableAffiliationManager.findAll().stream()
+      List<DeliverableAffiliation> dbAffiliationsTmp =
+        this.deliverableAffiliationManager.findByPhaseAndDeliverable(phase, deliverable);
+
+      /// this.deliverableAffiliationManager.findAll() was replaced by dbAffiliationsTmp
+      if (incomingInstitutions != null) {
+        List<DeliverableAffiliation> dbAffiliations = dbAffiliationsTmp != null ? dbAffiliationsTmp.stream()
           .filter(da -> da != null && da.getId() != null && da.getPhase() != null && da.getDeliverable() != null
             && da.getPhase().equals(phase) && da.getDeliverable().getId() != null
             && da.getDeliverable().getId().equals(deliverable.getId())
@@ -575,58 +579,69 @@ public class DeliverableMetadataByWOS extends BaseAction {
             && da.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId()))
           .collect(Collectors.toList()) : Collections.emptyList();
 
-      for (DeliverableAffiliation dbDeliverableAffiliation : dbAffiliations) {
-        if (dbDeliverableAffiliation != null && dbDeliverableAffiliation.getInstitution() != null
-          && (incomingInstitutions.stream().filter(i -> i != null && i.getFullName() != null
-            && StringUtils.equalsIgnoreCase(i.getFullName(), dbDeliverableAffiliation.getInstitutionNameWebOfScience())
-            && i.getPrediction().getConfidant() < APConstants.ACCEPTATION_PERCENTAGE).count() == 0)) {
-          this.deliverableAffiliationManager.deleteDeliverableAffiliation(dbDeliverableAffiliation.getId());
-          if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
-            this.deliverableAffiliationManager.replicate(dbDeliverableAffiliation,
-              phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+        LOG.info(" linea 578 " + dbAffiliations.size());
+
+        for (DeliverableAffiliation dbDeliverableAffiliation : dbAffiliations) {
+          if (dbDeliverableAffiliation != null && dbDeliverableAffiliation.getInstitution() != null
+            && (incomingInstitutions.stream()
+              .filter(i -> i != null && i.getFullName() != null
+                && StringUtils.equalsIgnoreCase(i.getFullName(),
+                  dbDeliverableAffiliation.getInstitutionNameWebOfScience())
+                && i.getPrediction().getConfidant() < APConstants.ACCEPTATION_PERCENTAGE)
+              .count() == 0)) {
+            this.deliverableAffiliationManager.deleteDeliverableAffiliation(dbDeliverableAffiliation.getId());
+            if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+              this.deliverableAffiliationManager.replicate(dbDeliverableAffiliation,
+                phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+            }
           }
         }
-      }
 
-      // save
+        // save
 
-      for (WOSInstitutionToHandle incomingAffiliation : incomingInstitutions) {
-        if (incomingAffiliation.getPrediction().getConfidant() >= APConstants.ACCEPTATION_PERCENTAGE) {
-          DeliverableAffiliation newDeliverableAffiliation =
-            this.deliverableAffiliationManager.findByPhaseAndDeliverable(phase, deliverable).stream()
+        for (WOSInstitutionToHandle incomingAffiliation : incomingInstitutions) {
+          if (incomingAffiliation.getPrediction().getConfidant() >= APConstants.ACCEPTATION_PERCENTAGE) {
+            // this.deliverableAffiliationManager.findByPhaseAndDeliverable(phase, deliverable) was replaced by
+            // dbAffiliationsTmp
+            DeliverableAffiliation newDeliverableAffiliation = dbAffiliationsTmp.stream()
               .filter(nda -> nda != null && nda.getDeliverableMetadataExternalSources() != null
                 && nda.getDeliverableMetadataExternalSources().getId() != null
                 && nda.getDeliverableMetadataExternalSources().getId().equals(externalSource.getId())
                 && nda.getInstitutionNameWebOfScience() != null && StringUtils
                   .equalsIgnoreCase(incomingAffiliation.getFullName(), nda.getInstitutionNameWebOfScience()))
               .findFirst().orElse(null);
-          if (newDeliverableAffiliation == null) {
-            newDeliverableAffiliation = new DeliverableAffiliation();
-            newDeliverableAffiliation.setPhase(phase);
-            newDeliverableAffiliation.setDeliverable(deliverable);
-            newDeliverableAffiliation.setCreateDate(new Date());
-            newDeliverableAffiliation.setCreatedBy(this.getCurrentUser());
-          }
-          Institution incomingInstitution = (incomingAffiliation.getPrediction().getValue().getCode() != 0)
-            ? this.institutionManager.getInstitutionById(incomingAffiliation.getPrediction().getValue().getCode())
-            : null;
-          if (incomingInstitution != null) {
-            newDeliverableAffiliation.setInstitution(incomingInstitution);
-            newDeliverableAffiliation.setInstitutionMatchConfidence(incomingAffiliation.getPrediction().getConfidant());
-            newDeliverableAffiliation.setDeliverableMetadataExternalSources(externalSource);
-            newDeliverableAffiliation.setInstitutionNameWebOfScience(incomingAffiliation.getFullName());
-            newDeliverableAffiliation.setInstitutionMatchConfidence(incomingAffiliation.getPrediction().getConfidant());
-            newDeliverableAffiliation.setActive(true);
-            newDeliverableAffiliation =
-              this.deliverableAffiliationManager.saveDeliverableAffiliation(newDeliverableAffiliation);
-            if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
-              this.deliverableAffiliationManager.replicate(newDeliverableAffiliation,
-                phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+            if (newDeliverableAffiliation == null) {
+              newDeliverableAffiliation = new DeliverableAffiliation();
+              newDeliverableAffiliation.setPhase(phase);
+              newDeliverableAffiliation.setDeliverable(deliverable);
+              newDeliverableAffiliation.setCreateDate(new Date());
+              newDeliverableAffiliation.setCreatedBy(this.getCurrentUser());
+            }
+            Institution incomingInstitution = (incomingAffiliation.getPrediction().getValue().getCode() != 0)
+              ? this.institutionManager.getInstitutionById(incomingAffiliation.getPrediction().getValue().getCode())
+              : null;
+            if (incomingInstitution != null) {
+              newDeliverableAffiliation.setInstitution(incomingInstitution);
+              newDeliverableAffiliation
+                .setInstitutionMatchConfidence(incomingAffiliation.getPrediction().getConfidant());
+              newDeliverableAffiliation.setDeliverableMetadataExternalSources(externalSource);
+              newDeliverableAffiliation.setInstitutionNameWebOfScience(incomingAffiliation.getFullName());
+              newDeliverableAffiliation
+                .setInstitutionMatchConfidence(incomingAffiliation.getPrediction().getConfidant());
+              newDeliverableAffiliation.setActive(true);
+              newDeliverableAffiliation =
+                this.deliverableAffiliationManager.saveDeliverableAffiliation(newDeliverableAffiliation);
+              if (deliverable.getIsPublication() == null || deliverable.getIsPublication() == false) {
+                this.deliverableAffiliationManager.replicate(newDeliverableAffiliation,
+                  phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
+              }
             }
           }
         }
-      }
 
+      }
+    } catch (Exception e) {
+      LOG.error(" unable to sav affiliaton data in saveAffiliationsToHandle function");
     }
   }
 
