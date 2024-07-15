@@ -917,17 +917,11 @@ async function onClickRemoveElement() {
   }
 
   // check if the indicator IPI2.3 has information, to avoid removing, it in the Performance Indicator
-  if (id === "7505" || name.includes("IPI 2.3")) {
+  if (name.includes("IPI 2.3")) {
 
     //Represents a collection of input elements that contain the information of the total participants for each shared clusters.
-   
-    const inputs = document.querySelectorAll("div.form-group.row[clusteridparticipant] .participantsNumbers input");
-    
-    const values = [];
-    inputs.forEach(input => {
-      values.push(parseInt(input.value));
-    });
-    var sumData = values.reduce((a, b) => a + b, 0);
+   var sumData = getSumTotalParticipants();
+
     if (sumData > 0) { 
       
       try {
@@ -1001,6 +995,25 @@ async function onClickRemoveElement() {
       $select.prop('disabled', false).trigger('change.select2');
     }
   });
+}
+
+/**
+ * Calculates the sum of total participants.
+ * 
+ * @returns {number} The sum of total participants.
+ */
+function getSumTotalParticipants() {
+  let sumTotal = 0;
+
+  const inputs = document.querySelectorAll("div.form-group.row[clusteridparticipant] .participantsNumbers input");
+    
+  const values = [];
+  inputs.forEach(input => {
+    values.push(parseInt(input.value));
+  });
+  sumTotal = values.reduce((a, b) => a + b, sumTotal);
+
+  return sumTotal;
 }
 
 function alertRemoveCluster() {
