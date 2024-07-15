@@ -35,6 +35,8 @@ public class MetadataWOSModelToHandle implements Serializable {
 
   @SerializedName("Title")
   private String title;
+
+  @SerializedName("DOI")
   private String doi;
 
   @SerializedName("Type")
@@ -49,10 +51,12 @@ public class MetadataWOSModelToHandle implements Serializable {
 
   private String openAcessLink;
 
-  @SerializedName("is_isi")
+  @SerializedName("ISI")
   private String isISI;
 
+  @SerializedName("Journal")
   private String journalName;
+
   private String volume;
 
   @SerializedName("name")

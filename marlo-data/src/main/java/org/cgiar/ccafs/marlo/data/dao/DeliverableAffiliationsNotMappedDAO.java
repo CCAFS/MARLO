@@ -57,6 +57,15 @@ public interface DeliverableAffiliationsNotMappedDAO {
    */
   public List<DeliverableAffiliationsNotMapped> findAll();
 
+
+  /**
+   * This method gets a list of deliverableAffiliationsNotMapped by externalSourceId
+   *
+   * @param externalSourceId deliverable Metadata External Sources Id
+   * @return a list from DeliverableAffiliationsNotMappeds null if no exist records
+   */
+  List<DeliverableAffiliationsNotMapped> findBydeliverableMetadataExternalSourcesId(long externalSourceId);
+
   /**
    * This method saves the information of the given deliverableAffiliationsNotMapped
    * 
