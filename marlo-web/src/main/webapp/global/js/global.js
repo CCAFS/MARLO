@@ -917,7 +917,7 @@ async function onClickRemoveElement() {
   }
 
   // check if the indicator IPI2.3 has information, to avoid removing, it in the Performance Indicator
-  if (id === "7505" || name.includes("IPI 2.3")) {
+  if (name.includes("IPI 2.3")) {
 
     //Represents a collection of input elements that contain the information of the total participants for each shared clusters.
    

@@ -94,7 +94,11 @@ $('.listindicators .setSelect2').select2().on('change', function() {
   $(".listindicators .removeElement").on("click",async function () {
 
     //These is validation for the IPI 2.3 indicator is selected and is able to be removed
-    if($(this).siblings('.elementRelationID').val() === "7505"){
+    var name = $(this).parent().find(".elementName").text();
+
+
+    //This is a validation for the IPI 2.3 indicator is selected and is able to be removed
+    if(name.includes("IPI 2.3")){
 
       const inputs = document.querySelectorAll("div.form-group.row[clusteridparticipant] .participantsNumbers input");
     
@@ -107,13 +111,14 @@ $('.listindicators .setSelect2').select2().on('change', function() {
         // If the flag is still in the list, the user is notified that the element is related to the IPI 2.3 indicator
         try {
           await alertRemoveIndicatorIPI2_3();
+          return;
         } catch (error) {
           return;
         }
       } else {
         $(this).closest("li").remove();
         searchIndicator();
-        return
+        return;
       }
       
     } else {
