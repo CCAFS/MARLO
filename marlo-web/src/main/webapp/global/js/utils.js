@@ -811,7 +811,9 @@ function setFormatInput() {
       
     $("input.targetValueNumber").each(function (i, ele) {
 
-      if($(ele).attr('type')=='hidden'){
+      $(ele).mask("#,##0.00", {reverse: true});
+
+/*       if($(ele).attr('type')=='hidden'){
         return;
       }
       let clone=$(ele).clone(false);
@@ -837,7 +839,7 @@ function setFormatInput() {
       $(ele).mouseleave(()=>{
         $(clone).show();
         $(ele1).hide();
-      })
+      }) */
     });
 
 }

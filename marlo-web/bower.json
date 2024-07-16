@@ -66,6 +66,11 @@
         "themes/base/jquery-ui.min.css"
       ]
     },
+    "jquery-mask-plugin": {
+      "main": [
+        "dist/jquery.mask.min.js"
+      ]
+    },
     "bootstrap": {
       "main": [
         "dist/css/bootstrap.min.css",
