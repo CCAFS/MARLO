@@ -1,7 +1,7 @@
 [#ftl]
 [#import "/WEB-INF/global/pages/bowerComponents.ftl" as components /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
-[#assign globalLibs = ["jquery", "bootstrap", "jquery-ui", "pusher-js", "noty", "countdown", "animate.css", "autogrow-textarea", "jReject", "cookieconsent" ] /]
+[#assign globalLibs = ["jquery", "bootstrap", "jquery-ui", "pusher-js", "noty", "countdown", "animate.css", "autogrow-textarea", "jReject", "cookieconsent", "jquery-mask-plugin" ] /]
 <!doctype html>
   <html lang="en">
   <head>
