@@ -813,6 +813,20 @@ function setFormatInput() {
 
       $(ele).mask("#,##0", {reverse: true});
 
+
+      if($(ele).attr("value") === "") {
+        $(ele).empty();
+        $(ele).unmask();
+        $(ele).val("");
+      }
+
+      $(ele).on("focus", function () {
+        if($(ele).attr("value") === "") {
+          $(ele).mask("#,##0", {reverse: true});
+        }
+        
+      });
+
     });
 
 }
