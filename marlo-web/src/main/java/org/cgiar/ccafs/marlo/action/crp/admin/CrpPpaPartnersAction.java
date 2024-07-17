@@ -727,13 +727,5 @@ public class CrpPpaPartnersAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-  private boolean validateEmailNotification() {
-    GlobalUnit globalUnit = loggedCrp;
-    Boolean crpNotification = globalUnit.getCustomParameters().stream()
-      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
-      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
-    return crpNotification;
-  }
-
 
 }

@@ -71,10 +71,22 @@ function init() {
 
   // Event when status is changed
   $statuses.on("change", function () {
-    justificationByStatus(this.value);
+    validateVisualJustifAndCompnsByStatusAndYear(this.value);
   });
 
-  validateDeliverableStatus();
+  validatePermissionsToChangeStatus()
+    .then(function(canChangeStatus) {
+      validateDeliverableStatus(canChangeStatus);
+    })
+    .catch(function(error) {
+      console.error('Error checking permissions:', error);
+    });
+
+  // Remove options in the new expected year to be lesser or equal than the expected year
+  // Trying to avoid human errors
+  if(!isDeliverableNew){
+    disabledDatesInNewExpectedYear();
+  }
 
 
   $('#doi-bridge').keydown(checkDOI);
@@ -87,8 +99,6 @@ function init() {
 
   $('input.isOtherUrl').on("click", activeByNoDOIProvidedCheckbox);
   activeByNoDOIProvidedCheckbox();
-  // justificationByStatus($statuses.val());
-  // validateCurrentDate();
 
   /** Activities * */
 
@@ -276,7 +286,27 @@ function init() {
 
   deliverablePartnersModule.init();
   feedbackAutoImplementation();
-  justificationByStatus($statuses.val())
+  validateVisualJustifAndCompnsByStatusAndYear($statuses.val());
+}
+
+function validatePermissionsToChangeStatus() {
+  return new Promise(function(resolve, reject) {
+    // Ajax
+    $.ajax({
+      url: baseURL + '/canDeleteDeliverableWithSharedTrainees.do',
+      data: {
+        deliverableId: $('input[name=deliverableID]').val(),
+        phaseID: phaseID
+      },   
+      success: function(data) {
+        var canChangeStatus = data.canDelete.response;
+        resolve(canChangeStatus);
+      },
+      error: function(xhr, status, error) {
+        reject(error);
+      }
+    });
+  });
 }
 
 function activeByNoDOIProvidedCheckbox() {
@@ -515,14 +545,7 @@ function validateCurrentDate() {
       });
       $statuses.val(statusValue);
       $statuses.trigger("change.select2");
-      justificationByStatus(statusValue);
-
-      // Check year and status
-      if ((year() < currentCycleYear) && (status() == 4)) {
-        // $('#newExpectedYear').show();
-      } else {
-        // $('#newExpectedYear').hide();
-      }
+      validateVisualJustifAndCompnsByStatusAndYear(statusValue);
 
     }
   });
@@ -530,14 +553,26 @@ function validateCurrentDate() {
   $statuses.trigger("change.select2");
 }
 
-function justificationByStatus(statusId) {
-  var $yearOverlay = $('#deliverableYear .overlay');
+/**
+ * Validates the visual justification and components(overlay and block) based on the status and  expected year.
+ *
+ * @param {number} statusId - The ID of the status.
+ */
+function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
+
+  // Get the status ID it is readonly - The status is not in the select
+  if(statusId == undefined){
+    statusId = $('input[type="hidden"].status').val();
+  }
+
   var $newExpectedYearBlock = $('#newExpectedYear');
   var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
   var newExpectedYear = $newExpectedYearSelect.val();
-  var hasExpectedYear =
-    ((newExpectedYear != "") && newExpectedYear != "-1") && (typeof newExpectedYear !== 'undefined');
-  var isCompletedWithoutExpectedYear = ((!reportingActive) && isStatusComplete(statusId) && hasExpectedYear);
+
+  var $yearOverlay = $('#deliverableYear .overlay');
+  var $newYearOverlay = $('#newExpectedYear .overlay');
+
+  var hasExpectedYear = ((newExpectedYear != "") && newExpectedYear != "-1") && (typeof newExpectedYear !== 'undefined');
 
   // Validate the justification
   if (isStatusCancelled(statusId) || isStatusExtended(statusId)) {
@@ -547,56 +582,161 @@ function justificationByStatus(statusId) {
     $statusDescription.slideUp(400);
   }
 
-  if (true) {
-    // Validate the new extended year
-    if (isDeliverableNew) {
-      showNewExpectedComponent(isStatusExtended(statusId) && upKeepActive);
-    } else {
-      console.log("hasExpectedYear", hasExpectedYear);
-      if (isStatusOnGoing(statusId)) {
-        console.log("if");
-        showNewExpectedComponent(false);
-      } else {
-        console.log("else");
-        if (statusId == 4) {
-          showNewExpectedComponent(true);
-          $('.expectedDisabled').hide("slow");
-        } else if (statusId == 2 || statusId == 3 || statusId == 5 || statusId == 6) {
+  // Show overlay in the expected year
+  showComponent(!isDeliverableNew, $yearOverlay, "overlay");
 
-          if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {
-            showNewExpectedComponent(true);
-          } else {
-            showNewExpectedComponent(false);
-          }
-          $('.expectedDisabled').show("slow");
-        } else {
-          showNewExpectedComponent(false);
+  // Validate the new extended year
+  if (isDeliverableNew) {
+
+    showComponent(isStatusExtended(statusId) && upKeepActive, $newExpectedYearBlock);
+  } else {
+    // Validate avaialble options in the status select
+    if (isStatusOnGoing(statusId)) {
+      showComponent(false, $newExpectedYearBlock);
+      //removeInformationOfNewExpectedYear();
+    } else {
+      if (isStatusExtended(statusId)) {
+        showComponent(true, $newExpectedYearBlock);
+        showComponent(false, $newYearOverlay, "overlay");
+
+        // Validate if the new expected year contains information to avoid overlay information
+        if($newExpectedYearBlock.find('select').val() == "-1"){
+          selectADefaultValueNewExpectedYear();
         }
+
+      } else if (isStatusComplete(statusId) || isStatusCancelled(statusId) || statusId == 6) {
+        if (($('.yearNewExpected').val() != '-1') && ($('.yearNewExpected').val() != $('.yearExpected').val())) {
+          showComponent(true, $newExpectedYearBlock);
+        } else {
+          showComponent(false, $newExpectedYearBlock);
+        }
+        //removeInformationOfNewExpectedYear();
+        showComponent(true, $newYearOverlay, "overlay");
+      } else {
+        showComponent(false, $newYearOverlay, "overlay");
       }
     }
-
-  } else {
-
   }
-
 }
 
-function showNewExpectedComponent(state) {
+/**
+ * Removes information of new expected year if the selected expected year is equal to the current cycle year.
+ * The validation is made when another state different to EXTENDED is selected. 
+ * Unless the user is an admin.
+ * UNUSED FUNCTION - The following function is not used in the current implementation is made in Backend when is "Save" a deliverable.
+ */
+/* function removeInformationOfNewExpectedYear() {
+  var $expectedYearBlock = $('#deliverableYear');
+  var $expectedYearSelect = $expectedYearBlock.find('select');
+  var expectedYear = $expectedYearSelect.val();
+
+  if(expectedYear == currentCycleYear){
+    var $newExpectedYearBlock = $('#newExpectedYear');
+    var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
+    var $statusDescription = $('#statusDescription');
+    $newExpectedYearSelect.val("-1").trigger("change.select2");
+    $statusDescription.find('textarea').val("");
+  }
+} */
+
+/**
+ * Selects a default value for the new expected year.
+ * Avoid the selection of the current year and not available options.
+ */
+function selectADefaultValueNewExpectedYear() {
+  var $expectedYearBlock = $('#deliverableYear');
+  var $expectedYearSelect = $expectedYearBlock.find('select');
+  var expectedYear = $expectedYearSelect.val();
+  const newDefaultValue = parseInt(expectedYear) + 1;
+
   var $newExpectedYearBlock = $('#newExpectedYear');
-  var $yearOverlay = $('#deliverableYear .overlay');
-  if (state) {
-    $newExpectedYearBlock.show();
-    $yearOverlay.show();
-  } else {
-    $newExpectedYearBlock.hide();
-    if (isDeliverableNew) {
-      $yearOverlay.hide();
+  var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
+  const options = [...document.querySelectorAll('#newExpectedYear select option')];
+
+
+  if(!options.some(option => option.value == newDefaultValue)){
+    return;
+  }
+
+  $newExpectedYearSelect.val(newDefaultValue).trigger("change.select2");
+
+}
+
+/**
+ * Disables dates in the new expected year select options based on the selected expected year.
+ * The new expected year should be greater than the selected expected year.
+ * Allow the select only to admin users.
+ * Selects the first option available.
+ * 
+ */
+function disabledDatesInNewExpectedYear() {
+  var $newExpectedYearBlock = $('#newExpectedYear');
+  var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
+  var $expectedYearBlock = $('#deliverableYear');
+  var $expectedYearSelect = $expectedYearBlock.find('select');
+  var expectedYear = $expectedYearSelect.val();
+  var newExpectedYearSelectOptions = $newExpectedYearSelect.find('option');
+
+  var isAdmin = document.getElementById("adminRole").value;   
+  
+  if(isAdmin === "true"){
+    return;
+  }
+
+  newExpectedYearSelectOptions.each(function (i, option) {
+
+    if (option.value <= expectedYear ) {
+      $(option).prop('disabled', true);
     }
+    if (option.value == "-1") {
+      $(option).prop('disabled', false);
+    }
+  });
+}
+
+/**
+ * Shows or hides a component based on the given state.
+ * The component could be a block or an overlay.
+ * The overlay is a div that blocks the possibility to change the below component.
+ * The admin has available all the fields
+ *
+ * @param {boolean} state - The state indicating whether to show or hide the component.
+ * @param {jQuery} $component - The jQuery object representing the component to show or hide.
+ * @param {string} componentType - The type of component to show or hide. Default is "block", could be "overlay".
+ */
+function showComponent(state, $component, componentType = "block") {
+
+  var isAdmin = document.getElementById("adminRole").value;
+
+  if (isAdmin === "true") {  
+    if(componentType == "block"){
+      $component.show();
+    }
+    if(componentType == "overlay"){
+      $component.hide();
+    }
+    
+    return;
+  }
+
+  if (state) {
+    $component.show();
+  } else {
+    $component.hide();
   }
 
 }
 
-function validateDeliverableStatus() {
+//Display the overlay that block the possibility to change the expected year
+
+function validateDeliverableStatus(canChangeStatus) {
+
+  const $expectedYearBlock = $('#deliverableYear');
+  const $expectedYearSelect = $expectedYearBlock.find('select');
+  const expectedYear = $expectedYearSelect.val();
+
+  var isAdmin = document.getElementById("adminRole").value;   
+
   // New Expected year should be greater than current reporting cycle year
   if (reportingActive) {
     if (isDeliverableNew) {
@@ -610,6 +750,29 @@ function validateDeliverableStatus() {
 
     $('#deliverableYear .overlay').show();
     $statuses.trigger("change");
+  }
+  
+  // Validation when the deliverable has shared submitted clusters related with trainees information
+  if(canChangeStatus === false){
+     
+    if(isAdmin === "true"){
+       $statuses.find('option[value="4"]').prop("disabled", false); // Enable Extended
+       $statuses.find('option[value="5"]').prop("disabled", false); // Enable Cancelled
+    }else{
+       $statuses.find('option[value="4"]').prop("disabled", true); // Disable Extended
+       $statuses.find('option[value="5"]').prop("disabled", true); // Disable Cancelled
+    }
+  }
+
+  //console.log("newExpectedYearCondition", newExpectedYear != "-1");
+  // Validate if the current cycle year is different or equal to the year expected to active On going status
+  if(expectedYear != currentCycleYear){
+    $statuses.find('option[value="2"]').prop("disabled", false); // Enable On-going
+    if((isAdmin !== true) && (reportingActive === true)){
+      $statuses.find('option[value="2"]').prop("disabled", true); // Disable On-going
+    } else {
+      $statuses.find('option[value="2"]').prop("disabled", false); // Enable On-going
+    }
   }
 }
 

@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableClusterParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
@@ -147,7 +148,7 @@ import org.jfree.util.Log;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -415,6 +416,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ButtonGuideContentManager buttonGuideContentManager;
+
+  @Inject
+  private DeliverableClusterParticipantManager deliverableClusterParticipantManager;
 
   private String centerSession;
 
@@ -1119,6 +1123,44 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       canDelete = false;
     }
     return canDelete;
+  }
+
+  /**
+   * @author KTANAKA
+   * @param deliverableID
+   * @param phaseID
+   * @return boolean - true if the deliverable with shared clusters with trainees information can be deleted
+   */
+  public boolean canDeleteDeliverableWithSharedTrainees(long deliverableID, long phaseID) {
+    try {
+      // Check if the shared cluster trainees specificity is active
+      if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+        // Check if there is no submission in progress phase
+        if (!this.isProgressActive()) {
+          // Retrieve deliverable cluster participants
+          List<DeliverableClusterParticipant> deliverableClusterParticipants = deliverableClusterParticipantManager
+            .getDeliverableClusterParticipantByDeliverableAndPhase(deliverableID, phaseID);
+
+          // Check if the list is not empty and process each participant
+          if (deliverableClusterParticipants != null && !deliverableClusterParticipants.isEmpty()) {
+            for (DeliverableClusterParticipant deliverableShared : deliverableClusterParticipants) {
+              Project project = deliverableShared.getProject();
+              Deliverable deliverable = deliverableShared.getDeliverable();
+              // Ensure necessary objects are not null and IDs are different, then check submission status
+              if (this.isSubmit(project.getId())) {
+                // Return false if submission is found
+                return false;
+              }
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      // Log error if an exception occurs
+      LOG.error("Error getting shared clusters statuses", e);
+    }
+    // Return false if no submission is found or an error occurred
+    return true;
   }
 
   /**
@@ -8394,7 +8436,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public String removeHtmlTags(String html) {
     if (html != null) {
-      Whitelist whitelist = Whitelist.none();
+      Safelist whitelist = Safelist.none();
       whitelist.addTags("a");
       whitelist.addAttributes("a", "href");
 
@@ -8958,6 +9000,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+  public boolean validateEmailNotification() {
+    GlobalUnit globalUnit = this.getCurrentCrp();
+    Boolean crpNotification = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
+      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
+    return crpNotification;
+  }
 
   /**
    * Validate if the current phase is progress, with status

@@ -238,12 +238,4 @@ public class SendNotificationEmailAction extends BaseAction {
   }
 
 
-  private boolean validateEmailNotification() {
-
-    return globalUnit.getCustomParameters().stream()
-      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
-      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
-  }
-
-
 }

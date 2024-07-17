@@ -350,12 +350,6 @@ public class PartnersSaveAction extends BaseAction {
     countryId = String.valueOf(locationId);
     partnerWebPage = activityPartner.getPartner().getWebsiteLink();
 
-    // Get project info
-    projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
-
-    // Get project information
-    Project project = projectInfo != null ? projectInfo.getProject() : null;
-
     // Get the partner type name
     countryName = locationManager.getLocElementById(Long.parseLong(countryId)).getName();
 
@@ -424,6 +418,11 @@ public class PartnersSaveAction extends BaseAction {
 
     switch (pageRequestName) {
       case "projects":
+        try {
+          projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
+        } catch (Exception e) {
+          LOG.error("Failed to get projectInfo from projectID ", e);
+        }
         this.addProjectMessage(message, partnerRequest, partnerRequestModifications);
         break;
 
@@ -432,6 +431,12 @@ public class PartnersSaveAction extends BaseAction {
         break;
 
       case "studies":
+        try {
+          projectInfo = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID).getProject()
+            .getProjecInfoPhase(this.getActualPhase());
+        } catch (Exception e) {
+          LOG.error("Failed to get projectInfo from expectedID ", e);
+        }
         this.addStudyMessage(message, partnerRequest, partnerRequestModifications);
         break;
 
@@ -446,8 +451,14 @@ public class PartnersSaveAction extends BaseAction {
       case "reportSynthesis":
         this.addReportSynthesisMessage(message, partnerRequest, partnerRequestModifications);
         break;
-
     }
+
+    if (projectInfo == null && projectID != 0) {
+      projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
+    }
+
+    // Get project information
+    Project project = projectInfo != null ? projectInfo.getProject() : null;
 
     boolean postFailed = false;
     if (this.isAiccra()) {
@@ -643,12 +654,5 @@ public class PartnersSaveAction extends BaseAction {
     super.validate();
   }
 
-  private boolean validateEmailNotification() {
-    GlobalUnit globalUnit = loggedCrp;
-    Boolean crpNotification = globalUnit.getCustomParameters().stream()
-      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
-      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
-    return crpNotification;
-  }
 
 }
