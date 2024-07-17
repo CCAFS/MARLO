@@ -811,33 +811,22 @@ function setFormatInput() {
       
     $("input.targetValueNumber").each(function (i, ele) {
 
-      if($(ele).attr('type')=='hidden'){
-        return;
+      $(ele).mask("#,##0", {reverse: true});
+
+
+      if($(ele).attr("value") === "") {
+        $(ele).empty();
+        $(ele).unmask();
+        $(ele).val("");
       }
-      let clone=$(ele).clone(false);
-      clone.attr("type","text");
-      clone.removeAttr('id');
-      clone.removeAttr('name');
-      let ele1=$(ele);
-      clone.val(Number(ele1.val()).toLocaleString("en"));
-      $(ele).after(clone);
-      $(ele).hide();
-      clone.mouseenter(()=>{
-  
-        ele1.show();
-        clone.hide();
-      })
-      setInterval(()=>{
-        let newv=Number(ele1.val()).toLocaleString("en");
-        if(clone.val()!=newv){
-          clone.val(newv);
+
+      $(ele).on("focus", function () {
+        if($(ele).attr("value") === "") {
+          $(ele).mask("#,##0", {reverse: true});
         }
-      },10)
-  
-      $(ele).mouseleave(()=>{
-        $(clone).show();
-        $(ele1).hide();
-      })
+        
+      });
+
     });
 
 }
