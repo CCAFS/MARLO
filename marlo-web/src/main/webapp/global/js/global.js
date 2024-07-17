@@ -232,8 +232,8 @@ $(document).ready(function () {
           const stringFixed = $stringClusterSubmit.substring(0, $stringClusterSubmit.length - 1);
           message += "The Information was correctly saved. <br> ";
           message += "It seems that the following cluster(s) were submitted: <b>"+stringFixed+ "</b>. We suggest the following actions so you can save the information correctly: <br> ";
-          message += "<ul style='padding-left: 32px;'> <li>Click on the cluster name to see the information. </li> ";
-          message += "<li>Contact the cluster leader to unsubmitt the cluster and update the information. </li> ";
+          message += "<ul style='padding-left: 32px;'>";
+          message += "<li>Contact cluster(s) leader to unsubmit them and update the information. </li> ";
           message += "</ul> ";
         } else {
           // $clusterSubmitted does not exist, do something else
