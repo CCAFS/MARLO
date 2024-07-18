@@ -55,7 +55,14 @@ public interface ActivityDAO {
   public List<Activity> findAll();
 
   /**
-   * This method obtains the number of existing activities, by deliverable and phase
+   * This method gets actives activities by a given activity identifier and project.
+   * 
+   * @param projectID is the project/cluster identifier.
+   * @param phaseId is the phase identifier.
+   * @return a list from Activity null if no exist records
+   */
+  List<Activity> getActiveActivitiesByProject(long projectId, long phaseId);
+   /* This method obtains the number of existing activities, by deliverable and phase
    * 
    * @param deliverableId deliverable identifier.
    * @param phaseId phase identifier.
