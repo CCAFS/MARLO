@@ -514,16 +514,58 @@ public class ProjectPartnerAction extends BaseAction {
    */
   public List<DeliverableDTO> getDeliverablesLedByUser(long userID) {
     List<DeliverableDTO> deliverablesLeadsTmp = new ArrayList<>();
+    List<Deliverable> deliverablesLeads = new ArrayList<>();
     try {
+      // Retrieve deliverables for the specified user and current phase
+      List<Deliverable> deliverables =
+        deliverableManager.getDeliverablesLeadByUser(userID, this.getActualPhase().getId());
 
-      deliverablesLeadsTmp = deliverableManager.getDeliverablesLeadByUserAndProjectWithSimpleConditions(userID,
-        this.getActualPhase().getId(), projectID);
+      if (deliverables != null) {
+        for (Deliverable deliverable : deliverables) {
+          if (deliverable.getProject() != null && deliverable.getProject().getId().equals(projectID)) {
+            deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
+            if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getStatus() != null
+              && (deliverable.getDeliverableInfo().getStatus() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())
+                || deliverable.getDeliverableInfo().getStatus() == Integer
+                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+              if (!deliverablesLeads.contains(deliverable)) {
+                if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
+
+                  if (deliverable.isActive()) {
+                    deliverablesLeads.add(deliverable);
+                  }
+
+                } else {
+                  if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
+                    .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                    if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+                      && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
+                      if (deliverable.isActive()) {
+                        deliverablesLeads.add(deliverable);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Convert Deliverable objects to DeliverableDTO using stream and lambda
+      deliverablesLeadsTmp = deliverablesLeads.stream().map(deliverable -> {
+        DeliverableDTO dto = new DeliverableDTO();
+        dto.setId(deliverable.getId());
+        dto.setTitle(deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getTitle() != null
+          ? deliverable.getDeliverableInfo().getTitle() : "");
+        return dto;
+      }).collect(Collectors.toList());
 
     } catch (Exception e) {
-      LOG.error(" unable to get deliverables - getDeliverablesLedByUser function ");
+      LOG.error("Error retrieving deliverables for user " + userID, e);
     }
     return deliverablesLeadsTmp;
-
   }
 
 
