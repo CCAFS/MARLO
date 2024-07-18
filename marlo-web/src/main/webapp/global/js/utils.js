@@ -811,7 +811,7 @@ function setFormatInput() {
       
     $("input.targetValueNumber").each(function (i, ele) {
 
-      $(ele).mask("#,##0", {reverse: true});
+      $(ele).mask("00,000,000", {reverse: true});
 
 
       if($(ele).attr("value") === "") {
@@ -822,7 +822,7 @@ function setFormatInput() {
 
       $(ele).on("focus", function () {
         if($(ele).attr("value") === "") {
-          $(ele).mask("#,##0", {reverse: true});
+          $(ele).mask("00,000,000", {reverse: true});
         }
         
       });
