@@ -88,7 +88,6 @@ import org.cgiar.ccafs.marlo.utils.POISummary;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -120,13 +119,13 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPrGeneral;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTString;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHdrFtr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import org.slf4j.Logger;
@@ -161,7 +160,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     ctStyle.setQFormat(onoffnull);
 
     // style defines a heading of the given level
-    CTPPr ppr = CTPPr.Factory.newInstance();
+    CTPPrGeneral ppr = CTPPrGeneral.Factory.newInstance();
     ppr.setOutlineLvl(indentNumber);
     ctStyle.setPPr(ppr);
 
@@ -689,7 +688,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     try {
       XWPFHeaderFooterPolicy headerFooterPolicy = new XWPFHeaderFooterPolicy(document, sectPr);
       headerFooterPolicy.createFooter(STHdrFtr.DEFAULT, paragraphs);
-    } catch (IOException e) {
+    } catch (Exception e) {
       LOG.error("Failed to createFooter. Exception: " + e.getMessage());
     }
   }
@@ -2183,7 +2182,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         CTP ctP = paragraph.getCTP();
         CTSimpleField toc = ctP.addNewFldSimple();
         toc.setInstr("TOC \\h");
-        toc.setDirty(STOnOff.TRUE);
+        toc.setDirty(true);
         XWPFRun run = paragraph.createRun();
 
         // First page
@@ -2668,7 +2667,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         CTP ctP = paragraph.getCTP();
         CTSimpleField toc = ctP.addNewFldSimple();
         toc.setInstr("TOC \\h");
-        toc.setDirty(STOnOff.TRUE);
+        toc.setDirty(true);
         XWPFRun run = paragraph.createRun();
 
         // First page
