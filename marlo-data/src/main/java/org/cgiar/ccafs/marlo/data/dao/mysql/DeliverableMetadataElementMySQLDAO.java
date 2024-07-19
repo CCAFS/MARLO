@@ -27,8 +27,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class DeliverableMetadataElementMySQLDAO extends AbstractMarloDAO<DeliverableMetadataElement, Long>
@@ -79,7 +79,7 @@ public class DeliverableMetadataElementMySQLDAO extends AbstractMarloDAO<Deliver
     MetadataElement metadataElement) {
     String query = "select distinct dm from DeliverableMetadataElement dm where phase.id = :phaseId "
       + "and deliverable.id= :deliverableId and metadataElement.id = :metadataElementId";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<DeliverableMetadataElement> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phase.getId());
     createQuery.setParameter("deliverableId", deliverable.getId());
     createQuery.setParameter("metadataElementId", metadataElement.getId());

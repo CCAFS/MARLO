@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,8 +56,8 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
   @Override
   public String getEmailByUsername(String username) {
     String queryString = "select email from " + User.class.getName() + " where username = '" + username + "'";
-    Query query = this.getSessionFactory().getCurrentSession().createQuery(queryString);
-    String email = (String) query.uniqueResult();
+    Query<String> query = this.getSessionFactory().getCurrentSession().createQuery(queryString, String.class);
+    String email = query.uniqueResult();
     return email;
   }
 

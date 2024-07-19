@@ -26,8 +26,9 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+
 
 @Named
 public class DeliverableQualityCheckMySQLDAO extends AbstractMarloDAO<DeliverableQualityCheck, Long>
@@ -88,7 +89,7 @@ public class DeliverableQualityCheckMySQLDAO extends AbstractMarloDAO<Deliverabl
   public DeliverableQualityCheck findQualityByPhaseAndDeliverable(Phase phase, Deliverable deliverable) {
     String query = "select distinct dq from DeliverableQualityCheck dq "
       + " where phase.id = :phaseId and deliverable.id= :deliverableId";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<DeliverableQualityCheck> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phase.getId());
     createQuery.setParameter("deliverableId", deliverable.getId());
 

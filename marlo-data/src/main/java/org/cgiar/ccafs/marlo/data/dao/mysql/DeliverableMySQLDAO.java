@@ -32,8 +32,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.FlushMode;
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> implements DeliverableDAO {
@@ -307,7 +307,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
       + "join d.project pr with pr.id = :projectId and pr.active = true join di.phase ph with ph.id = :phaseId "
       + "where di.deliverable = d and d.active = true and coalesce(nullif(di.newExpectedYear, -1),di.year) = ph.year";
 
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<Deliverable> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
 
     createQuery.setParameter("phaseId", phaseId);
     createQuery.setParameter("projectId", projectId);

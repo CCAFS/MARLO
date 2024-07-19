@@ -43,14 +43,15 @@ import javax.inject.Named;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.query.Query;
 import org.hibernate.type.OneToOneType;
 import org.hibernate.type.OrderedSetType;
 import org.hibernate.type.SetType;
 import org.hibernate.type.Type;
+
 
 /**
  * @author Christian Garcia
@@ -72,7 +73,7 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
     String queryString =
       "from " + Auditlog.class.getName() + " where ENTITY_NAME='class " + classAudit.getName() + "' and ENTITY_ID=" + id
         + " and main=1 and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc";
-    Query query = this.getSessionFactory().getCurrentSession().createQuery(queryString);
+    Query<Auditlog> query = this.getSessionFactory().getCurrentSession().createQuery(queryString);
     query.setMaxResults(11);
     List<Auditlog> auditLogs = super.findAll(query);
     return auditLogs;

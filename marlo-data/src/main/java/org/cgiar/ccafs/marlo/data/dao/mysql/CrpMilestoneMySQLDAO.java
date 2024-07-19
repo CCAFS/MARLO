@@ -27,8 +27,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class CrpMilestoneMySQLDAO extends AbstractMarloDAO<CrpMilestone, Long> implements CrpMilestoneDAO {
@@ -77,7 +77,7 @@ public class CrpMilestoneMySQLDAO extends AbstractMarloDAO<CrpMilestone, Long> i
   public CrpMilestone getCrpMilestone(String composedId, CrpProgramOutcome crpProgramOutcome) {
     String query = "select distinct pp from CrpMilestone  pp "
       + "where composeID=:composeID and crpProgramOutcome.id=:crpProgramOutcomeID and active=true";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<CrpMilestone> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("composeID", composedId);
     createQuery.setParameter("crpProgramOutcomeID", crpProgramOutcome.getId());
     Object findSingleResult = super.findSingleResult(CrpMilestone.class, createQuery);

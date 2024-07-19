@@ -25,8 +25,9 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+
 
 /**************
  * @author German C. Martinez - CIAT/CCAFS
@@ -79,7 +80,7 @@ public class DeliverableAltmetricInfoMySQLDAO extends AbstractMarloDAO<Deliverab
   public DeliverableAltmetricInfo findByPhaseAndDeliverable(Phase phase, Deliverable deliverable) {
     String query = "select distinct dai from DeliverableAltmetricInfo dai where phase.id = :phaseId "
       + "and deliverable.id= :deliverableId";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<DeliverableAltmetricInfo> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phase.getId());
     createQuery.setParameter("deliverableId", deliverable.getId());
 
