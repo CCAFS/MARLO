@@ -223,8 +223,14 @@ $(document).ready(function () {
         var $clusterSubmitted = $(`.clusterSubmitted`);
         var $clusterSubmittedFilter = $clusterSubmitted.filter((index, ele) => $(ele).attr("issubmit") === "true").get();
         var message = "";
-        console.log("ClusterSubmitted Lenght",$clusterSubmitted.length);
-        console.log("ClusterSubmitted", $clusterSubmitted);
+
+        var remainingAfricanValue = $("#remainingAfrican").val();
+        var remainingFemalesValue = $("#remainingFemales").val();
+        var remainingTraineesValue = $("#remainingTrainees").val();
+        var remainingYouthValue = $("#remainingYouth").val();
+
+        var sumRemaining = parseInt(remainingAfricanValue) + parseInt(remainingFemalesValue) + parseInt(remainingTraineesValue) + parseInt(remainingYouthValue); 
+
         if ($clusterSubmittedFilter.length > 0) {
           // $clusterSubmitted exists, do something
           const $mapClusterSubmit = $clusterSubmitted.filter((index, ele) => $(ele).attr("issubmit") === "true").get();
@@ -235,12 +241,15 @@ $(document).ready(function () {
           message += "<ul style='padding-left: 32px;'>";
           message += "<li>Contact cluster(s) leader to unsubmit them and update the information. </li> ";
           message += "</ul> ";
+        } else if (sumRemaining < 0) {
+          message += "The Information was correctly saved. <br> ";
+          message += "It seems that the <b>Remaining shared information</b> is inconsistence (value must be zero). We suggest to correct the information to avoid inconsistences in the system. ";
+          message += "You could also contact the cluster(s) leader to verificate the information. ";
         } else {
           // $clusterSubmitted does not exist, do something else
           message += "The Information was correctly saved. <br> ";
           message += "It seems that the <b>Remaining shared information</b> is incompleted please take a look.";
         }
-        // WARNING MESSAGE
         
         var messageType = "warning";
         notifyErrorMessage(messageType, message);
