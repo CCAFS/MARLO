@@ -102,8 +102,9 @@
           <div class="activitiesOG-content simpleBox" listname="project.openProjectActivities">
           <h4 class="subTitle headTitle">[@s.text name="project.activities.onGoing" /]</h4>
           <hr />
-          [#if action.getActivities(true)?has_content]
-            [#list action.getActivities(true) as activity]
+          [#assign activitiesListTrue = action.getActivities(true) ]
+          [#if activitiesListTrue?has_content]
+            [#list activitiesListTrue as activity]
                 [@projectActivityMacro element=activity name="project.projectActivities"  index=action.getIndexActivities((activity.id)!-1) isActive=true /]
             [/#list]
           [/#if]
@@ -114,11 +115,12 @@
             </div>
           [/#if]
 
-          [#if action.getActivities(false)?has_content]
+          [#assign activitiesListFalse = action.getActivities(false) ]
+          [#if activitiesListFalse?has_content]
           <div class="activitiesC-content simpleBox" listname="project.closedProjectActivities">
             <h4 class="subTitle headTitle">[@s.text name="project.activities.completed" /]</h4>
             <hr />
-            [#list action.getActivities(false) as activity]
+            [#list activitiesListFalse as activity]
                 [@projectActivityMacro element=activity name="project.projectActivities"  index=action.getIndexActivities((activity.id)!-1) isActive=false /]
             [/#list]
           </div>

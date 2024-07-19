@@ -49,13 +49,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.Comparator;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -119,6 +120,7 @@ public class ProjectActivitiesAction extends BaseAction {
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
   }
 
+
   public void activitiesPreviousData(Project projectBD) {
     List<Activity> activitiesPrew;
     activitiesPrew = projectBD.getActivities().stream()
@@ -128,6 +130,26 @@ public class ProjectActivitiesAction extends BaseAction {
         activityManager.deleteActivity(activity.getId());
       }
     }
+
+
+  }
+
+  public void activitiesPreviousDataCustom(Project projectBD) {
+    try {
+      List<Activity> activitiesPrew;
+      activitiesPrew =
+        this.activityManager.getActiveActivitiesByProject(projectBD.getId(), this.getActualPhase().getId()).stream()
+          .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+      for (Activity activity : activitiesPrew) {
+        if (!project.getProjectActivities().contains(activity)) {
+          activityManager.deleteActivity(activity.getId());
+        }
+      }
+    } catch (Exception e) {
+      logger.error(" unable to get activities in activitiesPreviousDataCustom function ");
+    }
+
+
   }
 
 
@@ -155,6 +177,22 @@ public class ProjectActivitiesAction extends BaseAction {
     return SUCCESS;
   }
 
+  // Helper function to extract the number from the title
+  private int extractActivityNumber(Activity activity) {
+    Pattern pattern = Pattern.compile("(\\d+(\\.\\d+)*)");
+    Matcher matcher = pattern.matcher(activity.getTitle());
+    if (matcher.find()) {
+      String numberStr = matcher.group(1);
+      String[] numberParts = numberStr.split("\\.");
+      int number = 0;
+      for (String part : numberParts) {
+        number = number * 100 + Integer.parseInt(part);
+      }
+      return number;
+    }
+    return 0; // Default if no number is found
+  }
+
   public List<Activity> getActivities(boolean open) {
 
     try {
@@ -166,7 +204,7 @@ public class ProjectActivitiesAction extends BaseAction {
             a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
               || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
           .collect(Collectors.toList());
-          //return openA;
+        // return openA;
 
       } else {
 
@@ -175,30 +213,14 @@ public class ProjectActivitiesAction extends BaseAction {
             a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
               || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
           .collect(Collectors.toList());
-          //return openA;
+        // return openA;
       }
-      //sort activities by title number
+      // sort activities by title number
       openA.sort(Comparator.comparing(this::extractActivityNumber));
       return openA;
     } catch (Exception e) {
       return new ArrayList<>();
     }
-  }
-  
-  //Helper function to extract the number from the title
-  private int extractActivityNumber(Activity activity) {
-     Pattern pattern = Pattern.compile("(\\d+(\\.\\d+)*)");
-     Matcher matcher = pattern.matcher(activity.getTitle());
-     if (matcher.find()) {
-         String numberStr = matcher.group(1);
-         String[] numberParts = numberStr.split("\\.");
-         int number = 0;
-         for (String part : numberParts) {
-             number = number * 100 + Integer.parseInt(part);
-         }
-         return number;
-     }
-     return 0; // Default if no number is found
   }
 
 
@@ -296,6 +318,7 @@ public class ProjectActivitiesAction extends BaseAction {
               if (deliverableActivity.getDeliverable() != null
                 && deliverableActivity.getDeliverable().getId() != null) {
 
+
                 if (deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId()) != null) {
                   Deliverable deliverable =
                     deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
@@ -323,6 +346,7 @@ public class ProjectActivitiesAction extends BaseAction {
       project = projectManager.getProjectById(projectID);
     }
     if (project != null) {
+
 
       Path path = this.getAutoSaveFilePath();
 
@@ -396,8 +420,11 @@ public class ProjectActivitiesAction extends BaseAction {
       }
       status.remove(ProjectStatusEnum.Extended.getStatusId());
       List<Deliverable> deliverables = new ArrayList<>();
-      if (project.getDeliverables() != null) {
-        if (project.getDeliverables().isEmpty()) {
+
+      Set<Deliverable> deliverablesTmp = project.getDeliverables();
+      // 04/06/2024 cgamboa project.getDeliverables() was changed by
+      if (deliverablesTmp != null) {
+        if (deliverablesTmp.isEmpty()) {
           /*
            * project.setProjectDeliverables(new ArrayList<Deliverable>(projectManager.getProjectById(projectID)
            * .getDeliverables().stream().filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) !=
@@ -413,11 +440,12 @@ public class ProjectActivitiesAction extends BaseAction {
            * .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
            * .collect(Collectors.toList())));
            */
-          deliverables = project.getDeliverables().stream()
-            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
-            .collect(Collectors.toList());
+          deliverables =
+            deliverablesTmp.stream().filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
+              .collect(Collectors.toList());
         }
       }
+
 
       for (Deliverable deliverable : deliverables) {
         deliverable.setTagTitle(deliverable.getComposedName());
@@ -458,8 +486,19 @@ public class ProjectActivitiesAction extends BaseAction {
        */
       project.setProjectDeliverables(deliverables);
 
+
+      List<ProjectPartner> ProjectPartnerList = new ArrayList<>();
+
+      try {
+        ProjectPartnerList = projectPartnerManager.findAllByPhaseProject(projectID, this.getActualPhase().getId());
+      } catch (Exception e) {
+        logger.error("unable to get ProjectPartner list in prepapre function ");
+      }
+
+      // 04/06/2024 cgamboa findAll() was changed by ProjectPartnerList
+
       partnerPersons = new ArrayList<>();
-      for (ProjectPartner partner : projectPartnerManager.findAll().stream()
+      for (ProjectPartner partner : ProjectPartnerList.stream()
         .filter(
           pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getPhase().equals(this.getActualPhase()))
         .collect(Collectors.toList())) {
@@ -471,10 +510,14 @@ public class ProjectActivitiesAction extends BaseAction {
         }
       }
 
+
+      List<ActivityTitle> ActivityTitleList = new ArrayList<>();
+      ActivityTitleList = activityTitleManager.findAll();
+
       activityTitles = new ArrayList<>();
 
       if (this.isAiccra()) {
-        if (activityTitleManager.findAll() != null && !activityTitleManager.findAll().isEmpty()) {
+        if (ActivityTitleList != null && !ActivityTitleList.isEmpty()) {
 
 
           try {
@@ -484,7 +527,7 @@ public class ProjectActivitiesAction extends BaseAction {
           }
 
           if (activityTitles == null || (activityTitles != null && activityTitles.isEmpty())) {
-            activityTitles = activityTitleManager.findAll();
+            activityTitles = ActivityTitleList;// activityTitleManager.findAll();
           }
           /*
            * List<ActivityTitle> tempActivityTitles = new ArrayList<>();
@@ -507,6 +550,7 @@ public class ProjectActivitiesAction extends BaseAction {
           }
         }
       }
+
 
       deliverablesMissingActivity = new ArrayList<>();
       List<Deliverable> prevMissingActivity = new ArrayList<>();
@@ -592,11 +636,31 @@ public class ProjectActivitiesAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       Project projectBD = projectManager.getProjectById(projectID);
-      List<Activity> activitiesDB = projectBD.getActivities().stream()
-        .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-      this.activitiesPreviousData(projectBD);
+
+      // 2024/07/03 gamboa projectBD.getActivities() was changed by this.activityManager.getActiveActivitiesByProject to
+      // improve performance
+      List<Activity> activitiesDB = new ArrayList<Activity>();
+      try {
+        activitiesDB =
+          this.activityManager.getActiveActivitiesByProject(projectBD.getId(), this.getActualPhase().getId()).stream()
+            .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+      } catch (Exception e) {
+        logger.info(" unable to get activities from the BD in save function ");
+      }
+
+
+      this.activitiesPreviousDataCustom(projectBD);
+
+      // cgamboa 11/06/2024 project.getProjectActivities() will be call once and used sometimes
+      List<Activity> projectActivities = new ArrayList<Activity>();
+      try {
+        projectActivities = project.getProjectActivities();
+      } catch (Exception e) {
+        logger.info(" unable to get activities in save function ");
+      }
+
       // Check activities from UI
-      if (project.getProjectActivities() != null && !project.getProjectActivities().isEmpty()) {
+      if (projectActivities != null && !projectActivities.isEmpty()) {
         this.saveActivitiesNewData();
       } else {
         // Delete activities
@@ -619,6 +683,7 @@ public class ProjectActivitiesAction extends BaseAction {
       this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
+
 
       if (path.toFile().exists()) {
         path.toFile().delete();

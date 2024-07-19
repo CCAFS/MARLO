@@ -76,6 +76,11 @@ public class DeliverableAffiliationsNotMappedManagerImpl implements DeliverableA
   }
 
   @Override
+  public List<DeliverableAffiliationsNotMapped> findBydeliverableMetadataExternalSourcesId(long externalSourceId) {
+    return deliverableAffiliationsNotMappedDAO.findBydeliverableMetadataExternalSourcesId(externalSourceId);
+  }
+
+  @Override
   public DeliverableAffiliationsNotMapped
     getDeliverableAffiliationsNotMappedById(long deliverableAffiliationsNotMappedID) {
     return deliverableAffiliationsNotMappedDAO.find(deliverableAffiliationsNotMappedID);
