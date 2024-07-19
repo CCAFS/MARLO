@@ -647,7 +647,11 @@ function addActionEvent(e) {
 
 function cloneSubActionSelect(value) {
   var $original =$(`#subactionSelect-${value}`).find('.baseselect');
-  $original.find('select').select2("destroy");
+
+  if ($original.find('select').data('select2')) {
+    $original.find('select').select2("destroy");
+  }
+  
   var $select = $original.clone(true);
   $select.removeClass('hideSelect');
   $original.find('select').select2();

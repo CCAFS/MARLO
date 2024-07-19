@@ -514,16 +514,58 @@ public class ProjectPartnerAction extends BaseAction {
    */
   public List<DeliverableDTO> getDeliverablesLedByUser(long userID) {
     List<DeliverableDTO> deliverablesLeadsTmp = new ArrayList<>();
+    List<Deliverable> deliverablesLeads = new ArrayList<>();
     try {
+      // Retrieve deliverables for the specified user and current phase
+      List<Deliverable> deliverables =
+        deliverableManager.getDeliverablesLeadByUser(userID, this.getActualPhase().getId());
 
-      deliverablesLeadsTmp = deliverableManager.getDeliverablesLeadByUserAndProjectWithSimpleConditions(userID,
-        this.getActualPhase().getId(), projectID);
+      if (deliverables != null) {
+        for (Deliverable deliverable : deliverables) {
+          if (deliverable.getProject() != null && deliverable.getProject().getId().equals(projectID)) {
+            deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
+            if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getStatus() != null
+              && (deliverable.getDeliverableInfo().getStatus() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())
+                || deliverable.getDeliverableInfo().getStatus() == Integer
+                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+              if (!deliverablesLeads.contains(deliverable)) {
+                if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
+
+                  if (deliverable.isActive()) {
+                    deliverablesLeads.add(deliverable);
+                  }
+
+                } else {
+                  if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
+                    .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                    if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+                      && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
+                      if (deliverable.isActive()) {
+                        deliverablesLeads.add(deliverable);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Convert Deliverable objects to DeliverableDTO using stream and lambda
+      deliverablesLeadsTmp = deliverablesLeads.stream().map(deliverable -> {
+        DeliverableDTO dto = new DeliverableDTO();
+        dto.setId(deliverable.getId());
+        dto.setTitle(deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getTitle() != null
+          ? deliverable.getDeliverableInfo().getTitle() : "");
+        return dto;
+      }).collect(Collectors.toList());
 
     } catch (Exception e) {
-      LOG.error(" unable to get deliverables - getDeliverablesLedByUser function ");
+      LOG.error("Error retrieving deliverables for user " + userID, e);
     }
     return deliverablesLeadsTmp;
-
   }
 
 
@@ -867,31 +909,42 @@ public class ProjectPartnerAction extends BaseAction {
 
     // new method
     // Project leader CC emails
-    if (role.getId() == plRole.getId().longValue()) {
-      List<CrpProgram> crpPrograms = projectManager.getPrograms(project.getId(),
-        ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue(), this.getActualPhase().getId());
+    try {
+      if (role.getId() == plRole.getId().longValue()) {
+        List<CrpProgram> crpPrograms = projectManager.getPrograms(project.getId(),
+          ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue(), this.getActualPhase().getId());
 
-      if (crpPrograms != null) {
-        if (crpPrograms.size() > 1) {
-          LOG.warn("Crp programs should be 1");
-        }
-        CrpProgram crpProgram = crpPrograms.get(0);
-        for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
-          .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
-          if (ccEmail.isEmpty()) {
-            ccEmail += crpProgramLeader.getUser().getEmail();
-          } else {
-            ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+        if (crpPrograms != null) {
+          if (crpPrograms.size() > 1) {
+            LOG.warn("Crp programs should be 1");
+
+            if (crpPrograms.get(0) != null) {
+              CrpProgram crpProgram = crpPrograms.get(0);
+              for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
+                .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
+                if (ccEmail.isEmpty()) {
+                  ccEmail += crpProgramLeader.getUser().getEmail();
+                } else {
+                  ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+                }
+              }
+            }
           }
         }
       }
+    } catch (Exception e) {
+      LOG.error("Error getting crpPrograms and crp programs leaders " + e);
     }
 
     // project coordinator CC emails
     if (role.getId() == pcRole.getId().longValue()) {
       ProjectPartnerPerson projectLeader = project.getLeaderPersonDB(this.getActualPhase());
       if (projectLeader != null && projectLeader.getUser() != null && projectLeader.getUser().getEmail() != null) {
-        ccEmail += ", " + projectLeader.getUser().getEmail();
+        if (ccEmail == null || ccEmail.isEmpty()) {
+          ccEmail = projectLeader.getUser().getEmail();
+        } else {
+          ccEmail += ", " + projectLeader.getUser().getEmail();
+        }
       }
     }
 
