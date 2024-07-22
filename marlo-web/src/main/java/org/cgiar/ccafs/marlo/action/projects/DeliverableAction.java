@@ -3320,10 +3320,11 @@ public class DeliverableAction extends BaseAction {
       }
       try {
         // 2024/07/22 conditional was added to avoid exception by null data
-        if (deliverableUserPartnershipPrev != null) {
+        if (deliverableUserPartnershipPrev != null && !deliverableUserPartnershipPrev.isEmpty()) {
           for (DeliverableUserPartnership deliverableUserPartnership : deliverableUserPartnershipPrev) {
             if (this.deliverable.getResponsiblePartnership() == null
-              || !this.deliverable.getResponsiblePartnership().contains(deliverableUserPartnership)) {
+              || (this.deliverable.getResponsiblePartnership() != null
+                && !this.deliverable.getResponsiblePartnership().contains(deliverableUserPartnership))) {
 
               deliverableUserPartnershipManager.deleteDeliverableUserPartnership(deliverableUserPartnership.getId());
             }
