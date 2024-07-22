@@ -206,6 +206,12 @@ $(document).ready(function () {
 
   function showNotificationMessages() {
     var messageSelector = $('#generalMessages').find("#message");
+
+    var $clusterSubmitted = $(`.clusterSubmitted`);
+    var $clusterSubmittedFilter = $clusterSubmitted.filter((index, ele) => $(ele).attr("issubmit") === "true").get();
+
+    var remainingPending = $(`input[name="deliverable.deliverableInfo.remainingPending"]`).val();
+    console.log(remainingPending, "remainingPending", typeof remainingPending);
     // VALIDATE IF IS ERROR O SUCCES CLASS
     if ($(messageSelector).hasClass("success")) {
       // SUCCESS MESSAGE
@@ -218,30 +224,36 @@ $(document).ready(function () {
         var message = $(messageSelector).html().split(":")[1];
         var messageType = "success";
         notifyErrorMessage(messageType, message);
-      } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message" && messageSelector.html().split(":")[1] === " deliverable.status.remaining") {
+      } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message" && $clusterSubmittedFilter.length > 0) {
         // SHOW CLUSTER SUBMITTED BASED ON THE DISABLED INPUT
-        var $clusterSubmitted = $(`.clusterSubmitted`);
-        var $clusterSubmittedFilter = $clusterSubmitted.filter((index, ele) => $(ele).attr("issubmit") === "true").get();
+
         var message = "";
 
-        var remainingAfricanValue = $("#remainingAfrican").val();
-        var remainingFemalesValue = $("#remainingFemales").val();
-        var remainingTraineesValue = $("#remainingTrainees").val();
-        var remainingYouthValue = $("#remainingYouth").val();
+        const $mapClusterSubmit = $clusterSubmitted.filter((index, ele) => $(ele).attr("issubmit") === "true").get();
+        const $stringClusterSubmit = $mapClusterSubmit.reduce((prev,curr) => prev +$(curr).attr("name")+",","");
+        const stringFixed = $stringClusterSubmit.substring(0, $stringClusterSubmit.length - 1);
+        message += "The Information was correctly saved. <br> ";
+        message += "It seems that the following cluster(s) were submitted: <b>"+stringFixed+ "</b>. We suggest the following actions so you can save the information correctly: <br> ";
+        message += "<ul style='padding-left: 32px;'>";
+        message += "<li>Contact cluster(s) leader to unsubmit them and update the information. </li> ";
+        message += "</ul> ";
+        
+        var messageType = "warning";
+        notifyErrorMessage(messageType, message);
+      } else if(messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message" && remainingPending == "true") {
 
-        var sumRemaining = parseInt(remainingAfricanValue) + parseInt(remainingFemalesValue) + parseInt(remainingTraineesValue) + parseInt(remainingYouthValue); 
+        var message = "";
+        var messageType = "warning";
 
-        if ($clusterSubmittedFilter.length > 0) {
-          // $clusterSubmitted exists, do something
-          const $mapClusterSubmit = $clusterSubmitted.filter((index, ele) => $(ele).attr("issubmit") === "true").get();
-          const $stringClusterSubmit = $mapClusterSubmit.reduce((prev,curr) => prev +$(curr).attr("name")+",","");
-          const stringFixed = $stringClusterSubmit.substring(0, $stringClusterSubmit.length - 1);
-          message += "The Information was correctly saved. <br> ";
-          message += "It seems that the following cluster(s) were submitted: <b>"+stringFixed+ "</b>. We suggest the following actions so you can save the information correctly: <br> ";
-          message += "<ul style='padding-left: 32px;'>";
-          message += "<li>Contact cluster(s) leader to unsubmit them and update the information. </li> ";
-          message += "</ul> ";
-        } else if (sumRemaining < 0) {
+        sumRemaining = 0;
+        var remainingAfrican = $(".remainingAfrican").html() || "0";
+        var remainingTrainees = $(".remainingTrainees").html() || "0";
+        var remainingFemales = $(".remainingFemales").html() || "0";
+        var remainingYouth = $(".remainingYouth").html() || "0";
+
+        sumRemaining = parseInt(remainingAfrican) + parseInt(remainingTrainees) + parseInt(remainingFemales) + parseInt(remainingYouth);
+
+        if (sumRemaining < 0) {
           message += "The Information was correctly saved. <br> ";
           message += "It seems that the <b>Remaining shared information</b> is inconsistence (value must be zero). We suggest to correct the information to avoid inconsistences in the system. ";
           message += "You could also contact the cluster(s) leader to verificate the information. ";
@@ -250,9 +262,9 @@ $(document).ready(function () {
           message += "The Information was correctly saved. <br> ";
           message += "It seems that the <b>Remaining shared information</b> is incompleted please take a look.";
         }
-        
-        var messageType = "warning";
+
         notifyErrorMessage(messageType, message);
+
       } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message") {
         // WARNING MESSAGE
         var message = ""
