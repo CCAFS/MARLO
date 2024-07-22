@@ -178,8 +178,11 @@
       </div>
       
       <div class="text-modal-evidences text-modal-status">
-        <p>It is not possible to change the status of this deliverable as it contains related information about trainees for clusters that have already submitted.</p>
-
+        <p>You should not be allowed to change the status of a deliverable to cancel or extend if there is already related information of Trainees and/or if one of the shared clusters is already submitted. Made the following recommendations:</p>
+        <ul>
+          <li>Unsubmit the shared cluster(s)</li>
+          <li>Remove the trainees related information to the shared cluster(s)</li>
+        </ul>
       </div>                
       <div class="container-buttons-evidences"> 
         <div class="button-close-modal close-modal-status">
