@@ -4504,13 +4504,13 @@ public class DeliverableAction extends BaseAction {
     String sharedClusterLeaderName, String sharedClusterLeaderEmail) {
     if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
 
-      String toEmail = sharedClusterLeaderEmail;
-      // CC will be the user who is making the modification.
-      String ccEmail = null; // this.getCurrentUser().getEmail();
-      // BBC will be our gmail notification email.
-      String bbcEmails = this.config.getEmailNotification();
-      String subject = this.getText("email.change.deliverableStatus.subject",
-        new String[] {deliverableID + "", statusPrevName, statusCurrentName});
+    String toEmail = sharedClusterLeaderEmail;
+    // CC will be the user who is making the modification.
+    String ccEmail = null;
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+    String subject = this.getText("email.change.deliverableStatus.subject",
+      new String[] {deliverableID + "", statusPrevName, statusCurrentName});
 
       // Building the email message
       StringBuilder message = new StringBuilder();
