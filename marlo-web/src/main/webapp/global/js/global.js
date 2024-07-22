@@ -211,7 +211,6 @@ $(document).ready(function () {
     var $clusterSubmittedFilter = $clusterSubmitted.filter((index, ele) => $(ele).attr("issubmit") === "true").get();
 
     var remainingPending = $(`input[name="deliverable.deliverableInfo.remainingPending"]`).val();
-    console.log(remainingPending, "remainingPending", typeof remainingPending);
     // VALIDATE IF IS ERROR O SUCCES CLASS
     if ($(messageSelector).hasClass("success")) {
       // SUCCESS MESSAGE
@@ -1101,6 +1100,19 @@ function removeCluster(idCluster) {
   }
 
 
+}
+
+
+/**
+ * Checks if there is related information for the trainees cluster.
+ * @returns {boolean} True if there is related information, false otherwise.
+ */
+function hasRelatedInformationTrainnesCluster(){
+  let hasRelatedInformation = false;
+  if(getSumTotalParticipants() > 0){
+    hasRelatedInformation = true;
+  }
+  return hasRelatedInformation;
 }
 
 function initialRemaining() {

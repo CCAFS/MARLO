@@ -81,7 +81,7 @@ function init() {
     if(isStatusCancelled($statuses.val()) || isStatusExtended($statuses.val())) {
       validatePermissionsToChangeStatus()
       .then(function(canChangeStatus) {
-        displayModalForAdmin(canChangeStatus, $prevValueSelectStatus).then(function() {
+        displayModalForAdmin(canChangeStatus, hasRelatedInformationTrainnesCluster(), $prevValueSelectStatus).then(function() {
           validateVisualJustifAndCompnsByStatusAndYear($statuses.val());
         });
       })
@@ -641,10 +641,9 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
   }
 }
 
-async function displayModalForAdmin(canChangeStatus, prevValueSelectStatus) {
+async function displayModalForAdmin(canChangeStatusClusterSubmitted, hasRelatedInformationTrainnesCluster, prevValueSelectStatus) {
   var isAdmin = document.getElementById("adminRole").value;
-
-  if(isAdmin === "true" && canChangeStatus === false){
+  if(isAdmin === "true" && (canChangeStatusClusterSubmitted === false || hasRelatedInformationTrainnesCluster === true)){
     try {
       // Wait for the user to click on the modal
       $statuses.val(prevValueSelectStatus).trigger("change.select2");
