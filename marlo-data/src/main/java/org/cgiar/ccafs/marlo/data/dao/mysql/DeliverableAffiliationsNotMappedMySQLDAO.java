@@ -73,6 +73,18 @@ public class DeliverableAffiliationsNotMappedMySQLDAO extends AbstractMarloDAO<D
   }
 
   @Override
+  public List<DeliverableAffiliationsNotMapped> findBydeliverableMetadataExternalSourcesId(long externalSourceId) {
+    String query = "from " + DeliverableAffiliationsNotMapped.class.getName()
+      + " where deliverable_metadata_external_sources_id =" + externalSourceId;
+    List<DeliverableAffiliationsNotMapped> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
   public DeliverableAffiliationsNotMapped save(DeliverableAffiliationsNotMapped deliverableAffiliationsNotMapped) {
     if (deliverableAffiliationsNotMapped.getId() == null) {
       super.saveEntity(deliverableAffiliationsNotMapped);

@@ -561,7 +561,10 @@ function getWOSInfo() {
         success: function (data) {
           if (data.jsonStringResponse != undefined && data.jsonStringResponse != "null") {
             // console.log('%cUpdate','background: #222; color: #37ff73');
-            // console.log("data.jsonStringResponse",data.jsonStringResponse);
+            // console.log("data.jsonStringResponse",data.jsonStringResponse);            
+            if (data.response == undefined) {            
+              data.response = JSON.parse(data.jsonStringResponse);
+            }
             updateWOSFields(data.response);
             $('#WOSModalBtn').show('slow');
             $('#output-wos').html('Found metadata successfully in Web of Science.');
@@ -660,7 +663,7 @@ function getCurrentDate() {
   return new Date().toUTCString()
 
 }
-function updateWOSFields(data) {
+function updateWOSFields(data) {  
   let {
     url,
     doi,

@@ -37,6 +37,7 @@
   [#-- bower:js --]
   [#if libraryName="jquery"]<script src="${baseUrlCdn}/global/bower_components/jquery/dist/jquery.min.js"></script>[/#if]
   [#if libraryName="jquery-ui"]<script src="${baseUrlCdn}/global/bower_components/jquery-ui/jquery-ui.min.js"></script>[/#if]
+  [#if libraryName="jquery-mask-plugin"]<script src="${baseUrlCdn}/global/bower_components/jquery-mask-plugin/dist/jquery.mask.min.js"></script>[/#if]
   [#if libraryName="html5shiv"]<script src="${baseUrlCdn}/global/bower_components/html5shiv/dist/html5shiv.js"></script>[/#if]
   [#if libraryName="jReject"]<script src="${baseUrlCdn}/global/bower_components/jReject/js/jquery.reject.js"></script>[/#if]
   [#if libraryName="noty"]<script src="${baseUrlCdn}/global/bower_components/noty/js/noty/packaged/jquery.noty.packaged.js"></script>[/#if]

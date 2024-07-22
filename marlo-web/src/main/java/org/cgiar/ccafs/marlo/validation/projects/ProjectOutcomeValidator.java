@@ -177,36 +177,31 @@ public class ProjectOutcomeValidator extends BaseValidator {
       if (projectMilestone.getCrpMilestone().getYear() == action.getCurrentCycleYear()) {
 
 
-        if (projectMilestone.getExpectedUnit() == null || projectMilestone.getExpectedUnit().getId() == null
-          || projectMilestone.getExpectedUnit().getId() == -1) {
-          // action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedUnit", params));
-          projectMilestone.setExpectedUnit(null);
-        } else {
-          if (projectMilestone.getExpectedValue() == null
-            || !this.isValidNumber(String.valueOf(projectMilestone.getExpectedValue()))) {
-            action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedValue", params));
-            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
+        if (projectMilestone.getExpectedValue() == null
+          || !this.isValidNumber(String.valueOf(projectMilestone.getExpectedValue()))) {
+          action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedValue", params));
+          action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        if (projectMilestone.getExpectedValue() != null && projectMilestone.getExpectedValue() < 0) {
+          action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        if (action.getActualPhase() != null && action.getActualPhase().getName() != null
+          && (!action.getActualPhase().getName().equals("POWB")
+            && !action.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
+          if (projectMilestone.getAchievedValue() == null
+            || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue()))) {
+            action.addMessage(action.getText("projectOutcomeMilestone.requeried.achievedValue", params));
+            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
               InvalidFieldsMessages.EMPTYFIELD);
           }
-          if (projectMilestone.getExpectedValue() != null && projectMilestone.getExpectedValue() < 0) {
-            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
+          if (projectMilestone.getAchievedValue() != null && projectMilestone.getAchievedValue() < 0) {
+            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
               InvalidFieldsMessages.EMPTYFIELD);
-          }
-          if (action.getActualPhase() != null && action.getActualPhase().getName() != null
-            && (!action.getActualPhase().getName().equals("POWB")
-              && !action.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
-            if (projectMilestone.getAchievedValue() == null
-              || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue()))) {
-              action.addMessage(action.getText("projectOutcomeMilestone.requeried.achievedValue", params));
-              action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-            if (projectMilestone.getAchievedValue() != null && projectMilestone.getAchievedValue() < 0) {
-              action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
           }
         }
+      
 
         if (!action.isReportingActive()) {
           if (!(this.isValidString(projectMilestone.getNarrativeTarget())
