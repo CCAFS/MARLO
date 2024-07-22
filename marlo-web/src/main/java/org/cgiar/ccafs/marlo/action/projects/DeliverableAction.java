@@ -3318,12 +3318,22 @@ public class DeliverableAction extends BaseAction {
               && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
             .collect(Collectors.toList());
       }
-      for (DeliverableUserPartnership deliverableUserPartnership : deliverableUserPartnershipPrev) {
-        if (this.deliverable.getResponsiblePartnership() == null
-          || !this.deliverable.getResponsiblePartnership().contains(deliverableUserPartnership)) {
+      try {
+        // 2024/07/22 conditional was added to avoid exception by null data
+        if (deliverableUserPartnershipPrev != null && !deliverableUserPartnershipPrev.isEmpty()) {
+          for (DeliverableUserPartnership deliverableUserPartnership : deliverableUserPartnershipPrev) {
+            if (this.deliverable.getResponsiblePartnership() == null
+              || (this.deliverable.getResponsiblePartnership() != null
+                && !this.deliverable.getResponsiblePartnership().contains(deliverableUserPartnership))) {
 
-          deliverableUserPartnershipManager.deleteDeliverableUserPartnership(deliverableUserPartnership.getId());
+              deliverableUserPartnershipManager.deleteDeliverableUserPartnership(deliverableUserPartnership.getId());
+            }
+          }
         }
+      } catch (Exception e) {
+        logger.error(
+          "unable to delete deliverable user partnership in saveDeliverablePartnershipResponsible function  ",
+          e.getMessage());
       }
 
     }
