@@ -913,7 +913,11 @@ var deliverablePartnersModule = (function () {
   function addPartnerItem() {
     var $listBlock = $('.otherDeliverablePartners');
     var $template = $('#deliverablePartnerItem-template');
-    $template.find('select').select2("destroy");
+
+    if($template.find('select').data('select2')){
+      $template.find('select').select2("destroy");
+    }
+    
     var $newItem = $template.clone(true).removeAttr('id');
 
     $template.find('select').select2();
