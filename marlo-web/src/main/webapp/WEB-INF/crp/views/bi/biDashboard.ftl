@@ -61,7 +61,7 @@
       [#--  Reports header  --]
 
       [#--  Reports Content --]
-      <div class="summariesContent col-md-12" style="min-height:550px;">
+      <div class="summariesContent col-md-12" >
         <div class="">
           [#list (biReports)?sort_by("reportOrder")![] as report]
               <div id="BIreport-${report.id}-contentOptions" class="" style="display:[#if report?index !=0]none[/#if];">
