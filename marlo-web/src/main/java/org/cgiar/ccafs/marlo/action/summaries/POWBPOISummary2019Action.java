@@ -75,7 +75,6 @@ import org.cgiar.ccafs.marlo.utils.ReadWordFile;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -108,6 +107,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPrGeneral;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTString;
@@ -133,22 +133,25 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     styleName.setVal(strStyleId);
     ctStyle.setName(styleName);
 
+    // Assuming headingLevel is an integer representing the level of the heading
     CTDecimalNumber indentNumber = CTDecimalNumber.Factory.newInstance();
-    indentNumber.setVal(BigInteger.valueOf(headingLevel));
+    indentNumber.setVal(BigInteger.valueOf(headingLevel)); // Set the UI priority
 
-    // lower number > style is more prominent in the formats bar
+    // Set the style's UI priority (using an integer value)
     ctStyle.setUiPriority(indentNumber);
 
     CTOnOff onoffnull = CTOnOff.Factory.newInstance();
-    ctStyle.setUnhideWhenUsed(onoffnull);
+    ctStyle.setUnhideWhenUsed(onoffnull); // Set the style to unhide when used
 
-    // style shows up in the formats bar
+    // Style shows up in the formats bar
     ctStyle.setQFormat(onoffnull);
 
-    // style defines a heading of the given level
-    CTPPr ppr = CTPPr.Factory.newInstance();
-    ppr.setOutlineLvl(indentNumber);
-    ctStyle.setPPr(ppr);
+    // Define a heading of the given level
+    CTPPrGeneral pprGeneral = CTPPrGeneral.Factory.newInstance(); // Create a new instance of CTPPrGeneral
+    CTDecimalNumber outlineLvl = CTDecimalNumber.Factory.newInstance(); // Create a new instance of CTDecimalNumber
+    outlineLvl.setVal(BigInteger.valueOf(headingLevel)); // Set the outline level value
+    pprGeneral.setOutlineLvl(outlineLvl); // Set the outline level in the paragraph properties
+    ctStyle.setPPr(pprGeneral); // Apply the paragraph properties to the style
 
     XWPFStyle style = new XWPFStyle(ctStyle);
 
@@ -326,7 +329,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     try {
       XWPFHeaderFooterPolicy headerFooterPolicy = new XWPFHeaderFooterPolicy(document, sectPr);
       headerFooterPolicy.createFooter(STHdrFtr.DEFAULT, paragraphs);
-    } catch (IOException e) {
+    } catch (Exception e) {
       LOG.error("Failed to createFooter. Exception: " + e.getMessage());
     }
 
@@ -1053,7 +1056,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
          * CTP ctP = paragraph.getCTP();
          * CTSimpleField toc = ctP.addNewFldSimple();
          * toc.setInstr("TOC \\h");
-         * toc.setDirty(STOnOff.TRUE);
+         * toc.setDirty(true);
          */
         XWPFRun run = paragraph.createRun();
         // run.addBreak(BreakType.PAGE);
@@ -1327,7 +1330,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
          * CTP ctP = paragraph.getCTP();
          * CTSimpleField toc = ctP.addNewFldSimple();
          * toc.setInstr("TOC \\h");
-         * toc.setDirty(STOnOff.TRUE);
+         * toc.setDirty(true);
          */
         XWPFRun run = paragraph.createRun();
         // run.addBreak(BreakType.PAGE);
