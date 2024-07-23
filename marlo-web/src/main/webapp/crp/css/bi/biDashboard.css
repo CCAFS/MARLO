@@ -177,31 +177,3 @@ ul.nav li a {
 #BIreport-8-contentOptions{
   height: 1100px !important;
 }
-
-#BIreport-7-contentOptions:has(exploration[aria-label="Indicators"]){
-  height: 1200px !important;
-}
-
-#BIreport-7-contentOptions:has(exploration[aria-label="Cluster Indicators"]){
-  height: 1300px !important;
-}
-
-#BIreport-7-contentOptions:has(exploration[aria-label="ClusterResults"]){
-  height: 2500px !important;
-}
-
-#BIreport-7-contentOptions:has(exploration[aria-label="Deliverables"]){
-  height: 2150px !important;
-}
-
-#BIreport-7-contentOptions:has(exploration[aria-label="OICRs"]){
-  height: 2100px !important;
-}
-
-#BIreport-7-contentOptions:has(exploration[aria-label="Innovations"]){
-  height: 1450px !important;
-}
-
-@supports(selector(:has(p))) {
-  /* Supported! */
-}
