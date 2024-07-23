@@ -75,7 +75,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -113,13 +112,12 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPrGeneral;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTString;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHdrFtr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,7 +152,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     ctStyle.setQFormat(onoffnull);
 
     // style defines a heading of the given level
-    CTPPr ppr = CTPPr.Factory.newInstance();
+    CTPPrGeneral ppr = CTPPrGeneral.Factory.newInstance();
     ppr.setOutlineLvl(indentNumber);
     ctStyle.setPPr(ppr);
 
@@ -616,7 +614,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     try {
       XWPFHeaderFooterPolicy headerFooterPolicy = new XWPFHeaderFooterPolicy(document, sectPr);
       headerFooterPolicy.createFooter(STHdrFtr.DEFAULT, paragraphs);
-    } catch (IOException e) {
+    } catch (Exception e) {
       LOG.error("Failed to createFooter. Exception: " + e.getMessage());
     }
 
@@ -822,6 +820,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
               && c.getCrpProgramOutcome().getComposedName().contains("PDO Indicator 1"))
             .collect(Collectors.toList()));
         } catch (Exception e) {
+          LOG.error("Error generating Progress Summary " + e.getMessage());
         }
 
         // PDO 2
@@ -832,6 +831,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
               && c.getCrpProgramOutcome().getComposedName().contains("PDO Indicator 2"))
             .collect(Collectors.toList()));
         } catch (Exception e) {
+          LOG.error("Error generating Progress Summary " + e.getMessage());
         }
 
         // PDO 3
@@ -842,6 +842,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
               && c.getCrpProgramOutcome().getComposedName().contains("PDO Indicator 3"))
             .collect(Collectors.toList()));
         } catch (Exception e) {
+          LOG.error("Error generating Progress Summary " + e.getMessage());
         }
         // PDO 4
         try {
@@ -851,6 +852,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
               && c.getCrpProgramOutcome().getComposedName().contains("PDO Indicator 4"))
             .collect(Collectors.toList()));
         } catch (Exception e) {
+          LOG.error("Error generating Progress Summary " + e.getMessage());
         }
 
         // IPI 1.1
@@ -861,6 +863,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
               && c.getCrpProgramOutcome().getComposedName().contains("IPI 1.1"))
             .collect(Collectors.toList()));
         } catch (Exception e) {
+          LOG.error("Error generating Progress Summary " + e.getMessage());
         }
 
         // IPI 1.2
@@ -871,6 +874,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
               && c.getCrpProgramOutcome().getComposedName().contains("IPI 1.2"))
             .collect(Collectors.toList()));
         } catch (Exception e) {
+          LOG.error("Error generating Progress Summary " + e.getMessage());
         }
 
         // IPI 1.3
@@ -1057,7 +1061,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
               CTP ctP = paragraph.getCTP();
               CTSimpleField toc = ctP.addNewFldSimple();
               toc.setInstr("TOC \\h");
-              toc.setDirty(STOnOff.TRUE);
+              toc.setDirty(true);
               XWPFRun run = paragraph.createRun();
               document.createParagraph().setPageBreak(true);
             }
@@ -1107,7 +1111,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
             run.addBreak();
             run.addPicture(new FileInputStream(imageFile), imgFormat, imgFile, Units.toEMU(width), Units.toEMU(height));
           } catch (Exception e) {
-            // System.out.println(e);
+            LOG.error("Error generating Progress Summary " + e.getMessage());
           }
 
           // Project Title
@@ -1601,7 +1605,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     try {
       ServletActionContext.getContext().setLocale(locale);
     } catch (Exception e) {
-
+      LOG.error("Error generating Progress Summary " + e.getMessage());
     }
 
     if (session.containsKey(APConstants.SESSION_CRP)) {
