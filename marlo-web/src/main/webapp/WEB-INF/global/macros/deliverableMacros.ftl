@@ -367,6 +367,12 @@
     <p><small>[@s.text name="involveParticipants.sharedClusters.help" /] </small></p>
   </span>
   <div class="simpleBox">
+  
+  [#if actualPhase.name != 'Progress']
+    <div class="note--2">
+      <p>[@s.text name="involveParticipants.sharedClusters.note" /]</p>
+    </div>
+  [/#if]
 
     <div class="block-involveParticipants">
       
@@ -405,42 +411,53 @@
           <div class="listClusterDM">
         [#assign index = 0]
         [#list list as cluster]
+
+          [#assign isSharedCluster = (action.isSubmit(cluster.project.id)) && (actualPhase.name != 'Progress') /]
+
           <input type="hidden" name="${customName}[${index}].id" class="valueId" value="${(cluster.id)!0}" valueIndex="${(cluster.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}" />
           <input type="hidden" name="${customName}[${index}].project.id" value="${(cluster.project.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}"/>
           <div class="form-group row" clusterIdParticipant="${(cluster.project.id)!0}">
             <div class="col-md-2">
               <div class="text-area-container text-flex-column">
               [@customForm.text name=(list[index].project.acronym)!"" /]
-              [#if action.isSubmit(cluster.project.id)]
-                <p style="font-style: italic; font-size: 10px;">Cluster submitted.</p>
+              [#if isSharedCluster]
+                <p style="font-style: italic; font-size: 10px;" title=[@s.text name="involveParticipants.sharedClusters.submittedHover" /]>Cluster submitted.</p>
               [/#if]
                 [#-- Allow to track if the cluster is submitted --]
-                [#assign isSubmit = action.isSubmit(cluster.project.id)?string('true', 'false') /]
+                [#assign isSubmit = isSharedCluster?string('true', 'false') /]
                 <p style="display:none" class="clusterSubmitted" isSubmit="${isSubmit}" name="${(list[index].project.acronym)!''}"></p>
               </div>
               <br>
             </div>
             <div class="col-md-2 participantsNumbers">
               <div class="text-area-container">
-              [@customForm.input name="${customName}[${index}].participants"  placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
+              [@customForm.input name="${customName}[${index}].participants"  placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
               </div>
               <br>
             </div>
             <div class="col-md-2 femaleNumbers">
               <div class="text-area-container">
-                [@customForm.input name="${customName}[${index}].females" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
+                [@customForm.input name="${customName}[${index}].females" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
               </div>
               <br>
             </div>
             <div class="col-md-2 africanNumbers">
               <div class="text-area-container">
-                [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
+                [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
               </div>
               <br>
             </div>
             <div class="col-md-2 youthNumbers">
               <div class="text-area-container">
-                [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
+                [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2">
+              <div class="text-area-container">
+                <button class="btn btn-danger removeInformationClusterTrainnes btn-remove" title="Remove ${(list[index].project.acronym)!''} information" clusterIdParticipant="${(cluster.project.id)!0}" ${isSharedCluster?then('disabled','')}>
+                 <span class="glyphicon glyphicon-trash"></span>
+                </button>
               </div>
               <br>
             </div>
