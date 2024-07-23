@@ -165,3 +165,15 @@ ul.nav li a {
 .col-md-2 {
   width: 100% !important;
 }
+
+#BIreport-7-contentOptions{
+  height: 1200px !important;
+}
+
+#BIreport-9-contentOptions{
+  height: 1600px !important;
+}
+
+#BIreport-8-contentOptions{
+  height: 1100px !important;
+}
