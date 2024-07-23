@@ -367,9 +367,12 @@
     <p><small>[@s.text name="involveParticipants.sharedClusters.help" /] </small></p>
   </span>
   <div class="simpleBox">
+  
+  [#if actualPhase.name != 'Progress']
     <div class="note--2">
       <p>[@s.text name="involveParticipants.sharedClusters.note" /]</p>
     </div>
+  [/#if]
 
     <div class="block-involveParticipants">
       
