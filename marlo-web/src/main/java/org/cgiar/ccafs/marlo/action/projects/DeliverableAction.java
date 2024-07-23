@@ -185,6 +185,7 @@ import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author avalencia - CCAFS
@@ -4508,6 +4509,7 @@ public class DeliverableAction extends BaseAction {
    */
   public void sendNotificationEmail(String statusPrevName, String statusCurrentName, String sharedClusterAcronym,
     String sharedClusterLeaderName, String sharedClusterLeaderEmail) {
+    if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
 
     String toEmail = sharedClusterLeaderEmail;
     // CC will be the user who is making the modification.
@@ -4517,24 +4519,26 @@ public class DeliverableAction extends BaseAction {
     String subject = this.getText("email.change.deliverableStatus.subject",
       new String[] {deliverableID + "", statusPrevName, statusCurrentName});
 
-    // Building the email message
-    StringBuilder message = new StringBuilder();
-    String[] values = new String[7];
+      // Building the email message
+      StringBuilder message = new StringBuilder();
+      String[] values = new String[7];
 
-    values[0] = sharedClusterLeaderName;
-    values[1] = deliverableID + "";
-    values[2] = deliverable.getProject().getAcronym();
-    values[3] = statusPrevName;
-    values[4] = statusCurrentName;
-    values[5] = sharedClusterAcronym;
-    values[6] = deliverable.getProject().getLeaderPerson(this.getActualPhase()).getUser().getComposedName();
+      values[0] = sharedClusterLeaderName;
+      values[1] = deliverableID + " - [" + deliverable.getDeliverableInfo(this.getActualPhase()).getTitle() + "]";
+      values[2] = deliverable.getProject().getAcronym();
+      values[3] = statusPrevName;
+      values[4] = statusCurrentName;
+      values[5] = sharedClusterAcronym;
+      User user = deliverable.getProject().getLeaderPerson(this.getActualPhase()).getUser();
+      values[6] = user.getComposedNameWithoutEmail() + " [" + user.getEmail() + "]";
 
-    message.append(this.getText("email.change.deliverableStatus.body", values));
-    message.append(this.getText("email.support.noCrpAdmins"));
-    message.append(this.getText("email.getStarted"));
-    message.append(this.getText("email.bye"));
+      message.append(this.getText("email.change.deliverableStatus.body", values));
+      message.append(this.getText("email.support.noCrpAdmins"));
+      message.append(this.getText("email.getStarted"));
+      message.append(this.getText("email.bye"));
 
-    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
   }
 
   public void setAcceptationPercentage(Integer acceptationPercentage) {
@@ -4935,11 +4939,15 @@ public class DeliverableAction extends BaseAction {
    */
   public void validateStatusChangeAndNotifySharedClusters() {
     try {
-      if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
+      if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)
+        && this.hasSpecificities(APConstants.NOTIFY_DELIVERABLE_STATUS_CHANGE)) {
 
         // Store repeated values in local variables for better readability and performance
         int statusPrev = previousStatus;
         String statusPrevName = ProjectStatusEnum.getValue(statusPrev).name();
+        if (statusPrevName != null && statusPrevName.equals("Ongoing")) {
+          statusPrevName = "On-going";
+        }
         int currentPhaseStatus = deliverable.getDeliverableInfo(this.getActualPhase()).getStatus();
         String statusCurrentName = ProjectStatusEnum.getValue(currentPhaseStatus).name();
 
