@@ -69,9 +69,31 @@ function init() {
   // Event to validate the expected date
   $(".yearExpected").on("change", validateCurrentDate);
 
-  // Event when status is changed
-  $statuses.on("change", function () {
-    validateVisualJustifAndCompnsByStatusAndYear(this.value);
+
+  $prevValueSelectStatus = $statuses.val();
+
+  $statuses.on("click", function () {
+
+    $prevValueSelectStatus = $statuses.val();
+
+  }).on("change", function () {
+
+    if(isStatusCancelled($statuses.val()) || isStatusExtended($statuses.val())) {
+      validatePermissionsToChangeStatus()
+      .then(function(canChangeStatus) {
+        displayModalForAdmin(canChangeStatus, hasRelatedInformationTrainnesCluster(), $prevValueSelectStatus).then(function() {
+          validateVisualJustifAndCompnsByStatusAndYear($statuses.val());
+        });
+      })
+      .catch(function(error) {
+        console.error('Error checking permissions:', error);
+      });
+    } else {
+      validateVisualJustifAndCompnsByStatusAndYear(this.value);
+    }
+
+
+
   });
 
   validatePermissionsToChangeStatus()
@@ -619,6 +641,20 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
   }
 }
 
+async function displayModalForAdmin(canChangeStatusClusterSubmitted, hasRelatedInformationTrainnesCluster, prevValueSelectStatus) {
+  var isAdmin = document.getElementById("adminRole").value;
+  if(isAdmin === "true" && (canChangeStatusClusterSubmitted === false || hasRelatedInformationTrainnesCluster === true)){
+    try {
+      // Wait for the user to click on the modal
+      $statuses.val(prevValueSelectStatus).trigger("change.select2");
+      await alertChangeStatusWithSubmittedCluster();
+    } catch (error) {
+      // User clicked on the close button instead of the remove button
+      return;
+    }
+  }
+}
+
 /**
  * Removes information of new expected year if the selected expected year is equal to the current cycle year.
  * The validation is made when another state different to EXTENDED is selected. 
@@ -913,7 +949,11 @@ var deliverablePartnersModule = (function () {
   function addPartnerItem() {
     var $listBlock = $('.otherDeliverablePartners');
     var $template = $('#deliverablePartnerItem-template');
-    $template.find('select').select2("destroy");
+
+    if($template.find('select').data('select2')){
+      $template.find('select').select2("destroy");
+    }
+    
     var $newItem = $template.clone(true).removeAttr('id');
 
     $template.find('select').select2();
