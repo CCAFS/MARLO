@@ -600,6 +600,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     query.append("INNER JOIN deliverable_dissemination AS dv ON d.id = dv.deliverable_id ");
     query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");
     query.append(" WHERE di.is_active =1 ");
+    query.append(" and d.is_active = di.is_active ");
     query.append(" and d.id_phase=" + phase);
     query.append(" and dv.dissemination_URL is not null");
     query.append(" and length(dissemination_URL)>0");
@@ -613,6 +614,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");
     query.append(" where dme.element_id in(35,36) ");
     query.append(" and di.is_active =1 ");
+    query.append(" and d.is_active = di.is_active ");
     query.append(" and d.id_phase=" + phase);
     query.append(" and element_value is not null");
     query.append(" and length(element_value)>0");
