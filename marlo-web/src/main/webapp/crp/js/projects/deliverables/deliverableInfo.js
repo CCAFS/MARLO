@@ -643,7 +643,9 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
 
 async function displayModalForAdmin(canChangeStatusClusterSubmitted, hasRelatedInformationTrainnesCluster, prevValueSelectStatus) {
   var isAdmin = document.getElementById("adminRole").value;
-  if(isAdmin === "true" && (canChangeStatusClusterSubmitted === false || hasRelatedInformationTrainnesCluster === true)){
+  var isClusterLeader = document.getElementById("clusterLeaderRole").value;
+
+  if(editable && isClusterLeader !== "true" && isAdmin !== "true" && (canChangeStatusClusterSubmitted === false || hasRelatedInformationTrainnesCluster === true)){
     try {
       // Wait for the user to click on the modal
       $statuses.val(prevValueSelectStatus).trigger("change.select2");

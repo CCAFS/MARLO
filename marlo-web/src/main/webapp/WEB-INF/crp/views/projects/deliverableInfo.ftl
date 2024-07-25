@@ -4,6 +4,7 @@
 <input type="hidden" id="traineesIndicator" name="traineesIndicator" value="${(action.getTraineesIndicatorDB())!''}"/>
 <input type="hidden" name="deliverable.deliverableInfo.remainingPending" value="${(deliverable.deliverableInfo.remainingPending!'false')?c}"/>
 <input type="hidden" id="adminRole" name="adminRole" value="${((action.canEditCrpAdmin())!'false')?c}"/>
+<input type="hidden" id="clusterLeaderRole" name="clusterLeaderRole" value="${((action.isProjectLeader(projectID))!'false')?c}"/>
 
 <div class="simpleBox">
   [#-- Title input --]
