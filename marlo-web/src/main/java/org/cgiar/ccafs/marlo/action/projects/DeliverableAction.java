@@ -4511,13 +4511,13 @@ public class DeliverableAction extends BaseAction {
     String sharedClusterLeaderName, String sharedClusterLeaderEmail) {
     if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
 
-    String toEmail = sharedClusterLeaderEmail;
-    // CC will be the user who is making the modification.
-    String ccEmail = null;
-    // BBC will be our gmail notification email.
-    String bbcEmails = this.config.getEmailNotification();
-    String subject = this.getText("email.change.deliverableStatus.subject",
-      new String[] {deliverableID + "", statusPrevName, statusCurrentName});
+      String toEmail = sharedClusterLeaderEmail;
+      // CC will be the user who is making the modification.
+      String ccEmail = null;
+      // BBC will be our gmail notification email.
+      String bbcEmails = this.config.getEmailNotification();
+      String subject = this.getText("email.change.deliverableStatus.subject",
+        new String[] {deliverableID + "", statusPrevName, statusCurrentName});
 
       // Building the email message
       StringBuilder message = new StringBuilder();
@@ -4785,7 +4785,7 @@ public class DeliverableAction extends BaseAction {
     Deliverable deliverableBase = deliverableManager.getDeliverableById(deliverableID);
     DeliverableInfo deliverableInfoDb = deliverableBase.getDeliverableInfo(this.getActualPhase());
 
-    // this.validateStatusChangeAndNotifySharedClusters();
+    this.validateStatusChangeAndNotifySharedClusters();
 
     deliverableInfoDb.setTitle(deliverable.getDeliverableInfo(this.getActualPhase()).getTitle());
     deliverableInfoDb.setDescription(deliverable.getDeliverableInfo(this.getActualPhase()).getDescription());
@@ -4934,8 +4934,11 @@ public class DeliverableAction extends BaseAction {
   }
 
   /**
-   * Validate if the status change for the current deliverable and notify via email to shared clusters with trainees
-   * information
+   * Validates the status change of a deliverable and performs actions if necessary.
+   * This method checks if the previous status was not "Extended" or "Cancelled" and the current status is "Extended" or
+   * "Cancelled".
+   * It also checks if there is a direct transition between "Extended" and "Cancelled" statuses in any direction.
+   * If the conditions are met, it performs certain actions, provided the deliverable has cluster participants.
    */
   public void validateStatusChangeAndNotifySharedClusters() {
     try {
@@ -4948,18 +4951,29 @@ public class DeliverableAction extends BaseAction {
         if (statusPrevName != null && statusPrevName.equals("Ongoing")) {
           statusPrevName = "On-going";
         }
+
+        // Get the current phase status of the deliverable
         int currentPhaseStatus = deliverable.getDeliverableInfo(this.getActualPhase()).getStatus();
         String statusCurrentName = ProjectStatusEnum.getValue(currentPhaseStatus).name();
 
         // Validate previous deliverable status
-        boolean isNotExtendedOrCancelled = statusPrev != Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+        boolean wasNotExtendedOrCancelled = statusPrev != Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
           && statusPrev != Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId());
+
         boolean isCurrentlyExtendedOrCancelled =
           currentPhaseStatus == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
             || currentPhaseStatus == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId());
 
-        if (isNotExtendedOrCancelled && isCurrentlyExtendedOrCancelled && deliverable.getClusterParticipant() != null
-          && !deliverable.getClusterParticipant().isEmpty()) {
+        boolean isCurrentOppositeOfPrevious = (statusPrev == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+          && currentPhaseStatus == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))
+          || (statusPrev == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+            && currentPhaseStatus == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()));
+
+        // If previous status was not "Extended" or "Cancelled", and current status is "Extended" or "Cancelled"
+        // Or if there is a direct transition between "Extended" and "Cancelled" statuses
+        // And the deliverable has cluster participants
+        if ((wasNotExtendedOrCancelled && isCurrentlyExtendedOrCancelled) || isCurrentOppositeOfPrevious
+          && deliverable.getClusterParticipant() != null && !deliverable.getClusterParticipant().isEmpty()) {
 
           for (DeliverableClusterParticipant deliverableParticipant : deliverable.getClusterParticipant()) {
             if (deliverableParticipant != null && deliverableParticipant.getProject() != null
