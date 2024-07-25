@@ -7325,7 +7325,7 @@ div.selectPrimary {
   border-radius: 0em 0em 0.3em 0.3em;
 }*/
 
-.menuContent #tip::before{
+.menuContent .beta::before{
 	content: "BETA";
 	color: #0277a2;
 	font-size: 9px;
