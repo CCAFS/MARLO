@@ -207,7 +207,7 @@ $(document).ready(function () {
   function showNotificationMessages() {
     var messageSelector = $('#generalMessages').find("#message");
 
-    let [ $clustersSubmitted, $clustersWithInfo] = getInformationFromAllClusterTrainnes();  
+    let [$clustersSubmitted,$clustersWithInfo,$clusterWithInfoAndSubmitted] = getInformationFromAllClusterTrainnes(); 
 
     var remainingPending = $(`input[name="deliverable.deliverableInfo.remainingPending"]`).val();
     // VALIDATE IF IS ERROR O SUCCES CLASS
@@ -224,12 +224,12 @@ $(document).ready(function () {
         var message = $(messageSelector).html().split(":")[1];
         var messageType = "success";
         notifyErrorMessage(messageType, message);
-      } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message" && ($clustersSubmitted.length > 0 || $clustersWithInfo.length > 0)) {
+      } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message" && ($clusterWithInfoAndSubmitted.length > 0)) {
         // SHOW CLUSTER SUBMITTED BASED ON THE DISABLED INPUT
 
         var message = "";
 
-        const $stringClusterSubmit = $clustersSubmitted.reduce((prev,curr) => prev +$(curr).find("p[issubmit]").attr("name")+",","");
+        const $stringClusterSubmit = $clusterWithInfoAndSubmitted.reduce((prev,curr) => prev +$(curr).find("p[issubmit]").attr("name")+",","");
         const stringFixed = $stringClusterSubmit.substring(0, $stringClusterSubmit.length - 1);
         message += "The Information was correctly saved. <br> ";
         message += "It seems that the following cluster(s) were submitted: <b>"+stringFixed+ "</b>. We suggest the following actions so you can save the information correctly: <br> ";
@@ -354,8 +354,7 @@ $(document).ready(function () {
 
     $statuses = $('select.status') || null;
     let statusValue = $statuses.val();
-    console.log(statusValue);
-    console.log("$statuses", $statuses);
+
 
     let message = "";
 
@@ -380,7 +379,7 @@ $(document).ready(function () {
     var $clustersWithInfo = $clustersInformation.filter((index, ele) => $(ele).find("input").val() > 0).get();
     
     var $clusterWithInfoAndSubmitted = $clustersInformation.filter((index, ele) => $(ele).find("input").val() > 0 && $(ele).find("p[issubmit]").attr("issubmit") === "true").get();
-    
+
     return [ $clustersSubmitted, $clustersWithInfo, $clusterWithInfoAndSubmitted];
 
   }
