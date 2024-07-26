@@ -31,15 +31,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.orm.hibernate4.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
 /**
  * Configuration for Database and Flyway beans.
  */
 @Configuration
+@EnableTransactionManagement
 public class MarloDatabaseConfiguration {
 
   /**
@@ -100,7 +102,7 @@ public class MarloDatabaseConfiguration {
 
   private Properties hibernateProperties() {
     Properties props = new Properties();
-    props.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+    props.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
     if (Boolean.TRUE.equals(showSql)) {
       props.setProperty(AvailableSettings.SHOW_SQL, "true");
     }

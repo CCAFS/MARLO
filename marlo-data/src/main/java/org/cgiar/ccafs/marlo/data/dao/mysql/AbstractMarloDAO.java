@@ -24,21 +24,23 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.FlushMode;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 // import org.hibernate.Transaction;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian David García O. - CIAT/CCAFS
  * @author Héctor F. Tobón R. - CIAT/CCAFS
  * @author Hermes Jimenez - CIAT/CCAFS
  */
+@Repository
+@Transactional
 public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
   private static final Logger LOG = LoggerFactory.getLogger(AbstractMarloDAO.class);
@@ -75,7 +77,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @param obj is a persistence instance from the database model.
    */
   protected void delete(Object obj) {
-    System.out.println(" linea 78");
     this.sessionFactory.getCurrentSession().delete(obj);
   }
 
@@ -84,30 +85,20 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * 
    * @param sqlQuery is a string representing an SQL query.
    */
+
+  @Transactional
   public List<Map<String, Object>> excuteStoreProcedure(String storeProcedure, String sqlQuery) {
-    System.out.println(" linea 87 excuteStoreProcedure ");
-    Session sesion = sessionFactory.openSession();
-    System.out.println(" linea 89 excuteStoreProcedure ");
-    System.out.println(" linea 90 excuteStoreProcedure " + storeProcedure);
-    Transaction transaction = sesion.beginTransaction();
-    NativeQuery<Map<String, Object>> queryProcd = sesion.createSQLQuery(storeProcedure);
-    System.out.println(" linea 92 excuteStoreProcedure ");
-    // queryProcd.setFlushMode(FlushMode.COMMIT);
-    System.out.println(" linea 95 excuteStoreProcedure ");
+    System.out.println(" linea 91 " + storeProcedure);
+    System.out.println(" linea 92 " + sqlQuery);
+    NativeQuery<Map<String, Object>> queryProcd =
+      this.sessionFactory.getCurrentSession().createSQLQuery(storeProcedure);
+    queryProcd.setFlushMode(FlushMode.COMMIT);
     queryProcd.executeUpdate();
-    NativeQuery<Map<String, Object>> query = sesion.createSQLQuery(sqlQuery);
-    System.out.println(" linea 98 excuteStoreProcedure ");
+    NativeQuery<Map<String, Object>> query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
     query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-    System.out.println(" linea 100 excuteStoreProcedure ");
-    // query.setFlushMode(FlushMode.COMMIT);
-    System.out.println(" linea 102 excuteStoreProcedure ");
+    query.setFlushMode(FlushMode.COMMIT);
 
     List<Map<String, Object>> result = query.list();
-    System.out.println(" linea 105 excuteStoreProcedure ");
-    transaction.commit();
-    System.out.println(" linea 107 excuteStoreProcedure ");
-    sesion.close();
-    System.out.println(" linea 109 excuteStoreProcedure ");
     return result;
 
   }
@@ -127,7 +118,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @param sqlQuery
    */
   public void executeUpdateQuery(String sqlQuery) {
-    System.out.println(" linea 130");
+
     NativeQuery query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
     query.setFlushMode(FlushMode.COMMIT);
     query.executeUpdate();
@@ -159,30 +150,18 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return the object populated.
    */
   public T find(Class<T> clazz, ID id) {
-    System.out.println(" linea 162");
-    Session sesion = sessionFactory.openSession();
-    Transaction transaction = sesion.beginTransaction();
-    System.out.println(" linea 165");
-    T obj = sesion.get(clazz, id);
+    T obj = sessionFactory.getCurrentSession().get(clazz, id);
 
-    // committing the transaction
-    transaction.commit(); // Transaction is committed
-
-
-    // closing the session
-    // sesion.close();
-    System.out.println(" linea 173");
     return obj;
   }
 
+
   protected List<T> findAll(Query<T> hibernateQuery) {
-    System.out.println(" linea 177");
     hibernateQuery.setHibernateFlushMode(FlushMode.COMMIT);
     @SuppressWarnings("unchecked")
     List<T> list = hibernateQuery.list();
     return list;
   }
-
 
   /**
    * This method make a query that returns a list of objects from the model.
@@ -197,11 +176,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return a list of <T> objects.
    */
   protected List<T> findAll(String hibernateQuery) {
-    System.out.println(" linea 196");
-    Session sesion = sessionFactory.openSession();
-    Transaction transaction = sesion.beginTransaction();
-    Query<T> query = sesion.createQuery(hibernateQuery);
-    transaction.commit();
+    Query<T> query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
     return this.findAll(query);
   }
 
@@ -211,36 +186,27 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @param sqlQuery is a string representing an HQL query.
    */
   public List<Map<String, Object>> findCustomQuery(String sqlQuery) {
-    System.out.println(" linea 207");
-    Session sesion = sessionFactory.openSession();
-    Transaction transaction = sesion.beginTransaction();
-    NativeQuery<Map<String, Object>> query = sesion.createSQLQuery(sqlQuery);
+
+
+    NativeQuery<Map<String, Object>> query = sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
     query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
     query.setFlushMode(FlushMode.COMMIT);
     List<Map<String, Object>> result = query.list();
-    transaction.commit();
-    System.out.println(" linea 218");
+
     return result;
 
   }
 
   protected List<T> findEveryone(Class<T> clazz) {
-    System.out.println(" linea 224");
-    Session sesion = sessionFactory.openSession();
-    Transaction transaction = sesion.beginTransaction();
-    System.out.println(" linea 227");
-    Query<T> query = sesion.createQuery("from " + clazz.getName());
-    System.out.println(" linea 229");
+    Query<T> query = sessionFactory.getCurrentSession().createQuery("from " + clazz.getName());
     query.setHibernateFlushMode(FlushMode.COMMIT);
-    System.out.println(" linea 231");
+
     @SuppressWarnings("unchecked")
     List<T> list = query.list();
-    System.out.println(" linea 234");
-    transaction.commit();
-    System.out.println(" linea 236");
     return list;
 
   }
+
 
   /**
    * Allows clients to create the HibernateQuery and set parameters on it.
@@ -250,7 +216,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return
    */
   protected T findSingleResult(Class<T> clazz, Query<T> hibernateQuery) {
-    System.out.println(" linea 251");
     hibernateQuery.setHibernateFlushMode(FlushMode.COMMIT);
     T object = clazz.cast(hibernateQuery.uniqueResult());
     return object;
@@ -265,23 +230,11 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return a Object of <T>
    */
   protected T findSingleResult(Class<T> clazz, String hibernateQuery) {
-    System.out.println(" linea 266");
     Query<T> query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
     query.setHibernateFlushMode(FlushMode.COMMIT);
     return this.findSingleResult(clazz, query);
   }
 
-
-  public Session getCurrentSession() {
-    System.out.println(" linea 274");
-    Session session = sessionFactory.getCurrentSession();
-
-    if (session == null || !session.isOpen()) {
-      session = sessionFactory.openSession();
-    }
-
-    return session;
-  }
 
   /**
    * Return the sessionFactory. DAOs are free to get this and use it to perform custom queries.
@@ -292,6 +245,20 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     return this.sessionFactory;
   }
 
+
+  // /**
+  // * Return the ID for the entity or null
+  // *
+  // * @param entity
+  // * @return
+  // */
+  // private ID getId(T entity) {
+  // ClassMetadata metadata = this.sessionFactory.getClassMetadata(entity.getClass());
+  // if (metadata.hasIdentifierProperty()) {
+  // return (ID) metadata.getIdentifier(entity, (SessionImplementor) this.sessionFactory.getCurrentSession());
+  // }
+  // return null;
+  // }
 
   /**
    * Get the user id that is in the temporally table (permissions)
@@ -311,31 +278,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
       return idT;
     }
     return idT;
-  }
-
-
-  // /**
-  // * Return the ID for the entity or null
-  // *
-  // * @param entity
-  // * @return
-  // */
-  // private ID getId(T entity) {
-  // ClassMetadata metadata = this.sessionFactory.getClassMetadata(entity.getClass());
-  // if (metadata.hasIdentifierProperty()) {
-  // return (ID) metadata.getIdentifier(entity, (SessionImplementor) this.sessionFactory.getCurrentSession());
-  // }
-  // return null;
-  // }
-
-  public Session openSessionIfNeeded() {
-    Session currentSession = sessionFactory.getCurrentSession();
-
-    if (currentSession == null || !currentSession.getTransaction().isActive()) {
-      return sessionFactory.openSession();
-    }
-
-    return currentSession;
   }
 
   /**
@@ -360,7 +302,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
   protected T saveEntity(T entity) {
-    System.out.println(" linea 335");
     sessionFactory.getCurrentSession().persist(entity);
     return entity;
   }
@@ -373,7 +314,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
   protected T saveEntity(T entity, String actionName, List<String> relationsName) {
-    System.out.println(" linea 348");
     this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName);
     sessionFactory.getCurrentSession().persist(entity);
     return entity;
@@ -387,7 +327,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
   protected T saveEntity(T entity, String actionName, List<String> relationsName, Phase phase) {
-    System.out.println(" linea 354");
     this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName, phase);
     sessionFactory.getCurrentSession().persist(entity);
     return entity;
@@ -400,7 +339,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
   protected T update(T entity) {
-    System.out.println(" linea 367");
     entity = (T) sessionFactory.getCurrentSession().merge(entity);
     return entity;
   }
@@ -413,7 +351,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
   protected T update(T entity, String actionName, List<String> relationsName) {
-    System.out.println(" linea 380");
     this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName);
     entity = (T) sessionFactory.getCurrentSession().merge(entity);
     return entity;
@@ -427,7 +364,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
   protected T update(T entity, String actionName, List<String> relationsName, Phase phase) {
-    System.out.println(" linea 394");
     this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName, phase);
     entity = (T) sessionFactory.getCurrentSession().merge(entity);
     return entity;
