@@ -1,4 +1,4 @@
-var $statuses, $statusDescription;
+var $statuses, $statusDescription, $detoneChange;
 
 $(document).ready(init);
 function hideOrShowCheckBoxIsOtherUrl(value) {
@@ -58,6 +58,7 @@ function init() {
   $statuses = $('select.status');
   isDeliverableNew = $statuses.classParam('isNew') == "true";
   $statusDescription = $('#statusDescription');
+  $detoneChange = false;
 
   // Take out the 0 - Not Targeted Dimension
   $('.crossCuttingDimensionsSelect option[value=0]').remove();
@@ -72,26 +73,30 @@ function init() {
 
   $prevValueSelectStatus = $statuses.val();
 
-  $statuses.on("click", function () {
-
+  $statuses.closest(".selectList").on("click", function () {
+    $detoneChange = true;
     $prevValueSelectStatus = $statuses.val();
 
-  }).on("change", function () {
-
-    if(isStatusCancelled($statuses.val()) || isStatusExtended($statuses.val())) {
-      validatePermissionsToChangeStatus()
-      .then(function(canChangeStatus) {
-        displayModalForAdmin(canChangeStatus, hasRelatedInformationTrainnesCluster(), $prevValueSelectStatus).then(function() {
-          validateVisualJustifAndCompnsByStatusAndYear($statuses.val());
+  })
+  
+  $statuses.on("change", function () {
+    if($detoneChange){
+      if(isStatusCancelled($statuses.val()) || isStatusExtended($statuses.val())) {
+        validatePermissionsToChangeStatus()
+        .then(function(canChangeStatus) {
+          displayModalForAdmin(canChangeStatus, hasRelatedInformationTrainnesCluster(), $prevValueSelectStatus).then(function() {
+            validateVisualJustifAndCompnsByStatusAndYear($statuses.val());
+            $detoneChange = false;
+          });
+        })
+        .catch(function(error) {
+          console.error('Error checking permissions:', error);
         });
-      })
-      .catch(function(error) {
-        console.error('Error checking permissions:', error);
-      });
-    } else {
-      validateVisualJustifAndCompnsByStatusAndYear(this.value);
+      } else {
+        validateVisualJustifAndCompnsByStatusAndYear(this.value);
+        $detoneChange = false;
+      }
     }
-
 
 
   });
