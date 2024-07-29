@@ -38,6 +38,12 @@ function addEvents() {
   if(userCanLeaveComments = $('#userCanLeaveComments').html() == 'false'){
     $('[has-role-authorization="true"]').hide();
   }
+
+  $(window).on('message', function (e) {
+    console.log('message received');
+    $("#iframe-dashboardEmbed").height(e.originalEvent.data.currentHeight);
+    $(".loaded").height("auto")
+  });
   
 }
 
@@ -72,7 +78,8 @@ function executePetition(idReport, urlReport) {
   var inputsContainer = idReport + '-contentOptions';
 
   pbiwidget.init(inputsContainer, {
-     reportName: url
+     reportName: url,
+     autoSize: true,
    });
 
    setReportTitle();
