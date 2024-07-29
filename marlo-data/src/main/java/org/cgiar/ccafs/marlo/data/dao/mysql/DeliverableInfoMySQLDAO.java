@@ -137,6 +137,7 @@ public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, L
     query.append("WHERE d.is_active = 1 AND ");
     query.append("d.`project_id` =" + project.getId() + " AND ");
     query.append("di.is_active = 1 AND ");
+    query.append("di.is_active = d.is_active AND ");
     query.append("di.`id_phase` =" + phase.getId());
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
@@ -165,6 +166,7 @@ public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, L
       " LEFT JOIN project_deliverable_shared AS pds ON pds.deliverable_id = di.deliverable_id AND pds.is_active = 1 AND pds.project_id = "
         + project.getId());
     query.append(" WHERE di.is_active = 1 AND di.id_phase = " + phase.getId());
+    query.append(" AND di.is_active = d.is_active ");
     query.append(" AND (d.id IS NOT NULL OR pds.id IS NOT NULL)");
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
