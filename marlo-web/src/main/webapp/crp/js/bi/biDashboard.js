@@ -40,8 +40,7 @@ function addEvents() {
   }
 
   $(window).on('message', function (e) {
-    console.log('message received');
-    $("#iframe-dashboardEmbed").height(e.originalEvent.data.currentHeight);
+    $(".loaded iframe").height(e.originalEvent.data.currentHeight);
     $(".loaded").height("auto")
   });
   
@@ -65,7 +64,6 @@ function fullScreenDashboard() {
     // report.updateSettings(newSettings)
     .then(function () {
       report.fullscreen();
-      console.log("full Screen Dashboard.");
     })
     .catch(function (error) {
       console.log(errors);

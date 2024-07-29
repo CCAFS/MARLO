@@ -1,9 +1,9 @@
 [#ftl]
 [#assign title = "MARLO BI" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20230824" ] /]
+[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20240727" ] /]
 [#assign customCSS = [
-  "${baseUrl}/crp/css/bi/biDashboard.css?20230627a"
+  "${baseUrl}/crp/css/bi/biDashboard.css?20240729"
   ] 
 /]
 [#assign currentSection = "bi" /] 
