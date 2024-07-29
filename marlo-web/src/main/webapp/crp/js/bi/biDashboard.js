@@ -40,7 +40,9 @@ function addEvents() {
   }
 
   $(window).on('message', function (e) {
-    $(".loaded iframe").height(e.originalEvent.data.currentHeight);
+    var currentVisible = $(".loaded iframe").filter((i, el) => $(el).closest('.loaded').css('display') !== 'none');
+    console.log(e.originalEvent.data);
+    currentVisible.height(e.originalEvent.data.currentHeight);
     $(".loaded").height("auto")
   });
   
