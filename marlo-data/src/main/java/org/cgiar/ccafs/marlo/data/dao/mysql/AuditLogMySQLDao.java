@@ -199,7 +199,7 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
     try {
 
 
-      if (!super.isTableInGoodCondition("auditlog")) {
+      if (!super.doesTableExist("auditlog")) {
         System.out.println("The table is not  in good condition");
         return null;
       }

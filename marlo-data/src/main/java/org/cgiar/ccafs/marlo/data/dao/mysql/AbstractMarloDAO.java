@@ -85,18 +85,17 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * 
    * @return validation result
    */
-  private boolean doesTableExist(String tableName) {
+  public boolean doesTableExist(String tableName) {
     boolean exists = false;
     String sql = "";
 
-    sql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_name = :tableName";
+    sql = "SELECT 1 FROM information_schema.tables WHERE table_name = :tableName LIMIT 1";
 
     try {
-      NativeQuery<Long> query = this.sessionFactory.getCurrentSession().createSQLQuery(sql);
+      NativeQuery<?> query = this.sessionFactory.getCurrentSession().createSQLQuery(sql);
       query.setParameter("tableName", tableName);
-      Long count = ((Number) query.uniqueResult()).longValue();
-
-      exists = count > 0;
+      Object result = query.uniqueResult();
+      exists = result != null;
     } catch (Exception e) {
       e.printStackTrace();
     }
