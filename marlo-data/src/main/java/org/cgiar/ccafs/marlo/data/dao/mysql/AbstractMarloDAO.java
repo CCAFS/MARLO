@@ -123,7 +123,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
       List<Map<String, Object>> result = query.list();
       return result;
     } catch (Exception e) {
-      System.out.println(" error " + e.getMessage());
+      LOG.error(" error " + e.getMessage());
       return null;
     }
 
@@ -296,6 +296,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     long idT = -1;
 
     if (!this.doesTableExist("user_permission")) {
+      LOG.info(" the table user_permission does not exist yet");
       return idT;
     }
 
@@ -313,6 +314,44 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   }
 
   /**
+   * Validates if the table presents an error in its integrity
+   * 
+   * @return validation result
+   */
+  public boolean isTableInGoodCondition(String tableName) {
+    String sql = "CHECK TABLE " + tableName;
+
+    try {
+      NativeQuery<?> query = this.sessionFactory.getCurrentSession().createSQLQuery(sql);
+      List<Object[]> results = (List<Object[]>) query.list();
+
+      for (Object[] row : results) {
+        String table = (String) row[0];
+        String operation = (String) row[1];
+        String messageType = (String) row[2];
+        String messageText = (String) row[3];
+
+        LOG.info("Table: " + table);
+        LOG.info("Operation: " + operation);
+        LOG.info("Message Type: " + messageType);
+        LOG.info("Message Text: " + messageText);
+
+        if ("status".equals(messageType) && "OK".equals(messageText)) {
+          return true;
+        } else if ("error".equals(messageType)) {
+          LOG.error("Error with table: " + messageText);
+          return false;
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
+
+  /**
    * This method return a object result from the function.
    * 
    * @param result is a List<Map<String, Object>> representing the result the function
@@ -325,7 +364,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     }
     return null;
   }
-
 
   /**
    * This method saves or update a record into the database.
@@ -388,6 +426,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     return entity;
   }
 
+
   /**
    * This method saves or update a record into the database.
    * 
@@ -400,6 +439,5 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     entity = (T) sessionFactory.getCurrentSession().merge(entity);
     return entity;
   }
-
 
 }

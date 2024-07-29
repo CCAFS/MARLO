@@ -196,19 +196,31 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
 
   @Override
   public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName, Long phaseId) {
+    try {
 
-    List<Auditlog> auditLogs = super.findAll("from " + Auditlog.class.getName() + " where ENTITY_NAME='class "
-      + classAudit.getName() + "' and ENTITY_ID=" + id + " and main=1 and id_phase=" + phaseId
-      + " and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc ");
-    // " and principal=1 order by CREATED_DATE desc LIMIT 10");
-    for (Auditlog auditlog : auditLogs) {
-      auditlog.setUser(userDao.getUser(auditlog.getUserId()));
-    }
 
-    if (auditLogs.size() > 11) {
-      return auditLogs.subList(0, 11);
+      if (!super.isTableInGoodCondition("auditlog")) {
+        System.out.println("The table is not  in good condition");
+        return null;
+      }
+
+
+      List<Auditlog> auditLogs = super.findAll("from " + Auditlog.class.getName() + " where ENTITY_NAME='class "
+        + classAudit.getName() + "' and ENTITY_ID=" + id + " and main=1 and id_phase=" + phaseId
+        + " and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc ");
+      // " and principal=1 order by CREATED_DATE desc LIMIT 10");
+      for (Auditlog auditlog : auditLogs) {
+        auditlog.setUser(userDao.getUser(auditlog.getUserId()));
+      }
+
+      if (auditLogs.size() > 11) {
+        return auditLogs.subList(0, 11);
+      }
+      return auditLogs;
+    } catch (Exception e) {
+      System.out.println("Error in listLogs function " + e.getMessage());
+      return null;
     }
-    return auditLogs;
 
   }
 
