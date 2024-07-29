@@ -41,8 +41,7 @@ function addEvents() {
 
   $(window).on('message', function (e) {
     var currentVisible = $(".loaded iframe").filter((i, el) => $(el).closest('.loaded').css('display') !== 'none');
-    console.log(e.originalEvent.data);
-    currentVisible.height(e.originalEvent.data.currentHeight);
+    currentVisible.height(e.originalEvent.data.currentHeight+40);
     $(".loaded").height("auto")
   });
   
