@@ -81,6 +81,30 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   }
 
   /**
+   * Validate the existence of a given table
+   * 
+   * @return validation result
+   */
+  private boolean doesTableExist(String tableName) {
+    boolean exists = false;
+    String sql = "";
+
+    sql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_name = :tableName";
+
+    try {
+      NativeQuery<Long> query = this.sessionFactory.getCurrentSession().createSQLQuery(sql);
+      query.setParameter("tableName", tableName);
+      Long count = ((Number) query.uniqueResult()).longValue();
+
+      exists = count > 0;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return exists;
+  }
+
+  /**
    * This method make a query that returns a not mapped object result from the model.
    * 
    * @param sqlQuery is a string representing an SQL query.
@@ -88,18 +112,20 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
   @Transactional
   public List<Map<String, Object>> excuteStoreProcedure(String storeProcedure, String sqlQuery) {
-    System.out.println(" linea 91 " + storeProcedure);
-    System.out.println(" linea 92 " + sqlQuery);
-    NativeQuery<Map<String, Object>> queryProcd =
-      this.sessionFactory.getCurrentSession().createSQLQuery(storeProcedure);
-    queryProcd.setFlushMode(FlushMode.COMMIT);
-    queryProcd.executeUpdate();
-    NativeQuery<Map<String, Object>> query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
-    query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-    query.setFlushMode(FlushMode.COMMIT);
-
-    List<Map<String, Object>> result = query.list();
-    return result;
+    try {
+      NativeQuery<Map<String, Object>> queryProcd =
+        this.sessionFactory.getCurrentSession().createSQLQuery(storeProcedure);
+      queryProcd.setFlushMode(FlushMode.COMMIT);
+      queryProcd.executeUpdate();
+      NativeQuery<Map<String, Object>> query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
+      query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+      query.setFlushMode(FlushMode.COMMIT);
+      List<Map<String, Object>> result = query.list();
+      return result;
+    } catch (Exception e) {
+      System.out.println(" error " + e.getMessage());
+      return null;
+    }
 
   }
 
@@ -110,18 +136,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    */
   public Object executeFunction(String function) {
     return this.resultFunction(this.findCustomQuery(function));
-  }
-
-  /**
-   * Pass String based hibernate query.
-   * 
-   * @param sqlQuery
-   */
-  public void executeUpdateQuery(String sqlQuery) {
-
-    NativeQuery query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
-    query.setFlushMode(FlushMode.COMMIT);
-    query.executeUpdate();
   }
 
 
@@ -143,18 +157,31 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
 
   /**
+   * Pass String based hibernate query.
+   * 
+   * @param sqlQuery
+   */
+  public void executeUpdateQuery(String sqlQuery) {
+
+    NativeQuery query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
+    query.setFlushMode(FlushMode.COMMIT);
+    query.executeUpdate();
+  }
+
+
+  /**
    * This method finds a specific record from the database and transform it to a database model object.
    * 
    * @param clazz represents the class of the database model object.
    * @param id is the record identifier.
    * @return the object populated.
    */
+  @Transactional
   public T find(Class<T> clazz, ID id) {
     T obj = sessionFactory.getCurrentSession().get(clazz, id);
 
     return obj;
   }
-
 
   protected List<T> findAll(Query<T> hibernateQuery) {
     hibernateQuery.setHibernateFlushMode(FlushMode.COMMIT);
@@ -185,8 +212,8 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * 
    * @param sqlQuery is a string representing an HQL query.
    */
-  public List<Map<String, Object>> findCustomQuery(String sqlQuery) {
 
+  public List<Map<String, Object>> findCustomQuery(String sqlQuery) {
 
     NativeQuery<Map<String, Object>> query = sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
     query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -197,6 +224,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
   }
 
+
   protected List<T> findEveryone(Class<T> clazz) {
     Query<T> query = sessionFactory.getCurrentSession().createQuery("from " + clazz.getName());
     query.setHibernateFlushMode(FlushMode.COMMIT);
@@ -206,7 +234,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     return list;
 
   }
-
 
   /**
    * Allows clients to create the HibernateQuery and set parameters on it.
@@ -221,6 +248,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     return object;
   }
 
+
   /**
    * This method make a query that returns a single object result from the model.
    * This method was implemented in a generic way, so, the object to be returned will depend on how the method
@@ -233,16 +261,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     Query<T> query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
     query.setHibernateFlushMode(FlushMode.COMMIT);
     return this.findSingleResult(clazz, query);
-  }
-
-
-  /**
-   * Return the sessionFactory. DAOs are free to get this and use it to perform custom queries.
-   * 
-   * @return
-   */
-  SessionFactory getSessionFactory() {
-    return this.sessionFactory;
   }
 
 
@@ -261,12 +279,26 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   // }
 
   /**
+   * Return the sessionFactory. DAOs are free to get this and use it to perform custom queries.
+   * 
+   * @return
+   */
+  SessionFactory getSessionFactory() {
+    return this.sessionFactory;
+  }
+
+  /**
    * Get the user id that is in the temporally table (permissions)
    * 
    * @return the user id
    */
   public long getTemTableUserId() {
     long idT = -1;
+
+    if (!this.doesTableExist("user_permission")) {
+      return idT;
+    }
+
     StringBuilder builder = new StringBuilder();
     builder.append("select DISTINCT id as idT from user_permission");
     try {
