@@ -39,7 +39,11 @@ function addEvents() {
     $('[has-role-authorization="true"]').hide();
   }
 
-    changeHeightInnerIframe();
+  $(window).on('message', function (e) {
+    console.log('message received');
+    $("#iframe-dashboardEmbed").height(e.originalEvent.data.currentHeight);
+    $(".loaded").height("auto")
+  });
   
 }
 
@@ -74,7 +78,8 @@ function executePetition(idReport, urlReport) {
   var inputsContainer = idReport + '-contentOptions';
 
   pbiwidget.init(inputsContainer, {
-     reportName: url
+     reportName: url,
+     autoSize: true,
    });
 
    setReportTitle();
@@ -98,51 +103,4 @@ function selectBIReport(e) {
   setReportTitle();
   // reportsMenuToggle();
   $content.fadeIn();
-}
-
-function changeHeightInnerIframe(){
-  let iframeOuter = $("#iframe-dashboardEmbed");
-  console.log(iframeOuter);
-  let documentIframeOuter = iframeOuter.contents();
-  console.log(documentIframeOuter);
-  let iframeInner = documentIframeOuter.find("iframe");
-  console.log(iframeInner);
-  let documentIframeInner = iframeInner.contents();
-  console.log(documentIframeInner);
-
-  documentIframeInner.on("click", function(){
-    console.log("click");
-    let explorationElement = documentIframeInner.find("exploration");
-    let ariaLabel = explorationElement.attr("aria-label");
-  
-    let parentIframeOuter = iframeOuter.parent();
-
-    console.log(ariaLabel);
-    console.log(parentIframeOuter);
-  
-    switch(ariaLabel){
-      case "Indicators":
-        parentIframeOuter.css("height", "1250px !important");
-        break;
-      case "Cluster Indicators":
-        parentIframeOuter.css("height", "1300px !important");
-        break;
-      case "ClusterResults":
-        parentIframeOuter.css("height", "2500px !important");
-        break;
-      case "Deliverables":
-        parentIframeOuter.css("height", "2150px !important");
-        break;
-      case "OICRs":
-        parentIframeOuter.css("height", "2100px !important");
-        break;
-      case "Innovations":
-        parentIframeOuter.css("height", "1450px !important");
-        break;
-      default:
-        parentIframeOuter.css("height", "1250px !important");
-        break;
-  
-    }
-  });
 }
