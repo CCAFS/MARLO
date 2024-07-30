@@ -131,7 +131,7 @@
 
       
       <div class="text-modal-evidences">
-        <p>It is not possible to remove the shared cluster from the list, this cluster has already been submitted and has trainees related.</p>
+        <p>It is not possible to remove the shared cluster from the list, this cluster has already been submitted or/and has trainees related.</p>
         <br>
         <p>We suggest the following actions so you can save the information correctly:</p>
         <ul>

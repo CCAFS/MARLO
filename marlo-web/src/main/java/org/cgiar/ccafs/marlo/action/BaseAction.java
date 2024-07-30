@@ -1378,6 +1378,40 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
     }
+
+    if (projectID != null && response) {
+      try {
+        List<ProjectPartner> projectPartners = projectPartnerManager
+          .getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(projectID, this.getActualPhase().getId());
+        List<ProjectPartnerPerson> projectParnerPersons = new ArrayList<>();
+        if (projectPartners != null) {
+          for (ProjectPartner projectPartner : projectPartners) {
+            if (projectPartner != null && projectPartner.getId() != null) {
+              projectParnerPersons = projectPartnerPersonManager.findAllActiveForProjectPartner(projectPartner.getId());
+              if (projectParnerPersons != null) {
+                projectParnerPersons = projectParnerPersons.stream()
+                  .filter(pp -> pp != null && pp.getUser() != null && pp.getUser().getId() != null
+                    && this.getCurrentUser() != null && pp.getUser().getId().equals(this.getCurrentUser().getId()))
+                  .collect(Collectors.toList());
+
+                if (projectParnerPersons != null) {
+                  for (ProjectPartnerPerson projectParnerPerson : projectParnerPersons) {
+                    if (projectParnerPerson != null && projectParnerPerson.getContactType() != null
+                      && (projectParnerPerson.getContactType().equals("PL")
+                        && projectParnerPerson.getContactType().equals("PC"))) {
+                      // TODO: verify this code
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (Exception e) {
+        LOG.error("Error getting project partners ", e);
+      }
+    }
+
     return response;
   }
 
@@ -1427,7 +1461,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                     if (projectParnerPerson != null && projectParnerPerson.getContactType() != null
                       && (projectParnerPerson.getContactType().equals("PL")
                         && projectParnerPerson.getContactType().equals("PC"))) {
-
+                      // TODO: verify this code
                     }
                   }
                 }
@@ -1487,7 +1521,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return response;
   }
-
 
   /**
    ************************ CENTER METHOD ********************* return true
@@ -1613,6 +1646,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
   /**
    * ***********************CENTER METHOD******************** Check if the
@@ -3506,7 +3540,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public List<String> getDeliverableTypesByRule(String rule) {
     List<String> rules = new ArrayList<>();
     List<DeliverableTypeRule> deliverableTypeRules =
@@ -3517,6 +3550,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return rules;
   }
+
 
   public List<HistoryDifference> getDifferences() {
     return this.differences;
@@ -3876,7 +3910,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return deliverableDTOs;
   }
 
-
   public List<ProjectExpectedStudy> getexpectedCrpOutcomes(Long id) {
     List<ProjectExpectedStudy> expectedStudies = new ArrayList<>();
     ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
@@ -3936,6 +3969,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return expectedStudies;
   }
+
 
   public List<Integer> getExpectedStudiesYears(Long expectedStudy) {
     List<Integer> allYears = new ArrayList<>();
@@ -7201,7 +7235,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.dataSaved;
   }
 
-
   /**
    * This method get the status of an specific deliverable depending of the
    * sectionStatuses and the year Previous deliverable will be marked as
@@ -7238,6 +7271,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
   /**
    * This method get the status of an specific deliverable depending of the
@@ -7295,7 +7329,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public Boolean isDeliverableNew(Long deliverableID) {
     if (deliverableID != null) {
       Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
@@ -7345,6 +7378,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isDraft() {
     return this.draft;
   }
+
 
   public boolean isEditable() {
     return this.isEditable;
@@ -7835,6 +7869,67 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return true;
     }
     return false;
+  }
+
+  /**
+   * validate if an user is cluster leader
+   * 
+   * @param projectID
+   * @return true if the current user rol is PL in this cluster
+   */
+  public boolean isProjectLeader(Long projectID) {
+    boolean response = false;
+
+
+    List<Role> roles = new ArrayList<>();
+    roles = this.getRolesList();
+    if (roles != null && !roles.isEmpty()) {
+      for (Role role : roles) {
+        if (role != null && role.getAcronym() != null) {
+          // FPL & FPM roles can comment
+
+          if (role.getAcronym().equals("PL")) {
+            response = true;
+          }
+        }
+      }
+    }
+
+    if (projectID != null && response) {
+      try {
+        List<ProjectPartner> projectPartners = projectPartnerManager
+          .getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(projectID, this.getActualPhase().getId());
+        List<ProjectPartnerPerson> projectParnerPersons = new ArrayList<>();
+        if (projectPartners != null) {
+          for (ProjectPartner projectPartner : projectPartners) {
+            if (projectPartner != null && projectPartner.getId() != null) {
+              projectParnerPersons = projectPartnerPersonManager.findAllActiveForProjectPartner(projectPartner.getId());
+              if (projectParnerPersons != null) {
+                projectParnerPersons = projectParnerPersons.stream()
+                  .filter(pp -> pp != null && pp.getUser() != null && pp.getUser().getId() != null
+                    && this.getCurrentUser() != null && pp.getUser().getId().equals(this.getCurrentUser().getId()))
+                  .collect(Collectors.toList());
+
+                if (projectParnerPersons != null) {
+                  for (ProjectPartnerPerson projectParnerPerson : projectParnerPersons) {
+                    if (projectParnerPerson != null && projectParnerPerson.getContactType() != null
+                      && (projectParnerPerson.getContactType().equals("PL"))) {
+                      response = true;
+                    } else {
+                      response = false;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (Exception e) {
+        LOG.error("Error getting project partners ", e);
+      }
+    }
+
+    return response;
   }
 
   public Boolean isProjectNew(long projectID) {
