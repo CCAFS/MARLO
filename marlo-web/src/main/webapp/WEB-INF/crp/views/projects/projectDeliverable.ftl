@@ -136,7 +136,7 @@
         <p>We suggest the following actions so you can save the information correctly:</p>
         <ul>
           <li>Distribute the remaining values across the shared cluster list</li>
-          <li>Contact the cluster leader to unsubmitt the cluster and update the information.</li>
+          <li>Contact the cluster leader to unsubmit the cluster and update the information.</li>
         </ul>       
       </div>                
       <div class="container-buttons-evidences"> 

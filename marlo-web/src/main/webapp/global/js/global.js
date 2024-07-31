@@ -254,12 +254,13 @@ $(document).ready(function () {
 
         if (sumRemaining < 0) {
           message += "The Information was correctly saved. <br> ";
-          message += "It seems that the <b>Remaining shared information</b> is inconsistence (value must be zero). We suggest to correct the information to avoid inconsistences in the system. ";
+          message += "It seems that the information for the <b>Remaining participants/trainees information</b> is inconsistence (value must be zero). We suggest to correct the information to avoid inconsistences in the system. ";
           message += "You could also contact the cluster(s) leader to verificate the information. ";
         } else {
           // $clusterSubmitted does not exist, do something else
           message += "The Information was correctly saved. <br> ";
-          message += "It seems that the <b>Remaining shared information</b> is incompleted please take a look.";
+          message += "It seems that the information for the <b>Remaining participants/trainees information</b> is incompleted. We suggest to fill the information to avoid inconsistences in the system.";
+          message += "You could also contact the cluster(s) leader to verificate the information. ";
         }
 
         notifyErrorMessage(messageType, message);
