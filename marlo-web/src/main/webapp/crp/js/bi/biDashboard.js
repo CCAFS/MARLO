@@ -38,6 +38,12 @@ function addEvents() {
   if(userCanLeaveComments = $('#userCanLeaveComments').html() == 'false'){
     $('[has-role-authorization="true"]').hide();
   }
+
+  $(window).on('message', function (e) {
+    var currentVisible = $(".loaded iframe").filter((i, el) => $(el).closest('.loaded').css('display') !== 'none');
+    currentVisible.height(e.originalEvent.data.currentHeight+40);
+    $(".loaded").height("auto")
+  });
   
 }
 
@@ -59,7 +65,6 @@ function fullScreenDashboard() {
     // report.updateSettings(newSettings)
     .then(function () {
       report.fullscreen();
-      console.log("full Screen Dashboard.");
     })
     .catch(function (error) {
       console.log(errors);
@@ -72,7 +77,8 @@ function executePetition(idReport, urlReport) {
   var inputsContainer = idReport + '-contentOptions';
 
   pbiwidget.init(inputsContainer, {
-     reportName: url
+     reportName: url,
+     autoSize: true,
    });
 
    setReportTitle();
