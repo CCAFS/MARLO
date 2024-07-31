@@ -5,7 +5,7 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20240723",
   "${baseUrlMedia}/js/projects/deliverables/deliverableShfrm.js?20240711",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20240723",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20240729",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20240313",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
@@ -13,7 +13,7 @@
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
 ] /]
 [#assign customCSS = [
-  "${baseUrl}/crp/css/projects/projectDeliverable.css?20230529",
+  "${baseUrl}/crp/css/projects/projectDeliverable.css?20240729",
   "${baseUrlCdn}/global/css/404.css?20240523"
   ] /]
 [#assign currentSection = "projects" /]
@@ -136,7 +136,7 @@
         <p>We suggest the following actions so you can save the information correctly:</p>
         <ul>
           <li>Distribute the remaining values across the shared cluster list</li>
-          <li>Contact the cluster leader to unsubmitt the cluster and update the information.</li>
+          <li>Contact the cluster leader to unsubmit the cluster and update the information.</li>
         </ul>       
       </div>                
       <div class="container-buttons-evidences"> 
