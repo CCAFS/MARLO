@@ -21,6 +21,7 @@ var app = new Vue({
 
 function init() {
   $('.loading-WOS-container').hide("slow");
+  $('.disseminationChannel').select2();
   updateReadOnly();
   $('.disseminationChannel').change(updateReadOnly)
   $('#handle-bridge').change(function () {
@@ -832,8 +833,12 @@ function updateReadOnly() {
     if ($('.deliverableDisseminationUrl ').prop('readonly')) {
       getWOSInfo();
     }
-/*     $('select[name="deliverable.dissemination.disseminationChannel"]').prop("disabled",true);
-    $('select').select2(); */
+
+    // Prevent the select from being changed and set the value to the last selected
+    $('.disseminationChannel').attr("readonly", true);
+
+
+
   //if not
   } else {
 
@@ -871,8 +876,11 @@ function updateReadOnly() {
         hideOrShowCheckBoxIsOtherUrl(true);
       }
     }
-/*     $('select[name="deliverable.dissemination.disseminationChannel"]').prop("disabled",false);
-    $('select').select2(); */
+
+    // Allow the select to be changed and set the value to the last selected
+    $('.disseminationChannel').attr("readonly", false);
+
+
 
   }
 
