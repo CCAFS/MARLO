@@ -31,16 +31,12 @@ import org.hibernate.query.Query;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian David García O. - CIAT/CCAFS
  * @author Héctor F. Tobón R. - CIAT/CCAFS
  * @author Hermes Jimenez - CIAT/CCAFS
  */
-@Repository
-@Transactional
 public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
   private static final Logger LOG = LoggerFactory.getLogger(AbstractMarloDAO.class);
@@ -109,7 +105,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @param sqlQuery is a string representing an SQL query.
    */
 
-  @Transactional
   public List<Map<String, Object>> excuteStoreProcedure(String storeProcedure, String sqlQuery) {
     try {
       NativeQuery<Map<String, Object>> queryProcd =
@@ -175,7 +170,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @param id is the record identifier.
    * @return the object populated.
    */
-  @Transactional
   public T find(Class<T> clazz, ID id) {
     T obj = sessionFactory.getCurrentSession().get(clazz, id);
 
