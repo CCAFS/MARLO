@@ -342,6 +342,13 @@ public class DeliverableManagerImpl implements DeliverableManager {
     return deliverableDAO.getDuplicatesDeliverablesByPhase(phase);
   }
 
+
+  @Override
+  public List<String> getDuplicatesDeliverablesByPhaseWithDissemination(long phase, String DOI, String handle,
+    String disseminationURL) {
+    return deliverableDAO.getDuplicatesDeliverablesByPhaseWithDissemination(phase, DOI, handle, disseminationURL);
+  }
+
   /**
    * Method to fill the list of deliverables (only publications or only Grey literature, depending on the
    * getPublications parameter), selected by flagships.

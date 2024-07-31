@@ -634,6 +634,54 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
   }
 
   @Override
+  public List<String> getDuplicatesDeliverablesByPhaseWithDissemination(long phase, String DOI, String handle,
+    String disseminationURL) {
+    StringBuilder query = new StringBuilder();
+    query.append("select id, dissemination_URL from ( SELECT DISTINCT  ");
+    query.append("d.id as id,");
+    query.append("dv.dissemination_URL as dissemination_URL ");
+    query.append("FROM ");
+    query.append("deliverables AS d ");
+    query.append("INNER JOIN deliverable_dissemination AS dv ON d.id = dv.deliverable_id ");
+    query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");
+    query.append(" WHERE di.is_active =1 ");
+    query.append(" and d.is_active = di.is_active ");
+    query.append(" and di.id_phase=" + phase);
+    query.append(" and dv.dissemination_URL is not null");
+    query.append(" and length(dissemination_URL)>0");
+    query.append(" UNION ");
+    query.append("SELECT DISTINCT  ");
+    query.append("d.id as id,");
+    query.append("dme.element_value as dissemination_URL ");
+    query.append("FROM ");
+    query.append("deliverables AS d ");
+    query.append("INNER JOIN deliverable_metadata_elements AS dme ON d.id = dme.deliverable_id ");
+    query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");
+    query.append(" where dme.element_id in(35,36) ");
+    query.append(" and di.is_active =1 ");
+    query.append(" and d.is_active = di.is_active ");
+    query.append(" and di.id_phase=" + phase);
+    query.append(" and element_value is not null");
+    query.append(" and length(element_value)>0 )t ");
+    query.append(" where ( dissemination_URL ='" + DOI + "'");
+    query.append(" or dissemination_URL ='" + handle + "'");
+    query.append(" or dissemination_URL ='" + disseminationURL + "')");
+
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<String> deliverables = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        String tmp = map.get("id").toString() + "|" + map.get("dissemination_URL").toString();
+        deliverables.add(tmp);
+      }
+    }
+
+    return deliverables;
+  }
+
+  @Override
   public List<Deliverable> getPublicationsByPhase(long phase) {
     StringBuilder query = new StringBuilder();
     query.append("SELECT DISTINCT  ");

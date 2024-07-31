@@ -158,7 +158,28 @@ public interface DeliverableManager {
   public List<Deliverable> getDeliverablesList(LiaisonInstitution liaisonInstitution, Phase phase);
 
 
+  /**
+   * Get listing to validate duplicate information (dissemination_URL,DIO, handle)
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @return deliverable list with the data to validate duplicates (dissemination_URL,DIO, handle)
+   */
   List<String> getDuplicatesDeliverablesByPhase(long phase);
+
+
+  /**
+   * Get listing to validate duplicate information (dissemination_URL,DIO, handle)
+   * 
+   * @author IBD
+   * @param phase phase of the project
+   * @param DOI DOI
+   * @param handle
+   * @param disseminationURL url of dissemination
+   * @return deliverable list with the data to validate duplicates (dissemination_URL,DIO, handle)
+   */
+  List<String> getDuplicatesDeliverablesByPhaseWithDissemination(long phase, String DOI, String handle,
+    String disseminationURL);
 
 
   public List<Deliverable> getNotPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
