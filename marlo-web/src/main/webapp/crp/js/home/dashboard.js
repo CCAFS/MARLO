@@ -8,7 +8,7 @@ let chargeOver = false;
 let timeOut = setTimeout(() => {
   getIntersectedActivities();
   chargeOver = true; 
-}, 5000);
+}, 7000);
 
 /**
  * The zoom level of the timeline.
@@ -59,6 +59,8 @@ function initDashboard() {
     clearTimeout(timeOut);
     getIntersectedActivities();
   }
+
+  getIntersectedActivities();
 }
 
 function itemMapHover() {
@@ -571,7 +573,7 @@ function createDivActivities(activity, weeks, id) {
 }
 
 const validatorActiveViewMore = (width) => {
-  if(timelineZoom >= 2){
+  if(timelineZoom <= 2){
     if(width === 1/7){
       return true;
     } else{
