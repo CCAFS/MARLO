@@ -668,7 +668,7 @@
 					<linkXref>true</linkXref>
 					<sourceEncoding>utf-8</sourceEncoding>
 					<minimumTokens>100</minimumTokens>
-					<targetJdk>1.8</targetJdk>
+					<targetJdk>11</targetJdk>
 					<excludeRoots>
 						<excludeRoot>target/generated-sources/annotations</excludeRoot>
 					</excludeRoots>
@@ -694,8 +694,8 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.5.1</version>
 					<configuration>
-						<source>1.8</source>
-						<target>1.8</target>
+						<source>11</source>
+						<target>11</target>
 						<debug>true</debug>
 						<annotationProcessorPaths>
 							<path>
