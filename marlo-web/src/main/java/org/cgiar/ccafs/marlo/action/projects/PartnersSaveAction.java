@@ -555,7 +555,8 @@ public class PartnersSaveAction extends BaseAction {
 
       HttpPost httpPost = new HttpPost(config.getClarisaAPIHost() + "/api/partner-requests/create");
 
-      httpPost.setEntity(new StringEntity(jsonObject.toString()));
+      // 2024/08/01 cgamboa Format is added to the request made
+      httpPost.setEntity(new StringEntity(jsonObject.toString(), "UTF-8"));
 
       httpPost.setHeader("Accept", "application/json");
       httpPost.setHeader("Content-Type", "application/json");
