@@ -542,7 +542,6 @@ function createDivActivities(activity, weeks, id) {
     width: ${setWidth(width)}; 
     background: ${setStatusColor(status)}
     "
-    data_width="${width}"
      >
     
       <div class="activityCard_content"> 
@@ -665,17 +664,6 @@ function setWidth(amount) {
   return `calc(${amount !== undefined ? (amount + extraAmount) + "*(" + widthInPx + " / "+dividerWidth+")" : "calc(" + widthInPx + " / "+dividerWidth+")"} )  `;
 }
 
-function setWidthHover($context){
-  const activityWidthCont = parseInt($context.css("width"));
-  const widthContainer = parseInt($('.sectionMap').css("width"));
-  const dividerWidth = timelineZoom;
-  const widthDivide = (widthContainer/dividerWidth);
-  if( activityWidthCont < widthDivide){
-    $context.css("width", "auto");
-  }
-  
-}
-
 /**
  * Calculates the distances based on the given parameters.
  * @param {number} weeks - The number of weeks.
@@ -794,15 +782,6 @@ function addActivitiesToTimeline2() {
     
       const $info = $(this).find('.activityCard_description');
       $info.tooltip();
-    });
-
-    
-    $(".activityCard_container").mouseenter(function(){
-      setWidthHover($(this));
-    });
-
-    $(".activityCard_container").mouseleave(function(){
-      $(this).css("width", setWidth($(this).attr("data_width")));
     });
 
 
