@@ -4,6 +4,12 @@ $(document).ready(initDashboard);
 // Set the timeline information from server;
 let timelineElements;
 
+let chargeOver = false;
+let timeOut = setTimeout(() => {
+  getIntersectedActivities();
+  chargeOver = true; 
+}, 5000);
+
 /**
  * The zoom level of the timeline.
  * Establish the default configuration for the weeks visibles in the timeline.
@@ -49,9 +55,10 @@ function initDashboard() {
 
   $('.circleMap').hover(itemMapHover, itemMap);
 
-  setTimeout(() => {
+  if(!chargeOver){
+    clearTimeout(timeOut);
     getIntersectedActivities();
-  }, 5000);
+  }
 }
 
 function itemMapHover() {
