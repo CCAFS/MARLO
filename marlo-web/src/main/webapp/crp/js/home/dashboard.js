@@ -4,6 +4,12 @@ $(document).ready(initDashboard);
 // Set the timeline information from server;
 let timelineElements;
 
+let chargeOver = false;
+let timeOut = setTimeout(() => {
+  getIntersectedActivities();
+  chargeOver = true; 
+}, 7000);
+
 /**
  * The zoom level of the timeline.
  * Establish the default configuration for the weeks visibles in the timeline.
@@ -49,9 +55,12 @@ function initDashboard() {
 
   $('.circleMap').hover(itemMapHover, itemMap);
 
-  setTimeout(() => {
+  if(!chargeOver){
+    clearTimeout(timeOut);
     getIntersectedActivities();
-  }, 5000);
+  }
+
+  getIntersectedActivities();
 }
 
 function itemMapHover() {
@@ -535,7 +544,6 @@ function createDivActivities(activity, weeks, id) {
     width: ${setWidth(width)}; 
     background: ${setStatusColor(status)}
     "
-    data_width="${width}"
      >
     
       <div class="activityCard_content"> 
@@ -565,7 +573,7 @@ function createDivActivities(activity, weeks, id) {
 }
 
 const validatorActiveViewMore = (width) => {
-  if(timelineZoom >= 2){
+  if(timelineZoom <= 2){
     if(width === 1/7){
       return true;
     } else{
@@ -656,17 +664,6 @@ function setWidth(amount) {
   const widthContainer = $('.sectionMap').width();
   const widthInPx = `${widthContainer * 0.95}px`;
   return `calc(${amount !== undefined ? (amount + extraAmount) + "*(" + widthInPx + " / "+dividerWidth+")" : "calc(" + widthInPx + " / "+dividerWidth+")"} )  `;
-}
-
-function setWidthHover($context){
-  const activityWidthCont = parseInt($context.css("width"));
-  const widthContainer = parseInt($('.sectionMap').css("width"));
-  const dividerWidth = timelineZoom;
-  const widthDivide = (widthContainer/dividerWidth);
-  if( activityWidthCont < widthDivide){
-    $context.css("width", "auto");
-  }
-  
 }
 
 /**
@@ -787,15 +784,6 @@ function addActivitiesToTimeline2() {
     
       const $info = $(this).find('.activityCard_description');
       $info.tooltip();
-    });
-
-    
-    $(".activityCard_container").mouseenter(function(){
-      setWidthHover($(this));
-    });
-
-    $(".activityCard_container").mouseleave(function(){
-      $(this).css("width", setWidth($(this).attr("data_width")));
     });
 
 
