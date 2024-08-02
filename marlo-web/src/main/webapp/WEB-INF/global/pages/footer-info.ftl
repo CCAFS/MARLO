@@ -87,7 +87,8 @@
 [#-- Copyright --]
 <div class="copyRight">
   <hr />
-  <span> Copyright &#169; 2013-2019 International Center for Tropical Agriculture (CIAT)</span><br />
+  <span> Copyright &#169; 2013-${currentCycleYear} Alliance of Bioversity International and CIAT.</span><br />
+  <span style="opacity:0.7;">Developed by the Innovation and Business Development (IBD) team of the Technology Integration Unit.<span><br> 
   <span style="opacity:0.5;"> Some rights reserved</span>
 </div>
 
