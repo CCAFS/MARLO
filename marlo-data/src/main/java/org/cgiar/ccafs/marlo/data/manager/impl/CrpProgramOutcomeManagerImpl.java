@@ -235,7 +235,8 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
         outcome = new CrpProgramOutcome();
       }
 
-      outcome.copyFields(originalCrpProgramOutcome);
+      // 2024/08/02 cgamboa copyFields was changed by copyFieldsToreplicate
+      outcome.copyFieldsToreplicate(originalCrpProgramOutcome);
       outcome.setPhase(current);
 
       outcome = crpProgramOutcomeDAO.save(outcome);
