@@ -26,8 +26,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class DeliverableIntellectualAssetMySQLDAO extends AbstractMarloDAO<DeliverableIntellectualAsset, Long>
@@ -76,7 +76,7 @@ public class DeliverableIntellectualAssetMySQLDAO extends AbstractMarloDAO<Deliv
   public DeliverableIntellectualAsset findIntellectualAssetByPhaseAndDeliverable(Phase phase, Deliverable deliverable) {
     String query = "select distinct di from DeliverableIntellectualAsset di "
       + " where phase.id = :phaseId and deliverable.id= :deliverableId";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<DeliverableIntellectualAsset> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phase.getId());
     createQuery.setParameter("deliverableId", deliverable.getId());
 

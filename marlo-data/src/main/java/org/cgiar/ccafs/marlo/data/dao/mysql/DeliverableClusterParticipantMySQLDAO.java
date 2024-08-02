@@ -24,8 +24,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class DeliverableClusterParticipantMySQLDAO extends AbstractMarloDAO<DeliverableClusterParticipant, Long>
@@ -77,7 +77,7 @@ public class DeliverableClusterParticipantMySQLDAO extends AbstractMarloDAO<Deli
 
     String query = "select dp from DeliverableClusterParticipant dp "
       + "where phase.id = :phaseId and deliverable.id= :deliverableId and is_active=1";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<DeliverableClusterParticipant> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phaseID);
     createQuery.setParameter("deliverableId", deliverableID);
 
@@ -92,7 +92,7 @@ public class DeliverableClusterParticipantMySQLDAO extends AbstractMarloDAO<Deli
 
     String query = "select dp from DeliverableClusterParticipant dp "
       + "where phase.id = :phaseId and deliverable.id= :deliverableId and project.id= :projectId and is_active=1";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<DeliverableClusterParticipant> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phaseID);
     createQuery.setParameter("deliverableId", deliverableID);
     createQuery.setParameter("projectId", projectID);
@@ -108,7 +108,7 @@ public class DeliverableClusterParticipantMySQLDAO extends AbstractMarloDAO<Deli
 
     String query = "select dp from DeliverableClusterParticipant dp "
       + "where phase.id = :phaseId and project.id= :projectId and is_active=1";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<DeliverableClusterParticipant> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phaseID);
     createQuery.setParameter("projectId", projectID);
 

@@ -30,8 +30,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Long> implements ProjectPartnerDAO {
@@ -130,7 +130,7 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
   public ProjectPartner getProjectPartnerByIdAndEagerFetchLocations(long projectPartnerID) {
     String query = "select distinct pp from ProjectPartner pp left join fetch pp.projectPartnerLocations ppl "
       + "where pp.id = :projectPartnerID";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<ProjectPartner> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("projectPartnerID", projectPartnerID);
 
     Object findSingleResult = super.findSingleResult(ProjectPartner.class, createQuery);

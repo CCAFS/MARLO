@@ -91,6 +91,7 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
       if (cache != null) {
         cache.evictAllRegions(); // Evict data from all query regions.
       }
+      System.out.println("Cache cleared for request: " + requestUrl);
       sessionFactory.getCurrentSession().beginTransaction();
       // Continue filter chain
       chain.doFilter(httpRequest, response);

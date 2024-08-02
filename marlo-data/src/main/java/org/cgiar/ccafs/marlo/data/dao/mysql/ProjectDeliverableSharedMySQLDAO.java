@@ -24,8 +24,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class ProjectDeliverableSharedMySQLDAO extends AbstractMarloDAO<ProjectDeliverableShared, Long>
@@ -75,7 +75,7 @@ public class ProjectDeliverableSharedMySQLDAO extends AbstractMarloDAO<ProjectDe
   public List<ProjectDeliverableShared> getByDeliverable(long deliverableId, long phaseId) {
     String query = "select distinct esp from ProjectDeliverableShared esp "
       + "where deliverable.id = :deliverableId and phase.id = :phaseId and is_active=1";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<ProjectDeliverableShared> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("deliverableId", deliverableId);
     createQuery.setParameter("phaseId", phaseId);
     List<ProjectDeliverableShared> result = super.findAll(createQuery);
@@ -91,7 +91,7 @@ public class ProjectDeliverableSharedMySQLDAO extends AbstractMarloDAO<ProjectDe
   public List<ProjectDeliverableShared> getByPhase(long phaseId) {
     String query =
       "select distinct esp from ProjectDeliverableShared esp " + "where phase.id = :phaseId and is_active=1";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<ProjectDeliverableShared> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phaseId);
     List<ProjectDeliverableShared> result = super.findAll(createQuery);
 
@@ -106,7 +106,7 @@ public class ProjectDeliverableSharedMySQLDAO extends AbstractMarloDAO<ProjectDe
   public List<ProjectDeliverableShared> getByProjectAndPhase(long projectId, long phaseId) {
     String query = "select distinct esp from ProjectDeliverableShared esp "
       + "where project.id = :projectId and phase.id = :phaseId and is_active=1";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<ProjectDeliverableShared> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("projectId", projectId);
     createQuery.setParameter("phaseId", phaseId);
     List<ProjectDeliverableShared> result = super.findAll(createQuery);

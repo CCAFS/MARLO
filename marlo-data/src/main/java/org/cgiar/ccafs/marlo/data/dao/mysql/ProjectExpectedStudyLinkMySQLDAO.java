@@ -25,8 +25,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class ProjectExpectedStudyLinkMySQLDAO extends AbstractMarloDAO<ProjectExpectedStudyLink, Long>
@@ -77,7 +77,7 @@ public class ProjectExpectedStudyLinkMySQLDAO extends AbstractMarloDAO<ProjectEx
     ProjectExpectedStudyLink projectExpectedStudyLink) {
     String query = "select distinct du from ProjectExpectedStudyLink du "
       + "where phase.id = :phaseId and projectExpectedStudy.id= :expectedId " + "and du.link = :duLink";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<ProjectExpectedStudyLink> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phase.getId());
     createQuery.setParameter("expectedId", projectExpectedStudyLink.getProjectExpectedStudy().getId());
     createQuery.setParameter("duLink", projectExpectedStudyLink.getLink());

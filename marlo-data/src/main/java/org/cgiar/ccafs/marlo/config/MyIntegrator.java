@@ -18,12 +18,11 @@ package org.cgiar.ccafs.marlo.config;
 import org.cgiar.ccafs.marlo.data.AuditColumnHibernateListener;
 import org.cgiar.ccafs.marlo.data.HibernateAuditLogListener;
 
-import org.hibernate.cfg.Configuration;
+import org.hibernate.boot.Metadata;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.EventType;
 import org.hibernate.integrator.spi.Integrator;
-import org.hibernate.metamodel.source.MetadataImplementor;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +37,7 @@ public class MyIntegrator implements Integrator {
   }
 
   @Override
-  public void integrate(Configuration configuration, SessionFactoryImplementor sessionFactory,
+  public void integrate(Metadata metadata, SessionFactoryImplementor sessionFactory,
     SessionFactoryServiceRegistry serviceRegistry) {
     final EventListenerRegistry eventListenerRegistry = serviceRegistry.getService(EventListenerRegistry.class);
 
@@ -56,13 +55,6 @@ public class MyIntegrator implements Integrator {
     eventListenerRegistry.prependListeners(EventType.PRE_UPDATE, auditColumnHibernateListener);
 
     LOG.debug("Finished registering Hibernate Event Listeners");
-
-  }
-
-  @Override
-  public void integrate(MetadataImplementor metadata, SessionFactoryImplementor sessionFactory,
-    SessionFactoryServiceRegistry serviceRegistry) {
-    return;
 
   }
 

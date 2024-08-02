@@ -2303,7 +2303,8 @@ public class DeliverableAction extends BaseAction {
         List<String> deliverables = null;
         try {
           // cgamboa change is made to obtain deliverables only for the phase 08/04/2024
-          deliverables = deliverableManager.getDuplicatesDeliverablesByPhase(this.getActualPhase().getId());
+          deliverables = deliverableManager.getDuplicatesDeliverablesByPhaseWithDissemination(
+            this.getActualPhase().getId(), DOI, handle, disseminationURL);
           // deliverableDTOs = this.getDuplicatedDeliverableInformation(DOI, handle, disseminationURL, deliverableID);
           deliverableDTOs =
             this.getDuplicatedDeliverableInformationNew(DOI, handle, disseminationURL, deliverableID, deliverables);
@@ -3704,7 +3705,8 @@ public class DeliverableAction extends BaseAction {
       try {
         List<String> deliverables = null;
         // cgamboa change is made to obtain deliverables only for the phase 08/04/2024
-        deliverables = deliverableManager.getDuplicatesDeliverablesByPhase(this.getActualPhase().getId());
+        deliverables = deliverableManager.getDuplicatesDeliverablesByPhaseWithDissemination(
+          this.getActualPhase().getId(), DOI, handle, disseminationURL);
         // deliverableDTOs = this.getDuplicatedDeliverableInformation(DOI, handle, disseminationURL, deliverableID);
         deliverableDTOs =
           this.getDuplicatedDeliverableInformationNew(DOI, handle, disseminationURL, deliverableID, deliverables);
@@ -3721,7 +3723,7 @@ public class DeliverableAction extends BaseAction {
           deliverableInfoManager.saveDeliverableInfo(deliverableBase.getDeliverableInfo());
         }
       } catch (Exception e) {
-        logger.error("unable to get duplivated deliverables", e);
+        logger.error("unable to get duplicated deliverables", e);
       }
 
 
