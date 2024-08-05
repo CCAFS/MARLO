@@ -21,6 +21,7 @@ var app = new Vue({
 
 function init() {
   $('.loading-WOS-container').hide("slow");
+  $('.disseminationChannel').select2();
   updateReadOnly();
   $('.disseminationChannel').change(updateReadOnly)
   $('#handle-bridge').change(function () {
@@ -380,13 +381,14 @@ function addcluster(infoCluster){
     class: 'form-group row',
     clusteridparticipant: idCluster
   });
-  var col1 = $('<div>').addClass('col-md-2');
-  var textArea1 = $('<div>').addClass('text-area-container text-flex-column').text(infoCluster.acronym);
+  var col1 = $('<div>').addClass('col-md-2 col-sm-2 col-xs-8 col-xs-first');
+  var textArea1 = $('<div>').addClass('text-area-container text-flex-column text-xs-left').text(infoCluster.acronym);
   col1.append(textArea1);
+  col1.append('<br>')
   div.append(col1);
   div.css('margin-bottom', '30px');
 
-  var col2 = $('<div>').addClass('col-md-2 participantsNumbers');
+  var col2 = $('<div>').addClass('col-md-2 col-sm-2 col-xs-3 col-xs-normal participantsNumbers');
   var textArea2 = $('<div>').addClass('text-area-container');
   var input2 = $('<input>').attr({
     type: 'text',
@@ -401,7 +403,7 @@ function addcluster(infoCluster){
   col2.append(textArea2);
   div.append(col2);
 
-  var col3 = $('<div>').addClass('col-md-2 femaleNumbers');
+  var col3 = $('<div>').addClass('col-md-2 col-sm-2 col-xs-3 col-xs-normal femaleNumbers');
   var textArea3 = $('<div>').addClass('text-area-container');
   var input3 = $('<input>').attr({
     type: 'text',
@@ -415,7 +417,7 @@ function addcluster(infoCluster){
   col3.append(textArea3);
   div.append(col3);
 
-  var col4 = $('<div>').addClass('col-md-2 africanNumbers');
+  var col4 = $('<div>').addClass('col-md-2 col-sm-2 col-xs-3 col-xs-normal africanNumbers');
   var textArea4 = $('<div>').addClass('text-area-container');
   var input4 = $('<input>').attr({
     type: 'text',
@@ -429,7 +431,7 @@ function addcluster(infoCluster){
   col4.append(textArea4);
   div.append(col4);
 
-  var col5 = $('<div>').addClass('col-md-2 youthNumbers');
+  var col5 = $('<div>').addClass('col-md-2 col-sm-2 col-xs-3 col-xs-normal youthNumbers');
   var textArea5 = $('<div>').addClass('text-area-container');
   var input5 = $('<input>').attr({
     type: 'text',
@@ -443,8 +445,8 @@ function addcluster(infoCluster){
   col5.append(textArea5);
   div.append(col5);
 
-  var col6 = $('<div>').addClass('col-md-2');
-  var textArea6 = $('<div>').addClass('text-area-container');
+  var col6 = $('<div>').addClass('col-md-2 col-sm-2 col-xs-4 col-xs-last');
+  var textArea6 = $('<div>').addClass('text-area-container text-xs-right');
   var button6 = $('<button>').attr({
     type: 'button',
     class: 'btn btn-danger removeInformationClusterTrainnes btn-remove',
@@ -832,8 +834,12 @@ function updateReadOnly() {
     if ($('.deliverableDisseminationUrl ').prop('readonly')) {
       getWOSInfo();
     }
-/*     $('select[name="deliverable.dissemination.disseminationChannel"]').prop("disabled",true);
-    $('select').select2(); */
+
+    // Prevent the select from being changed and set the value to the last selected
+    $('.disseminationChannel').attr("readonly", true);
+
+
+
   //if not
   } else {
 
@@ -871,8 +877,11 @@ function updateReadOnly() {
         hideOrShowCheckBoxIsOtherUrl(true);
       }
     }
-/*     $('select[name="deliverable.dissemination.disseminationChannel"]').prop("disabled",false);
-    $('select').select2(); */
+
+    // Allow the select to be changed and set the value to the last selected
+    $('.disseminationChannel').attr("readonly", false);
+
+
 
   }
 

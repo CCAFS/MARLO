@@ -207,8 +207,7 @@ $(document).ready(function () {
   function showNotificationMessages() {
     var messageSelector = $('#generalMessages').find("#message");
 
-    var $clusterSubmitted = $(`.clusterSubmitted`);
-    var $clusterSubmittedFilter = $clusterSubmitted.filter((index, ele) => $(ele).attr("issubmit") === "true").get();
+    let [$clustersSubmitted,$clustersWithInfo,$clusterWithInfoAndSubmitted] = getInformationFromAllClusterTrainnes(); 
 
     var remainingPending = $(`input[name="deliverable.deliverableInfo.remainingPending"]`).val();
     // VALIDATE IF IS ERROR O SUCCES CLASS
@@ -216,6 +215,8 @@ $(document).ready(function () {
       // SUCCESS MESSAGE
       if (messageSelector.length == 1 && messageSelector.html().split(":")[0] === "message") {
         var message = $(messageSelector).html().split(":")[1];
+        message+=alertAdminForChangingStatusWithTrainess();
+
         var messageType = "success";
         notifyErrorMessage(messageType, message);
       } else if (messageSelector.length == 1 && messageSelector.html().split(":")[0] === "draft") {
@@ -223,13 +224,12 @@ $(document).ready(function () {
         var message = $(messageSelector).html().split(":")[1];
         var messageType = "success";
         notifyErrorMessage(messageType, message);
-      } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message" && $clusterSubmittedFilter.length > 0) {
+      } else if (messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message" && ($clusterWithInfoAndSubmitted.length > 0)) {
         // SHOW CLUSTER SUBMITTED BASED ON THE DISABLED INPUT
 
         var message = "";
 
-        const $mapClusterSubmit = $clusterSubmitted.filter((index, ele) => $(ele).attr("issubmit") === "true").get();
-        const $stringClusterSubmit = $mapClusterSubmit.reduce((prev,curr) => prev +$(curr).attr("name")+",","");
+        const $stringClusterSubmit = $clusterWithInfoAndSubmitted.reduce((prev,curr) => prev +$(curr).find("p[issubmit]").attr("name")+",","");
         const stringFixed = $stringClusterSubmit.substring(0, $stringClusterSubmit.length - 1);
         message += "The Information was correctly saved. <br> ";
         message += "It seems that the following cluster(s) were submitted: <b>"+stringFixed+ "</b>. We suggest the following actions so you can save the information correctly: <br> ";
@@ -244,7 +244,7 @@ $(document).ready(function () {
         var message = "";
         var messageType = "warning";
 
-        sumRemaining = 0;
+        let sumRemaining = 0;
         var remainingAfrican = $(".remainingAfrican").html() || "0";
         var remainingTrainees = $(".remainingTrainees").html() || "0";
         var remainingFemales = $(".remainingFemales").html() || "0";
@@ -254,12 +254,13 @@ $(document).ready(function () {
 
         if (sumRemaining < 0) {
           message += "The Information was correctly saved. <br> ";
-          message += "It seems that the <b>Remaining shared information</b> is inconsistence (value must be zero). We suggest to correct the information to avoid inconsistences in the system. ";
+          message += "It seems that the information for the <b>Remaining participants/trainees information</b> is inconsistence (value must be zero). We suggest to correct the information to avoid inconsistences in the system. ";
           message += "You could also contact the cluster(s) leader to verificate the information. ";
         } else {
           // $clusterSubmitted does not exist, do something else
           message += "The Information was correctly saved. <br> ";
-          message += "It seems that the <b>Remaining shared information</b> is incompleted please take a look.";
+          message += "It seems that the information for the <b>Remaining participants/trainees information</b> is incompleted. We suggest to fill the information to avoid inconsistences in the system.";
+          message += "You could also contact the cluster(s) leader to verificate the information. ";
         }
 
         notifyErrorMessage(messageType, message);
@@ -271,6 +272,7 @@ $(document).ready(function () {
 
         message += "The Information was correctly saved. <br> ";
         message += "Please keep in mind that the fields highlighted below are missing or incorrect.";
+        message += alertAdminForChangingStatusWithTrainess();
         
         notifyErrorMessage(messageType, message);
       }
@@ -346,6 +348,41 @@ $(document).ready(function () {
     //     ]
 
     // });
+  }
+
+  function alertAdminForChangingStatusWithTrainess() {
+    var isAdmin = document.getElementById("adminRole").value || "false";
+
+    $statuses = $('select.status') || null;
+    let statusValue = $statuses.val();
+
+
+    let message = "";
+
+    let [ $clustersSubmitted, $clustersWithInfo] = getInformationFromAllClusterTrainnes();  
+
+    if(isAdmin === "true"){
+      if((isStatusCancelled(statusValue) || isStatusExtended(statusValue)) && ($clustersSubmitted.length > 0 || $clustersWithInfo.length > 0)){
+        message = "<br>";
+        message += "The status has been changed to <b>"+$statuses.find('option:selected').text()+"</b>. <br> ";
+        message += "Attention, Admin User, please proceed with caution as altering the status may impact the information shared among the Trainees.";
+      }
+    }
+    
+    return message;
+  }
+
+  function getInformationFromAllClusterTrainnes() {
+    var $clustersInformation = $(`div[clusteridparticipant]`);
+
+    var $clustersSubmitted = $clustersInformation.filter((index, ele) => $(ele).find("p[issubmit]").attr("issubmit") === "true").get();
+
+    var $clustersWithInfo = $clustersInformation.filter((index, ele) => $(ele).find("input").val() > 0).get();
+    
+    var $clusterWithInfoAndSubmitted = $clustersInformation.filter((index, ele) => $(ele).find("input").val() > 0 && $(ele).find("p[issubmit]").attr("issubmit") === "true").get();
+
+    return [ $clustersSubmitted, $clustersWithInfo, $clusterWithInfoAndSubmitted];
+
   }
 
   /* Tooltips with JQuery UI */

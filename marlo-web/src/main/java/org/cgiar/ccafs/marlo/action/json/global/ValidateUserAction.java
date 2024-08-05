@@ -69,6 +69,9 @@ public class ValidateUserAction extends BaseAction {
 
     if (user != null) {
       userFound.put("loginSuccess", true);
+      if (user.getFirstName() != null && user.getLastName() != null) {
+        userFound.put("userName", user.getFirstName() + " " + user.getLastName());
+      }
     } else {
       userFound.put("loginSuccess", false);
     }
