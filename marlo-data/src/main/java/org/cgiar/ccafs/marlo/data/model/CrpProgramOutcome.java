@@ -92,6 +92,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
   public CrpProgramOutcome() {
   }
 
+
   public void copyFields(CrpProgramOutcome other) {
     this.setActive(other.isActive());
     this.setActiveSince(other.getActiveSince());
@@ -101,6 +102,30 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.setDescription(other.getDescription());
     this.setAcronym(other.getAcronym());
     this.setFile(other.getFile());
+    this.setIndicator(other.getIndicator());
+    this.setInstructions(other.getInstructions());
+    this.setModificationJustification(other.getModificationJustification());
+    this.setModifiedBy(other.getModifiedBy());
+    this.setSrfTargetUnit(other.getSrfTargetUnit());
+    this.setValue(other.getValue());
+    this.setYear(other.getYear());
+  }
+
+
+  /**
+   * Replicate information between subsequent phases
+   *
+   * @param CrpProgramOutcome other outcome to replicate
+   */
+  public void copyFieldsToreplicate(CrpProgramOutcome other) {
+    this.setActive(other.isActive());
+    this.setActiveSince(other.getActiveSince());
+    this.setComposeID(other.getComposeID());
+    this.setCreatedBy(other.getCreatedBy());
+    this.setCrpProgram(other.getCrpProgram());
+    this.setDescription(other.getDescription());
+    this.setAcronym(other.getAcronym());
+    // this.setFile(other.getFile());
     this.setIndicator(other.getIndicator());
     this.setInstructions(other.getInstructions());
     this.setModificationJustification(other.getModificationJustification());
