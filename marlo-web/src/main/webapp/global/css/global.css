@@ -8216,7 +8216,6 @@ img.qaOptionsComment {
 
 /* Reset order for larger screens */
 .col-xs-first, .col-xs-last, .col-xs-normal {
-	float: none;
 	display: inline-block;
 }
 
