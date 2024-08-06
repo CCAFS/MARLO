@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 
 /**
@@ -131,7 +131,7 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
       + "when i.acronym like concat('%', :institutionName) then 7 when i.websiteLink like concat(:institutionName, '%') then 2 "
       + "when i.websiteLink like concat('% %', :institutionName, '% %') then 5 when i.websiteLink like concat('%', :institutionName) then 8 "
       + "else 12 end), i.name, i.acronym, i.websiteLink";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<Institution> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
 
     createQuery.setParameter("institutionName", searchValue);
 

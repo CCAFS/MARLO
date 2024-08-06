@@ -26,8 +26,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class DeliverableDisseminationMySQLDAO extends AbstractMarloDAO<DeliverableDissemination, Long>
@@ -76,7 +76,7 @@ public class DeliverableDisseminationMySQLDAO extends AbstractMarloDAO<Deliverab
   public DeliverableDissemination findDisseminationByPhaseAndDeliverable(Phase phase, Deliverable deliverable) {
     String query = "select distinct dd from DeliverableDissemination dd "
       + " where phase.id = :phaseId and deliverable.id= :deliverableId";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<DeliverableDissemination> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phase.getId());
     createQuery.setParameter("deliverableId", deliverable.getId());
 

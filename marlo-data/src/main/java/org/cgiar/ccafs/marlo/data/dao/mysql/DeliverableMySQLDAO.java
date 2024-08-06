@@ -32,8 +32,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.FlushMode;
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> implements DeliverableDAO {
@@ -307,7 +307,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
       + "join d.project pr with pr.id = :projectId and pr.active = true join di.phase ph with ph.id = :phaseId "
       + "where di.deliverable = d and d.active = true and coalesce(nullif(di.newExpectedYear, -1),di.year) = ph.year";
 
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<Deliverable> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
 
     createQuery.setParameter("phaseId", phaseId);
     createQuery.setParameter("projectId", projectId);
@@ -618,6 +618,54 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     query.append(" and di.id_phase=" + phase);
     query.append(" and element_value is not null");
     query.append(" and length(element_value)>0");
+
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<String> deliverables = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        String tmp = map.get("id").toString() + "|" + map.get("dissemination_URL").toString();
+        deliverables.add(tmp);
+      }
+    }
+
+    return deliverables;
+  }
+
+  @Override
+  public List<String> getDuplicatesDeliverablesByPhaseWithDissemination(long phase, String DOI, String handle,
+    String disseminationURL) {
+    StringBuilder query = new StringBuilder();
+    query.append("select id, dissemination_URL from ( SELECT DISTINCT  ");
+    query.append("d.id as id,");
+    query.append("dv.dissemination_URL as dissemination_URL ");
+    query.append("FROM ");
+    query.append("deliverables AS d ");
+    query.append("INNER JOIN deliverable_dissemination AS dv ON d.id = dv.deliverable_id ");
+    query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");
+    query.append(" WHERE di.is_active =1 ");
+    query.append(" and d.is_active = di.is_active ");
+    query.append(" and di.id_phase=" + phase);
+    query.append(" and dv.dissemination_URL is not null");
+    query.append(" and length(dissemination_URL)>0");
+    query.append(" UNION ");
+    query.append("SELECT DISTINCT  ");
+    query.append("d.id as id,");
+    query.append("dme.element_value as dissemination_URL ");
+    query.append("FROM ");
+    query.append("deliverables AS d ");
+    query.append("INNER JOIN deliverable_metadata_elements AS dme ON d.id = dme.deliverable_id ");
+    query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");
+    query.append(" where dme.element_id in(35,36) ");
+    query.append(" and di.is_active =1 ");
+    query.append(" and d.is_active = di.is_active ");
+    query.append(" and di.id_phase=" + phase);
+    query.append(" and element_value is not null");
+    query.append(" and length(element_value)>0 )t ");
+    query.append(" where ( dissemination_URL ='" + DOI + "'");
+    query.append(" or dissemination_URL ='" + handle + "'");
+    query.append(" or dissemination_URL ='" + disseminationURL + "')");
 
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());

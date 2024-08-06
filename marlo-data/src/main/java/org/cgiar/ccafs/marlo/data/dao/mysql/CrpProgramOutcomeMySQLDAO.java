@@ -25,8 +25,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class CrpProgramOutcomeMySQLDAO extends AbstractMarloDAO<CrpProgramOutcome, Long>
@@ -78,7 +78,7 @@ public class CrpProgramOutcomeMySQLDAO extends AbstractMarloDAO<CrpProgramOutcom
   public List<CrpProgramOutcome> getAllCrpProgramOutcomesByComposedIdFromPhase(String composedId, long phaseId) {
     String query = "select distinct cpo from CrpProgramOutcome cpo " + "where composeID=:composeID and active=true "
       + "and phase.id >= :phaseId";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<CrpProgramOutcome> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("composeID", composedId);
     createQuery.setParameter("phaseId", phaseId);
     List<CrpProgramOutcome> resultList = super.findAll(createQuery);
