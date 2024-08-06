@@ -50,6 +50,12 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-support</artifactId>
     </dependency>
+    
+    <dependency>
+        <groupId>dom4j</groupId>
+        <artifactId>dom4j</artifactId>
+        <version>1.6.1</version> <!-- Versión puede variar, asegúrate de usar la más adecuada -->
+    </dependency>
    </dependencies>
    <build>
     <plugins>
