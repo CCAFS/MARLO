@@ -8214,6 +8214,12 @@ img.qaOptionsComment {
 	margin-bottom: -15px;
 }
 
+/* Reset order for larger screens */
+.col-xs-first, .col-xs-last, .col-xs-normal {
+	display: inline-block;
+}
+
+
 @media only screen and (max-width: 768px){
 		/************* 2. HEADER ***************/
 		.breadcrumb{
@@ -8266,6 +8272,25 @@ img.qaOptionsComment {
 		#draggable-button img{
 			width: 16px;
 		}
+		.listClusterDM div.row{ 
+			display: flex;
+			flex-wrap: wrap;
+		}
+
+		.col-xs-first { order: 1; }
+		.col-xs-last { order: 2; }
+		.col-xs-normal { order: 3; }
+
+		.text-xs-left {
+			text-align: left;
+    		align-items: flex-start;
+		}
+
+		.text-xs-right {
+			text-align: right;
+			justify-content: flex-end;
+		}
+
 
 }
 
