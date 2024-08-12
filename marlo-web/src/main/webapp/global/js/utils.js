@@ -830,3 +830,31 @@ function setFormatInput() {
     });
 
 }
+
+function setMaskInputAllianceId(){
+
+  const translation = {
+    'translation': {
+      Z: { pattern: /[A-Z]/, optional: false },
+      0: { pattern: /[0-9]/, optional: false }
+    }
+  }
+
+  $("input.targetValueAllianceId").each(function(i,ele){
+
+    $(ele).mask('ZZZ-0000', translation);
+
+    if($(ele).attr("value") === "") {
+      $(ele).empty();
+      $(ele).unmask();
+      $(ele).val("");
+    }
+
+    $(ele).on("focus", function () {
+      if($(ele).attr("value") === "") {
+        $(ele).mask('ZZZ-0000', translation);
+      }
+    });
+
+  });
+}

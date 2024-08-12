@@ -30,39 +30,70 @@
     [/#if]
 
     <div class="borderBox">
-    [#-- previous link --]
-    [#--
-      <div class="form-group">
-        [#assign guideSheetURL = "https://drive.google.com/file/d/1sMmE8RK4mpDmJYl_S-bHy5CVK_ahCHr0/view" /]
-        <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> Outcome Impact Case Report  -  Guideline </a> </small>
-      </div>
-      <br />
-    --] 
-      <div class="form-group">
-        [#assign guideSheetURL = "https://cgiar.sharepoint.com/sites/AICCRA/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting%2FGuidance%20for%20AICCRA%20Outcome%20Impact%20Case%20Reports%2Epdf&parent=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting&p=true&ga=1" /]
-        <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> Outcome Impact Case Report  -  Guideline </a> </small>
-      </div>
-      <br />
-      <div class="form-group row">
-        <div class="col-md-3">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable && !isOutcomeCaseStudy /]
+
+      [#if isOutcomeCaseStudy] 
+        <div class="note--2">
+          <p>[@s.text name="study.general.note.allianceId" /]</p>
+          <p>[@s.text name="study.general.note.currentYearReport" /]</p>
         </div>
-        [#if action.canAccessSuperAdmin() || action.isPMU()]
-          [#if isOutcomeCaseStudy && action.hasSpecificities('oicr_score_field_active')]
-            <div class="col-md-3">
-              [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.score" helpIcon=false required=false editable=editable /]
-            </div>
+      [/#if]
+
+      [#-- Template for Other Studies --]
+      [#if !isOutcomeCaseStudy]
+        [#-- previous link --]
+          [#--
+          [#assign guideSheetURL = "https://drive.google.com/file/d/1sMmE8RK4mpDmJYl_S-bHy5CVK_ahCHr0/view" /]
+          --]
+        <div class="form-group">
+          [#assign guideSheetURL = "https://cgiar.sharepoint.com/sites/AICCRA/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting%2FGuidance%20for%20AICCRA%20Outcome%20Impact%20Case%20Reports%2Epdf&parent=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting&p=true&ga=1" /]
+          <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> Outcome Impact Case Report  -  Guideline </a> </small>
+        </div>
+        <br />
+      [/#if]
+
+
+      <div class="form-group row">
+      
+        [#-- OICR ID --]
+        [#if isOutcomeCaseStudy]
+          <div class="col-md-1">
+            [@customForm.input name="${(expectedID)!}" i18nkey="study.id" helpIcon=false required=false editable=false readOnly=true /]
+          </div>
         [/#if]
-          [#if !isOutcomeCaseStudy && action.hasSpecificities('melia_score_field_active')]
-            <div class="col-md-3">
-              [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.score" helpIcon=false required=false editable=editable /]
-            </div>
-          [/#if]
+
+        [#-- Study Type --]
+        <div class="${isOutcomeCaseStudy?string('col','col-md-3')}">
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=(editable && !isOutcomeCaseStudy) display=(!isOutcomeCaseStudy) /]
+        </div>
+
+        [#-- Alliance OICR ID --]
+        [#if isOutcomeCaseStudy]
+          <div class="col-md-2">
+            [@customForm.input name="${customName}.projectExpectedStudyInfo.allianceOicr" i18nkey="study.allianceID" helpIcon=false required=false editable=editable className="targetValueAllianceId" /]
+          </div>
         [/#if]
-        <div class="col-md-3">
+
+        [#-- Tag --]
+        [#if isOutcomeCaseStudy]          
+        <div class="col-md-2">
+            [@customForm.input name="${customName}.projectExpectedStudyInfo.tag" i18nkey="study.tag" required=false editable=editable /]
+          </div>
+        [/#if]
+
+        [#-- Score for MELIAs --]
+        [#if !isOutcomeCaseStudy && action.hasSpecificities('melia_score_field_active')]
+          <div class="col-md-2">
+            [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.score" helpIcon=false required=false editable=editable /]
+          </div>
+        [/#if]
+
+        [#-- Status --]
+        <div class="col-md-2">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.status.id" className="setSelect2 statusSelect" i18nkey="study.status" listName="statuses" keyFieldName="id"  displayFieldName="name" header=false required=true editable=editable /]
         </div>
-        <div class="col-md-3">
+
+        [#-- Year --]        
+        <div class="col-md-2">
           [#assign dbExpectedYear = ((element.projectExpectedStudyInfo.year)!currentCycleYear)  ]
           
            [#--
@@ -76,6 +107,15 @@
             [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="getExpectedStudiesYears(${(expectedID)!})" header=false required=true editable=editable /]
           </div>
         </div>
+
+        [#-- Buttons - Shared Cluster & Copy --]
+        [#if isOutcomeCaseStudy]
+          <div class="col-md-3">
+            <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px;"> <span class="glyphicon glyphicon-log-out"></span> Share OICR with Clusters </button>
+            <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px;"> <span class="glyphicon glyphicon-duplicate"></span> Copy OICR link (PDF Format) </button>
+          </div>
+        [/#if]
+
       </div>
       
 

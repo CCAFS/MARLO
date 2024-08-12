@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${expectedID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload", "flag-icon-css", "components-font-awesome"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectStudy.js?20240221",
+  "${baseUrlMedia}/js/projects/projectStudy.js?20240812",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20240313"
   ] 
@@ -98,7 +98,12 @@
           [/#if]
           
           [#-- Outcome case studies list --]
-          <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformation" /]</h3>
+          [#if (expectedStudy.projectExpectedStudyInfo.studyType?has_content) && (expectedStudy.projectExpectedStudyInfo.studyType.id == 1)]
+            <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformationOICR" /]</h3>
+          [#else]  
+            <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformation" /]</h3>
+          [/#if]
+
           <div id="caseStudiesBlock" class="">
             [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0  /]
           </div> 
