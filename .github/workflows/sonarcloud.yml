@@ -19,6 +19,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 11
+          distribution: 'temurin'  # Puedes usar 'adoptopenjdk', 'zulu', etc.
 
       - name: Cache SonarCloud packages
         uses: actions/cache@v2
@@ -42,6 +43,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 17
+          distribution: 'temurin'  # Puedes usar 'adoptopenjdk', 'zulu', etc.
 
       - name: Build and analyze
         env:
