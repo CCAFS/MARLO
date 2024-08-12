@@ -167,5 +167,11 @@
     <property name="score" type="string">
         <column name="score" sql-type="TEXT" />
     </property>
+    <property name="allianceOicr" type="string">
+        <column name="alliance_oicr_id" />
+    </property>
+    <property name="tag" type="string">
+        <column name="tag_id" sql-type="TEXT" />
+    </property>
 	</class>
 </hibernate-mapping>
