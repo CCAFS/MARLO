@@ -46,6 +46,10 @@ function init() {
   
   multiInputStudies = $('.multiInput').find('span input[name*="link"]');
   checkHyperlinks();
+
+  // Add mask to Alliance ID
+  setMaskInputAllianceId();
+  
 }
 
 function bottonPading(){
