@@ -61,11 +61,9 @@
         [/#if]
 
         [#-- Study Type --]
-        [#if !isOutcomeCaseStudy]
-          <div class="col-md-3">
-            [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.general.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable /]
-          </div>
-        [/#if]
+        <div class="${isOutcomeCaseStudy?string('col','col-md-3')}">
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.general.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=(editable && !isOutcomeCaseStudy) display=(!isOutcomeCaseStudy) /]
+        </div>
 
         [#-- Alliance OICR ID --]
         [#if isOutcomeCaseStudy]
