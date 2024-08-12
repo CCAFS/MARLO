@@ -153,7 +153,7 @@ public class HTMLtoExcel {
       case BOLD:
       case EM:
       case STRONG:
-        font.setBold(true);
+        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
         break;
       case UNDERLINE:
         font.setUnderline(Font.U_SINGLE);

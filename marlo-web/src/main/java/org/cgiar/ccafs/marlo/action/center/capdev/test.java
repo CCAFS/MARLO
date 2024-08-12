@@ -180,22 +180,25 @@ public class test {
 
     if (cell != null) {
       switch (cell.getCellType()) {
-        case STRING:
+        case Cell.CELL_TYPE_STRING:
           cellData = cell.getStringCellValue();
           break;
-        case NUMERIC:
+        case Cell.CELL_TYPE_NUMERIC:
           cellData = cell.getNumericCellValue();
           break;
-        case BOOLEAN:
+        case Cell.CELL_TYPE_BOOLEAN:
           cellData = cell.getBooleanCellValue();
           break;
-        case BLANK:
-          cellData = "";
+        case Cell.CELL_TYPE_BLANK:
+          cellData = cell.getStringCellValue();
           break;
+
+
         default:
           break;
       }
     }
+
 
     return cellData;
 

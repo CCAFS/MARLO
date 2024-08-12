@@ -40,6 +40,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataValidation;
 import org.apache.poi.ss.usermodel.DataValidationConstraint;
@@ -234,7 +236,7 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
       input.close();
 
 
-    } catch (Exception e) {
+    } catch (IOException | EncryptedDocumentException | InvalidFormatException e) {
       e.printStackTrace();
     }
 
