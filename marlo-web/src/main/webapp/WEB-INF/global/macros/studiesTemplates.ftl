@@ -56,7 +56,7 @@
         [#-- OICR ID --]
         [#if isOutcomeCaseStudy]
           <div class="col-md-3">
-            [@customForm.input name="${${(expectedID)!}}" i18nkey="study.id" helpIcon=false required=false editable=false readOnly=true /]
+            [@customForm.input name="${(expectedID)!}" i18nkey="study.id" helpIcon=false required=false editable=false readOnly=true /]
           </div>
         [/#if]
 
