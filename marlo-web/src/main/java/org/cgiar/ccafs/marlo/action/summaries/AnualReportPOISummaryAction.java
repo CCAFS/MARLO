@@ -75,6 +75,7 @@ import org.cgiar.ccafs.marlo.utils.POISummary;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -570,7 +571,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     try {
       XWPFHeaderFooterPolicy headerFooterPolicy = new XWPFHeaderFooterPolicy(document, sectPr);
       headerFooterPolicy.createFooter(STHdrFtr.DEFAULT, paragraphs);
-    } catch (Exception e) {
+    } catch (IOException e) {
       LOG.error("Failed to createFooter. Exception: " + e.getMessage());
     }
   }

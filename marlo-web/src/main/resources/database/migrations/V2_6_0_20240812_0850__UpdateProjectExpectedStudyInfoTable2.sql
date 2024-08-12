@@ -1,0 +1,2 @@
+ALTER TABLE project_expected_study_info MODIFY COLUMN alliance_oicr_id text CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
+ALTER TABLE project_expected_study_info MODIFY COLUMN tag_id text CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
