@@ -53,14 +53,20 @@
 
       <div class="form-group row">
       
+        [#-- OICR ID --]
         [#if isOutcomeCaseStudy]
           <div class="col-md-3">
             [@customForm.input name="${expectedID}" i18nkey="study.general.oicrId" helpIcon=false required=false editable=false readOnly=true /]
           </div>
         [/#if]
-        <div class="col-md-3">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable && !isOutcomeCaseStudy /]
-        </div>
+
+
+        [#if !isOutcomeCaseStudy]
+          <div class="col-md-3">
+            [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.general.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable /]
+          </div>
+        [/#if]
+
         [#if action.canAccessSuperAdmin() || action.isPMU()]
           [#if isOutcomeCaseStudy && action.hasSpecificities('oicr_score_field_active')]
             <div class="col-md-3">
