@@ -38,6 +38,7 @@
         </div>
       [/#if]
 
+      [#-- Template for Other Studies --]
       [#if !isOutcomeCaseStudy]
         [#-- previous link --]
           [#--
@@ -55,45 +56,43 @@
       
         [#-- OICR ID --]
         [#if isOutcomeCaseStudy]
-          <div class="col-md-3">
+          <div class="col-md-1">
             [@customForm.input name="${(expectedID)!}" i18nkey="study.id" helpIcon=false required=false editable=false readOnly=true /]
           </div>
         [/#if]
 
         [#-- Study Type --]
         <div class="${isOutcomeCaseStudy?string('col','col-md-3')}">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.general.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=(editable && !isOutcomeCaseStudy) display=(!isOutcomeCaseStudy) /]
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=(editable && !isOutcomeCaseStudy) display=(!isOutcomeCaseStudy) /]
         </div>
 
         [#-- Alliance OICR ID --]
         [#if isOutcomeCaseStudy]
-          <div class="col-md-3">
+          <div class="col-md-2">
             [@customForm.input name="${customName}.projectExpectedStudyInfo.allianceOicr" i18nkey="study.allianceID" helpIcon=false required=false editable=editable className="targetValueAllianceId" /]
           </div>
         [/#if]
 
         [#-- Tag --]
+        [#if isOutcomeCaseStudy]          
         <div class="col-md-2">
-          [@customForm.input name="${customName}.projectExpectedStudyInfo.tag" i18nkey="study.tag" required=false editable=editable /]
-        </div>
-        
-
-
-        [#if action.canAccessSuperAdmin() || action.isPMU()]
-          [#if isOutcomeCaseStudy && action.hasSpecificities('oicr_score_field_active')]
-            <div class="col-md-2">
-              [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.score" helpIcon=false required=false editable=editable /]
-            </div>
+            [@customForm.input name="${customName}.projectExpectedStudyInfo.tag" i18nkey="study.tag" required=false editable=editable /]
+          </div>
         [/#if]
-          [#if !isOutcomeCaseStudy && action.hasSpecificities('melia_score_field_active')]
-            <div class="col-md-2">
-              [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.score" helpIcon=false required=false editable=editable /]
-            </div>
-          [/#if]
-        [/#if]        
+
+        [#-- Score for MELIAs --]
+        [#if !isOutcomeCaseStudy && action.hasSpecificities('melia_score_field_active')]
+          <div class="col-md-2">
+            [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.score" helpIcon=false required=false editable=editable /]
+          </div>
+        [/#if]
+
+        [#-- Status --]
         <div class="col-md-2">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.status.id" className="setSelect2 statusSelect" i18nkey="study.status" listName="statuses" keyFieldName="id"  displayFieldName="name" header=false required=true editable=editable /]
-        </div>        
+        </div>
+
+        [#-- Year --]        
         <div class="col-md-2">
           [#assign dbExpectedYear = ((element.projectExpectedStudyInfo.year)!currentCycleYear)  ]
           
@@ -107,6 +106,11 @@
           <div class="block-year" style="display:${(!isStatusExtended && isOtherStatus)?string('block', 'none')}">
             [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="getExpectedStudiesYears(${(expectedID)!})" header=false required=true editable=editable /]
           </div>
+        </div>
+
+        [#-- Buttons - Shared Cluster & Copy --]
+        <div class="col-md-3">
+        
         </div>
       </div>
       
