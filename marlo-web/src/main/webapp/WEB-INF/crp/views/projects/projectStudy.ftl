@@ -98,7 +98,12 @@
           [/#if]
           
           [#-- Outcome case studies list --]
-          <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformation" /]</h3>
+          [#if (expectedStudy.projectExpectedStudyInfo.studyType?has_content) && (expectedStudy.projectExpectedStudyInfo.studyType.id == 1)]
+            <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformationOICR" /]</h3>
+          [#else]  
+            <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformation" /]</h3>
+          [/#if]
+
           <div id="caseStudiesBlock" class="">
             [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0  /]
           </div> 
