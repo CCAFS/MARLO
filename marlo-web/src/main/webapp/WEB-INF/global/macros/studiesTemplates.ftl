@@ -31,14 +31,14 @@
 
     <div class="borderBox">
 
-      [#if (element.projectExpectedStudyInfo.studyType)?has_content && (element.projectExpectedStudyInfo.studyType.id == 1)] 
+      [#if isOutcomeCaseStudy] 
         <div class="note--2">
           <p>[@s.text name="study.general.note.allianceId" /]</p>
           <p>[@s.text name="study.general.note.currentYearReport" /]</p>
         </div>
       [/#if]
 
-      [#if (element.projectExpectedStudyInfo.studyType)?has_content && element.projectExpectedStudyInfo.studyType.id != 1]
+      [#if !isOutcomeCaseStudy]
         [#-- previous link --]
           [#--
           [#assign guideSheetURL = "https://drive.google.com/file/d/1sMmE8RK4mpDmJYl_S-bHy5CVK_ahCHr0/view" /]
@@ -50,7 +50,14 @@
         <br />
       [/#if]
 
+
       <div class="form-group row">
+      
+        [#if isOutcomeCaseStudy]
+          <div class="col-md-3">
+            [@customForm.input name="${expectedID}" i18nkey="study.general.oicrId" helpIcon=false required=false editable=false readOnly=true /]
+          </div>
+        [/#if]
         <div class="col-md-3">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable && !isOutcomeCaseStudy /]
         </div>
