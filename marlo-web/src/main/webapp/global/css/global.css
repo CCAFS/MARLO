@@ -3398,6 +3398,15 @@ button.ipGraph-btn {
 	font-style: normal;
 	margin-bottom: 18px;
 	margin-top: 12px;
+	flex-wrap: wrap;
+}
+
+.note--2 p{
+	font-style: italic;
+	color: #5F5E5E;
+	font-size: 1.25rem;
+	font-style: italic;
+	font-weight: 300;
 }
 
 .topNote {
