@@ -21,6 +21,7 @@ package org.cgiar.ccafs.marlo.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -50,17 +52,17 @@ public class ReadExcelFile {
 
     if (cell != null) {
       switch (cell.getCellType()) {
-        case STRING:
+        case Cell.CELL_TYPE_STRING:
           cellData = cell.getStringCellValue();
           break;
-        case NUMERIC:
+        case Cell.CELL_TYPE_NUMERIC:
           cellData = cell.getNumericCellValue();
           break;
-        case BOOLEAN:
+        case Cell.CELL_TYPE_BOOLEAN:
           cellData = cell.getBooleanCellValue();
           break;
-        case BLANK:
-          cellData = "";
+        case Cell.CELL_TYPE_BLANK:
+          cellData = cell.getStringCellValue();
           break;
 
         default:
@@ -156,7 +158,7 @@ public class ReadExcelFile {
 
         }
 
-      } catch (Exception e) {
+      } catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
         e.printStackTrace();
       }
     }
@@ -238,7 +240,7 @@ public class ReadExcelFile {
         equal = false;
       }
 
-    } catch (Exception e) {
+    } catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
       equal = false;
     }
 
