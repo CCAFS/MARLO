@@ -60,12 +60,20 @@
           </div>
         [/#if]
 
-
+        [#-- Study Type --]
         [#if !isOutcomeCaseStudy]
           <div class="col-md-3">
             [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.general.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable /]
           </div>
         [/#if]
+
+        [#-- Alliance OICR ID --]
+        [#if isOutcomeCaseStudy]
+          <div class="col-md-3">
+            [@customForm.input name="${customName}.projectExpectedStudyInfo.allianceId" i18nkey="study.general.allianceId" helpIcon=false required=false editable=editable className="targetValueAllianceId" /]
+          </div>
+        [/#if]
+        
 
         [#if action.canAccessSuperAdmin() || action.isPMU()]
           [#if isOutcomeCaseStudy && action.hasSpecificities('oicr_score_field_active')]
