@@ -14,4 +14,8 @@
     <module>marlo-core</module>
     <module>marlo-data</module>
   </modules>
+  <properties>
+  <sonar.organization>ccafs</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+	</properties>
 </project>
