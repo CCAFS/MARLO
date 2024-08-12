@@ -109,9 +109,13 @@
         </div>
 
         [#-- Buttons - Shared Cluster & Copy --]
-        <div class="col-md-3">
-        
-        </div>
+        [#if isOutcomeCaseStudy]
+          <div class="col-md-3">
+            <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px;"> <span class="glyphicon glyphicon-log-out"></span> Share OICR with Clusters </button>
+            <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px;"> <span class="glyphicon glyphicon-duplicate"></span> Copy OICR link (PDF Format) </button>
+          </div>
+        [/#if]
+
       </div>
       
 
