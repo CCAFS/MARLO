@@ -29,7 +29,9 @@
       [#assign validateIsProgressWithStatus = true /]
     [/#if]
 
-    <div class="borderBox">
+    <div class="borderBox generalInformationStudies">
+
+
 
       [#if isOutcomeCaseStudy] 
         <div class="note--2">
@@ -53,6 +55,11 @@
 
 
       <div class="form-group row">
+
+        [#-- hr in elements --]
+        [#if isOutcomeCaseStudy]
+          <hr class="col-md-9 line-hr" />
+        [/#if]
       
         [#-- OICR ID --]
         [#if isOutcomeCaseStudy]
@@ -127,6 +134,7 @@
           </div>
         [/#if]
 
+        [#-- Shared Cluster Modal --]
         <div class="form-group col-md-12 sharedClusterMessage">
           <div class="modal fade" id="sharedClusterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable" style=" width:80%" role="document">

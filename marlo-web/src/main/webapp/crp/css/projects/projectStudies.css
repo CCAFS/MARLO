@@ -1,6 +1,34 @@
 #projectOutcomesList {
 }
 
+.generalInformationStudies {
+  position: relative;
+}
+
+.generalInformationStudies .form-group {
+  position: relative;
+}
+
+.generalInformationStudies .form-group .line-hr{
+  position: absolute; 
+  top: 12.5%;
+  height: 2px;
+  background-color: #CCC;
+  width: 68%;
+  left: 15px;
+}
+
+.generalInformationStudies .form-group .feedback-flex-items{
+  align-items: flex-end;
+}
+
+.generalInformationStudies label{
+  font-size: 12px;
+  margin-bottom: 1.25rem;
+  max-width: 120%;
+  width: 120%;
+}
+
 .copyButton{
   position: relative;
   top: 11px;
@@ -18,7 +46,7 @@
 }
 
 .generalStudyOptions{
-  padding: 0;
+  padding: 0 15px 0 0;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -39,7 +67,7 @@
 }
 
 .generalStudyOptions button p span{
-  margin-right: 0.5rem;
+  margin-right: 0.25rem;
 }
 
 #modalCounterShared{
