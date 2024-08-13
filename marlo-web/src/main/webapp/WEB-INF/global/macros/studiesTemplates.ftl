@@ -111,7 +111,9 @@
         [#-- Buttons - Shared Cluster & Copy --]
         [#if isOutcomeCaseStudy]
           <div class="col-md-3 generalStudyOptions">
-            <button type="button" class="btn btn-default btn-sm " style="margin-right: 5px;"> <span class="glyphicon glyphicon-log-out"></span> Share OICR with Clusters </button>
+            <button type="button" class="btn btn-default btn-sm" style="margin-right: 5px;" data-toggle="modal" data-target="#sharedClusterModal">
+              <span class="glyphicon glyphicon-log-out"></span> Share OICR with Clusters
+            </button>
 
             [#-- Link to PDF version of this study --]
             [#-- 0. Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
@@ -121,6 +123,33 @@
             
           </div>
         [/#if]
+
+        <div class="form-group col-md-12 sharedClusterMessage">
+          <div class="modal fade" id="sharedClusterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable" style=" width:80%" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Shared OICR</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <h5 class="headTitle">[@s.text name="study.sharedProjects.title" /]</h5>
+                  <div class="borderBox">
+                    [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="clearfix"></div>
+        </div>
+          
 
       </div>
       
@@ -801,7 +830,7 @@
     [/#if--]
     
     [#-- Projects shared --]
-    [#if fromProject]
+    [#if fromProject && !isOutcomeCaseStudy]
     <h3 class="headTitle">[@s.text name="study.sharedProjects.title" /]</h3>
     <div class="borderBox">
       [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
