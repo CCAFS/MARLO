@@ -45,9 +45,12 @@ jobs:
         with:
           java-version: 17
           distribution: 'temurin'
-
+          
+      - name: Verify SONAR_TOKEN
+        run: echo "SONAR_TOKEN=${{ secrets.SONAR_TOKEN }}"
+        
       - name: Build and analyze with SonarCloud
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=CCAFS_MARLO
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=CCAFS_MARLO -Dsonar.login=b2c676d90522f6893846af09d00d3eaf2cb91c59
