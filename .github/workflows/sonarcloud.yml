@@ -1,4 +1,4 @@
-name: SonarCloud
+SONAR_TOKENname: SonarCloud
 on:
   push:
     branches:
@@ -48,11 +48,11 @@ jobs:
           
       - name: Verify SONAR_TOKEN
         run: |
-          if [ -z "${{ secrets.SONAR_LOGIN }}" ]; then
-            echo "SONAR_LOGIN is not set or empty"
+          if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then
+            echo "SONAR_TOKEN is not set or empty"
             exit 1
           else
-            echo "SONAR_LOGIN is set"
+            echo "SONAR_TOKEN is set"
           fi
         
       - name: Build and analyze with SonarCloud
