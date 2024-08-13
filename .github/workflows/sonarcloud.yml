@@ -1,4 +1,4 @@
-SONAR_TOKENname: SonarCloud
+name: SonarCloud
 on:
   push:
     branches:
@@ -46,7 +46,15 @@ jobs:
           java-version: 17
           distribution: 'temurin'          
     
-        
+      - name: Verify SONAR_TOKEN
+        run: |
+          if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then
+            echo "SONAR_TOKEN is not set or empty"
+            exit 1
+          else
+            echo "SONAR_TOKEN is set"
+          fi
+          
       - name: Build and analyze with SonarCloud
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
