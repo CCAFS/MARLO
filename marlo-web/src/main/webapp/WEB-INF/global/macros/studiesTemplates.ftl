@@ -112,12 +112,15 @@
         [#if isOutcomeCaseStudy]
           <div class="col-md-3 generalStudyOptions">
             <button type="button" class="btn btn-default btn-sm" style="margin-right: 5px;" data-toggle="modal" data-target="#sharedClusterModal">
-              <span class="glyphicon glyphicon-log-out"></span> Share OICR with Clusters
+              <p><span class="glyphicon glyphicon-log-out"></span> Share OICR with Clusters</p>
+              <p id="modalCounterShared">0</p>
             </button>
 
             [#-- Link to PDF version of this study --]
             [#-- 0. Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
-            <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px;"> <span class="glyphicon glyphicon-duplicate"></span> Copy OICR link (PDF Format) </button>
+            <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px;">
+              <p><span class="glyphicon glyphicon-duplicate"></span> Copy OICR link (PDF Format)</p> 
+            </button>
             [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
             [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable display=false readOnly=true/]
             
