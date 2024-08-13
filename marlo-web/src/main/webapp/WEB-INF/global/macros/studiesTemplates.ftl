@@ -110,9 +110,15 @@
 
         [#-- Buttons - Shared Cluster & Copy --]
         [#if isOutcomeCaseStudy]
-          <div class="col-md-3">
-            <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px;"> <span class="glyphicon glyphicon-log-out"></span> Share OICR with Clusters </button>
+          <div class="col-md-3 generalStudyOptions">
+            <button type="button" class="btn btn-default btn-sm " style="margin-right: 5px;"> <span class="glyphicon glyphicon-log-out"></span> Share OICR with Clusters </button>
+
+            [#-- Link to PDF version of this study --]
+            [#-- 0. Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
             <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px;"> <span class="glyphicon glyphicon-duplicate"></span> Copy OICR link (PDF Format) </button>
+            [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+            [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable display=false readOnly=true/]
+            
           </div>
         [/#if]
 
@@ -223,20 +229,22 @@
     </div>
     <div class="borderBox">
       [#-- 0. Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
-        <div class="form-group">
-          <div class="optionPublicComponent form-group" style="display:block">         
-            <br />
-            <div class="input-group">
-              <span class="input-group-btn">
-                <button class="btn btn-default btn-sm copyButton" type="button"> <span class="glyphicon glyphicon-duplicate"></span> Copy URL </button>
-              </span>
-              [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
-              [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable readOnly=true/]
-              <!--input type="text" class="form-control input-sm urlInput" value="${summaryPDF}" readonly-->
+        [#if !isOutcomeCaseStudy]
+          <div class="form-group">
+            <div class="optionPublicComponent form-group" style="display:block">         
+              <br />
+              <div class="input-group">
+                <span class="input-group-btn">
+                  <button class="btn btn-default btn-sm copyButton" type="button"> <span class="glyphicon glyphicon-duplicate"></span> Copy URL </button>
+                </span>
+                [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+                [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable readOnly=true/]
+                <!--input type="text" class="form-control input-sm urlInput" value="${summaryPDF}" readonly-->
+              </div>
+              <div class="message text-center" style="display:none">Copied!</div>
             </div>
-            <div class="message text-center" style="display:none">Copied!</div>
           </div>
-        </div>
+        [/#if]
 
       [#-- 1. Title (up to 25 words) --]
       <div class="form-group">
