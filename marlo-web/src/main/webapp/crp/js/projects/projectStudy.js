@@ -50,6 +50,8 @@ function init() {
   // Add mask to Alliance ID
   setMaskInputAllianceId();
   
+  // Change counter value of Shared Cluster
+  counterSharedCluster();
 }
 
 function bottonPading(){
@@ -490,4 +492,16 @@ function setFileUploads() {
     $ub.find('.fileUploaded a').attr('href', '');
   });
 
+}
+
+function counterSharedCluster() {
+
+  let currentAmount = $('div[listname="expectedStudy.projects"] ul.list li').length;
+  const $counter = $('#modalCounterShared');
+  $counter.text(currentAmount);
+  
+  $('div[listname="expectedStudy.projects"] .setSelect2').on('change', function() {
+    currentAmount = $('div[listname="expectedStudy.projects"] ul.list li').length;
+    $counter.text(currentAmount);
+  });
 }

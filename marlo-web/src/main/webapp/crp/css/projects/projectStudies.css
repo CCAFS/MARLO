@@ -17,7 +17,36 @@
   color: #444;
 }
 
-a {
+.generalStudyOptions{
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.generalStudyOptions button{
+  width: 100%;
+  color: #fff;
+  border-radius: 0.3125rem;
+  background: #337AB7;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.generalStudyOptions button p{
+  margin: 0;
+}
+
+.generalStudyOptions button p span{
+  margin-right: 0.5rem;
+}
+
+#modalCounterShared{
+  background-color: #fff;
+  color: #337AB7;
+  width: 16px;
+  border-radius: 100%;
 }
 
 thead {
