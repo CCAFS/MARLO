@@ -163,16 +163,32 @@ function attachEvents() {
 
   // Copy URL Button event
   $('.copyButton').on('click', function() {
-    var $parent = $(this).parents(".optionPublicComponent");
+    
+    var $parent = $(this).closest(".generalStudyOptions, .optionPublicComponent");
+
     var $input = $parent.find('.urlInput');
     var $message = $parent.find('.message');
+
+    // Temporarily make the input visible if it is hidden
+    var wasHidden = $input.parent('.input').css('display') === 'none';
+    if (wasHidden) {
+      $input.parent('.input').css('display', 'block');
+    }
+
     $input.select();
+
     if(document.execCommand("copy")) {
+      if($message.length > 0) {
+      $message.text("Copied to clipboard");
       $message.fadeIn(400, function() {
         $message.fadeOut(300);
       });
+      }
     }
-    console.log($input.val());
+
+    if(wasHidden) {
+      $input.parent('.input').css('display', 'none');
+    }
   });
 
   /**
