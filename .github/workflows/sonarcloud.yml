@@ -44,16 +44,8 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 17
-          distribution: 'temurin'
-          
-      - name: Verify SONAR_TOKEN
-        run: |
-          if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then
-            echo "SONAR_TOKEN is not set or empty"
-            exit 1
-          else
-            echo "SONAR_TOKEN is set"
-          fi
+          distribution: 'temurin'          
+    
         
       - name: Build and analyze with SonarCloud
         env:
