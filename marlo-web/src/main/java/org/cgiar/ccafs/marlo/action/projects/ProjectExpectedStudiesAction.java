@@ -49,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyReferenceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyTagManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
@@ -95,6 +96,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyTag;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -140,6 +142,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -211,6 +214,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   // AR 2022 Managers
   private ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager;
+  private ProjectExpectedStudyTagManager projectExpectedStudyTagManager;
 
   // Variables
   private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
@@ -255,6 +259,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private int newExpectedYear;
   private List<ProjectOutcome> projectOutcomes;
   private List<CrpProgramOutcome> crpOutcomes;
+  private List<ProjectExpectedStudyTag> tagList;
 
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -289,7 +294,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager,
     ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager,
-    ProjectExpectedStudyCrpOutcomeManager projectExpectedStudyCrpOutcomeManager) {
+    ProjectExpectedStudyCrpOutcomeManager projectExpectedStudyCrpOutcomeManager,
+    ProjectExpectedStudyTagManager projectExpectedStudyTagManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -343,6 +349,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.projectExpectedStudyCrpOutcomeManager = projectExpectedStudyCrpOutcomeManager;
     this.projectExpectedStudyReferenceManager = projectExpectedStudyReferenceManager;
+    this.projectExpectedStudyTagManager = projectExpectedStudyTagManager;
   }
 
   /**
@@ -532,6 +539,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public List<SrfSubIdo> getSubIdos() {
     return this.subIdos;
+  }
+
+  public List<ProjectExpectedStudyTag> getTagList() {
+    return tagList;
   }
 
   public List<EvidenceTag> getTags() {
@@ -1095,6 +1106,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.tags = this.evidenceTagManager.findAll();
       this.innovationsList = new ArrayList<>();
       this.policyList = new ArrayList<>();
+      try {
+        this.tagList = this.projectExpectedStudyTagManager.findAll();
+      } catch (Exception e) {
+        Log.error(e + " error getting tagList elements");
+      }
 
       // Expected Study Projects List
       if (this.expectedStudy.getExpectedStudyProjects() != null) {
@@ -1861,7 +1877,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Expected Studies Crps Information
    * 
@@ -2517,7 +2532,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Expected Studies Regions Information
    * 
@@ -2868,6 +2882,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setSubIdos(List<SrfSubIdo> subIdos) {
     this.subIdos = subIdos;
+  }
+
+  public void setTagList(List<ProjectExpectedStudyTag> tagList) {
+    this.tagList = tagList;
   }
 
   public void setTags(List<EvidenceTag> tags) {
