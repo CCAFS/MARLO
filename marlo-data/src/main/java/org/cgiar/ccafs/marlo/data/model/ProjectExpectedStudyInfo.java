@@ -160,7 +160,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   @Expose
   public String allianceOicr;
   @Expose
-  public String tag;
+  public ProjectExpectedStudyTag tag;
 
   public ProjectExpectedStudyInfo() {
   }
@@ -361,11 +361,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return referencesText;
   }
 
-
   public RepIndGeographicScope getRepIndGeographicScope() {
     return repIndGeographicScope;
   }
-
 
   public RepIndOrganizationType getRepIndOrganizationType() {
     return repIndOrganizationType;
@@ -389,21 +387,17 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return repIndStageStudy;
   }
 
-
   public String getScopeComments() {
     return scopeComments;
   }
-
 
   public String getScore() {
     return score;
   }
 
-
   public GeneralStatus getStatus() {
     return status;
   }
-
 
   public String getStatusName() {
     if (this.getStatus() != null) {
@@ -412,21 +406,17 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return null;
   }
 
-
   public StudyType getStudyType() {
     return studyType;
   }
 
-
-  public String getTag() {
+  public ProjectExpectedStudyTag getTag() {
     return tag;
   }
-
 
   public String getTitle() {
     return title;
   }
-
 
   public String getTopLevelComments() {
     return topLevelComments;
@@ -437,11 +427,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return year;
   }
 
-
   public RepIndGenderYouthFocusLevel getYouthLevel() {
     return youthLevel;
   }
-
 
   @Override
   public boolean isActive() {
@@ -452,11 +440,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.allianceOicr = allianceOicr;
   }
 
-
   public void setCapdevLevel(RepIndGenderYouthFocusLevel capdevLevel) {
     this.capdevLevel = capdevLevel;
   }
-
 
   public void setCgiarInnovation(String cgiarInnovation) {
     this.cgiarInnovation = cgiarInnovation;
@@ -510,7 +496,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.hasCovidAnalysis = hasCovidAnalysis;
   }
 
-
   public void setHasMilestones(Boolean hasMilestones) {
     this.hasMilestones = hasMilestones;
   }
@@ -519,16 +504,13 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.isContribution = isContribution;
   }
 
-
   public void setIsPublic(Boolean isPublic) {
     this.isPublic = isPublic;
   }
 
-
   public void setIsSrfTarget(String isSrfTarget) {
     this.isSrfTarget = isSrfTarget;
   }
-
 
   public void setMELIAPublications(String mELIAPublications) {
     MELIAPublications = mELIAPublications;
@@ -558,7 +540,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public void setOutcomeImpactStatement(String outcomeImpactStatement) {
     this.outcomeImpactStatement = outcomeImpactStatement;
   }
-
 
   public void setOutcomeStory(String outcomeStory) {
     this.outcomeStory = outcomeStory;
@@ -606,7 +587,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.repIndRegion = repIndRegion;
   }
 
-
   public void setRepIndStageProcess(RepIndStageProcess repIndStageProcess) {
     this.repIndStageProcess = repIndStageProcess;
   }
@@ -627,20 +607,17 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.status = status;
   }
 
-
   public void setStudyType(StudyType studyType) {
     this.studyType = studyType;
   }
 
-  public void setTag(String tag) {
+  public void setTag(ProjectExpectedStudyTag tag) {
     this.tag = tag;
   }
-
 
   public void setTitle(String title) {
     this.title = title;
   }
-
 
   public void setTopLevelComments(String topLevelComments) {
     this.topLevelComments = topLevelComments;
@@ -716,4 +693,3 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   }
 
 }
-
