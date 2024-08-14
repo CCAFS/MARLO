@@ -130,7 +130,7 @@
             </button>
             [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
             [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable display=false readOnly=true/]
-            
+            <div class="message text-center" style="display:none; margin-top:6px;">Copied!</div>
           </div>
         [/#if]
 
@@ -140,7 +140,7 @@
             <div class="modal-dialog modal-dialog-scrollable" style=" width:80%" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">Shared OICR</h5>
+                  <h4 class="modal-title" id="exampleModalLabel">Share OICR</h4>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
