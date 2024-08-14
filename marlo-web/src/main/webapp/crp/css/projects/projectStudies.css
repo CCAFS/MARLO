@@ -11,7 +11,7 @@
 
 .generalInformationStudies .form-group .line-hr{
   position: absolute; 
-  top: 12.5%;
+  top: 14%;
   height: 2px;
   background-color: #CCC;
   width: 68%;
@@ -25,8 +25,8 @@
 .generalInformationStudies label{
   font-size: 12px;
   margin-bottom: 1.25rem;
-  max-width: 120%;
-  width: 120%;
+  max-width: 180%;
+  width: 180%;
 }
 
 .copyButton{
