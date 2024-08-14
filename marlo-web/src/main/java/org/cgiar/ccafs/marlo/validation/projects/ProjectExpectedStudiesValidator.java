@@ -65,8 +65,59 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  /**
+   * Validate all OICR data
+   *
+   * @param action base action
+   * @param project related project
+   * @param projectExpectedStudy An specific projectExpectedStudy
+   * @param saving related action
+   */
   public void validate(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy, boolean saving) {
 
+    this.validateGeneralInformation(action, project, projectExpectedStudy, saving);
+    this.validateAllianceAlignment(action, project, projectExpectedStudy, saving);
+    this.validateOneCgiarAlignment(action, project, projectExpectedStudy, saving);
+    this.validateCommunications(action, project, projectExpectedStudy, saving);
+
+
+  }
+
+
+  /**
+   * Validate the data of the AllianceAlignment tab
+   *
+   * @param action base action
+   * @param project related project
+   * @param projectExpectedStudy An specific projectExpectedStudy
+   * @param saving related action
+   */
+  public void validateAllianceAlignment(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy,
+    boolean saving) {
+  }
+
+  /**
+   * Validate the data of the Communications tab
+   *
+   * @param action base action
+   * @param project related project
+   * @param projectExpectedStudy An specific projectExpectedStudy
+   * @param saving related action
+   */
+  public void validateCommunications(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy,
+    boolean saving) {
+  }
+
+  /**
+   * Validate the data of the general information tab
+   *
+   * @param action base action
+   * @param project related project
+   * @param projectExpectedStudy An specific projectExpectedStudy
+   * @param saving related action
+   */
+  public void validateGeneralInformation(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy,
+    boolean saving) {
 
     action.setInvalidFields(new HashMap<>());
 
@@ -87,6 +138,11 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     } else if (action.getValidationMessage().length() > 0) {
       action.addActionMessage(
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+    }
+    System.out.println(" linea 145 " + action.getMissingFields().toString());
+
+    if (action.getMissingFields().toString().length() == 0) {
+      action.setOicrGeneralInformationComplete(true);
     }
 
     this.saveMissingFields(project, projectExpectedStudy, action.getActualPhase().getDescription(),
@@ -114,6 +170,18 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       LOG.error(" error in validateIsProgressAndNotStatus function [ProjectExpectedStudiesValidator]");
       return result;
     }
+  }
+
+  /**
+   * Validate the data of the OneCgiarAlignment tab
+   *
+   * @param action base action
+   * @param project related project
+   * @param projectExpectedStudy An specific projectExpectedStudy
+   * @param saving related action
+   */
+  public void validateOneCgiarAlignment(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy,
+    boolean saving) {
   }
 
 
