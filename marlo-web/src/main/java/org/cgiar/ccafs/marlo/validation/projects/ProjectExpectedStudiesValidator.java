@@ -139,7 +139,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       action.addActionMessage(
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
-    System.out.println(" linea 145 " + action.getMissingFields().toString());
 
     if (action.getMissingFields().toString().length() == 0) {
       action.setOicrGeneralInformationComplete(true);
@@ -819,15 +818,13 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
 
     // Validate Tag as
-    /*
-     * if ((!this.isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTag()))
-     * || this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTag()) > 30) {
-     * action.addMessage(action.getText("tag"));
-     * action.addMissingField("study.tag");
-     * action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.tag",
-     * InvalidFieldsMessages.EMPTYFIELD);
-     * }
-     */
+
+    if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTag() == null) {
+      action.addMessage(action.getText("tag"));
+      action.addMissingField("study.tag");
+      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.tag",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
 
 
     // Validate Title
