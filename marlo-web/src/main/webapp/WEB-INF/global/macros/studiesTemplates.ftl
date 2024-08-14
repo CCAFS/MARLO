@@ -29,10 +29,11 @@
       [#assign validateIsProgressWithStatus = true /]
     [/#if]
 
+    [#-- General: Component were the information is always visible --]
     <div class="borderBox generalInformationStudies">
 
 
-
+      [#-- Note for General Inputs description --]
       [#if isOutcomeCaseStudy] 
         <div class="note--2">
           <p>[@s.text name="study.general.note.allianceId" /]</p>
@@ -83,7 +84,7 @@
         [#-- Tag --]
         [#if isOutcomeCaseStudy]          
         <div class="col-md-2">
-            [@customForm.input name="${customName}.projectExpectedStudyInfo.tag" i18nkey="study.tag" required=false editable=editable /]
+            [@customForm.input name="${customName}.projectExpectedStudyInfo.tag" i18nkey="study.tag" required=false editable=false /]
           </div>
         [/#if]
 
@@ -267,6 +268,7 @@
         </div>
       [/#if] --]
     </div>
+
     <div class="borderBox">
       [#-- 0. Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
         [#if !isOutcomeCaseStudy]
