@@ -60,13 +60,12 @@ public class ProjectExpectedStudyTagMySQLDAO extends AbstractMarloDAO<ProjectExp
 
   @Override
   public List<ProjectExpectedStudyTag> findAll() {
-    String query = "from " + ProjectExpectedStudyTag.class.getName() + " where is_active=1";
+    String query = "from " + ProjectExpectedStudyTag.class.getName();
     List<ProjectExpectedStudyTag> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
-
   }
 
   @Override
@@ -76,10 +75,6 @@ public class ProjectExpectedStudyTagMySQLDAO extends AbstractMarloDAO<ProjectExp
     } else {
       projectExpectedStudyTag = super.update(projectExpectedStudyTag);
     }
-
-
     return projectExpectedStudyTag;
   }
-
-
 }
