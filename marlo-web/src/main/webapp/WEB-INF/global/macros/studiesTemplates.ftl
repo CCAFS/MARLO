@@ -84,7 +84,7 @@
         [#-- Tag --]
         [#if isOutcomeCaseStudy]          
         <div class="col-md-2">
-            [@customForm.input name="${customName}.projectExpectedStudyInfo.tag" i18nkey="study.tag" required=false editable=false /]
+            [@customForm.input name="tag" i18nkey="study.tag" required=false editable=false /]
           </div>
         [/#if]
 
