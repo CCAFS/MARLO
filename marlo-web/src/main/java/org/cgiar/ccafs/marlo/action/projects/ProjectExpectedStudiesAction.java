@@ -96,7 +96,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyTag;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -142,7 +141,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -248,6 +246,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<Project> myProjects;
   private List<FeedbackQACommentableFields> feedbackComments;
   private String transaction;
+  private String tag;
 
   // AR 2018 Sel-List
   private List<EvidenceTag> tags;
@@ -259,7 +258,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private int newExpectedYear;
   private List<ProjectOutcome> projectOutcomes;
   private List<CrpProgramOutcome> crpOutcomes;
-  private List<ProjectExpectedStudyTag> tagList;
 
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -541,8 +539,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.subIdos;
   }
 
-  public List<ProjectExpectedStudyTag> getTagList() {
-    return tagList;
+  public String getTag() {
+    return tag;
   }
 
   public List<EvidenceTag> getTags() {
@@ -1106,11 +1104,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.tags = this.evidenceTagManager.findAll();
       this.innovationsList = new ArrayList<>();
       this.policyList = new ArrayList<>();
-      try {
-        this.tagList = this.projectExpectedStudyTagManager.findAll();
-      } catch (Exception e) {
-        Log.error(e + " error getting tagList elements");
-      }
 
       // Expected Study Projects List
       if (this.expectedStudy.getExpectedStudyProjects() != null) {
@@ -1345,6 +1338,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         newExpectedYear = this.expectedStudy.getProjectExpectedStudyInfo().getYear();
       }
 
+      // Load OICR tag
+      if (this.expectedStudy.getProjectExpectedStudyInfo() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getTag() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getTag().getTagName() != null) {
+        tag = this.expectedStudy.getProjectExpectedStudyInfo(phase).getTag().getTagName();
+      }
+      System.out.println("TAG " + tag);
       /*
        * get feedback comments
        */
@@ -1478,7 +1478,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.expectedStudy.getProjectExpectedStudyInfo().setStatus(null);
 
       this.expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(null);
-
+      this.expectedStudy.getProjectExpectedStudyInfo().setTag(null);
     }
 
   }
@@ -2884,8 +2884,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.subIdos = subIdos;
   }
 
-  public void setTagList(List<ProjectExpectedStudyTag> tagList) {
-    this.tagList = tagList;
+  public void setTag(String tag) {
+    this.tag = tag;
   }
 
   public void setTags(List<EvidenceTag> tags) {
@@ -2906,5 +2906,4 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.projectExpectedStudiesValidator.validate(this, this.project, this.expectedStudy, true);
     }
   }
-
 }
