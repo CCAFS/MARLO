@@ -40,6 +40,7 @@
 [/#if]
 <input type="hidden"  name="expectedStudy.id" value="${(expectedStudy.id)!}" />
 [#assign isOutcomeCaseStudy = ((expectedStudy.projectExpectedStudyInfo.studyType.id == 1)!false) && reportingActive/]
+[#assign indexTab = 0]
 [#if isOutcomeCaseStudy]
   <!--  <div class="container helpText viewMore-block">
     <div class="helpMessage infoText">
@@ -105,7 +106,47 @@
           [/#if]
 
           <div id="caseStudiesBlock" class="">
-            [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0  /]
+
+            [#-- General: Component were the information is always visible --]
+            [@studies.studyGeneral element=(expectedStudy)!{} name="expectedStudy" index=0  /]
+
+            [#-- Content: All the information of the case study --]
+            <input id="indexTab" name="indexTab" type="hidden" value="${(indexTab)!0}">
+
+            <div class="studiesTab">
+              [#-- Tab navigation --]
+              <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if]"><a index="1" href="#study-generalInformation" aria-controls="info" role="tab" data-toggle="tab">General Information</a></li>
+
+                <li role="presentation" class="[#if indexTab==2]active[/#if]"><a index="2" href="#study-alliance" aria-controls="metadata" role="tab" data-toggle="tab">Alliance Alignment</a></li>
+
+                <li role="presentation" class="[#if indexTab==3]active[/#if]"><a index="3" href="#study-onecgiar" aria-controls="quality" role="tab" data-toggle="tab">One CGIAR Aligment </a></li>
+
+                <li role="presentation" class="[#if indexTab==4]active[/#if]"><a index="4" href="#study-communications" aria-controls="communications" role="tab" data-toggle="tab">Communications</a></li>
+              </ul>
+
+              [#-- Tab content --]
+              <div class="tab-content ">
+
+                <div id="study-generalInformation" role="tabpanel" class="tab-pane fade [#if indexTab==1 || indexTab==0]in active[/#if]">
+                  [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0  /]
+                </div>
+
+                <div id="study-alliance" role="tabpanel" class="tab-pane fade [#if indexTab==2]in active[/#if]">
+                  Alliance
+                </div>
+
+                <div id="study-onecgiar" role="tabpanel" class="tab-pane fade [#if indexTab==3]in active[/#if]">
+                  One Cgiar
+                </div>
+
+                <div id="study-communications" role="tabpanel" class="tab-pane fade [#if indexTab==4]in active[/#if]">
+                  Communications
+                </div>
+              </div>
+                
+            </div>
+
           </div> 
           
           [#-- Section Buttons & hidden inputs--]
