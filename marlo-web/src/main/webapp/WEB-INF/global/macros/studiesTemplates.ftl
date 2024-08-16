@@ -675,7 +675,7 @@
       [#-- Tag --]
       [#if isOutcomeCaseStudy]          
       <div class="col-md-2">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.tag.id" value="${(element.projectExpectedStudyInfo.tag.id)!-1}" className="setSelect2 studyTag" i18nkey="study.tag" listName="tagList" keyFieldName="id"  displayFieldName="tagName" required=false editable=(editable && isOutcomeCaseStudy && action.canAccessSuperAdmin()) /]
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.tag.id" value="${(element.projectExpectedStudyInfo.tag.id)!-1}" className="setSelect2 studyTag" i18nkey="study.tag" listName="tagList" keyFieldName="id"  displayFieldName="tagName" required=false editable=(editable && isOutcomeCaseStudy && action.canAccessSuperAdmin()) && action.hasSpecificities('oicr_tag_field_manual_manage_active') /]
         </div>
       [/#if]
 
