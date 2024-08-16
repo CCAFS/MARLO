@@ -148,9 +148,7 @@
                 </div>
                 <div class="modal-body">
                   <h5 class="headTitle">[@s.text name="study.sharedProjects.title" /]</h5>
-                  <div class="borderBox">
-                    [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
-                  </div>
+                  [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
@@ -268,6 +266,9 @@
         </div>
       [/#if] --]
     </div>
+
+    [#-- Tabs: Component ]
+  	
 
     <div class="borderBox">
       [#-- 0. Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
