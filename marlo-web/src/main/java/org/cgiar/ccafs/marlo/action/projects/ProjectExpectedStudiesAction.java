@@ -85,7 +85,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
@@ -249,6 +248,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<FeedbackQACommentableFields> feedbackComments;
   private String transaction;
   private String tag;
+  private int previousYear;
+  private int previousMaturityID;
+  private int previousTagID;
 
   // AR 2018 Sel-List
   private List<EvidenceTag> tags;
@@ -1352,7 +1354,24 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         && this.expectedStudy.getProjectExpectedStudyInfo().getTag().getTagName() != null) {
         tag = this.expectedStudy.getProjectExpectedStudyInfo(phase).getTag().getTagName();
       }
-      System.out.println("TAG " + tag);
+
+      // Set previous values
+      previousYear = this.expectedStudy.getProjectExpectedStudyInfo().getYear().intValue();
+
+      if (this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId() != null) {
+        previousMaturityID = this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId().intValue();
+      } else {
+        previousMaturityID = 0;
+      }
+
+      if (this.expectedStudy.getProjectExpectedStudyInfo().getTag() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getTag().getId() != null) {
+        previousTagID = this.expectedStudy.getProjectExpectedStudyInfo().getTag().getId().intValue();
+      } else {
+        previousTagID = 0;
+      }
+
       /*
        * get feedback comments
        */
@@ -1391,7 +1410,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.setBasePermission(this.getText(Permission.STUDIES_BASE_PERMISSION, params));
       }
     }
-    if (this.isHttpPost()) {
+    if (this.isHttpPost())
+
+    {
 
       // HTTP Post List
       if (this.expectedStudy.getCrps() != null) {
@@ -1524,12 +1545,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       // AR2022 Save
       this.saveReferences(this.expectedStudyDB, phase);
-
-      // Allow manual editing of OICRS tag field by super admins if specificity is enabled. This disables automatic
-      // operation for super admins.
-      if (!this.canAccessSuperAdmin() && !this.hasSpecificities(APConstants.OICR_TAG_FIELD_MANUAL_MANAGE_ACTIVE)) {
-        this.validateOICRTag(expectedStudyDB, phase);
-      }
 
       // try fixing a particular issue
       if (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null) {
@@ -1721,6 +1736,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
 
+      if (this.expectedStudy.getProjectExpectedStudyInfo().getTag() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getTag().getId() == -1) {
+        this.expectedStudy.getProjectExpectedStudyInfo().setTag(null);
+      }
+
       // REMOVED FOR AR 2020
       /*
        * if (this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null) {
@@ -1734,6 +1754,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       if (this.expectedStudy.getProjectExpectedStudyInfo().getIsPublic() == null) {
         this.expectedStudy.getProjectExpectedStudyInfo().setIsPublic(true);
+      }
+
+      // Allow manual editing of OICRS tag field by super admins if specificity is enabled. This disables automatic
+      // operation for super admins.
+      if (!this.canAccessSuperAdmin() || !this.hasSpecificities(APConstants.OICR_TAG_FIELD_MANUAL_MANAGE_ACTIVE)) {
+        this.validateOICRTag(expectedStudyDB, phase);
       }
 
       this.projectExpectedStudyInfoManager
@@ -2932,61 +2958,47 @@ public class ProjectExpectedStudiesAction extends BaseAction {
    * @param phase
    */
   public void validateOICRTag(ProjectExpectedStudy projectExpectedStudyDB, Phase phase) {
-    boolean tagChange = false;
-    // ProjectExpectedStudyInfo expectedStudyInfoPrev = projectExpectedStudyDB;
-    /*
-     * if (projectExpectedStudy != null && projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
-     * expectedStudyInfoPrev = this.projectExpectedStudyInfoManager
-     * .getProjectExpectedStudyInfoById(projectExpectedStudy.getProjectExpectedStudyInfo(phase).getId());
-     * }
-     */
 
-    if (projectExpectedStudyDB != null && projectExpectedStudyDB.getProjectExpectedStudyInfo(phase) != null
-      && this.expectedStudy != null) {
-      ProjectExpectedStudyInfo expectedStudyInfoPrev = projectExpectedStudyDB.getProjectExpectedStudyInfo(phase);
+
+    if (previousTagID == 0) {
+      /* New OICR: When creating a new OICR and maintaining the same "Current reporting year" */
+      if (phase != null && this.expectedStudy.getProjectExpectedStudyInfo() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getYear().intValue() == previousYear) {
+        this.expectedStudy.getProjectExpectedStudyInfo()
+          .setTag(projectExpectedStudyTagManager.getProjectExpectedStudyTagById(1));
+      }
+    }
+
+    if (previousTagID == 1) {
       /*
        * Updated OICR (Same level of
        * maturity)": When the reporting year of an OICR is updated without changing the "level
        * of maturity"
        */
       if (phase != null && this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
-        && this.expectedStudy.getProjectExpectedStudyInfo(phase).getRepIndStageStudy() != null
-        && this.expectedStudy.getProjectExpectedStudyInfo(phase).getRepIndStageStudy().getId() != null
-        && projectExpectedStudyDB != null && expectedStudyInfoPrev.getRepIndStageStudy() != null
-        && expectedStudyInfoPrev.getRepIndStageStudy().getId() != null
-        && expectedStudyInfoPrev.getRepIndStageStudy().getId() == expectedStudyInfoPrev.getRepIndStageStudy().getId()
-        && this.expectedStudy.getProjectExpectedStudyInfo(phase).getYear() != expectedStudyInfoPrev.getYear()) {
-        expectedStudyInfoPrev.setTag(projectExpectedStudyTagManager.getProjectExpectedStudyTagById(2));
-        tagChange = true;
+        && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId() != null
+        && previousMaturityID == this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId()
+          .intValue()
+        && this.expectedStudy.getProjectExpectedStudyInfo().getYear().intValue() != previousYear) {
+        this.expectedStudy.getProjectExpectedStudyInfo()
+          .setTag(projectExpectedStudyTagManager.getProjectExpectedStudyTagById(2));
       }
+    }
 
+    if (previousTagID == 1 || previousTagID == 2) {
       /*
        * Updated OICR (New level of maturity)": When the reporting year of an OICR is updated and the "level of
        * maturity"
        * have been change
        */
-      if (phase != null && this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
-        && this.expectedStudy.getProjectExpectedStudyInfo(phase).getRepIndStageStudy() != null
-        && this.expectedStudy.getProjectExpectedStudyInfo(phase).getRepIndStageStudy().getId() != null
-        && expectedStudyInfoPrev != null && expectedStudyInfoPrev.getRepIndStageStudy() != null
-        && expectedStudyInfoPrev.getRepIndStageStudy().getId() != null
-        && this.expectedStudy.getProjectExpectedStudyInfo(phase).getRepIndStageStudy().getId() != expectedStudyInfoPrev
-          .getRepIndStageStudy().getId()
-        && this.expectedStudy.getProjectExpectedStudyInfo(phase).getYear() != expectedStudyInfoPrev.getYear()) {
-        this.expectedStudy.getProjectExpectedStudyInfo(phase)
+      if (phase != null && this.expectedStudy.getProjectExpectedStudyInfo() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId() != null
+        && previousMaturityID != this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId()
+          .intValue()) {
+        this.expectedStudy.getProjectExpectedStudyInfo()
           .setTag(projectExpectedStudyTagManager.getProjectExpectedStudyTagById(3));
-        tagChange = true;
-
-      }
-
-      if (tagChange == false) {
-        /* New OICR: When creating a new OICR and maintaining the same "Current reporting year" */
-        if (phase != null && this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
-          && this.expectedStudy.getProjectExpectedStudyInfo(phase).getYear() == this.expectedStudy
-            .getProjectExpectedStudyInfo(phase).getYear()) {
-          this.expectedStudy.getProjectExpectedStudyInfo(phase)
-            .setTag(projectExpectedStudyTagManager.getProjectExpectedStudyTagById(1));
-        }
       }
     }
   }
