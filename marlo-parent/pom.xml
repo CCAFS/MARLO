@@ -112,6 +112,12 @@
 <!-- 		</repository> -->
 <!-- 	</repositories> -->
 
+<repositories>
+    <repository>
+        <id>pentaho-repo</id>
+        <url>https://repo.orl.eng.hitachivantara.com/artifactory/pnt-mvn/</url>
+    </repository>
+</repositories>
 	<!-- Common dependencies go here. -->
 	<dependencyManagement>
 		<dependencies>
@@ -212,83 +218,13 @@
 				<version>${ciat-adauth.version}</version>
 			</dependency>
 			<!-- PENTAHO dependencies -->
+			
 			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>core</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>extensions</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>base</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libdocbundle</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libfonts</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libformat</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libformula</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libloader</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>librepository</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libserializer</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libxml</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libswing</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libsparkline</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>charts</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>report-charts</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<!-- Logging Management -->
-			<dependency>
+    <groupId>org.pentaho.reporting.engine</groupId>
+    <artifactId>classic-core</artifactId>
+    <version>9.4.0.0-343</version>
+</dependency>
+<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${logback-classic.version}</version>

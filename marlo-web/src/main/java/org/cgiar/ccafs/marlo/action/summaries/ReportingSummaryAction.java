@@ -1116,6 +1116,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   @Override
   public String execute() throws Exception {
 
+    System.out.println(" linea 1119 ");
+
     if (this.getSelectedPhase() == null) {
       return NOT_FOUND;
     }
@@ -1135,6 +1137,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         + e.getMessage());
       hasW1W2Co = false;
     }
+
+    System.out.println(" linea 1141 ");
 
     // Fill target unit list
     targetUnitList = new HashMap<>();
@@ -1160,6 +1164,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     } catch (Exception e) {
       LOG.error("Error generating LOG info " + e.getMessage());
     }
+
+    System.out.println(" linea 1168 ");
 
     try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
       String masterQueryName = "Main_Query";
@@ -1215,6 +1221,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             regions.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
           }
         }
+
+        System.out.println(" linea 1225 ");
         // Set Main_Query
         CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
         TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
@@ -1225,6 +1233,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         masterReport = this.addi8nParameters(masterReport);
         // Set columns parameters (x and width)
         masterReport = this.addColumnParameters(masterReport);
+
+        System.out.println(" linea 1237 ");
 
         // Start Setting Planning Subreports
         // Subreport Description
@@ -1244,6 +1254,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           // args.clear();
           // this.fillSubreport((SubReport) hm.get("Description_CoAs"), "description_coas", args);
         }
+        System.out.println(" linea 1257 ");
         // Subreport Partners
         this.fillSubreport((SubReport) hm.get("partners"), "partners_count", args);
         // Subreport Partner Leader
@@ -1290,6 +1301,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           // this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
         }
 
+        System.out.println(" linea 1304 ");
+
         // Subreport Activities
         args.clear();
         if (this.getSelectedCycle().equals("Planning")) {
@@ -1321,6 +1334,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
 
       }
+      System.out.println(" linea 1337 ");
       PdfReportUtil.createPDF(masterReport, os);
       bytesPDF = os.toByteArray();
       os.close();
