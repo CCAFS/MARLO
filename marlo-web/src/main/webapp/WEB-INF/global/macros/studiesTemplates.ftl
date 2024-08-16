@@ -10,14 +10,14 @@
   [#local isStatusExtended = (element.projectExpectedStudyInfo.status.id == 4)!false]
   [#local isOtherStatus = (element.projectExpectedStudyInfo.status.id != 4)!false]
 
-<span id="parentID" style="display: none;">${expectedID!}</span>
-<span id="phaseID" style="display: none;">${phaseID!}</span>
-<span id="userID" style="display: none;">${currentUser.id!}</span>
-<span id="projectID" style="display: none;">${projectID!}</span>
-<span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
-<span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
-<span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
-<input type="hidden" id="sectionNameToFeedback" value="study" />
+  <span id="parentID" style="display: none;">${expectedID!}</span>
+  <span id="phaseID" style="display: none;">${phaseID!}</span>
+  <span id="userID" style="display: none;">${currentUser.id!}</span>
+  <span id="projectID" style="display: none;">${projectID!}</span>
+  <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
+  <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
+  <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
+  <input type="hidden" id="sectionNameToFeedback" value="study" />
 
 
   
@@ -29,246 +29,10 @@
       [#assign validateIsProgressWithStatus = true /]
     [/#if]
 
-    [#-- General: Component were the information is always visible --]
-    <div class="borderBox generalInformationStudies">
 
 
-      [#-- Note for General Inputs description --]
-      [#if isOutcomeCaseStudy] 
-        <div class="note--2">
-          <p>[@s.text name="study.general.note.allianceId" /]</p>
-          <p>[@s.text name="study.general.note.currentYearReport" /]</p>
-        </div>
-      [/#if]
-
-      [#-- Template for Other Studies --]
-      [#if !isOutcomeCaseStudy]
-        [#-- previous link --]
-          [#--
-          [#assign guideSheetURL = "https://drive.google.com/file/d/1sMmE8RK4mpDmJYl_S-bHy5CVK_ahCHr0/view" /]
-          --]
-        <div class="form-group">
-          [#assign guideSheetURL = "https://cgiar.sharepoint.com/sites/AICCRA/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting%2FGuidance%20for%20AICCRA%20Outcome%20Impact%20Case%20Reports%2Epdf&parent=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting&p=true&ga=1" /]
-          <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> Outcome Impact Case Report  -  Guideline </a> </small>
-        </div>
-        <br />
-      [/#if]
-
-
-      <div class="form-group row">
-
-        [#-- hr in elements --]
-        [#if isOutcomeCaseStudy]
-          <hr class="col-md-9 line-hr" />
-        [/#if]
-      
-        [#-- OICR ID --]
-        [#if isOutcomeCaseStudy]
-          <div class="col-md-1">
-            [@customForm.input name="${(expectedID)!}" i18nkey="study.id" helpIcon=false required=false editable=false readOnly=true /]
-          </div>
-        [/#if]
-
-        [#-- Study Type --]
-        <div class="${isOutcomeCaseStudy?string('col','col-md-3')}">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=(editable && !isOutcomeCaseStudy) display=(!isOutcomeCaseStudy) /]
-        </div>
-
-        [#-- Alliance OICR ID --]
-        [#if isOutcomeCaseStudy]
-          <div class="col-md-2">
-            [@customForm.input name="${customName}.projectExpectedStudyInfo.allianceOicr" i18nkey="study.allianceID" helpIcon=false required=false editable=editable className="targetValueAllianceId" /]
-          </div>
-        [/#if]
-
-        [#-- Tag --]
-        [#if isOutcomeCaseStudy]          
-        <div class="col-md-2">
-            [@customForm.input name="${customName}.projectExpectedStudyInfo.tag" i18nkey="study.tag" required=false editable=false /]
-          </div>
-        [/#if]
-
-        [#-- Score for MELIAs --]
-        [#if !isOutcomeCaseStudy && action.hasSpecificities('melia_score_field_active')]
-          <div class="col-md-2">
-            [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.score" helpIcon=false required=false editable=editable /]
-          </div>
-        [/#if]
-
-        [#-- Status --]
-        <div class="col-md-2">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.status.id" className="setSelect2 statusSelect" i18nkey="study.status" listName="statuses" keyFieldName="id"  displayFieldName="name" header=false required=true editable=editable /]
-        </div>
-
-        [#-- Year --]        
-        <div class="col-md-2">
-          [#assign dbExpectedYear = ((element.projectExpectedStudyInfo.year)!currentCycleYear)  ]
-          
-           [#--
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="getExpectedStudiesYears(${(expectedID)!})" header=false required=true editable=editable /]
-            --]  
-          
-         <div class="block-extendedYear" style="display:${isStatusExtended?string('block', 'none')}">
-            [@customForm.select name="newExpectedYear" className="setSelect2" i18nkey="study.year" listName="project.projectInfo.getYears(${currentCycleYear})" header=false required=true editable=editable /]
-          </div>
-          <div class="block-year" style="display:${(!isStatusExtended && isOtherStatus)?string('block', 'none')}">
-            [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="getExpectedStudiesYears(${(expectedID)!})" header=false required=true editable=editable /]
-          </div>
-        </div>
-
-        [#-- Buttons - Shared Cluster & Copy --]
-        [#if isOutcomeCaseStudy]
-          <div class="col-md-3 generalStudyOptions">
-            <button type="button" class="btn btn-default btn-sm" style="margin-right: 5px;" data-toggle="modal" data-target="#sharedClusterModal">
-              <p><span class="glyphicon glyphicon-log-out"></span> Share OICR with Clusters</p>
-              <p id="modalCounterShared">0</p>
-            </button>
-
-            [#-- Link to PDF version of this study --]
-            [#-- 0. Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
-            <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px;">
-              <p><span class="glyphicon glyphicon-duplicate"></span> Copy OICR link (PDF Format)</p> 
-            </button>
-            [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
-            [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable display=false readOnly=true/]
-            <div class="message text-center" style="display:none; margin-top:6px;">Copied!</div>
-          </div>
-        [/#if]
-
-        [#-- Shared Cluster Modal --]
-        <div class="form-group col-md-12 sharedClusterMessage">
-          <div class="modal fade" id="sharedClusterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable" style=" width:80%" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h4 class="modal-title" id="exampleModalLabel">Share OICR</h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <h5 class="headTitle">[@s.text name="study.sharedProjects.title" /]</h5>
-                  <div class="borderBox">
-                    [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="clearfix"></div>
-        </div>
-          
-
-      </div>
-      
-
-
-      [#-- Evidences table with types and their descriptions --]
-      [#if !((element.projectExpectedStudyInfo.studyType.id == 1)!false)]
-          <div class="note left" style="margin: 10px 0px; font-size: .85em; padding: 4px; border-radius: 10px;">
-            <div id="popup" class="helpMessage3">
-              <p><a style="cursor: pointer;" data-toggle="modal" data-target="#evidenceModal" > <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="study.generalInformation.studyType" /]</a></p>
-            </div>
-          </div>
-      [#if (reportingActive)!false]
-      <div class="form-group analysisGroup">
-        <label for="">[@s.text name="study.covidAnalysis" /]:[@customForm.req required=false /]
-        </label>        
-        <div class="form-group">
-          [#assign covidAnalisis = "covidAnalisis"]
-          [#assign showAnalysis = (expectedStudy.projectExpectedStudyInfo.hasCovidAnalysis?string)!"" /]
-          [@customForm.radioFlat id="${covidAnalisis}-yes" name="${customName}.projectExpectedStudyInfo.hasCovidAnalysis" label="Yes" value="true" checked=(showAnalysis == "true") cssClassLabel="radio-label-yes" editable=editable /]
-          [@customForm.radioFlat id="${covidAnalisis}-no" name="${customName}.projectExpectedStudyInfo.hasCovidAnalysis" label="No" value="false" checked=(showAnalysis == "false") cssClassLabel="radio-label-no" editable=editable /]
-        </div>  
-      </div>
-      [/#if]
-
-
-        <div class="form-group evidenceTypeMessage">
-          <div class="modal fade" id="evidenceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable" style=" width:80%" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <!-- <h5 class="modal-title" id="exampleModalLabel">Modal title</h5> -->
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  
-                  <table id="evidenceTypes" class="table ">
-                    <thead style="background-color: #0b7ba6; font-weight: 500; color: white;">
-                      <tr>
-                        <th> [@s.text name="study.dialogMessage.part1" /]</th>
-                        <th > [@s.text name="study.dialogMessage.part2" /] </th>
-                        <th> [@s.text name="study.dialogMessage.part3" /] / [@s.text name="study.dialogMessage.part4" /] </th>
-                      </tr>
-                    </thead>
-
-                    [#if studyTypes?has_content]
-                    [#list studyTypes as st]
-                    <tr>
-                      [#--if st_index == 0]
-                      <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
-                      [/#if--]
-                      <td  >
-                        ${st.name}
-                      </td>
-                      <td style="max-width: 90vw !important;">
-                      [#if (st.description?has_content)!false]
-                        ${st.description}
-                      [#else]
-                        <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
-                      [/#if]
-                      </td>
-                      <td>
-                        [#if (((st.keyIdentifier?has_content)!false) || ((st.forNarrative?has_content)!false) || ((st.example?has_content)!false))]
-                          [#if (st.keyIdentifier?has_content)!false]
-                            <i><u>How to identify?</u></i> ${st.keyIdentifier}
-                          [/#if]
-                          [#if (st.forNarrative?has_content)!false]
-                            <br><i><u>For:</u></i> ${st.forNarrative}
-                          [/#if]
-                          [#if (st.example?has_content)!false]
-                            <br /> (<i><small>Example: ${st.example}</small></i>)
-                          [/#if]
-                        [#else]
-                          <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
-                        [/#if]
-                      </td>
-                    </tr>
-                    [/#list]
-                    [/#if]
-                  </table>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="clearfix"></div>
-        </div>
-      [/#if]  
-      [#-- REMOVED FOR AR 2020 --]
-      [#--]if isOutcomeCaseStudy]
-        <hr />
-        [#-- Tags]
-        <div class="form-group">
-          <label for="">[@s.text name="study.tags" /]:[@customForm.req required=editable /]</label>
-          [#local tagValue = (element.projectExpectedStudyInfo.evidenceTag.id)!-1 ]
-          [#list tags as tag]
-            <br /> [@customForm.radioFlat id="tag-${tag_index}" name="${customName}.projectExpectedStudyInfo.evidenceTag.id" label="${tag.name}" value="${tag.id}" checked=(tagValue == tag.id) cssClass="radioType-tags" cssClassLabel="font-normal" editable=editable /] 
-          [/#list]
-        </div>
-      [/#if] --]
-    </div>
-
+  	
+    [#-- General Information: General Information Manage for all studies --]
     <div class="borderBox">
       [#-- 0. Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
         [#if !isOutcomeCaseStudy]
@@ -509,7 +273,7 @@
               [@customForm.elementsListComponent name="${customName}.projectOutcomes" elementType="projectOutcome" elementList=(element.projectOutcomes)![] label="study.outcomes"  listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName" required=false/]
             </div>          
         </div>
-  --]   
+      --]   
 
       [#-- 7. Key Contributors  --]
       <div class="form-group">
@@ -849,6 +613,247 @@
       [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
     </div>
     [/#if]
+  </div>
+[/#macro]
+
+[#macro studyGeneral element name index=-1 template=false fromProject=true]
+  [#local customName = "${name}"/]
+  [#local isOutcomeCaseStudy = ((element.projectExpectedStudyInfo.studyType.id == 1)!false)/]
+  [#local isStatusExtended = (element.projectExpectedStudyInfo.status.id == 4)!false]
+  [#local isOtherStatus = (element.projectExpectedStudyInfo.status.id != 4)!false]
+
+  <div class="borderBox generalInformationStudies">
+
+    [#-- Note for General Inputs description --]
+    [#if isOutcomeCaseStudy] 
+      <div class="note--2">
+        <p>[@s.text name="study.general.note.allianceId" /]</p>
+        <p>[@s.text name="study.general.note.currentYearReport" /]</p>
+      </div>
+    [/#if]
+
+    [#-- Template for Other Studies --]
+    [#if !isOutcomeCaseStudy]
+      [#-- previous link --]
+        [#--
+        [#assign guideSheetURL = "https://drive.google.com/file/d/1sMmE8RK4mpDmJYl_S-bHy5CVK_ahCHr0/view" /]
+        --]
+      <div class="form-group">
+        [#assign guideSheetURL = "https://cgiar.sharepoint.com/sites/AICCRA/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting%2FGuidance%20for%20AICCRA%20Outcome%20Impact%20Case%20Reports%2Epdf&parent=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting&p=true&ga=1" /]
+        <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> Outcome Impact Case Report  -  Guideline </a> </small>
+      </div>
+      <br />
+    [/#if]
+
+    [#-- General Inputs --]
+    <div class="form-group row">
+
+      [#-- hr in elements --]
+      [#if isOutcomeCaseStudy]
+        <hr class="col-md-9 line-hr" />
+      [/#if]
+    
+      [#-- OICR ID --]
+      [#if isOutcomeCaseStudy]
+        <div class="col-md-1">
+          [@customForm.input name="${(expectedID)!}" i18nkey="study.id" helpIcon=false required=false editable=false readOnly=true /]
+        </div>
+      [/#if]
+
+      [#-- Study Type --]
+      <div class="${isOutcomeCaseStudy?string('col','col-md-3')}">
+        [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=(editable && !isOutcomeCaseStudy) display=(!isOutcomeCaseStudy) /]
+      </div>
+
+      [#-- Alliance OICR ID --]
+      [#if isOutcomeCaseStudy]
+        <div class="col-md-2">
+          [@customForm.input name="${customName}.projectExpectedStudyInfo.allianceOicr" i18nkey="study.allianceID" helpIcon=false required=false editable=editable className="targetValueAllianceId" /]
+        </div>
+      [/#if]
+
+      [#-- Tag --]
+      [#if isOutcomeCaseStudy]          
+      <div class="col-md-2">
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.tag.id" value="${(element.projectExpectedStudyInfo.tag.id)!-1}" className="setSelect2 studyTag" i18nkey="study.tag" listName="tagList" keyFieldName="id"  displayFieldName="tagName" required=false editable=(editable && isOutcomeCaseStudy && action.canAccessSuperAdmin()) && action.hasSpecificities('oicr_tag_field_manual_manage_active') /]
+        </div>
+      [/#if]
+
+      [#-- Score for MELIAs --]
+      [#if !isOutcomeCaseStudy && action.hasSpecificities('melia_score_field_active')]
+        <div class="col-md-2">
+          [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.score" helpIcon=false required=false editable=editable /]
+        </div>
+      [/#if]
+
+      [#-- Status --]
+      <div class="col-md-2">
+        [@customForm.select name="${customName}.projectExpectedStudyInfo.status.id" className="setSelect2 statusSelect" i18nkey="study.status" listName="statuses" keyFieldName="id"  displayFieldName="name" header=false required=true editable=editable /]
+      </div>
+
+      [#-- Year --]        
+      <div class="col-md-2">
+        [#assign dbExpectedYear = ((element.projectExpectedStudyInfo.year)!currentCycleYear)  ]
+        
+          [#--
+        [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="getExpectedStudiesYears(${(expectedID)!})" header=false required=true editable=editable /]
+          --]  
+        
+        <div class="block-extendedYear" style="display:${isStatusExtended?string('block', 'none')}">
+          [@customForm.select name="newExpectedYear" className="setSelect2" i18nkey="study.year" listName="project.projectInfo.getYears(${currentCycleYear})" header=false required=true editable=editable /]
+        </div>
+        <div class="block-year" style="display:${(!isStatusExtended && isOtherStatus)?string('block', 'none')}">
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="getExpectedStudiesYears(${(expectedID)!})" header=false required=true editable=editable /]
+        </div>
+      </div>
+
+      [#-- Buttons - Shared Cluster & Copy --]
+      [#if isOutcomeCaseStudy]
+        <div class="col-md-3 generalStudyOptions">
+          <button type="button" class="btn btn-default btn-sm" style="margin-right: 5px;" data-toggle="modal" data-target="#sharedClusterModal">
+            <p><span class="glyphicon glyphicon-log-out"></span> Share OICR with Clusters</p>
+            <p id="modalCounterShared">0</p>
+          </button>
+
+          [#-- Link to PDF version of this study --]
+          [#-- 0. Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
+          <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px;">
+            <p><span class="glyphicon glyphicon-duplicate"></span> Copy OICR link (PDF Format)</p> 
+          </button>
+          [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+          [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable display=false readOnly=true/]
+          <div class="message text-center" style="display:none; margin-top:6px;">Copied!</div>
+        </div>
+      [/#if]
+
+      [#-- Shared Cluster Modal --]
+      <div class="form-group col-md-12 sharedClusterMessage">
+        <div class="modal fade" id="sharedClusterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable" style=" width:80%" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Share OICR</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <h5 class="headTitle">[@s.text name="study.sharedProjects.title" /]</h5>
+                [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="clearfix"></div>
+      </div>
+        
+
+    </div>
+    
+    [#-- Evidences table with types and their descriptions --]
+    [#if !((element.projectExpectedStudyInfo.studyType.id == 1)!false)]
+        <div class="note left" style="margin: 10px 0px; font-size: .85em; padding: 4px; border-radius: 10px;">
+            <div id="popup" class="helpMessage3">
+              <p><a style="cursor: pointer;" data-toggle="modal" data-target="#evidenceModal" > <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="study.generalInformation.studyType" /]</a></p>
+            </div>
+          </div>
+      [#if (reportingActive)!false]
+      <div class="form-group analysisGroup">
+        <label for="">[@s.text name="study.covidAnalysis" /]:[@customForm.req required=false /]
+        </label>        
+        <div class="form-group">
+          [#assign covidAnalisis = "covidAnalisis"]
+          [#assign showAnalysis = (expectedStudy.projectExpectedStudyInfo.hasCovidAnalysis?string)!"" /]
+          [@customForm.radioFlat id="${covidAnalisis}-yes" name="${customName}.projectExpectedStudyInfo.hasCovidAnalysis" label="Yes" value="true" checked=(showAnalysis == "true") cssClassLabel="radio-label-yes" editable=editable /]
+          [@customForm.radioFlat id="${covidAnalisis}-no" name="${customName}.projectExpectedStudyInfo.hasCovidAnalysis" label="No" value="false" checked=(showAnalysis == "false") cssClassLabel="radio-label-no" editable=editable /]
+        </div>  
+      </div>
+      [/#if]
+
+
+        <div class="form-group evidenceTypeMessage">
+          <div class="modal fade" id="evidenceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable" style=" width:80%" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <!-- <h5 class="modal-title" id="exampleModalLabel">Modal title</h5> -->
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  
+                  <table id="evidenceTypes" class="table ">
+                    <thead style="background-color: #0b7ba6; font-weight: 500; color: white;">
+                      <tr>
+                        <th> [@s.text name="study.dialogMessage.part1" /]</th>
+                        <th > [@s.text name="study.dialogMessage.part2" /] </th>
+                        <th> [@s.text name="study.dialogMessage.part3" /] / [@s.text name="study.dialogMessage.part4" /] </th>
+                      </tr>
+                    </thead>
+
+                    [#if studyTypes?has_content]
+                    [#list studyTypes as st]
+                    <tr>
+                      [#--if st_index == 0]
+                      <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
+                      [/#if--]
+                      <td  >
+                        ${st.name}
+                      </td>
+                      <td style="max-width: 90vw !important;">
+                      [#if (st.description?has_content)!false]
+                        ${st.description}
+                      [#else]
+                        <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
+                      [/#if]
+                      </td>
+                      <td>
+                        [#if (((st.keyIdentifier?has_content)!false) || ((st.forNarrative?has_content)!false) || ((st.example?has_content)!false))]
+                          [#if (st.keyIdentifier?has_content)!false]
+                            <i><u>How to identify?</u></i> ${st.keyIdentifier}
+                          [/#if]
+                          [#if (st.forNarrative?has_content)!false]
+                            <br><i><u>For:</u></i> ${st.forNarrative}
+                          [/#if]
+                          [#if (st.example?has_content)!false]
+                            <br /> (<i><small>Example: ${st.example}</small></i>)
+                          [/#if]
+                        [#else]
+                          <i>([@s.text name="study.dialogMessage.notProvided" /])</i>
+                        [/#if]
+                      </td>
+                    </tr>
+                    [/#list]
+                    [/#if]
+                  </table>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="clearfix"></div>
+        </div>
+      [/#if]  
+        [#-- REMOVED FOR AR 2020 --]
+        [#--]if isOutcomeCaseStudy]
+          <hr />
+          [#-- Tags]
+          <div class="form-group">
+            <label for="">[@s.text name="study.tags" /]:[@customForm.req required=editable /]</label>
+            [#local tagValue = (element.projectExpectedStudyInfo.evidenceTag.id)!-1 ]
+            [#list tags as tag]
+              <br /> [@customForm.radioFlat id="tag-${tag_index}" name="${customName}.projectExpectedStudyInfo.evidenceTag.id" label="${tag.name}" value="${tag.id}" checked=(tagValue == tag.id) cssClass="radioType-tags" cssClassLabel="font-normal" editable=editable /] 
+            [/#list]
+          </div>
+        [/#if] --]
   </div>
 [/#macro]
 

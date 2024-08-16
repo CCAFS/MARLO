@@ -49,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyReferenceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyTagManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
@@ -95,6 +96,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyTag;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -211,6 +213,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   // AR 2022 Managers
   private ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager;
+  private ProjectExpectedStudyTagManager projectExpectedStudyTagManager;
 
   // Variables
   private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
@@ -244,6 +247,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<Project> myProjects;
   private List<FeedbackQACommentableFields> feedbackComments;
   private String transaction;
+  private String tag;
+  private int previousYear;
+  private int previousMaturityID;
+  private int previousTagID;
 
   // AR 2018 Sel-List
   private List<EvidenceTag> tags;
@@ -255,6 +262,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private int newExpectedYear;
   private List<ProjectOutcome> projectOutcomes;
   private List<CrpProgramOutcome> crpOutcomes;
+  private List<ProjectExpectedStudyTag> tagList;
 
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -289,7 +297,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager,
     ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager,
-    ProjectExpectedStudyCrpOutcomeManager projectExpectedStudyCrpOutcomeManager) {
+    ProjectExpectedStudyCrpOutcomeManager projectExpectedStudyCrpOutcomeManager,
+    ProjectExpectedStudyTagManager projectExpectedStudyTagManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -343,6 +352,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.projectExpectedStudyCrpOutcomeManager = projectExpectedStudyCrpOutcomeManager;
     this.projectExpectedStudyReferenceManager = projectExpectedStudyReferenceManager;
+    this.projectExpectedStudyTagManager = projectExpectedStudyTagManager;
   }
 
   /**
@@ -532,6 +542,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public List<SrfSubIdo> getSubIdos() {
     return this.subIdos;
+  }
+
+  public String getTag() {
+    return tag;
+  }
+
+  public List<ProjectExpectedStudyTag> getTagList() {
+    return tagList;
   }
 
   public List<EvidenceTag> getTags() {
@@ -1095,6 +1113,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.tags = this.evidenceTagManager.findAll();
       this.innovationsList = new ArrayList<>();
       this.policyList = new ArrayList<>();
+      this.tagList = this.projectExpectedStudyTagManager.findAll();
 
       // Expected Study Projects List
       if (this.expectedStudy.getExpectedStudyProjects() != null) {
@@ -1329,6 +1348,30 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         newExpectedYear = this.expectedStudy.getProjectExpectedStudyInfo().getYear();
       }
 
+      // Load OICR tag
+      if (this.expectedStudy.getProjectExpectedStudyInfo() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getTag() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getTag().getTagName() != null) {
+        tag = this.expectedStudy.getProjectExpectedStudyInfo(phase).getTag().getTagName();
+      }
+
+      // Set previous values
+      previousYear = this.expectedStudy.getProjectExpectedStudyInfo().getYear().intValue();
+
+      if (this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId() != null) {
+        previousMaturityID = this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId().intValue();
+      } else {
+        previousMaturityID = 0;
+      }
+
+      if (this.expectedStudy.getProjectExpectedStudyInfo().getTag() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getTag().getId() != null) {
+        previousTagID = this.expectedStudy.getProjectExpectedStudyInfo().getTag().getId().intValue();
+      } else {
+        previousTagID = 0;
+      }
+
       /*
        * get feedback comments
        */
@@ -1367,7 +1410,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.setBasePermission(this.getText(Permission.STUDIES_BASE_PERMISSION, params));
       }
     }
-    if (this.isHttpPost()) {
+    if (this.isHttpPost())
+
+    {
 
       // HTTP Post List
       if (this.expectedStudy.getCrps() != null) {
@@ -1462,7 +1507,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.expectedStudy.getProjectExpectedStudyInfo().setStatus(null);
 
       this.expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(null);
-
+      this.expectedStudy.getProjectExpectedStudyInfo().setTag(null);
     }
 
   }
@@ -1691,6 +1736,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
 
+      if (this.expectedStudy.getProjectExpectedStudyInfo().getTag() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getTag().getId() == -1) {
+        this.expectedStudy.getProjectExpectedStudyInfo().setTag(null);
+      }
+
       // REMOVED FOR AR 2020
       /*
        * if (this.expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null) {
@@ -1704,6 +1754,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       if (this.expectedStudy.getProjectExpectedStudyInfo().getIsPublic() == null) {
         this.expectedStudy.getProjectExpectedStudyInfo().setIsPublic(true);
+      }
+
+      // Allow manual editing of OICRS tag field by super admins if specificity is enabled. This disables automatic
+      // operation for super admins.
+      if (!this.canAccessSuperAdmin() || !this.hasSpecificities(APConstants.OICR_TAG_FIELD_MANUAL_MANAGE_ACTIVE)) {
+        this.validateOICRTag(expectedStudyDB, phase);
       }
 
       this.projectExpectedStudyInfoManager
@@ -1860,7 +1916,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * Save Expected Studies Crps Information
@@ -2517,7 +2572,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Expected Studies Regions Information
    * 
@@ -2870,6 +2924,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.subIdos = subIdos;
   }
 
+  public void setTag(String tag) {
+    this.tag = tag;
+  }
+
+  public void setTagList(List<ProjectExpectedStudyTag> tagList) {
+    this.tagList = tagList;
+  }
+
   public void setTags(List<EvidenceTag> tags) {
     this.tags = tags;
   }
@@ -2889,4 +2951,56 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+  /**
+   * Validate OICR tag comparing level of maturity and year changes
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void validateOICRTag(ProjectExpectedStudy projectExpectedStudyDB, Phase phase) {
+
+
+    if (previousTagID == 0) {
+      /* New OICR: When creating a new OICR and maintaining the same "Current reporting year" */
+      if (phase != null && this.expectedStudy.getProjectExpectedStudyInfo() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getYear().intValue() == previousYear) {
+        this.expectedStudy.getProjectExpectedStudyInfo()
+          .setTag(projectExpectedStudyTagManager.getProjectExpectedStudyTagById(1));
+      }
+    }
+
+    if (previousTagID == 1) {
+      /*
+       * Updated OICR (Same level of
+       * maturity)": When the reporting year of an OICR is updated without changing the "level
+       * of maturity"
+       */
+      if (phase != null && this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId() != null
+        && previousMaturityID == this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId()
+          .intValue()
+        && this.expectedStudy.getProjectExpectedStudyInfo().getYear().intValue() != previousYear) {
+        this.expectedStudy.getProjectExpectedStudyInfo()
+          .setTag(projectExpectedStudyTagManager.getProjectExpectedStudyTagById(2));
+      }
+    }
+
+    if (previousTagID == 1 || previousTagID == 2) {
+      /*
+       * Updated OICR (New level of maturity)": When the reporting year of an OICR is updated and the "level of
+       * maturity"
+       * have been change
+       */
+      if (phase != null && this.expectedStudy.getProjectExpectedStudyInfo() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId() != null
+        && previousMaturityID != this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId()
+          .intValue()) {
+        this.expectedStudy.getProjectExpectedStudyInfo()
+          .setTag(projectExpectedStudyTagManager.getProjectExpectedStudyTagById(3));
+      }
+    }
+  }
 }
+

@@ -480,6 +480,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private HashMap<Integer, Integer> completedeliverableListbyPhase = new HashMap<Integer, Integer>();
 
+  // OICR validation variables
+  private boolean isOicrGeneralInformationComplete = false;
+
+  private boolean isOicrAllianceAlignmentComplete = false;
+
+
+  private boolean isOicrOneCgiarAlignmentComplete = false;
+
+
+  private boolean isOicrCommunicationsComplete = false;
+
 
   public BaseAction() {
     this.saveable = true;
@@ -506,6 +517,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     super.addActionError(anErrorMessage);
   }
 
+
   /**
    * This function add a flag (--warn--) to the message in order to give a
    * different style to the success message using javascript once the html is
@@ -516,6 +528,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void addActionWarning(String message) {
     this.addActionMessage("--warn--" + message);
   }
+
 
   public void addMessage(String message) {
     if (!StringUtils.stripToEmpty(message).isEmpty()) {
@@ -573,6 +586,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public boolean canAccessSuperAdmin() {
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
@@ -593,6 +607,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     LOG.debug(String.valueOf(this.securityContext.hasPermission(permission)));
     return this.securityContext.hasPermission(permission);
   }
+
 
   public boolean canAcessCrp() {
     return this.canAcessPublications() || this.canAcessSynthesisMog();
@@ -654,6 +669,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     }
   }
+
 
   public boolean canAcessSynthesisMog() {
     String permission = this.generatePermission(Permission.SYNTHESIS_BY_MOG_PERMISSION, this.getCrpSession());
@@ -1647,7 +1663,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   /**
    * ***********************CENTER METHOD******************** Check if the
    * capDev section is Active
@@ -1783,6 +1798,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return synthesis;
   }
+
 
   /**
    * Create a liaison institution Annual Report Synthesis in this phase
@@ -3551,7 +3567,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return rules;
   }
 
-
   public List<HistoryDifference> getDifferences() {
     return this.differences;
   }
@@ -3970,7 +3985,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return expectedStudies;
   }
 
-
   public List<Integer> getExpectedStudiesYears(Long expectedStudy) {
     List<Integer> allYears = new ArrayList<>();
     try {
@@ -4080,6 +4094,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   /**
    * Get the folder path according if the user navigate in center,crp or
    * platform sections.
@@ -4179,6 +4194,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return innovations;
   }
+
 
   public SectionStatus getInnovationStatus(long innovationID) {
 
@@ -7272,7 +7288,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   /**
    * This method get the status of an specific deliverable depending of the
    * sectionStatuses and the year Previous deliverable will be marked as
@@ -7344,7 +7359,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * Validate if a deliverable belongs to the phase
    * 
@@ -7374,11 +7388,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean isDraft() {
     return this.draft;
   }
-
 
   public boolean isEditable() {
     return this.isEditable;
@@ -7405,6 +7417,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
+
 
   public boolean isEntityPlatform() {
     if (this.getCurrentCrp() != null) {
@@ -7442,6 +7455,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public boolean isExpectedDeliverablesReportAllYearsVisible() {
     // Specificity for show expected deliverable summary - all years selection - in summaries section
     Boolean isVisible = false;
@@ -7458,6 +7472,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return isVisible;
   }
+
 
   /**
    * Findable
@@ -7496,6 +7511,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
   public boolean isFullEditable() {
     return this.fullEditable;
@@ -7654,6 +7670,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return false;
 
+  }
+
+  public boolean isOicrAllianceAlignmentComplete() {
+    return isOicrAllianceAlignmentComplete;
+  }
+
+  public boolean isOicrCommunicationsComplete() {
+    return isOicrCommunicationsComplete;
+  }
+
+  public boolean isOicrGeneralInformationComplete() {
+    return isOicrGeneralInformationComplete;
+  }
+
+  public boolean isOicrOneCgiarAlignmentComplete() {
+    return isOicrOneCgiarAlignmentComplete;
   }
 
   public boolean isOtherUrl() {
@@ -8777,6 +8809,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setNext(boolean next) {
     this.next = true;
+  }
+
+  public void setOicrAllianceAlignmentComplete(boolean isOicrAllianceAlignmentComplete) {
+    this.isOicrAllianceAlignmentComplete = isOicrAllianceAlignmentComplete;
+  }
+
+  public void setOicrCommunicationsComplete(boolean isOicrCommunicationsComplete) {
+    this.isOicrCommunicationsComplete = isOicrCommunicationsComplete;
+  }
+
+  public void setOicrGeneralInformationComplete(boolean isOicrGeneralInformationComplete) {
+    this.isOicrGeneralInformationComplete = isOicrGeneralInformationComplete;
+  }
+
+  public void setOicrOneCgiarAlignmentComplete(boolean isOicrOneCgiarAlignmentComplete) {
+    this.isOicrOneCgiarAlignmentComplete = isOicrOneCgiarAlignmentComplete;
   }
 
   public void setOtherUrl(boolean otherUrl) {
