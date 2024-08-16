@@ -267,9 +267,10 @@
       [/#if] --]
     </div>
 
-    [#-- Tabs: Component ]
+    [#-- Tabs: Component were control the system visualization --]
+    
   	
-
+    [#-- General Information: General Information Manage for all studies --]
     <div class="borderBox">
       [#-- 0. Link to PDF version of this study: AR 2020 and onwards -> ALL OICRs are ALWAYS public--]
         [#if !isOutcomeCaseStudy]
@@ -510,7 +511,7 @@
               [@customForm.elementsListComponent name="${customName}.projectOutcomes" elementType="projectOutcome" elementList=(element.projectOutcomes)![] label="study.outcomes"  listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName" required=false/]
             </div>          
         </div>
-  --]   
+      --]   
 
       [#-- 7. Key Contributors  --]
       <div class="form-group">
