@@ -85,6 +85,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
@@ -96,6 +97,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyTag;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -258,6 +260,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private int newExpectedYear;
   private List<ProjectOutcome> projectOutcomes;
   private List<CrpProgramOutcome> crpOutcomes;
+  private List<ProjectExpectedStudyTag> tagList;
 
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -541,6 +544,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public String getTag() {
     return tag;
+  }
+
+  public List<ProjectExpectedStudyTag> getTagList() {
+    return tagList;
   }
 
   public List<EvidenceTag> getTags() {
@@ -1104,6 +1111,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.tags = this.evidenceTagManager.findAll();
       this.innovationsList = new ArrayList<>();
       this.policyList = new ArrayList<>();
+      this.tagList = this.projectExpectedStudyTagManager.findAll();
 
       // Expected Study Projects List
       if (this.expectedStudy.getExpectedStudyProjects() != null) {
@@ -1516,6 +1524,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       // AR2022 Save
       this.saveReferences(this.expectedStudyDB, phase);
+
+      // this.validateOICRTag(expectedStudyDB, phase);
 
       // try fixing a particular issue
       if (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null) {
@@ -2888,6 +2898,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.tag = tag;
   }
 
+  public void setTagList(List<ProjectExpectedStudyTag> tagList) {
+    this.tagList = tagList;
+  }
+
   public void setTags(List<EvidenceTag> tags) {
     this.tags = tags;
   }
@@ -2906,4 +2920,71 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.projectExpectedStudiesValidator.validate(this, this.project, this.expectedStudy, true);
     }
   }
+
+  /**
+   * Validate OICR tag comparing level of maturity and year changes
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void validateOICRTag(ProjectExpectedStudy projectExpectedStudyDB, Phase phase) {
+    boolean tagChange = false;
+    // ProjectExpectedStudyInfo expectedStudyInfoPrev = projectExpectedStudyDB;
+    /*
+     * if (projectExpectedStudy != null && projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
+     * expectedStudyInfoPrev = this.projectExpectedStudyInfoManager
+     * .getProjectExpectedStudyInfoById(projectExpectedStudy.getProjectExpectedStudyInfo(phase).getId());
+     * }
+     */
+
+    if (projectExpectedStudyDB != null && projectExpectedStudyDB.getProjectExpectedStudyInfo(phase) != null
+      && this.expectedStudy != null) {
+      ProjectExpectedStudyInfo expectedStudyInfoPrev = projectExpectedStudyDB.getProjectExpectedStudyInfo(phase);
+      /*
+       * Updated OICR (Same level of
+       * maturity)": When the reporting year of an OICR is updated without changing the "level
+       * of maturity"
+       */
+      if (phase != null && this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
+        && this.expectedStudy.getProjectExpectedStudyInfo(phase).getRepIndStageStudy() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo(phase).getRepIndStageStudy().getId() != null
+        && projectExpectedStudyDB != null && expectedStudyInfoPrev.getRepIndStageStudy() != null
+        && expectedStudyInfoPrev.getRepIndStageStudy().getId() != null
+        && expectedStudyInfoPrev.getRepIndStageStudy().getId() == expectedStudyInfoPrev.getRepIndStageStudy().getId()
+        && this.expectedStudy.getProjectExpectedStudyInfo(phase).getYear() != expectedStudyInfoPrev.getYear()) {
+        expectedStudyInfoPrev.setTag(projectExpectedStudyTagManager.getProjectExpectedStudyTagById(2));
+        tagChange = true;
+      }
+
+      /*
+       * Updated OICR (New level of maturity)": When the reporting year of an OICR is updated and the "level of
+       * maturity"
+       * have been change
+       */
+      if (phase != null && this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
+        && this.expectedStudy.getProjectExpectedStudyInfo(phase).getRepIndStageStudy() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo(phase).getRepIndStageStudy().getId() != null
+        && expectedStudyInfoPrev != null && expectedStudyInfoPrev.getRepIndStageStudy() != null
+        && expectedStudyInfoPrev.getRepIndStageStudy().getId() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo(phase).getRepIndStageStudy().getId() != expectedStudyInfoPrev
+          .getRepIndStageStudy().getId()
+        && this.expectedStudy.getProjectExpectedStudyInfo(phase).getYear() != expectedStudyInfoPrev.getYear()) {
+        this.expectedStudy.getProjectExpectedStudyInfo(phase)
+          .setTag(projectExpectedStudyTagManager.getProjectExpectedStudyTagById(3));
+        tagChange = true;
+
+      }
+
+      if (tagChange == false) {
+        /* New OICR: When creating a new OICR and maintaining the same "Current reporting year" */
+        if (phase != null && this.expectedStudy.getProjectExpectedStudyInfo(phase) != null
+          && this.expectedStudy.getProjectExpectedStudyInfo(phase).getYear() == this.expectedStudy
+            .getProjectExpectedStudyInfo(phase).getYear()) {
+          this.expectedStudy.getProjectExpectedStudyInfo(phase)
+            .setTag(projectExpectedStudyTagManager.getProjectExpectedStudyTagById(1));
+        }
+      }
+    }
+  }
 }
+
