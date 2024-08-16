@@ -107,8 +107,10 @@
 
           <div id="caseStudiesBlock" class="">
 
-            [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0  /]
+            [#-- General: Component were the information is always visible --]
+            [@studies.studyGeneral element=(expectedStudy)!{} name="expectedStudy" index=0  /]
 
+            [#-- Content: All the information of the case study --]
             <input id="indexTab" name="indexTab" type="hidden" value="${(indexTab)!0}">
 
             <div class="studiesTab">
@@ -127,7 +129,7 @@
               <div class="tab-content ">
 
                 <div id="study-generalInformation" role="tabpanel" class="tab-pane fade [#if indexTab==1 || indexTab==0]in active[/#if]">
-                  General Information
+                  [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0  /]
                 </div>
 
                 <div id="study-alliance" role="tabpanel" class="tab-pane fade [#if indexTab==2]in active[/#if]">
