@@ -1525,7 +1525,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       // AR2022 Save
       this.saveReferences(this.expectedStudyDB, phase);
 
-      // this.validateOICRTag(expectedStudyDB, phase);
+      // Allow manual editing of OICRS tag field by super admins if specificity is enabled. This disables automatic
+      // operation for super admins.
+      if (!this.canAccessSuperAdmin() && !this.hasSpecificities(APConstants.OICR_TAG_FIELD_MANUAL_MANAGE_ACTIVE)) {
+        this.validateOICRTag(expectedStudyDB, phase);
+      }
 
       // try fixing a particular issue
       if (this.expectedStudy.getProjectExpectedStudyInfo(phase) != null) {

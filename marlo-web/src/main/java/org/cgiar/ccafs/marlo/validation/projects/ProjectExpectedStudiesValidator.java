@@ -819,10 +819,11 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
     // Validate Tag as
 
-    if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTag() == null) {
+    if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTag() == null
+      || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTag().getId() == -1) {
       action.addMessage(action.getText("tag"));
       action.addMissingField("study.tag");
-      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.tag",
+      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.tag.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
