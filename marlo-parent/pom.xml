@@ -222,7 +222,7 @@
 			<dependency>
     <groupId>org.pentaho.reporting.engine</groupId>
     <artifactId>classic-core</artifactId>
-    <version>9.4.0.0-343</version>
+    <version>9.2.0.0-290</version>
 </dependency>
 <dependency>
 				<groupId>ch.qos.logback</groupId>
