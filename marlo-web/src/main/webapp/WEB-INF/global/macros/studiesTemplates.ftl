@@ -44,7 +44,7 @@
                   <button class="btn btn-default btn-sm copyButton" type="button"> <span class="glyphicon glyphicon-duplicate"></span> Copy URL </button>
                 </span>
                 [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
-                [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable readOnly=true/]
+                [@customForm.input name="${customName}.projectExpectedStudyInfo.link" i18nkey="study.general.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable readOnly=true/]
                 <!--input type="text" class="form-control input-sm urlInput" value="${summaryPDF}" readonly-->
               </div>
               <div class="message text-center" style="display:none">Copied!</div>
@@ -610,7 +610,7 @@
     [#if fromProject && !isOutcomeCaseStudy]
     <h3 class="headTitle">[@s.text name="study.sharedProjects.title" /]</h3>
     <div class="borderBox">
-      [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
+      [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects.message"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
     </div>
     [/#if]
   </div>
@@ -687,7 +687,7 @@
       [/#if]
 
       [#-- Status --]
-      <div class="col-md-2">
+      <div class="${isOutcomeCaseStudy?string('col-md-2','col-md-3')}">
         [@customForm.select name="${customName}.projectExpectedStudyInfo.status.id" className="setSelect2 statusSelect" i18nkey="study.general.status" listName="statuses" keyFieldName="id"  displayFieldName="name" header=false required=true editable=editable /]
       </div>
 
