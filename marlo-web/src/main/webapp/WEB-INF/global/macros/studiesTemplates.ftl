@@ -70,6 +70,23 @@
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.outcomeImpactStatement" i18nkey="study.generalInformation.outcomeStatement" help="study.generalInformation.outcomeStatement.help" isNote=true className="limitWords-80" helpIcon=false required=false editable=editable /]
       </div>
       [/#if]
+
+      [#-- 3.  Maturity of change reported (tick-box)  --]
+      [#if isOutcomeCaseStudy]
+      <div class="form-group stageProcessOne">
+        <label for="${customName}.projectExpectedStudyInfo.repIndStageStudy.id">[@s.text name="study.generalInformation.maturityChange" /]:[@customForm.req required=(editable && !action.isPOWB() && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) /]
+          <div>
+            [@customForm.helpLabel name="study.generalInformation.maturityChange.help" showIcon=false isNote=true editable=editable/]
+            [@customForm.helpLabel name="study.generalInformation.maturityChange.help2" showIcon=false editable=editable/]
+          </div>
+        </label>
+        <div class="form-group">
+            [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndStageStudy.id" value="${(element.projectExpectedStudyInfo.repIndStageStudy.id)!-1}" showTitle=false 
+            listName="stageStudies"
+            keyFieldName="id" displayFieldName="name" required=false editable=editable /]
+        </div>
+      </div>
+      [/#if]
       
       [#--  Geographic scope - Countries  --]
       <div class="form-group geographicScopeBlock">
@@ -126,22 +143,6 @@
           </div>
         </div>
         [/#if]
-      [/#if]
-      
-      [#-- 4.  Maturity of change reported (tick-box)  --]
-      [#if isOutcomeCaseStudy]
-      <div class="form-group stageProcessOne">
-        <label for="">[@s.text name="study.generalInformation.maturityChange" /]:[@customForm.req required=(editable && !action.isPOWB() && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) /]
-          <div class="feedback-flex-items">
-            [@customForm.helpLabel name="study.generalInformation.maturityChange.help" showIcon=false editable=editable/][@customForm.helpLabel name="study.generalInformation.maturityChange.help2" showIcon=true editable=editable/]
-          </div>
-        </label>
-        <div class="form-group">
-          [#list stageStudies as stage]
-            <p>[@customForm.radioFlat id="maturityChange-${stage.id}" name="${customName}.projectExpectedStudyInfo.repIndStageStudy.id" label="<small><b>${stage.name}:</b> ${stage.description}</small>" value="${stage.id}" checked=(element.projectExpectedStudyInfo.repIndStageStudy.id == stage.id)!false cssClass="" cssClassLabel="font-normal" editable=editable/]</p> 
-          [/#list]
-        </div>
-      </div>
       [/#if]
       
       [#-- 5. Links to the Strategic Results Framework  --]
