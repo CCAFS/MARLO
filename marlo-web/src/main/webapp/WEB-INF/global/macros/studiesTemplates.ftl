@@ -67,37 +67,7 @@
       [#-- 2. Short outcome/impact statement (up to 80 words) --]
       [#if isOutcomeCaseStudy]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.outcomeImpactStatement" i18nkey="study.generalInformation.outcomeStatement" help="study.generalInformation.outcomeStatement.help" className="limitWords-80" helpIcon=false required=false editable=editable /]
-      </div>
-      [/#if]
-      
-      [#-- 3. Outcome story for communications use. REPLACED "comunicationsMaterial" --]
-      [#if isOutcomeCaseStudy]
-      <div class="form-group">
-      [#--  
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.comunicationsMaterial" i18nkey="study.outcomestory" help="study.outcomestory.help" className="limitWords-400" helpIcon=false required=true editable=editable /]
-      
-        <br />
-        --]
-        <label for="">[@s.text name="study.generalInformation.outcomestoryLinks" /]:
-          [@customForm.req required=false /]
-          [@customForm.helpLabel name="study.generalInformation.outcomestoryLinks.help" paramText="<a href='https://hdl.handle.net/10568/99384' target='_blank'>Personal data use authorization form</a>" showIcon=false editable=editable/]
-        </label>
-        <div class="linksBlock ">
-          <div class="linksList">
-            [#list (element.links)![{}] as link ]
-              [@studyLink name="${customName}.links" element=link index=link_index /]
-            [/#list]
-          </div>
-          [#if editable]
-          <div class="addButtonLink button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Link </div>
-          <div class="clearfix"></div>
-          [/#if]
-        </div>
-        [#-- Element item Template --]
-        <div style="display:none">
-          [@studyLink name="${customName}.links" element={} index=-1 template=true /]
-        </div>
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.outcomeImpactStatement" i18nkey="study.generalInformation.outcomeStatement" help="study.generalInformation.outcomeStatement.help" isNote=true className="limitWords-80" helpIcon=false required=false editable=editable /]
       </div>
       [/#if]
       
@@ -559,13 +529,6 @@
       </div>
        --]
       [/#if]
-
-      [#--  Contact person    --]
-      [#if isOutcomeCaseStudy]
-      <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.communications.contacts" help="study.communications.contacts.help" className="" helpIcon=false required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=editable && !action.isPOWB() /]
-      </div>
-      [/#if]
       
       [#--  Comments for other studies--]
       [#if !isOutcomeCaseStudy]
@@ -854,6 +817,57 @@
             [/#list]
           </div>
         [/#if] --]
+  </div>
+[/#macro]
+
+[#macro studyCommunications element name index=-1 template=false fromProject=true]
+  [#local customName = "${name}"/]
+  [#local isOutcomeCaseStudy = ((element.projectExpectedStudyInfo.studyType.id == 1)!false)/]
+  [#local isStatusExtended = (element.projectExpectedStudyInfo.status.id == 4)!false]
+  [#local isOtherStatus = (element.projectExpectedStudyInfo.status.id != 4)!false]
+  
+  [#local isPolicy = ((element.projectExpectedStudyInfo.isContribution)!false) ]
+  [#local stageProcessOne = ((element.projectExpectedStudyInfo.repIndStageProcess.id == 1))!false ]
+
+  <div class="borderBox">
+
+    [#-- Outcome story for communications use. REPLACED "comunicationsMaterial" --]
+    [#if isOutcomeCaseStudy]
+    <div class="form-group">
+    [#--  
+      [@customForm.textArea name="${customName}.projectExpectedStudyInfo.comunicationsMaterial" i18nkey="study.outcomestory" help="study.outcomestory.help" className="limitWords-400" helpIcon=false required=true editable=editable /]
+    
+      <br />
+      --]
+      <label for="">[@s.text name="study.generalInformation.outcomestoryLinks" /]:
+        [@customForm.req required=false /]
+        [@customForm.helpLabel name="study.generalInformation.outcomestoryLinks.help" paramText="<a href='https://hdl.handle.net/10568/99384' target='_blank'>Personal data use authorization form</a>" showIcon=false editable=editable/]
+      </label>
+      <div class="linksBlock ">
+        <div class="linksList">
+          [#list (element.links)![{}] as link ]
+            [@studyLink name="${customName}.links" element=link index=link_index /]
+          [/#list]
+        </div>
+        [#if editable]
+        <div class="addButtonLink button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Link </div>
+        <div class="clearfix"></div>
+        [/#if]
+      </div>
+      [#-- Element item Template --]
+      <div style="display:none">
+        [@studyLink name="${customName}.links" element={} index=-1 template=true /]
+      </div>
+    </div>
+    [/#if]
+
+    [#--  Contact person    --]
+    [#if isOutcomeCaseStudy]
+    <div class="form-group stageProcessOne">
+      [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.communications.contacts" help="study.communications.contacts.help" className="" helpIcon=false required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=editable && !action.isPOWB() /]
+    </div>
+    [/#if]
+  
   </div>
 [/#macro]
 

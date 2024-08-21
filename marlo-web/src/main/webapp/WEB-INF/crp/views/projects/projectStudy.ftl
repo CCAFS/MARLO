@@ -143,7 +143,7 @@
                 </div>
 
                 <div id="study-communications" role="tabpanel" class="tab-pane fade [#if indexTab==4]in active[/#if]">
-                  Communications
+                  [@studies.studyCommunications element=(expectedStudy)!{} name="expectedStudy" index=0  /]
                 </div>
               </div>
                 
