@@ -3401,6 +3401,10 @@ button.ipGraph-btn {
 	flex-wrap: wrap;
 }
 
+.note--2__margin-none{
+	margin: 0;
+}
+
 .note--2 p{
 	font-style: italic;
 	color: #5F5E5E;

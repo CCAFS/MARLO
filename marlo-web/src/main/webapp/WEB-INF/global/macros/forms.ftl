@@ -53,7 +53,7 @@
   </div>
 [/#macro]
 
-[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false]
+[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false isNote=false]
   <div class="feedback-flex-items"></div>
   <div class="textArea fieldReference ${changedField(name)}" [#if !display]style="display: none;"[#else]style="width: 100%;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
@@ -63,7 +63,7 @@
   	[#if showTitle]
       <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass} [#if powbInclude]powb-label[/#if]"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
         [#--  Help Text --]
-        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon isNote=isNote editable=editable/]
         [#if powbInclude]
           <span class="powb-doc badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
         [/#if]
@@ -618,7 +618,7 @@
   </div>
 [/#macro]
 
-[#macro helpLabel name="" paramText="" showIcon=true editable=true helpMore=false]
+[#macro helpLabel name="" paramText="" showIcon=true isNote=false editable=true helpMore=false]
   [#local nameValue][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][/#local]
   [#--  Help Text --]
   [#if nameValue?has_content && editable]
@@ -626,7 +626,11 @@
       <img src="${baseUrlCdn}/global/images/icon-help2.png" title="${nameValue}" />
       <span class="hint" style="display:none" title="${nameValue}"> [HINT] </span>
     [#else]
-      <br /><i class="helpLabel">${nameValue}</i>
+      [#if isNote]
+        <br /><i class="note--2 note--2__margin-none"><p>${nameValue}</p></i>
+      [#else]
+        <br /><i class="helpLabel">${nameValue}</i>
+      [/#if]
     [/#if]
   [/#if]
   [#if editable && helpMore]
