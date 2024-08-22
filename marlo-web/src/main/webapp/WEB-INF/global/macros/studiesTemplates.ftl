@@ -204,8 +204,19 @@
         </div>
 
       </div>
+
+      [#-- 6.  CGIAR innovation(s) or findings that have resulted in this outcome or impact.   --]
+      [#if isOutcomeCaseStudy]
+      <div class="form-group stageProcessOne">
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.cgiarInnovation" i18nkey="study.generalInformation.innovationsNarrative" help="study.generalInformation.innovationsNarrative.help" helpIcon=false isNote=true className="" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable /]
+         
+        [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="study.generalInformation.innovationsList"  listName="innovationsList" keyFieldName="id" displayFieldName="composedNameAlternative" required=false /]
+
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.otherInnovations" i18nkey="study.generalInformation.otherInnovations" className="limitWords-30" required=false editable=editable  /]
+      </div>
+      [/#if]
       
-      [#-- 5. Links to the Strategic Results Framework  --]
+      [#-- 7. Links to the Strategic Results Framework  --]
       <div class="form-group">
         [#if isOutcomeCaseStudy]
           <label for="">[@s.text name="study.generalInformation.stratgicResultsLink" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
@@ -305,15 +316,6 @@
             </div>          
         </div>
       --]   
-      
-      [#--  CGIAR innovation(s) or findings that have resulted in this outcome or impact.   --]
-      [#if isOutcomeCaseStudy]
-      <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.cgiarInnovation" i18nkey="study.generalInformation.innovationsNarrative" help="study.generalInformation.innovationsNarrative.help" helpIcon=false className="" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable /]
-         
-        [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="study.generalInformation.innovationsList"  listName="innovationsList" keyFieldName="id" displayFieldName="composedNameAlternative" required=false /]
-      </div>
-      [/#if]
       
       [#--  Elaboration of Outcome/Impact Statement  --]
       [#if isOutcomeCaseStudy]
