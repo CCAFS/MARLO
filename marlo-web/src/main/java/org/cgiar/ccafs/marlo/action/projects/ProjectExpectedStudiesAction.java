@@ -621,26 +621,25 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId() != null) {
           this.expectedStudy.getProjectExpectedStudyInfo().setRepIndStageStudy(this.stageStudyManager
             .getRepIndStageStudyById(this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId()));
+        }
 
+        /*
+         * Set RepIndStageStudy composed name
+         */
+        if (this.isAFPhase(this.getActualPhase().getId())) {
+          if (this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null
+            && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescriptionAF() != null) {
 
-          /*
-           * Set RepIndStageStudy composed name
-           */
-          if (this.isAFPhase(this.getActualPhase().getId())) {
-            if (this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null
-              && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescriptionAF() != null) {
-
-              this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().setComposedName(
-                "<b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() + "</b>"
-                  + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescriptionAF());
-            }
-          } else {
-            if (this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null
-              && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescription() != null) {
-              this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().setComposedName(
-                "<b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() + "</b>"
-                  + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescription());
-            }
+            this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy()
+              .setComposedName("<b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName()
+                + "</b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescriptionAF());
+          }
+        } else {
+          if (this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null
+            && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescription() != null) {
+            this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy()
+              .setComposedName("<b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName()
+                + "</b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescription());
           }
         }
 
@@ -1102,6 +1101,25 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.subIdos = this.srfSubIdoManager.findAll();
       this.targets = this.srfSloIndicatorManager.findAll();
 
+      /*
+       * Set RepIndStageStudy composed name
+       */
+      if (this.stageStudies != null && !this.stageStudies.isEmpty()) {
+        for (RepIndStageStudy stageStudy : this.stageStudies) {
+
+          if (stageStudy != null) {
+            if (this.isAFPhase(this.getActualPhase().getId())) {
+              if (stageStudy.getName() != null && stageStudy.getDescriptionAF() != null) {
+                stageStudy.setComposedName("<b>" + stageStudy.getName() + ": " + stageStudy.getDescriptionAF());
+              }
+            } else {
+              if (stageStudy.getName() != null && stageStudy.getDescription() != null) {
+                stageStudy.setComposedName("<b>" + stageStudy.getName() + ": " + stageStudy.getDescription());
+              }
+            }
+          }
+        }
+      }
 
       // institutions
       Project projectTemp = null;
