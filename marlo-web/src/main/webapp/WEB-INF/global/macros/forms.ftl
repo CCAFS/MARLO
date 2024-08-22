@@ -652,7 +652,7 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey="" showTitle=true isFlex=false]
+[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey="" showTitle=true isFlex=false isNote=false]
   [#attempt]
     [#local list = ((listName?eval)?sort_by((displayFieldName?split("."))))![] /] 
   [#recover]
@@ -669,7 +669,7 @@
       <div class="panel-head">
         <label for="">[@s.text name=label /]:[@req required=required && (editable || forceEditable) /]
           [#--  Help Text --]
-          [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=(editable || forceEditable)/]
+          [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon isNote=isNote editable=(editable || forceEditable)/]
         </label>
       </div>
     [#else]

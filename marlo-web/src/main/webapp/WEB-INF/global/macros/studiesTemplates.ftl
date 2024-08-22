@@ -81,12 +81,12 @@
           </div>
         </label>
         <div class="form-group">
-            [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndStageStudy.id" value="${(element.projectExpectedStudyInfo.repIndStageStudy.id)!-1}" showTitle=false listName="stageStudies" keyFieldName="id" displayFieldName="name" required=false editable=editable /]
+            [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndStageStudy.id" value="${(element.projectExpectedStudyInfo.repIndStageStudy.id)!-1}" showTitle=false listName="stageStudies" keyFieldName="id" displayFieldName="composedName" required=false editable=editable /]
         </div>
       </div>
       [/#if]
       
-      [#--  Geographic scope - Countries  --]
+      [#--  4. Geographic scope - Countries  --]
       <div class="form-group geographicScopeBlock">
         [#local geographicScopeList = (element.geographicScopes)![] ]
         [#local isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
@@ -127,7 +127,7 @@
         </div>
       </div>
       
-      [#-- 3. Link to Common Results Reporting Indicator #I3 --]
+      [#-- 3. (Other Studies) Link to Common Results Reporting Indicator #I3 --]
       [#if !action.isAiccra()]
         [#if isOutcomeCaseStudy]
         <div class="form-group">
@@ -152,6 +152,58 @@
         </div>
         [/#if]
       [/#if]
+
+      [#-- 5. Key Contributors  --]
+      <div class="form-group keyContributions">
+        [#if isOutcomeCaseStudy || !fromProject]
+          <label for="">[@s.text name="study.generalInformation.${isOutcomeCaseStudy?string('keyContributors','keyContributorsOther')}" /]:</label>
+          <div class="note"><span class="glyphicon glyphicon-question-sign"></span> [@s.text name="study.generalInformation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK"> clicking here</a>[/@][/@]</div>
+        [/#if]
+        [#-- CRPs - To be Removed --]
+        [#if !action.isAiccra()]
+          [#if isOutcomeCaseStudy]
+          <div class="form-group simpleBox">
+            [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.generalInformation.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false /]
+          </div>
+          [/#if]
+        [/#if]
+        [#-- Flagships - To be Removed --]
+        [#if !action.isAiccra()]
+          [#if isOutcomeCaseStudy || !fromProject]
+          <div class="form-group simpleBox stageProcessOne">
+            [#if !fromProject && editable]
+              <p class="note">To the [@s.text name="programManagement.flagship.title"/](s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="CrpProgram.leaders"/] and [@s.text name="CrpProgram.managers"/]</p>
+            [/#if]
+            [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" id="FP" elementList=element.flagships label="study.generalInformation.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName" required=false /]
+          </div>
+          [/#if]
+        [/#if]
+        <div class="row">
+          [#-- Centers --]
+          [#if isOutcomeCaseStudy]
+          <div class="col-md-6">
+            [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="study.generalInformation.keyContributors.centers"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=(!action.isPOWB() && validateIsProgressWithStatus!true)/]
+          </div>
+          [/#if]
+          [#-- External Partners --]
+          [#if isOutcomeCaseStudy]
+          <div class="col-md-6 stageProcessOne">
+            [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=element.institutions label="study.generalInformation.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName" help="study.generalInformation.externalPartner.note" helpIcon=false isNote=true required=false /]
+            [#-- Request partner adition --]
+            [#-- Remove element item of request --]
+            [#--[#if editable]
+                  <p id="addPartnerText" class="helpMessage">
+                    [@s.text name="projectPartners.addPartnerMessage.first" /]
+                    <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave'][@s.param name='expectedID']${(expectedID)!}[/@s.param][/@s.url]">
+                      [@s.text name="projectPartners.addPartnerMessage.second" /]
+                    </a>
+                  </p> 
+                [/#if]  --]
+          </div>
+          [/#if]
+        </div>
+
+      </div>
       
       [#-- 5. Links to the Strategic Results Framework  --]
       <div class="form-group">
@@ -253,63 +305,6 @@
             </div>          
         </div>
       --]   
-
-      [#-- 7. Key Contributors  --]
-      <div class="form-group">
-        [#if isOutcomeCaseStudy || !fromProject]
-          <label for="">[@s.text name="study.generalInformation.${isOutcomeCaseStudy?string('keyContributors','keyContributorsOther')}" /]:</label>
-        [/#if]
-        [#-- CRPs --]
-        [#if !action.isAiccra()]
-          [#if isOutcomeCaseStudy]
-          <div class="form-group simpleBox">
-            [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.generalInformation.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false /]
-          </div>
-          [/#if]
-        [/#if]
-        [#-- Centers --]
-        [#if isOutcomeCaseStudy]
-        <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="study.generalInformation.keyContributors.centers"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=(!action.isPOWB() && validateIsProgressWithStatus!true)/]
-          <div class="note">[@s.text name="study.generalInformation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
-        </div>
-        [/#if]
-        [#-- Flagships --]
-        [#if !action.isAiccra()]
-          [#if isOutcomeCaseStudy || !fromProject]
-          <div class="form-group simpleBox stageProcessOne">
-            [#if !fromProject && editable]
-              <p class="note">To the [@s.text name="programManagement.flagship.title"/](s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="CrpProgram.leaders"/] and [@s.text name="CrpProgram.managers"/]</p>
-            [/#if]
-            [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" id="FP" elementList=element.flagships label="study.generalInformation.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName" required=false /]
-          </div>
-          [/#if]
-        [/#if]
-        [#-- Regions --]
-        [#if (isOutcomeCaseStudy || !fromProject) && regionList?has_content]
-          <div class="form-group simpleBox stageProcessOne">
-            [#if !fromProject && editable]
-              <p class="note">To the Region(s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="regionalMapping.CrpProgram.leaders"/] and [@s.text name="regionalMapping.CrpProgram.managers"/]</p>
-            [/#if]
-            [@customForm.elementsListComponent name="${customName}.regions" elementType="crpProgram" id="RP" elementList=element.regions label="study.generalInformation.keyContributors.regions"  listName="regionList" keyFieldName="id" displayFieldName="composedName" required=false /]
-          </div>
-        [/#if]
-        [#-- External Partners --]
-        [#if isOutcomeCaseStudy]
-        <div class="form-group simpleBox stageProcessOne">
-          [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=element.institutions label="study.generalInformation.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName" required=false /]
-          [#-- Request partner adition --]
-          [#if editable]
-          <p id="addPartnerText" class="helpMessage">
-            [@s.text name="projectPartners.addPartnerMessage.first" /]
-            <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave'][@s.param name='expectedID']${(expectedID)!}[/@s.param][/@s.url]">
-              [@s.text name="projectPartners.addPartnerMessage.second" /]
-            </a>
-          </p> 
-          [/#if]
-        </div>
-        [/#if]
-      </div>
       
       [#--  CGIAR innovation(s) or findings that have resulted in this outcome or impact.   --]
       [#if isOutcomeCaseStudy]
