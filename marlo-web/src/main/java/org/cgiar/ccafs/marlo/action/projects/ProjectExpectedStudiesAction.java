@@ -621,6 +621,27 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId() != null) {
           this.expectedStudy.getProjectExpectedStudyInfo().setRepIndStageStudy(this.stageStudyManager
             .getRepIndStageStudyById(this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId()));
+
+
+          /*
+           * Set RepIndStageStudy composed name
+           */
+          if (this.isAFPhase(this.getActualPhase().getId())) {
+            if (this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null
+              && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescriptionAF() != null) {
+
+              this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().setComposedName(
+                "<b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() + "</b>"
+                  + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescriptionAF());
+            }
+          } else {
+            if (this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null
+              && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescription() != null) {
+              this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().setComposedName(
+                "<b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() + "</b>"
+                  + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescription());
+            }
+          }
         }
 
         // Load Status
