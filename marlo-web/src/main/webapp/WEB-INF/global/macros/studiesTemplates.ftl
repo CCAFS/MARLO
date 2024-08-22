@@ -81,9 +81,7 @@
           </div>
         </label>
         <div class="form-group">
-            [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndStageStudy.id" value="${(element.projectExpectedStudyInfo.repIndStageStudy.id)!-1}" showTitle=false 
-            listName="stageStudies"
-            keyFieldName="id" displayFieldName="name" required=false editable=editable /]
+            [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndStageStudy.id" value="${(element.projectExpectedStudyInfo.repIndStageStudy.id)!-1}" showTitle=false listName="stageStudies" keyFieldName="id" displayFieldName="name" required=false editable=editable /]
         </div>
       </div>
       [/#if]
@@ -96,25 +94,35 @@
         [#local isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
         [#local isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
         
-        <label for="">[@s.text name="study.generalInformation.geographicScopeTopic" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /] </label>
-        <div class="form-group simpleBox">
+        <label for="">[@s.text name="study.generalInformation.geographicScopeTopic" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
+          <div>
+            [@customForm.helpLabel name="study.generalInformation.geographicScopeTopic.note" showIcon=false isNote=true editable=editable/]
+          </div>
+        </label>
+        <div class="form-group geographicScopeInput">
           <div class="form-group row">
-            <div class="col-md-6">
-              [#-- Geographic Scope --]
-              [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes  label="study.generalInformation.geographicScope" listName="geographicScopes" keyFieldName="id" displayFieldName="name" required=(!action.isPOWB() && validateIsProgressWithStatus!true) /]
+            <div class="col-md-12">
+              <label for="${customName}.geographicScopes" class="col-md-4">[@s.text name="study.generalInformation.geographicScope" /]: </label>
+              <label for="" class="col-md-8">[@s.text name="study.generalInformation.geographicImpact" /]:</label>
             </div>
           </div>
-          <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
-            [#-- Regional scope --]
-            [@customForm.elementsListComponent name="${customName}.studyRegions" elementType="locElement" elementList=element.studyRegions label="study.generalInformation.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=false /]
-          </div>
-          <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
-            [#-- Multinational, National and Subnational scope --]
-            [@customForm.select name="${customName}.countriesIds" label="" i18nkey="study.generalInformation.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=(!action.isPOWB() && validateIsProgressWithStatus!true) className="countriesSelect" disabled=!editable/]
-          </div>
-          <div class="form-group">
-            [#-- Comment box --]
-            [@customForm.textArea name="${customName}.projectExpectedStudyInfo.scopeComments" className="limitWords-30" i18nkey="study.generalInformation.geographicScopeComments" help="study.generalInformation.geographicScopeComments.help" helpIcon=false  editable=editable required=false/]
+          <div class="form-group row">
+            <div class="form-group col-md-4">
+              [#-- Geographic Scope --]
+              [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes  listName="geographicScopes" keyFieldName="id" displayFieldName="name" showTitle=false isFlex=true required=(!action.isPOWB() && validateIsProgressWithStatus!true) /]
+            </div>
+            <div class="form-group regionalBlock col-md-4" style="display:${(isRegional)?string('block','none')}">
+              [#-- Regional scope --]
+              [@customForm.elementsListComponent name="${customName}.studyRegions" elementType="locElement" elementList=element.studyRegions label="study.generalInformation.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" isFlex=true required=false /]
+            </div>
+            <div class="form-group nationalBlock col-md-4" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+              [#-- Multinational, National and Subnational scope --]
+              [@customForm.select name="${customName}.countriesIds" label="" i18nkey="study.generalInformation.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=(!action.isPOWB() && validateIsProgressWithStatus!true) className="countriesSelect" isFlex=true  disabled=!editable/]
+            </div>
+            <div class="form-group col-md-12">
+              [#-- Comment box --]
+              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.scopeComments" className="limitWords-30" i18nkey="study.generalInformation.geographicScopeComments" help="study.generalInformation.geographicScopeComments.help" helpIcon=false  editable=editable required=false/]
+            </div>
           </div>
         </div>
       </div>

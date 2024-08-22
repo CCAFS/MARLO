@@ -117,6 +117,10 @@ a#btn-revokeChoice {
 	font-weight: normal;
 }
 
+.select--flex{
+	display: flex;
+}
+
 .select.button,
 .textArea.button {
 	float: left;
@@ -1340,6 +1344,19 @@ select#partnerSave_activityPartner_partner_type_id {
 .panel span.name {
 	cursor: pointer;
 	/* padding: 5px 3px; */
+}
+
+.panel.panel--flex{
+	display: flex;
+	
+}
+
+.panel.panel--flex .panel-head{
+	border-bottom: none;
+}
+
+.panel.panel--flex .panel-body{
+	border-left: none;
 }
 
 .remove {

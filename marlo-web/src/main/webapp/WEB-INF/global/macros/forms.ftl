@@ -158,9 +158,9 @@
   </div>
 [/#macro]
 
-[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" editable=true]
+[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" isFlex=false editable=true]
   <div class="feedback-flex-items"></div>
-  <div class="select fieldReference ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
+  <div class="select fieldReference ${isFlex?then('select--flex','')} ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
     [#if showTitle]
@@ -652,7 +652,7 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey=""]
+[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey="" showTitle=true isFlex=false]
   [#attempt]
     [#local list = ((listName?eval)?sort_by((displayFieldName?split("."))))![] /] 
   [#recover]
@@ -664,13 +664,17 @@
     [#local composedID = "${elementType}-${id}" /]
   [/#if]
   <div class="feedback-flex-items"></div>
-  <div class="fieldReference panel tertiary elementsListComponent" listname="${name}" style="position:relative">
-    <div class="panel-head">
-      <label for="">[@s.text name=label /]:[@req required=required && (editable || forceEditable) /]
-        [#--  Help Text --]
-        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=(editable || forceEditable)/]
-      </label>
-    </div>
+  <div class="fieldReference panel tertiary elementsListComponent  ${isFlex?then('panel--flex','')}" listname="${name}" style="position:relative">
+    [#if showTitle]
+      <div class="panel-head">
+        <label for="">[@s.text name=label /]:[@req required=required && (editable || forceEditable) /]
+          [#--  Help Text --]
+          [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=(editable || forceEditable)/]
+        </label>
+      </div>
+    [#else]
+      <div class="panel-head"></div>
+    [/#if]
     <div class="panel-body" style="min-height: 30px;">
       <div class="loading listComponentLoading" style="display:none"></div>
       <ul class="list">
