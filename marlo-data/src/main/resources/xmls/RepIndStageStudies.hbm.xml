@@ -14,5 +14,8 @@
         <property name="description" type="string">
             <column name="description" sql-type="TEXT" />
         </property>
+        <property name="descriptionAF" type="string">
+            <column name="description_af" sql-type="TEXT" />
+        </property>
     </class>
 </hibernate-mapping>
