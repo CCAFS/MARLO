@@ -14,6 +14,9 @@
         <property name="description" type="string">
             <column name="description" sql-type="TEXT" />
         </property>
+        <property name="descriptionAF" type="string">
+            <column name="description_af" sql-type="TEXT" />
+        </property>
         <property name="year" type="java.lang.Long">
             <column name="year" />
         </property>
