@@ -443,6 +443,7 @@
   <mapping resource="xmls/ProjectExpectedStudyPrimaryAllianceLevers.hbm.xml"/>
   <mapping resource="xmls/ProjectExpectedStudyPrimaryStrategicOutcomes.hbm.xml"/>
   <mapping resource="xmls/ProjectExpectedStudyRelatedAllianceLevers.hbm.xml"/>
+  <mapping resource="xmls/ProjectExpectedStudyRelatedLeverSdgContributions.hbm.xml"/>
 
  </session-factory>
 </hibernate-configuration>
