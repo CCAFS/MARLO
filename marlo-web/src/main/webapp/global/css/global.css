@@ -228,6 +228,18 @@ input.disabled {
 	text-align: center;
 }
 
+.modal-header {
+	padding: 10px 15px;
+}
+
+.modal-body .panel.tertiary .panel-head{
+	border-bottom: none;
+}
+
+.modal-footer {
+	border-top: none;
+}
+
 @media screen and (min-width: 768px) {
 	.modal:before {
 		display: inline-block;

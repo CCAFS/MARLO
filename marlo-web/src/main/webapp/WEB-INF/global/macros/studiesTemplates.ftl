@@ -698,7 +698,7 @@
       [#-- Shared Cluster Modal --]
       <div class="form-group col-md-12 sharedClusterMessage">
         <div class="modal fade" id="sharedClusterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-scrollable" style=" width:80%" role="document">
+          <div class="modal-dialog modal-dialog-scrollable" style=" width:60%" role="document">
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title" id="exampleModalLabel">[@s.text name="study.sharedProjects.modal.title" /]</h4>
