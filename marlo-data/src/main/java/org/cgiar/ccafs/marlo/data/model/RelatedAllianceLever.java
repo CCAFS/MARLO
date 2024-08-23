@@ -17,6 +17,9 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.annotations.Expose;
 
 public class RelatedAllianceLever extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
@@ -27,6 +30,9 @@ public class RelatedAllianceLever extends MarloAuditableEntity implements java.i
   private String name;
   @Expose
   private String description;
+
+  private List<RelatedAllianceLeverSdgContribution> relatedLeverSdgContributions =
+    new ArrayList<RelatedAllianceLeverSdgContribution>();
 
   public RelatedAllianceLever() {
   }
@@ -66,6 +72,10 @@ public class RelatedAllianceLever extends MarloAuditableEntity implements java.i
     return name;
   }
 
+  public List<RelatedAllianceLeverSdgContribution> getRelatedLeverSdgContributions() {
+    return relatedLeverSdgContributions;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -82,9 +92,12 @@ public class RelatedAllianceLever extends MarloAuditableEntity implements java.i
     this.name = name;
   }
 
+  public void setRelatedLeverSdgContributions(List<RelatedAllianceLeverSdgContribution> relatedLeverSdgContributions) {
+    this.relatedLeverSdgContributions = relatedLeverSdgContributions;
+  }
+
   @Override
   public String toString() {
     return "Activity [id=" + this.getId() + ", name=" + name + ", description=" + description + "]";
   }
 }
-

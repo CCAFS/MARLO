@@ -16,8 +16,12 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.PrimaryAllianceLeverManager;
 import org.cgiar.ccafs.marlo.data.manager.PrimaryAllianceStrategicOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.RelatedAllianceLeverManager;
+import org.cgiar.ccafs.marlo.data.manager.RelatedAllianceLeverSdgContributionManager;
 import org.cgiar.ccafs.marlo.data.model.PrimaryAllianceLever;
 import org.cgiar.ccafs.marlo.data.model.PrimaryAllianceStrategicOutcome;
+import org.cgiar.ccafs.marlo.data.model.RelatedAllianceLever;
+import org.cgiar.ccafs.marlo.data.model.RelatedAllianceLeverSdgContribution;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -39,15 +43,51 @@ public class AllianceLeversManagementAction extends BaseAction {
   private static final long serialVersionUID = -793652591843623397L;
   private List<PrimaryAllianceLever> primaryLevers;
   private List<PrimaryAllianceStrategicOutcome> primaryStrategicOutcomeLevers;
+  private List<RelatedAllianceLever> relatedLevers;
+  private List<RelatedAllianceLeverSdgContribution> relatedLeverSdgContributions;
   private PrimaryAllianceLeverManager primaryAllianceLeverManager;
   private PrimaryAllianceStrategicOutcomeManager primaryAllianceStrategicOutcomeManager;
+  private RelatedAllianceLeverManager relatedAllianceLeverManager;
+  private RelatedAllianceLeverSdgContributionManager relatedAllianceLeverSdgContributionManager;
 
   @Inject
   public AllianceLeversManagementAction(APConfig config, PrimaryAllianceLeverManager primaryAllianceLeverManager,
-    PrimaryAllianceStrategicOutcomeManager primaryAllianceStrategicOutcomeManager) {
+    PrimaryAllianceStrategicOutcomeManager primaryAllianceStrategicOutcomeManager,
+    RelatedAllianceLeverManager relatedAllianceLeverManager,
+    RelatedAllianceLeverSdgContributionManager relatedAllianceLeverSdgContributionManager) {
     super(config);
     this.primaryAllianceLeverManager = primaryAllianceLeverManager;
     this.primaryAllianceStrategicOutcomeManager = primaryAllianceStrategicOutcomeManager;
+    this.relatedAllianceLeverManager = relatedAllianceLeverManager;
+    this.relatedAllianceLeverSdgContributionManager = relatedAllianceLeverSdgContributionManager;
+  }
+
+  /**
+   * Fill related levers SDG Contributions
+   */
+  public void fillSdgContributions() {
+    if (relatedLevers != null && !relatedLevers.isEmpty()) {
+      try {
+        List<RelatedAllianceLeverSdgContribution> relatedSubLevers =
+          relatedAllianceLeverSdgContributionManager.findAll();
+
+        if (relatedSubLevers != null && !relatedSubLevers.isEmpty()) {
+          relatedLevers.forEach(action -> {
+            List<RelatedAllianceLeverSdgContribution> primarySubLeversAdd = relatedSubLevers.stream()
+              .filter(subLever -> action != null && action.getId() != null && subLever != null
+                && subLever.getRelatedAllianceLever() != null && subLever.getRelatedAllianceLever().getId() != null
+                && subLever.getRelatedAllianceLever().getId().equals(action.getId()))
+              .collect(Collectors.toList());
+
+            if (!primarySubLeversAdd.isEmpty()) {
+              action.setRelatedLeverSdgContributions(relatedSubLevers);
+            }
+          });
+        }
+      } catch (Exception e) {
+        logger.info(e + "no sub actions added yet");
+      }
+    }
   }
 
   /**
@@ -83,6 +123,14 @@ public class AllianceLeversManagementAction extends BaseAction {
 
   public List<PrimaryAllianceStrategicOutcome> getPrimaryStrategicOutcomeLevers() {
     return primaryStrategicOutcomeLevers;
+  }
+
+  public List<RelatedAllianceLever> getRelatedLevers() {
+    return relatedLevers;
+  }
+
+  public List<RelatedAllianceLeverSdgContribution> getRelatedLeverSdgContributions() {
+    return relatedLeverSdgContributions;
   }
 
   @Override
@@ -300,6 +348,14 @@ public class AllianceLeversManagementAction extends BaseAction {
 
   public void setPrimaryStrategicOutcomeLevers(List<PrimaryAllianceStrategicOutcome> primaryStrategicOutcomeLevers) {
     this.primaryStrategicOutcomeLevers = primaryStrategicOutcomeLevers;
+  }
+
+  public void setRelatedLevers(List<RelatedAllianceLever> relatedLevers) {
+    this.relatedLevers = relatedLevers;
+  }
+
+  public void setRelatedLeverSdgContributions(List<RelatedAllianceLeverSdgContribution> relatedLeverSdgContributions) {
+    this.relatedLeverSdgContributions = relatedLeverSdgContributions;
   }
 
   @Override
