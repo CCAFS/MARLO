@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "SHFRM Management" /]
+[#assign title = "Primary and Related Levers Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "flag-icon-css", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
@@ -146,7 +146,7 @@
 
     [#-- Remove link for all partners --]
     [#if isTemplate || action.canBeDeleted((element.id)!-1,(element.class.name)!)!false]
-      <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
+      <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="allianceLeversManagement.remove" /]"></div></div>
     [/#if]
     
     [#-- Partner Title --]
@@ -202,7 +202,7 @@
   <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}" listname="partner-${partnerIndex}-person-${index}">
     [#-- Remove link for all partners --]
     [#if editable]
-      <div class="removePerson removeElement" title="[@s.text name="projectPartners.removePerson" /]"></div>
+      <div class="removePerson removeElement" title="[@s.text name="allianceLeversManagement.remove" /]"></div>
     [/#if]
     <div class="leftHead">
       <span class="index"></span>
@@ -238,7 +238,7 @@
 
     [#-- Remove link for all partners --]
     [#if isTemplate || action.canBeDeleted((element.id)!-1,(element.class.name)!)!false]
-      <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
+      <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="allianceLeversManagement.remove" /]"></div></div>
     [/#if]
     
     [#-- Partner Title --]
@@ -294,7 +294,7 @@
   <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}" listname="partner-${partnerIndex}-person-${index}">
     [#-- Remove link for all partners --]
     [#if editable]
-      <div class="removePerson removeElement" title="[@s.text name="projectPartners.removePerson" /]"></div>
+      <div class="removePerson removeElement" title="[@s.text name="allianceLeversManagement.remove" /]"></div>
     [/#if]
     <div class="leftHead">
       <span class="index"></span>
