@@ -263,7 +263,7 @@
         [/#if]
       </div>
       
-      [#-- Milestones --]
+      [#-- Link to Performance Indicators: / Milestones --]
         [#--[#if isOutcomeCaseStudy]  --]
         <div class="form-group">          
           <label for="">[@s.text name="study.generalInformation.outcomes" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
@@ -273,8 +273,11 @@
           </label>
           [#assign studyMilestoneLink = "studyMilestoneLink"]
           [#assign showMilestoneIndicator = (expectedStudy.projectExpectedStudyInfo.hasMilestones?string)!"" /]
-          [@customForm.radioFlat id="${studyMilestoneLink}-yes" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
-          [@customForm.radioFlat id="${studyMilestoneLink}-no" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
+          <div class="form-group row">
+            <div class="col-md-2">[@customForm.radioFlat id="${studyMilestoneLink}-yes" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]</div>
+            <div class="col-md-2">[@customForm.radioFlat id="${studyMilestoneLink}-no" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]</div>
+          </div>
+
       </div>
         [#--  
        <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
@@ -291,7 +294,7 @@
         </div>
        --]
        
-       <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
+       <div class="form-group ${isOutcomeCaseStudy?then('','simpleBox')} block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
           [@customForm.elementsListComponent name="${customName}.crpOutcomes" elementType="crpOutcome" elementList=(element.crpOutcomes)![] label="study.generalInformation.outcomes"  listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=(!action.isPOWB() && validateIsProgressWithStatus!true)/]
           <div class="note left">
             <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="_blank">
@@ -316,11 +319,12 @@
             </div>          
         </div>
       --]   
+      [#-- End to Link to Performance Indicators --]
       
       [#--  Elaboration of Outcome/Impact Statement  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.elaborationOutcomeImpactStatement" i18nkey="study.generalInformation.elaborationStatement" help="study.generalInformation.elaborationStatement.help" helpIcon=false className="limitWords-400" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.elaborationOutcomeImpactStatement" i18nkey="study.generalInformation.elaborationStatement" help="study.generalInformation.elaborationStatement.help" helpIcon=false isNote=true className="limitWords-400" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable /]
       </div>
       [/#if]
       
@@ -337,7 +341,7 @@
       [/#if]
       --]
       
-      
+      <div class="note"><span class="glyphicon glyphicon-question-sign"></span>[@s.text name="message.shortenURLsDisclaimer"][@s.param value="93" /][/@s.text]</div>
       [#-- 9. References cited  new--]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
@@ -346,11 +350,11 @@
         [#if (element.projectExpectedStudyInfo.referencesText)?has_content]     
           <span id="warningEmptyReferencesTag" class="errorTag glyphicon glyphicon-info-sign" style="position: relative; left: 750px;" title="" aria-describedby="ui-id-5"> </span>          
             <div class="feedback-flex-items">
-            [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.generalInformation.referencesEvidenceCited" help="study.generalInformation.referencesCited.help2" helpIcon=false className="" required=false editable=editable oldReference=true /]        
+            [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.generalInformation.referencesEvidenceCited" help="study.generalInformation.referencesCited.help2" helpIcon=false isNote=true className="" required=false editable=editable oldReference=true /]        
             </div>
         [#else]
           <!-- <div class="feedback-flex-items"> -->
-            [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.generalInformation.referencesEvidenceCited" help="study.generalInformation.referencesCited.help2" helpIcon=false className="" required=false editable=editable oldReference=false /]        
+            [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.generalInformation.referencesEvidenceCited" help="study.generalInformation.referencesCited.help2" helpIcon=false className="" required=false editable=editable oldReference=false isNote=true /]        
           <!-- </div> -->
         [/#if]      
           
@@ -377,7 +381,7 @@
             </div>
 
         </div>
-        <p class="note"> <small>[@s.text name="message.shortenURLsDisclaimer"][@s.param value="93" /][/@s.text]</small> </p>
+        
         [#-- 
         <div class="form-group" style="position:relative" listname="">
           [@customForm.fileUploadAjax 

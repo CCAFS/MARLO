@@ -3410,7 +3410,7 @@ button.ipGraph-btn {
 	background-color: #D9EDF7;
 	padding: 8px;
 	display: flex;
-	align-items: end;
+	align-items: center;
 	border-radius: 0.3125rem;
 	font-size: 13px;
 	font-weight: 400;
