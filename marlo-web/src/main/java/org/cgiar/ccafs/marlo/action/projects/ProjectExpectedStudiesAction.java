@@ -1110,11 +1110,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           if (stageStudy != null) {
             if (this.isAFPhase(this.getActualPhase().getId())) {
               if (stageStudy.getName() != null && stageStudy.getDescriptionAF() != null) {
-                stageStudy.setComposedName("<b>" + stageStudy.getName() + ": " + stageStudy.getDescriptionAF());
+                stageStudy.setComposedName(stageStudy.getName() + ": " + stageStudy.getDescriptionAF());
               }
             } else {
               if (stageStudy.getName() != null && stageStudy.getDescription() != null) {
-                stageStudy.setComposedName("<b>" + stageStudy.getName() + ": " + stageStudy.getDescription());
+                stageStudy.setComposedName(stageStudy.getName() + ": " + stageStudy.getDescription());
               }
             }
           }
