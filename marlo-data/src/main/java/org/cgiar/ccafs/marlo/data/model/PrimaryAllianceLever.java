@@ -17,6 +17,9 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.annotations.Expose;
 
 public class PrimaryAllianceLever extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
@@ -27,6 +30,9 @@ public class PrimaryAllianceLever extends MarloAuditableEntity implements java.i
   private String name;
   @Expose
   private String description;
+
+  private List<PrimaryAllianceStrategicOutcome> primaryStrategicOutcomes =
+    new ArrayList<PrimaryAllianceStrategicOutcome>();
 
   public PrimaryAllianceLever() {
   }
@@ -66,6 +72,10 @@ public class PrimaryAllianceLever extends MarloAuditableEntity implements java.i
     return name;
   }
 
+  public List<PrimaryAllianceStrategicOutcome> getPrimaryStrategicOutcomes() {
+    return primaryStrategicOutcomes;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -80,6 +90,10 @@ public class PrimaryAllianceLever extends MarloAuditableEntity implements java.i
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setPrimaryStrategicOutcomes(List<PrimaryAllianceStrategicOutcome> primaryStrategicOutcomes) {
+    this.primaryStrategicOutcomes = primaryStrategicOutcomes;
   }
 
   @Override
