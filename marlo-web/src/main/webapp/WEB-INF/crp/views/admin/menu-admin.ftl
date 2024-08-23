@@ -31,7 +31,7 @@
     <#--  { 'slug': 'institutions',     'name': 'menu.superadmin.institutions',         'action': 'marloInstitutions',  'active': true },  -->
     { 'slug': 'crpPhases',        'name': 'CRPAdmin.menu.crpPhases',              'action': 'crpPhases',          'active': true },
     { 'slug': 'shfrmManagement',  'name': 'CRPAdmin.menu.shfrmManagement',        'action': 'shfrmManagement',    'active': action.isShfrmSpecificityActive()},
-    { 'slug': 'allianceLeversManagement',  'name': 'CRPAdmin.menu.allianceLeversManagement',        'action': 'allianceLeversManagement',    'active': false }
+    { 'slug': 'allianceLeversManagement',  'name': 'CRPAdmin.menu.allianceLeversManagement',        'action': 'allianceLeversManagement',    'active': true }
   ]/]
 [/#if]
 
