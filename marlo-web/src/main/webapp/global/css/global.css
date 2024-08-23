@@ -151,20 +151,24 @@ a#btn-revokeChoice {
 }
 
 .bigAddButton {
-	border-style: dashed;
-	border-width: 2px;
-	border-color: #ccc;
-	color: #b1afaf;
-	font-size: 1.5em;
+	background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='15' ry='15' stroke='%230B7BA6' stroke-width='2' stroke-dasharray='15px' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+	border-radius: 15px;
+	color: #0B7BA6;
+	font-size: 1.5rem;
 	padding: 10px 0;
 	margin: 0 7px;
 	cursor: pointer;
-	border-radius: 4px;
 	display: block;
+	gap: 0.625rem;
+}
+
+.bigAddButton span {
+	margin-right: 12px;
 }
 
 .bigAddButton:hover {
-	border-color: #9c9c9c;
+	background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='15' ry='15' stroke='%239C9C9CFF' stroke-width='2' stroke-dasharray='15px' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+	border-radius: 15px;
 	color: #757575;
 }
 
@@ -3434,7 +3438,7 @@ button.ipGraph-btn {
 	border-left: 5px solid #8DC955;
 	background: rgba(232, 247, 227, 0.40);
 	padding: 0.3125rem 0.625rem 0.3125rem 0.9375rem;
-	justify-content: center;
+	justify-content: left;
 	align-items: center;
 	gap: 0.625rem;
 	font-style: normal;

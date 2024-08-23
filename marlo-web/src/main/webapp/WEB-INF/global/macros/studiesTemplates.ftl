@@ -341,9 +341,9 @@
       [/#if]
       --]
       
-      <div class="note"><span class="glyphicon glyphicon-question-sign"></span>[@s.text name="message.shortenURLsDisclaimer"][@s.param value="93" /][/@s.text]</div>
       [#-- 9. References cited  new--]
       [#if isOutcomeCaseStudy]
+      <div class="note"><span class="glyphicon glyphicon-question-sign"></span>[@s.text name="message.shortenURLsDisclaimer"][@s.param value="93" /][/@s.text]</div>
       <div class="form-group stageProcessOne">
         <div class="form-group">
               
