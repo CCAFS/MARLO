@@ -406,7 +406,7 @@
         [#--
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.quantification" i18nkey="study.quantification" help="study.quantification.help" helpIcon=false className=" " required=editable && !(isPolicy && stageProcessOne) editable=editable /]
         --]
-        <label for="">[@s.text name="study.generalInformation.quantification" /]:[@customForm.helpLabel name="study.generalInformation.quantification.help" showIcon=false editable=editable/]</label><br />
+        <label for="">[@s.text name="study.generalInformation.quantification" /]:[@customForm.helpLabel name="study.generalInformation.quantification.help" isNote=true showIcon=false editable=editable/]</label><br />
         <div class="quantificationsBlock">
           <div class="quantificationsList">
           [#list (element.quantifications)![] as item]
@@ -907,18 +907,19 @@
       </div>
       [#-- Remove Button --]
       [#if editable]<div class="removeIcon removeElement removeQuantification" title="Remove"></div>[/#if]
-      [#-- Quantification type --]
-      <div class="form-group">
-        <label for="">[@s.text name="study.quantificationType" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
-        <br />[@customForm.radioFlat id="quantificationType-1" name="${customName}.typeQuantification" i18nkey="study.quantification.quantificationType-1" value="A" checked=((element.typeQuantification == "A")!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
-        <br />[@customForm.radioFlat id="quantificationType-2" name="${customName}.typeQuantification" i18nkey="study.quantification.quantificationType-2" value="B" checked=((element.typeQuantification == "B")!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
-      </div>
     </div>
     [#-- Units --]
     <div class="form-group row">
+      [#-- Quantification type --]
+      <div class="col-md-4">
+        <label for="">[@s.text name="study.quantificationType" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
+        [@customForm.select name="${customName}.typeQuantification.id" value="${(element.typeQuantification.id)!-1}" className="setSelect2" i18nkey="study.quantificationType" listName=""  keyFieldName="id" showTitle=false  displayFieldName="name" required=true editable=editable /]
+      </div>
+      [#-- Number --]
       <div class="col-md-4">
         [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" className="numericInput" required=(!action.isPOWB() && validateIsProgressWithStatus!true) editable=editable /]
       </div>
+      [#-- Unit --]
       <div class="col-md-4"> 
         [@customForm.input name="${customName}.targetUnit" i18nkey="study.quantification.targetUnit" className="" required=(!action.isPOWB() && validateIsProgressWithStatus!true) editable=editable /]
       </div> 
