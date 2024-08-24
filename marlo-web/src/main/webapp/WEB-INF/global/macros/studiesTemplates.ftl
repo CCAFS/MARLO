@@ -434,68 +434,52 @@
       <div class="form-group">
         [@tag name="Indicator #3" /]
         <label for="">[@s.text name="study.generalInformation.crossCuttingRelevance" /]:
-          [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.help" showIcon=false editable=editable/]
+          [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.help" isNote=true showIcon=false editable=editable/]
         </label>
-        [#-- Gender --]
-        <div class="simpleBox ccRelevanceBlock">
-          <label for="">[@s.text name="study.generalInformation.genderRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
-          <div class="form-group">
-            [#assign genderLevel = (element.projectExpectedStudyInfo.genderLevel.id)!1 ]
-            [#list focusLevels  as cc]
-              [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.genderLevel.id" label="${cc.powbName}" value="${cc.id}" checked=(genderLevel == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
-            [/#list]
-          </div>
-          <div class="ccCommentBox" style="display:${((genderLevel == 2) || (genderLevel == 3))?string('block', 'none')}">
-            <div class="form-group stageProcessOne">
-              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeGender" i18nkey="study.generalInformation.achievementsGenderRelevance" className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=editable /]
+        [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.note2" showIcon=false editable=editable/]
+        <div class="row">
+          [#-- Gender --]
+          <div class="ccRelevanceBlock col-md-3">
+            <label for="">[@s.text name="study.generalInformation.genderRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
+            <div class="form-group">
+              [#assign genderLevel = (element.projectExpectedStudyInfo.genderLevel.id)!1 ]
+              [@customForm.select name="${customName}.projectExpectedStudyInfo.genderLevel.id" label="" listName="focusLevels" keyFieldName="id" displayFieldName="powbName" value="${genderLevel}" required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable showTitle=false /]
             </div>
+            <div class="ccCommentBox" style="display:${((genderLevel == 2) || (genderLevel == 3))?string('block', 'none')}">
+              <div class="form-group stageProcessOne">
+                [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeGender" i18nkey="study.generalInformation.achievementsGenderRelevance" className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=editable /]
+              </div>
+            </div>
+          </div>
+          [#-- Youth  --]
+          <div class="ccRelevanceBlock col-md-3">
+            <label for="">[@s.text name="study.generalInformation.youthRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
+            <div class="form-group">
+              [#assign youthLevel = (element.projectExpectedStudyInfo.youthLevel.id)!1 ]
+              [@customForm.select name="${customName}.projectExpectedStudyInfo.youthLevel.id" label="" listName="focusLevels" keyFieldName="id" displayFieldName="powbName" value="${youthLevel}" required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable showTitle=false /]
+            </div> 
+          </div>
+          [#-- CapDev   --]
+          <div class="ccRelevanceBlock col-md-3">
+            <label for="">[@s.text name="study.generalInformation.capDevRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
+            <div class="form-group">
+              [#assign capdevLevel = (element.projectExpectedStudyInfo.capdevLevel.id)!1 ]
+              [@customForm.select name="${customName}.projectExpectedStudyInfo.capdevLevel.id" label="" listName="focusLevels" keyFieldName="id" displayFieldName="powbName" value="${capdevLevel}" required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable showTitle=false /]
+            </div>
+
+          </div>
+          [#-- Climate Change  --]
+          <div class="ccRelevanceBlock col-md-3">
+            <label for="">[@s.text name="study.generalInformation.climateChangeRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
+            <div class="form-group">
+              [#assign climateChangeLevel = (element.projectExpectedStudyInfo.climateChangeLevel.id)!1 ]
+              [@customForm.select name="${customName}.projectExpectedStudyInfo.climateChangeLevel.id" label="" listName="focusLevels" keyFieldName="id" displayFieldName="powbName" value="${climateChangeLevel}" required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable showTitle=false /]
+            </div>
+          </div>
+          <div class="col-md-12">
+            [@customForm.textArea name="${customName}.projectExpectedStudyInfo.commentsRelevance" i18nkey="study.generalInformation.commentsRelevance" className="limitWords-30" required=false editable=editable /]
           </div>
         </div>
-        [#-- Youth  --]
-        <div class="simpleBox ccRelevanceBlock">
-          <label for="">[@s.text name="study.generalInformation.youthRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
-          <div class="form-group">
-            [#assign youthLevel = (element.projectExpectedStudyInfo.youthLevel.id)!1 ]
-            [#list focusLevels  as cc]
-              [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.youthLevel.id" label="${cc.powbName}" value="${cc.id}" checked=(youthLevel == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
-            [/#list]
-          </div> 
-          <div class="ccCommentBox" style="display:${((youthLevel == 2) || (youthLevel == 3))?string('block', 'none')}">
-            <div class="form-group stageProcessOne">
-              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeYouth" i18nkey="study.generalInformation.achievementsYouthRelevance"  className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=editable /]
-            </div>
-          </div>
-        </div>
-        [#-- CapDev   --]
-        <div class="simpleBox ccRelevanceBlock">
-          <label for="">[@s.text name="study.generalInformation.capDevRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
-          <div class="form-group">
-            [#assign capdevLevel = (element.projectExpectedStudyInfo.capdevLevel.id)!1 ]
-            [#list focusLevels  as cc]
-              [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.capdevLevel.id" label="${cc.powbName}" value="${cc.id}" checked=(capdevLevel == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
-            [/#list]
-          </div>
-          <div class="ccCommentBox" style="display:${((capdevLevel == 2) || (capdevLevel == 3))?string('block', 'none')}">
-            <div class="form-group stageProcessOne">
-              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeCapdev" i18nkey="study.generalInformation.achievementsCapDevRelevance"  className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=editable /]
-            </div>
-          </div>
-        </div>
-        [#-- Climate Change  --]
-        <div class="simpleBox ccRelevanceBlock">
-          <label for="">[@s.text name="study.generalInformation.climateChangeRelevance" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
-          <div class="form-group">
-            [#assign climateChangeLevel = (element.projectExpectedStudyInfo.climateChangeLevel.id)!1 ]
-            [#list focusLevels  as cc]
-              [@customForm.radioFlat id="climateChangeRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.climateChangeLevel.id" label="${cc.powbName}" value="${cc.id}" checked=(climateChangeLevel == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
-            [/#list]
-          </div>
-          <div class="ccCommentBox" style="display:${((climateChangeLevel == 2) || (climateChangeLevel == 3))?string('block', 'none')}">
-            <div class="form-group stageProcessOne">
-              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeClimateChange" i18nkey="study.generalInformation.achievementsClimateChangeRelevance"  className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=editable /]
-            </div>
-          </div>
-        </div> 
         
       </div>
       [/#if]
