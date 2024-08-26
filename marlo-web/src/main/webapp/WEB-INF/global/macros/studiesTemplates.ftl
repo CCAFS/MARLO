@@ -268,7 +268,7 @@
       </div>
       
       [#-- Link to Performance Indicators: / Milestones --]
-        [#--[#if isOutcomeCaseStudy]  --]
+        [#if !isOutcomeCaseStudy]
         <div class="form-group">          
           <label for="" class="label--2">[@s.text name="study.generalInformation.outcomes" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
             <div class="feedback-flex-items">
@@ -281,8 +281,16 @@
             <div class="col-md-2">[@customForm.radioFlat id="${studyMilestoneLink}-yes" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]</div>
             <div class="col-md-2">[@customForm.radioFlat id="${studyMilestoneLink}-no" name="${customName}.projectExpectedStudyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${studyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]</div>
           </div>
-
-      </div>
+        </div>
+        [#else]
+        <div class="form-group">
+          <label for="" class="label--2">[@s.text name="study.generalInformation.outcomes" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
+          </label>
+          [#assign studyMilestoneLink = "studyMilestoneLink"]
+          [#assign showMilestoneIndicator = (expectedStudy.projectExpectedStudyInfo.hasMilestones?string)!"" /]
+          [@customForm.input name="${customName}.projectExpectedStudyInfo.hasMilestones" showTitle=false value="true" type="hidden" /]
+        </div>
+        [/#if]
         [#--  
        <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
           [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="study.milestones"  listName="milestones" keyFieldName="id" displayFieldName="composedName" hasPrimary=true /]
@@ -299,7 +307,7 @@
        --]
        
        <div class="form-group ${isOutcomeCaseStudy?then('','simpleBox')} block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
-          [@customForm.elementsListComponent name="${customName}.crpOutcomes" elementType="crpOutcome" elementList=(element.crpOutcomes)![] label="study.generalInformation.outcomes"  listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=(!action.isPOWB() && validateIsProgressWithStatus!true) /]
+          [@customForm.elementsListComponent name="${customName}.crpOutcomes" elementType="crpOutcome" elementList=(element.crpOutcomes)![] label="study.generalInformation.outcomes"  listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" showTitle=false required=(!action.isPOWB() && validateIsProgressWithStatus!true) /]
           <div class="note left">
             <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="_blank">
               <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.keyOutputNotice" /]
