@@ -246,9 +246,13 @@
             </div>            
             </label><br />
           [#local targetsOption = (element.projectExpectedStudyInfo.isSrfTarget)!""]
+          <div class="row">
           [#list ["targetsOptionYes", "targetsOptionNo", "targetsOptionTooEarlyToSay"] as option]
-            [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.isSrfTarget" i18nkey="study.generalInformation.${option}" value="${option}" checked=(option == targetsOption) cssClass="radioType-targetsOption" cssClassLabel="font-normal" editable=editable /] 
+            <div class="col-md-3">
+              [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.isSrfTarget" i18nkey="study.generalInformation.${option}" value="${option}" checked=(option == targetsOption) cssClass="radioType-targetsOption" cssClassLabel="font-normal" editable=editable /] 
+            </div>
           [/#list]
+          </div>
           [#local showTargetsComponent = (element.projectExpectedStudyInfo.isSrfTarget == "targetsOptionYes")!false /]
           <div class="srfTargetsComponent" style="display:${showTargetsComponent?string('block', 'none')}">
             [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.generalInformation.stratgicResultsLink.srfTargets" listName="targets" maxLimit=2  keyFieldName="id" displayFieldName="title" required=(editable && !action.isPOWB() && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true)/]          
@@ -445,11 +449,6 @@
               [#assign genderLevel = (element.projectExpectedStudyInfo.genderLevel.id)!1 ]
               [@customForm.select name="${customName}.projectExpectedStudyInfo.genderLevel.id" label="" listName="focusLevels" keyFieldName="id" displayFieldName="powbName" value="${genderLevel}" required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable showTitle=false /]
             </div>
-            <div class="ccCommentBox" style="display:${((genderLevel == 2) || (genderLevel == 3))?string('block', 'none')}">
-              <div class="form-group stageProcessOne">
-                [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeGender" i18nkey="study.generalInformation.achievementsGenderRelevance" className="limitWords-100" required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=editable /]
-              </div>
-            </div>
           </div>
           [#-- Youth  --]
           <div class="ccRelevanceBlock col-md-3">
@@ -491,10 +490,14 @@
          <div class="feedback-flex-items">
           [@customForm.helpLabel name="study.generalInformation.otherCrossCuttingOptions" showIcon=false editable=editable/]<br />
         </div>
-        [#local otherCrossCuttingSelection = (element.projectExpectedStudyInfo.otherCrossCuttingSelection)!"" ]
-        [#list ["Yes", "No", "NA"] as option]
-          [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.otherCrossCuttingSelection" i18nkey="study.generalInformation.otherCrossCutting${option}" value="${option}" checked=(otherCrossCuttingSelection == option) cssClass="radioType-otherCrossCuttingOption" cssClassLabel="font-normal" editable=editable /] 
-        [/#list]
+        <div class="form-group row">
+          [#local otherCrossCuttingSelection = (element.projectExpectedStudyInfo.otherCrossCuttingSelection)!"" ]
+          [#list ["Yes", "No", "NA"] as option]
+            <div class="col-md-2">
+              [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.otherCrossCuttingSelection" i18nkey="study.generalInformation.otherCrossCutting${option}" value="${option}" checked=(otherCrossCuttingSelection == option) cssClass="radioType-otherCrossCuttingOption" cssClassLabel="font-normal" editable=editable /] 
+            </div>
+          [/#list]
+        </div>
         [#local showOtherCrossCuttingOptionsComponent = true /] 
         <div class="otherCrossCuttingOptionsComponent form-group" style="display:${showOtherCrossCuttingOptionsComponent?string('block', 'none')}">
           [@customForm.textArea name="${customName}.projectExpectedStudyInfo.otherCrossCuttingDimensions" i18nkey="study.generalInformation.otherCrossCutting.comments" help="study.generalInformation.otherCrossCutting.comments.help" helpIcon=false  className="limitWords-200" required=false editable=editable /]
