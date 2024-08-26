@@ -188,7 +188,16 @@
           [#-- External Partners --]
           [#if isOutcomeCaseStudy]
           <div class="col-md-6 stageProcessOne">
-            [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=element.institutions label="study.generalInformation.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName" help="study.generalInformation.externalPartner.note" helpIcon=false isNote=true required=false /]
+            <label for="">[@s.text name="study.generalInformation.keyContributors.externalPartners" /]:</label>
+            <div id="addPartnerText" class="note--2">
+              <p>
+                [@s.text name="study.generalInformation.externalPartner.note" /]
+                <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave'][@s.param name='expectedID']${(expectedID)!}[/@s.param][/@s.url]">
+                  [@s.text name="projectPartners.addPartnerMessage.second" /]
+                </a>
+              </p>
+            </div> 
+            [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=element.institutions label="study.generalInformation.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName" help="study.generalInformation.externalPartner.note" showTitle=false helpIcon=false isNote=true required=false /]
             [#-- Request partner adition --]
             [#-- Remove element item of request --]
             [#--[#if editable]
@@ -267,7 +276,7 @@
         [/#if]
       </div>
       
-      [#-- Link to Performance Indicators: / Milestones --]
+      [#-- 8. Link to Performance Indicators: / Milestones --]
         [#if !isOutcomeCaseStudy]
         <div class="form-group">          
           <label for="" class="label--2">[@s.text name="study.generalInformation.outcomes" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
