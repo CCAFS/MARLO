@@ -54,7 +54,7 @@
 
       [#-- 1. Title (up to 25 words) --]
       <div class="form-group">
-        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.generalInformation.title" help="study.generalInformation.title.help" className="limitWords-30" helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
+        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.generalInformation.title" help="study.generalInformation.title.help" className="limitWords-30" helpIcon=!isOutcomeCaseStudy required=true editable=editable isMainTitle=true /]
       </div>
       
       [#-- Who is commissioning this study --]
@@ -67,14 +67,14 @@
       [#-- 2. Short outcome/impact statement (up to 80 words) --]
       [#if isOutcomeCaseStudy]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.outcomeImpactStatement" i18nkey="study.generalInformation.outcomeStatement" help="study.generalInformation.outcomeStatement.help" isNote=true className="limitWords-80" helpIcon=false required=false editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.outcomeImpactStatement" i18nkey="study.generalInformation.outcomeStatement" help="study.generalInformation.outcomeStatement.help" isNote=true className="limitWords-80" helpIcon=false required=false editable=editable isMainTitle=true /]
       </div>
       [/#if]
 
       [#-- 3.  Maturity of change reported (tick-box)  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        <label for="${customName}.projectExpectedStudyInfo.repIndStageStudy.id">[@s.text name="study.generalInformation.maturityChange" /]:[@customForm.req required=(editable && !action.isPOWB() && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) /]
+        <label for="${customName}.projectExpectedStudyInfo.repIndStageStudy.id" class="label--2">[@s.text name="study.generalInformation.maturityChange" /]:[@customForm.req required=(editable && !action.isPOWB() && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) /]
           <div>
             [@customForm.helpLabel name="study.generalInformation.maturityChange.help" showIcon=false isNote=true editable=editable/]
             [@customForm.helpLabel name="study.generalInformation.maturityChange.help2" showIcon=false editable=editable/]
@@ -94,7 +94,7 @@
         [#local isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
         [#local isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
         
-        <label for="">[@s.text name="study.generalInformation.geographicScopeTopic" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
+        <label for="" class="label--2">[@s.text name="study.generalInformation.geographicScopeTopic" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
           <div>
             [@customForm.helpLabel name="study.generalInformation.geographicScopeTopic.note" showIcon=false isNote=true editable=editable/]
           </div>
@@ -156,7 +156,7 @@
       [#-- 5. Key Contributors  --]
       <div class="form-group keyContributions">
         [#if isOutcomeCaseStudy || !fromProject]
-          <label for="">[@s.text name="study.generalInformation.${isOutcomeCaseStudy?string('keyContributors','keyContributorsOther')}" /]:</label>
+          <label for="" class="label--2">[@s.text name="study.generalInformation.${isOutcomeCaseStudy?string('keyContributors','keyContributorsOther')}" /]:</label>
           <div class="note"><span class="glyphicon glyphicon-question-sign"></span> [@s.text name="study.generalInformation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK"> clicking here</a>[/@][/@]</div>
         [/#if]
         [#-- CRPs - To be Removed --]
@@ -208,7 +208,7 @@
       [#-- 6.  CGIAR innovation(s) or findings that have resulted in this outcome or impact.   --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.cgiarInnovation" i18nkey="study.generalInformation.innovationsNarrative" help="study.generalInformation.innovationsNarrative.help" helpIcon=false isNote=true className="" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.cgiarInnovation" i18nkey="study.generalInformation.innovationsNarrative" help="study.generalInformation.innovationsNarrative.help" helpIcon=false isNote=true className="" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable isMainTitle=true /]
          
         [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="study.generalInformation.innovationsList"  listName="innovationsList" keyFieldName="id" displayFieldName="composedNameAlternative" required=false /]
 
@@ -219,7 +219,7 @@
       [#-- 7. Links to the Strategic Results Framework  --]
       <div class="form-group">
         [#if isOutcomeCaseStudy]
-          <label for="">[@s.text name="study.generalInformation.stratgicResultsLink" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
+          <label for="" class="label--2">[@s.text name="study.generalInformation.stratgicResultsLink" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
             [@customForm.helpLabel name="study.generalInformation.stratgicResultsLink.help" showIcon=false editable=editable/]
           </label>
         [#elseif !action.isAiccra()]
@@ -239,7 +239,7 @@
         </div>--] 
         
         [#-- SRF Targets (maxLimit=2)  --]
-        <div class="form-group simpleBox stageProcessOne">
+        <div class="form-group stageProcessOne">
             <label for="">[@s.text name="study.generalInformation.targetsOption" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
             <div class="feedback-flex-items">
               [@customForm.helpLabel name="study.generalInformation.targetsOption.help" showIcon=false editable=editable/]
@@ -261,7 +261,7 @@
         
         [#-- Comments  --]
         [#if isOutcomeCaseStudy]
-        <div class="form-group simpleBox stageProcessOne">
+        <div class="form-group stageProcessOne">
           [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.generalInformation.stratgicResultsLink.comments" help="study.generalInformation.stratgicResultsLink.comments.help" helpIcon=false className="limitWords-100" editable=editable required=false /]
         </div>
         [/#if]
@@ -270,7 +270,7 @@
       [#-- Link to Performance Indicators: / Milestones --]
         [#--[#if isOutcomeCaseStudy]  --]
         <div class="form-group">          
-          <label for="">[@s.text name="study.generalInformation.outcomes" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
+          <label for="" class="label--2">[@s.text name="study.generalInformation.outcomes" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
             <div class="feedback-flex-items">
               [@customForm.helpLabel name="study.generalInformation.outcomes.help" showIcon=false editable=editable/]
             </div>
@@ -299,7 +299,7 @@
        --]
        
        <div class="form-group ${isOutcomeCaseStudy?then('','simpleBox')} block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
-          [@customForm.elementsListComponent name="${customName}.crpOutcomes" elementType="crpOutcome" elementList=(element.crpOutcomes)![] label="study.generalInformation.outcomes"  listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=(!action.isPOWB() && validateIsProgressWithStatus!true)/]
+          [@customForm.elementsListComponent name="${customName}.crpOutcomes" elementType="crpOutcome" elementList=(element.crpOutcomes)![] label="study.generalInformation.outcomes"  listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=(!action.isPOWB() && validateIsProgressWithStatus!true) /]
           <div class="note left">
             <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="_blank">
               <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.keyOutputNotice" /]
@@ -328,7 +328,7 @@
       [#--  Elaboration of Outcome/Impact Statement  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.elaborationOutcomeImpactStatement" i18nkey="study.generalInformation.elaborationStatement" help="study.generalInformation.elaborationStatement.help" helpIcon=false isNote=true className="limitWords-400" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.elaborationOutcomeImpactStatement" i18nkey="study.generalInformation.elaborationStatement" help="study.generalInformation.elaborationStatement.help" helpIcon=false isNote=true className="limitWords-400" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable isMainTitle=true /]
       </div>
       [/#if]
       
@@ -358,7 +358,7 @@
             </div>
         [#else]
           <!-- <div class="feedback-flex-items"> -->
-            [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.generalInformation.referencesEvidenceCited" help="study.generalInformation.referencesCited.help2" helpIcon=false className="" required=false editable=editable oldReference=false isNote=true /]        
+            [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.generalInformation.referencesEvidenceCited" help="study.generalInformation.referencesCited.help2" helpIcon=false className="" required=false editable=editable oldReference=false isNote=true isMainTitle=true /]        
           <!-- </div> -->
         [/#if]      
           
@@ -410,7 +410,7 @@
         [#--
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.quantification" i18nkey="study.quantification" help="study.quantification.help" helpIcon=false className=" " required=editable && !(isPolicy && stageProcessOne) editable=editable /]
         --]
-        <label for="">[@s.text name="study.generalInformation.quantification" /]:[@customForm.helpLabel name="study.generalInformation.quantification.help" isNote=true showIcon=false editable=editable/]</label><br />
+        <label for="" class="label--2">[@s.text name="study.generalInformation.quantification" /]:[@customForm.helpLabel name="study.generalInformation.quantification.help" isNote=true showIcon=false editable=editable/]</label><br />
         <div class="quantificationsBlock">
           <div class="quantificationsList">
           [#list (element.quantifications)![] as item]
@@ -437,7 +437,7 @@
       </div>
       <div class="form-group">
         [@tag name="Indicator #3" /]
-        <label for="">[@s.text name="study.generalInformation.crossCuttingRelevance" /]:
+        <label for="" class="label--2">[@s.text name="study.generalInformation.crossCuttingRelevance" /]:
           [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.help" isNote=true showIcon=false editable=editable/]
         </label>
         [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.note2" showIcon=false editable=editable/]
@@ -486,7 +486,7 @@
       [#--  Other cross-cutting dimensions   --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        <label for="">[@s.text name="study.generalInformation.otherCrossCutting" /]:</label> 
+        <label for="" class="label--2">[@s.text name="study.generalInformation.otherCrossCutting" /]:</label> 
          <div class="feedback-flex-items">
           [@customForm.helpLabel name="study.generalInformation.otherCrossCuttingOptions" showIcon=false editable=editable/]<br />
         </div>

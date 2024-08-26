@@ -48,6 +48,14 @@ label {
 	cursor: pointer;
 }
 
+label.label--2{
+	font-weight: 700;
+	font-size: 15px;
+	color: #0A2842;
+	margin-top: 0.5rem;
+	margin-bottom: 0.125rem;
+}
+
 .input-sm {
 	padding: 4px 10px;
 	height: 27px;
