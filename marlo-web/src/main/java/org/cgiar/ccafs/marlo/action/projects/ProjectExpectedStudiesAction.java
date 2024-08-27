@@ -2496,7 +2496,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectExpectedStudy.getProjectExpectedStudyQuantifications() != null
-      && projectExpectedStudy.getProjectExpectedStudyQuantifications().size() > 0) {
+      && !projectExpectedStudy.getProjectExpectedStudyQuantifications().isEmpty()) {
       List<ProjectExpectedStudyQuantification> quantificationPrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyQuantifications().stream()
           .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
