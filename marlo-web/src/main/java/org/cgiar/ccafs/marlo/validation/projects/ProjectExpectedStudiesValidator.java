@@ -75,10 +75,32 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
    */
   public void validate(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy, boolean saving) {
 
+    action.setInvalidFields(new HashMap<>());
+
+    baseAction = action;
+
+    if (!saving) {
+      Path path = this.getAutoSaveFilePath(projectExpectedStudy, action.getCrpID(), action);
+      if (path.toFile().exists()) {
+        action.addMissingField("draft");
+      }
+    }
     this.validateGeneralInformation(action, project, projectExpectedStudy, saving);
     this.validateAllianceAlignment(action, project, projectExpectedStudy, saving);
     this.validateOneCgiarAlignment(action, project, projectExpectedStudy, saving);
     this.validateCommunications(action, project, projectExpectedStudy, saving);
+
+    if (!action.getFieldErrors().isEmpty()) {
+      action.addActionError(action.getText("saving.fields.required"));
+    } else if (action.getValidationMessage().length() > 0) {
+      action.addActionMessage(
+        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+    }
+
+
+    this.saveMissingFields(project, projectExpectedStudy, action.getActualPhase().getDescription(),
+      action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+      ProjectSectionStatusEnum.EXPECTEDSTUDIES.getStatus(), action);
 
 
   }
@@ -106,6 +128,37 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
    */
   public void validateCommunications(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy,
     boolean saving) {
+
+    try {
+
+      this.validateProjectExpectedStudyCommunications(projectExpectedStudy, action);
+
+
+      action.setOicrCommunicationsComplete(true);
+      if (this.validateCommunicationsFields(action.getMissingFields().toString())) {
+        action.setOicrCommunicationsComplete(false);
+      }
+    } catch (Exception e) {
+      LOG.error(" error in validateCommunications function " + e.getMessage());
+    }
+
+  }
+
+  /**
+   * Validate that the missing fields contain the fields of the communication section
+   *
+   * @param missingFields data related to missing fields
+   */
+  public boolean validateCommunicationsFields(String missingFields) {
+    try {
+      if (missingFields.contains("study.contacts")) {
+        return true;
+      }
+      return false;
+    } catch (Exception e) {
+      LOG.error(" error in validateCommunicationsFields function " + e.getMessage());
+      return false;
+    }
   }
 
   /**
@@ -119,36 +172,16 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
   public void validateGeneralInformation(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy,
     boolean saving) {
 
-    action.setInvalidFields(new HashMap<>());
-
-    baseAction = action;
-
-    if (!saving) {
-      Path path = this.getAutoSaveFilePath(projectExpectedStudy, action.getCrpID(), action);
-      if (path.toFile().exists()) {
-        action.addMissingField("draft");
-      }
-    }
-
     this.validateProjectExpectedStudyGeneralInformation(projectExpectedStudy, action);
 
-
-    if (!action.getFieldErrors().isEmpty()) {
-      action.addActionError(action.getText("saving.fields.required"));
-    } else if (action.getValidationMessage().length() > 0) {
-      action.addActionMessage(
-        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
-    }
 
     if (action.getMissingFields().toString().length() == 0) {
       action.setOicrGeneralInformationComplete(true);
     }
 
-    this.saveMissingFields(project, projectExpectedStudy, action.getActualPhase().getDescription(),
-      action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-      ProjectSectionStatusEnum.EXPECTEDSTUDIES.getStatus(), action);
 
   }
+
 
   /**
    * Validate if the current phase is progress
@@ -182,7 +215,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
   public void validateOneCgiarAlignment(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy,
     boolean saving) {
   }
-
 
   public void validateProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy, BaseAction action) {
 
@@ -767,6 +799,36 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
   }
 
 
+  public void validateProjectExpectedStudyCommunications(ProjectExpectedStudy projectExpectedStudy, BaseAction action) {
+
+    boolean resultProgessValidate = false;
+    resultProgessValidate = this.validateIsProgressAndNotCompleteStatus(action, projectExpectedStudy);
+
+    if (!action.isPOWB()) {
+
+      if (baseAction.isReportingActive() || baseAction.isUpKeepActive()) {
+        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStudyType() != null
+          && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStudyType()
+            .getId() == 1) {
+
+          if (!resultProgessValidate) {
+            // Validate Contacts
+            if (!this.isValidString(
+              projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getContacts())) {
+              action.addMessage(action.getText("Contacts"));
+              action.addMissingField("study.contacts");
+              action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.contacts",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+
+        }
+      }
+    }
+
+  }
+
+
   public void validateProjectExpectedStudyGeneralInformation(ProjectExpectedStudy projectExpectedStudy,
     BaseAction action) {
 
@@ -819,13 +881,15 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
     // Validate Tag as
 
-    if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTag() == null
-      || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTag().getId() == -1) {
-      action.addMessage(action.getText("tag"));
-      action.addMissingField("study.tag");
-      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.tag.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
+    /*
+     * if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTag() == null
+     * || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTag().getId() == -1) {
+     * action.addMessage(action.getText("tag"));
+     * action.addMissingField("study.tag");
+     * action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.tag.id",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     */
 
 
     // Validate Title
