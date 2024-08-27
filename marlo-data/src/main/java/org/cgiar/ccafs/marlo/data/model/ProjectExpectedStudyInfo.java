@@ -35,22 +35,17 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   @Expose
   private RepIndPolicyInvestimentType repIndPolicyInvestimentType;
 
-
   @Expose
   private FileDB outcomeFile;
-
 
   @Expose
   private RepIndStageProcess repIndStageProcess;
 
-
   @Expose
   private Phase phase;
 
-
   @Expose
   private FileDB referencesFile;
-
 
   @Expose
   private RepIndStageStudy repIndStageStudy;
@@ -110,6 +105,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   private String describeClimateChange;
 
   @Expose
+  private String commentsRelevance;
+
+  @Expose
   private String otherCrossCuttingDimensions;
 
   @Expose
@@ -131,14 +129,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   @Expose
   private String outcomeStory;
 
-
   @Expose
   private String isSrfTarget;
 
-
   @Expose
   private String cgiarInnovation;
-
 
   @Expose
   private String otherCrossCuttingSelection;
@@ -206,6 +201,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return climateChangeLevel;
   }
 
+  public String getCommentsRelevance() {
+    return commentsRelevance;
+  }
+
+
   public String getCommissioningStudy() {
     return commissioningStudy;
   }
@@ -270,7 +270,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return isContribution;
   }
 
-
   public Boolean getIsPublic() {
     return isPublic;
   }
@@ -278,6 +277,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public String getIsSrfTarget() {
     return isSrfTarget;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -297,7 +297,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -312,6 +311,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public String getOtherCrossCuttingSelection() {
     return otherCrossCuttingSelection;
   }
+
 
   public String getOtherStudyType() {
     return otherStudyType;
@@ -332,10 +332,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return outcomeStory;
   }
 
-
   public Phase getPhase() {
     return phase;
   }
+
 
   public Double getPolicyAmount() {
     return policyAmount;
@@ -356,7 +356,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return referencesFile;
   }
 
-
   public String getReferencesText() {
     return referencesText;
   }
@@ -365,10 +364,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return repIndGeographicScope;
   }
 
+
   public RepIndOrganizationType getRepIndOrganizationType() {
     return repIndOrganizationType;
   }
-
 
   public RepIndPolicyInvestimentType getRepIndPolicyInvestimentType() {
     return repIndPolicyInvestimentType;
@@ -378,10 +377,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return repIndRegion;
   }
 
+
   public RepIndStageProcess getRepIndStageProcess() {
     return repIndStageProcess;
   }
-
 
   public RepIndStageStudy getRepIndStageStudy() {
     return repIndStageStudy;
@@ -418,10 +417,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return title;
   }
 
+
   public String getTopLevelComments() {
     return topLevelComments;
   }
-
 
   public Integer getYear() {
     return year;
@@ -450,6 +449,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
 
   public void setClimateChangeLevel(RepIndGenderYouthFocusLevel climateChangeLevel) {
     this.climateChangeLevel = climateChangeLevel;
+  }
+
+  public void setCommentsRelevance(String commentsRelevance) {
+    this.commentsRelevance = commentsRelevance;
   }
 
   public void setCommissioningStudy(String commissioningStudy) {
@@ -569,19 +572,19 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.referencesText = referencesText;
   }
 
+
   public void setRepIndGeographicScope(RepIndGeographicScope repIndGeographicScope) {
     this.repIndGeographicScope = repIndGeographicScope;
   }
+
 
   public void setRepIndOrganizationType(RepIndOrganizationType repIndOrganizationType) {
     this.repIndOrganizationType = repIndOrganizationType;
   }
 
-
   public void setRepIndPolicyInvestimentType(RepIndPolicyInvestimentType repIndPolicyInvestimentType) {
     this.repIndPolicyInvestimentType = repIndPolicyInvestimentType;
   }
-
 
   public void setRepIndRegion(RepIndRegion repIndRegion) {
     this.repIndRegion = repIndRegion;
@@ -690,6 +693,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.setScore(projectExpectedStudyInfoUpdate.getScore());
     this.setAllianceOicr(projectExpectedStudyInfoUpdate.getAllianceOicr());
     this.setTag(projectExpectedStudyInfoUpdate.getTag());
+    this.setCommentsRelevance(projectExpectedStudyInfoUpdate.getCommentsRelevance());
   }
 
 }

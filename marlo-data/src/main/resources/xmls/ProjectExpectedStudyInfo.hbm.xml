@@ -170,6 +170,9 @@
     <property name="allianceOicr" type="string">
         <column name="alliance_oicr_id" />
     </property>
+    <property name="commentsRelevance" type="string">
+        <column name="comments_relevance" sql-type="TEXT" />
+    </property>
     <many-to-one name="tag"
       class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyTag" fetch="select">
       <column name="tag_id" />
