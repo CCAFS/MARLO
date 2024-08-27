@@ -54,7 +54,7 @@
 
       [#-- 1. Title (up to 25 words) --]
       <div class="form-group">
-        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.generalInformation.title" help="study.generalInformation.title.help" className="limitWords-30" helpIcon=!isOutcomeCaseStudy required=true editable=editable isMainTitle=true /]
+        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.generalInformation.title" help="study.generalInformation.title.help" className="limitWords-30" helpIcon=!isOutcomeCaseStudy required=true editable=editable isMainTitle=isOutcomeCaseStudy /]
       </div>
       
       [#-- Who is commissioning this study --]
@@ -94,12 +94,14 @@
         [#local isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
         [#local isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
         
-        <label for="" class="label--2">[@s.text name="study.generalInformation.geographicScopeTopic" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
+        <label for="" class="${isOutcomeCaseStudy?then('label--2','')}">[@s.text name="study.generalInformation.geographicScopeTopic" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
           <div>
-            [@customForm.helpLabel name="study.generalInformation.geographicScopeTopic.note" showIcon=false isNote=true editable=editable/]
+            [#if isOutcomeCaseStudy]
+              [@customForm.helpLabel name="study.generalInformation.geographicScopeTopic.note" showIcon=false isNote=true editable=editable/]
+            [/#if]
           </div>
         </label>
-        <div class="form-group geographicScopeInput">
+        <div class="form-group ${isOutcomeCaseStudy?then('','simpleBox')} geographicScopeInput">
           <div class="form-group row">
             <div class="col-md-12">
               <label for="${customName}.geographicScopes" class="col-md-4">[@s.text name="study.generalInformation.geographicScope" /]: </label>
@@ -226,7 +228,7 @@
       [/#if]
       
       [#-- 7. Links to the Strategic Results Framework  --]
-      <div class="form-group">
+      <div class="form-group ${isOutcomeCaseStudy?then('','simpleBox')}">
         [#if isOutcomeCaseStudy]
           <label for="" class="label--2">[@s.text name="study.generalInformation.stratgicResultsLink" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
             [@customForm.helpLabel name="study.generalInformation.stratgicResultsLink.help" showIcon=false editable=editable/]
@@ -279,7 +281,7 @@
       [#-- 8. Link to Performance Indicators: / Milestones --]
         [#if !isOutcomeCaseStudy]
         <div class="form-group">          
-          <label for="" class="label--2">[@s.text name="study.generalInformation.outcomes" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
+          <label for="" class="${isOutcomeCaseStudy?then('label--2','')}">[@s.text name="study.generalInformation.outcomes" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
             <div class="feedback-flex-items">
               [@customForm.helpLabel name="study.generalInformation.outcomes.help" showIcon=false editable=editable/]
             </div>
