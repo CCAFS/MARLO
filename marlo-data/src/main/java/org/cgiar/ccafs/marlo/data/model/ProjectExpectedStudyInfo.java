@@ -155,6 +155,8 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   @Expose
   public String allianceOicr;
   @Expose
+  public String otherInnovationsNarrative;
+  @Expose
   public ProjectExpectedStudyTag tag;
 
   public ProjectExpectedStudyInfo() {
@@ -313,6 +315,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   }
 
 
+  public String getOtherInnovationsNarrative() {
+    return otherInnovationsNarrative;
+  }
+
+
   public String getOtherStudyType() {
     return otherStudyType;
   }
@@ -327,10 +334,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return outcomeImpactStatement;
   }
 
-
   public String getOutcomeStory() {
     return outcomeStory;
   }
+
 
   public Phase getPhase() {
     return phase;
@@ -351,7 +358,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return quantification;
   }
 
-
   public FileDB getReferencesFile() {
     return referencesFile;
   }
@@ -360,10 +366,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return referencesText;
   }
 
+
   public RepIndGeographicScope getRepIndGeographicScope() {
     return repIndGeographicScope;
   }
-
 
   public RepIndOrganizationType getRepIndOrganizationType() {
     return repIndOrganizationType;
@@ -373,10 +379,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return repIndPolicyInvestimentType;
   }
 
+
   public RepIndRegion getRepIndRegion() {
     return repIndRegion;
   }
-
 
   public RepIndStageProcess getRepIndStageProcess() {
     return repIndStageProcess;
@@ -413,10 +419,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return tag;
   }
 
+
   public String getTitle() {
     return title;
   }
-
 
   public String getTopLevelComments() {
     return topLevelComments;
@@ -532,6 +538,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.otherCrossCuttingSelection = otherCrossCuttingSelection;
   }
 
+  public void setOtherInnovationsNarrative(String otherInnovationsNarrative) {
+    this.otherInnovationsNarrative = otherInnovationsNarrative;
+  }
+
   public void setOtherStudyType(String otherStudyType) {
     this.otherStudyType = otherStudyType;
   }
@@ -564,19 +574,19 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.quantification = quantification;
   }
 
+
   public void setReferencesFile(FileDB referencesFile) {
     this.referencesFile = referencesFile;
   }
+
 
   public void setReferencesText(String referencesText) {
     this.referencesText = referencesText;
   }
 
-
   public void setRepIndGeographicScope(RepIndGeographicScope repIndGeographicScope) {
     this.repIndGeographicScope = repIndGeographicScope;
   }
-
 
   public void setRepIndOrganizationType(RepIndOrganizationType repIndOrganizationType) {
     this.repIndOrganizationType = repIndOrganizationType;
@@ -694,6 +704,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.setAllianceOicr(projectExpectedStudyInfoUpdate.getAllianceOicr());
     this.setTag(projectExpectedStudyInfoUpdate.getTag());
     this.setCommentsRelevance(projectExpectedStudyInfoUpdate.getCommentsRelevance());
+    this.setOtherInnovationsNarrative(projectExpectedStudyInfoUpdate.getOtherInnovationsNarrative());
   }
 
 }
