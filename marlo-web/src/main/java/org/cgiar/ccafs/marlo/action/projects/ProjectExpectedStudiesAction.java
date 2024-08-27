@@ -54,6 +54,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.QuantificationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
@@ -105,6 +106,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.QuantificationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
@@ -214,6 +216,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   // AR 2022 Managers
   private ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager;
   private ProjectExpectedStudyTagManager projectExpectedStudyTagManager;
+  private QuantificationTypeManager quantificationTypeManager;
 
   // Variables
   private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
@@ -263,6 +266,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<ProjectOutcome> projectOutcomes;
   private List<CrpProgramOutcome> crpOutcomes;
   private List<ProjectExpectedStudyTag> tagList;
+  private List<QuantificationType> quantificationTypes;
 
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -298,7 +302,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     CrpProgramOutcomeManager crpProgramOutcomeManager,
     ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager,
     ProjectExpectedStudyCrpOutcomeManager projectExpectedStudyCrpOutcomeManager,
-    ProjectExpectedStudyTagManager projectExpectedStudyTagManager) {
+    ProjectExpectedStudyTagManager projectExpectedStudyTagManager,
+    QuantificationTypeManager quantificationTypeManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -353,6 +358,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectExpectedStudyCrpOutcomeManager = projectExpectedStudyCrpOutcomeManager;
     this.projectExpectedStudyReferenceManager = projectExpectedStudyReferenceManager;
     this.projectExpectedStudyTagManager = projectExpectedStudyTagManager;
+    this.quantificationTypeManager = quantificationTypeManager;
   }
 
   /**
@@ -500,6 +506,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public List<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
+  }
+
+  public List<QuantificationType> getQuantificationTypes() {
+    return quantificationTypes;
   }
 
   public List<CrpProgram> getRegionList() {
@@ -1153,6 +1163,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.innovationsList = new ArrayList<>();
       this.policyList = new ArrayList<>();
       this.tagList = this.projectExpectedStudyTagManager.findAll();
+      this.quantificationTypes = this.quantificationTypeManager.findAll();
 
       // Expected Study Projects List
       if (this.expectedStudy.getExpectedStudyProjects() != null) {
@@ -2514,6 +2525,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             studyQuantificationSave.setTypeQuantification("A");
           }
 
+          if (studyQuantificationSave.getQuantificationType() != null) {
+            studyQuantificationSave.setQuantificationType(studyQuantificationSave.getQuantificationType());
+          }
+
           studyQuantificationSave.setNumber(studyQuantification.getNumber());
           studyQuantificationSave.setComments(studyQuantification.getComments());
           studyQuantificationSave.setTargetUnit(studyQuantification.getTargetUnit());
@@ -2925,6 +2940,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setProjectOutcomes(List<ProjectOutcome> projectOutcomes) {
     this.projectOutcomes = projectOutcomes;
+  }
+
+  public void setQuantificationTypes(List<QuantificationType> quantificationTypes) {
+    this.quantificationTypes = quantificationTypes;
   }
 
   public void setRegionList(List<CrpProgram> regionList) {

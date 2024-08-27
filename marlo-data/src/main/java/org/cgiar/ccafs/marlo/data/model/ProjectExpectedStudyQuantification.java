@@ -15,25 +15,21 @@ public class ProjectExpectedStudyQuantification extends MarloBaseEntity implemen
   @Expose
   private ProjectExpectedStudy projectExpectedStudy;
 
+  private QuantificationType quantificationType;
   @Expose
   private String typeQuantification;
-
 
   @Expose
   private Long number;
 
-
   @Expose
   private String targetUnit;
-
 
   @Expose
   private String comments;
 
-
   public ProjectExpectedStudyQuantification() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -57,11 +53,9 @@ public class ProjectExpectedStudyQuantification extends MarloBaseEntity implemen
     return true;
   }
 
-
   public String getComments() {
     return comments;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -70,12 +64,10 @@ public class ProjectExpectedStudyQuantification extends MarloBaseEntity implemen
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -96,6 +88,10 @@ public class ProjectExpectedStudyQuantification extends MarloBaseEntity implemen
 
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
+  }
+
+  public QuantificationType getQuantificationType() {
+    return quantificationType;
   }
 
   public String getTargetUnit() {
@@ -140,6 +136,10 @@ public class ProjectExpectedStudyQuantification extends MarloBaseEntity implemen
     this.projectExpectedStudy = projectExpectedStudy;
   }
 
+  public void setQuantificationType(QuantificationType quantificationType) {
+    this.quantificationType = quantificationType;
+  }
+
   public void setTargetUnit(String targetUnit) {
     this.targetUnit = targetUnit;
   }
@@ -147,7 +147,6 @@ public class ProjectExpectedStudyQuantification extends MarloBaseEntity implemen
   public void setTypeQuantification(String typeQuantification) {
     this.typeQuantification = typeQuantification;
   }
-
 
 }
 
