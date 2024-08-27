@@ -459,7 +459,7 @@
         <label for="" class="label--2">[@s.text name="study.generalInformation.crossCuttingRelevance" /]:
           [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.help" isNote=true showIcon=false editable=editable/]
         </label>
-        [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.note2" showIcon=false editable=editable/]
+        [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.help2" showIcon=false editable=editable/]
         <div class="row">
           [#-- Gender --]
           <div class="ccRelevanceBlock col-md-3">
