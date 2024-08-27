@@ -167,6 +167,7 @@ a#btn-revokeChoice {
 	cursor: pointer;
 	display: block;
 	gap: 0.625rem;
+	margin-top: 14px;
 }
 
 .bigAddButton span {

@@ -866,7 +866,7 @@
           [/#list]
         </div>
         [#if editable]
-        <div class="addButtonLink button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Link </div>
+        <div class="addButtonLink bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Link </div>
         <div class="clearfix"></div>
         [/#if]
       </div>
