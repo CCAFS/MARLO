@@ -138,6 +138,7 @@ public class AllianceLeversManagementAction extends BaseAction {
     primaryLevers = new ArrayList<>();
     primaryLevers = primaryAllianceLeverManager.findAll();
     this.fillStrategicOutcomesLevers();
+    this.fillSdgContributions();
     if (this.isHttpPost()) {
       if (primaryLevers != null) {
         primaryLevers.clear();
@@ -148,185 +149,8 @@ public class AllianceLeversManagementAction extends BaseAction {
   @Override
   public String save() {
     if (this.canAcessCrpAdmin()) {
-      List<PrimaryAllianceStrategicOutcome> toDelete = new ArrayList<>();
-      List<PrimaryAllianceLever> primaryLeversDB = null;
-      primaryLeversDB = primaryAllianceLeverManager.findAll();
-
-      try {
-        List<PrimaryAllianceStrategicOutcome> DB = null;
-        DB = primaryAllianceStrategicOutcomeManager.findAll();
-        if (this.primaryLevers != null && !this.primaryLevers.isEmpty()) {
-          for (PrimaryAllianceLever action : this.primaryLevers) {
-
-            // Remove Sub actions
-            if (action.getPrimaryStrategicOutcomes() != null && !action.getPrimaryStrategicOutcomes().isEmpty()) {
-              // Obtener los IDs de las subacciones en action.getPrimaryStrategicOutcomes()
-              Set<Long> strategicOutcomeIdsInFrontend = action.getPrimaryStrategicOutcomes().stream()
-                .filter(Objects::nonNull).map(PrimaryAllianceStrategicOutcome::getId).collect(Collectors.toSet());
-
-              // Filter DB to retain only the subactions present in
-              // action.getPrimaryStrategicOutcomes()
-              DB = DB.stream()
-                .filter(strategicOutcomeDB -> strategicOutcomeDB.getPrimaryAllianceLever() != null
-                  && strategicOutcomeDB.getPrimaryAllianceLever().getId() != null
-                  && strategicOutcomeDB.getPrimaryAllianceLever().getId().equals(action.getId())
-                  && !strategicOutcomeIdsInFrontend.contains(strategicOutcomeDB.getId()))
-                .collect(Collectors.toList());
-
-              // Delete subactions from DB that are not in action.getPrimaryStrategicOutcomes()
-              DB.forEach(strategicOutcomeDB -> {
-                primaryAllianceStrategicOutcomeManager
-                  .deletePrimaryAllianceStrategicOutcome(strategicOutcomeDB.getId());
-                action.getPrimaryStrategicOutcomes().removeIf(sa -> sa.getId().equals(strategicOutcomeDB.getId()));
-                toDelete.add(strategicOutcomeDB);
-              });
-
-            } else {
-              DB.forEach(strategicOutcomeDB -> {
-                primaryAllianceStrategicOutcomeManager
-                  .deletePrimaryAllianceStrategicOutcome(strategicOutcomeDB.getId());
-                toDelete.add(strategicOutcomeDB);
-              });
-            }
-          }
-        }
-      } catch (Exception e) {
-        logger.info(e + " error deleting sub action");
-      }
-
-      if (this.primaryLevers != null && !this.primaryLevers.isEmpty()) {
-
-        if (primaryLeversDB != null) {
-          try {
-            List<PrimaryAllianceStrategicOutcome> strategicOutcomes = new ArrayList<>();
-
-            for (PrimaryAllianceLever actionDB : primaryLeversDB) {
-              if (this.primaryLevers != null && !this.primaryLevers.isEmpty()) {
-                Set<Long> actionIdsInFrontend = this.primaryLevers.stream().filter(Objects::nonNull)
-                  .map(PrimaryAllianceLever::getId).collect(Collectors.toSet());
-                if (!actionIdsInFrontend.contains(actionDB.getId())) {
-
-                  // Validate previous sub actions in DB for each priority actions
-
-                  try {
-                    strategicOutcomes = primaryAllianceStrategicOutcomeManager.findAll().stream()
-                      .filter(strategicOutcomeDB -> strategicOutcomeDB.getPrimaryAllianceLever() != null
-                        && strategicOutcomeDB.getPrimaryAllianceLever().getId() != null
-                        && strategicOutcomeDB.getPrimaryAllianceLever().getId().equals(actionDB.getId()))
-                      .collect(Collectors.toList());;
-
-
-                    if (strategicOutcomes != null && !strategicOutcomes.isEmpty()) {
-
-                      // delete sub actions
-                      for (PrimaryAllianceStrategicOutcome strategicOutcomeDelete : strategicOutcomes) {
-                        if (strategicOutcomeDelete != null && strategicOutcomeDelete.getId() != null) {
-                          primaryAllianceStrategicOutcomeManager
-                            .deletePrimaryAllianceStrategicOutcome(strategicOutcomeDelete.getId());
-                        }
-                      }
-                    }
-                  } catch (Exception e) {
-                    logger.error("error deleting sub actions", e);
-                  }
-                  primaryAllianceLeverManager.deletePrimaryAllianceLever(actionDB.getId());
-
-
-                }
-              }
-            }
-          } catch (Exception e) {
-            logger.info(e + " error deleting actions");
-          }
-        }
-
-        for (PrimaryAllianceLever action : this.primaryLevers) {
-          PrimaryAllianceLever actionSave = new PrimaryAllianceLever();
-          if (action.getId() != null) {
-            actionSave = primaryAllianceLeverManager.getPrimaryAllianceLeverById(action.getId());
-          }
-
-          if (toDelete != null && !toDelete.isEmpty()) {
-
-            for (PrimaryAllianceStrategicOutcome strategicOutcometoDelete : toDelete) {
-              if (actionSave.getPrimaryStrategicOutcomes().contains(strategicOutcometoDelete)) {
-                actionSave.getPrimaryStrategicOutcomes().remove(strategicOutcometoDelete);
-              }
-            }
-          }
-
-          if (action.getName() != null) {
-            actionSave.setName(action.getName());
-          }
-          if (action.getDescription() != null) {
-            actionSave.setDescription(action.getDescription());
-          }
-          List<PrimaryAllianceStrategicOutcome> strategicOutcomesTemp = new ArrayList<>();
-          if (action.getPrimaryStrategicOutcomes() != null && !action.getPrimaryStrategicOutcomes().isEmpty()) {
-            strategicOutcomesTemp = action.getPrimaryStrategicOutcomes();
-          }
-
-          action = primaryAllianceLeverManager.savePrimaryAllianceLever(actionSave);
-          action.setPrimaryStrategicOutcomes(strategicOutcomesTemp);
-
-          // Save sub-actions
-          if (action.getPrimaryStrategicOutcomes() != null && !action.getPrimaryStrategicOutcomes().isEmpty()) {
-            for (PrimaryAllianceStrategicOutcome strategicOutcome : action.getPrimaryStrategicOutcomes()) {
-              PrimaryAllianceStrategicOutcome strategicOutcomeSave = new PrimaryAllianceStrategicOutcome();
-
-              if (strategicOutcome.getId() != null) {
-                strategicOutcomeSave.setId(strategicOutcome.getId());
-              }
-              if (strategicOutcome.getName() != null) {
-                strategicOutcomeSave.setName(strategicOutcome.getName());
-              }
-              if (strategicOutcome.getDescription() != null) {
-                strategicOutcomeSave.setDescription(strategicOutcome.getDescription());
-              }
-              if (action.getId() != null) {
-                strategicOutcomeSave.setPrimaryAllianceLever(action);
-              }
-              try {
-                primaryAllianceStrategicOutcomeManager.savePrimaryAllianceStrategicOutcome(strategicOutcomeSave);
-              } catch (Exception e) {
-                logger.info(e + " error saving sub action");
-              }
-            }
-          }
-        }
-      } else {
-        // Delete all priority actions DB
-        try {
-          List<PrimaryAllianceStrategicOutcome> strategicOutcomes = new ArrayList<>();
-
-          if (primaryLeversDB != null && !primaryLeversDB.isEmpty()) {
-            for (PrimaryAllianceLever primaryLever : primaryLeversDB) {
-
-              strategicOutcomes = primaryAllianceStrategicOutcomeManager.findAll().stream()
-                .filter(strategicOutcomeDB -> strategicOutcomeDB.getPrimaryAllianceLever() != null
-                  && strategicOutcomeDB.getPrimaryAllianceLever().getId() != null
-                  && strategicOutcomeDB.getPrimaryAllianceLever().getId().equals(primaryLever.getId()))
-                .collect(Collectors.toList());;
-
-
-              if (strategicOutcomes != null && !strategicOutcomes.isEmpty()) {
-
-                // delete sub actions
-                for (PrimaryAllianceStrategicOutcome strategicOutcomeDelete : strategicOutcomes) {
-                  if (strategicOutcomeDelete != null && strategicOutcomeDelete.getId() != null) {
-                    primaryAllianceStrategicOutcomeManager
-                      .deletePrimaryAllianceStrategicOutcome(strategicOutcomeDelete.getId());
-                  }
-                }
-              }
-
-              primaryAllianceLeverManager.deletePrimaryAllianceLever(primaryLever.getId());
-            }
-          }
-        } catch (Exception e) {
-          logger.error("error deleting priority actions: " + e);
-        }
-      }
+      this.savePrimaryLevers();
+      this.saveRelatedLevers();
 
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
 
@@ -339,6 +163,368 @@ public class AllianceLeversManagementAction extends BaseAction {
 
     } else {
       return NOT_AUTHORIZED;
+    }
+  }
+
+  public void savePrimaryLevers() {
+    List<PrimaryAllianceStrategicOutcome> toDelete = new ArrayList<>();
+    List<PrimaryAllianceLever> primaryLeversDB = null;
+    primaryLeversDB = primaryAllianceLeverManager.findAll();
+
+    try {
+      List<PrimaryAllianceStrategicOutcome> DB = null;
+      DB = primaryAllianceStrategicOutcomeManager.findAll();
+      if (this.primaryLevers != null && !this.primaryLevers.isEmpty()) {
+        for (PrimaryAllianceLever action : this.primaryLevers) {
+
+          // Remove Sub actions
+          if (action.getPrimaryStrategicOutcomes() != null && !action.getPrimaryStrategicOutcomes().isEmpty()) {
+            // Obtener los IDs de las subacciones en action.getPrimaryStrategicOutcomes()
+            Set<Long> strategicOutcomeIdsInFrontend = action.getPrimaryStrategicOutcomes().stream()
+              .filter(Objects::nonNull).map(PrimaryAllianceStrategicOutcome::getId).collect(Collectors.toSet());
+
+            // Filter DB to retain only the subactions present in
+            // action.getPrimaryStrategicOutcomes()
+            DB = DB.stream()
+              .filter(strategicOutcomeDB -> strategicOutcomeDB.getPrimaryAllianceLever() != null
+                && strategicOutcomeDB.getPrimaryAllianceLever().getId() != null
+                && strategicOutcomeDB.getPrimaryAllianceLever().getId().equals(action.getId())
+                && !strategicOutcomeIdsInFrontend.contains(strategicOutcomeDB.getId()))
+              .collect(Collectors.toList());
+
+            // Delete subactions from DB that are not in action.getPrimaryStrategicOutcomes()
+            DB.forEach(strategicOutcomeDB -> {
+              primaryAllianceStrategicOutcomeManager.deletePrimaryAllianceStrategicOutcome(strategicOutcomeDB.getId());
+              action.getPrimaryStrategicOutcomes().removeIf(sa -> sa.getId().equals(strategicOutcomeDB.getId()));
+              toDelete.add(strategicOutcomeDB);
+            });
+
+          } else {
+            DB.forEach(strategicOutcomeDB -> {
+              primaryAllianceStrategicOutcomeManager.deletePrimaryAllianceStrategicOutcome(strategicOutcomeDB.getId());
+              toDelete.add(strategicOutcomeDB);
+            });
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.info(e + " error deleting sub action");
+    }
+
+    if (this.primaryLevers != null && !this.primaryLevers.isEmpty()) {
+
+      if (primaryLeversDB != null) {
+        try {
+          List<PrimaryAllianceStrategicOutcome> strategicOutcomes = new ArrayList<>();
+
+          for (PrimaryAllianceLever actionDB : primaryLeversDB) {
+            if (this.primaryLevers != null && !this.primaryLevers.isEmpty()) {
+              Set<Long> actionIdsInFrontend = this.primaryLevers.stream().filter(Objects::nonNull)
+                .map(PrimaryAllianceLever::getId).collect(Collectors.toSet());
+              if (!actionIdsInFrontend.contains(actionDB.getId())) {
+
+                // Validate previous sub actions in DB for each priority actions
+
+                try {
+                  strategicOutcomes = primaryAllianceStrategicOutcomeManager.findAll().stream()
+                    .filter(strategicOutcomeDB -> strategicOutcomeDB.getPrimaryAllianceLever() != null
+                      && strategicOutcomeDB.getPrimaryAllianceLever().getId() != null
+                      && strategicOutcomeDB.getPrimaryAllianceLever().getId().equals(actionDB.getId()))
+                    .collect(Collectors.toList());;
+
+
+                  if (strategicOutcomes != null && !strategicOutcomes.isEmpty()) {
+
+                    // delete sub actions
+                    for (PrimaryAllianceStrategicOutcome strategicOutcomeDelete : strategicOutcomes) {
+                      if (strategicOutcomeDelete != null && strategicOutcomeDelete.getId() != null) {
+                        primaryAllianceStrategicOutcomeManager
+                          .deletePrimaryAllianceStrategicOutcome(strategicOutcomeDelete.getId());
+                      }
+                    }
+                  }
+                } catch (Exception e) {
+                  logger.error("error deleting sub actions", e);
+                }
+                primaryAllianceLeverManager.deletePrimaryAllianceLever(actionDB.getId());
+
+
+              }
+            }
+          }
+        } catch (Exception e) {
+          logger.info(e + " error deleting actions");
+        }
+      }
+
+      for (PrimaryAllianceLever action : this.primaryLevers) {
+        PrimaryAllianceLever actionSave = new PrimaryAllianceLever();
+        if (action.getId() != null) {
+          actionSave = primaryAllianceLeverManager.getPrimaryAllianceLeverById(action.getId());
+        }
+
+        if (toDelete != null && !toDelete.isEmpty()) {
+
+          for (PrimaryAllianceStrategicOutcome strategicOutcometoDelete : toDelete) {
+            if (actionSave.getPrimaryStrategicOutcomes().contains(strategicOutcometoDelete)) {
+              actionSave.getPrimaryStrategicOutcomes().remove(strategicOutcometoDelete);
+            }
+          }
+        }
+
+        if (action.getName() != null) {
+          actionSave.setName(action.getName());
+        }
+        if (action.getDescription() != null) {
+          actionSave.setDescription(action.getDescription());
+        }
+        List<PrimaryAllianceStrategicOutcome> strategicOutcomesTemp = new ArrayList<>();
+        if (action.getPrimaryStrategicOutcomes() != null && !action.getPrimaryStrategicOutcomes().isEmpty()) {
+          strategicOutcomesTemp = action.getPrimaryStrategicOutcomes();
+        }
+
+        action = primaryAllianceLeverManager.savePrimaryAllianceLever(actionSave);
+        action.setPrimaryStrategicOutcomes(strategicOutcomesTemp);
+
+        // Save sub-actions
+        if (action.getPrimaryStrategicOutcomes() != null && !action.getPrimaryStrategicOutcomes().isEmpty()) {
+          for (PrimaryAllianceStrategicOutcome strategicOutcome : action.getPrimaryStrategicOutcomes()) {
+            PrimaryAllianceStrategicOutcome strategicOutcomeSave = new PrimaryAllianceStrategicOutcome();
+
+            if (strategicOutcome.getId() != null) {
+              strategicOutcomeSave.setId(strategicOutcome.getId());
+            }
+            if (strategicOutcome.getName() != null) {
+              strategicOutcomeSave.setName(strategicOutcome.getName());
+            }
+            if (strategicOutcome.getDescription() != null) {
+              strategicOutcomeSave.setDescription(strategicOutcome.getDescription());
+            }
+            if (action.getId() != null) {
+              strategicOutcomeSave.setPrimaryAllianceLever(action);
+            }
+            try {
+              primaryAllianceStrategicOutcomeManager.savePrimaryAllianceStrategicOutcome(strategicOutcomeSave);
+            } catch (Exception e) {
+              logger.info(e + " error saving sub action");
+            }
+          }
+        }
+      }
+    } else {
+      // Delete all priority actions DB
+      try {
+        List<PrimaryAllianceStrategicOutcome> strategicOutcomes = new ArrayList<>();
+
+        if (primaryLeversDB != null && !primaryLeversDB.isEmpty()) {
+          for (PrimaryAllianceLever primaryLever : primaryLeversDB) {
+
+            strategicOutcomes = primaryAllianceStrategicOutcomeManager.findAll().stream()
+              .filter(strategicOutcomeDB -> strategicOutcomeDB.getPrimaryAllianceLever() != null
+                && strategicOutcomeDB.getPrimaryAllianceLever().getId() != null
+                && strategicOutcomeDB.getPrimaryAllianceLever().getId().equals(primaryLever.getId()))
+              .collect(Collectors.toList());;
+
+
+            if (strategicOutcomes != null && !strategicOutcomes.isEmpty()) {
+
+              // delete sub actions
+              for (PrimaryAllianceStrategicOutcome strategicOutcomeDelete : strategicOutcomes) {
+                if (strategicOutcomeDelete != null && strategicOutcomeDelete.getId() != null) {
+                  primaryAllianceStrategicOutcomeManager
+                    .deletePrimaryAllianceStrategicOutcome(strategicOutcomeDelete.getId());
+                }
+              }
+            }
+
+            primaryAllianceLeverManager.deletePrimaryAllianceLever(primaryLever.getId());
+          }
+        }
+      } catch (Exception e) {
+        logger.error("error deleting priority actions: " + e);
+      }
+    }
+  }
+
+  public void saveRelatedLevers() {
+    List<RelatedAllianceLeverSdgContribution> toDelete = new ArrayList<>();
+    List<RelatedAllianceLever> relatedLeversDB = null;
+    relatedLeversDB = relatedAllianceLeverManager.findAll();
+
+    try {
+      List<RelatedAllianceLeverSdgContribution> DB = null;
+      DB = relatedAllianceLeverSdgContributionManager.findAll();
+      if (this.relatedLevers != null && !this.relatedLevers.isEmpty()) {
+        for (RelatedAllianceLever action : this.relatedLevers) {
+
+          // Remove Sub actions
+          if (action.getRelatedLeverSdgContributions() != null && !action.getRelatedLeverSdgContributions().isEmpty()) {
+            // Obtener los IDs de las subacciones en action.getRelatedLeverSdgContributions()
+            Set<Long> sdgContributionsIdsInFrontend = action.getRelatedLeverSdgContributions().stream()
+              .filter(Objects::nonNull).map(RelatedAllianceLeverSdgContribution::getId).collect(Collectors.toSet());
+
+            // Filter DB to retain only the subactions present in
+            // action.getRelatedLeverSdgContributions()
+            DB = DB.stream()
+              .filter(sdgContributionDB -> sdgContributionDB.getRelatedAllianceLever() != null
+                && sdgContributionDB.getRelatedAllianceLever().getId() != null
+                && sdgContributionDB.getRelatedAllianceLever().getId().equals(action.getId())
+                && !sdgContributionsIdsInFrontend.contains(sdgContributionDB.getId()))
+              .collect(Collectors.toList());
+
+            // Delete subactions from DB that are not in action.getRelatedLeverSdgContributions()
+            DB.forEach(sdgContributionDB -> {
+              relatedAllianceLeverSdgContributionManager
+                .deleteRelatedAllianceLeverSdgContribution(sdgContributionDB.getId());
+              action.getRelatedLeverSdgContributions().removeIf(sa -> sa.getId().equals(sdgContributionDB.getId()));
+              toDelete.add(sdgContributionDB);
+            });
+
+          } else {
+            DB.forEach(sdgContributionDB -> {
+              relatedAllianceLeverSdgContributionManager
+                .deleteRelatedAllianceLeverSdgContribution(sdgContributionDB.getId());
+              toDelete.add(sdgContributionDB);
+            });
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.info(e + " error deleting sub action");
+    }
+
+    if (this.relatedLevers != null && !this.relatedLevers.isEmpty()) {
+
+      if (relatedLeversDB != null) {
+        try {
+          List<RelatedAllianceLeverSdgContribution> sdgContributions = new ArrayList<>();
+
+          for (RelatedAllianceLever actionDB : relatedLeversDB) {
+            if (this.relatedLevers != null && !this.relatedLevers.isEmpty()) {
+              Set<Long> actionIdsInFrontend = this.relatedLevers.stream().filter(Objects::nonNull)
+                .map(RelatedAllianceLever::getId).collect(Collectors.toSet());
+              if (!actionIdsInFrontend.contains(actionDB.getId())) {
+
+                // Validate previous sub actions in DB for each priority actions
+
+                try {
+                  sdgContributions = relatedAllianceLeverSdgContributionManager.findAll().stream()
+                    .filter(sdgContributionDB -> sdgContributionDB.getRelatedAllianceLever() != null
+                      && sdgContributionDB.getRelatedAllianceLever().getId() != null
+                      && sdgContributionDB.getRelatedAllianceLever().getId().equals(actionDB.getId()))
+                    .collect(Collectors.toList());;
+
+
+                  if (sdgContributions != null && !sdgContributions.isEmpty()) {
+
+                    // delete sub actions
+                    for (RelatedAllianceLeverSdgContribution sdgContributionDelete : sdgContributions) {
+                      if (sdgContributionDelete != null && sdgContributionDelete.getId() != null) {
+                        relatedAllianceLeverSdgContributionManager
+                          .deleteRelatedAllianceLeverSdgContribution(sdgContributionDelete.getId());
+                      }
+                    }
+                  }
+                } catch (Exception e) {
+                  logger.error("error deleting sub actions", e);
+                }
+                relatedAllianceLeverManager.deleteRelatedAllianceLever(actionDB.getId());
+
+
+              }
+            }
+          }
+        } catch (Exception e) {
+          logger.info(e + " error deleting actions");
+        }
+      }
+
+      for (RelatedAllianceLever action : this.relatedLevers) {
+        RelatedAllianceLever actionSave = new RelatedAllianceLever();
+        if (action.getId() != null) {
+          actionSave = relatedAllianceLeverManager.getRelatedAllianceLeverById(action.getId());
+        }
+
+        if (toDelete != null && !toDelete.isEmpty()) {
+
+          for (RelatedAllianceLeverSdgContribution strategicOutcometoDelete : toDelete) {
+            if (actionSave.getRelatedLeverSdgContributions().contains(strategicOutcometoDelete)) {
+              actionSave.getRelatedLeverSdgContributions().remove(strategicOutcometoDelete);
+            }
+          }
+        }
+
+        if (action.getName() != null) {
+          actionSave.setName(action.getName());
+        }
+        if (action.getDescription() != null) {
+          actionSave.setDescription(action.getDescription());
+        }
+        List<RelatedAllianceLeverSdgContribution> sdgContributionsTemp = new ArrayList<>();
+        if (action.getRelatedLeverSdgContributions() != null && !action.getRelatedLeverSdgContributions().isEmpty()) {
+          sdgContributionsTemp = action.getRelatedLeverSdgContributions();
+        }
+
+        action = relatedAllianceLeverManager.saveRelatedAllianceLever(actionSave);
+        action.setRelatedLeverSdgContributions(sdgContributionsTemp);
+
+        // Save sub-actions
+        if (action.getRelatedLeverSdgContributions() != null && !action.getRelatedLeverSdgContributions().isEmpty()) {
+          for (RelatedAllianceLeverSdgContribution strategicOutcome : action.getRelatedLeverSdgContributions()) {
+            RelatedAllianceLeverSdgContribution strategicOutcomeSave = new RelatedAllianceLeverSdgContribution();
+
+            if (strategicOutcome.getId() != null) {
+              strategicOutcomeSave.setId(strategicOutcome.getId());
+            }
+            if (strategicOutcome.getName() != null) {
+              strategicOutcomeSave.setName(strategicOutcome.getName());
+            }
+            if (strategicOutcome.getDescription() != null) {
+              strategicOutcomeSave.setDescription(strategicOutcome.getDescription());
+            }
+            if (action.getId() != null) {
+              strategicOutcomeSave.setRelatedAllianceLever(action);
+            }
+            try {
+              relatedAllianceLeverSdgContributionManager.saveRelatedAllianceLeverSdgContribution(strategicOutcomeSave);
+            } catch (Exception e) {
+              logger.info(e + " error saving sub action");
+            }
+          }
+        }
+      }
+    } else {
+      // Delete all priority actions DB
+      try {
+        List<RelatedAllianceLeverSdgContribution> sdgContributions = new ArrayList<>();
+
+        if (relatedLeversDB != null && !relatedLeversDB.isEmpty()) {
+          for (RelatedAllianceLever relatedLever : relatedLeversDB) {
+
+            sdgContributions = relatedAllianceLeverSdgContributionManager.findAll().stream()
+              .filter(sdgContributionDB -> sdgContributionDB.getRelatedAllianceLever() != null
+                && sdgContributionDB.getRelatedAllianceLever().getId() != null
+                && sdgContributionDB.getRelatedAllianceLever().getId().equals(relatedLever.getId()))
+              .collect(Collectors.toList());;
+
+
+            if (sdgContributions != null && !sdgContributions.isEmpty()) {
+
+              // delete sub actions
+              for (RelatedAllianceLeverSdgContribution sdgContributionDelete : sdgContributions) {
+                if (sdgContributionDelete != null && sdgContributionDelete.getId() != null) {
+                  relatedAllianceLeverSdgContributionManager
+                    .deleteRelatedAllianceLeverSdgContribution(sdgContributionDelete.getId());
+                }
+              }
+            }
+
+            relatedAllianceLeverManager.deleteRelatedAllianceLever(relatedLever.getId());
+          }
+        }
+      } catch (Exception e) {
+        logger.error("error deleting priority actions: " + e);
+      }
     }
   }
 
