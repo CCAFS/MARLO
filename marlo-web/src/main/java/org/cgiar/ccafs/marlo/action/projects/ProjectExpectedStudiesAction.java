@@ -623,6 +623,26 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .getRepIndStageStudyById(this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId()));
         }
 
+        /*
+         * Set RepIndStageStudy composed name
+         */
+        if (this.isAFPhase(this.getActualPhase().getId())) {
+          if (this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null
+            && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescriptionAF() != null) {
+
+            this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy()
+              .setComposedName("<b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName()
+                + "</b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescriptionAF());
+          }
+        } else {
+          if (this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null
+            && this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescription() != null) {
+            this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy()
+              .setComposedName("<b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName()
+                + "</b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescription());
+          }
+        }
+
         // Load Status
         if (this.expectedStudy.getProjectExpectedStudyInfo().getStatus() != null
           && this.expectedStudy.getProjectExpectedStudyInfo().getStatus().getId() != null) {
@@ -1081,6 +1101,25 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.subIdos = this.srfSubIdoManager.findAll();
       this.targets = this.srfSloIndicatorManager.findAll();
 
+      /*
+       * Set RepIndStageStudy composed name
+       */
+      if (this.stageStudies != null && !this.stageStudies.isEmpty()) {
+        for (RepIndStageStudy stageStudy : this.stageStudies) {
+
+          if (stageStudy != null) {
+            if (this.isAFPhase(this.getActualPhase().getId())) {
+              if (stageStudy.getName() != null && stageStudy.getDescriptionAF() != null) {
+                stageStudy.setComposedName(stageStudy.getName() + ": " + stageStudy.getDescriptionAF());
+              }
+            } else {
+              if (stageStudy.getName() != null && stageStudy.getDescription() != null) {
+                stageStudy.setComposedName(stageStudy.getName() + ": " + stageStudy.getDescription());
+              }
+            }
+          }
+        }
+      }
 
       // institutions
       Project projectTemp = null;

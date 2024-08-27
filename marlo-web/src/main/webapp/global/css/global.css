@@ -48,6 +48,14 @@ label {
 	cursor: pointer;
 }
 
+label.label--2{
+	font-weight: 700;
+	font-size: 15px;
+	color: #0A2842;
+	margin-top: 0.5rem;
+	margin-bottom: 0.125rem;
+}
+
 .input-sm {
 	padding: 4px 10px;
 	height: 27px;
@@ -117,6 +125,10 @@ a#btn-revokeChoice {
 	font-weight: normal;
 }
 
+.select--flex{
+	display: flex;
+}
+
 .select.button,
 .textArea.button {
 	float: left;
@@ -147,20 +159,23 @@ a#btn-revokeChoice {
 }
 
 .bigAddButton {
-	border-style: dashed;
-	border-width: 2px;
-	border-color: #ccc;
-	color: #b1afaf;
-	font-size: 1.5em;
+	background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='10' ry='10' stroke='%230B7BA6' stroke-width='2' stroke-dasharray='15px' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+	color: #0B7BA6;
+	font-size: 1.5rem;
 	padding: 10px 0;
 	margin: 0 7px;
 	cursor: pointer;
-	border-radius: 4px;
 	display: block;
+	gap: 0.625rem;
+	margin-top: 14px;
+}
+
+.bigAddButton span {
+	margin-right: 12px;
 }
 
 .bigAddButton:hover {
-	border-color: #9c9c9c;
+	background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='10' ry='10' stroke='%239C9C9CFF' stroke-width='2' stroke-dasharray='15px' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
 	color: #757575;
 }
 
@@ -222,6 +237,18 @@ input.disabled {
 /* MODAL */
 .modal {
 	text-align: center;
+}
+
+.modal-header {
+	padding: 10px 15px;
+}
+
+.modal-body .panel.tertiary .panel-head{
+	border-bottom: none;
+}
+
+.modal-footer {
+	border-top: none;
 }
 
 @media screen and (min-width: 768px) {
@@ -1340,6 +1367,19 @@ select#partnerSave_activityPartner_partner_type_id {
 .panel span.name {
 	cursor: pointer;
 	/* padding: 5px 3px; */
+}
+
+.panel.panel--flex{
+	display: flex;
+	
+}
+
+.panel.panel--flex .panel-head{
+	border-bottom: none;
+}
+
+.panel.panel--flex .panel-body{
+	border-left: none;
 }
 
 .remove {
@@ -3378,11 +3418,24 @@ button.ipGraph-btn {
 }
 
 .note {
-	background-color: #FFF7CF;
-	padding: 6px;
-	text-align: center;
-	/* border-bottom: 2px solid #fff; */
-	font-style: italic;
+	background-color: #D9EDF7;
+	padding: 8px;
+	display: flex;
+	align-items: center;
+	border-radius: 0.3125rem;
+	font-size: 13px;
+	font-weight: 400;
+	line-height: 20px;
+	text-align: left;
+	border-left: 5px solid #40AAD4;
+	margin-bottom: 6px;
+}
+
+.note span {
+	color: #40AAD4;
+	font-size: 20px;
+	margin-right: 6px;
+	margin-top: 6px;
 }
 
 .note--2{
@@ -3392,7 +3445,7 @@ button.ipGraph-btn {
 	border-left: 5px solid #8DC955;
 	background: rgba(232, 247, 227, 0.40);
 	padding: 0.3125rem 0.625rem 0.3125rem 0.9375rem;
-	justify-content: center;
+	justify-content: left;
 	align-items: center;
 	gap: 0.625rem;
 	font-style: normal;
@@ -3401,12 +3454,28 @@ button.ipGraph-btn {
 	flex-wrap: wrap;
 }
 
+.note--2__margin-none{
+	margin: 0;
+}
+
 .note--2 p{
 	font-style: italic;
 	color: #5F5E5E;
 	font-size: 1.25rem;
-	font-style: italic;
 	font-weight: 300;
+}
+
+.note--2 ul{
+	width: 100%;
+	text-align: left;
+}
+
+.note--2 ul li{
+	font-style: italic;
+    color: #5F5E5E;
+    font-size: 1.25rem;
+    font-style: italic;
+    font-weight: 300;
 }
 
 .topNote {

@@ -436,6 +436,14 @@
   <mapping resource="xmls/SoilIndicators.hbm.xml"/>
   <mapping resource="xmls/TipParameters.hbm.xml"/>
   <mapping resource="xmls/ProjectExpectedStudyTags.hbm.xml"/>
+  <mapping resource="xmls/PrimaryAllianceLevers.hbm.xml"/>
+  <mapping resource="xmls/RelatedAllianceLevers.hbm.xml"/>
+  <mapping resource="xmls/PrimaryAllianceStrategicOutcomes.hbm.xml"/>
+  <mapping resource="xmls/RelatedAllianceLeverSdgContributions.hbm.xml"/>
+  <mapping resource="xmls/ProjectExpectedStudyPrimaryAllianceLevers.hbm.xml"/>
+  <mapping resource="xmls/ProjectExpectedStudyPrimaryStrategicOutcomes.hbm.xml"/>
+  <mapping resource="xmls/ProjectExpectedStudyRelatedAllianceLevers.hbm.xml"/>
+  <mapping resource="xmls/ProjectExpectedStudyRelatedLeverSdgContributions.hbm.xml"/>
 
  </session-factory>
 </hibernate-configuration>
