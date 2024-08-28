@@ -119,7 +119,15 @@
                 <ul class="nav nav-tabs" role="tablist">
                   <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if]"><a index="1" href="#study-generalInformation" aria-controls="info" role="tab" data-toggle="tab">[@s.text name="study.general.generalInformation" /]</a></li>
 
-                  <li role="presentation" class="[#if indexTab==2]active[/#if]"><a index="2" href="#study-alliance" aria-controls="metadata" role="tab" data-toggle="tab">[@s.text name="study.general.allianceAlignment" /]</a></li>
+                  [#assign isAllianceContribution = false /]
+                  [#list expectedStudy.centers as center]
+                  [#if center.institution.id == 7320]
+                    [#assign isAllianceContribution = true /]
+                    [#break /]
+                  [/#if]
+                  [/#list]
+                  
+                  <li role="presentation" class="[#if indexTab==2]active[/#if]" style="display:${isAllianceContribution?then('block','none')}" id="allianceTab"><a index="2" href="#study-alliance" aria-controls="metadata" role="tab" data-toggle="tab">[@s.text name="study.general.allianceAlignment" /]</a></li>
 
                   <li role="presentation" class="[#if indexTab==3]active[/#if]"><a index="3" href="#study-onecgiar" aria-controls="quality" role="tab" data-toggle="tab">[@s.text name="study.general.oneCGIARAlignment" /]</a></li>
 
