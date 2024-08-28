@@ -162,6 +162,8 @@ function attachEvents() {
    */
   // Add a project partner Event
   $(".addProjectPartner").on('click', addPartnerEvent);
+  // Add a project partner Event
+  $(".addProjectPartner2").on('click', addPartnerEvent2);
   // Remove a project partner Event
   $(".removePartner").on('click', removePartnerEvent);
   // When Partner Type change
@@ -702,6 +704,51 @@ function addPartnerEvent(e) {
   setProjectPartnersIndexes();
 }
 
+function addPartnerEvent2(e) {
+  console.log("addPartnerEvent2");
+  var $newElement = $("#projectPartner2-template").clone(true).removeAttr("id");
+  $(this).before($newElement);
+  $newElement.find('.blockTitle').trigger('click');
+  $newElement.show("slow", function() {
+    // Update component
+    $(document).trigger('updateComponent');
+  });
+
+  // Activate the select2 plugin for new partners created
+  // Organization
+  $newElement.find("select.institutionsList").select2(searchInstitutionsOptions(canUpdatePPAPartners));
+  $newElement.find("select.institutionsList").parent().find("span.select2-selection__placeholder")
+      .text(placeholderText); 
+
+  // Role Selection
+  $newElement.find("select.partnerPersonType").select2({
+      templateResult: formatState,
+      width: "100%"
+  });
+
+  // Research Phase
+  $newElement.find("select.researchPhasesSelect ").select2({
+      placeholder: "Select here...",
+      width: '100%'
+  });
+
+  // Countries
+  $newElement.find('select.countriesList, select.countriesSelect').select2({
+      placeholder: "Select a country(ies)",
+      templateResult: formatStateCountries,
+      templateSelection: formatStateCountries,
+      width: '100%'
+  });
+
+  // Other Selects
+  $newElement.find('select.setSelect2').select2({
+      width: '100%'
+  });
+
+  // Update indexes
+  setProjectPartnersIndexes();
+}
+
 function addContactEvent(e) {
   e.preventDefault();
   var $newElement = $("#contactPerson-template").clone(true).removeAttr("id");
@@ -797,6 +844,12 @@ function removePersonEvent(e) {
 
 function setProjectPartnersIndexes() {
   $partnersBlock.find(".projectPartner").each(function(index,element) {
+    var partner = new PartnerObject($(element));
+    partner.setIndex(index);
+  });
+}
+function setProjectPartnersIndexes() {
+  $partnersBlock.find(".projectPartner2").each(function(index,element) {
     var partner = new PartnerObject($(element));
     partner.setIndex(index);
   });

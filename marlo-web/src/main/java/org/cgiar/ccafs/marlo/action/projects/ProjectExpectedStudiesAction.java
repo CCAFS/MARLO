@@ -2526,7 +2526,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
 
           if (studyQuantificationSave.getQuantificationType() != null) {
-            studyQuantificationSave.setQuantificationType(studyQuantificationSave.getQuantificationType());
+            studyQuantificationSave.setQuantificationType(studyQuantification.getQuantificationType());
           }
 
           studyQuantificationSave.setNumber(studyQuantification.getNumber());
@@ -2548,6 +2548,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           } else {
             studyQuantificationSave.setTypeQuantification("A");
           }
+
+          if (studyQuantificationSave.getQuantificationType() != null) {
+            studyQuantificationSave.setQuantificationType(studyQuantification.getQuantificationType());
+          }
+
           studyQuantificationSave.setNumber(studyQuantification.getNumber());
           studyQuantificationSave.setComments(studyQuantification.getComments());
           studyQuantificationSave.setTargetUnit(studyQuantification.getTargetUnit());

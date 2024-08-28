@@ -73,14 +73,14 @@ public class AllianceLeversManagementAction extends BaseAction {
 
         if (relatedSubLevers != null && !relatedSubLevers.isEmpty()) {
           relatedLevers.forEach(action -> {
-            List<RelatedAllianceLeverSdgContribution> primarySubLeversAdd = relatedSubLevers.stream()
+            List<RelatedAllianceLeverSdgContribution> relatedSubLeversAdd = relatedSubLevers.stream()
               .filter(subLever -> action != null && action.getId() != null && subLever != null
                 && subLever.getRelatedAllianceLever() != null && subLever.getRelatedAllianceLever().getId() != null
                 && subLever.getRelatedAllianceLever().getId().equals(action.getId()))
               .collect(Collectors.toList());
 
-            if (!primarySubLeversAdd.isEmpty()) {
-              action.setRelatedLeverSdgContributions(relatedSubLevers);
+            if (!relatedSubLeversAdd.isEmpty()) {
+              action.setRelatedLeverSdgContributions(relatedSubLeversAdd);
             }
           });
         }
@@ -107,7 +107,7 @@ public class AllianceLeversManagementAction extends BaseAction {
               .collect(Collectors.toList());
 
             if (!primarySubLeversAdd.isEmpty()) {
-              action.setPrimaryStrategicOutcomes(primarySubLevers);
+              action.setPrimaryStrategicOutcomes(primarySubLeversAdd);
             }
           });
         }

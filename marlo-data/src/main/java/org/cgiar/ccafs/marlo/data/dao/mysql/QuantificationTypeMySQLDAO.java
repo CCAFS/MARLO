@@ -62,7 +62,7 @@ public class QuantificationTypeMySQLDAO extends AbstractMarloDAO<QuantificationT
   public List<QuantificationType> findAll() {
     String query = "from " + QuantificationType.class.getName();
     List<QuantificationType> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
