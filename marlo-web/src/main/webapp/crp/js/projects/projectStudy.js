@@ -52,6 +52,10 @@ function init() {
   
   // Change counter value of Shared Cluster
   counterSharedCluster();
+
+  // Update the dynamic visualization of the "Alliance" Tab after selecting in Key Contributors
+  $('select.elementType-institution').on('change',updateAllianceTab);
+  $('div.removeElementType-institution').on('click',updateAllianceTab);
 }
 
 function bottonPading(){
@@ -504,4 +508,26 @@ function counterSharedCluster() {
     currentAmount = $('div[listname="expectedStudy.projects"] ul.list li').length;
     $counter.text(currentAmount);
   });
+}
+
+function updateAllianceTab() {
+  var $selectCenters = $('select.elementType-institution');
+
+
+    setTimeout(() => {
+      $option = $selectCenters.find('option[disabled]');
+
+
+      if($option.length > 0) {
+
+        if($option.toArray().some((item) => item.value == "7320")) {
+          $('#allianceTab').slideDown();
+        } else {
+          $('#allianceTab').slideUp();
+        }
+      }
+    }, 1000);
+
+      
+
 }
