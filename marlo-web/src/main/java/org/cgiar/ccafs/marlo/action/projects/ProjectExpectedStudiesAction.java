@@ -2525,7 +2525,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             studyQuantificationSave.setTypeQuantification("A");
           }
 
-          if (studyQuantificationSave.getQuantificationType() != null) {
+          if (studyQuantification.getQuantificationType() != null) {
             studyQuantificationSave.setQuantificationType(studyQuantification.getQuantificationType());
           }
 
@@ -2549,7 +2549,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             studyQuantificationSave.setTypeQuantification("A");
           }
 
-          if (studyQuantificationSave.getQuantificationType() != null) {
+          if (studyQuantification.getQuantificationType() != null) {
             studyQuantificationSave.setQuantificationType(studyQuantification.getQuantificationType());
           }
 
