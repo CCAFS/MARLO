@@ -444,6 +444,7 @@
   <mapping resource="xmls/ProjectExpectedStudyPrimaryStrategicOutcomes.hbm.xml"/>
   <mapping resource="xmls/ProjectExpectedStudyRelatedAllianceLevers.hbm.xml"/>
   <mapping resource="xmls/ProjectExpectedStudyRelatedLeverSdgContributions.hbm.xml"/>
+  <mapping resource="xmls/QuantificationTypes.hbm.xml"/>
 
  </session-factory>
 </hibernate-configuration>

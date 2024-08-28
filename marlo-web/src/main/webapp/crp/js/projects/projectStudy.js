@@ -52,6 +52,10 @@ function init() {
   
   // Change counter value of Shared Cluster
   counterSharedCluster();
+
+  // Update the dynamic visualization of the "Alliance" Tab after selecting in Key Contributors
+  $('select.elementType-institution').on('change',updateAllianceTab);
+  $('div.removeElementType-institution').on('click',updateAllianceTab);
 }
 
 function bottonPading(){
@@ -329,14 +333,25 @@ function attachEvents() {
     // Functions
     function addItem() {
       var $list = $(this).parents('.quantificationsBlock').find('.quantificationsList');
-      var $element = $('#quantification-template').clone(true).removeAttr("id");
+      var $element = $('#quantification-template');
+
+      // remove select2 data to avoid corruption in clone process
+      if ($element.find('select').data('select2')) {
+        $element.find('select').select2("destroy");
+      }
+
+      // clone the item
+      var $clone = $element.clone(true).removeAttr("id");
       // Remove template tag
-      $element.find('input, textarea').each(function(i,e) {
+      $clone.find('input, textarea').each(function(i,e) {
         e.name = (e.name).replace("_TEMPLATE_", "");
         e.id = (e.id).replace("_TEMPLATE_", "");
       });
+      // Add select2 to select type of quantification
+      $element.find('select').select2();
+      $clone.find('select').select2();
       // Show the element
-      $element.appendTo($list).hide().show(350);
+      $clone.appendTo($list).hide().show(350);
       // Update indexes
       updateIndexes();
     }
@@ -367,16 +382,6 @@ function attachEvents() {
   })();
 	//On change radio buttons
 	$('input[class*="radioType-"]').on('change', onChangeRadioButton);
-}
-
-function onChangeRadioButton() {
-  var thisValue = this.value === "true";
-  var radioType = $(this).classParam('radioType');
-  if(thisValue) {
-    $('.block-' + radioType).slideDown();
-  } else {
-    $('.block-' + radioType).slideUp();
-  }
 }
 
 function addSelect2() {
@@ -504,4 +509,26 @@ function counterSharedCluster() {
     currentAmount = $('div[listname="expectedStudy.projects"] ul.list li').length;
     $counter.text(currentAmount);
   });
+}
+
+function updateAllianceTab() {
+  var $selectCenters = $('select.elementType-institution');
+
+
+    setTimeout(() => {
+      $option = $selectCenters.find('option[disabled]');
+
+
+      if($option.length > 0) {
+
+        if($option.toArray().some((item) => item.value == "7320")) {
+          $('#allianceTab').slideDown();
+        } else {
+          $('#allianceTab').slideUp();
+        }
+      }
+    }, 1000);
+
+      
+
 }

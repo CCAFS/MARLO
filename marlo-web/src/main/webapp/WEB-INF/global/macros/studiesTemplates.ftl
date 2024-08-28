@@ -223,7 +223,7 @@
          
         [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="study.generalInformation.innovationsList"  listName="innovationsList" keyFieldName="id" displayFieldName="composedNameAlternative" required=false /]
 
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.otherInnovations" i18nkey="study.generalInformation.otherInnovations" className="limitWords-30" required=false editable=editable  /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.otherInnovationsNarrative" i18nkey="study.generalInformation.otherInnovations" className="limitWords-30" required=false editable=editable  /]
       </div>
       [/#if]
       
@@ -459,7 +459,7 @@
         <label for="" class="label--2">[@s.text name="study.generalInformation.crossCuttingRelevance" /]:
           [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.help" isNote=true showIcon=false editable=editable/]
         </label>
-        [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.note2" showIcon=false editable=editable/]
+        [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.help2" showIcon=false editable=editable/]
         <div class="row">
           [#-- Gender --]
           <div class="ccRelevanceBlock col-md-3">
@@ -918,8 +918,7 @@
     <div class="form-group row">
       [#-- Quantification type --]
       <div class="col-md-4">
-        <label for="">[@s.text name="study.quantificationType" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]</label>
-        [@customForm.select name="${customName}.typeQuantification.id" value="${(element.typeQuantification.id)!-1}" className="setSelect2" i18nkey="study.quantificationType" listName=""  keyFieldName="id" showTitle=false  displayFieldName="name" required=true editable=editable /]
+        [@customForm.select name="${customName}.quantificationType.id" value="${(element.quantificationType.id)!-1}" className="setSelect2" i18nkey="study.quantificationType" listName="quantificationTypes"  keyFieldName="id" displayFieldName="name" required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable /]
       </div>
       [#-- Number --]
       <div class="col-md-4">
