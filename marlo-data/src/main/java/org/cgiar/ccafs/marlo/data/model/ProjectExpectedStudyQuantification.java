@@ -15,6 +15,7 @@ public class ProjectExpectedStudyQuantification extends MarloBaseEntity implemen
   @Expose
   private ProjectExpectedStudy projectExpectedStudy;
 
+  @Expose
   private QuantificationType quantificationType;
   @Expose
   private String typeQuantification;
