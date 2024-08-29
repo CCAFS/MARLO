@@ -1381,13 +1381,23 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
   private void validateQuantifications(BaseAction action,
     ProjectExpectedStudyQuantification projectExpectedStudyQuantification, int i) {
 
-    // Validate Type of Quantification
-    if (projectExpectedStudyQuantification.getTypeQuantification() == null) {
+
+    if (projectExpectedStudyQuantification.getQuantificationType() == null) {
       action.addMessage(action.getText("Type Quantification"));
-      action.addMissingField("Type Quantification");
-      action.getInvalidFields().put("input-expectedStudy.quantifications[" + i + "].typeQuantification",
+      action.addMissingField("study.quantificationType");
+      action.getInvalidFields().put("input-expectedStudy.quantifications[" + i + "].quantificationType.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
+    // Validate Type of Quantification
+    if (projectExpectedStudyQuantification.getQuantificationType() != null) {
+      if (projectExpectedStudyQuantification.getQuantificationType().getId() == -1) {
+        action.addMessage(action.getText("Type Quantification"));
+        action.addMissingField("study.quantificationType");
+        action.getInvalidFields().put("input-expectedStudy.quantifications[" + i + "].quantificationType.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
 
     // Validate Number
     if (!this.isValidNumber(String.valueOf(projectExpectedStudyQuantification.getNumber()))) {
