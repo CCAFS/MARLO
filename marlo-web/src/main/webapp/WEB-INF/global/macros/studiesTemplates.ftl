@@ -877,6 +877,36 @@
     </div>
     [/#if]
 
+    [#-- Publications --]
+    <div class="form-group">
+      <label for="">[@s.text name="study.generalInformation.publications" /]:[@customForm.req required=false /]</label>
+      [@customForm.helpLabel name="study.generalInformation.publications.help" showIcon=false isNote=true/]
+      <div class="publicationsBlock">
+        <div class="publicationsList">
+          <div class="row">
+            <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">Name[@customForm.req required=(editable && validateIsProgressWithStatus!true)  /]</div>
+            <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">Position[@customForm.req required=(editable && validateIsProgressWithStatus!true)  /]</div>
+            <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">Affiliation[@customForm.req required=(editable && validateIsProgressWithStatus!true)  /]</div>
+          </div>
+          [#if (element.publications?has_content) && (element.publications?size > 0)]
+            [#list (element.publications)![{}] as publication]
+              [@studyPublication name="${customName}.links" element=publication index=publication_index /]
+            [/#list]
+          [/#if]
+        </div>
+        [#if editable]
+          <div class="addPublication bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Publication </div>
+          <div class="clearfix"></div>
+        [/#if]
+      </div>
+      [#-- Element item Template --]
+      <div style="display:none">
+        [@studyPublication name="${customName}.publications" element={} index=-1 template=true /]
+      </div>
+
+    </div>
+      
+
     [#--  Contact person    --]
     [#if isOutcomeCaseStudy]
     <div class="form-group stageProcessOne">
@@ -942,3 +972,18 @@
   [/#list]
   [#return false]
 [/#function]
+
+[#macro studyPublication name element index=-1 template=false class=""  ]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div id="studyPublication-${(template?string('template', ''))}" class="studyPublication form-group grayBox ${class}">
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <span class="pull-left" style="width:4%"><strong><span class="indexTag">${index + 1}</span>.</strong></span>
+    <span class="pull-left" style="width:32%">[@customForm.input name="${customName}.name" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:32%">[@customForm.input name="${customName}.position" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:32%">[@customForm.input name="${customName}.affiliation" showTitle=false i18nkey="" className="" editable=editable /]</span>
+
+    [#if editable]<div class="removeElement sm removeIcon removePublication ${class}" title="Remove"></div>[/#if]
+    <div class="clearfix"></div>
+  </div>
+    
+[/#macro]
