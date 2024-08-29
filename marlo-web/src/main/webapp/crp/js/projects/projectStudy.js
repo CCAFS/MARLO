@@ -327,9 +327,8 @@ function attachEvents() {
    */
   (function () {
     // Events
-    console.log('publications functions');
     $('.addPublication').on('click', addItem);
-    $('.removeLink.publications').on('click', removeItem);
+    $('.removePublication').on('click', removeItem);
     validateEmptyLinks();
 
     // Functions
@@ -337,10 +336,6 @@ function attachEvents() {
       var $list = $(this).parent('.publicationsBlock').find('.publicationsList');
       var $element = $('#studyPublication-template').clone(true).removeAttr("id");
       var $listLength = $list.children().length;
-      console.log('add publication');
-      console.log($listLength);
-      console.log($list);
-      console.log($element);
       if ($listLength <= 30) {
         // Remove template tag
         $element.find('input, textarea').each(function (i, e) {
@@ -354,8 +349,8 @@ function attachEvents() {
       }
     }
     function removeItem() {
-      var $parent = $(this).parent('.studyPublication.publications');
-      var $addBtn = $(this).parent().parent().parent().find('.addButtonPublication');
+      var $parent = $(this).parent('.studyPublication');
+      var $addBtn = $(this).parent().parent().parent().find('.addPublication');
       $parent.hide(500, function () {
         // Remove DOM element
         $parent.remove();
