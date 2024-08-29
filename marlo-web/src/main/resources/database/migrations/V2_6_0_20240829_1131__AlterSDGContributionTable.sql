@@ -1,0 +1,3 @@
+ALTER TABLE related_alliance_lever_sdg_contributions DROP FOREIGN KEY related_alliance_levers_FK;
+ALTER TABLE related_alliance_lever_sdg_contributions DROP INDEX related_alliance_levers_FK;
+ALTER TABLE related_alliance_lever_sdg_contributions DROP COLUMN related_alliance_lever_id;
