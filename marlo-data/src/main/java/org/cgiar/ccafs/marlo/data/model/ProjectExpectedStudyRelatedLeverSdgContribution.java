@@ -27,7 +27,7 @@ public class ProjectExpectedStudyRelatedLeverSdgContribution extends MarloAudita
   @Expose
   private ProjectExpectedStudy projectExpectedStudy;
   @Expose
-  private RelatedAllianceLeverSdgContribution relatedLeverSdgContribution;
+  private RelatedLeversSDGContribution relatedLeverRelatedLeversSDGContribution;
   @Expose
   private Phase phase;
 
@@ -48,8 +48,8 @@ public class ProjectExpectedStudyRelatedLeverSdgContribution extends MarloAudita
     return projectExpectedStudy;
   }
 
-  public RelatedAllianceLeverSdgContribution getRelatedLeverSdgContribution() {
-    return relatedLeverSdgContribution;
+  public RelatedLeversSDGContribution getRelatedLeverRelatedLeversSDGContribution() {
+    return relatedLeverRelatedLeversSDGContribution;
   }
 
   public void setPhase(Phase phase) {
@@ -60,8 +60,9 @@ public class ProjectExpectedStudyRelatedLeverSdgContribution extends MarloAudita
     this.projectExpectedStudy = projectExpectedStudy;
   }
 
-  public void setRelatedLeverSdgContribution(RelatedAllianceLeverSdgContribution relatedLeverSdgContribution) {
-    this.relatedLeverSdgContribution = relatedLeverSdgContribution;
+  public void
+    setRelatedLeverRelatedLeversSDGContribution(RelatedLeversSDGContribution relatedLeverRelatedLeversSDGContribution) {
+    this.relatedLeverRelatedLeversSDGContribution = relatedLeverRelatedLeversSDGContribution;
   }
 }
 

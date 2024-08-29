@@ -19,7 +19,8 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import com.google.gson.annotations.Expose;
 
-public class PrimaryAllianceStrategicOutcome extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
+public class PrimaryLeversRelatedSdgContribution extends MarloAuditableEntity
+  implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -963914989396761020L;
 
@@ -30,9 +31,11 @@ public class PrimaryAllianceStrategicOutcome extends MarloAuditableEntity implem
   @Expose
   private PrimaryAllianceLever primaryAllianceLever;
   @Expose
+  private SdgContribution sdgContribution;
+  @Expose
   private Phase phase;
 
-  public PrimaryAllianceStrategicOutcome() {
+  public PrimaryLeversRelatedSdgContribution() {
   }
 
   @Override
@@ -44,7 +47,7 @@ public class PrimaryAllianceStrategicOutcome extends MarloAuditableEntity implem
       return false;
     }
 
-    PrimaryAllianceStrategicOutcome other = (PrimaryAllianceStrategicOutcome) obj;
+    PrimaryLeversRelatedSdgContribution other = (PrimaryLeversRelatedSdgContribution) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
         return false;
@@ -78,6 +81,10 @@ public class PrimaryAllianceStrategicOutcome extends MarloAuditableEntity implem
     return primaryAllianceLever;
   }
 
+  public SdgContribution getSdgContribution() {
+    return sdgContribution;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -100,6 +107,10 @@ public class PrimaryAllianceStrategicOutcome extends MarloAuditableEntity implem
 
   public void setPrimaryAllianceLever(PrimaryAllianceLever primaryAllianceLever) {
     this.primaryAllianceLever = primaryAllianceLever;
+  }
+
+  public void setSdgContribution(SdgContribution sdgContribution) {
+    this.sdgContribution = sdgContribution;
   }
 
   @Override

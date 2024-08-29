@@ -36,16 +36,16 @@ public class ProjectExpectedStudyRelatedLeverSdgContributionMySQLDAO extends Abs
   }
 
   @Override
-  public void deleteProjectExpectedStudyRelatedLeverSdgContribution(long projectExpectedStudyRelatedLeverSdgContributionId) {
-    ProjectExpectedStudyRelatedLeverSdgContribution projectExpectedStudyRelatedLeverSdgContribution = this.find(projectExpectedStudyRelatedLeverSdgContributionId);
-    projectExpectedStudyRelatedLeverSdgContribution.setActive(false);
-    this.update(projectExpectedStudyRelatedLeverSdgContribution);
+  public void deleteProjectExpectedStudyRelatedLeverSdgContribution(long projectExpectedStudyRelatedLeverSDGContributionId) {
+    ProjectExpectedStudyRelatedLeverSdgContribution projectExpectedStudyRelatedLeverSDGContribution = this.find(projectExpectedStudyRelatedLeverSDGContributionId);
+    projectExpectedStudyRelatedLeverSDGContribution.setActive(false);
+    this.update(projectExpectedStudyRelatedLeverSDGContribution);
   }
 
   @Override
-  public boolean existProjectExpectedStudyRelatedLeverSdgContribution(long projectExpectedStudyRelatedLeverSdgContributionID) {
-    ProjectExpectedStudyRelatedLeverSdgContribution projectExpectedStudyRelatedLeverSdgContribution = this.find(projectExpectedStudyRelatedLeverSdgContributionID);
-    if (projectExpectedStudyRelatedLeverSdgContribution == null) {
+  public boolean existProjectExpectedStudyRelatedLeverSdgContribution(long projectExpectedStudyRelatedLeverSDGContributionID) {
+    ProjectExpectedStudyRelatedLeverSdgContribution projectExpectedStudyRelatedLeverSDGContribution = this.find(projectExpectedStudyRelatedLeverSDGContributionID);
+    if (projectExpectedStudyRelatedLeverSDGContribution == null) {
       return false;
     }
     return true;
@@ -70,15 +70,15 @@ public class ProjectExpectedStudyRelatedLeverSdgContributionMySQLDAO extends Abs
   }
 
   @Override
-  public ProjectExpectedStudyRelatedLeverSdgContribution save(ProjectExpectedStudyRelatedLeverSdgContribution projectExpectedStudyRelatedLeverSdgContribution) {
-    if (projectExpectedStudyRelatedLeverSdgContribution.getId() == null) {
-      super.saveEntity(projectExpectedStudyRelatedLeverSdgContribution);
+  public ProjectExpectedStudyRelatedLeverSdgContribution save(ProjectExpectedStudyRelatedLeverSdgContribution projectExpectedStudyRelatedLeverSDGContribution) {
+    if (projectExpectedStudyRelatedLeverSDGContribution.getId() == null) {
+      super.saveEntity(projectExpectedStudyRelatedLeverSDGContribution);
     } else {
-      projectExpectedStudyRelatedLeverSdgContribution = super.update(projectExpectedStudyRelatedLeverSdgContribution);
+      projectExpectedStudyRelatedLeverSDGContribution = super.update(projectExpectedStudyRelatedLeverSDGContribution);
     }
 
 
-    return projectExpectedStudyRelatedLeverSdgContribution;
+    return projectExpectedStudyRelatedLeverSDGContribution;
   }
 
 

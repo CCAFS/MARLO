@@ -27,25 +27,25 @@ public interface ProjectExpectedStudyRelatedLeverSdgContributionManager {
 
 
   /**
-   * This method removes a specific projectExpectedStudyRelatedLeverSdgContribution value from the database.
+   * This method removes a specific projectExpectedStudyRelatedLeverSDGContribution value from the database.
    * 
-   * @param projectExpectedStudyRelatedLeverSdgContributionId is the projectExpectedStudyRelatedLeverSdgContribution identifier.
-   * @return true if the projectExpectedStudyRelatedLeverSdgContribution was successfully deleted, false otherwise.
+   * @param projectExpectedStudyRelatedLeverSDGContributionId is the projectExpectedStudyRelatedLeverSDGContribution identifier.
+   * @return true if the projectExpectedStudyRelatedLeverSDGContribution was successfully deleted, false otherwise.
    */
-  public void deleteProjectExpectedStudyRelatedLeverSdgContribution(long projectExpectedStudyRelatedLeverSdgContributionId);
+  public void deleteProjectExpectedStudyRelatedLeverSdgContribution(long projectExpectedStudyRelatedLeverSDGContributionId);
 
 
   /**
-   * This method validate if the projectExpectedStudyRelatedLeverSdgContribution identify with the given id exists in the system.
+   * This method validate if the projectExpectedStudyRelatedLeverSDGContribution identify with the given id exists in the system.
    * 
-   * @param projectExpectedStudyRelatedLeverSdgContributionID is a projectExpectedStudyRelatedLeverSdgContribution identifier.
-   * @return true if the projectExpectedStudyRelatedLeverSdgContribution exists, false otherwise.
+   * @param projectExpectedStudyRelatedLeverSDGContributionID is a projectExpectedStudyRelatedLeverSDGContribution identifier.
+   * @return true if the projectExpectedStudyRelatedLeverSDGContribution exists, false otherwise.
    */
-  public boolean existProjectExpectedStudyRelatedLeverSdgContribution(long projectExpectedStudyRelatedLeverSdgContributionID);
+  public boolean existProjectExpectedStudyRelatedLeverSdgContribution(long projectExpectedStudyRelatedLeverSDGContributionID);
 
 
   /**
-   * This method gets a list of projectExpectedStudyRelatedLeverSdgContribution that are active
+   * This method gets a list of projectExpectedStudyRelatedLeverSDGContribution that are active
    * 
    * @return a list from ProjectExpectedStudyRelatedLeverSdgContribution null if no exist records
    */
@@ -53,22 +53,22 @@ public interface ProjectExpectedStudyRelatedLeverSdgContributionManager {
 
 
   /**
-   * This method gets a projectExpectedStudyRelatedLeverSdgContribution object by a given projectExpectedStudyRelatedLeverSdgContribution identifier.
+   * This method gets a projectExpectedStudyRelatedLeverSDGContribution object by a given projectExpectedStudyRelatedLeverSDGContribution identifier.
    * 
-   * @param projectExpectedStudyRelatedLeverSdgContributionID is the projectExpectedStudyRelatedLeverSdgContribution identifier.
+   * @param projectExpectedStudyRelatedLeverSDGContributionID is the projectExpectedStudyRelatedLeverSDGContribution identifier.
    * @return a ProjectExpectedStudyRelatedLeverSdgContribution object.
    */
-  public ProjectExpectedStudyRelatedLeverSdgContribution getProjectExpectedStudyRelatedLeverSdgContributionById(long projectExpectedStudyRelatedLeverSdgContributionID);
+  public ProjectExpectedStudyRelatedLeverSdgContribution getProjectExpectedStudyRelatedLeverSdgContributionById(long projectExpectedStudyRelatedLeverSDGContributionID);
 
   /**
-   * This method saves the information of the given projectExpectedStudyRelatedLeverSdgContribution
+   * This method saves the information of the given projectExpectedStudyRelatedLeverSDGContribution
    * 
-   * @param projectExpectedStudyRelatedLeverSdgContribution - is the projectExpectedStudyRelatedLeverSdgContribution object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyRelatedLeverSdgContribution was
+   * @param projectExpectedStudyRelatedLeverSDGContribution - is the projectExpectedStudyRelatedLeverSDGContribution object with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyRelatedLeverSDGContribution was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectExpectedStudyRelatedLeverSdgContribution saveProjectExpectedStudyRelatedLeverSdgContribution(ProjectExpectedStudyRelatedLeverSdgContribution projectExpectedStudyRelatedLeverSdgContribution);
+  public ProjectExpectedStudyRelatedLeverSdgContribution saveProjectExpectedStudyRelatedLeverSdgContribution(ProjectExpectedStudyRelatedLeverSdgContribution projectExpectedStudyRelatedLeverSDGContribution);
 
 
 }

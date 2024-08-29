@@ -31,46 +31,46 @@ import javax.inject.Named;
 public class ProjectExpectedStudyRelatedLeverSdgContributionManagerImpl implements ProjectExpectedStudyRelatedLeverSdgContributionManager {
 
 
-  private ProjectExpectedStudyRelatedLeverSdgContributionDAO projectExpectedStudyRelatedLeverSdgContributionDAO;
+  private ProjectExpectedStudyRelatedLeverSdgContributionDAO projectExpectedStudyRelatedLeverSDGContributionDAO;
   // Managers
 
 
   @Inject
-  public ProjectExpectedStudyRelatedLeverSdgContributionManagerImpl(ProjectExpectedStudyRelatedLeverSdgContributionDAO projectExpectedStudyRelatedLeverSdgContributionDAO) {
-    this.projectExpectedStudyRelatedLeverSdgContributionDAO = projectExpectedStudyRelatedLeverSdgContributionDAO;
+  public ProjectExpectedStudyRelatedLeverSdgContributionManagerImpl(ProjectExpectedStudyRelatedLeverSdgContributionDAO projectExpectedStudyRelatedLeverSDGContributionDAO) {
+    this.projectExpectedStudyRelatedLeverSDGContributionDAO = projectExpectedStudyRelatedLeverSDGContributionDAO;
 
 
   }
 
   @Override
-  public void deleteProjectExpectedStudyRelatedLeverSdgContribution(long projectExpectedStudyRelatedLeverSdgContributionId) {
+  public void deleteProjectExpectedStudyRelatedLeverSdgContribution(long projectExpectedStudyRelatedLeverSDGContributionId) {
 
-    projectExpectedStudyRelatedLeverSdgContributionDAO.deleteProjectExpectedStudyRelatedLeverSdgContribution(projectExpectedStudyRelatedLeverSdgContributionId);
+    projectExpectedStudyRelatedLeverSDGContributionDAO.deleteProjectExpectedStudyRelatedLeverSdgContribution(projectExpectedStudyRelatedLeverSDGContributionId);
   }
 
   @Override
-  public boolean existProjectExpectedStudyRelatedLeverSdgContribution(long projectExpectedStudyRelatedLeverSdgContributionID) {
+  public boolean existProjectExpectedStudyRelatedLeverSdgContribution(long projectExpectedStudyRelatedLeverSDGContributionID) {
 
-    return projectExpectedStudyRelatedLeverSdgContributionDAO.existProjectExpectedStudyRelatedLeverSdgContribution(projectExpectedStudyRelatedLeverSdgContributionID);
+    return projectExpectedStudyRelatedLeverSDGContributionDAO.existProjectExpectedStudyRelatedLeverSdgContribution(projectExpectedStudyRelatedLeverSDGContributionID);
   }
 
   @Override
   public List<ProjectExpectedStudyRelatedLeverSdgContribution> findAll() {
 
-    return projectExpectedStudyRelatedLeverSdgContributionDAO.findAll();
+    return projectExpectedStudyRelatedLeverSDGContributionDAO.findAll();
 
   }
 
   @Override
-  public ProjectExpectedStudyRelatedLeverSdgContribution getProjectExpectedStudyRelatedLeverSdgContributionById(long projectExpectedStudyRelatedLeverSdgContributionID) {
+  public ProjectExpectedStudyRelatedLeverSdgContribution getProjectExpectedStudyRelatedLeverSdgContributionById(long projectExpectedStudyRelatedLeverSDGContributionID) {
 
-    return projectExpectedStudyRelatedLeverSdgContributionDAO.find(projectExpectedStudyRelatedLeverSdgContributionID);
+    return projectExpectedStudyRelatedLeverSDGContributionDAO.find(projectExpectedStudyRelatedLeverSDGContributionID);
   }
 
   @Override
-  public ProjectExpectedStudyRelatedLeverSdgContribution saveProjectExpectedStudyRelatedLeverSdgContribution(ProjectExpectedStudyRelatedLeverSdgContribution projectExpectedStudyRelatedLeverSdgContribution) {
+  public ProjectExpectedStudyRelatedLeverSdgContribution saveProjectExpectedStudyRelatedLeverSdgContribution(ProjectExpectedStudyRelatedLeverSdgContribution projectExpectedStudyRelatedLeverSDGContribution) {
 
-    return projectExpectedStudyRelatedLeverSdgContributionDAO.save(projectExpectedStudyRelatedLeverSdgContribution);
+    return projectExpectedStudyRelatedLeverSDGContributionDAO.save(projectExpectedStudyRelatedLeverSDGContribution);
   }
 
 
