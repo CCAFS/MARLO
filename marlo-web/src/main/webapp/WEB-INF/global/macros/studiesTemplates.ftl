@@ -978,9 +978,9 @@
   <div id="studyPublication-${(template?string('template', ''))}" class="studyPublication form-group grayBox ${class}">
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <span class="pull-left" style="width:4%"><strong><span class="indexTag">${index + 1}</span>.</strong></span>
-    <span class="pull-left" style="width:32%">[@customForm.input name="${customName}.name" showTitle=false i18nkey="" className="" editable=editable /]</span>
-    <span class="pull-left" style="width:32%">[@customForm.input name="${customName}.position" showTitle=false i18nkey="" className="" editable=editable /]</span>
-    <span class="pull-left" style="width:32%">[@customForm.input name="${customName}.affiliation" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:30%; margin-left: 12px ">[@customForm.input name="${customName}.name" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:30%; margin-left: 12px">[@customForm.input name="${customName}.position" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:30%; margin-left: 12px">[@customForm.input name="${customName}.affiliation" showTitle=false i18nkey="" className="" editable=editable /]</span>
 
     [#if editable]<div class="removeElement sm removeIcon removePublication ${class}" title="Remove"></div>[/#if]
     <div class="clearfix"></div>

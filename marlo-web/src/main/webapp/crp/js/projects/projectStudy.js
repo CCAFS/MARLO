@@ -323,6 +323,74 @@ function attachEvents() {
   })();
 
   /**
+   * Publications Component
+   */
+  (function () {
+    // Events
+    console.log('publications functions');
+    $('.addPublication').on('click', addItem);
+    $('.removeLink.publications').on('click', removeItem);
+    validateEmptyLinks();
+
+    // Functions
+    function addItem() {
+      var $list = $(this).parent('.publicationsBlock').find('.publicationsList');
+      var $element = $('#studyPublication-template').clone(true).removeAttr("id");
+      var $listLength = $list.children().length;
+      console.log('add publication');
+      console.log($listLength);
+      console.log($list);
+      console.log($element);
+      if ($listLength <= 30) {
+        // Remove template tag
+        $element.find('input, textarea').each(function (i, e) {
+          e.name = (e.name).replace("_TEMPLATE_", "");
+          e.id = (e.id).replace("_TEMPLATE_", "");
+        });
+        // Show the element
+        $element.appendTo($list).hide().show(350);
+        // Update indexes
+        updateIndexes(this);
+      }
+    }
+    function removeItem() {
+      var $parent = $(this).parent('.studyPublication.publications');
+      var $addBtn = $(this).parent().parent().parent().find('.addButtonPublication');
+      $parent.hide(500, function () {
+        // Remove DOM element
+        $parent.remove();
+        // Update indexes
+        updateIndexes($addBtn);
+      });
+    }
+    function updateIndexes(list) {
+      var linksList = $(list).parent('.publicationsBlock').find('.publicationsList');
+      linksList.find('.studyPublication').each(function (i, element) {
+        $(element).find('.indexTag').text(i + 1);
+        $(element).setNameIndexes(1, i);
+        $(element).find('label').removeAttr('for');
+      });
+      
+      if ((linksList.children().length - 1) != 0) {
+        $('#warningEmptyPublicationsTag').hide();
+        validateEmptyLinks();
+      } else {
+        $('#warningEmptyPublicationsTag').show();
+      }
+    }
+    function validateEmptyLinks() {
+      $('.publicationsList').find('.studyPublication span input').map((index, item) => {
+        if (item.value != '') {
+          $('#warningEmptyPublicationsTag').hide();
+        } else {
+          $('#warningEmptyPublicationsTag').show();
+        }
+      });
+    }
+
+  })();
+
+  /**
    * Qualification Component
    */
   (function() {
