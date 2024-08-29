@@ -910,7 +910,16 @@
     [#--  Contact person    --]
     [#if isOutcomeCaseStudy]
     <div class="form-group stageProcessOne">
-      [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.communications.contacts" help="study.communications.contacts.help" className="" helpIcon=false required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=editable && !action.isPOWB() /]
+      <label for="">[@s.text name="study.communications.contacts" /]:</label>
+      <div id="addPartnerText" class="note--2">
+        <p>
+          [@s.text name="study.communications.contacts.help" /]
+          <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave'][@s.param name='expectedID']${(expectedID)!}[/@s.param][/@s.url]">
+            [@s.text name="study.communications.contacts.help2" /]
+          </a>
+        </p>
+      </div>
+      [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.communications.contacts" help="" className="" helpIcon=false required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=(editable && !action.isPOWB()) showTitle=false /]
     </div>
     [/#if]
   
