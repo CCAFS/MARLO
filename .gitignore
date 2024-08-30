@@ -26,3 +26,6 @@ marlo-web/src/main/java/org/cgiar/ccafs/marlo/validation/WelcomeEmail.java
 !.vscode/launch.json
 !.vscode/extensions.json
 .history/*
+
+# Exclude context.xml
+context.xml
