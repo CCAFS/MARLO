@@ -97,7 +97,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPrimaryAllianceLever;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
@@ -938,21 +937,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
 
-
-        // Alliance levers List List Autosave
-        if (this.expectedStudy.getProjectExpectedStudyPrimaryAllianceLever() != null) {
-          for (ProjectExpectedStudyPrimaryAllianceLever projectExpectedStudyPrimaryAllianceLever : this.expectedStudy
-            .getProjectExpectedStudyPrimaryAllianceLever()) {
-            if (projectExpectedStudyPrimaryAllianceLever != null
-              && projectExpectedStudyPrimaryAllianceLever.getPrimaryAllianceLever() != null
-              && projectExpectedStudyPrimaryAllianceLever.getPrimaryAllianceLever().getId() != null) {
-              projectExpectedStudyPrimaryAllianceLever
-                .setPrimaryAllianceLever((primaryAllianceLeverManager.getPrimaryAllianceLeverById(
-                  projectExpectedStudyPrimaryAllianceLever.getPrimaryAllianceLever().getId())));
-            }
-          }
-        }
-
         this.setDraft(true);
       } else {
 
@@ -1129,37 +1113,28 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
 
-        List<PrimaryAllianceStrategicOutcome> primaryAllianceStrategicOutcomeTmp =
-          this.primaryAllianceStrategicOutcomeManager.findAll();
-
-
         // Expected Study primary alliance levers List
         if (this.expectedStudy.getProjectExpectedStudyPrimaryAllianceLever() != null) {
           this.expectedStudy.setPrimaryAllianceLever(
             new ArrayList<>(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyPrimaryAllianceLever().stream()
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()))));
 
-          // load strategic outcomes
+        }
 
 
-          List<PrimaryAllianceStrategicOutcome> PrimaryAllianceStrategicOutcomeList =
-            this.primaryAllianceStrategicOutcomeManager.getPrimaryAllianceStrategicOutcomeByStudyAndPhase(
-              this.expectedStudy.getId(), this.getActualPhase().getId());
+        // load sdg
+        if (this.expectedStudy.getProjectExpectedStudyRelatedLeverSdgContribution() != null) {
+          this.expectedStudy.setRelatedLeverSdgContribution(new ArrayList<>(
+            new ArrayList<>(this.expectedStudy.getProjectExpectedStudyRelatedLeverSdgContribution().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()))));
+        }
 
 
-          if (primaryAllianceStrategicOutcomeTmp != null) {
-            for (ProjectExpectedStudyPrimaryAllianceLever projectExpectedStudyPrimaryAllianceLever : this.expectedStudy
-              .getProjectExpectedStudyPrimaryAllianceLever()) {
-              projectExpectedStudyPrimaryAllianceLever.getPrimaryAllianceLever()
-                .setPrimaryStrategicOutcomes(
-                  PrimaryAllianceStrategicOutcomeList
-                    .stream().filter(o -> o.getPrimaryAllianceLever()
-                      .getId() == projectExpectedStudyPrimaryAllianceLever.getPrimaryAllianceLever().getId())
-                    .collect(Collectors.toList()));
-            }
-          }
-
-
+        // load strategic outcomes
+        if (this.expectedStudy.getProjectExpectedStudyPrimaryStrategicOutcome() != null) {
+          this.expectedStudy.setPrimaryStrategicOutcome(
+            new ArrayList<>(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyPrimaryStrategicOutcome().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()))));
         }
 
 

@@ -185,6 +185,22 @@
       </key>
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRelatedAllianceLever" />
+       </set>
+        <set name="projectExpectedStudyRelatedLeverSdgContribution" table="project_expected_study_related_sdg_contributions"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_study_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRelatedLeverSdgContribution" />
+    </set>
+      <set name="projectExpectedStudyPrimaryStrategicOutcome" table="project_expected_study_primary_strategic_outcomes"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_study_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPrimaryStrategicOutcome" />
     </set>
     <set name="projectExpectedStudyInnovations" table="project_expected_study_innovations"
       inverse="true" lazy="true" fetch="select">
