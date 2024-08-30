@@ -55,11 +55,16 @@ public interface PrimaryAllianceStrategicOutcomeDAO {
   public List<PrimaryAllianceStrategicOutcome> findAll();
 
 
+  List<PrimaryAllianceStrategicOutcome> getPrimaryAllianceStrategicOutcomeByStudyAndPhase(long projectExpectedStudyId,
+    long phaseId);
+
   /**
    * This method saves the information of the given primaryAllianceStrategicOutcome
    * 
-   * @param primaryAllianceStrategicOutcome - is the primaryAllianceStrategicOutcome object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the primaryAllianceStrategicOutcome was
+   * @param primaryAllianceStrategicOutcome - is the primaryAllianceStrategicOutcome object with the new information to
+   *        be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         primaryAllianceStrategicOutcome was
    *         updated
    *         or -1 is some error occurred.
    */

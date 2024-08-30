@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.PrimaryAllianceStrategicOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.model.PrimaryAllianceStrategicOutcome;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,7 +29,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class PrimaryAllianceStrategicOutcomeMySQLDAO extends AbstractMarloDAO<PrimaryAllianceStrategicOutcome, Long> implements PrimaryAllianceStrategicOutcomeDAO {
+public class PrimaryAllianceStrategicOutcomeMySQLDAO extends AbstractMarloDAO<PrimaryAllianceStrategicOutcome, Long>
+  implements PrimaryAllianceStrategicOutcomeDAO {
 
 
   @Inject
@@ -68,6 +71,33 @@ public class PrimaryAllianceStrategicOutcomeMySQLDAO extends AbstractMarloDAO<Pr
     return null;
 
   }
+
+  @Override
+  public List<PrimaryAllianceStrategicOutcome>
+    getPrimaryAllianceStrategicOutcomeByStudyAndPhase(long projectExpectedStudyId, long phaseId) {
+    StringBuilder query = new StringBuilder();
+    query.append(" select pespso.strategic_outcome_id as id  ");
+    query.append(" from project_expected_study_primary_strategic_outcomes as pespso ");
+    query.append(" join primary_alliance_strategic_outcomes as paso on pespso.strategic_outcome_id = paso.id ");
+    query.append(" where expected_study_id = " + projectExpectedStudyId);
+    query.append(" and pespso.id_phase =paso.id_phase ");
+    query.append(" and paso.id_phase = " + phaseId);
+
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<PrimaryAllianceStrategicOutcome> primaryAllianceStrategicOutcome = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        PrimaryAllianceStrategicOutcome primaryAllianceStrategicOutcomeTmp =
+          this.find(Long.parseLong(map.get("id").toString()));
+        primaryAllianceStrategicOutcome.add(primaryAllianceStrategicOutcomeTmp);
+      }
+    }
+
+    return primaryAllianceStrategicOutcome;
+  }
+
 
   @Override
   public PrimaryAllianceStrategicOutcome save(PrimaryAllianceStrategicOutcome primaryAllianceStrategicOutcome) {
