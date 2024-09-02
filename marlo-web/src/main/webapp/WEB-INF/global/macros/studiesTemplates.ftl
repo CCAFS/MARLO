@@ -881,8 +881,8 @@
 
     [#-- Publications --]
     <div class="form-group">
-      <label for="">[@s.text name="study.generalInformation.publications" /]:[@customForm.req required=false /]</label>
-      [@customForm.helpLabel name="study.generalInformation.publications.help" showIcon=false isNote=true/]
+      <label for="">[@s.text name="study.communications.publications" /]:[@customForm.req required=false /]</label>
+      [@customForm.helpLabel name="study.communications.publications.help" showIcon=false isNote=true/]
       <div class="publicationsBlock">
         <div class="publicationsList">
           <div class="row">
@@ -892,7 +892,7 @@
           </div>
           [#if (element.publications?has_content) && (element.publications?size > 0)]
             [#list (element.publications)![{}] as publication]
-              [@studyPublication name="${customName}.links" element=publication index=publication_index /]
+              [@publicationMacro name="${customName}.links" element=publication index=publication_index /]
             [/#list]
           [/#if]
         </div>
@@ -903,7 +903,7 @@
       </div>
       [#-- Element item Template --]
       <div style="display:none">
-        [@studyPublication name="${customName}.publications" element={} index=-1 template=true /]
+        [@publicationMacro name="${customName}.publications" element={} index=-1 template=true /]
       </div>
 
     </div>
@@ -927,6 +927,29 @@
     </div>
     [/#if]
   
+  </div>
+[/#macro]
+
+[#macro studyAlliance element name index=-1 template=false fromProject=true]
+[/#macro]
+
+[#macro studyOneCGIAR element name index=-1 template=false fromProject=true]
+  [#local customName = "${name}"/]
+  [#local contributionToCGIAR = (element.projectExpectedStudyInfo.contributionToCGIAR)!"" ]
+  <div class="borderBox">
+    <div class="form-group">
+      <label for="">[@s.text name="study.oneCGIARAligment.contributionToCGIAR" /]:[@customForm.req required=false /]</label>
+      <div class="form-group row">
+        [#list ["Yes", "No"] as option]
+          <div class="col-md-2">
+            [@customForm.radioFlat id="optionOneCGIAR-${option}" name="${customName}.projectExpectedStudyInfo.contributionToCGIAR" i18nkey="study.oneCGIARAligment.contributionToCGIAR${option}" value="${option}" checked=(contributionToCGIAR == option) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /] 
+          </div>
+        [/#list]
+      </div>
+      <div class="form-group" style="display:${(contributionToCGIAR == 'No')?then('block','none')};" >
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.reasonToNoProvided" i18nkey="study.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=false editable=editable /]
+      </div>
+    </div>
   </div>
 [/#macro]
 
@@ -986,7 +1009,7 @@
   [#return false]
 [/#function]
 
-[#macro studyPublication name element index=-1 template=false class=""  ]
+[#macro publicationMacro name element index=-1 template=false class=""  ]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   <div id="studyPublication-${(template?string('template', ''))}" class="studyPublication form-group grayBox ${class}">
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
