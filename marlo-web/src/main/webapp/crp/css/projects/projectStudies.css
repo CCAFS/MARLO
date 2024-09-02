@@ -37,6 +37,19 @@ ul.nav li a {
   border-right: 1px solid #ddd;
 }
 
+.nav-tabs li.submitted a {
+  background-image: url(../../../global/images/submitted.png?20190411);
+  background-repeat: no-repeat;
+  /* background-size: 15px; */
+  background-position: 97% -50%;
+}
+
+.nav-tabs li.toSubmit a {
+  background-image: url(../../../global/images/submitted.png?20190411);
+  background-repeat: no-repeat;
+  background-position: 97% 150%;
+}
+
 .generalInformationStudies {
   position: relative;
 }
