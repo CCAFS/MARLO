@@ -1,4 +1,6 @@
 [#ftl]
+[#import "/WEB-INF/global/macros/deliverableMacros.ftl" as deliverableMacros /]
+
 [#macro studyMacro element name index=-1 template=false fromProject=true ]
   [#local customName = "${name}"/]
   [#local customId = "study-${template?string('template',index)}" /]
@@ -919,7 +921,9 @@
           </a>
         </p>
       </div>
-      [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.communications.contacts" help="" className="" helpIcon=false required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=(editable && !action.isPOWB()) showTitle=false /]
+      <div>
+        [@deliverableMacros.deliverablePartnerMacro element={} name="projectExpectedStudyInfo.contacts" index=0 defaultType=2 /]
+      </div>
     </div>
     [/#if]
   
