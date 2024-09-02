@@ -70,5 +70,23 @@ public class ProjectExpectedStudyPrimaryAllianceLever extends MarloAuditableEnti
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
   }
+
+
+  /**
+   * Add the save/update information to reply the next Phase
+   * 
+   * @param projectExpectedStudyPrimaryAllianceLeverUpdate - a ProjectExpectedStudyPrimaryAllianceLever object.
+   * @param phase - The next Phase
+   */
+  public void updateProjectExpectedStudyInfoInfo(
+    ProjectExpectedStudyPrimaryAllianceLever projectExpectedStudyPrimaryAllianceLeverUpdate, Phase phase) {
+
+    this.setPhase(phase);
+    this.setProjectExpectedStudy(projectExpectedStudyPrimaryAllianceLeverUpdate.getProjectExpectedStudy());
+    this.setPrimaryAllianceLever(projectExpectedStudyPrimaryAllianceLeverUpdate.getPrimaryAllianceLever());
+
+
+  }
+
 }
 
