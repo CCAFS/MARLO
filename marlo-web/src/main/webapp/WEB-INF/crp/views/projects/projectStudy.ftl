@@ -151,7 +151,7 @@
                 </div>
 
                 <div id="study-onecgiar" role="tabpanel" class="tab-pane fade [#if indexTab==3]in active[/#if]">
-                  One Cgiar
+                  [@studies.studyOneCGIAR element=(expectedStudy)!{} name="expectedStudy" index=0  /]
                 </div>
 
                 <div id="study-communications" role="tabpanel" class="tab-pane fade [#if indexTab==4]in active[/#if]">
