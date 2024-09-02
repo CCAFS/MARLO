@@ -32,5 +32,8 @@
     <property name="encryptionKey" type="string">
       <column name="encryption_key"/>
     </property>
+    <property name="tipEmail" type="string">
+      <column name="tip_email"/>
+    </property>
   </class>
 </hibernate-mapping>

@@ -41,6 +41,8 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
   private String encryptionKey;
   @Expose
   private Date tokenDueDate;
+  @Expose
+  private Date tipEmail;
 
   public String getEncryptionKey() {
     return encryptionKey;
@@ -72,6 +74,10 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
     return tipBaseUrl;
   }
 
+  public Date getTipEmail() {
+    return tipEmail;
+  }
+
   public String getTipLoginService() {
     return tipLoginService;
   }
@@ -84,10 +90,10 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
     return tipTokenService;
   }
 
+
   public Date getTokenDueDate() {
     return tokenDueDate;
   }
-
 
   public String getTokenValue() {
     return tokenValue;
@@ -106,7 +112,6 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
   @Override
   public void setModifiedBy(User modifiedBy) {
     // TODO Auto-generated method stub
-
   }
 
   public void setPrivateKey(String privateKey) {
@@ -115,6 +120,10 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
 
   public void setTipBaseUrl(String tipBaseUrl) {
     this.tipBaseUrl = tipBaseUrl;
+  }
+
+  public void setTipEmail(Date tipEmail) {
+    this.tipEmail = tipEmail;
   }
 
   public void setTipLoginService(String tipLoginService) {
