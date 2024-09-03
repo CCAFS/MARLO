@@ -697,5 +697,37 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyCenter" />
     </set>
+    <set name="projectExpectedStudyPrimaryAllianceLever" table="project_expected_study_primary_alliance_levers"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPrimaryAllianceLever" />
+    </set>
+     <set name="projectExpectedStudyRelatedAllianceLever" table="project_expected_study_related_alliance_levers"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRelatedAllianceLever" />
+       </set>
+       <set name="projectExpectedStudyRelatedLeverSdgContribution" table="project_expected_study_related_sdg_contributions"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRelatedLeverSdgContribution" />
+    </set>
+      <set name="projectExpectedStudyPrimaryStrategicOutcome" table="project_expected_study_primary_strategic_outcomes"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPrimaryStrategicOutcome" />
+    </set>
   </class>
 </hibernate-mapping>

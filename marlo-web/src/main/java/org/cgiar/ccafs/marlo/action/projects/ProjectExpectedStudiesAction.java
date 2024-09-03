@@ -30,6 +30,8 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.PrimaryAllianceLeverManager;
+import org.cgiar.ccafs.marlo.data.manager.PrimaryAllianceStrategicOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpManager;
@@ -43,10 +45,14 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPrimaryAllianceLeverManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPrimaryStrategicOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyQuantificationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyReferenceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRelatedAllianceLeverManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRelatedLeverSdgContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyTagManager;
@@ -55,6 +61,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.QuantificationTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RelatedAllianceLeverManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
@@ -62,6 +69,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.SdgContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
@@ -77,6 +85,8 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PrimaryAllianceLever;
+import org.cgiar.ccafs.marlo.data.model.PrimaryAllianceStrategicOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
@@ -91,10 +101,14 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPrimaryAllianceLever;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPrimaryStrategicOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRelatedAllianceLever;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRelatedLeverSdgContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyTag;
@@ -107,12 +121,14 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.QuantificationType;
+import org.cgiar.ccafs.marlo.data.model.RelatedAllianceLever;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
+import org.cgiar.ccafs.marlo.data.model.SdgContribution;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
@@ -217,6 +233,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager;
   private ProjectExpectedStudyTagManager projectExpectedStudyTagManager;
   private QuantificationTypeManager quantificationTypeManager;
+  private PrimaryAllianceLeverManager primaryAllianceLeverManager;
+  private RelatedAllianceLeverManager relatedAllianceLeverManager;
+  private PrimaryAllianceStrategicOutcomeManager primaryAllianceStrategicOutcomeManager;
+  private SdgContributionManager sdgContributionManager;
+  private ProjectExpectedStudyPrimaryAllianceLeverManager projectExpectedStudyPrimaryAllianceLeverManager;
+  private ProjectExpectedStudyRelatedAllianceLeverManager projectExpectedStudyRelatedAllianceLeverManager;
+  private ProjectExpectedStudyRelatedLeverSdgContributionManager projectExpectedStudyRelatedLeverSdgContributionManager;
+  private ProjectExpectedStudyPrimaryStrategicOutcomeManager projectExpectedStudyPrimaryStrategicOutcomeManager;
 
   // Variables
   private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
@@ -267,6 +291,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<CrpProgramOutcome> crpOutcomes;
   private List<ProjectExpectedStudyTag> tagList;
   private List<QuantificationType> quantificationTypes;
+  private List<PrimaryAllianceLever> primaryAllianceLever;
+  private List<RelatedAllianceLever> relatedAllianceLever;
+  private List<PrimaryAllianceStrategicOutcome> primaryAllianceStrategicOutcome;
+  private List<SdgContribution> sdgContribution;
+
 
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -302,8 +331,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     CrpProgramOutcomeManager crpProgramOutcomeManager,
     ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager,
     ProjectExpectedStudyCrpOutcomeManager projectExpectedStudyCrpOutcomeManager,
-    ProjectExpectedStudyTagManager projectExpectedStudyTagManager,
-    QuantificationTypeManager quantificationTypeManager) {
+    ProjectExpectedStudyTagManager projectExpectedStudyTagManager, QuantificationTypeManager quantificationTypeManager,
+    PrimaryAllianceLeverManager primaryAllianceLeverManager, RelatedAllianceLeverManager relatedAllianceLeverManager,
+    PrimaryAllianceStrategicOutcomeManager primaryAllianceStrategicOutcomeManager,
+    SdgContributionManager sdgContributionManager,
+    ProjectExpectedStudyPrimaryAllianceLeverManager projectExpectedStudyPrimaryAllianceLeverManager,
+    ProjectExpectedStudyRelatedAllianceLeverManager projectExpectedStudyRelatedAllianceLeverManager,
+    ProjectExpectedStudyRelatedLeverSdgContributionManager projectExpectedStudyRelatedLeverSdgContributionManager,
+    ProjectExpectedStudyPrimaryStrategicOutcomeManager projectExpectedStudyPrimaryStrategicOutcomeManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -359,7 +394,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectExpectedStudyReferenceManager = projectExpectedStudyReferenceManager;
     this.projectExpectedStudyTagManager = projectExpectedStudyTagManager;
     this.quantificationTypeManager = quantificationTypeManager;
+    this.primaryAllianceLeverManager = primaryAllianceLeverManager;
+    this.relatedAllianceLeverManager = relatedAllianceLeverManager;
+    this.primaryAllianceStrategicOutcomeManager = primaryAllianceStrategicOutcomeManager;
+    this.sdgContributionManager = sdgContributionManager;
+    this.projectExpectedStudyPrimaryAllianceLeverManager = projectExpectedStudyPrimaryAllianceLeverManager;
+    this.projectExpectedStudyRelatedAllianceLeverManager = projectExpectedStudyRelatedAllianceLeverManager;
+    this.projectExpectedStudyRelatedLeverSdgContributionManager =
+      projectExpectedStudyRelatedLeverSdgContributionManager;
+    this.projectExpectedStudyPrimaryStrategicOutcomeManager = projectExpectedStudyPrimaryStrategicOutcomeManager;
   }
+
 
   /**
    * Delete all LocElements Records when Geographic Scope is Global or NULL
@@ -398,6 +443,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = this.expectedStudy.getClass().getSimpleName();
     // get the action name and replace / for _
@@ -408,21 +454,26 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return Paths.get(this.config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public List<Institution> getCenters() {
     return centers;
   }
+
 
   public List<LocElement> getCountries() {
     return this.countries;
   }
 
+
   public long getCrpMilestonePrimary() {
     return crpMilestonePrimary;
   }
 
+
   public List<CrpProgramOutcome> getCrpOutcomes() {
     return crpOutcomes;
   }
+
 
   public List<GlobalUnit> getCrps() {
     return this.crps;
@@ -496,6 +547,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.policyList;
   }
 
+  public List<PrimaryAllianceLever> getPrimaryAllianceLever() {
+    return primaryAllianceLever;
+  }
+
+  public List<PrimaryAllianceStrategicOutcome> getPrimaryAllianceStrategicOutcome() {
+    return primaryAllianceStrategicOutcome;
+  }
+
   public Project getProject() {
     return this.project;
   }
@@ -518,6 +577,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public List<LocElement> getRegions() {
     return this.regions;
+  }
+
+  public List<RelatedAllianceLever> getRelatedAllianceLever() {
+    return relatedAllianceLever;
+  }
+
+  public List<SdgContribution> getSdgContribution() {
+    return sdgContribution;
   }
 
   public long getSrfSubIdoPrimary() {
@@ -893,6 +960,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
         this.setDraft(true);
       } else {
+
         this.setDraft(false);
 
         if (this.expectedStudy.getProjectExpectedStudyInfo() == null) {
@@ -1065,6 +1133,40 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
 
+
+        // Expected Study primary alliance levers List
+        if (this.expectedStudy.getProjectExpectedStudyPrimaryAllianceLever() != null) {
+          this.expectedStudy.setPrimaryAllianceLever(
+            new ArrayList<>(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyPrimaryAllianceLever().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()))));
+
+        }
+
+
+        // load sdg
+        if (this.expectedStudy.getProjectExpectedStudyRelatedLeverSdgContribution() != null) {
+          this.expectedStudy.setRelatedLeverSdgContribution(new ArrayList<>(
+            new ArrayList<>(this.expectedStudy.getProjectExpectedStudyRelatedLeverSdgContribution().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()))));
+        }
+
+
+        // load strategic outcomes
+        if (this.expectedStudy.getProjectExpectedStudyPrimaryStrategicOutcome() != null) {
+          this.expectedStudy.setPrimaryStrategicOutcome(
+            new ArrayList<>(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyPrimaryStrategicOutcome().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()))));
+        }
+
+
+        // Expected Study related alliance levers List
+        if (this.expectedStudy.getProjectExpectedStudyRelatedAllianceLever() != null) {
+          this.expectedStudy.setRelatedAllianceLever(
+            new ArrayList<>(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyRelatedAllianceLever().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()))));
+        }
+
+
       }
 
 
@@ -1164,6 +1266,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.policyList = new ArrayList<>();
       this.tagList = this.projectExpectedStudyTagManager.findAll();
       this.quantificationTypes = this.quantificationTypeManager.findAll();
+      this.primaryAllianceLever = this.primaryAllianceLeverManager.findAll();
+      this.relatedAllianceLever = this.relatedAllianceLeverManager.findAll();
+      this.primaryAllianceStrategicOutcome = this.primaryAllianceStrategicOutcomeManager.findAll();
+      this.sdgContribution = this.sdgContributionManager.findAll();
+
 
       // Expected Study Projects List
       if (this.expectedStudy.getExpectedStudyProjects() != null) {
@@ -1606,6 +1713,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       // Save Geographic Scope Data
       this.saveGeographicScopes(this.expectedStudyDB, phase);
+
+      this.saveProjectExpectedStudyPrimaryAllianceLever(this.expectedStudyDB, phase);
+      this.saveProjectExpectedStudyRelatedAllianceLever(this.expectedStudyDB, phase);
+      this.saveProjectExpectedStudyRelatedLeverSdgContribution(this.expectedStudyDB, phase);
+      this.saveProjectExpectedStudyPrimaryStrategicOutcome(this.expectedStudyDB, phase);
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -2394,6 +2506,273 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
   /**
+   * Save Expected Studies Primary Alliance Lever
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveProjectExpectedStudyPrimaryAllianceLever(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    try {
+      // Search and deleted form Information
+      if (projectExpectedStudy.getProjectExpectedStudyPrimaryAllianceLever() != null
+        && !projectExpectedStudy.getProjectExpectedStudyPrimaryAllianceLever().isEmpty()) {
+        List<ProjectExpectedStudyPrimaryAllianceLever> primaryAllianceLeverPrev =
+          new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyPrimaryAllianceLever().stream()
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+
+        for (ProjectExpectedStudyPrimaryAllianceLever primaryAllianceLever : primaryAllianceLeverPrev) {
+          if (this.expectedStudy.getPrimaryAllianceLever() == null
+            || !this.expectedStudy.getPrimaryAllianceLever().contains(primaryAllianceLever)) {
+            this.projectExpectedStudyPrimaryAllianceLeverManager
+              .deleteProjectExpectedStudyPrimaryAllianceLever(primaryAllianceLever.getId());
+          }
+        }
+      }
+
+      // Save form Information
+      if (this.expectedStudy.getPrimaryAllianceLever() != null) {
+        for (ProjectExpectedStudyPrimaryAllianceLever primaryAllianceLever : this.expectedStudy
+          .getPrimaryAllianceLever()) {
+          if (primaryAllianceLever.getId() == null) {
+            ProjectExpectedStudyPrimaryAllianceLever primaryAllianceLeverSave =
+              new ProjectExpectedStudyPrimaryAllianceLever();
+            primaryAllianceLeverSave.setProjectExpectedStudy(projectExpectedStudy);
+            primaryAllianceLeverSave.setPhase(phase);
+            primaryAllianceLeverSave.setPrimaryAllianceLever(primaryAllianceLever.getPrimaryAllianceLever());
+
+
+            this.projectExpectedStudyPrimaryAllianceLeverManager
+              .saveProjectExpectedStudyPrimaryAllianceLever(primaryAllianceLeverSave);
+            // This is to add studyQuantificationSave to generate
+            // correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyPrimaryAllianceLever().add(primaryAllianceLeverSave);
+          } else {
+            ProjectExpectedStudyPrimaryAllianceLever primaryAllianceLeverSave =
+              this.projectExpectedStudyPrimaryAllianceLeverManager
+                .getProjectExpectedStudyPrimaryAllianceLeverById(primaryAllianceLever.getId());
+
+            primaryAllianceLeverSave.setPrimaryAllianceLever(primaryAllianceLever.getPrimaryAllianceLever());
+
+            this.projectExpectedStudyPrimaryAllianceLeverManager
+              .saveProjectExpectedStudyPrimaryAllianceLever(primaryAllianceLeverSave);
+            // This is to add studyQuantificationSave to generate
+            // correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyPrimaryAllianceLever().add(primaryAllianceLeverSave);
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.info(" error in saveProjectExpectedStudyPrimaryAllianceLever function " + e.getMessage());
+    }
+  }
+
+  /**
+   * Save Expected Studies Primary Strategic Outcome
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveProjectExpectedStudyPrimaryStrategicOutcome(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    try {
+      // Search and deleted form Information
+      if (projectExpectedStudy.getProjectExpectedStudyPrimaryStrategicOutcome() != null
+        && !projectExpectedStudy.getProjectExpectedStudyPrimaryStrategicOutcome().isEmpty()) {
+        List<ProjectExpectedStudyPrimaryStrategicOutcome> primaryStrategicOutcomePrev =
+          new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyPrimaryStrategicOutcome().stream()
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+
+        for (ProjectExpectedStudyPrimaryStrategicOutcome primaryStrategicOutcome : primaryStrategicOutcomePrev) {
+          if (this.expectedStudy.getPrimaryStrategicOutcome() == null
+            || !this.expectedStudy.getPrimaryStrategicOutcome().contains(primaryStrategicOutcome)) {
+            this.projectExpectedStudyPrimaryStrategicOutcomeManager
+              .deleteProjectExpectedStudyPrimaryStrategicOutcome(primaryStrategicOutcome.getId());
+
+          }
+        }
+      }
+
+
+      // Save form Information
+      if (this.expectedStudy.getPrimaryStrategicOutcome() != null) {
+        for (ProjectExpectedStudyPrimaryStrategicOutcome primaryStrategicOutcome : this.expectedStudy
+          .getPrimaryStrategicOutcome()) {
+          if (primaryStrategicOutcome.getId() == null) {
+            ProjectExpectedStudyPrimaryStrategicOutcome primaryStrategicOutcomeSave =
+              new ProjectExpectedStudyPrimaryStrategicOutcome();
+            primaryStrategicOutcomeSave.setProjectExpectedStudy(projectExpectedStudy);
+            primaryStrategicOutcomeSave.setPhase(phase);
+            primaryStrategicOutcomeSave
+              .setPrimaryStrategicOutcome(primaryStrategicOutcome.getPrimaryStrategicOutcome());
+
+
+            this.projectExpectedStudyPrimaryStrategicOutcomeManager
+              .saveProjectExpectedStudyPrimaryStrategicOutcome(primaryStrategicOutcomeSave);
+            // This is to add studyQuantificationSave to generate
+            // correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyPrimaryStrategicOutcome().add(primaryStrategicOutcomeSave);
+          } else {
+            ProjectExpectedStudyPrimaryStrategicOutcome primaryStrategicOutcomeSave =
+              this.projectExpectedStudyPrimaryStrategicOutcomeManager
+                .getProjectExpectedStudyPrimaryStrategicOutcomeById(primaryStrategicOutcome.getId());
+
+            primaryStrategicOutcomeSave
+              .setPrimaryStrategicOutcome(primaryStrategicOutcome.getPrimaryStrategicOutcome());
+
+            this.projectExpectedStudyPrimaryStrategicOutcomeManager
+              .saveProjectExpectedStudyPrimaryStrategicOutcome(primaryStrategicOutcomeSave);
+            // This is to add studyQuantificationSave to generate
+            // correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyPrimaryStrategicOutcome().add(primaryStrategicOutcomeSave);
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.info(" error in saveProjectExpectedStudyPrimaryStrategicOutcome function " + e.getMessage());
+    }
+
+  }
+
+
+  /**
+   * Save Expected Studies Related Alliance Lever
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveProjectExpectedStudyRelatedAllianceLever(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    try {
+
+      // Search and deleted form Information
+      if (projectExpectedStudy.getProjectExpectedStudyRelatedAllianceLever() != null
+        && !projectExpectedStudy.getProjectExpectedStudyRelatedAllianceLever().isEmpty()) {
+        List<ProjectExpectedStudyRelatedAllianceLever> relatedAllianceLeverPrev =
+          new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyRelatedAllianceLever().stream()
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+
+        for (ProjectExpectedStudyRelatedAllianceLever relatedAllianceLever : relatedAllianceLeverPrev) {
+          if (this.expectedStudy.getRelatedAllianceLever() == null
+            || !this.expectedStudy.getRelatedAllianceLever().contains(relatedAllianceLever)) {
+            this.projectExpectedStudyRelatedAllianceLeverManager
+              .deleteProjectExpectedStudyRelatedAllianceLever(relatedAllianceLever.getId());
+          }
+        }
+      }
+
+      // Save form Information
+      if (this.expectedStudy.getRelatedAllianceLever() != null) {
+        for (ProjectExpectedStudyRelatedAllianceLever relatedAllianceLever : this.expectedStudy
+          .getRelatedAllianceLever()) {
+          if (relatedAllianceLever.getId() == null) {
+            ProjectExpectedStudyRelatedAllianceLever relatedAllianceLeverSave =
+              new ProjectExpectedStudyRelatedAllianceLever();
+            relatedAllianceLeverSave.setProjectExpectedStudy(projectExpectedStudy);
+            relatedAllianceLeverSave.setPhase(phase);
+            relatedAllianceLeverSave.setRelatedAllianceLever(relatedAllianceLever.getRelatedAllianceLever());
+
+
+            this.projectExpectedStudyRelatedAllianceLeverManager
+              .saveProjectExpectedStudyRelatedAllianceLever(relatedAllianceLeverSave);
+            // This is to add studyQuantificationSave to generate
+            // correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyRelatedAllianceLever().add(relatedAllianceLeverSave);
+          } else {
+            ProjectExpectedStudyRelatedAllianceLever relatedAllianceLeverSave =
+              this.projectExpectedStudyRelatedAllianceLeverManager
+                .getProjectExpectedStudyRelatedAllianceLeverById(relatedAllianceLever.getId());
+
+            relatedAllianceLeverSave.setRelatedAllianceLever(relatedAllianceLever.getRelatedAllianceLever());
+
+            this.projectExpectedStudyRelatedAllianceLeverManager
+              .saveProjectExpectedStudyRelatedAllianceLever(relatedAllianceLeverSave);
+            // This is to add studyQuantificationSave to generate
+            // correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyRelatedAllianceLever().add(relatedAllianceLeverSave);
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.info(" error in saveProjectExpectedStudyRelatedAllianceLever function " + e.getMessage());
+    }
+
+  }
+
+  /**
+   * Save Expected Studies Related Lever Sdg Contribution
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveProjectExpectedStudyRelatedLeverSdgContribution(ProjectExpectedStudy projectExpectedStudy,
+    Phase phase) {
+
+    try {
+      // Search and deleted form Information
+      if (projectExpectedStudy.getProjectExpectedStudyRelatedLeverSdgContribution() != null
+        && !projectExpectedStudy.getProjectExpectedStudyRelatedLeverSdgContribution().isEmpty()) {
+        List<ProjectExpectedStudyRelatedLeverSdgContribution> relatedLeverSdgContributionPrev =
+          new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyRelatedLeverSdgContribution().stream()
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+
+        for (ProjectExpectedStudyRelatedLeverSdgContribution relatedLeverSdgContribution : relatedLeverSdgContributionPrev) {
+          if (this.expectedStudy.getRelatedLeverSdgContribution() == null
+            || !this.expectedStudy.getRelatedLeverSdgContribution().contains(relatedLeverSdgContribution)) {
+            this.projectExpectedStudyRelatedLeverSdgContributionManager
+              .deleteProjectExpectedStudyRelatedLeverSdgContribution(relatedLeverSdgContribution.getId());
+          }
+        }
+      }
+
+
+      // Save form Information
+      if (this.expectedStudy.getRelatedLeverSdgContribution() != null) {
+        for (ProjectExpectedStudyRelatedLeverSdgContribution relatedLeverSdgContribution : this.expectedStudy
+          .getRelatedLeverSdgContribution()) {
+          if (relatedLeverSdgContribution.getId() == null) {
+            ProjectExpectedStudyRelatedLeverSdgContribution relatedLeverSdgContributionSave =
+              new ProjectExpectedStudyRelatedLeverSdgContribution();
+            relatedLeverSdgContributionSave.setProjectExpectedStudy(projectExpectedStudy);
+            relatedLeverSdgContributionSave.setPhase(phase);
+            relatedLeverSdgContributionSave.setRelatedLeverRelatedLeversSDGContribution(
+              relatedLeverSdgContribution.getRelatedLeverRelatedLeversSDGContribution());
+
+
+            this.projectExpectedStudyRelatedLeverSdgContributionManager
+              .saveProjectExpectedStudyRelatedLeverSdgContribution(relatedLeverSdgContributionSave);
+            // This is to add studyQuantificationSave to generate
+            // correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyRelatedLeverSdgContribution()
+              .add(relatedLeverSdgContributionSave);
+          } else {
+            ProjectExpectedStudyRelatedLeverSdgContribution relatedLeverSdgContributionSave =
+              this.projectExpectedStudyRelatedLeverSdgContributionManager
+                .getProjectExpectedStudyRelatedLeverSdgContributionById(relatedLeverSdgContribution.getId());
+
+            relatedLeverSdgContributionSave.setRelatedLeverRelatedLeversSDGContribution(
+              relatedLeverSdgContribution.getRelatedLeverRelatedLeversSDGContribution());
+
+            this.projectExpectedStudyRelatedLeverSdgContributionManager
+              .saveProjectExpectedStudyRelatedLeverSdgContribution(relatedLeverSdgContributionSave);
+            // This is to add studyQuantificationSave to generate
+            // correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyRelatedLeverSdgContribution()
+              .add(relatedLeverSdgContributionSave);
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.info(" error in saveProjectExpectedStudyRelatedLeverSdgContribution function " + e.getMessage());
+    }
+
+  }
+
+  /**
    * Save Expected Studies Project Outcome Information
    * 
    * @param projectExpectedStudy
@@ -2441,6 +2820,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
   }
+
 
   /**
    * Save Expected Studies Projects Information
@@ -2937,6 +3317,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.policyList = policyList;
   }
 
+  public void setPrimaryAllianceLever(List<PrimaryAllianceLever> primaryAllianceLever) {
+    this.primaryAllianceLever = primaryAllianceLever;
+  }
+
+  public void
+    setPrimaryAllianceStrategicOutcome(List<PrimaryAllianceStrategicOutcome> primaryAllianceStrategicOutcome) {
+    this.primaryAllianceStrategicOutcome = primaryAllianceStrategicOutcome;
+  }
+
   public void setProject(Project project) {
     this.project = project;
   }
@@ -2959,6 +3348,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setRegions(List<LocElement> regions) {
     this.regions = regions;
+  }
+
+  public void setRelatedAllianceLever(List<RelatedAllianceLever> relatedAllianceLever) {
+    this.relatedAllianceLever = relatedAllianceLever;
+  }
+
+  public void setSdgContribution(List<SdgContribution> sdgContribution) {
+    this.sdgContribution = sdgContribution;
   }
 
   public void setSrfSubIdoPrimary(long srfSubIdoPrimary) {

@@ -1,4 +1,6 @@
 [#ftl]
+[#import "/WEB-INF/global/macros/deliverableMacros.ftl" as deliverableMacros /]
+
 [#macro studyMacro element name index=-1 template=false fromProject=true ]
   [#local customName = "${name}"/]
   [#local customId = "study-${template?string('template',index)}" /]
@@ -74,6 +76,10 @@
       [#-- 3.  Maturity of change reported (tick-box)  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
+        <div class="form-group">
+          [#assign guideSheetURL = "https://cgiar.sharepoint.com/sites/AICCRA/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting%2FGuidance%20for%20AICCRA%20Outcome%20Impact%20Case%20Reports%2Epdf&parent=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting&p=true&ga=1" /]
+          <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" />[@s.text name="study.general.guideSheetURL.levelMaturity" /]</a> </small>
+        </div>
         <label for="${customName}.projectExpectedStudyInfo.repIndStageStudy.id" class="label--2">[@s.text name="study.generalInformation.maturityChange" /]:[@customForm.req required=(editable && !action.isPOWB() && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) /]
           <div>
             [@customForm.helpLabel name="study.generalInformation.maturityChange.help" showIcon=false isNote=true editable=editable/]
@@ -452,7 +458,7 @@
       [#if isOutcomeCaseStudy]
       <div class="form-group">
         [#assign ccGuideSheetURL = "https://drive.google.com/file/d/1oXb5UHABZIbyUUczZ8eqnDsgdzwABXPk/view?usp=sharing" /]
-        <small class="pull-right"><a href="${ccGuideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" />Cross-Cutting Markers  -  Guideline </a> </small>
+        <small class="pull-right"><a href="${ccGuideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" />[@s.text name="study.general.guideSheetURL.crossMarkets" /]</a> </small>
       </div>
       <div class="form-group">
         [@tag name="Indicator #3" /]
@@ -877,13 +883,77 @@
     </div>
     [/#if]
 
+    [#-- Publications --]
+    <div class="form-group">
+      <label for="">[@s.text name="study.communications.publications" /]:[@customForm.req required=false /]</label>
+      [@customForm.helpLabel name="study.communications.publications.help" showIcon=false isNote=true/]
+      <div class="publicationsBlock">
+        <div class="publicationsList">
+          <div class="row">
+            <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">Name[@customForm.req required=(editable && validateIsProgressWithStatus!true)  /]</div>
+            <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">Position[@customForm.req required=(editable && validateIsProgressWithStatus!true)  /]</div>
+            <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">Affiliation[@customForm.req required=(editable && validateIsProgressWithStatus!true)  /]</div>
+          </div>
+          [#if (element.publications?has_content) && (element.publications?size > 0)]
+            [#list (element.publications)![{}] as publication]
+              [@publicationMacro name="${customName}.links" element=publication index=publication_index /]
+            [/#list]
+          [/#if]
+        </div>
+        [#if editable]
+          <div class="addPublication bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Publication </div>
+          <div class="clearfix"></div>
+        [/#if]
+      </div>
+      [#-- Element item Template --]
+      <div style="display:none">
+        [@publicationMacro name="${customName}.publications" element={} index=-1 template=true /]
+      </div>
+
+    </div>
+      
+
     [#--  Contact person    --]
     [#if isOutcomeCaseStudy]
     <div class="form-group stageProcessOne">
-      [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.communications.contacts" help="study.communications.contacts.help" className="" helpIcon=false required=(editable && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) editable=editable && !action.isPOWB() /]
+      <label for="">[@s.text name="study.communications.contacts" /]:</label>
+      <div id="addPartnerText" class="note--2">
+        <p>
+          [@s.text name="study.communications.contacts.help" /]
+          <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave'][@s.param name='expectedID']${(expectedID)!}[/@s.param][/@s.url]">
+            [@s.text name="study.communications.contacts.help2" /]
+          </a>
+        </p>
+      </div>
+      <div>
+        [@deliverableMacros.deliverablePartnerMacro element={} name="projectExpectedStudyInfo.contacts" index=0 defaultType=2 /]
+      </div>
     </div>
     [/#if]
   
+  </div>
+[/#macro]
+
+[#macro studyAlliance element name index=-1 template=false fromProject=true]
+[/#macro]
+
+[#macro studyOneCGIAR element name index=-1 template=false fromProject=true]
+  [#local customName = "${name}"/]
+  [#local contributionToCGIAR = (element.projectExpectedStudyInfo.contributionToCGIAR)!"" ]
+  <div class="borderBox">
+    <div class="form-group">
+      <label for="">[@s.text name="study.oneCGIARAligment.contributionToCGIAR" /]:[@customForm.req required=false /]</label>
+      <div class="form-group row">
+        [#list ["Yes", "No"] as option]
+          <div class="col-md-2">
+            [@customForm.radioFlat id="optionOneCGIAR-${option}" name="${customName}.projectExpectedStudyInfo.contributionToCGIAR" i18nkey="study.oneCGIARAligment.contributionToCGIAR${option}" value="${option}" checked=(contributionToCGIAR == option) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /] 
+          </div>
+        [/#list]
+      </div>
+      <div class="form-group contributionToCGIARComment" style="display:${(contributionToCGIAR == 'No')?then('block','none')};" >
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.reasonToNoProvided" i18nkey="study.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=false editable=editable /]
+      </div>
+    </div>
   </div>
 [/#macro]
 
@@ -942,3 +1012,18 @@
   [/#list]
   [#return false]
 [/#function]
+
+[#macro publicationMacro name element index=-1 template=false class=""  ]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div id="studyPublication-${(template?string('template', ''))}" class="studyPublication form-group grayBox ${class}">
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <span class="pull-left" style="width:4%"><strong><span class="indexTag">${index + 1}</span>.</strong></span>
+    <span class="pull-left" style="width:30%; margin-left: 12px ">[@customForm.input name="${customName}.name" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:30%; margin-left: 12px">[@customForm.input name="${customName}.position" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:30%; margin-left: 12px">[@customForm.input name="${customName}.affiliation" showTitle=false i18nkey="" className="" editable=editable /]</span>
+
+    [#if editable]<div class="removeElement sm removeIcon removePublication ${class}" title="Remove"></div>[/#if]
+    <div class="clearfix"></div>
+  </div>
+    
+[/#macro]

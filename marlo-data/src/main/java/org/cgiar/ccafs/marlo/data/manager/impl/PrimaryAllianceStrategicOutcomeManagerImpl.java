@@ -36,7 +36,8 @@ public class PrimaryAllianceStrategicOutcomeManagerImpl implements PrimaryAllian
 
 
   @Inject
-  public PrimaryAllianceStrategicOutcomeManagerImpl(PrimaryAllianceStrategicOutcomeDAO primaryAllianceStrategicOutcomeDAO) {
+  public PrimaryAllianceStrategicOutcomeManagerImpl(
+    PrimaryAllianceStrategicOutcomeDAO primaryAllianceStrategicOutcomeDAO) {
     this.primaryAllianceStrategicOutcomeDAO = primaryAllianceStrategicOutcomeDAO;
 
 
@@ -62,13 +63,24 @@ public class PrimaryAllianceStrategicOutcomeManagerImpl implements PrimaryAllian
   }
 
   @Override
-  public PrimaryAllianceStrategicOutcome getPrimaryAllianceStrategicOutcomeById(long primaryAllianceStrategicOutcomeID) {
+  public PrimaryAllianceStrategicOutcome
+    getPrimaryAllianceStrategicOutcomeById(long primaryAllianceStrategicOutcomeID) {
 
     return primaryAllianceStrategicOutcomeDAO.find(primaryAllianceStrategicOutcomeID);
   }
 
   @Override
-  public PrimaryAllianceStrategicOutcome savePrimaryAllianceStrategicOutcome(PrimaryAllianceStrategicOutcome primaryAllianceStrategicOutcome) {
+  public List<PrimaryAllianceStrategicOutcome>
+    getPrimaryAllianceStrategicOutcomeByStudyAndPhase(long projectExpectedStudyId, long phaseId) {
+
+    return primaryAllianceStrategicOutcomeDAO.getPrimaryAllianceStrategicOutcomeByStudyAndPhase(projectExpectedStudyId,
+      phaseId);
+
+  }
+
+  @Override
+  public PrimaryAllianceStrategicOutcome
+    savePrimaryAllianceStrategicOutcome(PrimaryAllianceStrategicOutcome primaryAllianceStrategicOutcome) {
 
     return primaryAllianceStrategicOutcomeDAO.save(primaryAllianceStrategicOutcome);
   }

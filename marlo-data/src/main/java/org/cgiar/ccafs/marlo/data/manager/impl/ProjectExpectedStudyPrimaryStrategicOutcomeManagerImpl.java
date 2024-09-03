@@ -15,11 +15,15 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyPrimaryStrategicOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPrimaryStrategicOutcomeManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPrimaryStrategicOutcome;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,16 +32,20 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ProjectExpectedStudyPrimaryStrategicOutcomeManagerImpl implements ProjectExpectedStudyPrimaryStrategicOutcomeManager {
+public class ProjectExpectedStudyPrimaryStrategicOutcomeManagerImpl
+  implements ProjectExpectedStudyPrimaryStrategicOutcomeManager {
 
 
   private ProjectExpectedStudyPrimaryStrategicOutcomeDAO projectExpectedStudyPrimaryStrategicOutcomeDAO;
+  private PhaseDAO phaseDAO;
   // Managers
 
 
   @Inject
-  public ProjectExpectedStudyPrimaryStrategicOutcomeManagerImpl(ProjectExpectedStudyPrimaryStrategicOutcomeDAO projectExpectedStudyPrimaryStrategicOutcomeDAO) {
+  public ProjectExpectedStudyPrimaryStrategicOutcomeManagerImpl(
+    ProjectExpectedStudyPrimaryStrategicOutcomeDAO projectExpectedStudyPrimaryStrategicOutcomeDAO, PhaseDAO phaseDAO) {
     this.projectExpectedStudyPrimaryStrategicOutcomeDAO = projectExpectedStudyPrimaryStrategicOutcomeDAO;
+    this.phaseDAO = phaseDAO;
 
 
   }
@@ -45,13 +53,59 @@ public class ProjectExpectedStudyPrimaryStrategicOutcomeManagerImpl implements P
   @Override
   public void deleteProjectExpectedStudyPrimaryStrategicOutcome(long projectExpectedStudyPrimaryStrategicOutcomeId) {
 
-    projectExpectedStudyPrimaryStrategicOutcomeDAO.deleteProjectExpectedStudyPrimaryStrategicOutcome(projectExpectedStudyPrimaryStrategicOutcomeId);
+    ProjectExpectedStudyPrimaryStrategicOutcome projectExpectedStudyPrimaryStrategicOutcome =
+      this.getProjectExpectedStudyPrimaryStrategicOutcomeById(projectExpectedStudyPrimaryStrategicOutcomeId);
+    Phase currentPhase = projectExpectedStudyPrimaryStrategicOutcome.getPhase();
+
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null) {
+      this.deleteProjectExpectedStudyPrimaryStrategicOutcomePhase(currentPhase.getNext(),
+        projectExpectedStudyPrimaryStrategicOutcome);
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectExpectedStudyPrimaryStrategicOutcomePhase(upkeepPhase.getNext(),
+            projectExpectedStudyPrimaryStrategicOutcome);
+        }
+      }
+    }
+
+    projectExpectedStudyPrimaryStrategicOutcomeDAO
+      .deleteProjectExpectedStudyPrimaryStrategicOutcome(projectExpectedStudyPrimaryStrategicOutcomeId);
   }
+
+
+  public void deleteProjectExpectedStudyPrimaryStrategicOutcomePhase(Phase next,
+    ProjectExpectedStudyPrimaryStrategicOutcome projectExpectedStudyPrimaryStrategicOutcome) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectExpectedStudyPrimaryStrategicOutcome> projectExpectedStudyPrimaryStrategicOutcomeList =
+      phase.getProjectExpectedStudyPrimaryStrategicOutcome().stream()
+        .filter(c -> c.isActive()
+          && c.getProjectExpectedStudy().getId() == projectExpectedStudyPrimaryStrategicOutcome
+            .getProjectExpectedStudy().getId()
+          && c.getPrimaryStrategicOutcome().getId() == projectExpectedStudyPrimaryStrategicOutcome
+            .getPrimaryStrategicOutcome().getId())
+        .collect(Collectors.toList());
+    for (ProjectExpectedStudyPrimaryStrategicOutcome projectExpectedStudyPrimaryStrategicOutcomeTmp : projectExpectedStudyPrimaryStrategicOutcomeList) {
+      projectExpectedStudyPrimaryStrategicOutcomeDAO
+        .deleteProjectExpectedStudyPrimaryStrategicOutcome(projectExpectedStudyPrimaryStrategicOutcomeTmp.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deleteProjectExpectedStudyPrimaryStrategicOutcomePhase(phase.getNext(),
+        projectExpectedStudyPrimaryStrategicOutcome);
+    }
+  }
+
 
   @Override
   public boolean existProjectExpectedStudyPrimaryStrategicOutcome(long projectExpectedStudyPrimaryStrategicOutcomeID) {
 
-    return projectExpectedStudyPrimaryStrategicOutcomeDAO.existProjectExpectedStudyPrimaryStrategicOutcome(projectExpectedStudyPrimaryStrategicOutcomeID);
+    return projectExpectedStudyPrimaryStrategicOutcomeDAO
+      .existProjectExpectedStudyPrimaryStrategicOutcome(projectExpectedStudyPrimaryStrategicOutcomeID);
   }
 
   @Override
@@ -62,15 +116,78 @@ public class ProjectExpectedStudyPrimaryStrategicOutcomeManagerImpl implements P
   }
 
   @Override
-  public ProjectExpectedStudyPrimaryStrategicOutcome getProjectExpectedStudyPrimaryStrategicOutcomeById(long projectExpectedStudyPrimaryStrategicOutcomeID) {
+  public ProjectExpectedStudyPrimaryStrategicOutcome
+    getProjectExpectedStudyPrimaryStrategicOutcomeById(long projectExpectedStudyPrimaryStrategicOutcomeID) {
 
     return projectExpectedStudyPrimaryStrategicOutcomeDAO.find(projectExpectedStudyPrimaryStrategicOutcomeID);
   }
 
-  @Override
-  public ProjectExpectedStudyPrimaryStrategicOutcome saveProjectExpectedStudyPrimaryStrategicOutcome(ProjectExpectedStudyPrimaryStrategicOutcome projectExpectedStudyPrimaryStrategicOutcome) {
+  /**
+   * Reply the information to the next Phases
+   * 
+   * @param next - The next Phase
+   * @param projectExpectedStudyPrimaryStrategicOutcome - The project expected study primary strategic outcome into the
+   *        database.
+   */
+  public void saveInfoPhase(Phase next,
+    ProjectExpectedStudyPrimaryStrategicOutcome projectExpectedStudyPrimaryStrategicOutcome) {
 
-    return projectExpectedStudyPrimaryStrategicOutcomeDAO.save(projectExpectedStudyPrimaryStrategicOutcome);
+    Phase phase = phaseDAO.find(next.getId());
+    List<ProjectExpectedStudyPrimaryStrategicOutcome> projectExpectedStudyPrimaryStrategicOutcomeList =
+      phase.getProjectExpectedStudyPrimaryStrategicOutcome().stream()
+        .filter(c -> c.getProjectExpectedStudy().getId().longValue() == projectExpectedStudyPrimaryStrategicOutcome
+          .getProjectExpectedStudy().getId()
+          && c.getPrimaryStrategicOutcome().getId() == projectExpectedStudyPrimaryStrategicOutcome
+            .getPrimaryStrategicOutcome().getId())
+        .collect(Collectors.toList());
+    if (projectExpectedStudyPrimaryStrategicOutcomeList.isEmpty()) {
+
+      ProjectExpectedStudyPrimaryStrategicOutcome projectExpectedStudyPrimaryStrategicOutcomeAdd =
+        new ProjectExpectedStudyPrimaryStrategicOutcome();
+
+      projectExpectedStudyPrimaryStrategicOutcomeAdd
+        .setProjectExpectedStudy(projectExpectedStudyPrimaryStrategicOutcome.getProjectExpectedStudy());
+      projectExpectedStudyPrimaryStrategicOutcomeAdd.setPhase(phase);
+      projectExpectedStudyPrimaryStrategicOutcomeAdd
+        .setPrimaryStrategicOutcome(projectExpectedStudyPrimaryStrategicOutcome.getPrimaryStrategicOutcome());
+
+      projectExpectedStudyPrimaryStrategicOutcomeDAO.save(projectExpectedStudyPrimaryStrategicOutcomeAdd);
+    }
+
+    if (phase.getNext() != null) {
+      this.saveInfoPhase(phase.getNext(), projectExpectedStudyPrimaryStrategicOutcome);
+    }
+  }
+
+
+  @Override
+  public ProjectExpectedStudyPrimaryStrategicOutcome saveProjectExpectedStudyPrimaryStrategicOutcome(
+    ProjectExpectedStudyPrimaryStrategicOutcome projectExpectedStudyPrimaryStrategicOutcome) {
+
+
+    ProjectExpectedStudyPrimaryStrategicOutcome sourceInfo =
+      projectExpectedStudyPrimaryStrategicOutcomeDAO.save(projectExpectedStudyPrimaryStrategicOutcome);
+    Phase phase = phaseDAO.find(sourceInfo.getPhase().getId());
+
+
+    if (phase.getDescription().equals(APConstants.PLANNING)) {
+      if (phase.getNext() != null) {
+        this.saveInfoPhase(phase.getNext(), projectExpectedStudyPrimaryStrategicOutcome);
+      }
+    }
+
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveInfoPhase(upkeepPhase, projectExpectedStudyPrimaryStrategicOutcome);
+        }
+      }
+    }
+
+
+    return sourceInfo;
+
   }
 
 

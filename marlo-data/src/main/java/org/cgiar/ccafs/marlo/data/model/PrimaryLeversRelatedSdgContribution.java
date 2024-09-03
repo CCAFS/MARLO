@@ -19,74 +19,103 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import com.google.gson.annotations.Expose;
 
-public class ProjectExpectedStudyPrimaryAllianceLever extends MarloAuditableEntity
+public class PrimaryLeversRelatedSdgContribution extends MarloAuditableEntity
   implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -963914989396761020L;
 
   @Expose
-  private ProjectExpectedStudy projectExpectedStudy;
+  private String name;
+  @Expose
+  private String description;
   @Expose
   private PrimaryAllianceLever primaryAllianceLever;
   @Expose
+  private SdgContribution sdgContribution;
+  @Expose
   private Phase phase;
 
-  public ProjectExpectedStudyPrimaryAllianceLever() {
+  public PrimaryLeversRelatedSdgContribution() {
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+
+    PrimaryLeversRelatedSdgContribution other = (PrimaryLeversRelatedSdgContribution) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
+  }
+
+  public String getDescription() {
+    return description;
+  }
 
   @Override
   public String getLogDeatil() {
-    // TODO Auto-generated method stub
-    return null;
+    StringBuilder sb = new StringBuilder();
+    sb.append("Id : ").append(this.getId());
+    return sb.toString();
   }
 
+  public String getName() {
+    return name;
+  }
 
   public Phase getPhase() {
     return phase;
   }
 
-
   public PrimaryAllianceLever getPrimaryAllianceLever() {
     return primaryAllianceLever;
   }
 
-
-  public ProjectExpectedStudy getProjectExpectedStudy() {
-    return projectExpectedStudy;
+  public SdgContribution getSdgContribution() {
+    return sdgContribution;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+    return result;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
 
-
   public void setPrimaryAllianceLever(PrimaryAllianceLever primaryAllianceLever) {
     this.primaryAllianceLever = primaryAllianceLever;
   }
 
-
-  public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
-    this.projectExpectedStudy = projectExpectedStudy;
+  public void setSdgContribution(SdgContribution sdgContribution) {
+    this.sdgContribution = sdgContribution;
   }
 
-
-  /**
-   * Add the save/update information to reply the next Phase
-   * 
-   * @param projectExpectedStudyPrimaryAllianceLeverUpdate - a ProjectExpectedStudyPrimaryAllianceLever object.
-   * @param phase - The next Phase
-   */
-  public void updateProjectExpectedStudyInfoInfo(
-    ProjectExpectedStudyPrimaryAllianceLever projectExpectedStudyPrimaryAllianceLeverUpdate, Phase phase) {
-
-    this.setPhase(phase);
-    this.setProjectExpectedStudy(projectExpectedStudyPrimaryAllianceLeverUpdate.getProjectExpectedStudy());
-    this.setPrimaryAllianceLever(projectExpectedStudyPrimaryAllianceLeverUpdate.getPrimaryAllianceLever());
-
-
+  @Override
+  public String toString() {
+    return "Activity [id=" + this.getId() + ", name=" + name + ", description=" + description + "]";
   }
-
 }
 

@@ -19,43 +19,17 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import com.google.gson.annotations.Expose;
 
-public class RelatedAllianceLeverSdgContribution extends MarloAuditableEntity
-  implements java.io.Serializable, IAuditLog {
+public class RelatedLeversSDGContribution extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -963914989396761020L;
-
   @Expose
-  private String name;
-  @Expose
-  private String description;
+  private SdgContribution sdgContribution;
   @Expose
   private RelatedAllianceLever relatedAllianceLever;
+  @Expose
+  private Phase phase;
 
-  public RelatedAllianceLeverSdgContribution() {
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-
-    RelatedAllianceLeverSdgContribution other = (RelatedAllianceLeverSdgContribution) obj;
-    if (this.getId() == null) {
-      if (other.getId() != null) {
-        return false;
-      }
-    } else if (!this.getId().equals(other.getId())) {
-      return false;
-    }
-    return true;
-  }
-
-  public String getDescription() {
-    return description;
+  public RelatedLeversSDGContribution() {
   }
 
   @Override
@@ -65,12 +39,16 @@ public class RelatedAllianceLeverSdgContribution extends MarloAuditableEntity
     return sb.toString();
   }
 
-  public String getName() {
-    return name;
+  public Phase getPhase() {
+    return phase;
   }
 
   public RelatedAllianceLever getRelatedAllianceLever() {
     return relatedAllianceLever;
+  }
+
+  public SdgContribution getSdgContribution() {
+    return sdgContribution;
   }
 
   @Override
@@ -81,20 +59,15 @@ public class RelatedAllianceLeverSdgContribution extends MarloAuditableEntity
     return result;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setName(String name) {
-    this.name = name;
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setRelatedAllianceLever(RelatedAllianceLever relatedAllianceLever) {
     this.relatedAllianceLever = relatedAllianceLever;
   }
 
-  @Override
-  public String toString() {
-    return "Activity [id=" + this.getId() + ", name=" + name + ", description=" + description + "]";
+  public void setSdgContribution(SdgContribution sdgContribution) {
+    this.sdgContribution = sdgContribution;
   }
 }
