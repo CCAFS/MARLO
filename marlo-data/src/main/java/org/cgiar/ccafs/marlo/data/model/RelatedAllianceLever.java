@@ -17,6 +17,9 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.google.gson.annotations.Expose;
 
 public class RelatedAllianceLever extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
@@ -28,8 +31,13 @@ public class RelatedAllianceLever extends MarloAuditableEntity implements java.i
   @Expose
   private String description;
 
+
+  private Set<RelatedLeversSDGContribution> relatedLeversSDGContribution = new HashSet<RelatedLeversSDGContribution>(0);
+
+
   public RelatedAllianceLever() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -66,6 +74,10 @@ public class RelatedAllianceLever extends MarloAuditableEntity implements java.i
     return name;
   }
 
+  public Set<RelatedLeversSDGContribution> getRelatedLeversSDGContribution() {
+    return relatedLeversSDGContribution;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -80,6 +92,10 @@ public class RelatedAllianceLever extends MarloAuditableEntity implements java.i
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setRelatedLeversSDGContribution(Set<RelatedLeversSDGContribution> relatedLeversSDGContribution) {
+    this.relatedLeversSDGContribution = relatedLeversSDGContribution;
   }
 
   @Override

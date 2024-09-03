@@ -17,15 +17,6 @@
             class="org.cgiar.ccafs.marlo.data.model.SdgContribution" fetch="select">
             <column name="related_sdg_contribution_id"/>
         </many-to-one>
-		<property name="name" type="string" >
-			<column name="name" sql-type="TEXT" />
-		</property>
-		<property name="description" type="string">
-			<column name="description" sql-type="TEXT" />
-		</property>
-		<property name="active" type="boolean">
-			<column name="is_active" not-null="true" />
-		</property>
 		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>

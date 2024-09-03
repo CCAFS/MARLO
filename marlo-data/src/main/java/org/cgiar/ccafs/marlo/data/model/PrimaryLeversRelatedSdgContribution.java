@@ -25,10 +25,6 @@ public class PrimaryLeversRelatedSdgContribution extends MarloAuditableEntity
   private static final long serialVersionUID = -963914989396761020L;
 
   @Expose
-  private String name;
-  @Expose
-  private String description;
-  @Expose
   private PrimaryAllianceLever primaryAllianceLever;
   @Expose
   private SdgContribution sdgContribution;
@@ -58,9 +54,6 @@ public class PrimaryLeversRelatedSdgContribution extends MarloAuditableEntity
     return true;
   }
 
-  public String getDescription() {
-    return description;
-  }
 
   @Override
   public String getLogDeatil() {
@@ -69,9 +62,6 @@ public class PrimaryLeversRelatedSdgContribution extends MarloAuditableEntity
     return sb.toString();
   }
 
-  public String getName() {
-    return name;
-  }
 
   public Phase getPhase() {
     return phase;
@@ -93,13 +83,6 @@ public class PrimaryLeversRelatedSdgContribution extends MarloAuditableEntity
     return result;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
 
   public void setPhase(Phase phase) {
     this.phase = phase;
@@ -115,7 +98,7 @@ public class PrimaryLeversRelatedSdgContribution extends MarloAuditableEntity
 
   @Override
   public String toString() {
-    return "Activity [id=" + this.getId() + ", name=" + name + ", description=" + description + "]";
+    return "Activity [id=" + this.getId() + "]";
   }
 }
 
