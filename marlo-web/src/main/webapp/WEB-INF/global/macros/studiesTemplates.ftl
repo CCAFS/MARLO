@@ -935,6 +935,16 @@
 [/#macro]
 
 [#macro studyAlliance element name index=-1 template=false fromProject=true]
+  [#local customName = "${name}"/]
+  <div class="borderBox">
+    <div class="form-group">
+      <label for="">[@s.text name="study.allianceAligment.linkToLevers.title" /]:[@customForm.req required=false /]</label>
+      [@customForm.helpLabel name="study.allianceAligment.linkToLevers.note" showIcon=false editable=editable isNote=true /]
+      <div class="form-group">
+        [@customForm.radioToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" element="primaryAllianceLever" hasPrimary=true hasSecundary=true /]
+      </div>
+    </div>
+  </div>
 [/#macro]
 
 [#macro studyOneCGIAR element name index=-1 template=false fromProject=true]

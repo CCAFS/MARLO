@@ -1082,22 +1082,28 @@
   </div>
 [/#macro]
 
-[#macro radioToCheckboxMacrp name="" label="" element index=-1 template=false hasPrimary=false hasSecundary=false class="" required=true editable=true]
+[#macro radioToCheckboxMacro name="" label="" element=[] index=-1 template=false hasPrimary=false hasSecundary=false class="" required=true editable=true]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   <div class="form-group">
     <label for="">[@s.text name=label /]:[@req required=required && editable /]
     </label>
-    [#list element as radioItem]
-      [#local radioItemName = "${customName}-${radioItem.name}-${radioItem.description}" /]
-      [@customForm.radioFlat id="${radioItemName}" name="${radioItemName}" value="true" editable=editable checked="${radioItem.checked}"?boolean /]
-      [#if hasPrimary]
-        <label for="${radioItemName}" class="radio-label">First sublist</label>
-      [/#if]
-      [#if hasSecundary]
-        <label for="${radioItemName}" class="radio-label">Second sublist</label>
-      [/#if]
+    <p>${element}</p>
+    [#if (element?has_content) ]
+      
+      [#list element as radioItem]
+        [#local radioItemName = "${customName}-${radioItem.name}-${radioItem.description}" /]
+        [@customForm.radioFlat id="${radioItemName}" name="${radioItemName}" value="true" editable=editable checked="${radioItem.checked}"?boolean /]
+        [#if (radioItem.checked)!false]
+          [#if hasPrimary]
+            <label for="${radioItemName}" class="radio-label">First sublist</label>
+          [/#if]
+          [#if hasSecundary]
+            <label for="${radioItemName}" class="radio-label">Second sublist</label>
+          [/#if]
+        [/#if]
 
-    [/#list]
+      [/#list]
+    [/#if]
   </div>
   
 [/#macro]
