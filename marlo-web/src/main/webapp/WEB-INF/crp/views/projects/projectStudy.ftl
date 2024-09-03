@@ -147,7 +147,7 @@
                 </div>
 
                 <div id="study-alliance" role="tabpanel" class="tab-pane fade [#if indexTab==2]in active[/#if]">
-                  Alliance
+                  [@studies.studyAlliance element=(expectedStudy)!{} name="expectedStudy" index=0  /]
                 </div>
 
                 <div id="study-onecgiar" role="tabpanel" class="tab-pane fade [#if indexTab==3]in active[/#if]">
