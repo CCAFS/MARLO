@@ -76,6 +76,10 @@
       [#-- 3.  Maturity of change reported (tick-box)  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
+        <div class="form-group">
+          [#assign guideSheetURL = "https://cgiar.sharepoint.com/sites/AICCRA/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting%2FGuidance%20for%20AICCRA%20Outcome%20Impact%20Case%20Reports%2Epdf&parent=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting&p=true&ga=1" /]
+          <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" />[@s.text name="study.general.guideSheetURL.levelMaturity" /]</a> </small>
+        </div>
         <label for="${customName}.projectExpectedStudyInfo.repIndStageStudy.id" class="label--2">[@s.text name="study.generalInformation.maturityChange" /]:[@customForm.req required=(editable && !action.isPOWB() && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) /]
           <div>
             [@customForm.helpLabel name="study.generalInformation.maturityChange.help" showIcon=false isNote=true editable=editable/]
@@ -454,7 +458,7 @@
       [#if isOutcomeCaseStudy]
       <div class="form-group">
         [#assign ccGuideSheetURL = "https://drive.google.com/file/d/1oXb5UHABZIbyUUczZ8eqnDsgdzwABXPk/view?usp=sharing" /]
-        <small class="pull-right"><a href="${ccGuideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" />Cross-Cutting Markers  -  Guideline </a> </small>
+        <small class="pull-right"><a href="${ccGuideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" />[@s.text name="study.general.guideSheetURL.crossMarkets" /]</a> </small>
       </div>
       <div class="form-group">
         [@tag name="Indicator #3" /]
@@ -946,7 +950,7 @@
           </div>
         [/#list]
       </div>
-      <div class="form-group" style="display:${(contributionToCGIAR == 'No')?then('block','none')};" >
+      <div class="form-group contributionToCGIARComment" style="display:${(contributionToCGIAR == 'No')?then('block','none')};" >
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.reasonToNoProvided" i18nkey="study.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=false editable=editable /]
       </div>
     </div>
