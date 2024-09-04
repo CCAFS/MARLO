@@ -62,6 +62,13 @@ public class SdgContributionManagerImpl implements SdgContributionManager {
   }
 
   @Override
+  public List<SdgContribution> findAllByPhase(long phaseId) {
+
+    return sdgContributionDAO.findAllByPhase(phaseId);
+
+  }
+
+  @Override
   public SdgContribution getSdgContributionById(long sdgContributionID) {
 
     return sdgContributionDAO.find(sdgContributionID);

@@ -53,6 +53,14 @@ public interface SdgContributionManager {
 
 
   /**
+   * This method gets a list of sdgContribution that are active, by phase
+   * 
+   * @param phaseId phase ID
+   * @return a list from SdgContribution null if no exist records
+   */
+  List<SdgContribution> findAllByPhase(long phaseId);
+
+  /**
    * This method gets a sdgContribution object by a given sdgContribution identifier.
    * 
    * @param sdgContributionID is the sdgContribution identifier.

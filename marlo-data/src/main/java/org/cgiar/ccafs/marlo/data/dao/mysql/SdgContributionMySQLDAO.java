@@ -70,6 +70,17 @@ public class SdgContributionMySQLDAO extends AbstractMarloDAO<SdgContribution, L
   }
 
   @Override
+  public List<SdgContribution> findAllByPhase(long phaseId) {
+    String query = "from " + SdgContribution.class.getName() + " where is_active=1 and id_phase=" + phaseId;
+    List<SdgContribution> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
   public SdgContribution save(SdgContribution sdgContribution) {
     if (sdgContribution.getId() == null) {
       super.saveEntity(sdgContribution);

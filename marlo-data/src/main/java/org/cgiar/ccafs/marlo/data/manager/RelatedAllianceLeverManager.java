@@ -51,6 +51,13 @@ public interface RelatedAllianceLeverManager {
    */
   public List<RelatedAllianceLever> findAll();
 
+  /**
+   * This method gets a list of relatedAllianceLever that are active, by phase
+   * 
+   * @param phaseId phase ID
+   * @return a list from RelatedAllianceLever null if no exist records
+   */
+  List<RelatedAllianceLever> findAllByPhase(long phaseId);
 
   /**
    * This method gets a relatedAllianceLever object by a given relatedAllianceLever identifier.
@@ -59,6 +66,7 @@ public interface RelatedAllianceLeverManager {
    * @return a RelatedAllianceLever object.
    */
   public RelatedAllianceLever getRelatedAllianceLeverById(long relatedAllianceLeverID);
+
 
   /**
    * This method saves the information of the given relatedAllianceLever

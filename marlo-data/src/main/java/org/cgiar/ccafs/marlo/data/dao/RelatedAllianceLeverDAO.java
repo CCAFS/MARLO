@@ -56,6 +56,14 @@ public interface RelatedAllianceLeverDAO {
 
 
   /**
+   * This method gets a list of relatedAllianceLever that are active, by phase
+   * 
+   * @param phaseId phase ID
+   * @return a list from RelatedAllianceLever null if no exist records
+   */
+  List<RelatedAllianceLever> findAllByPhase(long phaseId);
+
+  /**
    * This method saves the information of the given relatedAllianceLever
    * 
    * @param relatedAllianceLever - is the relatedAllianceLever object with the new information to be added/updated.

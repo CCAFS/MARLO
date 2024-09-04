@@ -73,6 +73,18 @@ public class PrimaryAllianceStrategicOutcomeMySQLDAO extends AbstractMarloDAO<Pr
   }
 
   @Override
+  public List<PrimaryAllianceStrategicOutcome> findAllByPhase(long phaseId) {
+    String query =
+      "from " + PrimaryAllianceStrategicOutcome.class.getName() + " where is_active=1 and id_phase=" + phaseId;
+    List<PrimaryAllianceStrategicOutcome> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
   public List<PrimaryAllianceStrategicOutcome>
     getPrimaryAllianceStrategicOutcomeByStudyAndPhase(long projectExpectedStudyId, long phaseId) {
     StringBuilder query = new StringBuilder();
