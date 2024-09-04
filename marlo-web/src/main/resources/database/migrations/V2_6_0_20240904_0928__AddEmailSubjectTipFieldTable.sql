@@ -1,0 +1,1 @@
+ALTER TABLE tip_parameters ADD email_subject text NULL;
