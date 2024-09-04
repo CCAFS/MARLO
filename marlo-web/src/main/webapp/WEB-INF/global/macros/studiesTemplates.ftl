@@ -938,10 +938,10 @@
   [#local customName = "${name}"/]
   <div class="borderBox">
     <div class="form-group">
-      <label for="">[@s.text name="study.allianceAligment.linkToLevers.title" /]:[@customForm.req required=false /]</label>
+      <label class="label--2" for="">[@s.text name="study.allianceAligment.linkToLevers.title" /]:[@customForm.req required=false /]</label>
       [@customForm.helpLabel name="study.allianceAligment.linkToLevers.note" showIcon=false editable=editable isNote=true /]
       <div class="form-group">
-        [@customForm.radioToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" element="primaryAllianceLever" hasPrimary=true hasSecundary=true /]
+        [@customForm.radioToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" listName=primaryAllianceLever displayFieldName="name" hasPrimary=true hasSecondary=true /]
       </div>
     </div>
   </div>
