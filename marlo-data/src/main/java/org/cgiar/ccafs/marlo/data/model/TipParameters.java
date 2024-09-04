@@ -42,11 +42,17 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
   @Expose
   private Date tokenDueDate;
   @Expose
-  private Date tipEmail;
+  private String tipEmail;
   @Expose
-  private Date emailText;
+  private String emailText;
+  @Expose
+  private String emailSubject;
 
-  public Date getEmailText() {
+  public String getEmailSubject() {
+    return emailSubject;
+  }
+
+  public String getEmailText() {
     return emailText;
   }
 
@@ -80,7 +86,8 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
     return tipBaseUrl;
   }
 
-  public Date getTipEmail() {
+
+  public String getTipEmail() {
     return tipEmail;
   }
 
@@ -91,7 +98,6 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
   public String getTipStatusService() {
     return tipStatusService;
   }
-
 
   public String getTipTokenService() {
     return tipTokenService;
@@ -111,7 +117,11 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
     return false;
   }
 
-  public void setEmailText(Date emailText) {
+  public void setEmailSubject(String emailSubject) {
+    this.emailSubject = emailSubject;
+  }
+
+  public void setEmailText(String emailText) {
     this.emailText = emailText;
   }
 
@@ -132,7 +142,7 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
     this.tipBaseUrl = tipBaseUrl;
   }
 
-  public void setTipEmail(Date tipEmail) {
+  public void setTipEmail(String tipEmail) {
     this.tipEmail = tipEmail;
   }
 
