@@ -304,6 +304,7 @@ div.disabled {
 	font-weight: bold;
 	font-size: 1.2em;
 	padding: 0.15em;
+	line-height: 0;
 }
 
 .fieldset {
@@ -579,7 +580,7 @@ textarea#justification {
 	line-height: 1.5em;
 	word-wrap: break-word;
 	color: #828282;
-	margin: 0;
+	margin: 0.25rem 0;
 }
 
 .dont-break-out {
