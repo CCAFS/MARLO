@@ -41,7 +41,7 @@ public class PrimaryAllianceLever extends MarloAuditableEntity implements java.i
   private Set<PrimaryAllianceStrategicOutcome> primaryStrategicOutcomes =
     new HashSet<PrimaryAllianceStrategicOutcome>(0);
 
-  private List<PrimaryAllianceStrategicOutcome> StrategicOutcomes;
+  private List<PrimaryAllianceStrategicOutcome> strategicOutcomes;
 
 
   private Set<PrimaryLeversRelatedSdgContribution> primaryLeversRelatedSdgContribution =
@@ -123,7 +123,7 @@ public class PrimaryAllianceLever extends MarloAuditableEntity implements java.i
   }
 
   public List<PrimaryAllianceStrategicOutcome> getStrategicOutcomes() {
-    return StrategicOutcomes;
+    return strategicOutcomes;
   }
 
 
@@ -173,7 +173,7 @@ public class PrimaryAllianceLever extends MarloAuditableEntity implements java.i
   }
 
   public void setStrategicOutcomes(List<PrimaryAllianceStrategicOutcome> strategicOutcomes) {
-    StrategicOutcomes = strategicOutcomes;
+    this.strategicOutcomes = strategicOutcomes;
   }
 
 

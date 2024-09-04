@@ -87,7 +87,6 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PrimaryAllianceLever;
 import org.cgiar.ccafs.marlo.data.model.PrimaryAllianceStrategicOutcome;
-import org.cgiar.ccafs.marlo.data.model.PrimaryLeversRelatedSdgContribution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
@@ -123,7 +122,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.QuantificationType;
 import org.cgiar.ccafs.marlo.data.model.RelatedAllianceLever;
-import org.cgiar.ccafs.marlo.data.model.RelatedLeversSDGContribution;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
@@ -1279,38 +1277,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           .setRelatedSdgContribution(primaryAllianceLeverTmp.getRelatedSdgContribution(this.getActualPhase()));
       }
 
-      // strategic
-      for (PrimaryAllianceLever primary : this.primaryAllianceLever) {
-        logger.info(" linea 1271 ID " + primary.getId() + " data" + primary.getStrategicOutcomes());
-      }
-      // sdg
-      for (PrimaryAllianceLever primary : this.primaryAllianceLever) {
-        logger.info(" linea 1277 ID " + primary.getId() + " data" + primary.getRelatedSdgContribution());
-        for (PrimaryLeversRelatedSdgContribution primaryLeversRelatedSdgContribution : primary
-          .getRelatedSdgContribution()) {
-          logger.info(" linea 1280 ID " + primaryLeversRelatedSdgContribution.getId() + " data"
-            + primaryLeversRelatedSdgContribution.getSdgContribution());
-        }
-      }
-
       this.relatedAllianceLever = this.relatedAllianceLeverManager.findAllByPhase(this.getActualPhase().getId());
       for (RelatedAllianceLever relatedAllianceLeverTmp : this.relatedAllianceLever) {
         relatedAllianceLeverTmp
           .setRelatedSdgContribution(relatedAllianceLeverTmp.getRelatedSdgContribution(this.getActualPhase()));
       }
 
-      // sdg
-      for (RelatedAllianceLever primary : this.relatedAllianceLever) {
-        logger.info(" linea 1291 ID " + primary.getId() + " data" + primary.getRelatedSdgContribution());
-        for (RelatedLeversSDGContribution relatedLeversSDGContribution : primary.getRelatedSdgContribution()) {
-          logger.info(" linea 1294 ID " + relatedLeversSDGContribution.getId() + " data"
-            + relatedLeversSDGContribution.getSdgContribution());
-        }
-      }
       this.primaryAllianceStrategicOutcome =
         this.primaryAllianceStrategicOutcomeManager.findAllByPhase(this.getActualPhase().getId());
       this.sdgContribution = this.sdgContributionManager.findAllByPhase(this.getActualPhase().getId());
-
 
       // Expected Study Projects List
       if (this.expectedStudy.getExpectedStudyProjects() != null) {
