@@ -144,6 +144,14 @@ table#projectHighlights {
   font-size: 0.94em;
 }
 
+.radioToCheckbox .radioFlat {
+  padding-left: 0;
+} 
+
+#innerCheckbox {
+  padding-left: 20px;
+}
+
 /* NEW */
 .panel .panel-body {
   min-height: 38px;
