@@ -996,7 +996,8 @@ public class ProjectPartnerAction extends BaseAction {
     }
 
     // TIP notification email
-    if (((role == plRole) || (role == pcRole)) && (this.hasSpecificities(APConstants.TIP_NOTIFICATION_EMAIL_ACTIVE))) {
+    if (((role == plRole) || (role == pcRole)) && this.hasSpecificities(APConstants.TIP_NOTIFICATION_EMAIL_ACTIVE)
+      && !userAssigned.isCgiarUser()) {
       this.sendRequestEmailToTIP(userAssigned);
     }
   }
@@ -2252,6 +2253,7 @@ public class ProjectPartnerAction extends BaseAction {
         String emailText = tipParameter.getEmailText();
 
         emailText = emailText.replace("{param1}", user.getFirstName() + " " + user.getLastName());
+        emailText = emailText.replace("{param2}", user.getEmail());
 
         if (this.validateEmailNotification()) {
           sendMail.sendTemporalMethod(toEmail, ccEmail, bbcEmails, subject, emailText, null, null, null, true);
