@@ -170,7 +170,7 @@ public class HTMLtoWord {
       case BOLD:
       case EM:
       case STRONG:
-        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        font.setBold(true);
         break;
       case UNDERLINE:
         font.setUnderline(Font.U_SINGLE);

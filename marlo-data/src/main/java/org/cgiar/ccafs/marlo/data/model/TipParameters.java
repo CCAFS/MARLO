@@ -41,6 +41,20 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
   private String encryptionKey;
   @Expose
   private Date tokenDueDate;
+  @Expose
+  private String tipEmail;
+  @Expose
+  private String emailText;
+  @Expose
+  private String emailSubject;
+
+  public String getEmailSubject() {
+    return emailSubject;
+  }
+
+  public String getEmailText() {
+    return emailText;
+  }
 
   public String getEncryptionKey() {
     return encryptionKey;
@@ -72,6 +86,11 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
     return tipBaseUrl;
   }
 
+
+  public String getTipEmail() {
+    return tipEmail;
+  }
+
   public String getTipLoginService() {
     return tipLoginService;
   }
@@ -88,7 +107,6 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
     return tokenDueDate;
   }
 
-
   public String getTokenValue() {
     return tokenValue;
   }
@@ -99,6 +117,14 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
     return false;
   }
 
+  public void setEmailSubject(String emailSubject) {
+    this.emailSubject = emailSubject;
+  }
+
+  public void setEmailText(String emailText) {
+    this.emailText = emailText;
+  }
+
   public void setEncryptionKey(String encryptionKey) {
     this.encryptionKey = encryptionKey;
   }
@@ -106,7 +132,6 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
   @Override
   public void setModifiedBy(User modifiedBy) {
     // TODO Auto-generated method stub
-
   }
 
   public void setPrivateKey(String privateKey) {
@@ -115,6 +140,10 @@ public class TipParameters extends MarloBaseEntity implements java.io.Serializab
 
   public void setTipBaseUrl(String tipBaseUrl) {
     this.tipBaseUrl = tipBaseUrl;
+  }
+
+  public void setTipEmail(String tipEmail) {
+    this.tipEmail = tipEmail;
   }
 
   public void setTipLoginService(String tipLoginService) {
