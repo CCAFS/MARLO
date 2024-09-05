@@ -165,7 +165,7 @@
       <div class="form-group keyContributions">
         [#if isOutcomeCaseStudy || !fromProject]
           <label for="" class="label--2">[@s.text name="study.generalInformation.${isOutcomeCaseStudy?string('keyContributors','keyContributorsOther')}" /]:</label>
-          <div class="note"><span class="glyphicon glyphicon-question-sign"></span> [@s.text name="study.generalInformation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK"> clicking here</a>[/@][/@]</div>
+          <div class="note"><span class="glyphicon glyphicon-question-sign"></span> [@s.text name="study.generalInformation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">&nbsp clicking here</a>[/@] [/@]</div>
         [/#if]
         [#-- CRPs - To be Removed --]
         [#if !action.isAiccra()]
