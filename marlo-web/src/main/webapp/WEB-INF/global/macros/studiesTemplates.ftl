@@ -56,7 +56,7 @@
 
       [#-- 1. Title (up to 25 words) --]
       <div class="form-group">
-        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.generalInformation.title" help="study.generalInformation.title.help" className="limitWords-30" helpIcon=!isOutcomeCaseStudy required=true editable=editable isMainTitle=isOutcomeCaseStudy /]
+        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.generalInformation.title" help="study.generalInformation.title.help" className="limitWords-15" helpIcon=!isOutcomeCaseStudy required=true editable=editable isMainTitle=isOutcomeCaseStudy /]
       </div>
       
       [#-- Who is commissioning this study --]
@@ -69,7 +69,7 @@
       [#-- 2. Short outcome/impact statement (up to 80 words) --]
       [#if isOutcomeCaseStudy]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.outcomeImpactStatement" i18nkey="study.generalInformation.outcomeStatement" help="study.generalInformation.outcomeStatement.help" isNote=true className="limitWords-80" helpIcon=false required=false editable=editable isMainTitle=true /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.outcomeImpactStatement" i18nkey="study.generalInformation.outcomeStatement" help="study.generalInformation.outcomeStatement.help" isNote=true className="limitWords-80 margin-top-10" helpIcon=false required=false editable=editable isMainTitle=true /]
       </div>
       [/#if]
 

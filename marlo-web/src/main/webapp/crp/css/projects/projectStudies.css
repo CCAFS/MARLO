@@ -151,6 +151,10 @@ div.nationalBlock div.selectList span.selection span.select2-selection ul{
   overflow:visible;
 }
 
+.margin-top-10{
+  margin-top: 1rem;
+}
+
 thead {
   background: #f5f5f5;
   color: #a9a8a8;
