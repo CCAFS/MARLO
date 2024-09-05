@@ -119,13 +119,13 @@
               [#-- Geographic Scope --]
               [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes  listName="geographicScopes" keyFieldName="id" displayFieldName="name" showTitle=false isFlex=true required=(!action.isPOWB() && validateIsProgressWithStatus!true) /]
             </div>
-            <div class="form-group regionalBlock col-md-4" style="display:${(isRegional)?string('block','none')}">
-              [#-- Regional scope --]
-              [@customForm.elementsListComponent name="${customName}.studyRegions" elementType="locElement" elementList=element.studyRegions label="study.generalInformation.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" isFlex=true required=false /]
-            </div>
             <div class="form-group nationalBlock col-md-4" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
               [#-- Multinational, National and Subnational scope --]
               [@customForm.select name="${customName}.countriesIds" label="" i18nkey="study.generalInformation.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=(!action.isPOWB() && validateIsProgressWithStatus!true) className="countriesSelect" isFlex=true  disabled=!editable/]
+            </div>
+            <div class="form-group regionalBlock col-md-4" style="display:${(isRegional)?string('block','none')}">
+              [#-- Regional scope --]
+              [@customForm.elementsListComponent name="${customName}.studyRegions" elementType="locElement" elementList=element.studyRegions label="study.generalInformation.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" isFlex=true required=false /]
             </div>
             <div class="form-group col-md-12">
               [#-- Comment box --]

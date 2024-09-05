@@ -126,6 +126,31 @@ ul.nav li a {
   border-radius: 100%;
 }
 
+div.nationalBlock div.selectList span.selection{
+  height: 50px;
+}
+
+div.nationalBlock div.selectList span.selection span.select2-selection{
+  position: relative;
+  width: 170px;
+}
+
+div.nationalBlock div.selectList span.selection span.select2-selection::before{
+  content: "Select a Country(s)";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+div.nationalBlock div.selectList span.selection span.select2-selection ul{
+  position: absolute;
+  top: 30px;
+  overflow:visible;
+}
+
 thead {
   background: #f5f5f5;
   color: #a9a8a8;
