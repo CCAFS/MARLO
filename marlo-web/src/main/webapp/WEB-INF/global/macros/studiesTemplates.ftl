@@ -225,7 +225,7 @@
       [#-- 6.  CGIAR innovation(s) or findings that have resulted in this outcome or impact.   --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.cgiarInnovation" i18nkey="study.generalInformation.innovationsNarrative" help="study.generalInformation.innovationsNarrative.help" helpIcon=false isNote=true className="" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable isMainTitle=true /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.cgiarInnovation" i18nkey="study.generalInformation.innovationsNarrative" help="study.generalInformation.innovationsNarrative.help" helpIcon=false isNote=true className="margin-top-10" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable isMainTitle=true /]
          
         [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="study.generalInformation.innovationsList"  listName="innovationsList" keyFieldName="id" displayFieldName="composedNameAlternative" required=false /]
 
@@ -353,7 +353,7 @@
       [#--  Elaboration of Outcome/Impact Statement  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.elaborationOutcomeImpactStatement" i18nkey="study.generalInformation.elaborationStatement" help="study.generalInformation.elaborationStatement.help" helpIcon=false isNote=true className="limitWords-400" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable isMainTitle=true /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.elaborationOutcomeImpactStatement" i18nkey="study.generalInformation.elaborationStatement" help="study.generalInformation.elaborationStatement.help" helpIcon=false isNote=true className="limitWords-400 margin-top-10" required=(editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) editable=editable isMainTitle=true /]
       </div>
       [/#if]
       
