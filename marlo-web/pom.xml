@@ -76,66 +76,12 @@
 			<groupId>org.cgiar.ciat.auth</groupId>
 			<artifactId>adauth</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.pentaho</groupId>
-			<artifactId>core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pentaho</groupId>
-			<artifactId>extensions</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pentaho</groupId>
-			<artifactId>base</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pentaho</groupId>
-			<artifactId>libdocbundle</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pentaho</groupId>
-			<artifactId>libfonts</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pentaho</groupId>
-			<artifactId>libformat</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pentaho</groupId>
-			<artifactId>libformula</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pentaho</groupId>
-			<artifactId>libloader</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pentaho</groupId>
-			<artifactId>librepository</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pentaho</groupId>
-			<artifactId>libserializer</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pentaho</groupId>
-			<artifactId>libxml</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pentaho</groupId>
-			<artifactId>libswing</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pentaho</groupId>
-			<artifactId>libsparkline</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pentaho</groupId>
-			<artifactId>charts</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.pentaho</groupId>
-			<artifactId>report-charts</artifactId>
-		</dependency>
+		
+	<dependency>
+    <groupId>org.pentaho.reporting.engine</groupId>
+    <artifactId>classic-core</artifactId>
+</dependency>
+			
 		<!-- Struts Convention plugin may not be required anymore after we ditched 
 			the struts-rest plugin -->
 		<dependency>

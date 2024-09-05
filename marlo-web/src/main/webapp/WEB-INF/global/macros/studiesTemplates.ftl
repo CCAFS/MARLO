@@ -941,7 +941,8 @@
       <label class="label--2" for="">[@s.text name="study.allianceAligment.linkToLevers.title" /]:[@customForm.req required=false /]</label>
       [@customForm.helpLabel name="study.allianceAligment.linkToLevers.note" showIcon=false editable=editable isNote=true /]
       <div class="form-group">
-        [@customForm.radioToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" listName=primaryAllianceLever displayFieldName="name" hasPrimary=true hasSecondary=true /]
+        [@customForm.radioToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" listName=primaryAllianceLever displayFieldName="name" hasPrimary=true
+        listNamePrimary=primaryAllianceStrategicOutcome hasSecondary=true checkedValue=1 /]
       </div>
     </div>
   </div>

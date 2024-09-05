@@ -1082,7 +1082,7 @@
   </div>
 [/#macro]
 
-[#macro radioToCheckboxMacro name="" label="" elementList=[] listName="" keyFieldName="" displayFieldName="" index=-1 template=false hasPrimary=false listNamePrimary="" keyFieldNamePrimary="" displayFieldNamePrimary="" hasSecondary=false listNameSecondary="" keyFieldNameSecondary="" displayFieldNameSecondary="" class="" required=true editable=true]
+[#macro radioToCheckboxMacro name="" label="" elementList=[] listName="" keyFieldName="" displayFieldName="" index=-1 template=false hasPrimary=false listNamePrimary="" keyFieldNamePrimary="" displayFieldNamePrimary="" hasSecondary=false listNameSecondary="" keyFieldNameSecondary="" displayFieldNameSecondary="" class="" required=true editable=true checkedValue="" ]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   
   [#attempt]
@@ -1090,19 +1090,34 @@
   [#recover]
     [#local list = [] /] 
   [/#attempt]
-  
-  <div class="form-group">
-    <label for="">[@s.text name=label /]:[@req required=required && editable /]
-    </label>
-      
+
+  [#if listName?has_content]
+    <div class="form-group radioToCheckbox">
+      <label for="">[@s.text name=label /]:[@req required=required && editable /]</label>
+        
       [#list listName as radioItem]
         [#local radioItemName = "${radioItem.name}: ${radioItem.description}" /]
-        [@customForm.radioFlat id="${radioItem.id}" name="${radioItemName}" value="${radioItem.id}" i18nkey="${radioItemName}" editable=editable /]
-        <div class="form-group" id="innerCheckbox">
-          [#if (radioItem.checked)!true]
+        [#local isChecked = false]
+        [#if checkedValue?has_content]
+          [#if checkedValue == radioItem.id]
+            [#local isChecked = true /]
+          [/#if]
+        [/#if]
+        [@customForm.radioFlat id="${radioItem.id}" name="${customName}-${radioItem.id}" value="${radioItem.id}" i18nkey="${radioItemName}" editable=editable checked=isChecked /]
+        <div class="form-group" id="innerCheckbox" data-radioButton="${radioItem.id}" style="display:${isChecked?string('block','none')}" >
             [#if hasPrimary]
+              [#attempt]
+                [#local listPrimary = (listNamePrimary?filter(x.id = radioItem.id))![] /]
+              [#recover]
+                [#local listPrimary = [] /] 
+              [/#attempt]
+              
               <div class="form-group" style="padding-left: 20px;">
                 <label for="" class="radio-label">Primary list</label>
+                [#list listNamePrimary as primaryItem]
+                  <p>${primaryItem.name}</p>
+                [/#list]
+                  
               </div>
             [/#if]
             [#if hasSecondary]
@@ -1110,10 +1125,10 @@
                 <label for="" class="radio-label">Secondary list</label>
               </div>
             [/#if]
-          [/#if]
         </div>
-
       [/#list]
-  </div>
+
+    </div>
+  [/#if]
   
 [/#macro]
