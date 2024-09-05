@@ -21,6 +21,7 @@ var app = new Vue({
 
 function init() {
   $('.loading-WOS-container').hide("slow");
+  $('.disseminationChannel').select2();
   updateReadOnly();
   $('.disseminationChannel').change(updateReadOnly)
   $('#handle-bridge').change(function () {
@@ -94,26 +95,25 @@ $('.listindicators .setSelect2').select2().on('change', function() {
   $(".listindicators .removeElement").on("click",async function () {
 
     //These is validation for the IPI 2.3 indicator is selected and is able to be removed
-    if($(this).siblings('.elementRelationID').val() === "7505"){
+    var name = $(this).parent().find(".elementName").text();
 
-      const inputs = document.querySelectorAll("div.form-group.row[clusteridparticipant] .participantsNumbers input");
-    
-      const values = [];
-      inputs.forEach(input => {
-        values.push(parseInt(input.value));
-      });
-      var sumData = values.reduce((a, b) => a + b, 0);
+
+    //This is a validation for the IPI 2.3 indicator is selected and is able to be removed
+    if(name.includes("IPI 2.3")){
+
+      var sumData = getSumTotalParticipants();
       if (sumData > 0) { 
         // If the flag is still in the list, the user is notified that the element is related to the IPI 2.3 indicator
         try {
           await alertRemoveIndicatorIPI2_3();
+          return;
         } catch (error) {
           return;
         }
       } else {
         $(this).closest("li").remove();
         searchIndicator();
-        return
+        return;
       }
       
     } else {
@@ -157,7 +157,15 @@ $('.listindicators .setSelect2').select2().on('change', function() {
   initialTotals();
   initialRemaining();
   reviewSharedclusters();
-  
+
+  // Add hover to deleted button if the indicator is IPI 2.3 and is participant information
+  $('.listindicators .removeElement').hover(function() {
+    var name = $(this).parent().find(".elementName").text();
+    if(name.includes("IPI 2.3") && getSumTotalParticipants() > 0){
+      $(this).css('cursor', 'not-allowed');
+      $(this).attr('title', 'This indicator can not be removed, since there are shared clusters with information in the "General Information"');
+    }
+  });
 
 }
 
@@ -352,6 +360,7 @@ function addcluster(infoCluster){
     lastValueId = 0;
   }
 
+
   var hiddenInputId = $('<input>').attr({
     type: 'hidden',
     class: 'valueId',
@@ -372,12 +381,14 @@ function addcluster(infoCluster){
     class: 'form-group row',
     clusteridparticipant: idCluster
   });
-  var col1 = $('<div>').addClass('col-md-2');
-  var textArea1 = $('<div>').addClass('text-area-container').text(infoCluster.acronym);
+  var col1 = $('<div>').addClass('col-md-2 col-sm-2 col-xs-8 col-xs-first');
+  var textArea1 = $('<div>').addClass('text-area-container text-flex-column text-xs-left').text(infoCluster.acronym);
   col1.append(textArea1);
+  col1.append('<br>')
   div.append(col1);
   div.css('margin-bottom', '30px');
-  var col2 = $('<div>').addClass('col-md-2');
+
+  var col2 = $('<div>').addClass('col-md-2 col-sm-2 col-xs-3 col-xs-normal participantsNumbers');
   var textArea2 = $('<div>').addClass('text-area-container');
   var input2 = $('<input>').attr({
     type: 'text',
@@ -392,7 +403,7 @@ function addcluster(infoCluster){
   col2.append(textArea2);
   div.append(col2);
 
-  var col3 = $('<div>').addClass('col-md-2 femaleNumbers');
+  var col3 = $('<div>').addClass('col-md-2 col-sm-2 col-xs-3 col-xs-normal femaleNumbers');
   var textArea3 = $('<div>').addClass('text-area-container');
   var input3 = $('<input>').attr({
     type: 'text',
@@ -406,7 +417,7 @@ function addcluster(infoCluster){
   col3.append(textArea3);
   div.append(col3);
 
-  var col4 = $('<div>').addClass('col-md-2');
+  var col4 = $('<div>').addClass('col-md-2 col-sm-2 col-xs-3 col-xs-normal africanNumbers');
   var textArea4 = $('<div>').addClass('text-area-container');
   var input4 = $('<input>').attr({
     type: 'text',
@@ -420,7 +431,7 @@ function addcluster(infoCluster){
   col4.append(textArea4);
   div.append(col4);
 
-  var col5 = $('<div>').addClass('col-md-2 femaleNumbers');
+  var col5 = $('<div>').addClass('col-md-2 col-sm-2 col-xs-3 col-xs-normal youthNumbers');
   var textArea5 = $('<div>').addClass('text-area-container');
   var input5 = $('<input>').attr({
     type: 'text',
@@ -434,12 +445,43 @@ function addcluster(infoCluster){
   col5.append(textArea5);
   div.append(col5);
 
+  var col6 = $('<div>').addClass('col-md-2 col-sm-2 col-xs-4 col-xs-last');
+  var textArea6 = $('<div>').addClass('text-area-container text-xs-right');
+  var button6 = $('<button>').attr({
+    type: 'button',
+    class: 'btn btn-danger removeInformationClusterTrainnes btn-remove',
+    clusteridparticipant: idCluster,
+    title: `Remove ${infoCluster.acronym} information` 
+  });
+  button6.append($('<span>').addClass('glyphicon glyphicon-trash'));
+  textArea6.append($('<div>').addClass('input fieldReference').css('display', 'block').append(button6));
+  col6.append(textArea6);
+  div.append(col6);
+
 
   // Agregamos los elementos al contenedor adecuado
   $('.block-involveParticipants .listClusterDM').append(hiddenInputId);
   $('.block-involveParticipants .listClusterDM').append(hiddenInputProjectId);
   $('.block-involveParticipants .listClusterDM').append(div);
+  button6.on('click', removeInformationClusterTrainnes);
   initialTotals()
+}
+
+function removeInformationClusterTrainnes(){
+  event.preventDefault();
+  let clusterIdParticipant;
+  clusterIdParticipant = $(this).attr('clusteridparticipant');
+  console.log("clusterIdParticipant: "+clusterIdParticipant);
+  const $divElement = document.querySelector(`.listClusterDM div[clusteridparticipant="${clusterIdParticipant}"]`);
+  console.log("divElement: "+$divElement);
+  const inputs = $divElement.querySelectorAll('input');
+  console.log("inputs: "+inputs);
+  inputs.forEach(input => {
+    input.value = 0;
+  });
+
+  initialRemaining();	
+  initialTotals();
 }
 
 
@@ -792,8 +834,12 @@ function updateReadOnly() {
     if ($('.deliverableDisseminationUrl ').prop('readonly')) {
       getWOSInfo();
     }
-/*     $('select[name="deliverable.dissemination.disseminationChannel"]').prop("disabled",true);
-    $('select').select2(); */
+
+    // Prevent the select from being changed and set the value to the last selected
+    $('.disseminationChannel').attr("readonly", true);
+
+
+
   //if not
   } else {
 
@@ -831,8 +877,11 @@ function updateReadOnly() {
         hideOrShowCheckBoxIsOtherUrl(true);
       }
     }
-/*     $('select[name="deliverable.dissemination.disseminationChannel"]').prop("disabled",false);
-    $('select').select2(); */
+
+    // Allow the select to be changed and set the value to the last selected
+    $('.disseminationChannel').attr("readonly", false);
+
+
 
   }
 
@@ -1152,6 +1201,8 @@ function addDisseminationEvents() {
       displayExtraFieldUrl(false, false);
     }
   });
+
+  $('.removeInformationClusterTrainnes').on('click', removeInformationClusterTrainnes);	
 
 }
 

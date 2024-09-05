@@ -19,7 +19,7 @@
     
   <cache
     name="org.hibernate.cache.internal.StandardQueryCache"
-    maxElementsInMemory="10000"
+    maxBytesLocalHeap="2M"
     eternal="false"
     timeToIdleSeconds="3600"
     timeToLiveSeconds="3600">
@@ -27,7 +27,7 @@
 
   <cache
     name="org.hibernate.cache.spi.UpdateTimestampsCache"
-    maxElementsInMemory="15000"
+    maxBytesLocalHeap="3M"
     eternal="true">
   </cache>
     

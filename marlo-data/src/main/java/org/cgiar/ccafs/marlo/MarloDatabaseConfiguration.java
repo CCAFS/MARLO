@@ -15,25 +15,33 @@
 
 package org.cgiar.ccafs.marlo;
 
+import java.util.Properties;
+
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Environment;
+import org.hibernate.cache.ehcache.internal.EhcacheRegionFactory;
+import org.hibernate.cache.ehcache.internal.SingletonEhcacheRegionFactory;
+import org.hibernate.cfg.AvailableSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.hibernate4.HibernateTransactionManager;
-import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
 /**
  * Configuration for Database and Flyway beans.
  */
 @Configuration
+@EnableTransactionManagement
 public class MarloDatabaseConfiguration {
 
   /**
@@ -55,6 +63,11 @@ public class MarloDatabaseConfiguration {
   private Boolean showSql;
 
   private final Logger log = LoggerFactory.getLogger(MarloDatabaseConfiguration.class);
+
+  @Bean(name = "ehcacheRegionFactory")
+  public EhcacheRegionFactory ehcacheRegionFactory() {
+    return new SingletonEhcacheRegionFactory();
+  }
 
   @Bean(name = "dataSource", destroyMethod = "close")
   public DataSource getDataSource() {
@@ -87,6 +100,38 @@ public class MarloDatabaseConfiguration {
     return dataSource;
   }
 
+  private Properties hibernateProperties() {
+    Properties props = new Properties();
+    props.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
+    if (Boolean.TRUE.equals(showSql)) {
+      props.setProperty(AvailableSettings.SHOW_SQL, "true");
+    }
+    props.setProperty("hibernate.cache.use_second_level_cache", Boolean.TRUE.toString());
+    props.setProperty("hibernate.cache.use_query_cache", Boolean.TRUE.toString());
+    return props;
+  }
+
+  @Bean(name = "transactionManager")
+  public PlatformTransactionManager hibernateTransactionManager() {
+    final HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+    transactionManager.setSessionFactory(this.sessionFactory());
+    return transactionManager;
+  }
+
+  @Bean(name = "localSessionFactoryBean")
+  public LocalSessionFactoryBean localSessionFactory() {
+    log.info("Setting LocalSessionFactory");
+    MarloLocalSessionFactoryBean sessionFactory = new MarloLocalSessionFactoryBean();
+    sessionFactory.setDataSource(this.getDataSource());
+    sessionFactory.setConfigLocation(new ClassPathResource("hibernate.cfg.xml"));
+    sessionFactory.setHibernateProperties(this.hibernateProperties());
+
+    // Enable second level cache with ehcache
+    sessionFactory.setRegionFactory(this.ehcacheRegionFactory());
+
+    return sessionFactory;
+  }
+
   /**
    * Leave commented out for now.
    * 
@@ -98,32 +143,9 @@ public class MarloDatabaseConfiguration {
   // }
 
   @Bean(name = "sessionFactory")
-  public SessionFactory getSessionFactory(final DataSource dataSource) {
+  public SessionFactory sessionFactory() {
     log.info("Setting SessionFactory");
-    LocalSessionFactoryBuilder sessionBuilder = new LocalSessionFactoryBuilder(dataSource);
-    sessionBuilder.configure("hibernate.cfg.xml");
-    sessionBuilder.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-    if (showSql) {
-      sessionBuilder.setProperty(Environment.SHOW_SQL, "true");
-    }
-
-    // Enable second level cache with ehcache
-    sessionBuilder.setProperty("hibernate.cache.use_second_level_cache", Boolean.TRUE.toString());
-    sessionBuilder.setProperty("hibernate.cache.region.factory_class",
-      "org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory");
-
-    // // Enable query cache
-    sessionBuilder.setProperty("hibernate.cache.use_query_cache", Boolean.TRUE.toString());
-
-    SessionFactory sessionFactory = sessionBuilder.buildSessionFactory();
-    return sessionFactory;
-  }
-
-
-  @Bean(name = "transactionManager")
-  public HibernateTransactionManager getTransactionManager(final SessionFactory sessionFactory) {
-    final HibernateTransactionManager transactionManager = new HibernateTransactionManager(sessionFactory);
-    return transactionManager;
+    return this.localSessionFactory().getObject();
   }
 
 }

@@ -29,8 +29,9 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+
 
 @Named
 public class DeliverableParticipantMySQLDAO extends AbstractMarloDAO<DeliverableParticipant, Long>
@@ -92,7 +93,7 @@ public class DeliverableParticipantMySQLDAO extends AbstractMarloDAO<Deliverable
   public DeliverableParticipant findDeliverableParticipantByPhaseAndDeliverable(Phase phase, Deliverable deliverable) {
     String query = "select distinct dp from DeliverableParticipant dp "
       + " where phase.id = :phaseId and deliverable.id= :deliverableId and dp.active = 1";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<DeliverableParticipant> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phase.getId());
     createQuery.setParameter("deliverableId", deliverable.getId());
 

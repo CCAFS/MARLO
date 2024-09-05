@@ -4,7 +4,7 @@
   <div class="col-md-4 infoLinks text-left">
     <strong>Contact</strong><br />
     <ul>
-      <li><a href="mailto:MARLOSupport@cgiar.org">MARLOSupport@cgiar.org</a></li>
+      <li><a href="mailto:MARLOSupport@cgiar.org">[@s.text name="footer.contactEmail" /]</a></li>
     </ul>
   </div>
   [#-- Legal Information--]
@@ -87,8 +87,9 @@
 [#-- Copyright --]
 <div class="copyRight">
   <hr />
-  <span> Copyright &#169; 2013-2019 International Center for Tropical Agriculture (CIAT)</span><br />
-  <span style="opacity:0.5;"> Some rights reserved</span>
+  <span>[@s.text name="footer.copyrighAlert" /]</span><br />
+  <span style="opacity:0.7;">[@s.text name="footer.developedBy" /]<span><br> 
+  <span style="opacity:0.5;">[@s.text name="footer.rightsReserved" /]</span>
 </div>
 
 [#-- MARLO Blog --]

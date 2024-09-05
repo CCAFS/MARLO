@@ -1116,6 +1116,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   @Override
   public String execute() throws Exception {
 
+
     if (this.getSelectedPhase() == null) {
       return NOT_FOUND;
     }
@@ -1135,6 +1136,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         + e.getMessage());
       hasW1W2Co = false;
     }
+
 
     // Fill target unit list
     targetUnitList = new HashMap<>();
@@ -1160,6 +1162,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     } catch (Exception e) {
       LOG.error("Error generating LOG info " + e.getMessage());
     }
+
 
     try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
       String masterQueryName = "Main_Query";
@@ -1215,6 +1218,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             regions.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
           }
         }
+
         // Set Main_Query
         CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
         TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
@@ -1225,6 +1229,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         masterReport = this.addi8nParameters(masterReport);
         // Set columns parameters (x and width)
         masterReport = this.addColumnParameters(masterReport);
+
 
         // Start Setting Planning Subreports
         // Subreport Description
@@ -1289,6 +1294,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           this.fillSubreport((SubReport) hm.get("innovations"), "innovations", args);
           // this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
         }
+
 
         // Subreport Activities
         args.clear();

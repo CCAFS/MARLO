@@ -24,8 +24,9 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+
 
 @Named
 public class ExpectedStudyProjectMySQLDAO extends AbstractMarloDAO<ExpectedStudyProject, Long>
@@ -74,7 +75,7 @@ public class ExpectedStudyProjectMySQLDAO extends AbstractMarloDAO<ExpectedStudy
   public List<ExpectedStudyProject> getByProjectAndPhase(long projectId, long phaseId) {
     String query = "select distinct esp from ExpectedStudyProject esp "
       + "where project.id = :projectId and phase.id = :phaseId and is_active = 1";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<ExpectedStudyProject> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("projectId", projectId);
     createQuery.setParameter("phaseId", phaseId);
     List<ExpectedStudyProject> result = super.findAll(createQuery);

@@ -43,14 +43,15 @@ import javax.inject.Named;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.query.Query;
 import org.hibernate.type.OneToOneType;
 import org.hibernate.type.OrderedSetType;
 import org.hibernate.type.SetType;
 import org.hibernate.type.Type;
+
 
 /**
  * @author Christian Garcia
@@ -72,7 +73,7 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
     String queryString =
       "from " + Auditlog.class.getName() + " where ENTITY_NAME='class " + classAudit.getName() + "' and ENTITY_ID=" + id
         + " and main=1 and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc";
-    Query query = this.getSessionFactory().getCurrentSession().createQuery(queryString);
+    Query<Auditlog> query = this.getSessionFactory().getCurrentSession().createQuery(queryString);
     query.setMaxResults(11);
     List<Auditlog> auditLogs = super.findAll(query);
     return auditLogs;
@@ -195,19 +196,31 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
 
   @Override
   public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName, Long phaseId) {
+    try {
 
-    List<Auditlog> auditLogs = super.findAll("from " + Auditlog.class.getName() + " where ENTITY_NAME='class "
-      + classAudit.getName() + "' and ENTITY_ID=" + id + " and main=1 and id_phase=" + phaseId
-      + " and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc ");
-    // " and principal=1 order by CREATED_DATE desc LIMIT 10");
-    for (Auditlog auditlog : auditLogs) {
-      auditlog.setUser(userDao.getUser(auditlog.getUserId()));
-    }
 
-    if (auditLogs.size() > 11) {
-      return auditLogs.subList(0, 11);
+      if (!super.doesTableExist("auditlog")) {
+        System.out.println("The table is not  in good condition");
+        return null;
+      }
+
+
+      List<Auditlog> auditLogs = super.findAll("from " + Auditlog.class.getName() + " where ENTITY_NAME='class "
+        + classAudit.getName() + "' and ENTITY_ID=" + id + " and main=1 and id_phase=" + phaseId
+        + " and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc ");
+      // " and principal=1 order by CREATED_DATE desc LIMIT 10");
+      for (Auditlog auditlog : auditLogs) {
+        auditlog.setUser(userDao.getUser(auditlog.getUserId()));
+      }
+
+      if (auditLogs.size() > 11) {
+        return auditLogs.subList(0, 11);
+      }
+      return auditLogs;
+    } catch (Exception e) {
+      System.out.println("Error in listLogs function " + e.getMessage());
+      return null;
     }
-    return auditLogs;
 
   }
 

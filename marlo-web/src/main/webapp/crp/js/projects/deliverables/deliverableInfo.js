@@ -1,4 +1,4 @@
-var $statuses, $statusDescription;
+var $statuses, $statusDescription, $detoneChange;
 
 $(document).ready(init);
 function hideOrShowCheckBoxIsOtherUrl(value) {
@@ -58,6 +58,7 @@ function init() {
   $statuses = $('select.status');
   isDeliverableNew = $statuses.classParam('isNew') == "true";
   $statusDescription = $('#statusDescription');
+  $detoneChange = false;
 
   // Take out the 0 - Not Targeted Dimension
   $('.crossCuttingDimensionsSelect option[value=0]').remove();
@@ -69,9 +70,35 @@ function init() {
   // Event to validate the expected date
   $(".yearExpected").on("change", validateCurrentDate);
 
-  // Event when status is changed
+
+  $prevValueSelectStatus = $statuses.val();
+
+  $statuses.closest(".selectList").on("click", function () {
+    $detoneChange = true;
+    $prevValueSelectStatus = $statuses.val();
+
+  })
+  
   $statuses.on("change", function () {
-    validateVisualJustifAndCompnsByStatusAndYear(this.value);
+    if($detoneChange){
+      if(isStatusCancelled($statuses.val()) || isStatusExtended($statuses.val())) {
+        validatePermissionsToChangeStatus()
+        .then(function(canChangeStatus) {
+          displayModalForAdmin(canChangeStatus, hasRelatedInformationTrainnesCluster(), $prevValueSelectStatus).then(function() {
+            validateVisualJustifAndCompnsByStatusAndYear($statuses.val());
+            $detoneChange = false;
+          });
+        })
+        .catch(function(error) {
+          console.error('Error checking permissions:', error);
+        });
+      } else {
+        validateVisualJustifAndCompnsByStatusAndYear(this.value);
+        $detoneChange = false;
+      }
+    }
+
+
   });
 
   validatePermissionsToChangeStatus()
@@ -619,6 +646,22 @@ function validateVisualJustifAndCompnsByStatusAndYear(statusId) {
   }
 }
 
+async function displayModalForAdmin(canChangeStatusClusterSubmitted, hasRelatedInformationTrainnesCluster, prevValueSelectStatus) {
+  var isAdmin = document.getElementById("adminRole").value;
+  var isClusterLeader = document.getElementById("clusterLeaderRole").value;
+
+  if(editable && isClusterLeader !== "true" && isAdmin !== "true" && (canChangeStatusClusterSubmitted === false || hasRelatedInformationTrainnesCluster === true)){
+    try {
+      // Wait for the user to click on the modal
+      $statuses.val(prevValueSelectStatus).trigger("change.select2");
+      await alertChangeStatusWithSubmittedCluster();
+    } catch (error) {
+      // User clicked on the close button instead of the remove button
+      return;
+    }
+  }
+}
+
 /**
  * Removes information of new expected year if the selected expected year is equal to the current cycle year.
  * The validation is made when another state different to EXTENDED is selected. 
@@ -913,7 +956,11 @@ var deliverablePartnersModule = (function () {
   function addPartnerItem() {
     var $listBlock = $('.otherDeliverablePartners');
     var $template = $('#deliverablePartnerItem-template');
-    $template.find('select').select2("destroy");
+
+    if($template.find('select').data('select2')){
+      $template.find('select').select2("destroy");
+    }
+    
     var $newItem = $template.clone(true).removeAttr('id');
 
     $template.find('select').select2();

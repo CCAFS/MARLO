@@ -24,8 +24,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class CrpOutcomeSubIdoMySQLDAO extends AbstractMarloDAO<CrpOutcomeSubIdo, Long> implements CrpOutcomeSubIdoDAO {
@@ -74,7 +74,7 @@ public class CrpOutcomeSubIdoMySQLDAO extends AbstractMarloDAO<CrpOutcomeSubIdo,
       + "with cpo.composeID = :composeID and cpo.active=true " + "and cpo.phase.id = :phaseID "
       + " where cosi.srfSubIdo is null and cosi.active=true and cosi.crpProgramOutcome.active=true";
 
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<CrpOutcomeSubIdo> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("composeID", outcomeComposedId);
     createQuery.setParameter("phaseID", phaseId);
 
@@ -89,7 +89,7 @@ public class CrpOutcomeSubIdoMySQLDAO extends AbstractMarloDAO<CrpOutcomeSubIdo,
       + "with cpo.composeID = :composeID and cpo.active=true " + "and cpo.phase.id = :phaseID "
       + " where cosi.srfSubIdo.id = :subIdoID and cosi.active=true and cosi.crpProgramOutcome.active=true";
 
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<CrpOutcomeSubIdo> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("composeID", outcomeComposedId);
     createQuery.setParameter("phaseID", phaseId);
     createQuery.setParameter("subIdoID", subIdoId);
