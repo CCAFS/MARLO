@@ -285,7 +285,7 @@
       </div>
       
       [#-- 8. Link to Performance Indicators: / Milestones --]
-        [#if !isOutcomeCaseStudy]
+      [#if !isOutcomeCaseStudy]
         <div class="form-group">          
           <label for="" class="${isOutcomeCaseStudy?then('label--2','')}">[@s.text name="study.generalInformation.outcomes" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
             <div class="feedback-flex-items">
@@ -307,7 +307,7 @@
           [#assign showMilestoneIndicator = (expectedStudy.projectExpectedStudyInfo.hasMilestones?string)!"" /]
           [@customForm.input name="${customName}.projectExpectedStudyInfo.hasMilestones" showTitle=false value="true" type="hidden" /]
         </div>
-        [/#if]
+      [/#if]
         [#--  
        <div class="form-group simpleBox block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
           [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=(element.milestones)![] label="study.milestones"  listName="milestones" keyFieldName="id" displayFieldName="composedName" hasPrimary=true /]
@@ -326,9 +326,8 @@
        <div class="form-group ${isOutcomeCaseStudy?then('','simpleBox')} block-${studyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
           [@customForm.elementsListComponent name="${customName}.crpOutcomes" elementType="crpOutcome" elementList=(element.crpOutcomes)![] label="study.generalInformation.outcomes"  listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" showTitle=false required=(!action.isPOWB() && validateIsProgressWithStatus!true) /]
           <div class="note left">
-            <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="_blank">
-              <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.keyOutputNotice" /]
-            </a>
+            <span class="glyphicon glyphicon-question-sign"></span>
+            [@s.text name="project.deliverable.generalInformation.keyOutputNotice2"][@s.param] <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">&nbsp clicking here</a>[/@] [/@]  
           </div>
          <br/>      
         </div>
