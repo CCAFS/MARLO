@@ -24,11 +24,22 @@ public class SdgContribution extends MarloAuditableEntity implements java.io.Ser
   private static final long serialVersionUID = -963914989396761020L;
 
   @Expose
+  private String code;
+
+  @Expose
   private String name;
+
+
   @Expose
   private String description;
+
+
   @Expose
   private Phase phase;
+
+
+  @Expose
+  private Sdg sdg;
 
   public SdgContribution() {
   }
@@ -53,6 +64,10 @@ public class SdgContribution extends MarloAuditableEntity implements java.io.Ser
     return true;
   }
 
+  public String getCode() {
+    return code;
+  }
+
   public String getDescription() {
     return description;
   }
@@ -72,12 +87,20 @@ public class SdgContribution extends MarloAuditableEntity implements java.io.Ser
     return phase;
   }
 
+  public Sdg getSdg() {
+    return sdg;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
   }
 
   public void setDescription(String description) {
@@ -92,8 +115,15 @@ public class SdgContribution extends MarloAuditableEntity implements java.io.Ser
     this.phase = phase;
   }
 
+  public void setSdg(Sdg sdg) {
+    this.sdg = sdg;
+  }
+
   @Override
   public String toString() {
-    return "Activity [id=" + this.getId() + ", name=" + name + ", description=" + description + "]";
+    return "SdgContribution [code=" + code + ", name=" + name + ", description=" + description + ", phase=" + phase
+      + ", sdg=" + sdg + "]";
   }
+
+
 }
