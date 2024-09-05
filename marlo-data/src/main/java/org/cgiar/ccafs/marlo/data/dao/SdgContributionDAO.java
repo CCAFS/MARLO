@@ -56,6 +56,14 @@ public interface SdgContributionDAO {
 
 
   /**
+   * This method gets a list of sdgContribution that are active, by phase
+   * 
+   * @param phaseId phase ID
+   * @return a list from SdgContribution null if no exist records
+   */
+  List<SdgContribution> findAllByPhase(long phaseId);
+
+  /**
    * This method saves the information of the given sdgContribution
    * 
    * @param sdgContribution - is the sdgContribution object with the new information to be added/updated.

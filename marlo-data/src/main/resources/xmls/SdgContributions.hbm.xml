@@ -9,6 +9,9 @@
 			<column name="id" />
 			<generator class="identity" />
 		</id>
+		<property name="code" type="string" >
+			<column name="code" sql-type="TEXT" />
+		</property>
 		<property name="name" type="string" >
 			<column name="name" sql-type="TEXT" />
 		</property>
@@ -28,6 +31,10 @@
 		<many-to-one name="phase"
             class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
             <column name="id_phase"/>
+        </many-to-one>
+		<many-to-one name="sdg"
+            class="org.cgiar.ccafs.marlo.data.model.Sdg" fetch="select">
+            <column name="sdg_id"/>
         </many-to-one>
 	</class>
 </hibernate-mapping>

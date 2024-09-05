@@ -25,5 +25,19 @@
 			<column name="modification_justification" sql-type="TEXT"
 				not-null="true" />
 		</property>
+		<set name="primaryStrategicOutcomes" table="primary_alliance_strategic_outcomes"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="primary_alliance_lever_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.PrimaryAllianceStrategicOutcome" />
+		</set>
+		<set name="primaryLeversRelatedSdgContribution" table="primary_levers_related_sdg_contributions"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="primary_lever_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.PrimaryLeversRelatedSdgContribution" />
+		</set>
 	</class>
 </hibernate-mapping>

@@ -12,7 +12,7 @@ function init() {
   addSelect2();
 
   // Add Geographic Scope
-  $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(event,id,name) {
+  $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(_event,_id,_name) {
     setGeographicScope(this);
   });
   setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
@@ -63,7 +63,7 @@ function bottonPading(){
 }
 
 function checkHyperlinks() {
-  multiInputStudies.each((index, item) => {
+  multiInputStudies.each((_index, item) => {
     validateURL(item);
   });
 }
@@ -210,7 +210,7 @@ function attachEvents() {
       var $list = $(this).parents('.linksBlock').find('.linksList');
       var $element = $('#studyLink-template').clone(true).removeAttr("id");
       // Remove template tag
-      $element.find('input, textarea').each(function(i,e) {
+      $element.find('input, textarea').each(function(_i,e) {
         e.name = (e.name).replace("_TEMPLATE_", "");
         e.id = (e.id).replace("_TEMPLATE_", "");
       });
@@ -267,21 +267,22 @@ function attachEvents() {
     validateEmptyLinks();
 
     // Functions
-    function addItem() {
-      var $list = $(this).parent('.referenceBlock').find('.referenceList');
+    function addItem(e) {
+      var eventSelect = e instanceof jQuery.fn.init ? e : event.target;
+      var $list = $(eventSelect).parent('.referenceBlock').find('.referenceList');
       var $element = $('#multiInput-references-template').clone(true).removeAttr("id");
       var $listLength = $list.children().length;
 
       if ($listLength <= 30) {
         // Remove template tag
-        $element.find('input, textarea').each(function (i, e) {
+        $element.find('input, textarea').each(function (_i, e) {
           e.name = (e.name).replace("_TEMPLATE_", "");
           e.id = (e.id).replace("_TEMPLATE_", "");
         });
         // Show the element
         $element.appendTo($list).hide().show(350);
         // Update indexes
-        updateIndexes(this);
+        updateIndexes();
       }
     }
     function removeItem() {
@@ -291,11 +292,11 @@ function attachEvents() {
         // Remove DOM element
         $parent.remove();
         // Update indexes
-        updateIndexes($addBtn);
+        updateIndexes();
       });
     }
-    function updateIndexes(list) {
-      var linksList = $(list).parent('.referenceBlock').find('.referenceList');
+    function updateIndexes() {
+      var linksList = $('.referenceBlock').find('.referenceList');
       linksList.find('.multiInput').each(function (i, element) {
         $(element).find('.indexTag').text(i + 1);
         $(element).setNameIndexes(1, i);
@@ -311,7 +312,7 @@ function attachEvents() {
       }
     }
     function validateEmptyLinks() {
-      $('.referenceList').find('.multiInput span input').map((index, item) => {
+      $('.referenceList').find('.multiInput span input').map((_index, item) => {
         if (item.value != '') {
           $('#warningEmptyReferencesTag').hide();
         } else {
@@ -319,6 +320,10 @@ function attachEvents() {
         }
       });
     }
+
+    setTimeout(() => {
+      addItem($('.addButtonReference'));
+    }, 1000);
 
   })();
 
@@ -338,7 +343,7 @@ function attachEvents() {
       var $listLength = $list.children().length;
       if ($listLength <= 30) {
         // Remove template tag
-        $element.find('input, textarea').each(function (i, e) {
+        $element.find('input, textarea').each(function (_i, e) {
           e.name = (e.name).replace("_TEMPLATE_", "");
           e.id = (e.id).replace("_TEMPLATE_", "");
         });
@@ -374,7 +379,7 @@ function attachEvents() {
       }
     }
     function validateEmptyLinks() {
-      $('.publicationsList').find('.studyPublication span input').map((index, item) => {
+      $('.publicationsList').find('.studyPublication span input').map((_index, item) => {
         if (item.value != '') {
           $('#warningEmptyPublicationsTag').hide();
         } else {
@@ -386,7 +391,7 @@ function attachEvents() {
   })();
 
   /**
-   * Qualification Component
+   * Quantification Component
    */
   (function() {
     // Events
@@ -394,8 +399,9 @@ function attachEvents() {
     $('.removeQuantification').on('click', removeItem);
 
     // Functions
-    function addItem() {
-      var $list = $(this).parents('.quantificationsBlock').find('.quantificationsList');
+    function addItem(e) {
+      var eventSelect = e instanceof jQuery.fn.init ? e : event.target;
+      var $list = $(eventSelect).parents('.quantificationsBlock').find('.quantificationsList');
       var $element = $('#quantification-template');
 
       // remove select2 data to avoid corruption in clone process
@@ -406,7 +412,7 @@ function attachEvents() {
       // clone the item
       var $clone = $element.clone(true).removeAttr("id");
       // Remove template tag
-      $clone.find('input, textarea').each(function(i,e) {
+      $clone.find('input, textarea').each(function(_i,e) {
         e.name = (e.name).replace("_TEMPLATE_", "");
         e.id = (e.id).replace("_TEMPLATE_", "");
       });
@@ -441,6 +447,10 @@ function attachEvents() {
 
       });
     }
+
+    setTimeout(() => {
+      addItem($('.addStudyQualification'))
+    }, 1000);
 
   })();
 	//On change radio buttons
@@ -541,7 +551,7 @@ function setFileUploads() {
           $ub.find('.fileUploaded a').attr('href', r.path + '/' + r.fileFileName)
         }
       },
-      fail: function(e,data) {
+      fail: function(e,_data) {
         var $ub = $(e.target).parents(containerClass);
         $ub.animateCss('shake');
       },
@@ -559,7 +569,7 @@ function setFileUploads() {
   });
 
   // Prepare data
-  $fileUpload.bind('fileuploadsubmit', function(e,data) {
+  $fileUpload.bind('fileuploadsubmit', function(_e,_data) {
 
   });
 

@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class PrimaryAllianceLeverMySQLDAO extends AbstractMarloDAO<PrimaryAllianceLever, Long> implements PrimaryAllianceLeverDAO {
+public class PrimaryAllianceLeverMySQLDAO extends AbstractMarloDAO<PrimaryAllianceLever, Long>
+  implements PrimaryAllianceLeverDAO {
 
 
   @Inject
@@ -61,6 +62,18 @@ public class PrimaryAllianceLeverMySQLDAO extends AbstractMarloDAO<PrimaryAllian
   @Override
   public List<PrimaryAllianceLever> findAll() {
     String query = "from " + PrimaryAllianceLever.class.getName() + " where is_active=1";
+    List<PrimaryAllianceLever> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+
+  @Override
+  public List<PrimaryAllianceLever> findAllByPhase(long phaseId) {
+    String query = "from " + PrimaryAllianceLever.class.getName() + " where is_active=1 and id_phase=" + phaseId;
     List<PrimaryAllianceLever> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

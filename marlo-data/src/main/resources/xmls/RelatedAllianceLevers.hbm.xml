@@ -25,5 +25,12 @@
 			<column name="modification_justification" sql-type="TEXT"
 				not-null="true" />
 		</property>
+		<set name="relatedLeversSDGContribution" table="related_levers_sdg_contributions"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="related_alliance_lever_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.RelatedLeversSDGContribution" />
+		</set>
 	</class>
 </hibernate-mapping>

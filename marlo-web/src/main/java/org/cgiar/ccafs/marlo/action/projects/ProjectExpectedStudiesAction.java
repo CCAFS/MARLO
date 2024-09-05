@@ -1266,11 +1266,31 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.policyList = new ArrayList<>();
       this.tagList = this.projectExpectedStudyTagManager.findAll();
       this.quantificationTypes = this.quantificationTypeManager.findAll();
-      this.primaryAllianceLever = this.primaryAllianceLeverManager.findAll();
-      this.relatedAllianceLever = this.relatedAllianceLeverManager.findAll();
-      this.primaryAllianceStrategicOutcome = this.primaryAllianceStrategicOutcomeManager.findAll();
-      this.sdgContribution = this.sdgContributionManager.findAll();
+      this.primaryAllianceLever = this.primaryAllianceLeverManager.findAllByPhase(this.getActualPhase().getId());
 
+      if (this.primaryAllianceLever != null) {
+        for (PrimaryAllianceLever primaryAllianceLeverTmp : this.primaryAllianceLever) {
+          primaryAllianceLeverTmp
+            .setStrategicOutcomes(primaryAllianceLeverTmp.getStrategicOutcomes(this.getActualPhase()));
+        }
+
+        for (PrimaryAllianceLever primaryAllianceLeverTmp : this.primaryAllianceLever) {
+          primaryAllianceLeverTmp
+            .setRelatedSdgContribution(primaryAllianceLeverTmp.getRelatedSdgContribution(this.getActualPhase()));
+        }
+      }
+
+      this.relatedAllianceLever = this.relatedAllianceLeverManager.findAllByPhase(this.getActualPhase().getId());
+      if (this.relatedAllianceLever != null) {
+        for (RelatedAllianceLever relatedAllianceLeverTmp : this.relatedAllianceLever) {
+          relatedAllianceLeverTmp
+            .setRelatedSdgContribution(relatedAllianceLeverTmp.getRelatedSdgContribution(this.getActualPhase()));
+        }
+      }
+
+      this.primaryAllianceStrategicOutcome =
+        this.primaryAllianceStrategicOutcomeManager.findAllByPhase(this.getActualPhase().getId());
+      this.sdgContribution = this.sdgContributionManager.findAllByPhase(this.getActualPhase().getId());
 
       // Expected Study Projects List
       if (this.expectedStudy.getExpectedStudyProjects() != null) {

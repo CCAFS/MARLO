@@ -55,6 +55,14 @@ public interface PrimaryAllianceStrategicOutcomeDAO {
   public List<PrimaryAllianceStrategicOutcome> findAll();
 
 
+  /**
+   * This method gets a list of primaryAllianceStrategicOutcome that are active, by phase.
+   * 
+   * @param phaseId phase ID
+   * @return a list from PrimaryAllianceStrategicOutcome null if no exist records
+   */
+  List<PrimaryAllianceStrategicOutcome> findAllByPhase(long phaseId);
+
   List<PrimaryAllianceStrategicOutcome> getPrimaryAllianceStrategicOutcomeByStudyAndPhase(long projectExpectedStudyId,
     long phaseId);
 

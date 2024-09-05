@@ -56,6 +56,15 @@ public interface PrimaryAllianceLeverDAO {
 
 
   /**
+   * This method gets a list of primaryAllianceLever that are active, by phase
+   * 
+   * @param phaseId phase ID
+   * @return a list from PrimaryAllianceLever null if no exist records
+   */
+  List<PrimaryAllianceLever> findAllByPhase(long phaseId);
+
+
+  /**
    * This method saves the information of the given primaryAllianceLever
    * 
    * @param primaryAllianceLever - is the primaryAllianceLever object with the new information to be added/updated.

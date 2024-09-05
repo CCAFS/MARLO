@@ -17,6 +17,12 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.google.gson.annotations.Expose;
 
 public class RelatedAllianceLever extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
@@ -27,9 +33,18 @@ public class RelatedAllianceLever extends MarloAuditableEntity implements java.i
   private String name;
   @Expose
   private String description;
+  @Expose
+  private Phase phase;
+
+
+  private Set<RelatedLeversSDGContribution> relatedLeversSDGContribution = new HashSet<RelatedLeversSDGContribution>(0);
+
+  private List<RelatedLeversSDGContribution> relatedSdgContribution;
+
 
   public RelatedAllianceLever() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -62,8 +77,31 @@ public class RelatedAllianceLever extends MarloAuditableEntity implements java.i
     return sb.toString();
   }
 
+
   public String getName() {
     return name;
+  }
+
+
+  public Phase getPhase() {
+    return phase;
+  }
+
+  public Set<RelatedLeversSDGContribution> getRelatedLeversSDGContribution() {
+    return relatedLeversSDGContribution;
+  }
+
+  public List<RelatedLeversSDGContribution> getRelatedSdgContribution() {
+    return relatedSdgContribution;
+  }
+
+  public List<RelatedLeversSDGContribution> getRelatedSdgContribution(Phase phase) {
+    List<RelatedLeversSDGContribution> relatedLeversSDGContribution = this.getRelatedLeversSDGContribution().stream()
+      .filter(dm -> dm.isActive() && dm.getPhase().equals(phase)).collect(Collectors.toList());
+    if (relatedLeversSDGContribution != null && !relatedLeversSDGContribution.isEmpty()) {
+      return relatedLeversSDGContribution;
+    }
+    return new ArrayList<RelatedLeversSDGContribution>();
   }
 
   @Override
@@ -80,6 +118,18 @@ public class RelatedAllianceLever extends MarloAuditableEntity implements java.i
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
+  }
+
+  public void setRelatedLeversSDGContribution(Set<RelatedLeversSDGContribution> relatedLeversSDGContribution) {
+    this.relatedLeversSDGContribution = relatedLeversSDGContribution;
+  }
+
+  public void setRelatedSdgContribution(List<RelatedLeversSDGContribution> relatedSdgContribution) {
+    this.relatedSdgContribution = relatedSdgContribution;
   }
 
   @Override

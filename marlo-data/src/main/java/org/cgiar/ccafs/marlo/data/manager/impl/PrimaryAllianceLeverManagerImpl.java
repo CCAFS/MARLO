@@ -62,6 +62,13 @@ public class PrimaryAllianceLeverManagerImpl implements PrimaryAllianceLeverMana
   }
 
   @Override
+  public List<PrimaryAllianceLever> findAllByPhase(long phaseId) {
+
+    return primaryAllianceLeverDAO.findAllByPhase(phaseId);
+
+  }
+
+  @Override
   public PrimaryAllianceLever getPrimaryAllianceLeverById(long primaryAllianceLeverID) {
 
     return primaryAllianceLeverDAO.find(primaryAllianceLeverID);

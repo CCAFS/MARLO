@@ -18,7 +18,10 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
 
@@ -31,11 +34,25 @@ public class PrimaryAllianceLever extends MarloAuditableEntity implements java.i
   @Expose
   private String description;
 
-  private List<PrimaryAllianceStrategicOutcome> primaryStrategicOutcomes =
-    new ArrayList<PrimaryAllianceStrategicOutcome>();
+  @Expose
+  private Phase phase;
+
+
+  private Set<PrimaryAllianceStrategicOutcome> primaryStrategicOutcomes =
+    new HashSet<PrimaryAllianceStrategicOutcome>(0);
+
+  private List<PrimaryAllianceStrategicOutcome> strategicOutcomes;
+
+
+  private Set<PrimaryLeversRelatedSdgContribution> primaryLeversRelatedSdgContribution =
+    new HashSet<PrimaryLeversRelatedSdgContribution>(0);
+
+  private List<PrimaryLeversRelatedSdgContribution> relatedSdgContribution;
+
 
   public PrimaryAllianceLever() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -57,9 +74,11 @@ public class PrimaryAllianceLever extends MarloAuditableEntity implements java.i
     return true;
   }
 
+
   public String getDescription() {
     return description;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -68,13 +87,55 @@ public class PrimaryAllianceLever extends MarloAuditableEntity implements java.i
     return sb.toString();
   }
 
+
   public String getName() {
     return name;
   }
 
-  public List<PrimaryAllianceStrategicOutcome> getPrimaryStrategicOutcomes() {
+
+  public Phase getPhase() {
+    return phase;
+  }
+
+
+  public Set<PrimaryLeversRelatedSdgContribution> getPrimaryLeversRelatedSdgContribution() {
+    return primaryLeversRelatedSdgContribution;
+  }
+
+  public Set<PrimaryAllianceStrategicOutcome> getPrimaryStrategicOutcomes() {
     return primaryStrategicOutcomes;
   }
+
+
+  public List<PrimaryLeversRelatedSdgContribution> getRelatedSdgContribution() {
+    return relatedSdgContribution;
+  }
+
+
+  public List<PrimaryLeversRelatedSdgContribution> getRelatedSdgContribution(Phase phase) {
+    List<PrimaryLeversRelatedSdgContribution> primaryLeversRelatedSdgContribution =
+      this.getPrimaryLeversRelatedSdgContribution().stream().filter(dm -> dm.isActive() && dm.getPhase().equals(phase))
+        .collect(Collectors.toList());
+    if (primaryLeversRelatedSdgContribution != null && !primaryLeversRelatedSdgContribution.isEmpty()) {
+      return primaryLeversRelatedSdgContribution;
+    }
+    return new ArrayList<PrimaryLeversRelatedSdgContribution>();
+  }
+
+  public List<PrimaryAllianceStrategicOutcome> getStrategicOutcomes() {
+    return strategicOutcomes;
+  }
+
+
+  public List<PrimaryAllianceStrategicOutcome> getStrategicOutcomes(Phase phase) {
+    List<PrimaryAllianceStrategicOutcome> primaryAllianceStrategicOutcomes = this.getPrimaryStrategicOutcomes().stream()
+      .filter(dm -> dm.isActive() && dm.getPhase().equals(phase)).collect(Collectors.toList());
+    if (primaryAllianceStrategicOutcomes != null && !primaryAllianceStrategicOutcomes.isEmpty()) {
+      return primaryAllianceStrategicOutcomes;
+    }
+    return new ArrayList<PrimaryAllianceStrategicOutcome>();
+  }
+
 
   @Override
   public int hashCode() {
@@ -84,6 +145,7 @@ public class PrimaryAllianceLever extends MarloAuditableEntity implements java.i
     return result;
   }
 
+
   public void setDescription(String description) {
     this.description = description;
   }
@@ -92,9 +154,28 @@ public class PrimaryAllianceLever extends MarloAuditableEntity implements java.i
     this.name = name;
   }
 
-  public void setPrimaryStrategicOutcomes(List<PrimaryAllianceStrategicOutcome> primaryStrategicOutcomes) {
+  public void setPhase(Phase phase) {
+    this.phase = phase;
+  }
+
+  public void setPrimaryLeversRelatedSdgContribution(
+    Set<PrimaryLeversRelatedSdgContribution> primaryLeversRelatedSdgContribution) {
+    this.primaryLeversRelatedSdgContribution = primaryLeversRelatedSdgContribution;
+  }
+
+  public void setPrimaryStrategicOutcomes(Set<PrimaryAllianceStrategicOutcome> primaryStrategicOutcomes) {
     this.primaryStrategicOutcomes = primaryStrategicOutcomes;
   }
+
+
+  public void setRelatedSdgContribution(List<PrimaryLeversRelatedSdgContribution> relatedSdgContribution) {
+    this.relatedSdgContribution = relatedSdgContribution;
+  }
+
+  public void setStrategicOutcomes(List<PrimaryAllianceStrategicOutcome> strategicOutcomes) {
+    this.strategicOutcomes = strategicOutcomes;
+  }
+
 
   @Override
   public String toString() {

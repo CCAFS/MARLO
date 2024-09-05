@@ -53,6 +53,14 @@ public interface PrimaryAllianceStrategicOutcomeManager {
 
 
   /**
+   * This method gets a list of primaryAllianceStrategicOutcome that are active, by phase.
+   * 
+   * @param phaseId phase ID
+   * @return a list from PrimaryAllianceStrategicOutcome null if no exist records
+   */
+  List<PrimaryAllianceStrategicOutcome> findAllByPhase(long phaseId);
+
+  /**
    * This method gets a primaryAllianceStrategicOutcome object by a given primaryAllianceStrategicOutcome identifier.
    * 
    * @param primaryAllianceStrategicOutcomeID is the primaryAllianceStrategicOutcome identifier.
@@ -60,9 +68,9 @@ public interface PrimaryAllianceStrategicOutcomeManager {
    */
   public PrimaryAllianceStrategicOutcome getPrimaryAllianceStrategicOutcomeById(long primaryAllianceStrategicOutcomeID);
 
+
   List<PrimaryAllianceStrategicOutcome> getPrimaryAllianceStrategicOutcomeByStudyAndPhase(long projectExpectedStudyId,
     long phaseId);
-
 
   /**
    * This method saves the information of the given primaryAllianceStrategicOutcome

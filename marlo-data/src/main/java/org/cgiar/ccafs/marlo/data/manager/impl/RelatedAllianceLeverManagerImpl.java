@@ -62,6 +62,13 @@ public class RelatedAllianceLeverManagerImpl implements RelatedAllianceLeverMana
   }
 
   @Override
+  public List<RelatedAllianceLever> findAllByPhase(long phaseId) {
+
+    return relatedAllianceLeverDAO.findAllByPhase(phaseId);
+
+  }
+
+  @Override
   public RelatedAllianceLever getRelatedAllianceLeverById(long relatedAllianceLeverID) {
 
     return relatedAllianceLeverDAO.find(relatedAllianceLeverID);

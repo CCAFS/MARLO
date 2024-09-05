@@ -51,6 +51,13 @@ public interface PrimaryAllianceLeverManager {
    */
   public List<PrimaryAllianceLever> findAll();
 
+  /**
+   * This method gets a list of primaryAllianceLever that are active, by phase
+   * 
+   * @param phaseId phase ID
+   * @return a list from PrimaryAllianceLever null if no exist records
+   */
+  List<PrimaryAllianceLever> findAllByPhase(long phaseId);
 
   /**
    * This method gets a primaryAllianceLever object by a given primaryAllianceLever identifier.
@@ -59,6 +66,7 @@ public interface PrimaryAllianceLeverManager {
    * @return a PrimaryAllianceLever object.
    */
   public PrimaryAllianceLever getPrimaryAllianceLeverById(long primaryAllianceLeverID);
+
 
   /**
    * This method saves the information of the given primaryAllianceLever

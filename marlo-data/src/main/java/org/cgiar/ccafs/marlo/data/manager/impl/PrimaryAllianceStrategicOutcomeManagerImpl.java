@@ -63,6 +63,13 @@ public class PrimaryAllianceStrategicOutcomeManagerImpl implements PrimaryAllian
   }
 
   @Override
+  public List<PrimaryAllianceStrategicOutcome> findAllByPhase(long phaseId) {
+
+    return primaryAllianceStrategicOutcomeDAO.findAllByPhase(phaseId);
+
+  }
+
+  @Override
   public PrimaryAllianceStrategicOutcome
     getPrimaryAllianceStrategicOutcomeById(long primaryAllianceStrategicOutcomeID) {
 
