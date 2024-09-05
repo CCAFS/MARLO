@@ -24,8 +24,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.FlushMode;
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 // import org.hibernate.Transaction;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.slf4j.Logger;
@@ -76,20 +77,49 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   }
 
   /**
+   * Validate the existence of a given table
+   * 
+   * @return validation result
+   */
+  public boolean doesTableExist(String tableName) {
+    boolean exists = false;
+    String sql = "";
+
+    sql = "SELECT 1 FROM information_schema.tables WHERE table_name = :tableName LIMIT 1";
+
+    try {
+      NativeQuery<?> query = this.sessionFactory.getCurrentSession().createSQLQuery(sql);
+      query.setParameter("tableName", tableName);
+      Object result = query.uniqueResult();
+      exists = result != null;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return exists;
+  }
+
+  /**
    * This method make a query that returns a not mapped object result from the model.
    * 
    * @param sqlQuery is a string representing an SQL query.
    */
-  public List<Map<String, Object>> excuteStoreProcedure(String storeProcedure, String sqlQuery) {
-    Query queryProcd = this.sessionFactory.getCurrentSession().createSQLQuery(storeProcedure);
-    queryProcd.setFlushMode(FlushMode.COMMIT);
-    queryProcd.executeUpdate();
-    Query query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
-    query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-    query.setFlushMode(FlushMode.COMMIT);
 
-    List<Map<String, Object>> result = query.list();
-    return result;
+  public List<Map<String, Object>> excuteStoreProcedure(String storeProcedure, String sqlQuery) {
+    try {
+      NativeQuery<Map<String, Object>> queryProcd =
+        this.sessionFactory.getCurrentSession().createSQLQuery(storeProcedure);
+      queryProcd.setFlushMode(FlushMode.COMMIT);
+      queryProcd.executeUpdate();
+      NativeQuery<Map<String, Object>> query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
+      query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+      query.setFlushMode(FlushMode.COMMIT);
+      List<Map<String, Object>> result = query.list();
+      return result;
+    } catch (Exception e) {
+      LOG.error(" error " + e.getMessage());
+      return null;
+    }
 
   }
 
@@ -100,18 +130,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    */
   public Object executeFunction(String function) {
     return this.resultFunction(this.findCustomQuery(function));
-  }
-
-  /**
-   * Pass String based hibernate query.
-   * 
-   * @param sqlQuery
-   */
-  public void executeUpdateQuery(String sqlQuery) {
-
-    Query query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
-    query.setFlushMode(FlushMode.COMMIT);
-    query.executeUpdate();
   }
 
 
@@ -133,6 +151,19 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
 
   /**
+   * Pass String based hibernate query.
+   * 
+   * @param sqlQuery
+   */
+  public void executeUpdateQuery(String sqlQuery) {
+
+    NativeQuery query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
+    query.setFlushMode(FlushMode.COMMIT);
+    query.executeUpdate();
+  }
+
+
+  /**
    * This method finds a specific record from the database and transform it to a database model object.
    * 
    * @param clazz represents the class of the database model object.
@@ -140,14 +171,13 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return the object populated.
    */
   public T find(Class<T> clazz, ID id) {
-    T obj = (T) sessionFactory.getCurrentSession().get(clazz, id);
+    T obj = sessionFactory.getCurrentSession().get(clazz, id);
 
     return obj;
   }
 
-
-  protected List<T> findAll(Query hibernateQuery) {
-    hibernateQuery.setFlushMode(FlushMode.COMMIT);
+  protected List<T> findAll(Query<T> hibernateQuery) {
+    hibernateQuery.setHibernateFlushMode(FlushMode.COMMIT);
     @SuppressWarnings("unchecked")
     List<T> list = hibernateQuery.list();
     return list;
@@ -166,7 +196,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return a list of <T> objects.
    */
   protected List<T> findAll(String hibernateQuery) {
-    Query query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
+    Query<T> query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
     return this.findAll(query);
   }
 
@@ -175,8 +205,10 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * 
    * @param sqlQuery is a string representing an HQL query.
    */
+
   public List<Map<String, Object>> findCustomQuery(String sqlQuery) {
-    Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
+
+    NativeQuery<Map<String, Object>> query = sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
     query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
     query.setFlushMode(FlushMode.COMMIT);
     List<Map<String, Object>> result = query.list();
@@ -185,16 +217,16 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
   }
 
+
   protected List<T> findEveryone(Class<T> clazz) {
-    Query query = sessionFactory.getCurrentSession().createQuery("from " + clazz.getName());
-    query.setFlushMode(FlushMode.COMMIT);
+    Query<T> query = sessionFactory.getCurrentSession().createQuery("from " + clazz.getName());
+    query.setHibernateFlushMode(FlushMode.COMMIT);
 
     @SuppressWarnings("unchecked")
     List<T> list = query.list();
     return list;
 
   }
-
 
   /**
    * Allows clients to create the HibernateQuery and set parameters on it.
@@ -203,11 +235,12 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @param hibernateQuery
    * @return
    */
-  protected T findSingleResult(Class<T> clazz, Query hibernateQuery) {
-    hibernateQuery.setFlushMode(FlushMode.COMMIT);
+  protected T findSingleResult(Class<T> clazz, Query<T> hibernateQuery) {
+    hibernateQuery.setHibernateFlushMode(FlushMode.COMMIT);
     T object = clazz.cast(hibernateQuery.uniqueResult());
     return object;
   }
+
 
   /**
    * This method make a query that returns a single object result from the model.
@@ -218,19 +251,9 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return a Object of <T>
    */
   protected T findSingleResult(Class<T> clazz, String hibernateQuery) {
-    Query query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
-    query.setFlushMode(FlushMode.COMMIT);
+    Query<T> query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
+    query.setHibernateFlushMode(FlushMode.COMMIT);
     return this.findSingleResult(clazz, query);
-  }
-
-
-  /**
-   * Return the sessionFactory. DAOs are free to get this and use it to perform custom queries.
-   * 
-   * @return
-   */
-  SessionFactory getSessionFactory() {
-    return this.sessionFactory;
   }
 
 
@@ -249,12 +272,27 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   // }
 
   /**
+   * Return the sessionFactory. DAOs are free to get this and use it to perform custom queries.
+   * 
+   * @return
+   */
+  SessionFactory getSessionFactory() {
+    return this.sessionFactory;
+  }
+
+  /**
    * Get the user id that is in the temporally table (permissions)
    * 
    * @return the user id
    */
   public long getTemTableUserId() {
     long idT = -1;
+
+    if (!this.doesTableExist("user_permission")) {
+      LOG.info(" the table user_permission does not exist yet");
+      return idT;
+    }
+
     StringBuilder builder = new StringBuilder();
     builder.append("select DISTINCT id as idT from user_permission");
     try {
@@ -269,6 +307,44 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   }
 
   /**
+   * Validates if the table presents an error in its integrity
+   * 
+   * @return validation result
+   */
+  public boolean isTableInGoodCondition(String tableName) {
+    String sql = "CHECK TABLE " + tableName;
+
+    try {
+      NativeQuery<?> query = this.sessionFactory.getCurrentSession().createSQLQuery(sql);
+      List<Object[]> results = (List<Object[]>) query.list();
+
+      for (Object[] row : results) {
+        String table = (String) row[0];
+        String operation = (String) row[1];
+        String messageType = (String) row[2];
+        String messageText = (String) row[3];
+
+        LOG.info("Table: " + table);
+        LOG.info("Operation: " + operation);
+        LOG.info("Message Type: " + messageType);
+        LOG.info("Message Text: " + messageText);
+
+        if ("status".equals(messageType) && "OK".equals(messageText)) {
+          return true;
+        } else if ("error".equals(messageType)) {
+          LOG.error("Error with table: " + messageText);
+          return false;
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
+
+  /**
    * This method return a object result from the function.
    * 
    * @param result is a List<Map<String, Object>> representing the result the function
@@ -281,7 +357,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     }
     return null;
   }
-
 
   /**
    * This method saves or update a record into the database.
@@ -344,6 +419,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     return entity;
   }
 
+
   /**
    * This method saves or update a record into the database.
    * 
@@ -356,6 +432,5 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     entity = (T) sessionFactory.getCurrentSession().merge(entity);
     return entity;
   }
-
 
 }

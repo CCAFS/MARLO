@@ -3385,6 +3385,21 @@ button.ipGraph-btn {
 	font-style: italic;
 }
 
+.note--2{
+	display: flex;
+	border-radius: 0.5rem;
+	border-right: 5px solid #8DC955;
+	border-left: 5px solid #8DC955;
+	background: rgba(232, 247, 227, 0.40);
+	padding: 0.3125rem 0.625rem 0.3125rem 0.9375rem;
+	justify-content: center;
+	align-items: center;
+	gap: 0.625rem;
+	font-style: normal;
+	margin-bottom: 18px;
+	margin-top: 12px;
+}
+
 .topNote {
 	margin: 0;
 }
@@ -7237,6 +7252,10 @@ button.btn.btn-primary {
 	border-color: #267d9e;
 }
 
+button.btn.btn-remove {
+	padding: 3px 12px;
+}
+
 article#mainInformation {
 	min-height: 100px;
 }
@@ -7305,6 +7324,17 @@ div.selectPrimary {
   padding: 0.3em 1.1em 0.3em 1.1em;
   border-radius: 0em 0em 0.3em 0.3em;
 }*/
+
+.menuContent .beta::before{
+	content: "BETA";
+	color: #0277a2;
+	font-size: 9px;
+	position: absolute;
+	top: 0em;
+	background-color: rgb(154, 226, 128);
+	padding: 0.3em 1.1em 0.3em 1.1em;
+	border-radius: 0em 0em 0.3em 0.3em;
+  }
 
 li.currentSection#bi::before {
 	color: #127fa8;
@@ -8184,6 +8214,12 @@ img.qaOptionsComment {
 	margin-bottom: -15px;
 }
 
+/* Reset order for larger screens */
+.col-xs-first, .col-xs-last, .col-xs-normal {
+	display: inline-block;
+}
+
+
 @media only screen and (max-width: 768px){
 		/************* 2. HEADER ***************/
 		.breadcrumb{
@@ -8236,6 +8272,25 @@ img.qaOptionsComment {
 		#draggable-button img{
 			width: 16px;
 		}
+		.listClusterDM div.row{ 
+			display: flex;
+			flex-wrap: wrap;
+		}
+
+		.col-xs-first { order: 1; }
+		.col-xs-last { order: 2; }
+		.col-xs-normal { order: 3; }
+
+		.text-xs-left {
+			text-align: left;
+    		align-items: flex-start;
+		}
+
+		.text-xs-right {
+			text-align: right;
+			justify-content: flex-end;
+		}
+
 
 }
 

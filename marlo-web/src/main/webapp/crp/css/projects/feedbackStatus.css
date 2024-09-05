@@ -183,3 +183,7 @@ ul.nav li a {
 .col-md-2 {
   width: 100% !important;
 }
+
+div[name="feedback_bi"] {
+  height: 850px !important;
+}

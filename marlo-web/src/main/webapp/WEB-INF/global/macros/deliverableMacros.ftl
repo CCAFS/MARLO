@@ -367,80 +367,97 @@
     <p><small>[@s.text name="involveParticipants.sharedClusters.help" /] </small></p>
   </span>
   <div class="simpleBox">
+  
+  [#if actualPhase.name != 'Progress']
+    <div class="note--2 text-center">
+      <p>[@s.text name="involveParticipants.sharedClusters.note" /]</p>
+    </div>
+  [/#if]
 
     <div class="block-involveParticipants">
       
           <div class="form-group row">
-            <div class="col-md-2">
+            <div class="col-md-2 col-sm-2 hidden-xs">
               <div class="text-area-container">
               [@customForm.text name="involveParticipants.sharedClusters.project" /]
               </div>
               <br>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-2 col-sm-2 col-xs-3">
               <div class="text-area-container">
               [@customForm.text name="involveParticipants.sharedClusters.participants" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
               </div>
               <br>
             </div>
-            <div class="col-md-2 femaleNumbers">
+            <div class="col-md-2 col-sm-2 col-xs-3 femaleNumbers">
               <div class="text-area-container">
               [@customForm.text name="involveParticipants.sharedClusters.females" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
               </div>
               <br>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-2 col-sm-2 col-xs-3">
               <div class="text-area-container">
               [@customForm.text name="involveParticipants.sharedClusters.africans" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
               </div>
               <br>
             </div>
-            <div class="col-md-2 femaleNumbers">
+            <div class="col-md-2 col-sm-2 col-xs-3 femaleNumbers">
               <div class="text-area-container">
               [@customForm.text name="involveParticipants.sharedClusters.youth" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
               </div>
               <br>
             </div>
           </div>
-          <div class="listClusterDM">
+          <div class="listClusterDM container">
         [#assign index = 0]
         [#list list as cluster]
+
+          [#assign isSharedCluster = (action.isSubmit(cluster.project.id)) && (actualPhase.name != 'Progress') /]
+
           <input type="hidden" name="${customName}[${index}].id" class="valueId" value="${(cluster.id)!0}" valueIndex="${(cluster.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}" />
           <input type="hidden" name="${customName}[${index}].project.id" value="${(cluster.project.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}"/>
           <div class="form-group row" clusterIdParticipant="${(cluster.project.id)!0}">
-            <div class="col-md-2">
-              <div class="text-area-container text-flex-column">
+            <div class="col-md-2 col-sm-2 col-xs-8 col-xs-first">
+              <div class="text-area-container text-flex-column text-xs-left">
               [@customForm.text name=(list[index].project.acronym)!"" /]
-              [#if action.isSubmit(cluster.project.id)]
-                <p style="font-style: italic; font-size: 10px;">Cluster submitted.</p>
+              [#if isSharedCluster]
+              <p style="font-style: italic; font-size: 10px;" class="text-center" title=[@s.text name="involveParticipants.sharedClusters.submittedHover" /]>Cluster submitted.</p>
               [/#if]
-                [#-- Allow to track if the cluster is submitted --]
-                [#assign isSubmit = action.isSubmit(cluster.project.id)?string('true', 'false') /]
-                <p style="display:none" class="clusterSubmitted" isSubmit="${isSubmit}" name="${(list[index].project.acronym)!''}"></p>
+              [#-- Allow to track if the cluster is submitted --]
+              [#assign isSubmit = isSharedCluster?string('true', 'false') /]
+              <p style="display:none" class="clusterSubmitted" isSubmit="${isSubmit}" name="${(list[index].project.acronym)!''}"></p>
               </div>
               <br>
             </div>
-            <div class="col-md-2 participantsNumbers">
+            <div class="col-md-2 col-sm-2 col-xs-3 col-xs-normal participantsNumbers">
               <div class="text-area-container">
-              [@customForm.input name="${customName}[${index}].participants"  placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
+              [@customForm.input name="${customName}[${index}].participants"  placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
               </div>
               <br>
             </div>
-            <div class="col-md-2 femaleNumbers">
+            <div class="col-md-2 col-sm-2 col-xs-3 col-xs-normal femaleNumbers">
               <div class="text-area-container">
-                [@customForm.input name="${customName}[${index}].females" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
+              [@customForm.input name="${customName}[${index}].females" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
               </div>
               <br>
             </div>
-            <div class="col-md-2 africanNumbers">
+            <div class="col-md-2 col-sm-2 col-xs-3 col-xs-normal africanNumbers">
               <div class="text-area-container">
-                [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
+              [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
               </div>
               <br>
             </div>
-            <div class="col-md-2 youthNumbers">
+            <div class="col-md-2 col-sm-2 col-xs-3 col-xs-normal youthNumbers">
               <div class="text-area-container">
-                [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=action.isSubmit((cluster.project.id))/]
+              [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
+              </div>
+              <br>
+            </div>
+            <div class="col-md-2 col-sm-2 col-xs-4 col-xs-last">
+              <div class="text-area-container text-xs-right">
+                <button class="btn btn-danger removeInformationClusterTrainnes btn-remove" title="Remove ${(list[index].project.acronym)!''} information" clusterIdParticipant="${(cluster.project.id)!0}" ${isSharedCluster?then('disabled','')}>
+                 <span class="glyphicon glyphicon-trash"></span>
+                </button>
               </div>
               <br>
             </div>
@@ -450,12 +467,12 @@
           </div>
         <hr />
                 <div class="form-group row">
-    <div class="col-md-2">
+    <div class="col-md-2 col-sm-2 col-xs-12">
       <div class="text-area-container">
         Total report</div>
       <br>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-2 col-sm-2 col-xs-3">
       <div class="text-area-container">
         <div class="input fieldReference " style="display:block;">
           <div class="totalTrainees">0</div>
@@ -463,7 +480,7 @@
       </div>
       <br>
     </div>
-    <div class=" col-md-2 femaleNumbers">
+    <div class=" col-md-2 col-sm-2 col-xs-3 femaleNumbers">
       <div class="text-area-container">
         <div class="input fieldReference " style="display:block;">
           <div class="totalFemales">0</div>
@@ -471,7 +488,7 @@
       </div>
       <br>
     </div>
-    <div class=" col-md-2">
+    <div class=" col-md-2 col-sm-2 col-xs-3">
       <div class="text-area-container">
         <div class="input fieldReference " style="display:block;">
           <div class="totalAfrican">0</div>
@@ -479,7 +496,7 @@
       </div>
       <br>
     </div>
-    <div class=" col-md-2 femaleNumbers">
+    <div class=" col-md-2 col-sm-2 col-xs-3 femaleNumbers">
       <div class="text-area-container">
         <div class="input fieldReference " style="display:block;">
           <div  class="totalYouth">0</div>
@@ -491,12 +508,12 @@
   <div class="form-group row remaining-container" style="
       color: #FFC300;
   ">
-    <div class="col-md-2">
+    <div class="col-md-2 col-sm-2 col-xs-12">
       <div class="text-area-container " style="font-weight: 600;">
         Remaining </div>
       <br>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-2 col-sm-2 col-xs-3">
       <div class="text-area-container">
         <div class="input fieldReference " style="display:block;">
           <div class="remainingTrainees">0</div>
@@ -504,7 +521,7 @@
       </div>
       <br>
     </div>
-    <div class=" col-md-2 femaleNumbers">
+    <div class=" col-md-2 col-sm-2 col-xs-3 femaleNumbers">
       <div class="text-area-container">
         <div class="input fieldReference " style="display:block;">
           <div class="remainingFemales">0</div>
@@ -512,7 +529,7 @@
       </div>
       <br>
     </div>
-    <div class=" col-md-2">
+    <div class=" col-md-2 col-sm-2 col-xs-3">
       <div class="text-area-container">
         <div class="input fieldReference " style="display:block;">
           <div class="remainingAfrican">0</div>
@@ -520,7 +537,7 @@
       </div>
       <br>
     </div>
-    <div class=" col-md-2 femaleNumbers">
+    <div class=" col-md-2 col-sm-2 col-xs-3 femaleNumbers">
       <div class="text-area-container">
         <div class="input fieldReference " style="display:block;">
           <div class="remainingYouth">0</div>

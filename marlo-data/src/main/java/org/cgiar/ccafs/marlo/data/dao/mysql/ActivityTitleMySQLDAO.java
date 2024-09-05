@@ -24,8 +24,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class ActivityTitleMySQLDAO extends AbstractMarloDAO<ActivityTitle, Long> implements ActivityTitleDAO {
@@ -58,6 +58,7 @@ public class ActivityTitleMySQLDAO extends AbstractMarloDAO<ActivityTitle, Long>
 
   }
 
+
   @Override
   public List<ActivityTitle> findAll() {
     String query = "from " + ActivityTitle.class.getName();
@@ -72,7 +73,7 @@ public class ActivityTitleMySQLDAO extends AbstractMarloDAO<ActivityTitle, Long>
   @Override
   public List<ActivityTitle> findByCurrentYear(int year) {
     String query = "select pat from ActivityTitle pat where pat.endYear >= :year and pat.startYear < :year";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<ActivityTitle> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("year", year);
     List<ActivityTitle> list = super.findAll(createQuery);
     if (!list.isEmpty()) {
@@ -80,6 +81,7 @@ public class ActivityTitleMySQLDAO extends AbstractMarloDAO<ActivityTitle, Long>
     }
     return null;
   }
+
 
   @Override
   public ActivityTitle save(ActivityTitle activityTitle) {

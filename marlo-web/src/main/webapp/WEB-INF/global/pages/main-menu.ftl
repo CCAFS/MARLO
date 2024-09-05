@@ -73,14 +73,14 @@
   [#-- BI Module --]
   { 'slug': 'bi', 'name': 'menu.bi',      'namespace': '/bi',       'action': '${(crpSession)!}/bi',    'visible': logged && biModuleActive, 'active': true },
   [#-- TIP Module --]
-  { 'slug': 'tip', 'name': 'menu.tip',      'namespace': '/tip',       'action': '${(crpSession)!}/tip',    'visible': logged && action.hasSpecificities('tip_section_active'), 'active': true }
+  { 'slug': 'tip', 'name': 'menu.tip',      'namespace': '/tip',       'action': '${(crpSession)!}/tip',    'visible': logged && action.hasSpecificities('tip_section_active'), 'active': true, 'beta': true }
 ]/]
 
 
 [#macro mainMenuList]
   [#list mainMenu as item]
    [#if item.visible]
-    <li id="${item.slug}" class="[#if currentSection?? && currentSection == item.slug ]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
+    <li id="${item.slug}" class="[#if currentSection?? && currentSection == item.slug ]currentSection[/#if] ${(item.active)?string('enabled','disabled')} [#if (item.beta)!false] beta [/#if]">
       [#if item.active]
         [#assign url][@s.url namespace=item.namespace action='${item.action}'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
       [#else]

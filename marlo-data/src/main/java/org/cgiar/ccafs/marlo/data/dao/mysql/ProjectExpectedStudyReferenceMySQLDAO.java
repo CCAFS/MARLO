@@ -24,8 +24,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class ProjectExpectedStudyReferenceMySQLDAO extends AbstractMarloDAO<ProjectExpectedStudyReference, Long>
@@ -76,7 +76,7 @@ public class ProjectExpectedStudyReferenceMySQLDAO extends AbstractMarloDAO<Proj
     String query =
       "select peslink from ProjectExpectedStudyReference peslink where peslink.projectExpectedStudy.id = :studyId "
         + "order by peslink.phase.id";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<ProjectExpectedStudyReference> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
 
     createQuery.setParameter("studyId", studyId);
 

@@ -3,9 +3,9 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate", "vue"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20240711",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20240723",
   "${baseUrlMedia}/js/projects/deliverables/deliverableShfrm.js?20240711",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20240322",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20240729",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20240313",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
@@ -13,7 +13,7 @@
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
 ] /]
 [#assign customCSS = [
-  "${baseUrl}/crp/css/projects/projectDeliverable.css?20230529",
+  "${baseUrl}/crp/css/projects/projectDeliverable.css?20240729",
   "${baseUrlCdn}/global/css/404.css?20240523"
   ] /]
 [#assign currentSection = "projects" /]
@@ -131,12 +131,12 @@
 
       
       <div class="text-modal-evidences">
-        <p>It is not possible to remove the shared cluster from the list, this cluster has already been submitted and has trainees related.</p>
+        <p>It is not possible to remove the shared cluster from the list, this cluster has already been submitted or/and has trainees related.</p>
         <br>
         <p>We suggest the following actions so you can save the information correctly:</p>
         <ul>
           <li>Distribute the remaining values across the shared cluster list</li>
-          <li>Contact the cluster leader to unsubmitt the cluster and update the information.</li>
+          <li>Contact the cluster leader to unsubmit the cluster and update the information.</li>
         </ul>       
       </div>                
       <div class="container-buttons-evidences"> 
@@ -162,6 +162,30 @@
       </div>                
       <div class="container-buttons-evidences"> 
         <div class="button-close-modal close-modal-indicator">
+          <p>Close</p>
+        </div>
+      </div> 
+    </div>   
+  </div>
+
+    <div class=" modal-deliverable ui-dialog modal-status" style="display: none;  background-color: #50505070 !important;">
+    <div class="content-modal">
+      <div class="ui-dialog-titlebar">
+        <p class="title-modal-evidences title-modal-status">Change Status</p>
+        <div class="button-exit close-modal-indicator">
+          <div class="x-close-modal" ></div>
+        </div>
+      </div>
+      
+      <div class="text-modal-evidences text-modal-status">
+        <p>You should not be allowed to change the status of a deliverable to cancel or extend if there is already related information of Trainees and/or if one of the shared clusters is already submitted. Made the following recommendations:</p>
+        <ul>
+          <li>Unsubmit the shared cluster(s)</li>
+          <li>Remove the trainees related information to the shared cluster(s)</li>
+        </ul>
+      </div>                
+      <div class="container-buttons-evidences"> 
+        <div class="button-close-modal close-modal-status">
           <p>Close</p>
         </div>
       </div> 

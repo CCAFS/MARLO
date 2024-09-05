@@ -50,6 +50,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
+import org.cgiar.ccafs.marlo.data.manager.TipParametersManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
@@ -90,6 +91,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.Role;
+import org.cgiar.ccafs.marlo.data.model.TipParameters;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
@@ -197,7 +199,7 @@ public class ProjectPartnerAction extends BaseAction {
   private final ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager;
   private final ProjectExpectedStudyManager projectExpectedStudyManager;
   private final ActivityManager activityManager;
-
+  private final TipParametersManager tipParametersManager;
 
   // Variables
   private final ProjectPartnersValidator projectPartnersValidator;
@@ -243,7 +245,8 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPolicyCenterManager projectPolicyCenterManager, ProjectPolicyManager projectPolicyManager,
     ProjectInnovationCenterManager projectInnovationCenterManager, ProjectInnovationManager projectInnovationManager,
     ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager, ActivityManager activityManager) {
+    ProjectExpectedStudyManager projectExpectedStudyManager, ActivityManager activityManager,
+    TipParametersManager tipParametersManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
@@ -281,6 +284,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.projectExpectedStudyCenterManager = projectExpectedStudyCenterManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.activityManager = activityManager;
+    this.tipParametersManager = tipParametersManager;
   }
 
   public void addCrpUser(User user) {
@@ -869,7 +873,7 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void notifyRoleAssigned(User userAssigned, Role role) {
 
-
+    boolean leaderOrCoordinatorAsigment = false;
     // Get The Crp/Center/Platform where the project was created
     GlobalUnitProject globalUnitProject =
 
@@ -989,6 +993,12 @@ public class ProjectPartnerAction extends BaseAction {
     // TODO Disable temporally CIAT MARLO send email.
     if (!this.isCenterGlobalUnit()) {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
+
+    // TIP notification email
+    if (((role == plRole) || (role == pcRole)) && this.hasSpecificities(APConstants.TIP_NOTIFICATION_EMAIL_ACTIVE)
+      && !userAssigned.isCgiarUser()) {
+      this.sendRequestEmailToTIP(userAssigned);
     }
   }
 
@@ -2225,6 +2235,35 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
+  /**
+   * Send request Email to TIP team to add new contact when cluster leader or coordinator is add
+   */
+  public void sendRequestEmailToTIP(User user) {
+    try {
+      List<TipParameters> tipParameters = tipParametersManager.findAll();
+      if (tipParameters != null) {
+        TipParameters tipParameter = tipParameters.get(0);
+        String toEmail = tipParameter.getTipEmail();
+        String ccEmail = this.getCurrentUser().getEmail();
+        String bbcEmails = this.config.getEmailNotification();
+        String subject = (tipParameter.getEmailSubject() != null && !tipParameter.getEmailSubject().isEmpty())
+          ? tipParameter.getEmailSubject() + " " + user.getFirstName() + " " + user.getLastName()
+          : "Request to add user " + user.getFirstName() + " " + user.getLastName();
+        subject = subject.replace("{param1}", user.getFirstName() + " " + user.getLastName());
+        String emailText = tipParameter.getEmailText();
+
+        emailText = emailText.replace("{param1}", user.getFirstName() + " " + user.getLastName());
+        emailText = emailText.replace("{param2}", user.getEmail());
+
+        if (this.validateEmailNotification()) {
+          sendMail.sendTemporalMethod(toEmail, ccEmail, bbcEmails, subject, emailText, null, null, null, true);
+        }
+      }
+    } catch (Exception e) {
+      LOG.error("error getting TIP parameters " + e);
+    }
+  }
+
   public void setAllInstitutions(List<Institution> allInstitutions) {
     this.allInstitutions = allInstitutions;
   }
@@ -2236,6 +2275,7 @@ public class ProjectPartnerAction extends BaseAction {
   public void setAllUsers(List<User> allUsers) {
     this.allUsers = allUsers;
   }
+
 
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
@@ -2292,7 +2332,6 @@ public class ProjectPartnerAction extends BaseAction {
     this.intitutionTypes = intitutionTypes;
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -2301,10 +2340,10 @@ public class ProjectPartnerAction extends BaseAction {
     this.partnerPersonTypes = partnerPersonTypes;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
   }
-
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
@@ -2313,6 +2352,7 @@ public class ProjectPartnerAction extends BaseAction {
   public void setProjectPPAPartners(List<ProjectPartner> projectPPAPartners) {
     this.projectPPAPartners = projectPPAPartners;
   }
+
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
@@ -2384,7 +2424,6 @@ public class ProjectPartnerAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * This method updates the role for each user (Leader/Coordinator) into the database, and notifies by email what has

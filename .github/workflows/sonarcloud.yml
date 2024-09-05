@@ -2,7 +2,7 @@ name: SonarCloud
 on:
   push:
     branches:
-      - aiccra-dev
+      - aiccra-marlo-java-11-version2
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:

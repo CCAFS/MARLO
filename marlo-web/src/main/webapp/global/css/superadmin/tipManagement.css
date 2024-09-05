@@ -1,0 +1,149 @@
+/* Row styling */
+.form-row {
+  display: flex; /* Uses flexbox to arrange form-groups in a row */
+  flex-wrap: wrap; /* Allows wrapping to the next line if there are too many items */
+  gap: 25px; /* Adds space between form-groups */
+  margin-bottom: 1px; /* Adds space below each row */
+}
+
+/* Form group styling */
+.form-group {
+  flex: 1 1 calc(50% - 20px); /* Each form-group takes up 50% of the width minus the gap */
+  margin: 0; /* Resets default margin */
+}
+
+/* Button styling */
+.buttons {
+  position: relative; /* Allows positioning of the floating button */
+}
+
+.button-save {
+  position: fixed; /* Keeps the button fixed at a position on the screen */
+  bottom: 20px; /* Distance from the bottom of the screen */
+  right: 10px; /* Distance from the right of the screen */
+  background-color: #28a745; /* Green color */
+  color: white; /* White text color */
+  border: none; /* Removes default border */
+  border-radius: 50px; /* Rounds the corners */
+  padding: 10px 20px; /* Adds padding */
+  font-size: 16px; /* Increases font size */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Adds shadow for floating effect */
+  transition: background-color 0.3s ease; /* Smooth color transition */
+}
+
+.button-save:hover {
+  background-color: #218838; /* Darker green on hover */
+}
+
+/* Styling for the form section */
+.borderBox {
+  padding: 20px; /* Adds padding around the form section */
+  margin-top: 30px; /* Adds space above the form section */
+  background-color: #fdfdfd; /* Light background color */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  border-radius: 8px; /* Rounded corners */
+}
+
+/* Estilo del botón de actualizar token */
+.addButton {
+  display: inline-block; /* Permite al botón tener dimensiones definidas */
+  background-color: #007bff; /* Color de fondo azul */
+  color: white; /* Color del texto blanco */
+  border: none; /* Elimina el borde predeterminado */
+  border-radius: 4px; /* Bordes redondeados */
+  padding: 8px 20px; /* Relleno dentro del botón */
+  font-size: 13px; /* Tamaño del texto */
+  text-align: center; /* Centra el texto */
+  text-decoration: none; /* Elimina el subrayado en el texto */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para un efecto flotante */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Transiciones suaves */
+  cursor: pointer; /* Cambia el cursor a mano cuando pasa sobre el botón */
+}
+
+.addButton:hover {
+  background-color: #0056b3; /* Color más oscuro en el hover */
+  transform: scale(1.00); /* Efecto de aumento al pasar el cursor */
+}
+
+.addButton:active {
+  background-color: #00408d; /* Color aún más oscuro cuando se hace clic */
+  transform: scale(0.7); /* Efecto de reducción al hacer clic */
+}
+
+/* Container styling */
+.container {
+  padding: 2px; /* Adds padding around the container */
+}
+
+/* Email Section Container */
+/* This sets the background color, border radius, box shadow, and border for the email section */
+.email-section {
+  background: #ffffff; /* White background for clarity */
+  border-radius: 15px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow for a subtle 3D effect */
+  position: relative; /* For positioning the banner */
+  padding: 25px; /* Space inside the section */
+  margin-top: 10px; /* Space above the section */
+  border: 0.4px solid #0b5da6; /* Border to make the section stand out */
+  padding-left: 50px; /* Add space on the left for the banner */
+}
+
+/* Solid Color Stripe on the Left Side of the Email Section */
+/* This creates a solid color banner on the left side of the section */
+.email-banner {
+  width: 12px; /* Width of the banner */
+  background: #0b5da6; /* Solid color for the banner */
+  border-top-left-radius: 15px; /* Rounded top-left corner */
+  border-bottom-left-radius: 15px; /* Rounded bottom-left corner */
+  position: absolute; /* Positioned on the left side of the section */
+  top: 0; /* Align to the top */
+  left: 0; /* Align to the left */
+  bottom: 0; /* Extend to the bottom */
+}
+
+/* Email Section Header */
+/* Styles for the header of the email section, including icon and subtitle */
+.email-header {
+  display: flex; /* Flexbox for alignment */
+  align-items: center; /* Center align items vertically */
+  margin-top: 10px; /* Space above the header */
+  margin-bottom: 20px; /* Space below the header */
+}
+
+.email-header .bi-envelope-fill {
+  font-size: 40px; /* Size of the icon */
+  color: #0b5da6; /* Color of the icon */
+  margin-right: 15px; /* Space between icon and text */
+}
+
+.email-header .sectionSubtitle {
+  /*color: #3a3a3a; Color of the subtitle text */
+  /* font-weight: bold;  Bold text */
+  font-size: 20px; /* Font size of the subtitle */
+  margin: 0; /* Remove default margin */
+}
+
+/* Form Row Styles */
+/* Margins for form rows and groups */
+.form-row {
+  margin-bottom: 8px; /* Space below each row */
+}
+
+.form-group {
+  margin-bottom: 8px; /* Space below each form group */
+}
+
+/* Text Field Hover Effect */
+/* Adds a subtle effect when hovering over text fields */
+input[type="text"], input[type="email"], textarea {
+  border: 1px solid #ced4da; /* Default border color */
+  border-radius: 4px; /* Rounded corners */
+  padding: 10px; /* Space inside the field */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for border color and box shadow */
+}
+
+/* Effect when hovering over text fields */
+input[type="text"]:hover, input[type="email"]:hover, textarea:hover {
+  border-color: #007bff; /* Border color on hover */
+  box-shadow: 0 0 2px rgba(0, 123, 255, 0.5); /* Subtle shadow on hover */
+}

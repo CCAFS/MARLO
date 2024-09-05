@@ -12,7 +12,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<ciat-adauth.version>5.5</ciat-adauth.version>
-		<hibernate-core-version>4.3.11.Final</hibernate-core-version>
+		<hibernate-core-version>5.4.33.Final</hibernate-core-version>
 		<org.springframework-version>4.3.24.RELEASE</org.springframework-version>
 		<junit.version>4.13.2</junit.version>
 		<logback-classic.version>1.2.13</logback-classic.version>
@@ -24,7 +24,7 @@
 		<mysql.version>8.0.28</mysql.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
 		<jsp-api.version>2.2.1</jsp-api.version>
-		<poi.version>3.13</poi.version>
+		<poi.version>3.17</poi.version>
 		<ooxml-schemas.version>1.0</ooxml-schemas.version>
 		<flyway.version>4.0.1</flyway.version>
 		<org.json.version>20231013</org.json.version>
@@ -37,7 +37,7 @@
 		<jasper-reports-version>6.2.2</jasper-reports-version>
 		<com.google.code.gson-version>2.8.9</com.google.code.gson-version>
 		<pusher-http-java>1.0.0</pusher-http-java>
-		<pentaho-report.version>6.1.0.1-196</pentaho-report.version>
+		<pentaho-report.version>8.0.0.6-352</pentaho-report.version>
 		<org-apache-axis.version>1.4</org-apache-axis.version>
 		<javax-xml.version>1.1</javax-xml.version>
 		<hikari.version>2.4.6</hikari.version>
@@ -68,7 +68,7 @@
 		<tomcat.version>8.0.53</tomcat.version>
 		<log4j.version>2.16.0</log4j.version>
 		<sonar.organization>ccafs</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 	<developers>
 		<developer>
@@ -101,17 +101,24 @@
 		<url>https://github.com/CCAFS/marlo/issues</url>
 	</issueManagement>
 	<!-- Setup repositories -->
-<!-- 	<repositories> -->
-<!-- 		<repository> -->
-<!-- 			<id>spring-boot-throttling-repo</id> -->
-<!-- 			<url>https://raw.github.com/weddini/spring-boot-throttling/mvn-repo/</url> -->
-<!-- 			<snapshots> -->
-<!-- 				<enabled>true</enabled> -->
-<!-- 				<updatePolicy>always</updatePolicy> -->
-<!-- 			</snapshots> -->
-<!-- 		</repository> -->
-<!-- 	</repositories> -->
+	<!-- 	<repositories> -->
+	<!-- 		<repository> -->
+	<!-- 			<id>spring-boot-throttling-repo</id> -->
+	<!--
+	<url>https://raw.github.com/weddini/spring-boot-throttling/mvn-repo/</url> -->
+	<!-- 			<snapshots> -->
+	<!-- 				<enabled>true</enabled> -->
+	<!-- 				<updatePolicy>always</updatePolicy> -->
+	<!-- 			</snapshots> -->
+	<!-- 		</repository> -->
+	<!-- 	</repositories> -->
 
+	<repositories>
+		<repository>
+			<id>pentaho-repo</id>
+			<url>https://repo.orl.eng.hitachivantara.com/artifactory/pnt-mvn/</url>
+		</repository>
+	</repositories>
 	<!-- Common dependencies go here. -->
 	<dependencyManagement>
 		<dependencies>
@@ -133,9 +140,9 @@
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
 			<dependency>
-			    <groupId>org.apache.logging.log4j</groupId>
-			    <artifactId>log4j-api</artifactId>
-			    <version>${log4j.version}</version>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+				<version>${log4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.struts</groupId>
@@ -212,82 +219,12 @@
 				<version>${ciat-adauth.version}</version>
 			</dependency>
 			<!-- PENTAHO dependencies -->
+
 			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>core</artifactId>
+				<groupId>org.pentaho.reporting.engine</groupId>
+				<artifactId>classic-core</artifactId>
 				<version>${pentaho-report.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>extensions</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>base</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libdocbundle</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libfonts</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libformat</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libformula</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libloader</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>librepository</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libserializer</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libxml</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libswing</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>libsparkline</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>charts</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.pentaho</groupId>
-				<artifactId>report-charts</artifactId>
-				<version>${pentaho-report.version}</version>
-			</dependency>
-			<!-- Logging Management -->
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
@@ -445,6 +382,12 @@
 				<artifactId>poi-ooxml</artifactId>
 				<version>${poi.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml-schemas</artifactId>
+				<version>${poi.version}</version>
+			</dependency>
 			<dependency>
 				<!-- Apache POI - JAVA API ooXML Schemas -->
 				<groupId>org.apache.poi</groupId>
@@ -474,10 +417,10 @@
 			</dependency>
 			<!-- End jasper -->
 			<dependency>
-			    <groupId>com.lowagie.org.olap4j</groupId>
-			    <artifactId>olap4j</artifactId>
-			    <version>0.9.7.309-JS-3</version>
-            </dependency>
+				<groupId>com.lowagie.org.olap4j</groupId>
+				<artifactId>olap4j</artifactId>
+				<version>0.9.7.309-JS-3</version>
+			</dependency>
 			<!-- gson -->
 			<dependency>
 				<groupId>com.google.code.gson</groupId>
@@ -567,7 +510,8 @@
 				<artifactId>jaxrpc-api</artifactId>
 				<version>${javax-xml.version}</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/commons-discovery/commons-discovery -->
+			<!--
+			https://mvnrepository.com/artifact/commons-discovery/commons-discovery -->
 			<dependency>
 				<groupId>commons-discovery</groupId>
 				<artifactId>commons-discovery</artifactId>
@@ -584,7 +528,7 @@
 				<artifactId>quartz</artifactId>
 				<version>${quartz.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
@@ -635,11 +579,11 @@
 				<version>${geoip2.version}</version>
 			</dependency>
 			<!-- throttling library to REST API -->
-<!-- 			<dependency> -->
-<!-- 				<groupId>com.weddini.throttling</groupId> -->
-<!-- 				<artifactId>spring-boot-throttling-starter</artifactId> -->
-<!-- 				<version>0.0.9</version> -->
-<!-- 			</dependency> -->
+			<!-- 			<dependency> -->
+			<!-- 				<groupId>com.weddini.throttling</groupId> -->
+			<!-- 				<artifactId>spring-boot-throttling-starter</artifactId> -->
+			<!-- 				<version>0.0.9</version> -->
+			<!-- 			</dependency> -->
 			<!-- Apache Commons Library -->
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -735,13 +679,13 @@
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>2.7</version>
 				</plugin>
-				  
+
 				<plugin>
 					<groupId>com.samaxes.maven</groupId>
 					<artifactId>minify-maven-plugin</artifactId>
 					<version>1.7.6</version>
 				</plugin>
-				
+
 				<plugin>
 					<!-- Ensure we can analyze java 8 code -->
 					<groupId>org.apache.maven.plugins</groupId>

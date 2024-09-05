@@ -24,8 +24,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class ReportSynthesisFlagshipProgressDeliverableMySQLDAO
@@ -79,7 +79,8 @@ public class ReportSynthesisFlagshipProgressDeliverableMySQLDAO
     long progressId) {
     String query = "select distinct rsfpd from ReportSynthesisFlagshipProgressDeliverable rsfpd "
       + "where reportSynthesisFlagshipProgress.id = :progressId and deliverable.id = :deliverableId order by activeSince desc";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<ReportSynthesisFlagshipProgressDeliverable> createQuery =
+      this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("progressId", progressId);
     createQuery.setParameter("deliverableId", deliverableId);
     // equivalent to LIMIT 1

@@ -25,8 +25,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class DeliverableUserMySQLDAO extends AbstractMarloDAO<DeliverableUser, Long> implements DeliverableUserDAO {
@@ -75,7 +75,7 @@ public class DeliverableUserMySQLDAO extends AbstractMarloDAO<DeliverableUser, L
     String query =
       "select distinct du from DeliverableUser du " + "where phase.id = :phaseId and deliverable.id= :deliverableId "
         + "and du.firstName = :duFirstName and du.lastName = :duLastName and du.elementId = :duElementId";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<DeliverableUser> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phase.getId());
     createQuery.setParameter("deliverableId", deliverableUser.getDeliverable().getId());
     createQuery.setParameter("duFirstName", deliverableUser.getFirstName());
@@ -92,7 +92,7 @@ public class DeliverableUserMySQLDAO extends AbstractMarloDAO<DeliverableUser, L
     String query =
       "select distinct du from DeliverableUser du " + "where phase.id = :phaseId and deliverable.id= :deliverableId "
         + "and du.firstName = :duFirstName and du.lastName = :duLastName and du.elementId = :duElementId";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    Query<DeliverableUser> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("phaseId", phase.getId());
     createQuery.setParameter("deliverableId", deliverableUser.getDeliverable().getId());
     createQuery.setParameter("duFirstName", deliverableUser.getFirstName());

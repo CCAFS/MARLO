@@ -138,6 +138,8 @@ public final class APConstants {
   public static final String FEEDBACK_REPLAY_USERNAME = "feedback_replay_username";
   public static final String FEEDBACK_COMMENT_REACTION = "feedback_comment_reaction";
   public static final String FEEDBACK_RESPONSE = "feedback_response";
+  public static final String TIP_NOTIFICATION_EMAIL_ACTIVE = "tip_notification_email_active";
+
   public static final String SECTION_ID = "section_id";
   public static final String PREVIOUS_PROJECT_ID_ACTIVE = "previous_project_id_field_active";
   public static final String HOMEPAGE_TIMELINE_ACTIVE = "homepage_timeline_active";
@@ -154,6 +156,7 @@ public final class APConstants {
   public static final String SHFRM_CONTRIBUTION_ACTIVE = "shfrm_contribution_active";
   public static final String TIP_SECTION_ACTIVE = "tip_section_active";
   public static final String TIP_SECURITY_ACTIVE = "tip_security_active";
+  public static final String NOTIFY_DELIVERABLE_STATUS_CHANGE = "notify_deliverable_status_change";
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
     "is_expected_deliverable_report_all_years_visible";
@@ -323,6 +326,15 @@ public final class APConstants {
 
   public static final String PROJECT_EXPECTED_STUDIES_GEOGRAPHIC_SCOPE =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyGeographicScopes)";
+
+  public static final String PROJECT_EXPECTED_STUDIES_CENTER_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyCenters)";
+  public static final String PROJECT_EXPECTED_STUDIES_MILESTONE_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyMilestones)";
+  public static final String PROJECT_EXPECTED_STUDIES_PROJECT_OUTCOME_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyProjectOutcomes)";
+
+  public static final String PROJECT_INDICATOR_PHASE_PREVIOUS_NAME = "AR";
 
   public static final String PROJECT_BILATERAL = "BILATERAL";
   // public static final String PROJECT_CORE_TYPE = "CORE";

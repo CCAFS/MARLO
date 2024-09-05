@@ -147,6 +147,8 @@ public final class APConstants {
   public static final String FEEDBACK_REPLAY_USERNAME = "feedback_replay_username";
   public static final String FEEDBACK_COMMENT_REACTION = "feedback_comment_reaction";
   public static final String FEEDBACK_RESPONSE = "feedback_response";
+  public static final String TIP_NOTIFICATION_EMAIL_ACTIVE = "tip_notification_email_active";
+
   public static final String SECTION_ID = "section_id";
   public static final String FIELD_ID = "fieldID";
   public static final String CRP_BI_MODULE_ACTIVE = "crp_bi_module_active";
@@ -164,6 +166,7 @@ public final class APConstants {
   public static final String SHFRM_CONTRIBUTION_ACTIVE = "shfrm_contribution_active";
   public static final String TIP_SECTION_ACTIVE = "tip_section_active";
   public static final String TIP_SECURITY_ACTIVE = "tip_security_active";
+  public static final String NOTIFY_DELIVERABLE_STATUS_CHANGE = "notify_deliverable_status_change";
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
     "is_expected_deliverable_report_all_years_visible";
