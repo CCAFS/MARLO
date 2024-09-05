@@ -1267,20 +1267,25 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.tagList = this.projectExpectedStudyTagManager.findAll();
       this.quantificationTypes = this.quantificationTypeManager.findAll();
       this.primaryAllianceLever = this.primaryAllianceLeverManager.findAllByPhase(this.getActualPhase().getId());
-      for (PrimaryAllianceLever primaryAllianceLeverTmp : this.primaryAllianceLever) {
-        primaryAllianceLeverTmp
-          .setStrategicOutcomes(primaryAllianceLeverTmp.getStrategicOutcomes(this.getActualPhase()));
-      }
 
-      for (PrimaryAllianceLever primaryAllianceLeverTmp : this.primaryAllianceLever) {
-        primaryAllianceLeverTmp
-          .setRelatedSdgContribution(primaryAllianceLeverTmp.getRelatedSdgContribution(this.getActualPhase()));
+      if (this.primaryAllianceLever != null) {
+        for (PrimaryAllianceLever primaryAllianceLeverTmp : this.primaryAllianceLever) {
+          primaryAllianceLeverTmp
+            .setStrategicOutcomes(primaryAllianceLeverTmp.getStrategicOutcomes(this.getActualPhase()));
+        }
+
+        for (PrimaryAllianceLever primaryAllianceLeverTmp : this.primaryAllianceLever) {
+          primaryAllianceLeverTmp
+            .setRelatedSdgContribution(primaryAllianceLeverTmp.getRelatedSdgContribution(this.getActualPhase()));
+        }
       }
 
       this.relatedAllianceLever = this.relatedAllianceLeverManager.findAllByPhase(this.getActualPhase().getId());
-      for (RelatedAllianceLever relatedAllianceLeverTmp : this.relatedAllianceLever) {
-        relatedAllianceLeverTmp
-          .setRelatedSdgContribution(relatedAllianceLeverTmp.getRelatedSdgContribution(this.getActualPhase()));
+      if (this.relatedAllianceLever != null) {
+        for (RelatedAllianceLever relatedAllianceLeverTmp : this.relatedAllianceLever) {
+          relatedAllianceLeverTmp
+            .setRelatedSdgContribution(relatedAllianceLeverTmp.getRelatedSdgContribution(this.getActualPhase()));
+        }
       }
 
       this.primaryAllianceStrategicOutcome =
