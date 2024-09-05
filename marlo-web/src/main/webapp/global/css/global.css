@@ -3437,8 +3437,7 @@ button.ipGraph-btn {
 .note span {
 	color: #40AAD4;
 	font-size: 20px;
-	margin-right: 6px;
-	margin-top: 6px;
+	margin-right: 1rem;
 }
 
 .note--2{

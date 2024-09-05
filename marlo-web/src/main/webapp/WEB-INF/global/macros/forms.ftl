@@ -1084,12 +1084,6 @@
 
 [#macro radioToCheckboxMacro name="" label="" elementList=[] listName="" keyFieldName="" displayFieldName="" index=-1 template=false hasPrimary=false listNamePrimary="" keyFieldNamePrimary="" displayFieldNamePrimary="" hasSecondary=false listNameSecondary="" keyFieldNameSecondary="" displayFieldNameSecondary="" class="" required=true editable=true checkedValue="" ]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
-  
-  [#attempt]
-    [#local list = ((listName?eval))![] /] 
-  [#recover]
-    [#local list = [] /] 
-  [/#attempt]
 
   [#if listName?has_content]
     <div class="form-group radioToCheckbox">
