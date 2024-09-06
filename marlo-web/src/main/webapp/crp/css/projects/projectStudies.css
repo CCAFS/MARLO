@@ -67,6 +67,26 @@ ul.nav li a {
   left: 15px;
 }
 
+@media screen and (max-width: 768px) {
+  .generalInformationStudies .form-group .line-hr{
+    width: 100%;
+  }
+  
+}
+
+@media screen and (max-width: 1366px) {
+  .generalInformationStudies .form-group .line-hr{
+    width: 70%;
+  }
+  
+}
+
+@media screen and (max-width: 1978){
+  .generalInformationStudies .form-group .line-hr{
+    width: 71%;
+  }
+}
+
 .generalInformationStudies .form-group .feedback-flex-items{
   align-items: flex-end;
 }
