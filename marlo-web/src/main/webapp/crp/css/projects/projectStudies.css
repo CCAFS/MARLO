@@ -74,14 +74,14 @@ ul.nav li a {
   
 }
 
-@media screen and (max-width: 1366px) {
+@media screen and (min-width: 1366px) {
   .generalInformationStudies .form-group .line-hr{
     width: 70%;
   }
   
 }
 
-@media screen and (max-width: 1978){
+@media screen and (min-width: 1978){
   .generalInformationStudies .form-group .line-hr{
     width: 71%;
   }
