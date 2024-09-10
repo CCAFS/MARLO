@@ -322,7 +322,11 @@ function attachEvents() {
     }
 
     setTimeout(() => {
-      addItem($('.addButtonReference'));
+      var referenceListLength = $('.referenceList').children().length - 1;
+      if (referenceListLength == 0) {
+        addItem($('.addButtonReference'));
+      }
+      
     }, 1000);
 
   })();
@@ -449,7 +453,11 @@ function attachEvents() {
     }
 
     setTimeout(() => {
-      addItem($('.addStudyQualification'))
+      var quantificationsListLength = $('.quantificationsList').children().length;
+      if (quantificationsListLength == 0) {
+        addItem($('.addStudyQualification'));
+      }
+
     }, 1000);
 
   })();
