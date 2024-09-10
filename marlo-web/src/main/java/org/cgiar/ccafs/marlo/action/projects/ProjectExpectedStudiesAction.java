@@ -44,6 +44,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyProjectOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPublicationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyQuantificationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyReferenceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
@@ -92,6 +93,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPublication;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
@@ -217,6 +219,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager;
   private ProjectExpectedStudyTagManager projectExpectedStudyTagManager;
   private QuantificationTypeManager quantificationTypeManager;
+  private ProjectExpectedStudyPublicationManager projectExpectedStudyPublicationManager;
 
 
   // Variables
@@ -308,8 +311,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     CrpProgramOutcomeManager crpProgramOutcomeManager,
     ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager,
     ProjectExpectedStudyCrpOutcomeManager projectExpectedStudyCrpOutcomeManager,
-    ProjectExpectedStudyTagManager projectExpectedStudyTagManager,
-    QuantificationTypeManager quantificationTypeManager) {
+    ProjectExpectedStudyTagManager projectExpectedStudyTagManager, QuantificationTypeManager quantificationTypeManager,
+    ProjectExpectedStudyPublicationManager projectExpectedStudyPublicationManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -365,6 +368,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectExpectedStudyReferenceManager = projectExpectedStudyReferenceManager;
     this.projectExpectedStudyTagManager = projectExpectedStudyTagManager;
     this.quantificationTypeManager = quantificationTypeManager;
+    this.projectExpectedStudyPublicationManager = projectExpectedStudyPublicationManager;
   }
 
 
@@ -1082,6 +1086,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
 
+        // Expected Study Publications List
+        if (this.expectedStudy.getProjectExpectedStudyPublications() != null) {
+          this.expectedStudy
+            .setPublications(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyPublications().stream()
+              .filter(o -> o != null && o.getId() != null && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+              .collect(Collectors.toList())));
+        }
+
+
       }
 
 
@@ -1605,6 +1618,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveLink(this.expectedStudyDB, phase);
       this.saveInnovations(this.expectedStudyDB, phase);
       this.saveQuantifications(this.expectedStudyDB, phase);
+
+      logger.info(" linea 1621");
+      this.savePublications(this.expectedStudyDB, phase);
+      logger.info(" linea 1623");
 
       // AR 2019 Save
       this.saveCenters(this.expectedStudyDB, phase);
@@ -2506,6 +2523,68 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
+
+  /**
+   * Save Expected Studies Publications
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void savePublications(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    logger.info(" linea 2534 " + projectExpectedStudy.getProjectExpectedStudyPublications().size());
+    if (projectExpectedStudy.getProjectExpectedStudyPublications() != null
+      && !projectExpectedStudy.getProjectExpectedStudyPublications().isEmpty()) {
+      List<ProjectExpectedStudyPublication> publicationPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyPublications().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyPublication publication : publicationPrev) {
+        if (this.expectedStudy.getPublications() == null
+          || !this.expectedStudy.getPublications().contains(publication)) {
+          this.projectExpectedStudyPublicationManager.deleteProjectExpectedStudyPublication(publication.getId());
+        }
+      }
+    }
+
+
+    // Save form Information
+    if (this.expectedStudy.getPublications() != null) {
+      for (ProjectExpectedStudyPublication publication : this.expectedStudy.getPublications()) {
+        if (publication.getId() == null) {
+          ProjectExpectedStudyPublication studyPublicationSave = new ProjectExpectedStudyPublication();
+          studyPublicationSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyPublicationSave.setPhase(phase);
+          studyPublicationSave.setName(publication.getName());
+          studyPublicationSave.setPosition(publication.getPosition());
+          studyPublicationSave.setAffiliation(publication.getAffiliation());
+
+
+          this.projectExpectedStudyPublicationManager.saveProjectExpectedStudyPublication(studyPublicationSave);
+          // This is to add studyQuantificationSave to generate
+          // correct auditlog.
+          this.expectedStudy.getProjectExpectedStudyPublications().add(studyPublicationSave);
+        } else {
+          ProjectExpectedStudyPublication studyPublicationSave =
+            this.projectExpectedStudyPublicationManager.getProjectExpectedStudyPublicationById(publication.getId());
+
+          studyPublicationSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyPublicationSave.setPhase(phase);
+          studyPublicationSave.setName(publication.getName());
+          studyPublicationSave.setPosition(publication.getPosition());
+          studyPublicationSave.setAffiliation(publication.getAffiliation());
+
+          this.projectExpectedStudyPublicationManager.saveProjectExpectedStudyPublication(studyPublicationSave);
+          // This is to add studyQuantificationSave to generate
+          // correct auditlog.
+          this.expectedStudy.getProjectExpectedStudyPublications().add(studyPublicationSave);
+        }
+      }
+    }
+
+  }
+
 
   /**
    * Save Expected Studies Quantification Information
