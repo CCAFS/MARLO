@@ -31,9 +31,6 @@ public class SDGContribution extends MarloAuditableEntity implements java.io.Ser
   private String code;
   @Expose
   private Sdg sdg;
-  @Expose
-  private Phase phase;
-
 
   public SDGContribution() {
   }
@@ -77,10 +74,6 @@ public class SDGContribution extends MarloAuditableEntity implements java.io.Ser
     return name;
   }
 
-  public Phase getPhase() {
-    return phase;
-  }
-
   public Sdg getSdg() {
     return sdg;
   }
@@ -97,10 +90,6 @@ public class SDGContribution extends MarloAuditableEntity implements java.io.Ser
     this.name = name;
   }
 
-  public void setPhase(Phase phase) {
-    this.phase = phase;
-  }
-
   public void setSdg(Sdg sdg) {
     this.sdg = sdg;
   }
@@ -110,4 +99,3 @@ public class SDGContribution extends MarloAuditableEntity implements java.io.Ser
     return "Activity [id=" + this.getId() + ", name=" + name + ", description=" + description + "]";
   }
 }
-

@@ -28,10 +28,6 @@
 			<column name="modification_justification" sql-type="TEXT"
 				not-null="true" />
 		</property>
-		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
-            fetch="select">
-            <column name="id_phase" />
-        </many-to-one>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
             fetch="select" update="false">
             <column name="created_by" not-null="true" />
