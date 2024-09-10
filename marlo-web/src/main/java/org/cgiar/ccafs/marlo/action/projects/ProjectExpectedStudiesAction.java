@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AllianceLeverManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
@@ -66,6 +67,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
+import org.cgiar.ccafs.marlo.data.model.AllianceLever;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -220,6 +222,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudyTagManager projectExpectedStudyTagManager;
   private QuantificationTypeManager quantificationTypeManager;
   private ProjectExpectedStudyPublicationManager projectExpectedStudyPublicationManager;
+  private AllianceLeverManager allianceLeverManager;
 
 
   // Variables
@@ -276,6 +279,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<Object> primaryAllianceStrategicOutcome;
   private List<Object> sdgContribution;
 
+  private List<AllianceLever> allianceLever;
+
 
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -312,7 +317,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager,
     ProjectExpectedStudyCrpOutcomeManager projectExpectedStudyCrpOutcomeManager,
     ProjectExpectedStudyTagManager projectExpectedStudyTagManager, QuantificationTypeManager quantificationTypeManager,
-    ProjectExpectedStudyPublicationManager projectExpectedStudyPublicationManager) {
+    ProjectExpectedStudyPublicationManager projectExpectedStudyPublicationManager,
+    AllianceLeverManager allianceLeverManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -369,6 +375,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectExpectedStudyTagManager = projectExpectedStudyTagManager;
     this.quantificationTypeManager = quantificationTypeManager;
     this.projectExpectedStudyPublicationManager = projectExpectedStudyPublicationManager;
+    this.allianceLeverManager = allianceLeverManager;
   }
 
 
@@ -410,6 +417,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
 
+  public List<AllianceLever> getAllianceLever() {
+    return allianceLever;
+  }
+
+
   private Path getAutoSaveFilePath() {
     String composedClassName = this.expectedStudy.getClass().getSimpleName();
     // get the action name and replace / for _
@@ -444,6 +456,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public List<GlobalUnit> getCrps() {
     return this.crps;
   }
+
 
   public long getExpectedID() {
     return this.expectedID;
@@ -513,10 +526,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.policyList;
   }
 
-
   public Project getProject() {
     return this.project;
   }
+
 
   public long getProjectID() {
     return this.projectID;
@@ -538,10 +551,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.regions;
   }
 
-
   public long getSrfSubIdoPrimary() {
     return srfSubIdoPrimary;
   }
+
 
   public List<RepIndStageProcess> getStageProcesses() {
     return this.stageProcesses;
@@ -1194,6 +1207,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.policyList = new ArrayList<>();
       this.tagList = this.projectExpectedStudyTagManager.findAll();
       this.quantificationTypes = this.quantificationTypeManager.findAll();
+      this.allianceLever = this.allianceLeverManager.findAll();
 
 
       // Expected Study Projects List
@@ -1619,9 +1633,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveInnovations(this.expectedStudyDB, phase);
       this.saveQuantifications(this.expectedStudyDB, phase);
 
-      logger.info(" linea 1621");
       this.savePublications(this.expectedStudyDB, phase);
-      logger.info(" linea 1623");
 
       // AR 2019 Save
       this.saveCenters(this.expectedStudyDB, phase);
@@ -2429,7 +2441,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Expected Studies Project Outcome Information
    * 
@@ -2524,6 +2535,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   /**
    * Save Expected Studies Publications
    * 
@@ -2533,7 +2545,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public void savePublications(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
 
     // Search and deleted form Information
-    logger.info(" linea 2534 " + projectExpectedStudy.getProjectExpectedStudyPublications().size());
     if (projectExpectedStudy.getProjectExpectedStudyPublications() != null
       && !projectExpectedStudy.getProjectExpectedStudyPublications().isEmpty()) {
       List<ProjectExpectedStudyPublication> publicationPrev =
@@ -2584,7 +2595,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
-
 
   /**
    * Save Expected Studies Quantification Information
@@ -2668,6 +2678,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * Save Expected Studies References Information
@@ -2951,6 +2962,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
 
+  }
+
+  public void setAllianceLever(List<AllianceLever> allianceLever) {
+    this.allianceLever = allianceLever;
   }
 
   public void setCenters(List<Institution> centers) {
