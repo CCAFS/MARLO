@@ -90,28 +90,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   private List<ProjectExpectedStudyFlagship> flagships;
 
-  private Set<ProjectExpectedStudyPrimaryAllianceLever> projectExpectedStudyPrimaryAllianceLever =
-    new HashSet<ProjectExpectedStudyPrimaryAllianceLever>(0);
-  private List<ProjectExpectedStudyPrimaryAllianceLever> primaryAllianceLever;
-
-  private Set<ProjectExpectedStudyRelatedAllianceLever> projectExpectedStudyRelatedAllianceLever =
-    new HashSet<ProjectExpectedStudyRelatedAllianceLever>(0);
-
-  private List<ProjectExpectedStudyRelatedAllianceLever> relatedAllianceLever;
-
-  private Set<ProjectExpectedStudyRelatedLeverSdgContribution> projectExpectedStudyRelatedLeverSdgContribution =
-    new HashSet<ProjectExpectedStudyRelatedLeverSdgContribution>(0);
-
-
-  private List<ProjectExpectedStudyRelatedLeverSdgContribution> relatedLeverSdgContribution;
-
-
-  private Set<ProjectExpectedStudyPrimaryStrategicOutcome> projectExpectedStudyPrimaryStrategicOutcome =
-    new HashSet<ProjectExpectedStudyPrimaryStrategicOutcome>(0);
-
-
-  private List<ProjectExpectedStudyPrimaryStrategicOutcome> primaryStrategicOutcome;
-
 
   private List<ProjectExpectedStudyCrp> crps;
 
@@ -349,13 +327,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return policies;
   }
 
-  public List<ProjectExpectedStudyPrimaryAllianceLever> getPrimaryAllianceLever() {
-    return primaryAllianceLever;
-  }
-
-  public List<ProjectExpectedStudyPrimaryStrategicOutcome> getPrimaryStrategicOutcome() {
-    return primaryStrategicOutcome;
-  }
 
   public Project getProject() {
     return project;
@@ -429,13 +400,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return projectExpectedStudyPolicies;
   }
 
-  public Set<ProjectExpectedStudyPrimaryAllianceLever> getProjectExpectedStudyPrimaryAllianceLever() {
-    return projectExpectedStudyPrimaryAllianceLever;
-  }
-
-  public Set<ProjectExpectedStudyPrimaryStrategicOutcome> getProjectExpectedStudyPrimaryStrategicOutcome() {
-    return projectExpectedStudyPrimaryStrategicOutcome;
-  }
 
   public Set<ProjectExpectedStudyProjectOutcome> getProjectExpectedStudyProjectOutcomes() {
     return projectExpectedStudyProjectOutcomes;
@@ -454,13 +418,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return projectExpectedStudyRegions;
   }
 
-  public Set<ProjectExpectedStudyRelatedAllianceLever> getProjectExpectedStudyRelatedAllianceLever() {
-    return projectExpectedStudyRelatedAllianceLever;
-  }
-
-  public Set<ProjectExpectedStudyRelatedLeverSdgContribution> getProjectExpectedStudyRelatedLeverSdgContribution() {
-    return projectExpectedStudyRelatedLeverSdgContribution;
-  }
 
   public Set<ProjectExpectedStudySrfTarget> getProjectExpectedStudySrfTargets() {
     return projectExpectedStudySrfTargets;
@@ -492,14 +449,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return regions;
   }
 
-  public List<ProjectExpectedStudyRelatedAllianceLever> getRelatedAllianceLever() {
-    return relatedAllianceLever;
-  }
-
-
-  public List<ProjectExpectedStudyRelatedLeverSdgContribution> getRelatedLeverSdgContribution() {
-    return relatedLeverSdgContribution;
-  }
 
   public Integer getScope() {
     return scope;
@@ -667,13 +616,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.policies = policies;
   }
 
-  public void setPrimaryAllianceLever(List<ProjectExpectedStudyPrimaryAllianceLever> primaryAllianceLever) {
-    this.primaryAllianceLever = primaryAllianceLever;
-  }
-
-  public void setPrimaryStrategicOutcome(List<ProjectExpectedStudyPrimaryStrategicOutcome> primaryStrategicOutcome) {
-    this.primaryStrategicOutcome = primaryStrategicOutcome;
-  }
 
   public void setProject(Project project) {
     this.project = project;
@@ -734,20 +676,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.projectExpectedStudyPolicies = projectExpectedStudyPolicies;
   }
 
-  public void setProjectExpectedStudyPrimaryAllianceLever(
-    HashSet<ProjectExpectedStudyPrimaryAllianceLever> projectExpectedStudyPrimaryAllianceLever) {
-    this.projectExpectedStudyPrimaryAllianceLever = projectExpectedStudyPrimaryAllianceLever;
-  }
-
-  public void setProjectExpectedStudyPrimaryAllianceLever(
-    Set<ProjectExpectedStudyPrimaryAllianceLever> projectExpectedStudyPrimaryAllianceLever) {
-    this.projectExpectedStudyPrimaryAllianceLever = projectExpectedStudyPrimaryAllianceLever;
-  }
-
-  public void setProjectExpectedStudyPrimaryStrategicOutcome(
-    Set<ProjectExpectedStudyPrimaryStrategicOutcome> projectExpectedStudyPrimaryStrategicOutcome) {
-    this.projectExpectedStudyPrimaryStrategicOutcome = projectExpectedStudyPrimaryStrategicOutcome;
-  }
 
   public void setProjectExpectedStudyProjectOutcomes(
     Set<ProjectExpectedStudyProjectOutcome> projectExpectedStudyProjectOutcomes) {
@@ -767,16 +695,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.projectExpectedStudyRegions = projectExpectedStudyRegions;
   }
 
-
-  public void setProjectExpectedStudyRelatedAllianceLever(
-    Set<ProjectExpectedStudyRelatedAllianceLever> projectExpectedStudyRelatedAllianceLever) {
-    this.projectExpectedStudyRelatedAllianceLever = projectExpectedStudyRelatedAllianceLever;
-  }
-
-  public void setProjectExpectedStudyRelatedLeverSdgContribution(
-    Set<ProjectExpectedStudyRelatedLeverSdgContribution> projectExpectedStudyRelatedLeverSdgContribution) {
-    this.projectExpectedStudyRelatedLeverSdgContribution = projectExpectedStudyRelatedLeverSdgContribution;
-  }
 
   public void setProjectExpectedStudySrfTargets(Set<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargets) {
     this.projectExpectedStudySrfTargets = projectExpectedStudySrfTargets;
@@ -807,14 +725,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.regions = regions;
   }
 
-  public void setRelatedAllianceLever(List<ProjectExpectedStudyRelatedAllianceLever> relatedAllianceLever) {
-    this.relatedAllianceLever = relatedAllianceLever;
-  }
-
-  public void
-    setRelatedLeverSdgContribution(List<ProjectExpectedStudyRelatedLeverSdgContribution> relatedLeverSdgContribution) {
-    this.relatedLeverSdgContribution = relatedLeverSdgContribution;
-  }
 
   public void setScope(Integer scope) {
     this.scope = scope;

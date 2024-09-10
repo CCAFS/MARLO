@@ -147,14 +147,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   private Set<DeliverableUserPartnership> deliverableUserPartnerships = new HashSet<DeliverableUserPartnership>(0);
   private Set<DeliverableClusterParticipant> deliverableClusterParticipants =
     new HashSet<DeliverableClusterParticipant>(0);
-  private Set<ProjectExpectedStudyPrimaryAllianceLever> projectExpectedStudyPrimaryAllianceLever =
-    new HashSet<ProjectExpectedStudyPrimaryAllianceLever>(0);
-  private Set<ProjectExpectedStudyRelatedAllianceLever> projectExpectedStudyRelatedAllianceLever =
-    new HashSet<ProjectExpectedStudyRelatedAllianceLever>(0);
-  private Set<ProjectExpectedStudyRelatedLeverSdgContribution> projectExpectedStudyRelatedLeverSdgContribution =
-    new HashSet<ProjectExpectedStudyRelatedLeverSdgContribution>(0);
-  private Set<ProjectExpectedStudyPrimaryStrategicOutcome> projectExpectedStudyPrimaryStrategicOutcome =
-    new HashSet<ProjectExpectedStudyPrimaryStrategicOutcome>(0);
 
 
   public Phase() {
@@ -427,14 +419,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectExpectedStudyPolicies;
   }
 
-  public Set<ProjectExpectedStudyPrimaryAllianceLever> getProjectExpectedStudyPrimaryAllianceLever() {
-    return projectExpectedStudyPrimaryAllianceLever;
-  }
-
-  public Set<ProjectExpectedStudyPrimaryStrategicOutcome> getProjectExpectedStudyPrimaryStrategicOutcome() {
-    return projectExpectedStudyPrimaryStrategicOutcome;
-  }
-
   public Set<ProjectExpectedStudyQuantification> getProjectExpectedStudyQuantifications() {
     return projectExpectedStudyQuantifications;
   }
@@ -443,13 +427,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectExpectedStudyRegions;
   }
 
-  public Set<ProjectExpectedStudyRelatedAllianceLever> getProjectExpectedStudyRelatedAllianceLever() {
-    return projectExpectedStudyRelatedAllianceLever;
-  }
-
-  public Set<ProjectExpectedStudyRelatedLeverSdgContribution> getProjectExpectedStudyRelatedLeverSdgContribution() {
-    return projectExpectedStudyRelatedLeverSdgContribution;
-  }
 
   public Set<ProjectExpectedStudySrfTarget> getProjectExpectedStudySrfTargets() {
     return projectExpectedStudySrfTargets;
@@ -825,15 +802,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.projectExpectedStudyPolicies = projectExpectedStudyPolicies;
   }
 
-  public void setProjectExpectedStudyPrimaryAllianceLever(
-    Set<ProjectExpectedStudyPrimaryAllianceLever> projectExpectedStudyPrimaryAllianceLever) {
-    this.projectExpectedStudyPrimaryAllianceLever = projectExpectedStudyPrimaryAllianceLever;
-  }
-
-  public void setProjectExpectedStudyPrimaryStrategicOutcome(
-    Set<ProjectExpectedStudyPrimaryStrategicOutcome> projectExpectedStudyPrimaryStrategicOutcome) {
-    this.projectExpectedStudyPrimaryStrategicOutcome = projectExpectedStudyPrimaryStrategicOutcome;
-  }
 
   public void setProjectExpectedStudyQuantifications(
     Set<ProjectExpectedStudyQuantification> projectExpectedStudyQuantifications) {
@@ -844,15 +812,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.projectExpectedStudyRegions = projectExpectedStudyRegions;
   }
 
-  public void setProjectExpectedStudyRelatedAllianceLever(
-    Set<ProjectExpectedStudyRelatedAllianceLever> projectExpectedStudyRelatedAllianceLever) {
-    this.projectExpectedStudyRelatedAllianceLever = projectExpectedStudyRelatedAllianceLever;
-  }
-
-  public void setProjectExpectedStudyRelatedLeverSdgContribution(
-    Set<ProjectExpectedStudyRelatedLeverSdgContribution> projectExpectedStudyRelatedLeverSdgContribution) {
-    this.projectExpectedStudyRelatedLeverSdgContribution = projectExpectedStudyRelatedLeverSdgContribution;
-  }
 
   public void setProjectExpectedStudySrfTargets(Set<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargets) {
     this.projectExpectedStudySrfTargets = projectExpectedStudySrfTargets;

@@ -436,17 +436,7 @@
   <mapping resource="xmls/SoilIndicators.hbm.xml"/>
   <mapping resource="xmls/TipParameters.hbm.xml"/>
   <mapping resource="xmls/ProjectExpectedStudyTags.hbm.xml"/>
-  <mapping resource="xmls/PrimaryAllianceLevers.hbm.xml"/>
-  <mapping resource="xmls/RelatedAllianceLevers.hbm.xml"/>
-  <mapping resource="xmls/PrimaryAllianceStrategicOutcomes.hbm.xml"/>
-  <mapping resource="xmls/SdgContributions.hbm.xml"/>
-  <mapping resource="xmls/ProjectExpectedStudyPrimaryAllianceLevers.hbm.xml"/>
-  <mapping resource="xmls/ProjectExpectedStudyPrimaryStrategicOutcomes.hbm.xml"/>
-  <mapping resource="xmls/ProjectExpectedStudyRelatedAllianceLevers.hbm.xml"/>
-  <mapping resource="xmls/ProjectExpectedStudyRelatedLeverSdgContributions.hbm.xml"/>
   <mapping resource="xmls/QuantificationTypes.hbm.xml"/>
-  <mapping resource="xmls/PrimaryLeversRelatedSdgContributions.hbm.xml"/>
-  <mapping resource="xmls/RelatedLeversSDGContributions.hbm.xml"/>
   <mapping resource="xmls/ProjectExpectedStudyPublications.hbm.xml"/>
 
  </session-factory>
