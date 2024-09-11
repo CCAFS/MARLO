@@ -895,7 +895,7 @@
           </div>
           [#if (element.publications?has_content) && (element.publications?size > 0)]
             [#list (element.publications)![{}] as publication]
-              [@publicationMacro name="${customName}.links" element=publication index=publication_index /]
+              [@publicationMacro name="${customName}.publications" element=publication index=publication_index /]
             [/#list]
           [/#if]
         </div>
@@ -940,8 +940,7 @@
       <label class="label--2" for="">[@s.text name="study.allianceAligment.linkToLevers.title" /]:[@customForm.req required=false /]</label>
       [@customForm.helpLabel name="study.allianceAligment.linkToLevers.note" showIcon=false editable=editable isNote=true /]
       <div class="form-group">
-        [@customForm.radioToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" listName=primaryAllianceLever displayFieldName="name" hasPrimary=true
-        listNamePrimary=primaryAllianceStrategicOutcome hasSecondary=true checkedValue=1 /]
+        [@customForm.radioToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" listName=allianceLever displayFieldName="name" checkedValue=1 /]
       </div>
     </div>
   </div>
