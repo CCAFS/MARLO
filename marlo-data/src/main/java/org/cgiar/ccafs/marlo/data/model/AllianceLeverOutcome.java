@@ -17,28 +17,24 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.google.gson.annotations.Expose;
 
-public class AllianceLever extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
+public class AllianceLeverOutcome extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -963914989396761020L;
 
   @Expose
   private String name;
+
   @Expose
   private String description;
 
-  private Set<AllianceLeverOutcome> allianceLeverOutcomes = new HashSet<>(0);
+
+  @Expose
+  private AllianceLever allianceLever;
 
 
-  private List<AllianceLeverOutcome> outcomes;
-
-
-  public AllianceLever() {
+  public AllianceLeverOutcome() {
   }
 
 
@@ -51,7 +47,7 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
       return false;
     }
 
-    AllianceLever other = (AllianceLever) obj;
+    AllianceLeverOutcome other = (AllianceLeverOutcome) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
         return false;
@@ -63,8 +59,8 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
   }
 
 
-  public Set<AllianceLeverOutcome> getAllianceLeverOutcomes() {
-    return allianceLeverOutcomes;
+  public AllianceLever getAllianceLever() {
+    return allianceLever;
   }
 
 
@@ -79,18 +75,16 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
     return sb.toString();
   }
 
+
   public String getName() {
     return name;
   }
 
 
-  public List<AllianceLeverOutcome> getOutcomes() {
-    return outcomes;
+  public void setAllianceLever(AllianceLever allianceLever) {
+    this.allianceLever = allianceLever;
   }
 
-  public void setAllianceLeverOutcomes(Set<AllianceLeverOutcome> allianceLeverOutcomes) {
-    this.allianceLeverOutcomes = allianceLeverOutcomes;
-  }
 
   public void setDescription(String description) {
     this.description = description;
@@ -100,12 +94,10 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
     this.name = name;
   }
 
-  public void setOutcomes(List<AllianceLeverOutcome> outcomes) {
-    this.outcomes = outcomes;
-  }
 
   @Override
   public String toString() {
-    return "Activity [id=" + this.getId() + ", name=" + name + ", description=" + description + "]";
+    return "Activity [id=" + this.getId() + ", name=" + name;
   }
 }
+
