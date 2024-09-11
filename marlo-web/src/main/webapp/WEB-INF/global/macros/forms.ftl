@@ -1082,8 +1082,8 @@
   </div>
 [/#macro]
 
-[#macro radioToCheckboxMacro name="" label="" elementList=[] listName="" keyFieldName="" displayFieldName="" index=-1 template=false hasPrimary=false listNamePrimary="" keyFieldNamePrimary="" displayFieldNamePrimary="" hasSecondary=false listNameSecondary="" keyFieldNameSecondary="" displayFieldNameSecondary="" class="" required=true editable=true checkedValue="" ]
-  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+[#macro radioToCheckboxMacro name="" fieldName="" label="" elementList=[] listName="" keyFieldName="" displayFieldName="" template=false hasPrimary=false listNamePrimary="" keyFieldNamePrimary="" displayFieldNamePrimary="" hasSecondary=false listNameSecondary="" keyFieldNameSecondary="" displayFieldNameSecondary="" class="" required=true editable=true checkedValue="" ]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}"]
 
   [#if listName?has_content]
     <div class="form-group radioToCheckbox">
@@ -1097,19 +1097,19 @@
             [#local isChecked = true /]
           [/#if]
         [/#if]
-        [@customForm.radioFlat id="${radioItem.id}" name="${customName}-${radioItem.id}" value="${radioItem.id}" i18nkey="${radioItemName}" editable=editable checked=isChecked /]
+        [@customForm.radioFlat id="option_${customName}_${radioItem.id}" name="${customName}.projectExpectedStudyInfo.${fieldName}" value="${radioItem.id}" i18nkey="radioCheck-${radioItemName}" editable=editable checked=isChecked /]
         <div class="form-group" id="innerCheckbox" data-radioButton="${radioItem.id}" style="display:${isChecked?string('block','none')}" >
             [#if hasPrimary]
               [#attempt]
                 [#local listPrimary = (listNamePrimary?filter(x.id = radioItem.id))![] /]
               [#recover]
-                [#local listPrimary = [] /] 
+                [#local listPrimary = ['Yes','No', 'Maybe'] /] 
               [/#attempt]
               
               <div class="form-group" style="padding-left: 20px;">
                 <label for="" class="radio-label">Primary list</label>
-                [#list listNamePrimary as primaryItem]
-                  <p>${primaryItem.name}</p>
+                [#list listPrimary as primaryItem]
+                  [@customForm.checkbox value="${radioItem.id}-${primaryItem}" name="${customName}-${radioItem.id}-${primaryItem}" label=primaryItem editable=editable /]
                 [/#list]
                   
               </div>
