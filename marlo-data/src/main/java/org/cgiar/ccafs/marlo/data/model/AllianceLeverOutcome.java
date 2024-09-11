@@ -17,33 +17,24 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.google.gson.annotations.Expose;
 
-public class AllianceLever extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
+public class AllianceLeverOutcome extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -963914989396761020L;
 
   @Expose
   private String name;
+
   @Expose
   private String description;
 
-  private Set<AllianceLeverOutcome> allianceLeverOutcomes = new HashSet<>(0);
+
+  @Expose
+  private AllianceLever allianceLever;
 
 
-  private List<AllianceLeverOutcome> outcomes;
-
-  private Set<AllianceLeversSdgContribution> allianceLeversSdgContributions = new HashSet<>(0);
-
-
-  private List<AllianceLeversSdgContribution> sdgContributions;
-
-
-  public AllianceLever() {
+  public AllianceLeverOutcome() {
   }
 
 
@@ -56,7 +47,7 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
       return false;
     }
 
-    AllianceLever other = (AllianceLever) obj;
+    AllianceLeverOutcome other = (AllianceLeverOutcome) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
         return false;
@@ -68,19 +59,14 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
   }
 
 
-  public Set<AllianceLeverOutcome> getAllianceLeverOutcomes() {
-    return allianceLeverOutcomes;
-  }
-
-  public Set<AllianceLeversSdgContribution> getAllianceLeversSdgContributions() {
-    return allianceLeversSdgContributions;
+  public AllianceLever getAllianceLever() {
+    return allianceLever;
   }
 
 
   public String getDescription() {
     return description;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -95,22 +81,10 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
   }
 
 
-  public List<AllianceLeverOutcome> getOutcomes() {
-    return outcomes;
+  public void setAllianceLever(AllianceLever allianceLever) {
+    this.allianceLever = allianceLever;
   }
 
-  public List<AllianceLeversSdgContribution> getSdgContributions() {
-    return sdgContributions;
-  }
-
-  public void setAllianceLeverOutcomes(Set<AllianceLeverOutcome> allianceLeverOutcomes) {
-    this.allianceLeverOutcomes = allianceLeverOutcomes;
-  }
-
-
-  public void setAllianceLeversSdgContributions(Set<AllianceLeversSdgContribution> allianceLeversSdgContributions) {
-    this.allianceLeversSdgContributions = allianceLeversSdgContributions;
-  }
 
   public void setDescription(String description) {
     this.description = description;
@@ -120,16 +94,10 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
     this.name = name;
   }
 
-  public void setOutcomes(List<AllianceLeverOutcome> outcomes) {
-    this.outcomes = outcomes;
-  }
-
-  public void setSdgContributions(List<AllianceLeversSdgContribution> sdgContributions) {
-    this.sdgContributions = sdgContributions;
-  }
 
   @Override
   public String toString() {
-    return "Activity [id=" + this.getId() + ", name=" + name + ", description=" + description + "]";
+    return "Activity [id=" + this.getId() + ", name=" + name;
   }
 }
+
