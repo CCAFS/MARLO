@@ -465,6 +465,8 @@ function attachEvents() {
 	$('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
   $('input.radioType-contributionToCGIAR').on('change', onDisplayCommentForNoContributingCGIAR);
+
+  $('input[id*="radioCheckDisplay_primary"]').on('change', displayInnerCheckbox);
 }
 
 function addSelect2() {
@@ -625,5 +627,27 @@ function updateAllianceTab() {
     }, 1000);
 
       
+
+}
+
+function displayInnerCheckbox() {
+  console.log("Testing");
+  console.log($(this).val());
+  var $parentMacro = $(this).parents('.radioToCheckbox');
+  var $radioButtons = $parentMacro.find('input.radio-input[id*="radioCheckDisplay_"]');
+  var $radioSelected = $radioButtons.filter(':checked');
+
+  $radioButtons.each(function() {
+    var $this = $(this);
+    var $innerCheckbox = $parentMacro.find(`#innerCheckbox[data-radioButton='${$this.val()}']`);
+    console.log($innerCheckbox);
+    if($this.is($radioSelected)) {
+      console.log("Soy seleccionado" );
+      $innerCheckbox.slideDown();
+    } else {
+      console.log("No soy seleccionado");
+      $innerCheckbox.slideUp();
+    }
+  });
 
 }

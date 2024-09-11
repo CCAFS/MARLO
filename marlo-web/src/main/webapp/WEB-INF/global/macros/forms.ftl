@@ -1097,7 +1097,7 @@
             [#local isChecked = true /]
           [/#if]
         [/#if]
-        [@customForm.radioFlat id="option_${customName}_${radioItem.id}" name="${customName}.projectExpectedStudyInfo.${fieldName}" value="${radioItem.id}" i18nkey="radioCheck-${radioItemName}" editable=editable checked=isChecked /]
+        [@customForm.radioFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.projectExpectedStudyInfo.${fieldName}" value="${radioItem.id}" i18nkey="radioCheckDisplay_${radioItemName}" editable=editable checked=isChecked /]
         <div class="form-group" id="innerCheckbox" data-radioButton="${radioItem.id}" style="display:${isChecked?string('block','none')}" >
             [#if hasPrimary]
               [#attempt]
