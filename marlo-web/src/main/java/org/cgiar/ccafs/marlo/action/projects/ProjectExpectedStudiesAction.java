@@ -1210,6 +1210,35 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.allianceLever = this.allianceLeverManager.findAll();
 
 
+      // get otucomes alliance lever list
+      if (this.allianceLever != null) {
+        for (AllianceLever allianceLeverTmp : this.allianceLever) {
+          if (allianceLeverTmp.getAllianceLeverOutcomes() != null) {
+            allianceLeverTmp.setOutcomes(new ArrayList<>(allianceLeverTmp.getAllianceLeverOutcomes().stream()
+              .filter(o -> o != null && o.getId() != null && o.isActive()).collect(Collectors.toList())));
+          }
+        }
+
+      }
+
+      if (this.allianceLever != null) {
+        for (AllianceLever allianceLeverTmp : this.allianceLever) {
+          logger.info(" linea 1226 " + allianceLeverTmp);
+        }
+      }
+
+      // get sdg alliance lever list
+      if (this.allianceLever != null) {
+        for (AllianceLever allianceLeverTmp : this.allianceLever) {
+          if (allianceLeverTmp.getAllianceLeversSdgContributions() != null) {
+            allianceLeverTmp.setSdgContributions(new ArrayList<>(allianceLeverTmp.getAllianceLeversSdgContributions()
+              .stream().filter(o -> o != null && o.getId() != null && o.isActive()).collect(Collectors.toList())));
+          }
+        }
+
+      }
+
+
       // Expected Study Projects List
       if (this.expectedStudy.getExpectedStudyProjects() != null) {
         List<ExpectedStudyProject> expectedStudyProjects =

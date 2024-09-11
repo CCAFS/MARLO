@@ -3,18 +3,12 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Sep 5, 2016 8:28:29 AM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
-	<class name="org.cgiar.ccafs.marlo.data.model.AllianceLever" table="alliance_levers"
+	<class name="org.cgiar.ccafs.marlo.data.model.AllianceLeversSdgContribution" table="alliance_levers_sdg_contributions"
 		optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />
-		</id>
-		<property name="name" type="string" >
-			<column name="name" sql-type="TEXT" />
-		</property>
-		<property name="description" type="string">
-			<column name="description" sql-type="TEXT" />
-		</property>
+		</id>		
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
@@ -29,21 +23,13 @@
             fetch="select" update="false">
             <column name="created_by" not-null="true" />
         </many-to-one>
-		<set name="allianceLeverOutcomes" table="alliance_lever_outcomes"
-      inverse="true" lazy="true" fetch="select">
-      <key>
-        <column name="alliance_lever_id" />
-      </key>
-      <one-to-many
-        class="org.cgiar.ccafs.marlo.data.model.AllianceLeverOutcome" />
-    </set>
-	<set name="allianceLeversSdgContributions" table="alliance_levers_sdg_contributions"
-      inverse="true" lazy="true" fetch="select">
-      <key>
-        <column name="alliance_lever_id" />
-      </key>
-      <one-to-many
-        class="org.cgiar.ccafs.marlo.data.model.AllianceLeversSdgContribution" />
-    </set>
+		<many-to-one name="allianceLever"
+            class="org.cgiar.ccafs.marlo.data.model.AllianceLever" fetch="select">
+            <column name="alliance_lever_id" />
+        </many-to-one>
+		<many-to-one name="sDGContribution"
+            class="org.cgiar.ccafs.marlo.data.model.SDGContribution" fetch="select">
+            <column name="sdg_contribution_id" />
+        </many-to-one>
 	</class>
 </hibernate-mapping>
