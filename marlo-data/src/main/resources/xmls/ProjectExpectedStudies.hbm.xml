@@ -234,5 +234,13 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPublication" />
     </set>
+	<set name="projectExpectedStudySdgAllianceLever" table="project_expected_study_sdg_alliance_levers"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgAllianceLever" />
+    </set>
 	</class>
 </hibernate-mapping>

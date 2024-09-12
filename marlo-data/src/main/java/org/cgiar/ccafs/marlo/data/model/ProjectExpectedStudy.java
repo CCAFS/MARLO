@@ -175,9 +175,15 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   private List<ProjectExpectedStudyPublication> publications;
 
+  private Set<ProjectExpectedStudySdgAllianceLever> projectExpectedStudySdgAllianceLever = new HashSet<>(0);
+
+
+  private List<ProjectExpectedStudySdgAllianceLever> sdgAllianceLever;
+
 
   public ProjectExpectedStudy() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -206,7 +212,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return casesStudy;
   }
 
-
   public List<ProjectExpectedStudyCenter> getCenters() {
     return centers;
   }
@@ -220,9 +225,11 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return commentStatus;
   }
 
+
   public String getComposedId() {
     return composedId;
   }
+
 
   public String getComposedIdentifier() {
     String name = "S" + this.getId();
@@ -232,6 +239,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     }
     return name;
   }
+
 
   public String getComposedName() {
     String composedName = this.getComposedIdentifier();
@@ -318,11 +326,9 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return milestones;
   }
 
-
   public String getOtherType() {
     return otherType;
   }
-
 
   public String getPdfLink() {
     return pdfLink;
@@ -336,9 +342,11 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return policies;
   }
 
+
   public Project getProject() {
     return project;
   }
+
 
   public Set<ProjectExpectedStudyCenter> getProjectExpectedStudyCenters() {
     return projectExpectedStudyCenters;
@@ -359,7 +367,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public Set<ProjectExpectedStudyFlagship> getProjectExpectedStudyFlagships() {
     return projectExpectedStudyFlagships;
   }
-
 
   public Set<ProjectExpectedStudyGeographicScope> getProjectExpectedStudyGeographicScopes() {
     return projectExpectedStudyGeographicScopes;
@@ -388,6 +395,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public Set<ProjectExpectedStudyInfo> getProjectExpectedStudyInfos() {
     return projectExpectedStudyInfos;
   }
+
 
   public Set<ProjectExpectedStudyInnovation> getProjectExpectedStudyInnovations() {
     return projectExpectedStudyInnovations;
@@ -421,7 +429,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return projectExpectedStudyQuantifications;
   }
 
-
   public Set<ProjectExpectedStudyReference> getProjectExpectedStudyReferences() {
     return projectExpectedStudyReferences;
   }
@@ -430,10 +437,14 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return projectExpectedStudyRegions;
   }
 
+  public Set<ProjectExpectedStudySdgAllianceLever> getProjectExpectedStudySdgAllianceLever() {
+    return projectExpectedStudySdgAllianceLever;
+  }
 
   public Set<ProjectExpectedStudySrfTarget> getProjectExpectedStudySrfTargets() {
     return projectExpectedStudySrfTargets;
   }
+
 
   public Set<ProjectExpectedStudySubIdo> getProjectExpectedStudySubIdos() {
     return projectExpectedStudySubIdos;
@@ -448,7 +459,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return projects;
   }
 
-
   public List<ProjectExpectedStudyPublication> getPublications() {
     return publications;
   }
@@ -457,19 +467,19 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return quantifications;
   }
 
+
   public List<ProjectExpectedStudyReference> getReferences() {
     return references;
   }
+
 
   public List<ProjectExpectedStudyFlagship> getRegions() {
     return regions;
   }
 
-
   public Integer getScope() {
     return scope;
   }
-
 
   public String getScopeName() {
     if (scope == null || scope.intValue() == -1) {
@@ -478,6 +488,11 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return GlobalScopeEnum.getValue(scope.intValue()).getType();
 
   }
+
+  public List<ProjectExpectedStudySdgAllianceLever> getSdgAllianceLever() {
+    return sdgAllianceLever;
+  }
+
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -491,6 +506,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public SrfSloIndicator getSrfSloIndicator() {
     return srfSloIndicator;
   }
+
 
   public SrfSubIdo getSrfSubIdo() {
     return srfSubIdo;
@@ -646,7 +662,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.projectExpectedStudyCountries = projectExpectedStudyCountries;
   }
 
-
   public void setProjectExpectedStudyCrpOutcomes(Set<ProjectExpectedStudyCrpOutcome> projectExpectedStudyCrpOutcomes) {
     this.projectExpectedStudyCrpOutcomes = projectExpectedStudyCrpOutcomes;
   }
@@ -654,6 +669,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public void setProjectExpectedStudyCrps(Set<ProjectExpectedStudyCrp> projectExpectedStudyCrps) {
     this.projectExpectedStudyCrps = projectExpectedStudyCrps;
   }
+
 
   public void setProjectExpectedStudyFlagships(Set<ProjectExpectedStudyFlagship> projectExpectedStudyFlagships) {
     this.projectExpectedStudyFlagships = projectExpectedStudyFlagships;
@@ -676,7 +692,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.projectExpectedStudyInnovations = projectExpectedStudyInnovations;
   }
 
-
   public void
     setProjectExpectedStudyInstitutions(Set<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutions) {
     this.projectExpectedStudyInstitutions = projectExpectedStudyInstitutions;
@@ -685,6 +700,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public void setProjectExpectedStudyLinks(Set<ProjectExpectedStudyLink> projectExpectedStudyLinks) {
     this.projectExpectedStudyLinks = projectExpectedStudyLinks;
   }
+
 
   public void setProjectExpectedStudyMilestones(Set<ProjectExpectedStudyMilestone> projectExpectedStudyMilestones) {
     this.projectExpectedStudyMilestones = projectExpectedStudyMilestones;
@@ -704,7 +720,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.projectExpectedStudyPublications = projectExpectedStudyPublications;
   }
 
-
   public void setProjectExpectedStudyQuantifications(
     Set<ProjectExpectedStudyQuantification> projectExpectedStudyQuantifications) {
     this.projectExpectedStudyQuantifications = projectExpectedStudyQuantifications;
@@ -714,27 +729,33 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.projectExpectedStudyReferences = projectExpectedStudyReferences;
   }
 
+
   public void setProjectExpectedStudyRegions(Set<ProjectExpectedStudyRegion> projectExpectedStudyRegions) {
     this.projectExpectedStudyRegions = projectExpectedStudyRegions;
+  }
+
+  public void setProjectExpectedStudySdgAllianceLever(
+    Set<ProjectExpectedStudySdgAllianceLever> projectExpectedStudySdgAllianceLever) {
+    this.projectExpectedStudySdgAllianceLever = projectExpectedStudySdgAllianceLever;
   }
 
   public void setProjectExpectedStudySrfTargets(Set<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargets) {
     this.projectExpectedStudySrfTargets = projectExpectedStudySrfTargets;
   }
 
-
   public void setProjectExpectedStudySubIdos(Set<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos) {
     this.projectExpectedStudySubIdos = projectExpectedStudySubIdos;
   }
+
 
   public void setProjectOutcomes(List<ProjectExpectedStudyProjectOutcome> projectOutcomes) {
     this.projectOutcomes = projectOutcomes;
   }
 
-
   public void setProjects(List<ExpectedStudyProject> projects) {
     this.projects = projects;
   }
+
 
   public void setPublications(List<ProjectExpectedStudyPublication> publications) {
     this.publications = publications;
@@ -752,9 +773,13 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.regions = regions;
   }
 
-
   public void setScope(Integer scope) {
     this.scope = scope;
+  }
+
+
+  public void setSdgAllianceLever(List<ProjectExpectedStudySdgAllianceLever> sdgAllianceLever) {
+    this.sdgAllianceLever = sdgAllianceLever;
   }
 
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
