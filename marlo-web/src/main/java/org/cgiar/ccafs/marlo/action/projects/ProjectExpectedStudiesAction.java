@@ -1221,11 +1221,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       }
 
-      if (this.allianceLever != null) {
-        for (AllianceLever allianceLeverTmp : this.allianceLever) {
-          logger.info(" linea 1226 " + allianceLeverTmp);
-        }
-      }
 
       // get sdg alliance lever list
       if (this.allianceLever != null) {
