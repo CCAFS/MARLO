@@ -443,6 +443,6 @@
   <mapping resource="xmls/SDGContributions.hbm.xml"/>
   <mapping resource="xmls/AllianceLeversSdgContributions.hbm.xml"/>
   <mapping resource="xmls/ProjectExpectedStudySdgAllianceLevers.hbm.xml"/>
-
+  <mapping resource="xmls/ProjectExpectedStudyAllianceLeversOutcomes.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>
