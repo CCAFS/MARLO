@@ -153,7 +153,8 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     new HashSet<ProjectExpectedStudySdgAllianceLever>(0);
   private Set<ProjectExpectedStudyAllianceLeversOutcome> projectExpectedStudyAllianceLeversOutcomes =
     new HashSet<ProjectExpectedStudyAllianceLeversOutcome>(0);
-
+  private Set<ProjectExpectedStudyPartnership> projectExpectedStudyPartnerships =
+    new HashSet<ProjectExpectedStudyPartnership>(0);
 
   public Phase() {
   }
