@@ -57,6 +57,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyTagManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.QuantificationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
@@ -111,6 +112,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -230,6 +232,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   private ProjectExpectedStudySdgAllianceLeverManager projectExpectedStudySdgAllianceLeverManager;
   private ProjectExpectedStudyAllianceLeversOutcomeManager projectExpectedStudyAllianceLeversOutcomeManager;
+  private ProjectPartnerManager projectPartnerManager;
 
 
   // Variables
@@ -327,7 +330,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectExpectedStudyPublicationManager projectExpectedStudyPublicationManager,
     AllianceLeverManager allianceLeverManager,
     ProjectExpectedStudySdgAllianceLeverManager projectExpectedStudySdgAllianceLeverManager,
-    ProjectExpectedStudyAllianceLeversOutcomeManager projectExpectedStudyAllianceLeversOutcomeManager) {
+    ProjectExpectedStudyAllianceLeversOutcomeManager projectExpectedStudyAllianceLeversOutcomeManager,
+    ProjectPartnerManager projectPartnerManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -387,6 +391,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.allianceLeverManager = allianceLeverManager;
     this.projectExpectedStudySdgAllianceLeverManager = projectExpectedStudySdgAllianceLeverManager;
     this.projectExpectedStudyAllianceLeversOutcomeManager = projectExpectedStudyAllianceLeversOutcomeManager;
+    this.projectPartnerManager = projectPartnerManager;
   }
 
 
@@ -615,6 +620,36 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public String getTransaction() {
     return this.transaction;
+  }
+
+  /**
+   * This method gets a list of users
+   *
+   * @param institutionId institution identifier
+   * @return User list
+   */
+  public List<User> getUserList(Long institutionId) {
+
+    List<User> users = new ArrayList<>();
+
+    List<ProjectPartner> partnersTmp = new ArrayList<>();
+    try {
+      partnersTmp = projectPartnerManager.findAllByPhaseProjectAndInstitution(projectID, this.getActualPhase().getId(),
+        institutionId);
+    } catch (Exception e) {
+      logger.error("unable to get partners");
+    }
+    if (partnersTmp != null && !partnersTmp.isEmpty()) {
+      ProjectPartner projectPartner = partnersTmp.get(0);
+      List<ProjectPartnerPerson> partnerPersons = new ArrayList<>(
+        projectPartner.getProjectPartnerPersons().stream().filter(pp -> pp.isActive()).collect(Collectors.toList()));
+      for (ProjectPartnerPerson projectPartnerPerson : partnerPersons) {
+
+        users.add(projectPartnerPerson.getUser());
+      }
+    }
+
+    return users;
   }
 
   @Override
@@ -2503,6 +2538,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   /**
    * Save Expected Studies Policies Information
    * 
@@ -2607,7 +2643,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save Expected Studies Projects Information
    * 
@@ -2651,6 +2686,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
+
 
   /**
    * Save Expected Studies Publications
@@ -2796,7 +2832,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Expected Studies References Information
    * 
@@ -2861,6 +2896,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Expected Studies Regions Information
    * 
@@ -2907,7 +2943,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
-
 
   /**
    * Save Expected Studies SdgAllianceLever Information
@@ -3230,10 +3265,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.policyInvestimentTypes = policyInvestimentTypes;
   }
 
+
   public void setPolicyList(List<ProjectPolicy> policyList) {
     this.policyList = policyList;
   }
-
 
   public void setProject(Project project) {
     this.project = project;
@@ -3255,10 +3290,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.regionList = regionList;
   }
 
+
   public void setRegions(List<LocElement> regions) {
     this.regions = regions;
   }
-
 
   public void setSrfSubIdoPrimary(long srfSubIdoPrimary) {
     this.srfSubIdoPrimary = srfSubIdoPrimary;
@@ -3315,6 +3350,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   /**
    * Validate OICR tag comparing level of maturity and year changes
    * 
@@ -3366,5 +3402,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
+
+
 }
 
