@@ -10,6 +10,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -42,6 +43,19 @@ public class ImageSDGAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    this.getInfo();
+    return SUCCESS;
+  }
+
+  public Map<String, Object> getImageProperties() {
+    return imageProperties;
+  }
+
+  public InputStream getImageStream() {
+    return imageStream;
+  }
+
+  private void getInfo() throws FileNotFoundException {
     SDGContribution SDGContribution = SDGContributionManager.getSDGContributionById(sdgContributionID);
     if (SDGContribution != null && SDGContribution.getSdg() != null && SDGContribution.getSdg().getId() != null) {
       Sdg sdg = sdgManager.getSDGById(SDGContribution.getSdg().getId());
@@ -55,24 +69,13 @@ public class ImageSDGAction extends BaseAction {
         System.out.println("imageFile " + imageFile);
         if (imageFile != null) {
           imageStream = new FileInputStream(imageFile);
-          return SUCCESS;
-        } else {
-          return ERROR;
         }
       }
     }
-    return ERROR;
-  }
-
-  public Map<String, Object> getImageProperties() {
-    return imageProperties;
-  }
-
-  public InputStream getImageStream() {
-    return imageStream;
   }
 
   public String image() throws Exception {
+    this.getInfo();
     imageProperties.put(this.getBaseUrl() + "adsoluteURL", imagePath);
     imageProperties.put("relativeURL", imagePath);
     return SUCCESS;
