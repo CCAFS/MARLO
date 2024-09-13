@@ -1090,36 +1090,49 @@
       <label for="">[@s.text name=label /]:[@req required=required && editable /]</label>
         
       [#list listName as radioItem]
-        [#local radioItemName = "${radioItem.name}: ${radioItem.description}" /]
+
+        [#if radioItem.description?has_content]
+          [#local radioItemName = "${radioItem.name}: ${radioItem.description}" /]
+        [#else]
+          [#local radioItemName = "${radioItem.name}" /]
+        [/#if]
+                
         [#local isChecked = false]
         [#if checkedValue?has_content]
           [#if checkedValue == radioItem.id]
             [#local isChecked = true /]
           [/#if]
         [/#if]
-        [@customForm.radioFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.projectExpectedStudyInfo.${fieldName}" value="${radioItem.id}" i18nkey="radioCheckDisplay_${radioItemName}" editable=editable checked=isChecked /]
-        <div class="form-group" id="innerCheckbox" data-radioButton="${radioItem.id}" style="display:${isChecked?string('block','none')}" >
-            [#if hasPrimary]
-              [#attempt]
-                [#local listPrimary = (listNamePrimary?filter(x.id = radioItem.id))![] /]
-              [#recover]
-                [#local listPrimary = ['Yes','No', 'Maybe'] /] 
-              [/#attempt]
-              
-              <div class="form-group" style="padding-left: 20px;">
-                <label for="" class="radio-label">Primary list</label>
-                [#list listPrimary as primaryItem]
-                  [@customForm.checkbox value="${radioItem.id}-${primaryItem}" name="${customName}-${radioItem.id}-${primaryItem}" label=primaryItem editable=editable /]
-                [/#list]
-                  
-              </div>
-            [/#if]
-            [#if hasSecondary]
-              <div class="form-group" style="padding-left: 20px;">
-                <label for="" class="radio-label">Secondary list</label>
-              </div>
-            [/#if]
-        </div>
+        
+        [@customForm.radioFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.projectExpectedStudyInfo.${fieldName}" value="${radioItem.id}" i18nkey="${radioItemName}" editable=editable checked=isChecked /]
+        [#if radioItem.name == 'Other']
+          <div class="form-group"> 
+            [@input name="${customName}.projectExpectedStudyInfo.${fieldName}.other" placeholder="Other" editable=editable showTitle=false /]
+          </div> 
+        [#else]
+          <div class="form-group" id="innerCheckbox" data-radioButton="${radioItem.id}" style="display:${isChecked?string('block','none')}" >
+              [#if hasPrimary]
+                [#attempt]
+                  [#local listPrimary = (listNamePrimary?filter(x.id = radioItem.id))![] /]
+                [#recover]
+                  [#local listPrimary = ['Yes','No', 'Maybe'] /] 
+                [/#attempt]
+                
+                <div class="form-group" style="padding-left: 20px;">
+                  <label for="" class="radio-label">Primary list</label>
+                  [#list listPrimary as primaryItem]
+                    [@customForm.checkbox value="${radioItem.id}-${primaryItem}" name="${customName}-${radioItem.id}-${primaryItem}" label=primaryItem editable=editable /]
+                  [/#list]
+                    
+                </div>
+              [/#if]
+              [#if hasSecondary]
+                <div class="form-group" style="padding-left: 20px;">
+                  <label for="" class="radio-label">Secondary list</label>
+                </div>
+              [/#if]
+          </div>
+        [/#if]
       [/#list]
 
     </div>
