@@ -706,6 +706,21 @@
 	      </result>
 	    </action>
 	    
+		<action name="getImageInfo"
+	      class="org.cgiar.ccafs.marlo.action.json.project.ImageSDGAction" method="image">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
+	    
+	    <action name="sdgImage" class="org.cgiar.ccafs.marlo.action.json.project.ImageSDGAction">
+	        <result type="stream">
+		        <param name="inputName">imageStream</param>
+		        <param name="contentType">image/png</param>
+	    	</result>
+		</action>
+	    
 	    <action name="getTimelineInformation"
 	      class="org.cgiar.ccafs.marlo.action.json.project.TimelineInformationServiceAction">
 	      <result type="json">
