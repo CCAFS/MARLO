@@ -24,8 +24,7 @@ public class ProjectExpectedStudyPartnershipsPerson extends MarloAuditableEntity
 
   private static final long serialVersionUID = -963914989396761020L;
 
-  @Expose
-  private String name;
+
   @Expose
   private ProjectExpectedStudyPartnership projectExpectedStudyPartnership;
 
@@ -66,11 +65,6 @@ public class ProjectExpectedStudyPartnershipsPerson extends MarloAuditableEntity
   }
 
 
-  public String getName() {
-    return name;
-  }
-
-
   public ProjectExpectedStudyPartnership getProjectExpectedStudyPartnership() {
     return projectExpectedStudyPartnership;
   }
@@ -78,11 +72,6 @@ public class ProjectExpectedStudyPartnershipsPerson extends MarloAuditableEntity
 
   public User getUser() {
     return user;
-  }
-
-
-  public void setName(String name) {
-    this.name = name;
   }
 
 
@@ -98,6 +87,6 @@ public class ProjectExpectedStudyPartnershipsPerson extends MarloAuditableEntity
 
   @Override
   public String toString() {
-    return "Activity [id=" + this.getId() + ", name=" + name;
+    return "Activity [id=" + this.getId();
   }
 }

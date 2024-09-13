@@ -28,8 +28,6 @@ public class ProjectExpectedStudyPartnership extends MarloAuditableEntity implem
   private static final long serialVersionUID = -963914989396761020L;
 
   @Expose
-  private String name;
-  @Expose
   private ProjectExpectedStudy projectExpectedStudy;
   @Expose
   private Phase phase;
@@ -83,11 +81,6 @@ public class ProjectExpectedStudyPartnership extends MarloAuditableEntity implem
   }
 
 
-  public String getName() {
-    return name;
-  }
-
-
   public List<ProjectExpectedStudyPartnershipsPerson> getPartnershipsPersons() {
     return partnershipsPersons;
   }
@@ -115,11 +108,6 @@ public class ProjectExpectedStudyPartnership extends MarloAuditableEntity implem
 
   public void setInstitution(Institution institution) {
     this.institution = institution;
-  }
-
-
-  public void setName(String name) {
-    this.name = name;
   }
 
 
@@ -151,6 +139,6 @@ public class ProjectExpectedStudyPartnership extends MarloAuditableEntity implem
 
   @Override
   public String toString() {
-    return "Activity [id=" + this.getId() + ", name=" + name;
+    return "Activity [id=" + this.getId();
   }
 }

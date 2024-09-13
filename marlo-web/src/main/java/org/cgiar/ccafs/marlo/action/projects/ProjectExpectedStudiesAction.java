@@ -1169,6 +1169,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               .collect(Collectors.toList()))));
         }
 
+        // Expected Study projectExpectedStudyPartnerships List
+        if (this.expectedStudy.getProjectExpectedStudyPartnerships() != null) {
+          this.expectedStudy
+            .setPartnerships((new ArrayList<>(this.expectedStudy.getProjectExpectedStudyPartnerships().stream()
+              .filter(o -> o != null && o.getId() != null && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+              .collect(Collectors.toList()))));
+        }
+
 
       }
 
