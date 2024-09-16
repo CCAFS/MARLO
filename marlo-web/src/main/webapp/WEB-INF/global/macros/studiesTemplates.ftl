@@ -937,7 +937,7 @@
   [#local customName = "${name}"/]
   <div class="borderBox">
     <div class="form-group">
-      <label class="label--2" for="">[@s.text name="study.allianceAligment.linkToLevers.title" /]:[@customForm.req required=false /]</label>
+      <label class="label--2" for=""><b>[@s.text name="study.allianceAligment.linkToLevers.title" /]<b>[@customForm.req required=false /]</label>
       [@customForm.helpLabel name="study.allianceAligment.linkToLevers.note" showIcon=false editable=editable isNote=true /]
       <div class="form-group">
         [@customForm.radioToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" name="${customName}" fieldName="primary" listName=allianceLever displayFieldName="name" isPrimaryLever=true checkedValue=1 /]

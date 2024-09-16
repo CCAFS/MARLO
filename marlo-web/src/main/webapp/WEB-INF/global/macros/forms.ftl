@@ -1091,9 +1091,6 @@
         
       [#list listName as radioItem]
 
-      <p>${radioItem.allianceLeverOutcomes}</p>
-      <p>${radioItem.allianceLeversSdgContributions}</p>
-
         [#if radioItem.description?has_content]
           [#local radioItemName = "${radioItem.name}: ${radioItem.description}" /]
         [#else]
@@ -1120,11 +1117,9 @@
                 [#recover]
                   [#local listPrimary = ['Yes','No', 'Maybe'] /] 
                 [/#attempt]
-
-                <p>${listPrimary}</p>
                 
                 <div class="form-group" style="padding-left: 20px;">
-                  <label for="" class="radio-label">Primary list</label>
+                  <label for="" class="radio-label"><b>[@s.text name="study.allianceAligment.linkToLevers.options.text.strategicOutcome" /]</b></label>
                   [#list listPrimary as primaryItem]
                     [@customForm.checkbox value="${primaryItem.id}" name="${customName}.projectExpectedStudyInfo.${fieldName}.allianceLeverOutcomes.${primaryItem.name}" label="${primaryItem.description}" editable=editable /]
                   [/#list]
