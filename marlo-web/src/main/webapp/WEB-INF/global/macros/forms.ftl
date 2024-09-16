@@ -1082,7 +1082,7 @@
   </div>
 [/#macro]
 
-[#macro radioToCheckboxMacro name="" fieldName="" label="" elementList=[] listName="" keyFieldName="" displayFieldName="" template=false hasPrimary=false listNamePrimary="" keyFieldNamePrimary="" displayFieldNamePrimary="" hasSecondary=false listNameSecondary="" keyFieldNameSecondary="" displayFieldNameSecondary="" class="" required=true editable=true checkedValue="" ]
+[#macro radioToCheckboxMacro name="" fieldName="" label="" elementList=[] listName="" keyFieldName="" displayFieldName="" template=false isPrimaryLever=false hasSecondary=false listNameSecondary="" keyFieldNameSecondary="" displayFieldNameSecondary="" class="" required=true editable=true checkedValue="" ]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}"]
 
   [#if listName?has_content]
@@ -1090,6 +1090,9 @@
       <label for="">[@s.text name=label /]:[@req required=required && editable /]</label>
         
       [#list listName as radioItem]
+
+      <p>${radioItem.allianceLeverOutcomes}</p>
+      <p>${radioItem.allianceLeversSdgContributions}</p>
 
         [#if radioItem.description?has_content]
           [#local radioItemName = "${radioItem.name}: ${radioItem.description}" /]
@@ -1111,17 +1114,19 @@
           </div> 
         [#else]
           <div class="form-group" id="innerCheckbox" data-radioButton="${radioItem.id}" style="display:${isChecked?string('block','none')}" >
-              [#if hasPrimary]
+              [#if isPrimaryLever]
                 [#attempt]
-                  [#local listPrimary = (listNamePrimary?filter(x.id = radioItem.id))![] /]
+                  [#local listPrimary = radioItem.allianceLeverOutcomes![] /]
                 [#recover]
                   [#local listPrimary = ['Yes','No', 'Maybe'] /] 
                 [/#attempt]
+
+                <p>${listPrimary}</p>
                 
                 <div class="form-group" style="padding-left: 20px;">
                   <label for="" class="radio-label">Primary list</label>
                   [#list listPrimary as primaryItem]
-                    [@customForm.checkbox value="${radioItem.id}-${primaryItem}" name="${customName}-${radioItem.id}-${primaryItem}" label=primaryItem editable=editable /]
+                    [@customForm.checkbox value="${primaryItem.id}" name="${customName}.projectExpectedStudyInfo.${fieldName}.allianceLeverOutcomes.${primaryItem.name}" label="${primaryItem.description}" editable=editable /]
                   [/#list]
                     
                 </div>

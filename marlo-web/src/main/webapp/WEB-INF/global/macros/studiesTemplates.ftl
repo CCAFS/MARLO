@@ -940,7 +940,7 @@
       <label class="label--2" for="">[@s.text name="study.allianceAligment.linkToLevers.title" /]:[@customForm.req required=false /]</label>
       [@customForm.helpLabel name="study.allianceAligment.linkToLevers.note" showIcon=false editable=editable isNote=true /]
       <div class="form-group">
-        [@customForm.radioToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" name="${customName}" fieldName="primary" listName=allianceLever displayFieldName="name" hasPrimary=true checkedValue=1 /]
+        [@customForm.radioToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" name="${customName}" fieldName="primary" listName=allianceLever displayFieldName="name" isPrimaryLever=true checkedValue=1 /]
       </div>
     </div>
   </div>
