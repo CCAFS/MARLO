@@ -36,7 +36,8 @@ public class ProjectExpectedStudyPartnershipManagerImpl implements ProjectExpect
 
 
   @Inject
-  public ProjectExpectedStudyPartnershipManagerImpl(ProjectExpectedStudyPartnershipDAO projectExpectedStudyPartnershipDAO) {
+  public ProjectExpectedStudyPartnershipManagerImpl(
+    ProjectExpectedStudyPartnershipDAO projectExpectedStudyPartnershipDAO) {
     this.projectExpectedStudyPartnershipDAO = projectExpectedStudyPartnershipDAO;
 
 
@@ -62,13 +63,22 @@ public class ProjectExpectedStudyPartnershipManagerImpl implements ProjectExpect
   }
 
   @Override
-  public ProjectExpectedStudyPartnership getProjectExpectedStudyPartnershipById(long projectExpectedStudyPartnershipID) {
+  public List<ProjectExpectedStudyPartnership> findByExpectedAndPhase(long expectedId, long phaseId) {
+
+    return projectExpectedStudyPartnershipDAO.findByExpectedAndPhase(expectedId, phaseId);
+
+  }
+
+  @Override
+  public ProjectExpectedStudyPartnership
+    getProjectExpectedStudyPartnershipById(long projectExpectedStudyPartnershipID) {
 
     return projectExpectedStudyPartnershipDAO.find(projectExpectedStudyPartnershipID);
   }
 
   @Override
-  public ProjectExpectedStudyPartnership saveProjectExpectedStudyPartnership(ProjectExpectedStudyPartnership projectExpectedStudyPartnership) {
+  public ProjectExpectedStudyPartnership
+    saveProjectExpectedStudyPartnership(ProjectExpectedStudyPartnership projectExpectedStudyPartnership) {
 
     return projectExpectedStudyPartnershipDAO.save(projectExpectedStudyPartnership);
   }

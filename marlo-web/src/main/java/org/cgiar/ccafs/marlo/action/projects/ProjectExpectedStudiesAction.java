@@ -44,6 +44,9 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInstitutionManager
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyMilestoneManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPartnerTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPartnershipsPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPublicationManager;
@@ -70,6 +73,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.AllianceLever;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -97,6 +101,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnerType;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnership;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnershipsPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPublication;
@@ -233,6 +240,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudySdgAllianceLeverManager projectExpectedStudySdgAllianceLeverManager;
   private ProjectExpectedStudyAllianceLeversOutcomeManager projectExpectedStudyAllianceLeversOutcomeManager;
   private ProjectPartnerManager projectPartnerManager;
+  private ProjectExpectedStudyPartnershipManager projectExpectedStudyPartnershipManager;
+  private ProjectExpectedStudyPartnerTypeManager projectExpectedStudyPartnerTypeManager;
+  private ProjectExpectedStudyPartnershipsPersonManager projectExpectedStudyPartnershipsPersonManager;
+  private UserManager userManager;
 
 
   // Variables
@@ -331,7 +342,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     AllianceLeverManager allianceLeverManager,
     ProjectExpectedStudySdgAllianceLeverManager projectExpectedStudySdgAllianceLeverManager,
     ProjectExpectedStudyAllianceLeversOutcomeManager projectExpectedStudyAllianceLeversOutcomeManager,
-    ProjectPartnerManager projectPartnerManager) {
+    ProjectPartnerManager projectPartnerManager,
+    ProjectExpectedStudyPartnershipManager projectExpectedStudyPartnershipManager,
+    ProjectExpectedStudyPartnerTypeManager projectExpectedStudyPartnerTypeManager,
+    ProjectExpectedStudyPartnershipsPersonManager projectExpectedStudyPartnershipsPersonManager,
+    UserManager userManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -392,6 +407,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectExpectedStudySdgAllianceLeverManager = projectExpectedStudySdgAllianceLeverManager;
     this.projectExpectedStudyAllianceLeversOutcomeManager = projectExpectedStudyAllianceLeversOutcomeManager;
     this.projectPartnerManager = projectPartnerManager;
+    this.projectExpectedStudyPartnershipManager = projectExpectedStudyPartnershipManager;
+    this.projectExpectedStudyPartnerTypeManager = projectExpectedStudyPartnerTypeManager;
+    this.projectExpectedStudyPartnershipsPersonManager = projectExpectedStudyPartnershipsPersonManager;
+    this.userManager = userManager;
   }
 
 
@@ -1730,6 +1749,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.savePublications(this.expectedStudyDB, phase);
       this.saveSdgAllianceLever(this.expectedStudyDB, phase);
       this.saveAllianceLeversOutcomes(this.expectedStudyDB, phase);
+      this.saveProjectExpectedPartnership(this.expectedStudyDB, phase);
 
       // AR 2019 Save
       this.saveCenters(this.expectedStudyDB, phase);
@@ -2603,6 +2623,175 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
   /**
+   * 08/01 save Deliverable Partnership Responsible
+   *
+   * @param deliverable
+   */
+  public void saveProjectExpectedPartnership(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    if (projectExpectedStudy.getProjectExpectedStudyPartnerships() != null
+      && projectExpectedStudy.getProjectExpectedStudyPartnerships().size() > 0) {
+      List<ProjectExpectedStudyPartnership> projectExpectedStudyPartnershipCustom = null;
+      try {
+        projectExpectedStudyPartnershipCustom = this.projectExpectedStudyPartnershipManager
+          .findByExpectedAndPhase(projectExpectedStudy.getId(), this.getActualPhase().getId());
+
+      } catch (Exception e) {
+        // TODO: handle exception
+        logger.info(e.getMessage());
+      }
+      List<ProjectExpectedStudyPartnership> projectExpectedStudyPartnershipPrev = null;
+      if (projectExpectedStudyPartnershipCustom != null && !projectExpectedStudyPartnershipCustom.isEmpty()) {
+        projectExpectedStudyPartnershipPrev = projectExpectedStudyPartnershipCustom.stream()
+          .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId()) && dp
+            .getProjectExpectedStudyPartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+          .collect(Collectors.toList());
+      }
+      try {
+        // 2024/07/22 conditional was added to avoid exception by null data
+        if (projectExpectedStudyPartnershipPrev != null && !projectExpectedStudyPartnershipPrev.isEmpty()) {
+          for (ProjectExpectedStudyPartnership projectExpectedStudyPartnership : projectExpectedStudyPartnershipPrev) {
+            if (projectExpectedStudy.getPartnerships() == null || (projectExpectedStudy.getPartnerships() != null
+              && !projectExpectedStudy.getPartnerships().contains(projectExpectedStudyPartnership))) {
+
+              projectExpectedStudyPartnershipManager
+                .deleteProjectExpectedStudyPartnership(projectExpectedStudyPartnership.getId());
+            }
+          }
+        }
+      } catch (Exception e) {
+        logger.error("unable to delete deliverable user partnership in saveProjectExpectedPartnership function  ",
+          e.getMessage());
+      }
+
+    }
+
+    ProjectExpectedStudyPartnerType projectExpectedStudyPartnerType = this.projectExpectedStudyPartnerTypeManager
+      .getProjectExpectedStudyPartnerTypeById(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE);
+    if (projectExpectedStudy.getPartnerships() != null) {
+
+      for (ProjectExpectedStudyPartnership projectExpectedStudyPartnership : projectExpectedStudy.getPartnerships()) {
+        if (projectExpectedStudyPartnership.getId() != null) {
+
+          ProjectExpectedStudyPartnership projectExpectedStudyPartnershipSave = projectExpectedStudyPartnershipManager
+            .getProjectExpectedStudyPartnershipById(projectExpectedStudyPartnership.getId());
+
+          if (projectExpectedStudyPartnership.getInstitution().getId() != null) {
+            if (projectExpectedStudyPartnership.getInstitution().getId() != -1) {
+              Institution institution =
+                institutionManager.getInstitutionById(projectExpectedStudyPartnership.getInstitution().getId());
+              projectExpectedStudyPartnershipSave.setInstitution(institution);
+
+              if (projectExpectedStudyPartnership.getPartnershipsPersons() != null) {
+                projectExpectedStudyPartnershipSave
+                  .setPartnershipsPersons(projectExpectedStudyPartnership.getPartnershipsPersons());
+              }
+
+              projectExpectedStudyPartnershipSave = projectExpectedStudyPartnershipManager
+                .saveProjectExpectedStudyPartnership(projectExpectedStudyPartnershipSave);
+
+              this.saveProjectExpectedstudyPartnershipsPersons(projectExpectedStudyPartnership,
+                projectExpectedStudyPartnershipSave);
+            } else {
+              projectExpectedStudyPartnershipManager
+                .deleteProjectExpectedStudyPartnership(projectExpectedStudyPartnership.getId());
+            }
+          }
+
+        } else {
+
+          ProjectExpectedStudyPartnership projectExpectedStudyPartnershipSave = new ProjectExpectedStudyPartnership();
+          projectExpectedStudyPartnershipSave.setPhase(this.getActualPhase());
+          projectExpectedStudyPartnershipSave.setProjectExpectedStudy(projectExpectedStudy);
+          projectExpectedStudyPartnershipSave.setCreatedBy(this.getCurrentUser());
+          projectExpectedStudyPartnershipSave.setProjectExpectedStudyPartnerType(projectExpectedStudyPartnerType);
+
+          if (projectExpectedStudyPartnership.getInstitution() != null
+            && projectExpectedStudyPartnership.getInstitution().getId() != null) {
+            if (projectExpectedStudyPartnership.getInstitution().getId() != -1) {
+              Institution institution =
+                institutionManager.getInstitutionById(projectExpectedStudyPartnership.getInstitution().getId());
+              projectExpectedStudyPartnershipSave.setInstitution(institution);
+
+              if (projectExpectedStudyPartnership.getPartnershipsPersons() != null) {
+                projectExpectedStudyPartnershipSave
+                  .setPartnershipsPersons(projectExpectedStudyPartnership.getPartnershipsPersons());
+              }
+
+              projectExpectedStudyPartnershipSave = projectExpectedStudyPartnershipManager
+                .saveProjectExpectedStudyPartnership(projectExpectedStudyPartnershipSave);
+
+              this.saveProjectExpectedstudyPartnershipsPersons(projectExpectedStudyPartnership,
+                projectExpectedStudyPartnershipSave);
+            }
+          }
+
+        }
+      }
+
+
+    }
+
+  }
+
+  private void saveProjectExpectedstudyPartnershipsPersons(
+    ProjectExpectedStudyPartnership projectExpectedStudyPartnership,
+    ProjectExpectedStudyPartnership projectExpectedStudyPartnershipDB) {
+
+    if (projectExpectedStudyPartnershipDB.getProjectExpectedStudyPartnershipsPersons() != null
+      && !projectExpectedStudyPartnershipDB.getProjectExpectedStudyPartnershipsPersons().isEmpty()) {
+
+      List<ProjectExpectedStudyPartnershipsPerson> projectExpectedStudyPartnershipsPersonPrev =
+        projectExpectedStudyPartnershipDB.getProjectExpectedStudyPartnershipsPersons().stream()
+          .filter(dp -> dp.isActive()).collect(Collectors.toList());
+
+      for (ProjectExpectedStudyPartnershipsPerson projectExpectedStudyPartnershipsPerson : projectExpectedStudyPartnershipsPersonPrev) {
+        if (projectExpectedStudyPartnership.getPartnershipsPersons() == null || !projectExpectedStudyPartnership
+          .getPartnershipsPersons().contains(projectExpectedStudyPartnershipsPerson)) {
+          this.projectExpectedStudyPartnershipsPersonManager
+            .deleteProjectExpectedStudyPartnershipsPerson(projectExpectedStudyPartnershipsPerson.getId());
+        }
+      }
+
+    }
+
+    if (projectExpectedStudyPartnership.getPartnershipsPersons() != null) {
+
+      for (ProjectExpectedStudyPartnershipsPerson person : projectExpectedStudyPartnership.getPartnershipsPersons()) {
+
+        if (person.getId() != null) {
+          ProjectExpectedStudyPartnershipsPerson projectExpectedStudyPartnershipsPersonNew =
+            this.projectExpectedStudyPartnershipsPersonManager
+              .getProjectExpectedStudyPartnershipsPersonById(person.getId());
+          if (person.getUser() != null && person.getUser().getId() != null) {
+            if (!person.getUser().getId().equals(projectExpectedStudyPartnershipsPersonNew.getUser().getId())) {
+              projectExpectedStudyPartnershipsPersonNew.setUser(userManager.getUser(person.getUser().getId()));
+              this.projectExpectedStudyPartnershipsPersonManager
+                .saveProjectExpectedStudyPartnershipsPerson(projectExpectedStudyPartnershipsPersonNew);
+            }
+          } else {
+            this.projectExpectedStudyPartnershipsPersonManager
+              .deleteProjectExpectedStudyPartnershipsPerson(person.getId());
+          }
+        } else {
+          if (person.getUser() != null && person.getUser().getId() != null) {
+            ProjectExpectedStudyPartnershipsPerson projectExpectedStudyPartnershipsPersonNew =
+              new ProjectExpectedStudyPartnershipsPerson();
+            projectExpectedStudyPartnershipsPersonNew.setUser(userManager.getUser(person.getUser().getId()));
+            projectExpectedStudyPartnershipsPersonNew
+              .setProjectExpectedStudyPartnership(projectExpectedStudyPartnershipDB);
+            this.projectExpectedStudyPartnershipsPersonManager
+              .saveProjectExpectedStudyPartnershipsPerson(projectExpectedStudyPartnershipsPersonNew);
+          }
+        }
+      }
+
+    }
+
+  }
+
+
+  /**
    * Save Expected Studies Project Outcome Information
    * 
    * @param projectExpectedStudy
@@ -2651,6 +2840,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   /**
    * Save Expected Studies Projects Information
    * 
@@ -2694,7 +2884,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
-
 
   /**
    * Save Expected Studies Publications
@@ -2903,7 +3092,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * Save Expected Studies Regions Information
@@ -3265,6 +3453,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.newExpectedYear = newExpectedYear;
   }
 
+
   public void setOrganizationTypes(List<RepIndOrganizationType> organizationTypes) {
     this.organizationTypes = organizationTypes;
   }
@@ -3272,7 +3461,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public void setPolicyInvestimentTypes(List<RepIndPolicyInvestimentType> policyInvestimentTypes) {
     this.policyInvestimentTypes = policyInvestimentTypes;
   }
-
 
   public void setPolicyList(List<ProjectPolicy> policyList) {
     this.policyList = policyList;
@@ -3290,6 +3478,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectOutcomes = projectOutcomes;
   }
 
+
   public void setQuantificationTypes(List<QuantificationType> quantificationTypes) {
     this.quantificationTypes = quantificationTypes;
   }
@@ -3297,7 +3486,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public void setRegionList(List<CrpProgram> regionList) {
     this.regionList = regionList;
   }
-
 
   public void setRegions(List<LocElement> regions) {
     this.regions = regions;
@@ -3347,9 +3535,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.targets = targets;
   }
 
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
+
 
   @Override
   public void validate() {

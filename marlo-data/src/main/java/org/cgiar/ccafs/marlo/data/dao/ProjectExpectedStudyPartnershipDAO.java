@@ -55,11 +55,15 @@ public interface ProjectExpectedStudyPartnershipDAO {
   public List<ProjectExpectedStudyPartnership> findAll();
 
 
+  List<ProjectExpectedStudyPartnership> findByExpectedAndPhase(long expectedId, long phaseId);
+
   /**
    * This method saves the information of the given projectExpectedStudyPartnership
    * 
-   * @param projectExpectedStudyPartnership - is the projectExpectedStudyPartnership object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyPartnership was
+   * @param projectExpectedStudyPartnership - is the projectExpectedStudyPartnership object with the new information to
+   *        be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyPartnership was
    *         updated
    *         or -1 is some error occurred.
    */
