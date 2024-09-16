@@ -937,10 +937,13 @@
   [#local customName = "${name}"/]
   <div class="borderBox">
     <div class="form-group">
-      <label class="label--2" for=""><b>[@s.text name="study.allianceAligment.linkToLevers.title" /]<b>[@customForm.req required=false /]</label>
+      <label class="label--2" for=""><b>[@s.text name="study.allianceAligment.linkToLevers.title" /]</b>[@customForm.req required=false /]</label>
       [@customForm.helpLabel name="study.allianceAligment.linkToLevers.note" showIcon=false editable=editable isNote=true /]
       <div class="form-group">
         [@customForm.radioToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" name="${customName}" fieldName="primary" listName=allianceLever displayFieldName="name" isPrimaryLever=true hasInnerCheckbox=true labelInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="allianceLeversSdgContributions" classReferenceInnerCheckbox="sDGContribution" checkedValue=1 /]
+      </div>
+      <div class="form-group">
+        [@customForm.radioToCheckboxMacro label="study.allianceAligment.linkToLevers.options.relatedLever" name="${customName}" fieldName="related" listName=allianceLever displayFieldName="name" isPrimaryLever=false hasInnerCheckbox=true labelInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="allianceLeversSdgContributions" classReferenceInnerCheckbox="sDGContribution" checkedValue=1 /]
       </div>
     </div>
   </div>

@@ -1087,7 +1087,7 @@
 
   [#if listName?has_content]
     <div class="form-group radioToCheckbox">
-      <label for="">[@s.text name=label /]:[@req required=required && editable /]</label>
+      <label for="">[@s.text name=label /][@req required=required && editable /]</label>
         
       [#list listName as radioItem]
 
