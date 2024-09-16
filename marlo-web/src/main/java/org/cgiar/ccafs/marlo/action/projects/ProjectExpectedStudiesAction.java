@@ -71,6 +71,7 @@ import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.model.AllianceLever;
+import org.cgiar.ccafs.marlo.data.model.AllianceLeversSdgContribution;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -675,6 +676,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
         this.setTransaction("-1");
       }
+
       if (this.expectedStudy.getProjectExpectedStudyInfo() == null) {
         this.expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase());
       }
@@ -1159,7 +1161,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             (new ArrayList<>(this.expectedStudy.getProjectExpectedStudySdgAllianceLevers().stream()
               .filter(o -> o != null && o.getId() != null && o.isActive() && o.getPhase().getId().equals(phase.getId()))
               .collect(Collectors.toList()))));
+
+          // Set Alliance lever to study object
+          if (this.expectedStudy.getSdgAllianceLevers() != null) {
+            this.expectedStudy.setAllianceLever(this.expectedStudy.getSdgAllianceLevers().get(0).getAllianceLever());
+
+
+          }
+
+
         }
+
 
         // Expected Study allianceLeversOutcomes List
         if (this.expectedStudy.getProjectExpectedStudyAllianceLeversOutcomes() != null) {
@@ -1169,6 +1181,32 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               .collect(Collectors.toList()))));
         }
 
+
+        if (this.expectedStudy.getAllianceLever() != null
+          && this.expectedStudy.getAllianceLever().getLeverSdgContributions() != null) {
+          for (AllianceLeversSdgContribution leverSdgContribution : this.expectedStudy.getAllianceLever()
+            .getLeverSdgContributions()) {
+
+            if (leverSdgContribution != null && leverSdgContribution.getsDGContribution() != null) {
+              this.expectedStudy.getAllianceLever().getSdgContributions()
+                .add(leverSdgContribution.getsDGContribution());
+            }
+          }
+        }
+        if (this.expectedStudy.getAllianceLevers() != null) {
+          for (AllianceLever allianceLeverObject : this.expectedStudy.getAllianceLevers()) {
+
+            if (allianceLeverObject != null && allianceLeverObject.getLeverSdgContributions() != null) {
+              for (AllianceLeversSdgContribution leverSdgContribution : allianceLeverObject
+                .getLeverSdgContributions()) {
+                if (leverSdgContribution != null && leverSdgContribution.getsDGContribution() != null) {
+                  allianceLeverObject.getSdgContributions().add(leverSdgContribution.getsDGContribution());
+                }
+              }
+            }
+          }
+        }
+
         // Expected Study projectExpectedStudyPartnerships List
         if (this.expectedStudy.getProjectExpectedStudyPartnerships() != null) {
           this.expectedStudy
@@ -1176,8 +1214,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               .filter(o -> o != null && o.getId() != null && o.isActive() && o.getPhase().getId().equals(phase.getId()))
               .collect(Collectors.toList()))));
         }
-
-
       }
 
 
@@ -1188,7 +1224,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
       }
-
 
       // Getting The list
       this.statuses = this.generalStatusManager.findByTable(APConstants.PROJECT_EXPECTED_STUDIES_TABLE);
@@ -1296,8 +1331,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       if (this.allianceLever != null) {
         for (AllianceLever allianceLeverTmp : this.allianceLever) {
           if (allianceLeverTmp.getAllianceLeversSdgContributions() != null) {
-            allianceLeverTmp.setSdgContributions(new ArrayList<>(allianceLeverTmp.getAllianceLeversSdgContributions()
-              .stream().filter(o -> o != null && o.getId() != null && o.isActive()).collect(Collectors.toList())));
+            allianceLeverTmp
+              .setLeverSdgContributions(new ArrayList<>(allianceLeverTmp.getAllianceLeversSdgContributions().stream()
+                .filter(o -> o != null && o.getId() != null && o.isActive()).collect(Collectors.toList())));
           }
         }
 
@@ -2975,7 +3011,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
     }
-
 
     // Save form Information
     if (this.expectedStudy.getSdgAllianceLevers() != null) {
