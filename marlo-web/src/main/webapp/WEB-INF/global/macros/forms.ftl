@@ -1140,8 +1140,6 @@
                     [#list listInnerContent as innerItem]
                       [@customForm.checkbox value="${innerItem.id}" name="${customName}.projectExpectedStudyInfo.${fieldName}" label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable /]
                     [/#list]
-                    [#else]
-                    <p>No inner content</p>
                   [/#if]
                 </div>
               [/#if]
