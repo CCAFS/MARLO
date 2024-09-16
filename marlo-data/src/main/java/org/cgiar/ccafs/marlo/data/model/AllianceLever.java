@@ -34,13 +34,15 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
 
   private Set<AllianceLeverOutcome> allianceLeverOutcomes = new HashSet<>(0);
 
-
   private List<AllianceLeverOutcome> outcomes;
 
   private Set<AllianceLeversSdgContribution> allianceLeversSdgContributions = new HashSet<>(0);
 
+  private List<AllianceLeversSdgContribution> leverSdgContributions;
 
-  private List<AllianceLeversSdgContribution> sdgContributions;
+  // Saved elements
+  private List<SDGContribution> sdgContributions;
+  private List<AllianceLeverOutcome> leverOutcomes;
 
 
   public AllianceLever() {
@@ -81,6 +83,14 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
     return description;
   }
 
+  public List<AllianceLeverOutcome> getLeverOutcomes() {
+    return leverOutcomes;
+  }
+
+  public List<AllianceLeversSdgContribution> getLeverSdgContributions() {
+    return leverSdgContributions;
+  }
+
 
   @Override
   public String getLogDeatil() {
@@ -89,17 +99,15 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
     return sb.toString();
   }
 
-
   public String getName() {
     return name;
   }
-
 
   public List<AllianceLeverOutcome> getOutcomes() {
     return outcomes;
   }
 
-  public List<AllianceLeversSdgContribution> getSdgContributions() {
+  public List<SDGContribution> getSdgContributions() {
     return sdgContributions;
   }
 
@@ -107,13 +115,20 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
     this.allianceLeverOutcomes = allianceLeverOutcomes;
   }
 
-
   public void setAllianceLeversSdgContributions(Set<AllianceLeversSdgContribution> allianceLeversSdgContributions) {
     this.allianceLeversSdgContributions = allianceLeversSdgContributions;
   }
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public void setLeverOutcomes(List<AllianceLeverOutcome> leverOutcomes) {
+    this.leverOutcomes = leverOutcomes;
+  }
+
+  public void setLeverSdgContributions(List<AllianceLeversSdgContribution> leverSdgContributions) {
+    this.leverSdgContributions = leverSdgContributions;
   }
 
   public void setName(String name) {
@@ -124,7 +139,7 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
     this.outcomes = outcomes;
   }
 
-  public void setSdgContributions(List<AllianceLeversSdgContribution> sdgContributions) {
+  public void setSdgContributions(List<SDGContribution> sdgContributions) {
     this.sdgContributions = sdgContributions;
   }
 
