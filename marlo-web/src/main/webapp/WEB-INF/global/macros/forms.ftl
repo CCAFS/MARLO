@@ -1082,7 +1082,7 @@
   </div>
 [/#macro]
 
-[#macro radioToCheckboxMacro name="" fieldName="" label="" elementList=[] listName="" keyFieldName="" displayFieldName="" template=false isPrimaryLever=false hasSecondary=false listNameSecondary="" keyFieldNameSecondary="" displayFieldNameSecondary="" class="" required=true editable=true checkedValue="" ]
+[#macro radioToCheckboxMacro name="" fieldName="" label="" elementList=[] listName="" keyFieldName="" displayFieldName="" template=false isPrimaryLever=false hasInnerCheckbox=false listNameInnerCheckbox="" labelInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true checkedValue="" ]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}"]
 
   [#if listName?has_content]
@@ -1115,7 +1115,7 @@
                 [#attempt]
                   [#local listPrimary = radioItem.allianceLeverOutcomes![] /]
                 [#recover]
-                  [#local listPrimary = ['Yes','No', 'Maybe'] /] 
+                  [#local listPrimary = [] /] 
                 [/#attempt]
                 
                 <div class="form-group" style="padding-left: 20px;">
@@ -1123,12 +1123,26 @@
                   [#list listPrimary as primaryItem]
                     [@customForm.checkbox value="${primaryItem.id}" name="${customName}.projectExpectedStudyInfo.${fieldName}.allianceLeverOutcomes.${primaryItem.name}" label="${primaryItem.description}" editable=editable /]
                   [/#list]
-                    
                 </div>
               [/#if]
-              [#if hasSecondary]
+
+              [#if hasInnerCheckbox]
                 <div class="form-group" style="padding-left: 20px;">
-                  <label for="" class="radio-label">Secondary list</label>
+                  <label for="" class="radio-label"><b>[@s.text name=labelInnerCheckbox /]</b></label>
+
+                  [#attempt]
+                    [#local listInnerContent = radioItem[listNameInnerCheckbox]![] /]
+                  [#recover]
+                    [#local listInnerContent = [] /] 
+                  [/#attempt]
+
+                  [#if listInnerContent?has_content]
+                    [#list listInnerContent as innerItem]
+                      [@customForm.checkbox value="${innerItem.id}" name="${customName}.projectExpectedStudyInfo.${fieldName}" label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable /]
+                    [/#list]
+                    [#else]
+                    <p>No inner content</p>
+                  [/#if]
                 </div>
               [/#if]
           </div>
