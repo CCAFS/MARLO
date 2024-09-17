@@ -297,12 +297,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<CrpProgramOutcome> crpOutcomes;
   private List<ProjectExpectedStudyTag> tagList;
   private List<QuantificationType> quantificationTypes;
-  private List<Object> primaryAllianceLever;
-  private List<Object> relatedAllianceLever;
-  private List<Object> primaryAllianceStrategicOutcome;
-  private List<Object> sdgContribution;
 
   private List<AllianceLever> allianceLever;
+  private List<ProjectPartner> partners;
+  private List<ProjectPartnerPerson> partnerPersons;
+  private List<Institution> partnerInstitutions;
+  private Boolean isManagingPartnerPersonRequerid;
 
 
   @Inject
@@ -499,17 +499,21 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.expectedID;
   }
 
+
   public ProjectExpectedStudy getExpectedStudy() {
     return this.expectedStudy;
   }
+
 
   public List<FeedbackQACommentableFields> getFeedbackComments() {
     return feedbackComments;
   }
 
+
   public List<CrpProgram> getFlagshipList() {
     return this.flagshipList;
   }
+
 
   public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
     return this.focusLevels;
@@ -551,6 +555,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.organizationTypes;
   }
 
+  public List<ProjectPartnerPerson> getPartnerPersons() {
+    return partnerPersons;
+  }
+
+  public List<ProjectPartner> getPartners() {
+    return partners;
+  }
+
   public String getPath() {
     return this.config.getDownloadURL() + "/" + this.getStudiesSourceFolder().replace('\\', '/');
   }
@@ -567,7 +579,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.project;
   }
 
-
   public long getProjectID() {
     return this.projectID;
   }
@@ -575,6 +586,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public List<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
   }
+
 
   public List<QuantificationType> getQuantificationTypes() {
     return quantificationTypes;
@@ -592,7 +604,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return srfSubIdoPrimary;
   }
 
-
   public List<RepIndStageProcess> getStageProcesses() {
     return this.stageProcesses;
   }
@@ -600,6 +611,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public List<RepIndStageStudy> getStageStudies() {
     return this.stageStudies;
   }
+
 
   public List<GeneralStatus> getStatuses() {
     return this.statuses;
@@ -1268,6 +1280,35 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             }
 
           }
+        }
+
+
+        partners = new ArrayList<>();
+        partnerInstitutions = new ArrayList<>();
+        isManagingPartnerPersonRequerid = this.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
+
+
+        List<ProjectPartner> partnersTmp = projectPartnerManager
+          .findAllByPhaseProject(this.expectedStudy.getProject().getId(), this.getActualPhase().getId());
+
+        if (partnersTmp != null) {
+          for (ProjectPartner partner : partnersTmp) {
+            List<ProjectPartnerPerson> persons =
+              partner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+            if (!isManagingPartnerPersonRequerid) {
+              partners.add(partner);
+              partnerInstitutions.add(partner.getInstitution());
+            } else {
+              if (!persons.isEmpty()) {
+                partners.add(partner);
+                partnerInstitutions.add(partner.getInstitution());
+              }
+            }
+          }
+          partnerPersons = new ArrayList<>();
+
+          partnerPersons =
+            partners.stream().flatMap(e -> e.getProjectPartnerPersons().stream()).collect(Collectors.toList());
         }
 
 
@@ -2638,7 +2679,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save Expected Studies Policies Information
    * 
@@ -2692,7 +2732,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * 08/01 save Deliverable Partnership Responsible
@@ -2806,6 +2845,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   private void saveProjectExpectedstudyPartnershipsPersons(
     ProjectExpectedStudyPartnership projectExpectedStudyPartnership,
     ProjectExpectedStudyPartnership projectExpectedStudyPartnershipDB) {
@@ -2912,7 +2952,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save Expected Studies Projects Information
    * 
@@ -2956,6 +2995,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
+
 
   /**
    * Save Expected Studies Publications
@@ -3164,6 +3204,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * Save Expected Studies Regions Information
@@ -3524,9 +3565,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.newExpectedYear = newExpectedYear;
   }
 
-
   public void setOrganizationTypes(List<RepIndOrganizationType> organizationTypes) {
     this.organizationTypes = organizationTypes;
+  }
+
+  public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
+    this.partnerPersons = partnerPersons;
+  }
+
+
+  public void setPartners(List<ProjectPartner> partners) {
+    this.partners = partners;
   }
 
   public void setPolicyInvestimentTypes(List<RepIndPolicyInvestimentType> policyInvestimentTypes) {

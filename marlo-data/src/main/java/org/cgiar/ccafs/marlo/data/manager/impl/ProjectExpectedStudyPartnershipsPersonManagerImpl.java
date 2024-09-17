@@ -28,7 +28,8 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ProjectExpectedStudyPartnershipsPersonManagerImpl implements ProjectExpectedStudyPartnershipsPersonManager {
+public class ProjectExpectedStudyPartnershipsPersonManagerImpl
+  implements ProjectExpectedStudyPartnershipsPersonManager {
 
 
   private ProjectExpectedStudyPartnershipsPersonDAO projectExpectedStudyPartnershipsPersonDAO;
@@ -36,7 +37,8 @@ public class ProjectExpectedStudyPartnershipsPersonManagerImpl implements Projec
 
 
   @Inject
-  public ProjectExpectedStudyPartnershipsPersonManagerImpl(ProjectExpectedStudyPartnershipsPersonDAO projectExpectedStudyPartnershipsPersonDAO) {
+  public ProjectExpectedStudyPartnershipsPersonManagerImpl(
+    ProjectExpectedStudyPartnershipsPersonDAO projectExpectedStudyPartnershipsPersonDAO) {
     this.projectExpectedStudyPartnershipsPersonDAO = projectExpectedStudyPartnershipsPersonDAO;
 
 
@@ -45,13 +47,15 @@ public class ProjectExpectedStudyPartnershipsPersonManagerImpl implements Projec
   @Override
   public void deleteProjectExpectedStudyPartnershipsPerson(long projectExpectedStudyPartnershipsPersonId) {
 
-    projectExpectedStudyPartnershipsPersonDAO.deleteProjectExpectedStudyPartnershipsPerson(projectExpectedStudyPartnershipsPersonId);
+    projectExpectedStudyPartnershipsPersonDAO
+      .deleteProjectExpectedStudyPartnershipsPerson(projectExpectedStudyPartnershipsPersonId);
   }
 
   @Override
   public boolean existProjectExpectedStudyPartnershipsPerson(long projectExpectedStudyPartnershipsPersonID) {
 
-    return projectExpectedStudyPartnershipsPersonDAO.existProjectExpectedStudyPartnershipsPerson(projectExpectedStudyPartnershipsPersonID);
+    return projectExpectedStudyPartnershipsPersonDAO
+      .existProjectExpectedStudyPartnershipsPerson(projectExpectedStudyPartnershipsPersonID);
   }
 
   @Override
@@ -62,13 +66,15 @@ public class ProjectExpectedStudyPartnershipsPersonManagerImpl implements Projec
   }
 
   @Override
-  public ProjectExpectedStudyPartnershipsPerson getProjectExpectedStudyPartnershipsPersonById(long projectExpectedStudyPartnershipsPersonID) {
+  public ProjectExpectedStudyPartnershipsPerson
+    getProjectExpectedStudyPartnershipsPersonById(long projectExpectedStudyPartnershipsPersonID) {
 
     return projectExpectedStudyPartnershipsPersonDAO.find(projectExpectedStudyPartnershipsPersonID);
   }
 
   @Override
-  public ProjectExpectedStudyPartnershipsPerson saveProjectExpectedStudyPartnershipsPerson(ProjectExpectedStudyPartnershipsPerson projectExpectedStudyPartnershipsPerson) {
+  public ProjectExpectedStudyPartnershipsPerson saveProjectExpectedStudyPartnershipsPerson(
+    ProjectExpectedStudyPartnershipsPerson projectExpectedStudyPartnershipsPerson) {
 
     return projectExpectedStudyPartnershipsPersonDAO.save(projectExpectedStudyPartnershipsPerson);
   }
