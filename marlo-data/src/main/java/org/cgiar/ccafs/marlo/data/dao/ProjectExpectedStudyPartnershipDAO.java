@@ -55,6 +55,8 @@ public interface ProjectExpectedStudyPartnershipDAO {
   public List<ProjectExpectedStudyPartnership> findAll();
 
 
+  List<ProjectExpectedStudyPartnership> findByExpected(long expectedId);
+
   List<ProjectExpectedStudyPartnership> findByExpectedAndPhase(long expectedId, long phaseId);
 
   /**

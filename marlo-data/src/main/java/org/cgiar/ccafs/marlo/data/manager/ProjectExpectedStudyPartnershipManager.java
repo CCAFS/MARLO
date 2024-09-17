@@ -52,7 +52,10 @@ public interface ProjectExpectedStudyPartnershipManager {
   public List<ProjectExpectedStudyPartnership> findAll();
 
 
+  List<ProjectExpectedStudyPartnership> findByExpected(long expectedIdd);
+
   List<ProjectExpectedStudyPartnership> findByExpectedAndPhase(long expectedId, long phaseId);
+
 
   /**
    * This method gets a projectExpectedStudyPartnership object by a given projectExpectedStudyPartnership identifier.
