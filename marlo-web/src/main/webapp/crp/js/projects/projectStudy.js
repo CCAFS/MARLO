@@ -466,7 +466,7 @@ function attachEvents() {
 
   $('input.radioType-contributionToCGIAR').on('change', onDisplayCommentForNoContributingCGIAR);
 
-  $('input[id*="radioCheckDisplay_primary"]').on('change', displayInnerCheckbox);
+  $('input[id*="radioCheckDisplay_"]').on('change', displayInnerCheckbox);
 }
 
 function addSelect2() {
