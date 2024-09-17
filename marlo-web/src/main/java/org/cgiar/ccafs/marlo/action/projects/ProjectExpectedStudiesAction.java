@@ -148,6 +148,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1211,13 +1212,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
 
           // Fill alliance lever list with sdg contributions saved elements
-          for (AllianceLever allianceLeverObject : this.expectedStudy.getAllianceLevers()) {
+          if (this.expectedStudy.getAllianceLevers() != null) {
+            for (AllianceLever allianceLeverObject : this.expectedStudy.getAllianceLevers()) {
 
-            if (allianceLeverObject != null && allianceLeverObject.getLeverSdgContributions() != null) {
-              for (AllianceLeversSdgContribution leverSdgContribution : allianceLeverObject
-                .getLeverSdgContributions()) {
-                if (leverSdgContribution != null && leverSdgContribution.getsDGContribution() != null) {
-                  allianceLeverObject.getSdgContributions().add(leverSdgContribution.getsDGContribution());
+              if (allianceLeverObject != null && allianceLeverObject.getLeverSdgContributions() != null) {
+                for (AllianceLeversSdgContribution leverSdgContribution : allianceLeverObject
+                  .getLeverSdgContributions()) {
+                  if (leverSdgContribution != null && leverSdgContribution.getsDGContribution() != null) {
+                    allianceLeverObject.getSdgContributions().add(leverSdgContribution.getsDGContribution());
+                  }
                 }
               }
             }
@@ -1227,6 +1230,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             for (ProjectExpectedStudyAllianceLeversOutcome allianceLeverOutcome : this.expectedStudy
               .getAllianceLeversOutcomes()) {
               if (allianceLeverOutcome != null && allianceLeverOutcome.getAllianceLeverOutcome() != null) {
+                this.expectedStudy.getAllianceLever().setLeverOutcomes(new ArrayList<>());
                 this.expectedStudy.getAllianceLever().getLeverOutcomes()
                   .add(allianceLeverOutcome.getAllianceLeverOutcome());
               }
@@ -1234,13 +1238,39 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
 
+
         // Expected Study projectExpectedStudyPartnerships List
         if (this.expectedStudy.getProjectExpectedStudyPartnerships() != null) {
-          this.expectedStudy
-            .setPartnerships((new ArrayList<>(this.expectedStudy.getProjectExpectedStudyPartnerships().stream()
-              .filter(o -> o != null && o.getId() != null && o.isActive() && o.getPhase().getId().equals(phase.getId()))
-              .collect(Collectors.toList()))));
+
+          List<ProjectExpectedStudyPartnership> deList =
+            this.expectedStudy.getProjectExpectedStudyPartnerships().stream()
+              .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+                && dp.getProjectExpectedStudyPartnerType().getId()
+                  .equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+              .collect(Collectors.toList());
+
+          if (deList != null && !deList.isEmpty()) {
+            try {
+              Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            } catch (Exception e) {
+              logger.error("unable to sort dlist", e);
+            }
+            this.expectedStudy.setPartnerships(new ArrayList<>());
+            for (ProjectExpectedStudyPartnership projectExpectedStudyPartnership : deList) {
+
+              if (projectExpectedStudyPartnership.getProjectExpectedStudyPartnershipsPersons() != null) {
+                List<ProjectExpectedStudyPartnershipsPerson> partnershipPersons =
+                  new ArrayList<>(projectExpectedStudyPartnership.getProjectExpectedStudyPartnershipsPersons().stream()
+                    .filter(d -> d.isActive()).collect(Collectors.toList()));
+                projectExpectedStudyPartnership.setPartnershipsPersons(partnershipPersons);
+              }
+              this.expectedStudy.getPartnerships().add(projectExpectedStudyPartnership);
+            }
+
+          }
         }
+
+
       }
 
 

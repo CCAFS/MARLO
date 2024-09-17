@@ -79,10 +79,15 @@ public class ProjectExpectedStudyAllianceLeversOutcomeManagerImpl
     ProjectExpectedStudyAllianceLeversOutcome projectExpectedStudyAllianceLeversOutcome) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<ProjectExpectedStudyAllianceLeversOutcome> projectExpectedStudyAllianceLeversOutcomeList = phase
-      .getProjectExpectedStudyAllianceLeversOutcomes().stream().filter(c -> c.isActive() && c.getProjectExpectedStudy()
-        .getId() == projectExpectedStudyAllianceLeversOutcome.getProjectExpectedStudy().getId())
-      .collect(Collectors.toList());
+    List<ProjectExpectedStudyAllianceLeversOutcome> projectExpectedStudyAllianceLeversOutcomeList =
+      phase.getProjectExpectedStudyAllianceLeversOutcomes().stream()
+        .filter(c -> c.isActive()
+          && c.getProjectExpectedStudy().getId() == projectExpectedStudyAllianceLeversOutcome.getProjectExpectedStudy()
+            .getId()
+          && c.getAllianceLever() == projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome()
+            .getAllianceLever()
+          && c.getAllianceLeverOutcome() == projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome())
+        .collect(Collectors.toList());
     for (ProjectExpectedStudyAllianceLeversOutcome projectExpectedStudyAllianceLeversOutcomeTmp : projectExpectedStudyAllianceLeversOutcomeList) {
       projectExpectedStudyAllianceLeversOutcomeDAO
         .deleteProjectExpectedStudyAllianceLeversOutcome(projectExpectedStudyAllianceLeversOutcomeTmp.getId());
@@ -126,10 +131,14 @@ public class ProjectExpectedStudyAllianceLeversOutcomeManagerImpl
     ProjectExpectedStudyAllianceLeversOutcome projectExpectedStudyAllianceLeversOutcome) {
 
     Phase phase = phaseDAO.find(next.getId());
-    List<ProjectExpectedStudyAllianceLeversOutcome> projectExpectedStudyAllianceLeversOutcomeList = phase
-      .getProjectExpectedStudyAllianceLeversOutcomes().stream().filter(c -> c.getProjectExpectedStudy().getId()
-        .longValue() == projectExpectedStudyAllianceLeversOutcome.getProjectExpectedStudy().getId())
-      .collect(Collectors.toList());
+    List<ProjectExpectedStudyAllianceLeversOutcome> projectExpectedStudyAllianceLeversOutcomeList =
+      phase.getProjectExpectedStudyAllianceLeversOutcomes().stream()
+        .filter(c -> c.getProjectExpectedStudy().getId().longValue() == projectExpectedStudyAllianceLeversOutcome
+          .getProjectExpectedStudy().getId()
+          && c.getAllianceLever() == projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome()
+            .getAllianceLever()
+          && c.getAllianceLeverOutcome() == projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome())
+        .collect(Collectors.toList());
     if (projectExpectedStudyAllianceLeversOutcomeList.isEmpty()) {
 
       ProjectExpectedStudyAllianceLeversOutcome projectExpectedStudyAllianceLeversOutcomeAdd =

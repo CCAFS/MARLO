@@ -81,8 +81,12 @@ public class ProjectExpectedStudySdgAllianceLeverManagerImpl implements ProjectE
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectExpectedStudySdgAllianceLever> projectExpectedStudySdgAllianceLeverList = phase
-      .getProjectExpectedStudySdgAllianceLevers().stream().filter(c -> c.isActive() && c.getProjectExpectedStudy()
-        .getId() == projectExpectedStudySdgAllianceLever.getProjectExpectedStudy().getId())
+      .getProjectExpectedStudySdgAllianceLevers().stream()
+      .filter(c -> c.isActive()
+        && c.getProjectExpectedStudy().getId() == projectExpectedStudySdgAllianceLever.getProjectExpectedStudy().getId()
+        && c.getAllianceLever() == projectExpectedStudySdgAllianceLever.getAllianceLever()
+        && c.getsDGContribution() == projectExpectedStudySdgAllianceLever.getsDGContribution()
+        && c.getIsPrimary() == projectExpectedStudySdgAllianceLever.getIsPrimary())
       .collect(Collectors.toList());
     for (ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLeverTmp : projectExpectedStudySdgAllianceLeverList) {
       projectExpectedStudySdgAllianceLeverDAO
@@ -125,10 +129,14 @@ public class ProjectExpectedStudySdgAllianceLeverManagerImpl implements ProjectE
   public void saveInfoPhase(Phase next, ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLever) {
 
     Phase phase = phaseDAO.find(next.getId());
-    List<ProjectExpectedStudySdgAllianceLever> projectExpectedStudySdgAllianceLeverList = phase
-      .getProjectExpectedStudySdgAllianceLevers().stream().filter(c -> c.getProjectExpectedStudy().getId()
-        .longValue() == projectExpectedStudySdgAllianceLever.getProjectExpectedStudy().getId())
-      .collect(Collectors.toList());
+    List<ProjectExpectedStudySdgAllianceLever> projectExpectedStudySdgAllianceLeverList =
+      phase.getProjectExpectedStudySdgAllianceLevers().stream()
+        .filter(c -> c.getProjectExpectedStudy().getId().longValue() == projectExpectedStudySdgAllianceLever
+          .getProjectExpectedStudy().getId()
+          && c.getAllianceLever() == projectExpectedStudySdgAllianceLever.getAllianceLever()
+          && c.getsDGContribution() == projectExpectedStudySdgAllianceLever.getsDGContribution()
+          && c.getIsPrimary() == projectExpectedStudySdgAllianceLever.getIsPrimary())
+        .collect(Collectors.toList());
     if (projectExpectedStudySdgAllianceLeverList.isEmpty()) {
 
       ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLeverAdd =
