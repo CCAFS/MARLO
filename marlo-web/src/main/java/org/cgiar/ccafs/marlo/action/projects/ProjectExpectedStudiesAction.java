@@ -1172,7 +1172,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
                 && p.getPrimary() && p.getPhase() != null && p.getPhase().getId().equals(phase.getId()))
               .collect(Collectors.toList());
 
-            if (projectPolicies != null && projectPolicies.size() > 0 && projectPolicies.get(0) != null) {
+            if (projectPolicies != null && !projectPolicies.isEmpty() && projectPolicies.get(0) != null) {
               milestonePrimaryId = projectPolicies.get(0).getCrpMilestone().getId(); //
               crpMilestonePrimary = projectPolicies.get(0).getCrpMilestone().getId(); //
             }
@@ -1196,7 +1196,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               .collect(Collectors.toList()))));
 
           // Set Alliance lever to study object
-          if (this.expectedStudy.getSdgAllianceLevers() != null) {
+          if (this.expectedStudy.getSdgAllianceLevers() != null
+            && this.expectedStudy.getSdgAllianceLevers().get(0) != null
+            && this.expectedStudy.getSdgAllianceLevers().get(0).getAllianceLever() != null) {
             this.expectedStudy.setAllianceLever(this.expectedStudy.getSdgAllianceLevers().get(0).getAllianceLever());
           }
         }
