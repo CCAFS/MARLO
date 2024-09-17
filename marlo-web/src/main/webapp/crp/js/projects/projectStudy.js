@@ -633,7 +633,7 @@ function updateAllianceTab() {
 function displayInnerCheckbox() {
 
   var $parentMacro = $(this).parents('.radioToCheckbox');
-  var $radioButtons = $parentMacro.find('input.radio-input[id*="radioCheckDisplay_"]');
+  var $radioButtons = $parentMacro.find('input[id*="radioCheckDisplay_"]');
   var $radioSelected = $radioButtons.filter(':checked');
 
   $radioButtons.each(function() {
