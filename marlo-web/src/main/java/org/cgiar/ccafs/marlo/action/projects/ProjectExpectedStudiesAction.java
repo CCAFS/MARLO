@@ -75,6 +75,7 @@ import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.AllianceLever;
+import org.cgiar.ccafs.marlo.data.model.AllianceLeverOutcome;
 import org.cgiar.ccafs.marlo.data.model.AllianceLeversSdgContribution;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -1860,9 +1861,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveQuantifications(this.expectedStudyDB, phase);
 
       this.savePublications(this.expectedStudyDB, phase);
-      this.saveSdgAllianceLever(this.expectedStudyDB, phase);
-      this.saveAllianceLeversOutcomes(this.expectedStudyDB, phase);
-      this.saveProjectExpectedPartnership(this.expectedStudyDB, phase);
+      // this.saveSdgAllianceLever(this.expectedStudyDB, phase);
+      // this.saveAllianceLeversOutcomes(this.expectedStudyDB, phase);
+      this.saveAllianceLever(this.expectedStudyDB, phase);
+      // this.saveProjectExpectedPartnership(this.expectedStudyDB, phase);
 
       // AR 2019 Save
       this.saveCenters(this.expectedStudyDB, phase);
@@ -2130,6 +2132,103 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
+
+  /**
+   * Save primary alliance lever Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveAllianceLever(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudyAllianceLeversOutcomes() != null
+      && !projectExpectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().isEmpty()) {
+      List<ProjectExpectedStudyAllianceLeversOutcome> allianceLeversOutcomePrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyAllianceLeversOutcome allianceLeversOutcome : allianceLeversOutcomePrev) {
+        if (this.expectedStudy.getAllianceLeversOutcomes() == null
+          || !this.expectedStudy.getAllianceLeversOutcomes().contains(allianceLeversOutcome)) {
+          this.projectExpectedStudyAllianceLeversOutcomeManager
+            .deleteProjectExpectedStudyAllianceLeversOutcome(allianceLeversOutcome.getId());
+        }
+      }
+    }
+
+
+    /// save data from alliancelever
+
+
+    if (this.expectedStudy.getAllianceLever() != null
+      && this.expectedStudy.getAllianceLever().getLeverOutcomes() != null) {
+      for (AllianceLeverOutcome allianceLeverOutcomeTmp : this.expectedStudy.getAllianceLever().getLeverOutcomes()) {
+        if (allianceLeverOutcomeTmp.getId() == null) {
+          ProjectExpectedStudyAllianceLeversOutcome allianceLeversOutcomeSave =
+            new ProjectExpectedStudyAllianceLeversOutcome();
+          allianceLeversOutcomeSave.setProjectExpectedStudy(projectExpectedStudy);
+          allianceLeversOutcomeSave.setPhase(phase);
+          allianceLeversOutcomeSave.setAllianceLever(allianceLeverOutcomeTmp.getAllianceLever());
+          allianceLeversOutcomeSave.setAllianceLeverOutcome(allianceLeverOutcomeTmp);
+          this.projectExpectedStudyAllianceLeversOutcomeManager
+            .saveProjectExpectedStudyAllianceLeversOutcome(allianceLeversOutcomeSave);
+          // This is to add studyQuantificationSave to generate
+          // correct auditlog.
+          this.expectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().add(allianceLeversOutcomeSave);
+        } else {
+          ProjectExpectedStudyAllianceLeversOutcome allianceLeversOutcomeSave =
+            this.projectExpectedStudyAllianceLeversOutcomeManager
+              .getProjectExpectedStudyAllianceLeversOutcomeById(allianceLeverOutcomeTmp.getId());
+          allianceLeversOutcomeSave.setAllianceLever(allianceLeverOutcomeTmp.getAllianceLever());
+          allianceLeversOutcomeSave.setAllianceLeverOutcome(allianceLeverOutcomeTmp);
+          this.projectExpectedStudyAllianceLeversOutcomeManager
+            .saveProjectExpectedStudyAllianceLeversOutcome(allianceLeversOutcomeSave);
+          // This is to add studyQuantificationSave to generate
+          // correct auditlog.
+          this.expectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().add(allianceLeversOutcomeSave);
+        }
+      }
+    }
+
+
+    if (this.expectedStudy.getAllianceLevers() != null) {
+      for (AllianceLever AllianceLeverList : this.expectedStudy.getAllianceLevers()) {
+        if (AllianceLeverList.getLeverOutcomes() != null) {
+          for (AllianceLeverOutcome allianceLeverOutcomeTmp : AllianceLeverList.getLeverOutcomes()) {
+            if (allianceLeverOutcomeTmp.getId() == null) {
+              ProjectExpectedStudyAllianceLeversOutcome allianceLeversOutcomeSave =
+                new ProjectExpectedStudyAllianceLeversOutcome();
+              allianceLeversOutcomeSave.setProjectExpectedStudy(projectExpectedStudy);
+              allianceLeversOutcomeSave.setPhase(phase);
+              allianceLeversOutcomeSave.setAllianceLever(allianceLeverOutcomeTmp.getAllianceLever());
+              allianceLeversOutcomeSave.setAllianceLeverOutcome(allianceLeverOutcomeTmp);
+              this.projectExpectedStudyAllianceLeversOutcomeManager
+                .saveProjectExpectedStudyAllianceLeversOutcome(allianceLeversOutcomeSave);
+              // This is to add studyQuantificationSave to generate
+              // correct auditlog.
+              this.expectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().add(allianceLeversOutcomeSave);
+            } else {
+              ProjectExpectedStudyAllianceLeversOutcome allianceLeversOutcomeSave =
+                this.projectExpectedStudyAllianceLeversOutcomeManager
+                  .getProjectExpectedStudyAllianceLeversOutcomeById(allianceLeverOutcomeTmp.getId());
+              allianceLeversOutcomeSave.setAllianceLever(allianceLeverOutcomeTmp.getAllianceLever());
+              allianceLeversOutcomeSave.setAllianceLeverOutcome(allianceLeverOutcomeTmp);
+              this.projectExpectedStudyAllianceLeversOutcomeManager
+                .saveProjectExpectedStudyAllianceLeversOutcome(allianceLeversOutcomeSave);
+              // This is to add studyQuantificationSave to generate
+              // correct auditlog.
+              this.expectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().add(allianceLeversOutcomeSave);
+            }
+          }
+        }
+      }
+    }
+
+
+  }
+
 
   /**
    * Save Expected Studies AllianceLeversOutcomes Information
