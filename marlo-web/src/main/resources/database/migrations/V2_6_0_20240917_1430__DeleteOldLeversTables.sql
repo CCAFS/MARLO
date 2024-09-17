@@ -1,0 +1,11 @@
+DROP TABLE project_expected_study_primary_alliance_levers;
+DROP TABLE project_expected_study_primary_strategic_outcomes;
+DROP TABLE project_expected_study_related_alliance_levers;
+
+DROP TABLE primary_alliance_strategic_outcomes;
+DROP TABLE primary_levers_related_sdg_contributions;
+
+DROP TABLE related_levers_sdg_contributions;
+
+DROP TABLE primary_alliance_levers;
+DROP TABLE related_alliance_levers;
