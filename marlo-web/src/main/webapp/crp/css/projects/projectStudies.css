@@ -193,9 +193,24 @@ table#projectHighlights {
   font-size: 0.94em;
 }
 
-.radioToCheckbox .radioFlat {
+.radioToCheckbox .containerRadioToCheckbox .radioFlat {
   padding-left: 0;
 } 
+
+.radioToCheckbox .containerRadioToCheckbox--other {
+  display: flex;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other .radioFlat {
+  width: 10% !important;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other .inputOther {
+  width: -webkit-fill-available;
+  width: -moz-available;
+}
 
 #innerCheckbox {
   padding-left: 20px;
