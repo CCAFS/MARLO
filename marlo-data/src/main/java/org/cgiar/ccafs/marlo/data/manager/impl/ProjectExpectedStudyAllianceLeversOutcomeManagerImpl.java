@@ -79,14 +79,19 @@ public class ProjectExpectedStudyAllianceLeversOutcomeManagerImpl
     ProjectExpectedStudyAllianceLeversOutcome projectExpectedStudyAllianceLeversOutcome) {
     Phase phase = phaseDAO.find(next.getId());
 
+
+    System.out.println(
+      " linea 83" + projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome().getAllianceLever().getId());
+    System.out.println(" linea 84" + projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome().getId());
     List<ProjectExpectedStudyAllianceLeversOutcome> projectExpectedStudyAllianceLeversOutcomeList =
       phase.getProjectExpectedStudyAllianceLeversOutcomes().stream()
         .filter(c -> c.isActive()
           && c.getProjectExpectedStudy().getId() == projectExpectedStudyAllianceLeversOutcome.getProjectExpectedStudy()
             .getId()
-          && c.getAllianceLever() == projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome()
-            .getAllianceLever()
-          && c.getAllianceLeverOutcome() == projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome())
+          && c.getAllianceLever().getId() == projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome()
+            .getAllianceLever().getId()
+          && c.getAllianceLeverOutcome().getId() == projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome()
+            .getId())
         .collect(Collectors.toList());
     for (ProjectExpectedStudyAllianceLeversOutcome projectExpectedStudyAllianceLeversOutcomeTmp : projectExpectedStudyAllianceLeversOutcomeList) {
       projectExpectedStudyAllianceLeversOutcomeDAO
