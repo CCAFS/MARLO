@@ -925,7 +925,8 @@
         </p>
       </div>
       <div>
-        [@deliverableMacros.deliverablePartnerMacro element={} name="projectExpectedStudyInfo.contacts" index=0 defaultType=2 /]
+        <p>${element}</p>
+        [@deliverableMacros.deliverablePartnerMacro element=(element.partnerships[0])!{} name="${customName}.partners" index=0 defaultType=2 /]
       </div>
     </div>
     [/#if]
