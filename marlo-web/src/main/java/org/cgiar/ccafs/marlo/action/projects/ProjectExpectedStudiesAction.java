@@ -1207,7 +1207,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           for (ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLeverTmp : this.expectedStudy
             .getSdgAllianceLevers()) {
             if (projectExpectedStudySdgAllianceLeverTmp.getAllianceLever() != null) {
-              if (projectExpectedStudySdgAllianceLeverTmp.getIsPrimary()) {
+              if (projectExpectedStudySdgAllianceLeverTmp.getIsPrimary() != null
+                && projectExpectedStudySdgAllianceLeverTmp.getIsPrimary()) {
                 this.expectedStudy.setAllianceLever(projectExpectedStudySdgAllianceLeverTmp.getAllianceLever());
               } else {
                 if (!this.expectedStudy.getAllianceLevers()
