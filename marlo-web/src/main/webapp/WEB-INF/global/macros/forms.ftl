@@ -1127,7 +1127,7 @@
                   <div class="form-group" style="padding-left: 20px;">
                     <label for="" class="radio-label"><b>[@s.text name="study.allianceAligment.linkToLevers.options.text.strategicOutcome" /]</b></label>
                     [#list listPrimary as primaryItem]
-                      [@customForm.checkBoxFlat value="${primaryItem.id}" name="${customName}.${fieldName}.outcome[${primaryItem_index}].id" id="innerCheckDisplay${fieldName}_outcome_${primaryItem_index}" label="${primaryItem.description}" editable=editable /]
+                      [@customForm.checkBoxFlat value="${primaryItem.id}" name="${customName}.${fieldName}.outcome[${primaryItem_index}].id" id="innerCheckDisplay${fieldName}_outcome_${primaryItem_index}" label="${primaryItem.description}" editable=editable checked=false /]
                     [/#list]
                   </div>
                 [/#if]
