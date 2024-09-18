@@ -71,6 +71,7 @@ public class ProjectExpectedStudyPartnershipManagerImpl implements ProjectExpect
   public void addPersons(ProjectExpectedStudyPartnership projectExpectedStudyPartnership,
     Long newProjectExpectedStudyPartnershipId) {
 
+
     if (projectExpectedStudyPartnership.getPartnershipsPersons() != null) {
 
       for (ProjectExpectedStudyPartnershipsPerson projectExpectedStudyPartnershipsPerson : projectExpectedStudyPartnership
@@ -544,14 +545,15 @@ public class ProjectExpectedStudyPartnershipManagerImpl implements ProjectExpect
   public void updatePersons(ProjectExpectedStudyPartnership projectExpectedStudyPartnershipUp,
     ProjectExpectedStudyPartnership projectExpectedStudyPartnership, Long projectExpectedStudyPartnerTypeType) {
 
+
     List<ProjectExpectedStudyPartnershipsPerson> projectExpectedStudyPartnershipsPersonPrev =
       new ArrayList<ProjectExpectedStudyPartnershipsPerson>(
         projectExpectedStudyPartnershipUp.getProjectExpectedStudyPartnershipsPersons().stream()
           .filter(dup -> dup.isActive()).collect(Collectors.toList()));
 
     for (ProjectExpectedStudyPartnershipsPerson projectExpectedStudyPartnershipsPerson : projectExpectedStudyPartnershipsPersonPrev) {
-      if (projectExpectedStudyPartnershipUp.getPartnershipsPersons() == null
-        || projectExpectedStudyPartnershipUp.getPartnershipsPersons().stream()
+      if (projectExpectedStudyPartnership.getPartnershipsPersons() == null
+        || projectExpectedStudyPartnership.getPartnershipsPersons().stream()
           .filter(c -> projectExpectedStudyPartnershipsPerson.getUser() != null
             && projectExpectedStudyPartnershipsPerson.getUser().getId() != null && c.getUser() != null
             && c.getUser().getId() != null
@@ -600,7 +602,7 @@ public class ProjectExpectedStudyPartnershipManagerImpl implements ProjectExpect
 
             projectExpectedStudyPartnershipsPersonSave.setUser(projectExpectedStudyPartnershipsPerson.getUser());
             projectExpectedStudyPartnershipsPersonSave
-              .setProjectExpectedStudyPartnership(projectExpectedStudyPartnership);
+              .setProjectExpectedStudyPartnership(projectExpectedStudyPartnershipUp);
 
             projectExpectedStudyPartnershipsPersonDAO.save(projectExpectedStudyPartnershipsPersonSave);
           }
