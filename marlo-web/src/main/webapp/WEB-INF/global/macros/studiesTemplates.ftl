@@ -910,6 +910,28 @@
       </div>
 
     </div>
+
+        [#-- Deliverable Partner Template --]
+    [@deliverableMacros.deliverablePartnerMacro element={} name="deliverable.otherPartnerships" index=-1 defaultType=2 isTemplate=true /]
+
+    [#-- Partner users TEMPLATE --]
+    <div id="partnerUsers" style="display:none">
+      [#list partners as partner]
+        <div class="institution-${partner.institution.id}">
+          [#assign usersList = (action.getUserList(partner.institution.id))![]]
+          <div class="users-1">
+            [#list usersList as user]
+              [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="deliverable.responsiblePartnership[0].partnershipPersons" isUserChecked=false isResponsable=true /]
+            [/#list]
+          </div>
+          <div class="users-2">
+            [#list usersList as user]
+              [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="deliverable.otherPartnerships[-1].partnershipPersons" isUserChecked=false isResponsable=false /]
+            [/#list]
+          </div>
+        </div>
+      [/#list]
+    </div>
       
 
     [#--  Contact person    --]
