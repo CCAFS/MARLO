@@ -665,7 +665,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public List<User> getUserList(Long institutionId) {
 
     List<User> users = new ArrayList<>();
-
     List<ProjectPartner> partnersTmp = new ArrayList<>();
     try {
       partnersTmp = projectPartnerManager.findAllByPhaseProjectAndInstitution(projectID, this.getActualPhase().getId(),
@@ -1315,6 +1314,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
 
+
+
       }
 
 
@@ -1866,7 +1867,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       // this.saveSdgAllianceLever(this.expectedStudyDB, phase);
       // this.saveAllianceLeversOutcomes(this.expectedStudyDB, phase);
       this.saveAllianceLever(this.expectedStudyDB, phase);
-      // this.saveProjectExpectedPartnership(this.expectedStudyDB, phase);
+      this.saveProjectExpectedPartnership(this.expectedStudyDB, phase);
 
       // AR 2019 Save
       this.saveCenters(this.expectedStudyDB, phase);
@@ -2901,7 +2902,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
               projectExpectedStudyPartnershipSave = projectExpectedStudyPartnershipManager
                 .saveProjectExpectedStudyPartnership(projectExpectedStudyPartnershipSave);
-
               this.saveProjectExpectedstudyPartnershipsPersons(projectExpectedStudyPartnership,
                 projectExpectedStudyPartnershipSave);
             } else {
@@ -2932,7 +2932,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
               projectExpectedStudyPartnershipSave = projectExpectedStudyPartnershipManager
                 .saveProjectExpectedStudyPartnership(projectExpectedStudyPartnershipSave);
-
               this.saveProjectExpectedstudyPartnershipsPersons(projectExpectedStudyPartnership,
                 projectExpectedStudyPartnershipSave);
             }
@@ -2976,6 +2975,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           ProjectExpectedStudyPartnershipsPerson projectExpectedStudyPartnershipsPersonNew =
             this.projectExpectedStudyPartnershipsPersonManager
               .getProjectExpectedStudyPartnershipsPersonById(person.getId());
+
           if (person.getUser() != null && person.getUser().getId() != null) {
             if (!person.getUser().getId().equals(projectExpectedStudyPartnershipsPersonNew.getUser().getId())) {
               projectExpectedStudyPartnershipsPersonNew.setUser(userManager.getUser(person.getUser().getId()));
