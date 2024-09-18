@@ -1900,7 +1900,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.savePublications(this.expectedStudyDB, phase);
       // this.saveSdgAllianceLever(this.expectedStudyDB, phase);
       // this.saveAllianceLeversOutcomes(this.expectedStudyDB, phase);
-      this.saveAllianceLever(this.expectedStudyDB, phase);
+      // this.saveAllianceLever(this.expectedStudyDB, phase);
       this.saveProjectExpectedPartnership(this.expectedStudyDB, phase);
 
       // AR 2019 Save
