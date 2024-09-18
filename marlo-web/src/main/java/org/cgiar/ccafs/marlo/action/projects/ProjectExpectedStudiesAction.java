@@ -1845,6 +1845,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.expectedStudy.getSdgAllianceLevers().clear();
       }
 
+      if (this.expectedStudy.getPartnerships() != null) {
+        this.expectedStudy.getPartnerships().clear();
+      }
 
       // HTTP Post info Values
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
