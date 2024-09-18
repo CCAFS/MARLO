@@ -1195,10 +1195,28 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               .collect(Collectors.toList()))));
 
           // Set Alliance lever to study object
-          if (this.expectedStudy.getSdgAllianceLevers() != null
-            && this.expectedStudy.getSdgAllianceLevers().get(0) != null
-            && this.expectedStudy.getSdgAllianceLevers().get(0).getAllianceLever() != null) {
-            this.expectedStudy.setAllianceLever(this.expectedStudy.getSdgAllianceLevers().get(0).getAllianceLever());
+          /*
+           * if (this.expectedStudy.getSdgAllianceLevers() != null
+           * && this.expectedStudy.getSdgAllianceLevers().get(0) != null
+           * && this.expectedStudy.getSdgAllianceLevers().get(0).getAllianceLever() != null) {
+           * this.expectedStudy.setAllianceLever(this.expectedStudy.getSdgAllianceLevers().get(0).getAllianceLever());
+           * }
+           */
+
+          this.expectedStudy.setAllianceLevers(new ArrayList<>());
+          for (ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLeverTmp : this.expectedStudy
+            .getSdgAllianceLevers()) {
+            if (projectExpectedStudySdgAllianceLeverTmp.getAllianceLever() != null) {
+              if (projectExpectedStudySdgAllianceLeverTmp.getIsPrimary()) {
+                this.expectedStudy.setAllianceLever(projectExpectedStudySdgAllianceLeverTmp.getAllianceLever());
+              } else {
+                if (!this.expectedStudy.getAllianceLevers()
+                  .contains(projectExpectedStudySdgAllianceLeverTmp.getAllianceLever())) {
+                  this.expectedStudy.getAllianceLevers()
+                    .add(projectExpectedStudySdgAllianceLeverTmp.getAllianceLever());
+                }
+              }
+            }
           }
         }
 
@@ -1809,6 +1827,23 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       if (this.expectedStudy.getReferences() != null) {
         this.expectedStudy.getReferences().clear();
       }
+
+      if (this.expectedStudy.getPublications() != null) {
+        this.expectedStudy.getPublications().clear();
+      }
+
+      if (this.expectedStudy.getAllianceLevers() != null) {
+        this.expectedStudy.getAllianceLevers().clear();
+      }
+
+      if (this.expectedStudy.getAllianceLeversOutcomes() != null) {
+        this.expectedStudy.getAllianceLeversOutcomes().clear();
+      }
+
+      if (this.expectedStudy.getSdgAllianceLevers() != null) {
+        this.expectedStudy.getSdgAllianceLevers().clear();
+      }
+
 
       // HTTP Post info Values
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
