@@ -436,17 +436,16 @@
   <mapping resource="xmls/SoilIndicators.hbm.xml"/>
   <mapping resource="xmls/TipParameters.hbm.xml"/>
   <mapping resource="xmls/ProjectExpectedStudyTags.hbm.xml"/>
-  <mapping resource="xmls/PrimaryAllianceLevers.hbm.xml"/>
-  <mapping resource="xmls/RelatedAllianceLevers.hbm.xml"/>
-  <mapping resource="xmls/PrimaryAllianceStrategicOutcomes.hbm.xml"/>
-  <mapping resource="xmls/SdgContributions.hbm.xml"/>
-  <mapping resource="xmls/ProjectExpectedStudyPrimaryAllianceLevers.hbm.xml"/>
-  <mapping resource="xmls/ProjectExpectedStudyPrimaryStrategicOutcomes.hbm.xml"/>
-  <mapping resource="xmls/ProjectExpectedStudyRelatedAllianceLevers.hbm.xml"/>
-  <mapping resource="xmls/ProjectExpectedStudyRelatedLeverSdgContributions.hbm.xml"/>
   <mapping resource="xmls/QuantificationTypes.hbm.xml"/>
-  <mapping resource="xmls/PrimaryLeversRelatedSdgContributions.hbm.xml"/>
-  <mapping resource="xmls/RelatedLeversSDGContributions.hbm.xml"/>
-
+  <mapping resource="xmls/ProjectExpectedStudyPublications.hbm.xml"/>
+  <mapping resource="xmls/AllianceLevers.hbm.xml"/>
+  <mapping resource="xmls/AllianceLeverOutcomes.hbm.xml"/>
+  <mapping resource="xmls/SDGContributions.hbm.xml"/>
+  <mapping resource="xmls/AllianceLeversSdgContributions.hbm.xml"/>
+  <mapping resource="xmls/ProjectExpectedStudySdgAllianceLevers.hbm.xml"/>
+  <mapping resource="xmls/ProjectExpectedStudyAllianceLeversOutcomes.hbm.xml"/>
+  <mapping resource="xmls/ProjectExpectedStudyPartnerTypes.hbm.xml"/>
+  <mapping resource="xmls/ProjectExpectedStudyPartnerships.hbm.xml"/>
+  <mapping resource="xmls/ProjectExpectedStudyPartnershipsPersons.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>

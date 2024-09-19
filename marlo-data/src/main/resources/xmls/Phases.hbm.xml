@@ -696,38 +696,42 @@
       </key>
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyCenter" />
-    </set>
-    <set name="projectExpectedStudyPrimaryAllianceLever" table="project_expected_study_primary_alliance_levers"
-      inverse="true" lazy="true" fetch="select">
+    </set>    
+    <set name="projectExpectedStudyPublications"
+      table="project_expected_study_publications" inverse="true" order-by="id"
+      lazy="true" fetch="select">
       <key>
-        <column name="id_phase" />
+        <column name="id_phase" not-null="true" />
       </key>
       <one-to-many
-        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPrimaryAllianceLever" />
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPublication" />
     </set>
-     <set name="projectExpectedStudyRelatedAllianceLever" table="project_expected_study_related_alliance_levers"
-      inverse="true" lazy="true" fetch="select">
+    <set name="projectExpectedStudySdgAllianceLevers"
+      table="project_expected_study_sdg_alliance_levers" inverse="true" order-by="id"
+      lazy="true" fetch="select">
       <key>
-        <column name="id_phase" />
+        <column name="id_phase" not-null="true" />
       </key>
       <one-to-many
-        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRelatedAllianceLever" />
-       </set>
-       <set name="projectExpectedStudyRelatedLeverSdgContribution" table="project_expected_study_related_sdg_contributions"
-      inverse="true" lazy="true" fetch="select">
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgAllianceLever" />
+    </set>
+    <set name="projectExpectedStudyAllianceLeversOutcomes"
+      table="project_expected_study_alliance_levers_outcomes" inverse="true" order-by="id"
+      lazy="true" fetch="select">
       <key>
-        <column name="id_phase" />
+        <column name="id_phase" not-null="true" />
       </key>
       <one-to-many
-        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRelatedLeverSdgContribution" />
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyAllianceLeversOutcome" />
     </set>
-      <set name="projectExpectedStudyPrimaryStrategicOutcome" table="project_expected_study_primary_strategic_outcomes"
-      inverse="true" lazy="true" fetch="select">
+    <set name="projectExpectedStudyPartnerships"
+      table="project_expected_study_partnerships" inverse="true" order-by="id"
+      lazy="true" fetch="select">
       <key>
-        <column name="id_phase" />
+        <column name="id_phase" not-null="true" />
       </key>
       <one-to-many
-        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPrimaryStrategicOutcome" />
-    </set>
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnership" />
+    </set>     
   </class>
 </hibernate-mapping>

@@ -77,7 +77,7 @@
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         <div class="form-group">
-          [#assign guideSheetURL = "https://cgiar.sharepoint.com/sites/AICCRA/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting%2FGuidance%20for%20AICCRA%20Outcome%20Impact%20Case%20Reports%2Epdf&parent=%2Fsites%2FAICCRA%2FShared%20Documents%2F02%2E%20Monitoring%20%26%20Evaluation%2F2%2E2%20MARLO%20Docs%20and%20reports%2F6%2E%20OICR%20reporting&p=true&ga=1" /]
+          [#assign guideSheetURL = "https://cgiar.sharepoint.com/sites/Alliance-SPRM/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAlliance%2DSPRM%2FShared%20Documents%2F2%20Project%20Monitoring%2C%20Evaluation%20and%20Learning%2F2%2E5%20Project%20Monitoring%2C%20Evaluation%20and%20Learning%20%2D%20Projects%2F2%2E5%2E1%20Outcomes%2F2024%20Outcomes%2F2024%20OICR%20Guidance%20Note%20%28Version%2014%2E08%2E24%29%2Epdf&parent=%2Fsites%2FAlliance%2DSPRM%2FShared%20Documents%2F2%20Project%20Monitoring%2C%20Evaluation%20and%20Learning%2F2%2E5%20Project%20Monitoring%2C%20Evaluation%20and%20Learning%20%2D%20Projects%2F2%2E5%2E1%20Outcomes%2F2024%20Outcomes" /]
           <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" />[@s.text name="study.general.guideSheetURL.levelMaturity" /]</a> </small>
         </div>
         <label for="${customName}.projectExpectedStudyInfo.repIndStageStudy.id" class="label--2">[@s.text name="study.generalInformation.maturityChange" /]:[@customForm.req required=(editable && !action.isPOWB() && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true) /]
@@ -895,7 +895,7 @@
           </div>
           [#if (element.publications?has_content) && (element.publications?size > 0)]
             [#list (element.publications)![{}] as publication]
-              [@publicationMacro name="${customName}.links" element=publication index=publication_index /]
+              [@publicationMacro name="${customName}.publications" element=publication index=publication_index /]
             [/#list]
           [/#if]
         </div>
@@ -909,6 +909,20 @@
         [@publicationMacro name="${customName}.publications" element={} index=-1 template=true /]
       </div>
 
+    </div>
+
+    [#-- Partner users TEMPLATE --]
+    <div id="partnerUsers" style="display:none">
+      [#list partners as partner]
+        <div class="institution-${partner.institution.id}">
+          [#assign usersList = (action.getUserList(partner.institution.id))![]]
+          <div class="users-2">
+            [#list usersList as user]
+              [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="_TEMPLATE_${customName}.partnerships[0].partnershipPersons" isUserChecked=false isResponsable=false /]
+            [/#list]
+          </div>
+        </div>
+      [/#list]
     </div>
       
 
@@ -924,8 +938,8 @@
           </a>
         </p>
       </div>
-      <div>
-        [@deliverableMacros.deliverablePartnerMacro element={} name="projectExpectedStudyInfo.contacts" index=0 defaultType=2 /]
+      <div class="projectExpectedStudyPartners">
+        [@deliverableMacros.deliverablePartnerMacro element=(element.partnerships[0])!{} name="${customName}.partnerships" index=0 defaultType=2 /]
       </div>
     </div>
     [/#if]
@@ -937,11 +951,13 @@
   [#local customName = "${name}"/]
   <div class="borderBox">
     <div class="form-group">
-      <label class="label--2" for="">[@s.text name="study.allianceAligment.linkToLevers.title" /]:[@customForm.req required=false /]</label>
+      <label class="label--2" for=""><b>[@s.text name="study.allianceAligment.linkToLevers.title" /]</b>[@customForm.req required=false /]</label>
       [@customForm.helpLabel name="study.allianceAligment.linkToLevers.note" showIcon=false editable=editable isNote=true /]
       <div class="form-group">
-        [@customForm.radioToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" listName=primaryAllianceLever displayFieldName="name" hasPrimary=true
-        listNamePrimary=primaryAllianceStrategicOutcome hasSecondary=true checkedValue=1 /]
+        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" name="${customName}" fieldName="allianceLever" listName=allianceLever keyFieldName="sdgContributions" isPrimaryLever=true hasInnerCheckbox=true labelInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="allianceLeversSdgContributions" classReferenceInnerCheckbox="sDGContribution" checkedValue=1 /]
+      </div>
+      <div class="form-group">
+        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.relatedLever" name="${customName}" fieldName="allianceLevers" listName=allianceLever keyFieldName="sdgContributions" isPrimaryLever=false hasInnerCheckbox=true labelInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="allianceLeversSdgContributions" classReferenceInnerCheckbox="sDGContribution" isRadioButton=false checkedValue=1 /]
       </div>
     </div>
   </div>

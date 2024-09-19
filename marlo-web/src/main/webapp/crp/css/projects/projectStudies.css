@@ -74,14 +74,15 @@ ul.nav li a {
   
 }
 
-@media screen and (max-width: 1366px) {
+@media screen and (min-width: 1366px) {
   .generalInformationStudies .form-group .line-hr{
     width: 70%;
   }
   
 }
 
-@media screen and (max-width: 1978){
+
+@media screen and (min-width: 1978){
   .generalInformationStudies .form-group .line-hr{
     width: 71%;
   }
@@ -193,9 +194,33 @@ table#projectHighlights {
   font-size: 0.94em;
 }
 
-.radioToCheckbox .radioFlat {
+.radioToCheckbox .containerRadioToCheckbox .radioFlat {
   padding-left: 0;
 } 
+
+.radioToCheckbox .containerRadioToCheckbox .inputsFlat {
+  margin-bottom: 12px;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other {
+  display: flex;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other .radioFlat {
+  width: 10% !important;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other .inputsFlat {
+  width: 10% !important;
+  margin-top: 0;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other .inputOther {
+  width: -webkit-fill-available;
+  width: -moz-available;
+}
 
 #innerCheckbox {
   padding-left: 20px;

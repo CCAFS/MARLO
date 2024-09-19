@@ -20,5 +20,8 @@
     <property name="description" type="string">
       <column name="description" sql-type="TEXT" not-null="true" />
     </property>
+    <property name="icon" type="string">
+      <column name="icon" sql-type="TEXT" not-null="true" />
+    </property>
   </class>
 </hibernate-mapping>

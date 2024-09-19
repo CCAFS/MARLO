@@ -721,6 +721,13 @@
 	        <param name="excludeNullProperties">true</param>
 	      </result>
 	    </action>
+		<action name="getSdgImage"
+	      class="org.cgiar.ccafs.marlo.action.json.project.SDGImageAction">
+	      <result type="json">
+	        <param name="noCache">true</param>
+	        <param name="excludeNullProperties">true</param>
+	      </result>
+	    </action>
 	    
 		<action name="feedbackReplies"
 	      class="org.cgiar.ccafs.marlo.action.json.project.FeedbackQARepliesAction">

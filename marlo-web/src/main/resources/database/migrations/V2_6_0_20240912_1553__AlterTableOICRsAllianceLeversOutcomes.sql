@@ -1,0 +1,2 @@
+ALTER TABLE project_expected_study_alliance_levers_outcomes DROP FOREIGN KEY study_alliance_levers_outcomes_phases_FK;
+ALTER TABLE project_expected_study_alliance_levers_outcomes ADD CONSTRAINT project_expected_study_alliance_levers_outcomes_phases_fk FOREIGN KEY (id_phase) REFERENCES phases(id) ON DELETE RESTRICT ON UPDATE RESTRICT;

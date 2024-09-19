@@ -41,7 +41,7 @@ public class SdgMySQLDAO extends AbstractMarloDAO<Sdg, Long> implements SdgDAO {
   public List<Sdg> findAll() {
     String query = "from " + Sdg.class.getName();
     List<Sdg> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
@@ -51,6 +51,4 @@ public class SdgMySQLDAO extends AbstractMarloDAO<Sdg, Long> implements SdgDAO {
   public Sdg getSDGById(Long id) {
     return super.find(Sdg.class, id);
   }
-
-
 }
