@@ -72,10 +72,10 @@ public class ProjectExpectedStudyPartnershipManagerImpl implements ProjectExpect
     Long newProjectExpectedStudyPartnershipId) {
 
 
-    if (projectExpectedStudyPartnership.getPartnershipsPersons() != null) {
+    if (projectExpectedStudyPartnership.getPartnershipPersons() != null) {
 
       for (ProjectExpectedStudyPartnershipsPerson projectExpectedStudyPartnershipsPerson : projectExpectedStudyPartnership
-        .getPartnershipsPersons()) {
+        .getPartnershipPersons()) {
         if (projectExpectedStudyPartnershipsPerson.getUser() != null
           && projectExpectedStudyPartnershipsPerson.getUser().getId() != null) {
           ProjectExpectedStudyPartnershipsPerson projectExpectedStudyPartnershipsPersonSave =
@@ -552,8 +552,8 @@ public class ProjectExpectedStudyPartnershipManagerImpl implements ProjectExpect
           .filter(dup -> dup.isActive()).collect(Collectors.toList()));
 
     for (ProjectExpectedStudyPartnershipsPerson projectExpectedStudyPartnershipsPerson : projectExpectedStudyPartnershipsPersonPrev) {
-      if (projectExpectedStudyPartnership.getPartnershipsPersons() == null
-        || projectExpectedStudyPartnership.getPartnershipsPersons().stream()
+      if (projectExpectedStudyPartnership.getPartnershipPersons() == null
+        || projectExpectedStudyPartnership.getPartnershipPersons().stream()
           .filter(c -> projectExpectedStudyPartnershipsPerson.getUser() != null
             && projectExpectedStudyPartnershipsPerson.getUser().getId() != null && c.getUser() != null
             && c.getUser().getId() != null
@@ -567,9 +567,9 @@ public class ProjectExpectedStudyPartnershipManagerImpl implements ProjectExpect
     }
 
     // This process is for Other Partnership Delete function
-    if (projectExpectedStudyPartnership.getPartnershipsPersons() != null) {
+    if (projectExpectedStudyPartnership.getPartnershipPersons() != null) {
       for (ProjectExpectedStudyPartnershipsPerson projectExpectedStudyPartnershipsPersonDel : projectExpectedStudyPartnership
-        .getPartnershipsPersons()) {
+        .getPartnershipPersons()) {
         if (projectExpectedStudyPartnershipsPersonDel.getId() != null) {
           if (projectExpectedStudyPartnershipsPersonDel.getUser() == null
             || projectExpectedStudyPartnershipsPersonDel.getUser().getId() == null) {
@@ -580,10 +580,10 @@ public class ProjectExpectedStudyPartnershipManagerImpl implements ProjectExpect
       }
     }
 
-    if (projectExpectedStudyPartnership.getPartnershipsPersons() != null) {
+    if (projectExpectedStudyPartnership.getPartnershipPersons() != null) {
 
       for (ProjectExpectedStudyPartnershipsPerson projectExpectedStudyPartnershipsPerson : projectExpectedStudyPartnership
-        .getPartnershipsPersons()) {
+        .getPartnershipPersons()) {
 
         List<ProjectExpectedStudyPartnershipsPerson> projectExpectedStudyPartnershipsPersons =
           projectExpectedStudyPartnershipsPersonPrev.stream()

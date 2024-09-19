@@ -176,6 +176,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = 597647662288518417L;
+  private static final long[] EMPTY_ARRAY = {};
   private final Logger logger = LoggerFactory.getLogger(ProjectExpectedStudiesAction.class);
 
 
@@ -568,6 +569,28 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.config.getDownloadURL() + "/" + this.getStudiesSourceFolder().replace('\\', '/');
   }
 
+  /**
+   * @return an array of integers.
+   */
+  public long[] getPersonsIds(ProjectExpectedStudyPartnership projectExpectedStudyPartnership) {
+    if (projectExpectedStudyPartnership != null) {
+      List<ProjectExpectedStudyPartnershipsPerson> pPersons = projectExpectedStudyPartnership.getPartnershipPersons()
+        .stream().filter(pp -> pp.getUser() != null && pp.getUser().getId() != null && pp.getUser().getId() > 0)
+        .collect(Collectors.toList());
+      if (pPersons != null) {
+        long[] ids = new long[pPersons.size()];
+        for (int i = 0; i < ids.length; i++) {
+          if (pPersons.get(i).getUser() != null && pPersons.get(i).getUser().getId() != null) {
+            ids[i] = pPersons.get(i).getUser().getId();
+          }
+        }
+        return ids;
+      }
+    }
+
+    return EMPTY_ARRAY;
+  }
+
   public List<RepIndPolicyInvestimentType> getPolicyInvestimentTypes() {
     return this.policyInvestimentTypes;
   }
@@ -584,10 +607,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.projectID;
   }
 
+
   public List<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
   }
-
 
   public List<QuantificationType> getQuantificationTypes() {
     return quantificationTypes;
@@ -609,10 +632,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.stageProcesses;
   }
 
+
   public List<RepIndStageStudy> getStageStudies() {
     return this.stageStudies;
   }
-
 
   public List<GeneralStatus> getStatuses() {
     return this.statuses;
@@ -1295,7 +1318,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
                 List<ProjectExpectedStudyPartnershipsPerson> partnershipPersons =
                   new ArrayList<>(projectExpectedStudyPartnership.getProjectExpectedStudyPartnershipsPersons().stream()
                     .filter(d -> d.isActive()).collect(Collectors.toList()));
-                projectExpectedStudyPartnership.setPartnershipsPersons(partnershipPersons);
+                projectExpectedStudyPartnership.setPartnershipPersons(partnershipPersons);
               }
               this.expectedStudy.getPartnerships().add(projectExpectedStudyPartnership);
             }
@@ -2173,6 +2196,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   /**
    * Save primary alliance lever Information
    * 
@@ -2268,7 +2292,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
   }
-
 
   /**
    * Save Expected Studies AllianceLeversOutcomes Information
@@ -2872,6 +2895,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   /**
    * 08/01 save Deliverable Partnership Responsible
    *
@@ -2901,9 +2925,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         // 2024/07/22 conditional was added to avoid exception by null data
         if (projectExpectedStudyPartnershipPrev != null && !projectExpectedStudyPartnershipPrev.isEmpty()) {
           for (ProjectExpectedStudyPartnership projectExpectedStudyPartnership : projectExpectedStudyPartnershipPrev) {
-            if (projectExpectedStudy.getPartnerships() == null || (projectExpectedStudy.getPartnerships() != null
-              && !projectExpectedStudy.getPartnerships().contains(projectExpectedStudyPartnership))) {
-
+            if (this.expectedStudy.getPartnerships() == null || (this.expectedStudy.getPartnerships() != null
+              && !this.expectedStudy.getPartnerships().contains(projectExpectedStudyPartnership))) {
               projectExpectedStudyPartnershipManager
                 .deleteProjectExpectedStudyPartnership(projectExpectedStudyPartnership.getId());
             }
@@ -2918,11 +2941,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     ProjectExpectedStudyPartnerType projectExpectedStudyPartnerType = this.projectExpectedStudyPartnerTypeManager
       .getProjectExpectedStudyPartnerTypeById(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE);
-    if (projectExpectedStudy.getPartnerships() != null) {
-
-      for (ProjectExpectedStudyPartnership projectExpectedStudyPartnership : projectExpectedStudy.getPartnerships()) {
+    if (this.expectedStudy.getPartnerships() != null) {
+      for (ProjectExpectedStudyPartnership projectExpectedStudyPartnership : this.expectedStudy.getPartnerships()) {
         if (projectExpectedStudyPartnership.getId() != null) {
-
           ProjectExpectedStudyPartnership projectExpectedStudyPartnershipSave = projectExpectedStudyPartnershipManager
             .getProjectExpectedStudyPartnershipById(projectExpectedStudyPartnership.getId());
 
@@ -2932,11 +2953,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
                 institutionManager.getInstitutionById(projectExpectedStudyPartnership.getInstitution().getId());
               projectExpectedStudyPartnershipSave.setInstitution(institution);
 
-              if (projectExpectedStudyPartnership.getPartnershipsPersons() != null) {
+              if (projectExpectedStudyPartnership.getPartnershipPersons() != null) {
                 projectExpectedStudyPartnershipSave
-                  .setPartnershipsPersons(projectExpectedStudyPartnership.getPartnershipsPersons());
+                  .setPartnershipPersons(projectExpectedStudyPartnership.getPartnershipPersons());
               }
-
               projectExpectedStudyPartnershipSave = projectExpectedStudyPartnershipManager
                 .saveProjectExpectedStudyPartnership(projectExpectedStudyPartnershipSave);
               this.saveProjectExpectedstudyPartnershipsPersons(projectExpectedStudyPartnership,
@@ -2948,7 +2968,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
 
         } else {
-
           ProjectExpectedStudyPartnership projectExpectedStudyPartnershipSave = new ProjectExpectedStudyPartnership();
           projectExpectedStudyPartnershipSave.setPhase(this.getActualPhase());
           projectExpectedStudyPartnershipSave.setProjectExpectedStudy(projectExpectedStudy);
@@ -2962,9 +2981,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
                 institutionManager.getInstitutionById(projectExpectedStudyPartnership.getInstitution().getId());
               projectExpectedStudyPartnershipSave.setInstitution(institution);
 
-              if (projectExpectedStudyPartnership.getPartnershipsPersons() != null) {
+
+              if (projectExpectedStudyPartnership.getPartnershipPersons() != null) {
                 projectExpectedStudyPartnershipSave
-                  .setPartnershipsPersons(projectExpectedStudyPartnership.getPartnershipsPersons());
+                  .setPartnershipPersons(projectExpectedStudyPartnership.getPartnershipPersons());
               }
 
               projectExpectedStudyPartnershipSave = projectExpectedStudyPartnershipManager
@@ -2995,19 +3015,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           .filter(dp -> dp.isActive()).collect(Collectors.toList());
 
       for (ProjectExpectedStudyPartnershipsPerson projectExpectedStudyPartnershipsPerson : projectExpectedStudyPartnershipsPersonPrev) {
-        if (projectExpectedStudyPartnership.getPartnershipsPersons() == null || !projectExpectedStudyPartnership
-          .getPartnershipsPersons().contains(projectExpectedStudyPartnershipsPerson)) {
+        if (projectExpectedStudyPartnership.getPartnershipPersons() == null || !projectExpectedStudyPartnership
+          .getPartnershipPersons().contains(projectExpectedStudyPartnershipsPerson)) {
           this.projectExpectedStudyPartnershipsPersonManager
             .deleteProjectExpectedStudyPartnershipsPerson(projectExpectedStudyPartnershipsPerson.getId());
         }
       }
 
     }
-
-    if (projectExpectedStudyPartnership.getPartnershipsPersons() != null) {
-
-      for (ProjectExpectedStudyPartnershipsPerson person : projectExpectedStudyPartnership.getPartnershipsPersons()) {
-
+    if (projectExpectedStudyPartnership.getPartnershipPersons() != null) {
+      for (ProjectExpectedStudyPartnershipsPerson person : projectExpectedStudyPartnership.getPartnershipPersons()) {
         if (person.getId() != null) {
           ProjectExpectedStudyPartnershipsPerson projectExpectedStudyPartnershipsPersonNew =
             this.projectExpectedStudyPartnershipsPersonManager
@@ -3039,7 +3056,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
-
 
   /**
    * Save Expected Studies Project Outcome Information
@@ -3089,6 +3105,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
   }
+
 
   /**
    * Save Expected Studies Projects Information
@@ -3195,7 +3212,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save Expected Studies Quantification Information
    * 
@@ -3279,6 +3295,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Expected Studies References Information
    * 
@@ -3342,7 +3359,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * Save Expected Studies Regions Information
@@ -3707,10 +3723,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.organizationTypes = organizationTypes;
   }
 
+
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;
   }
-
 
   public void setPartners(List<ProjectPartner> partners) {
     this.partners = partners;
@@ -3732,10 +3748,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectID = projectID;
   }
 
+
   public void setProjectOutcomes(List<ProjectOutcome> projectOutcomes) {
     this.projectOutcomes = projectOutcomes;
   }
-
 
   public void setQuantificationTypes(List<QuantificationType> quantificationTypes) {
     this.quantificationTypes = quantificationTypes;
@@ -3788,6 +3804,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public void setTags(List<EvidenceTag> tags) {
     this.tags = tags;
   }
+
 
   public void setTargets(List<SrfSloIndicator> targets) {
     this.targets = targets;

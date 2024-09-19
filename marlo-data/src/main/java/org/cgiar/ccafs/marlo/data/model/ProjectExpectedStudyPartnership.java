@@ -40,7 +40,7 @@ public class ProjectExpectedStudyPartnership extends MarloAuditableEntity implem
   private Set<ProjectExpectedStudyPartnershipsPerson> projectExpectedStudyPartnershipsPersons = new HashSet<>(0);
 
 
-  private List<ProjectExpectedStudyPartnershipsPerson> partnershipsPersons;
+  private List<ProjectExpectedStudyPartnershipsPerson> partnershipPersons;
 
 
   public ProjectExpectedStudyPartnership() {
@@ -81,8 +81,8 @@ public class ProjectExpectedStudyPartnership extends MarloAuditableEntity implem
   }
 
 
-  public List<ProjectExpectedStudyPartnershipsPerson> getPartnershipsPersons() {
-    return partnershipsPersons;
+  public List<ProjectExpectedStudyPartnershipsPerson> getPartnershipPersons() {
+    return partnershipPersons;
   }
 
 
@@ -111,8 +111,8 @@ public class ProjectExpectedStudyPartnership extends MarloAuditableEntity implem
   }
 
 
-  public void setPartnershipsPersons(List<ProjectExpectedStudyPartnershipsPerson> partnershipsPersons) {
-    this.partnershipsPersons = partnershipsPersons;
+  public void setPartnershipPersons(List<ProjectExpectedStudyPartnershipsPerson> partnershipPersons) {
+    this.partnershipPersons = partnershipPersons;
   }
 
 
