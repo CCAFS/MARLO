@@ -671,6 +671,8 @@ var deliverablePartnersModule = (function () {
     // On add a shrfm sub action
     $('.addSlo').on('click', addIdo);
 
+    updateIndexes();
+
   }
 
   function addIdo() {
@@ -702,7 +704,7 @@ var deliverablePartnersModule = (function () {
   }
 
   function addPartnerItem() {
-    var $listBlock = $('.otherDeliverablePartners');
+    var $listBlock = $('.projectExpectedStudyPartners');
     var $template = $('#deliverablePartnerItem-template');
 
     if($template.find('select').data('select2')){
@@ -735,6 +737,12 @@ var deliverablePartnersModule = (function () {
     $usersBlock.empty();
     // Get new users list
     var $newUsersBlock = $('#partnerUsers .institution-' + this.value + ' .users-' + typeID).clone(true);
+    //Remove name _TEMPLATE_ from inputs
+    $newUsersBlock.find('input').each(function(_i,e) {
+      e.name = (e.name).replace("_TEMPLATE_", "");
+      e.id = (e.id).replace("_TEMPLATE_", "");
+    });
+
     // Show them
     $usersBlock.append($newUsersBlock.html());
     // Update indexes
@@ -744,7 +752,7 @@ var deliverablePartnersModule = (function () {
   }
 
   function updateIndexes() {
-    $('.otherDeliverablePartners .deliverablePartnerItem').each(function (i, partner) {
+    $('.projectExpectedStudyPartners .deliverablePartnerItem').each(function (i, partner) {
 
       // Update deliverable partner index
       $(partner).setNameIndexes(1, i);
@@ -754,6 +762,13 @@ var deliverablePartnersModule = (function () {
         var customID = "jsGenerated-" + i + "-" + j + "-" + personID;
         // Update user index
         $(user).setNameIndexes(2, j);
+
+        //Remove name _TEMPLATE_ from inputs
+        $(user).find('input').each(function(_i,e) {
+          e.name = (e.name).replace("_TEMPLATE_", "");
+          e.id = (e.id).replace("_TEMPLATE_", "");
+        });
+
         // Update user checks/radios labels and inputs ids
         $(user).find('input[type="checkbox"]').attr('id', customID);
         $(user).find('label.checkbox-label').attr('for', customID);
@@ -765,7 +780,7 @@ var deliverablePartnersModule = (function () {
   }
 
   function updateInstitutionSelects() {
-    var $listBlock = $('.otherDeliverablePartners');
+    var $listBlock = $('.projectExpectedStudyPartners');
     var $institutionsSelects = $listBlock.find('select.partnerInstitutionID');
 
     // Get selected values
