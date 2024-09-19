@@ -1290,6 +1290,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             (new ArrayList<>(this.expectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().stream()
               .filter(o -> o != null && o.getId() != null && o.isActive() && o.getPhase().getId().equals(phase.getId()))
               .collect(Collectors.toList()))));
+          if (this.expectedStudy.getAllianceLever() == null) {
+            for (ProjectExpectedStudyAllianceLeversOutcome projectExpectedStudyAllianceLeversOutcomesTmp : this.expectedStudy
+              .getAllianceLeversOutcomes()) {
+              this.expectedStudy.setAllianceLever(projectExpectedStudyAllianceLeversOutcomesTmp.getAllianceLever());
+            }
+          }
         }
 
         if (this.expectedStudy.getAllianceLever() != null) {
