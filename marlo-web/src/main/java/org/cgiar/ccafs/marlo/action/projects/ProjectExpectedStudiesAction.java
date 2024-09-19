@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AllianceLeverManager;
+import org.cgiar.ccafs.marlo.data.manager.AllianceLeverOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
@@ -70,6 +71,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.SDGContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
@@ -132,6 +134,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
+import org.cgiar.ccafs.marlo.data.model.SDGContribution;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
@@ -164,6 +167,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -248,6 +252,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudyPartnerTypeManager projectExpectedStudyPartnerTypeManager;
   private ProjectExpectedStudyPartnershipsPersonManager projectExpectedStudyPartnershipsPersonManager;
   private UserManager userManager;
+  private SDGContributionManager sDGContributionManager;
+  private AllianceLeverOutcomeManager allianceLeverOutcomeManager;
 
 
   // Variables
@@ -350,7 +356,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectExpectedStudyPartnershipManager projectExpectedStudyPartnershipManager,
     ProjectExpectedStudyPartnerTypeManager projectExpectedStudyPartnerTypeManager,
     ProjectExpectedStudyPartnershipsPersonManager projectExpectedStudyPartnershipsPersonManager,
-    UserManager userManager) {
+    UserManager userManager, SDGContributionManager sDGContributionManager,
+    AllianceLeverOutcomeManager allianceLeverOutcomeManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -415,6 +422,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectExpectedStudyPartnerTypeManager = projectExpectedStudyPartnerTypeManager;
     this.projectExpectedStudyPartnershipsPersonManager = projectExpectedStudyPartnershipsPersonManager;
     this.userManager = userManager;
+    this.sDGContributionManager = sDGContributionManager;
+    this.allianceLeverOutcomeManager = allianceLeverOutcomeManager;
   }
 
 
@@ -453,6 +462,36 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       }
     }
+  }
+
+
+  public void fillAllianceLevers() {
+    try {
+      if (this.expectedStudy.getAllianceLever() != null) {
+        List<SDGContribution> sDGContributionList = new ArrayList<>();
+        sDGContributionList = this.sDGContributionManager.findSDGcontributionByExpectedPhaseAndLever(
+          this.getActualPhase().getId(), this.expectedStudy.getId(), this.expectedStudy.getAllianceLever().getId(), 1);
+        this.expectedStudy.getAllianceLever().setSdgContributions(sDGContributionList);
+
+        List<AllianceLeverOutcome> allianceLeverOutcomeList = new ArrayList<>();
+        allianceLeverOutcomeList = this.allianceLeverOutcomeManager.findAllianceLeverOutcomeByExpectedPhaseAndLever(
+          this.getActualPhase().getId(), this.expectedStudy.getId(), this.expectedStudy.getAllianceLever().getId());
+        this.expectedStudy.getAllianceLever().setLeverOutcomes(allianceLeverOutcomeList);
+      }
+
+
+      if (this.expectedStudy.getAllianceLevers() != null && !this.expectedStudy.getAllianceLevers().isEmpty()) {
+        for (AllianceLever allianLever : this.expectedStudy.getAllianceLevers()) {
+          List<SDGContribution> sDGContributionList = new ArrayList<>();
+          sDGContributionList = this.sDGContributionManager.findSDGcontributionByExpectedPhaseAndLever(
+            this.getActualPhase().getId(), this.expectedStudy.getId(), allianLever.getId(), 0);
+          allianLever.setSdgContributions(sDGContributionList);
+        }
+      }
+    } catch (Exception e) {
+      Log.error(" error in fillallianceLevers function " + e.getMessage());
+    }
+
   }
 
 
@@ -515,7 +554,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public List<CrpProgram> getFlagshipList() {
     return this.flagshipList;
   }
-
 
   public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
     return this.focusLevels;
@@ -603,10 +641,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.project;
   }
 
+
   public long getProjectID() {
     return this.projectID;
   }
-
 
   public List<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
@@ -628,10 +666,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return srfSubIdoPrimary;
   }
 
+
   public List<RepIndStageProcess> getStageProcesses() {
     return this.stageProcesses;
   }
-
 
   public List<RepIndStageStudy> getStageStudies() {
     return this.stageStudies;
@@ -707,6 +745,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     return users;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -1293,6 +1332,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             }
           }
         }
+
+        // this function set the sdg and outocmes related to the levers
+        this.fillAllianceLevers();
 
 
         // Expected Study projectExpectedStudyPartnerships List
@@ -1894,6 +1936,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(null);
       this.expectedStudy.getProjectExpectedStudyInfo().setTag(null);
     }
+
 
   }
 

@@ -52,6 +52,8 @@ public interface AllianceLeverOutcomeManager {
   public List<AllianceLeverOutcome> findAll();
 
 
+  List<AllianceLeverOutcome> findAllianceLeverOutcomeByExpectedPhaseAndLever(long phase, long expectedId, long lever);
+
   /**
    * This method gets a allianceLeverOutcome object by a given allianceLeverOutcome identifier.
    * 
@@ -59,6 +61,7 @@ public interface AllianceLeverOutcomeManager {
    * @return a AllianceLeverOutcome object.
    */
   public AllianceLeverOutcome getAllianceLeverOutcomeById(long allianceLeverOutcomeID);
+
 
   /**
    * This method saves the information of the given allianceLeverOutcome

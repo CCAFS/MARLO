@@ -62,6 +62,14 @@ public class AllianceLeverOutcomeManagerImpl implements AllianceLeverOutcomeMana
   }
 
   @Override
+  public List<AllianceLeverOutcome> findAllianceLeverOutcomeByExpectedPhaseAndLever(long phase, long expectedId,
+    long lever) {
+
+    return allianceLeverOutcomeDAO.findAllianceLeverOutcomeByExpectedPhaseAndLever(phase, expectedId, lever);
+
+  }
+
+  @Override
   public AllianceLeverOutcome getAllianceLeverOutcomeById(long allianceLeverOutcomeID) {
 
     return allianceLeverOutcomeDAO.find(allianceLeverOutcomeID);
