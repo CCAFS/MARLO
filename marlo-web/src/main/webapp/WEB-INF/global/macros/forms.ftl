@@ -1096,15 +1096,6 @@
         [#else]
           [#local radioItemName = "${radioItem.name}" /]
         [/#if]
-
-        [#--  Check if the radio item is checked  
-        [#local isChecked = false]
-        [#if checkedValue?has_content]
-          [#if checkedValue == radioItem.id]
-            [#local isChecked = true /]
-          [/#if]
-        [/#if]
-        --]
       
         [#local isChecked = false]
 
