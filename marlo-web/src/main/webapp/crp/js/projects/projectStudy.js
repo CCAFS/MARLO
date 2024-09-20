@@ -824,6 +824,11 @@ var dynamicSelectorSDGImageModule = (function (){
     changeCurrentDisplaySDGImage();
   }
 
+
+  const $containerPrimaryLever = $('.containerPrimaryLever');
+  const $checkedRadioButtonLever = $containerPrimaryLever.find('input[name="expectedStudy.projectExpectedStudyInfo.allianceLever.id"]:checked');
+  const $checkedRadioButtonLeverValue = $checkedRadioButtonLever.val();
+
   function changeCurrentDisplaySDGImage() {
     const $containerImage = $('.selectedLeverContainer__image');
     const $image = $containerImage.find('img');

@@ -557,10 +557,10 @@
   [/#if]
 [/#macro]
 
-[#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" columns=0 ]
+[#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" columns=0 additionalData="" ]
   <div class="inputsFlat [#if columns > 0]col-md-${columns}[/#if]">
     [#if editable]
-    <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] />
+    <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] [#if additionalData?has_content] data-additional="${additionalData}" [/#if] />
     <label for="${id}" class="checkbox-label ${cssClassLabel}"> [@s.text name=label /] 
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
@@ -1082,11 +1082,11 @@
   </div>
 [/#macro]
 
-[#macro selectableCheckToCheckboxMacro name="" fieldName="" keyFieldName="" label="" listName="" template=false isPrimaryLever=false hasInnerCheckbox=false listNameInnerCheckbox="" labelInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true checkedValue="" isRadioButton=true ]
+[#macro selectableCheckToCheckboxMacro name="" className="" fieldName="" keyFieldName="" label="" listName="" template=false isPrimaryLever=false hasInnerCheckbox=false listNameInnerCheckbox="" labelInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true checkedValue="" isRadioButton=true ]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}"]
 
   [#if listName?has_content]
-    <div class="form-group radioToCheckbox">
+    <div class="form-group radioToCheckbox ${isPrimaryLever?then('containerPrimaryLever','')} ${className}">
       <label for="">[@s.text name=label /][@req required=required && editable /]</label>
       <input type="hidden" name="${customName}.${fieldName}.isPrimary" value="${isPrimaryLever?c}" />
       [#list listName as radioItem]
@@ -1144,7 +1144,7 @@
 
                     [#if listInnerContent?has_content]
                       [#list listInnerContent as innerItem]
-                        [@customForm.checkBoxFlat value="${innerItem.id}" name="${customName}.${fieldName}.${keyFieldName}[${innerItem_index}].id" id="innerCheckDisplay${fieldName}_${keyFieldName}_${innerItem_index}" label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable checked=false /]
+                        [@customForm.checkBoxFlat value="${innerItem.id}" name="${customName}.${fieldName}.${keyFieldName}[${innerItem_index}].id" id="innerCheckDisplay${fieldName}_${keyFieldName}_${innerItem_index}" label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable checked=false additionalData="${innerItem[classReferenceInnerCheckbox].sdg.id}" /]
                       [/#list]
                     [/#if]
                   </div>
