@@ -950,16 +950,35 @@
 [#macro studyAlliance element name index=-1 template=false fromProject=true]
   [#local customName = "${name}"/]
   <div class="borderBox">
+    [#-- Levers --]
     <div class="form-group">
       <label class="label--2" for=""><b>[@s.text name="study.allianceAligment.linkToLevers.title" /]</b>[@customForm.req required=false /]</label>
       [@customForm.helpLabel name="study.allianceAligment.linkToLevers.note" showIcon=false editable=editable isNote=true /]
+      [#-- Primary Levers --]
       <div class="form-group">
         [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" name="${customName}" fieldName="allianceLever" listName=allianceLever keyFieldName="sdgContributions" isPrimaryLever=true hasInnerCheckbox=true labelInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="allianceLeversSdgContributions" classReferenceInnerCheckbox="sDGContribution" checkedValue=1 /]
       </div>
+      [#-- Related Levers --]
       <div class="form-group">
         [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.relatedLever" name="${customName}" fieldName="allianceLevers" listName=allianceLever keyFieldName="sdgContributions" isPrimaryLever=false hasInnerCheckbox=true labelInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="allianceLeversSdgContributions" classReferenceInnerCheckbox="sDGContribution" isRadioButton=false checkedValue=1 /]
       </div>
     </div>
+
+    [#-- SDG Representation --]
+    <div class="form-group">
+      <label class="label--2" for=""><b>[@s.text name="study.allianceAligment.generalContributionSDG" /]</b></label>
+      <label for="">[@s.text name="study.allianceAligment.generalContributionSDG.description" /]</label>
+      <div class="selectedLeverContainer">
+        <div class="selectedLeverContainer__image">
+          <img src="" alt="Selected Lever"  />
+        </div>
+        <div class="selectedLeverContainer__content">
+          <b><p class="selectedLeverContainer__content__lever">No Selected Lever</p></b>
+          <p class="selectedLeverContainer__content__contributionSDG">No Selected the Contribution to SDG</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 [/#macro]
 

@@ -225,6 +225,27 @@ table#projectHighlights {
   padding-left: 20px;
 }
 
+/* Dynamic Lever Selector */
+.selectedLeverContainer{
+  display: flex;
+  width: 100%;
+  padding: 1rem;
+  border: 0.5px solid #808080;
+  border-radius: 5px;
+}
+
+.selectedLeverContainer__image{
+  width: 60px;
+  border-radius: 2px;
+  background-color: #6f6f6f;
+}
+
+.selectedLeverContainer__content{
+  width: -webkit-fill-available;
+  width: -moz-available;
+  padding-left: 1rem;
+}
+
 /* NEW */
 .panel .panel-body {
   min-height: 38px;
