@@ -824,21 +824,22 @@ var dynamicSelectorSDGImageModule = (function (){
     changeCurrentDisplaySDGImage();
   }
 
-
-  const $containerPrimaryLever = $('.containerPrimaryLever');
-  const $checkedRadioButtonLever = $containerPrimaryLever.find('input[name="expectedStudy.projectExpectedStudyInfo.allianceLever.id"]:checked');
-  const $checkedRadioButtonLeverValue = $checkedRadioButtonLever.val();
-
   function changeCurrentDisplaySDGImage() {
     const $containerImage = $('.selectedLeverContainer__image');
     const $image = $containerImage.find('img');
-    console.log($image);
+
+    const $containerPrimaryLever = $('.containerPrimaryLever');
+    const $checkedRadioButtonLever = $containerPrimaryLever.find('input[name="expectedStudy.allianceLever.id"]:checked');
+    const $checkedRadioButtonLeverParent = $checkedRadioButtonLever.parents('.containerRadioToCheckbox');
+    const $innerCheckbox = $checkedRadioButtonLeverParent.find('#innerCheckbox');
+    const $checkedInnerCheckbox = $innerCheckbox.find('input[name*="expectedStudy.allianceLever.sdgContributions"]:checked');
+    const $checkedInnerCheckboxValue = $checkedInnerCheckbox.val();
 
     $.ajax({
       url: baseURL + '/getSdgImage.do',
       async: true,
       data: {
-        requestID: 1
+        requestID: Number.parseInt($checkedInnerCheckboxValue)
       },
       success: function(data) {
         console.log(data);
