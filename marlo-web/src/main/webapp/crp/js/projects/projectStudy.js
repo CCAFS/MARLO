@@ -824,21 +824,23 @@ var dynamicSelectorSDGImageModule = (function (){
     changeCurrentDisplaySDGImage();
   }
 
-
-  const $containerPrimaryLever = $('.containerPrimaryLever');
-  const $checkedRadioButtonLever = $containerPrimaryLever.find('input[name="expectedStudy.projectExpectedStudyInfo.allianceLever.id"]:checked');
-  const $checkedRadioButtonLeverValue = $checkedRadioButtonLever.val();
-
   function changeCurrentDisplaySDGImage() {
     const $containerImage = $('.selectedLeverContainer__image');
     const $image = $containerImage.find('img');
-    console.log($image);
 
+    const $containerPrimaryLever = $('.containerPrimaryLever');
+    const $checkedRadioButtonLever = $containerPrimaryLever.find('input[name="expectedStudy.allianceLever.id"]:checked');
+    const $checkedRadioButtonLeverParent = $checkedRadioButtonLever.parents('.containerRadioToCheckbox');
+    const $innerCheckbox = $checkedRadioButtonLeverParent.find('#innerCheckbox');
+    const $checkedInnerCheckbox = $innerCheckbox.find('input[name*="expectedStudy.allianceLever.sdgContributions"]:checked');
+    const $checkedInnerCheckboxValue = $checkedInnerCheckbox.val();
+
+    //Set image of the SDG Contribution
     $.ajax({
       url: baseURL + '/getSdgImage.do',
       async: true,
       data: {
-        requestID: 1
+        requestID: Number.parseInt($checkedInnerCheckboxValue)
       },
       success: function(data) {
         console.log(data);
@@ -849,6 +851,14 @@ var dynamicSelectorSDGImageModule = (function (){
         reject(error);
       }
     });
+
+    //Set information of the SDG Contribution
+    const $containerSDGInformation = $('.selectedLeverContainer__content');
+    const $leverName = $containerSDGInformation.find('.selectedLeverContainer__content__lever');
+    const $leverContributionSDG = $containerSDGInformation.find('.selectedLeverContainer__content__contributionSDG');
+
+    $leverName.text($checkedRadioButtonLever.next().text());
+    $leverContributionSDG.text($checkedInnerCheckbox.next().text());
 
   }
 

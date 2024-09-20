@@ -557,10 +557,10 @@
   [/#if]
 [/#macro]
 
-[#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" columns=0 additionalData="" ]
+[#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" columns=0 ]
   <div class="inputsFlat [#if columns > 0]col-md-${columns}[/#if]">
     [#if editable]
-    <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] [#if additionalData?has_content] data-additional="${additionalData}" [/#if] />
+    <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] />
     <label for="${id}" class="checkbox-label ${cssClassLabel}"> [@s.text name=label /] 
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
@@ -1082,8 +1082,8 @@
   </div>
 [/#macro]
 
-[#macro selectableCheckToCheckboxMacro element name="" className="" fieldName="" keyFieldName="" label="" listName="" template=false isPrimaryLever=false hasInnerCheckbox=false listNameInnerCheckbox="" labelInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true isRadioButton=true ]
-  [#local customName = "${template?string('_TEMPLATE_', '')}${name}"]
+[#macro selectableCheckToCheckboxMacro element name="" className="" fieldName="" keyFieldName="" label="" listName=""  isPrimaryLever=false hasInnerCheckbox=false listNameInnerCheckbox="" labelInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true isRadioButton=true ]
+  [#local customName = "${name}"]
 
   [#if listName?has_content]
     <div class="form-group radioToCheckbox ${isPrimaryLever?then('containerPrimaryLever','')} ${className}">
@@ -1096,15 +1096,6 @@
         [#else]
           [#local radioItemName = "${radioItem.name}" /]
         [/#if]
-
-        [#--  Check if the radio item is checked  
-        [#local isChecked = false]
-        [#if checkedValue?has_content]
-          [#if checkedValue == radioItem.id]
-            [#local isChecked = true /]
-          [/#if]
-        [/#if]
-        --]
       
         [#local isChecked = false]
 
@@ -1155,33 +1146,31 @@
                   </div>
                 [/#if]
 
-                [#if hasInnerCheckbox]
-                  <div class="form-group" style="padding-left: 20px;">
-                    <label for="" class="radio-label"><b>[@s.text name=labelInnerCheckbox /]</b></label>
+                <div class="form-group" style="padding-left: 20px;">
+                  <label for="" class="radio-label"><b>[@s.text name=labelInnerCheckbox /]</b></label>
 
-                    [#attempt]
-                      [#local listInnerContent = radioItem[listNameInnerCheckbox]![] /]
-                    [#recover]
-                      [#local listInnerContent = [] /] 
-                    [/#attempt]
+                  [#attempt]
+                    [#local listInnerContent = radioItem[listNameInnerCheckbox]![] /]
+                  [#recover]
+                    [#local listInnerContent = [] /] 
+                  [/#attempt]
 
-                    [#if listInnerContent?has_content]
-                      [#list listInnerContent as innerItem]
-                        [#local isCheckedInner = false]
-                        [#if element?has_content && element[fieldName]?has_content && element[fieldName][keyFieldName]?has_content]
-                          [#list element[fieldName][keyFieldName] as innerChecked]
-                            [#if innerChecked.id == innerItem.id]
-                              [#local isCheckedInner = true /]
-                              [#break /]
-                            [/#if]
-                          [/#list]
-                        [/#if]
+                  [#if listInnerContent?has_content]
+                    [#list listInnerContent as innerItem]
+                      [#local isCheckedInner = false]
+                      [#if element?has_content && element[fieldName]?has_content && element[fieldName][keyFieldName]?has_content]
+                        [#list element[fieldName][keyFieldName] as innerChecked]
+                          [#if innerChecked.id == innerItem.id]
+                            [#local isCheckedInner = true /]
+                            [#break /]
+                          [/#if]
+                        [/#list]
+                      [/#if]
 
-                        [@customForm.checkBoxFlat value="${innerItem.id}" name="${customName}.${fieldName}.${keyFieldName}[${innerItem_index}].id" id="innerCheckDisplay${fieldName}_${keyFieldName}_${innerItem_index}" label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable checked=false additionalData="${innerItem[classReferenceInnerCheckbox].sdg.id}" checked=isCheckedInner /]
-                      [/#list]
-                    [/#if]
-                  </div>
-                [/#if]
+                      [@customForm.checkBoxFlat value="${innerItem.id}" name="${customName}.${fieldName}.${keyFieldName}[${innerItem_index}].id" id="innerCheckDisplay${fieldName}_${keyFieldName}_${innerItem_index}" label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable checked=false  checked=isCheckedInner /]
+                    [/#list]
+                  [/#if]
+                </div>
             </div>
           [/#if]
         </div>
