@@ -1167,7 +1167,17 @@
 
                     [#if listInnerContent?has_content]
                       [#list listInnerContent as innerItem]
-                        [@customForm.checkBoxFlat value="${innerItem.id}" name="${customName}.${fieldName}.${keyFieldName}[${innerItem_index}].id" id="innerCheckDisplay${fieldName}_${keyFieldName}_${innerItem_index}" label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable checked=false additionalData="${innerItem[classReferenceInnerCheckbox].sdg.id}" /]
+                        [#local isCheckedInner = false]
+                        [#if element?has_content && element[fieldName]?has_content && element[fieldName][keyFieldName]?has_content]
+                          [#list element[fieldName][keyFieldName] as innerChecked]
+                            [#if innerChecked.id == innerItem.id]
+                              [#local isCheckedInner = true /]
+                              [#break /]
+                            [/#if]
+                          [/#list]
+                        [/#if]
+
+                        [@customForm.checkBoxFlat value="${innerItem.id}" name="${customName}.${fieldName}.${keyFieldName}[${innerItem_index}].id" id="innerCheckDisplay${fieldName}_${keyFieldName}_${innerItem_index}" label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable checked=false additionalData="${innerItem[classReferenceInnerCheckbox].sdg.id}" checked=isCheckedInner /]
                       [/#list]
                     [/#if]
                   </div>
