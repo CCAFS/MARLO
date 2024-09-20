@@ -59,6 +59,9 @@ function init() {
 
   //init partners methods
   deliverablePartnersModule.init();
+
+  //init dynamic selector
+  dynamicSelectorSDGImageModule.init();
 }
 
 function bottonPading(){
@@ -812,4 +815,40 @@ var deliverablePartnersModule = (function () {
   return {
     init: init
   }
+})();
+
+var dynamicSelectorSDGImageModule = (function (){
+
+  function init() {
+    console.log("Starting dynamicSelectorSDGImageModule");
+    changeCurrentDisplaySDGImage();
+  }
+
+  function changeCurrentDisplaySDGImage() {
+    const $containerImage = $('.selectedLeverContainer__image');
+    const $image = $containerImage.find('img');
+    console.log($image);
+
+    $.ajax({
+      url: baseURL + '/getSdgImage.do',
+      async: true,
+      data: {
+        requestID: 1
+      },
+      success: function(data) {
+        console.log(data);
+        $image.attr("src",data.image.adsoluteURL);
+      },
+      error: function(xhr, status, error) {
+        console.error(error);
+        reject(error);
+      }
+    });
+
+  }
+
+  return {
+    init: init
+  }
+
 })();

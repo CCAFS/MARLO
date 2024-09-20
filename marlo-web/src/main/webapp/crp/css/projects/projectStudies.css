@@ -240,6 +240,10 @@ table#projectHighlights {
   background-color: #6f6f6f;
 }
 
+.selectedLeverContainer__image img{
+  width: inherit;
+}
+
 .selectedLeverContainer__content{
   width: -webkit-fill-available;
   width: -moz-available;
