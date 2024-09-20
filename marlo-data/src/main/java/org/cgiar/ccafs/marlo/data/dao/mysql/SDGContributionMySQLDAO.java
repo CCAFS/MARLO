@@ -79,7 +79,9 @@ public class SDGContributionMySQLDAO extends AbstractMarloDAO<SDGContribution, L
     query.append(" from sdg_contributions as sc ");
     query.append(" join project_expected_study_sdg_alliance_levers as pessal ");
     query.append(" on sc.id = pessal.sdg_contribution_id ");
-    query.append(" where pessal.id_phase=" + phase);
+    query.append(" join alliance_levers_sdg_contributions as alsc on alsc.sdg_contribution_id =sc.id ");
+    query.append(" where alsc.alliance_lever_id =pessal.alliance_lever_id ");
+    query.append(" and pessal.id_phase=" + phase);
     query.append(" and pessal.expected_id=" + expectedId);
     query.append(" and pessal.alliance_lever_id=" + lever);
     query.append(" and pessal.is_primary=" + isPrimary);

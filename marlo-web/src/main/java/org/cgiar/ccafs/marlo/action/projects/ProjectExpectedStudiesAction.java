@@ -478,11 +478,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           this.getActualPhase().getId(), this.expectedStudy.getId(), this.expectedStudy.getAllianceLever().getId());
         this.expectedStudy.getAllianceLever().setLeverOutcomes(allianceLeverOutcomeList);
       }
-      this.logger.info(" linea 483 ID alliance lever " + this.expectedStudy.getAllianceLever().getId());
-      for (final AllianceLeverOutcome alo : this.expectedStudy.getAllianceLever().getOutcomes()) {
-        this.logger.info(" linea 483 ID outcome " + alo.getId());
-
-      }
 
 
       if ((this.expectedStudy.getAllianceLevers() != null) && !this.expectedStudy.getAllianceLevers().isEmpty()) {
