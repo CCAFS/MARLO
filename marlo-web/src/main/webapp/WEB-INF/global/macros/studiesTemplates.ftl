@@ -956,11 +956,11 @@
       [@customForm.helpLabel name="study.allianceAligment.linkToLevers.note" showIcon=false editable=editable isNote=true /]
       [#-- Primary Levers --]
       <div class="form-group">
-        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" name="${customName}" fieldName="allianceLever" listName=allianceLever keyFieldName="sdgContributions" isPrimaryLever=true hasInnerCheckbox=true labelInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="allianceLeversSdgContributions" classReferenceInnerCheckbox="sDGContribution" checkedValue=1 /]
+        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" name="${customName}" fieldName="allianceLever" listName=allianceLever keyFieldName="sdgContributions" isPrimaryLever=true hasInnerCheckbox=true labelInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="allianceLeversSdgContributions" classReferenceInnerCheckbox="sDGContribution" element=element /]
       </div>
       [#-- Related Levers --]
       <div class="form-group">
-        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.relatedLever" name="${customName}" fieldName="allianceLevers" listName=allianceLever keyFieldName="sdgContributions" isPrimaryLever=false hasInnerCheckbox=true labelInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="allianceLeversSdgContributions" classReferenceInnerCheckbox="sDGContribution" isRadioButton=false checkedValue=1 /]
+        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.relatedLever" name="${customName}" fieldName="allianceLevers" listName=allianceLever keyFieldName="sdgContributions" isPrimaryLever=false hasInnerCheckbox=true labelInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="allianceLeversSdgContributions" classReferenceInnerCheckbox="sDGContribution" isRadioButton=false element=element /]
       </div>
     </div>
 

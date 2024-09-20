@@ -1082,7 +1082,7 @@
   </div>
 [/#macro]
 
-[#macro selectableCheckToCheckboxMacro name="" className="" fieldName="" keyFieldName="" label="" listName="" template=false isPrimaryLever=false hasInnerCheckbox=false listNameInnerCheckbox="" labelInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true checkedValue="" isRadioButton=true ]
+[#macro selectableCheckToCheckboxMacro element name="" className="" fieldName="" keyFieldName="" label="" listName="" template=false isPrimaryLever=false hasInnerCheckbox=false listNameInnerCheckbox="" labelInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true isRadioButton=true ]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}"]
 
   [#if listName?has_content]
@@ -1096,13 +1096,24 @@
         [#else]
           [#local radioItemName = "${radioItem.name}" /]
         [/#if]
-                
+
+        [#--  Check if the radio item is checked  
         [#local isChecked = false]
         [#if checkedValue?has_content]
           [#if checkedValue == radioItem.id]
             [#local isChecked = true /]
           [/#if]
         [/#if]
+        --]
+      
+        [#local isChecked = false]
+
+        [#if element?has_content && element.allianceLever?has_content && element.allianceLever.id?has_content]
+          [#if radioItem.id == element.allianceLever.id]
+            [#local isChecked = true /]
+          [/#if]
+        [/#if]
+
         <div class="containerRadioToCheckbox ${(radioItem.name == 'Other')?then('containerRadioToCheckbox--other','')}">
           [#if isRadioButton]
             [@customForm.radioFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.${fieldName}.id" value="${radioItem.id}" i18nkey="${radioItemName}" editable=editable checked=isChecked /]
@@ -1119,6 +1130,7 @@
             <div class="form-group" id="innerCheckbox" data-radioButton="${radioItem.id}" style="display:${isChecked?string('block','none')}" >
                 [#if isPrimaryLever]
                   [#attempt]
+                  <!--CONTROL LIST: alliances levers outcomes -->
                     [#local listPrimary = radioItem.allianceLeverOutcomes![] /]
                   [#recover]
                     [#local listPrimary = [] /] 
@@ -1127,7 +1139,18 @@
                   <div class="form-group" style="padding-left: 20px;">
                     <label for="" class="radio-label"><b>[@s.text name="study.allianceAligment.linkToLevers.options.text.strategicOutcome" /]</b></label>
                     [#list listPrimary as primaryItem]
-                      [@customForm.checkBoxFlat value="${primaryItem.id}" name="${customName}.${fieldName}.outcome[${primaryItem_index}].id" id="innerCheckDisplay${fieldName}_outcome_${primaryItem_index}" label="${primaryItem.description}" editable=editable checked=false /]
+
+                      [#local checkedPrimary = false]
+                      [#if element?has_content && element.allianceLever?has_content && element.allianceLever.leverOutcomes?has_content]
+                        [#list element.allianceLever.leverOutcomes as primaryChecked]
+                          [#if primaryChecked.id == primaryItem.id]
+                            [#local checkedPrimary = true /]
+                            [#break /]
+                          [/#if]
+                        [/#list]
+                      [/#if]
+
+                      [@customForm.checkBoxFlat value="${primaryItem.id}" name="${customName}.${fieldName}.outcome[${primaryItem_index}].id" id="innerCheckDisplay${fieldName}_outcome_${primaryItem_index}" label="${primaryItem.description}" editable=editable checked=checkedPrimary /]
                     [/#list]
                   </div>
                 [/#if]
