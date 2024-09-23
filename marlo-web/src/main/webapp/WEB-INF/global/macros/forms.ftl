@@ -1115,7 +1115,7 @@
 
           [#if radioItem.name == 'Other']
             <div class="form-group inputOther"> 
-              [@input name="${customName}.${fieldName}.leverComments" placeholder="Other" editable=editable showTitle=false /]
+              [@input name="${customName}.${fieldName}[${radioItem_index}].leverComments" placeholder="Other" editable=editable showTitle=false /]
             </div> 
           [#else]
             <div class="form-group" id="innerCheckbox" data-radioButton="${radioItem.id}" style="display:${isChecked?string('block','none')}" >
