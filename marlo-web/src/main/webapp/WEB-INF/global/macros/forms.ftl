@@ -1115,7 +1115,11 @@
 
           [#if radioItem.name == 'Other']
             <div class="form-group inputOther"> 
-              [@input name="${customName}.${fieldName}[${radioItem_index}].leverComments" placeholder="Other" editable=editable showTitle=false /]
+              [#if isPrimaryLever]
+                [@input name="${customName}.${fieldName}.leverComments" placeholder="Other" editable=editable showTitle=false /]
+              [#else]
+                [@input name="${customName}.${fieldName}[${radioItem_index}].leverComments" placeholder="Other" editable=editable showTitle=false /]
+              [/#if]
             </div> 
           [#else]
             <div class="form-group" id="innerCheckbox" data-radioButton="${radioItem.id}" style="display:${isChecked?string('block','none')}" >
