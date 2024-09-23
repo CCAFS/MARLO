@@ -473,6 +473,8 @@ function attachEvents() {
   $('input.radioType-contributionToCGIAR').on('change', onDisplayCommentForNoContributingCGIAR);
 
   $('input[id*="radioCheckDisplay_"]').on('change', displayInnerCheckbox);
+
+  $('.containerPrimaryLever input[id*="innerCheckDisplayallianceLever_sdgContributions_"]').on('change', dynamicSelectorSDGImageModule.init);
 }
 
 function addSelect2() {
@@ -646,9 +648,31 @@ function displayInnerCheckbox() {
     var $this = $(this);
     var $innerCheckbox = $parentMacro.find(`#innerCheckbox[data-radioButton='${$this.val()}']`);
     if($this.is($radioSelected)) {
-      $innerCheckbox.slideDown();
+      $innerCheckbox.slideDown("slow");
+      //get name inner inputs and remove _TEMPLATE_
+      $innerCheckbox.find('input').each(function(_i,e) {
+        e.name = (e.name).replace("_TEMPLATE_", "");
+        e.id = (e.id).replace("_TEMPLATE_", "");
+      });
+
+      $innerCheckbox.find('label').each(function(_i,e) {
+        e.htmlFor = (e.htmlFor).replace("_TEMPLATE_", "");
+      } );
     } else {
-      $innerCheckbox.slideUp();
+      $innerCheckbox.slideUp("slow");
+      //get name inner inputs and add _TEMPLATE_
+      $innerCheckbox.find('input').each(function(_i,e) {
+        if(e.name.indexOf("_TEMPLATE_") == -1){
+          e.name = "_TEMPLATE_" + (e.name);
+          e.id = "_TEMPLATE_" + (e.id);
+        } 
+      });
+
+      $innerCheckbox.find('label').each(function(_i,e) {
+        if(e.htmlFor.indexOf("_TEMPLATE_") == -1){
+          e.htmlFor = "_TEMPLATE_" + (e.htmlFor);
+        }
+      });
     }
   });
 

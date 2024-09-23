@@ -1132,6 +1132,15 @@
                     [#list listPrimary as primaryItem]
 
                       [#local checkedPrimary = false]
+
+                      [#if isChecked]
+                        [#local customNameInnerName = "${customName}.${fieldName}.leverOutcomes[${primaryItem_index}].id"]
+                        [#local customIdInner = "innerCheckDisplay${fieldName}_outcome_${primaryItem_index}"]
+                      [#else]
+                        [#local customNameInnerName = "_TEMPLATE_${customName}.${fieldName}.leverOutcomes[${primaryItem_index}].id"]
+                        [#local customIdInner= "_TEMPLATE_innerCheckDisplay${fieldName}_outcome_${primaryItem_index}"]
+                      [/#if]
+
                       [#if element?has_content && element.allianceLever?has_content && element.allianceLever.leverOutcomes?has_content]
                         [#list element.allianceLever.leverOutcomes as primaryChecked]
                           [#if primaryChecked.id == primaryItem.id]
@@ -1141,7 +1150,7 @@
                         [/#list]
                       [/#if]
 
-                      [@customForm.checkBoxFlat value="${primaryItem.id}" name="${customName}.${fieldName}.leverOutcomes[${primaryItem_index}].id" id="innerCheckDisplay${fieldName}_outcome_${primaryItem_index}" label="${primaryItem.description}" editable=editable checked=checkedPrimary /]
+                      [@customForm.checkBoxFlat value="${primaryItem.id}" name=customNameInnerName id=customIdInner label="${primaryItem.description}" editable=editable checked=checkedPrimary /]
                     [/#list]
                   </div>
                 [/#if]
@@ -1158,16 +1167,24 @@
                   [#if listInnerContent?has_content]
                     [#list listInnerContent as innerItem]
                       [#local isCheckedInner = false]
+
+                      [#if isChecked]
+                        [#local customNameInnerName = "${customName}.${fieldName}.${keyFieldName}[${innerItem_index}].id" /]
+                        [#local customIdInner = "innerCheckDisplay${fieldName}_${keyFieldName}_${innerItem_index}"]
+                      [#else]
+                        [#local customNameInnerName = "_TEMPLATE_${customName}.${fieldName}.${keyFieldName}[${innerItem_index}].id" /]
+                        [#local customIdInner = "_TEMPLATE_innerCheckDisplay${fieldName}_${keyFieldName}_${innerItem_index}"]
+                      [/#if]
+
                       [#if element?has_content && element[fieldName]?has_content && element[fieldName][keyFieldName]?has_content]
                         [#list element[fieldName][keyFieldName] as innerChecked]
                           [#if innerChecked.id == innerItem.id]
                             [#local isCheckedInner = true /]
-                            [#break /]
                           [/#if]
                         [/#list]
                       [/#if]
 
-                      [@customForm.checkBoxFlat value="${innerItem.id}" name="${customName}.${fieldName}.${keyFieldName}[${innerItem_index}].id" id="innerCheckDisplay${fieldName}_${keyFieldName}_${innerItem_index}" label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable checked=false  checked=isCheckedInner /]
+                      [@customForm.checkBoxFlat value="${innerItem.id}" name=customNameInnerName id=customIdInner label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable checked=false  checked=isCheckedInner /]
                     [/#list]
                   [/#if]
                 </div>
