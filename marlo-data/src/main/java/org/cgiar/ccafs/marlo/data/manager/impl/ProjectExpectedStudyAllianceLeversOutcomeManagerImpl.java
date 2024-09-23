@@ -80,9 +80,6 @@ public class ProjectExpectedStudyAllianceLeversOutcomeManagerImpl
     Phase phase = phaseDAO.find(next.getId());
 
 
-    System.out.println(
-      " linea 83" + projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome().getAllianceLever().getId());
-    System.out.println(" linea 84" + projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome().getId());
     List<ProjectExpectedStudyAllianceLeversOutcome> projectExpectedStudyAllianceLeversOutcomeList =
       phase.getProjectExpectedStudyAllianceLeversOutcomes().stream()
         .filter(c -> c.isActive()

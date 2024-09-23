@@ -1141,7 +1141,7 @@
                         [/#list]
                       [/#if]
 
-                      [@customForm.checkBoxFlat value="${primaryItem.id}" name="${customName}.${fieldName}.outcome[${primaryItem_index}].id" id="innerCheckDisplay${fieldName}_outcome_${primaryItem_index}" label="${primaryItem.description}" editable=editable checked=checkedPrimary /]
+                      [@customForm.checkBoxFlat value="${primaryItem.id}" name="${customName}.${fieldName}.leverOutcomes[${primaryItem_index}].id" id="innerCheckDisplay${fieldName}_outcome_${primaryItem_index}" label="${primaryItem.description}" editable=editable checked=checkedPrimary /]
                     [/#list]
                   </div>
                 [/#if]
