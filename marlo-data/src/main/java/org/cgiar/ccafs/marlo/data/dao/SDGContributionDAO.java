@@ -58,6 +58,8 @@ public interface SDGContributionDAO {
   List<SDGContribution> findSDGcontributionByExpectedPhaseAndLever(long phase, long expectedId, long lever,
     int isPrimary);
 
+  List<SDGContribution> findSDGcontributionByLever(long lever);
+
   /**
    * This method saves the information of the given sDGContribution
    * 

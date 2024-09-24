@@ -70,6 +70,13 @@ public class SDGContributionManagerImpl implements SDGContributionManager {
   }
 
   @Override
+  public List<SDGContribution> findSDGcontributionByLever(long lever) {
+
+    return sDGContributionDAO.findSDGcontributionByLever(lever);
+
+  }
+
+  @Override
   public SDGContribution getSDGContributionById(long sDGContributionID) {
 
     return sDGContributionDAO.find(sDGContributionID);

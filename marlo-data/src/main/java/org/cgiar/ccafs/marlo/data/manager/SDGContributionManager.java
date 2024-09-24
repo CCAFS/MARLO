@@ -55,6 +55,9 @@ public interface SDGContributionManager {
   List<SDGContribution> findSDGcontributionByExpectedPhaseAndLever(long phase, long expectedId, long lever,
     int isPrimary);
 
+  List<SDGContribution> findSDGcontributionByLever(long lever);
+
+
   /**
    * This method gets a sDGContribution object by a given sDGContribution identifier.
    * 

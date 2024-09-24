@@ -103,6 +103,29 @@ public class SDGContributionMySQLDAO extends AbstractMarloDAO<SDGContribution, L
 
 
   @Override
+  public List<SDGContribution> findSDGcontributionByLever(long lever) {
+    StringBuilder query = new StringBuilder();
+    query.append(" select distinct sc.id from sdg_contributions as sc ");
+    query.append(" join alliance_levers_sdg_contributions as alsc on alsc.sdg_contribution_id =sc.id ");
+    query.append(" where sc.id =alsc.sdg_contribution_id ");
+    query.append(" and sc.is_active = alsc.is_active ");
+    query.append(" and alsc.alliance_lever_id =" + lever);
+    query.append(" and alsc.is_active =1 ");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<SDGContribution> sDGContributions = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        SDGContribution sDGContribution = this.find(Long.parseLong(map.get("id").toString()));
+        sDGContributions.add(sDGContribution);
+      }
+    }
+
+    return sDGContributions;
+  }
+
+  @Override
   public SDGContribution save(SDGContribution sDGContribution) {
     if (sDGContribution.getId() == null) {
       super.saveEntity(sDGContribution);
