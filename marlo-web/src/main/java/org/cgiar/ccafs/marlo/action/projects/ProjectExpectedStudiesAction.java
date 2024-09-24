@@ -105,6 +105,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGlobalTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
@@ -1404,6 +1405,35 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               this.expectedStudy.getPartnerships().add(projectExpectedStudyPartnership);
             }
 
+          }
+        }
+
+        // Expected Study impact areas
+        if (this.expectedStudy.getProjectExpectedStudyImpactAreas() != null) {
+          this.expectedStudy
+            .setImpactAreas(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyImpactAreas().stream()
+              .filter(
+                o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+              .collect(Collectors.toList())));
+          if (this.expectedStudy.getImpactAreas() != null && !this.expectedStudy.getImpactAreas().isEmpty()) {
+            this.expectedStudy.setImpactArea(this.expectedStudy.getImpactAreas().get(0).getImpactArea());
+          }
+        }
+
+        // Expected Study global target
+        if (this.expectedStudy.getProjectExpectedStudyGlobalTargets() != null) {
+          this.expectedStudy
+            .setGlobalTargets(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyGlobalTargets().stream()
+              .filter(
+                o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+              .collect(Collectors.toList())));
+          if (this.expectedStudy.getImpactAreas() != null && !this.expectedStudy.getImpactAreas().isEmpty()) {
+            this.expectedStudy.getImpactArea().setGlobalTargets(new ArrayList<>());
+            for (ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTargetTmp : this.expectedStudy
+              .getGlobalTargets()) {
+              this.expectedStudy.getImpactArea().getGlobalTargets()
+                .add(projectExpectedStudyGlobalTargetTmp.getGlobalTarget());
+            }
           }
         }
 
