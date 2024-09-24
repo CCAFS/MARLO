@@ -52,6 +52,8 @@ public interface ImpactAreaManager {
   public List<ImpactArea> findAll();
 
 
+  List<ImpactArea> findAllCustom();
+
   /**
    * This method gets a impactArea object by a given impactArea identifier.
    * 
@@ -59,6 +61,7 @@ public interface ImpactAreaManager {
    * @return a ImpactArea object.
    */
   public ImpactArea getImpactAreaById(long impactAreaID);
+
 
   /**
    * This method saves the information of the given impactArea

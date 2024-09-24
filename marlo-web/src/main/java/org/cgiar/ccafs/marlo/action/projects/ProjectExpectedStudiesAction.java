@@ -29,7 +29,9 @@ import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ImpactAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -89,6 +91,7 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -256,6 +259,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private final SDGContributionManager sDGContributionManager;
   private final AllianceLeverOutcomeManager allianceLeverOutcomeManager;
   private final AllianceLeversSdgContributionManager allianceLeversSdgContributionManager;
+  private final ImpactAreaManager impactAreaManager;
+  private final GlobalTargetManager globalTargetManager;
 
 
   // Variables
@@ -313,6 +318,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<ProjectPartnerPerson> partnerPersons;
   private List<Institution> partnerInstitutions;
   private Boolean isManagingPartnerPersonRequerid;
+  private List<ImpactArea> impactAreasList;
 
 
   @Inject
@@ -360,7 +366,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectExpectedStudyPartnershipsPersonManager projectExpectedStudyPartnershipsPersonManager,
     UserManager userManager, SDGContributionManager sDGContributionManager,
     AllianceLeverOutcomeManager allianceLeverOutcomeManager,
-    AllianceLeversSdgContributionManager allianceLeversSdgContributionManager) {
+    AllianceLeversSdgContributionManager allianceLeversSdgContributionManager, ImpactAreaManager impactAreaManager,
+    GlobalTargetManager globalTargetManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -428,6 +435,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.sDGContributionManager = sDGContributionManager;
     this.allianceLeverOutcomeManager = allianceLeverOutcomeManager;
     this.allianceLeversSdgContributionManager = allianceLeversSdgContributionManager;
+    this.impactAreaManager = impactAreaManager;
+    this.globalTargetManager = globalTargetManager;
   }
 
 
@@ -563,12 +572,18 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.flagshipList;
   }
 
+
   public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
     return this.focusLevels;
   }
 
+
   public List<RepIndGeographicScope> getGeographicScopes() {
     return this.geographicScopes;
+  }
+
+  public List<ImpactArea> getImpactAreasList() {
+    return impactAreasList;
   }
 
   public List<ProjectInnovation> getInnovationsList() {
@@ -650,10 +665,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.project;
   }
 
-
   public long getProjectID() {
     return this.projectID;
   }
+
 
   public List<ProjectOutcome> getProjectOutcomes() {
     return this.projectOutcomes;
@@ -675,10 +690,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.srfSubIdoPrimary;
   }
 
-
   public List<RepIndStageProcess> getStageProcesses() {
     return this.stageProcesses;
   }
+
 
   public List<RepIndStageStudy> getStageStudies() {
     return this.stageStudies;
@@ -754,7 +769,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     return users;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -1522,6 +1536,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.innovationsList = new ArrayList<>();
       this.policyList = new ArrayList<>();
       this.tagList = this.projectExpectedStudyTagManager.findAll();
+      this.impactAreasList = this.impactAreaManager.findAllCustom();
+      for (ImpactArea impactArea : this.impactAreasList) {
+        impactArea.setGlobalTargets(this.globalTargetManager.findAllByImpactArea(impactArea.getId()));
+      }
+
       this.quantificationTypes = this.quantificationTypeManager.findAll();
       this.allianceLever = this.allianceLeverManager.findAll();
 
@@ -1970,6 +1989,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
 
@@ -2269,7 +2289,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
-
   /**
    * Save primary alliance lever Information
    * 
@@ -2447,6 +2466,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
+
 
   /**
    * Save study Crp Program Outcome Information
@@ -3054,7 +3074,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   private void saveProjectExpectedstudyPartnershipsPersons(
     ProjectExpectedStudyPartnership projectExpectedStudyPartnership,
     ProjectExpectedStudyPartnership projectExpectedStudyPartnershipDB) {
@@ -3160,6 +3179,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   /**
    * Save Expected Studies Projects Information
    * 
@@ -3204,7 +3224,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
-
 
   /**
    * Save Expected Studies Publications
@@ -3351,6 +3370,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Expected Studies References Information
    * 
@@ -3415,7 +3435,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Expected Studies Regions Information
    * 
@@ -3462,6 +3481,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
+
 
   /**
    * Save Expected Studies SdgAllianceLever Information
@@ -3806,6 +3826,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setGeographicScopes(List<RepIndGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
+  }
+
+  public void setImpactAreasList(List<ImpactArea> impactAreasList) {
+    this.impactAreasList = impactAreasList;
   }
 
   public void setInnovationsList(List<ProjectInnovation> innovationsList) {

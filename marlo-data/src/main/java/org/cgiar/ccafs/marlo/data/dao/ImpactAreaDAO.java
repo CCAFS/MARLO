@@ -55,6 +55,8 @@ public interface ImpactAreaDAO {
   public List<ImpactArea> findAll();
 
 
+  List<ImpactArea> findAllCustom();
+
   /**
    * This method saves the information of the given impactArea
    * 

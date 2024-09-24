@@ -16,8 +16,8 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.dao.ImpactAreaDAO;
-import org.cgiar.ccafs.marlo.data.model.ImpactArea;
+import org.cgiar.ccafs.marlo.data.dao.GlobalTargetDAO;
+import org.cgiar.ccafs.marlo.data.model.GlobalTarget;
 
 import java.util.List;
 
@@ -27,25 +27,25 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ImpactAreaMySQLDAO extends AbstractMarloDAO<ImpactArea, Long> implements ImpactAreaDAO {
+public class GlobalTargetMySQLDAO extends AbstractMarloDAO<GlobalTarget, Long> implements GlobalTargetDAO {
 
 
   @Inject
-  public ImpactAreaMySQLDAO(SessionFactory sessionFactory) {
+  public GlobalTargetMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
   }
 
   @Override
-  public void deleteImpactArea(long impactAreaId) {
-    ImpactArea impactArea = this.find(impactAreaId);
-    impactArea.setActive(false);
-    this.update(impactArea);
+  public void deleteGlobalTarget(long globalTargetId) {
+    GlobalTarget globalTarget = this.find(globalTargetId);
+    globalTarget.setActive(false);
+    this.update(globalTarget);
   }
 
   @Override
-  public boolean existImpactArea(long impactAreaID) {
-    ImpactArea impactArea = this.find(impactAreaID);
-    if (impactArea == null) {
+  public boolean existGlobalTarget(long globalTargetID) {
+    GlobalTarget globalTarget = this.find(globalTargetID);
+    if (globalTarget == null) {
       return false;
     }
     return true;
@@ -53,15 +53,15 @@ public class ImpactAreaMySQLDAO extends AbstractMarloDAO<ImpactArea, Long> imple
   }
 
   @Override
-  public ImpactArea find(long id) {
-    return super.find(ImpactArea.class, id);
+  public GlobalTarget find(long id) {
+    return super.find(GlobalTarget.class, id);
 
   }
 
   @Override
-  public List<ImpactArea> findAll() {
-    String query = "from " + ImpactArea.class.getName() + " where is_active=1";
-    List<ImpactArea> list = super.findAll(query);
+  public List<GlobalTarget> findAll() {
+    String query = "from " + GlobalTarget.class.getName();
+    List<GlobalTarget> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,9 +70,9 @@ public class ImpactAreaMySQLDAO extends AbstractMarloDAO<ImpactArea, Long> imple
   }
 
   @Override
-  public List<ImpactArea> findAllCustom() {
-    String query = "from " + ImpactArea.class.getName();
-    List<ImpactArea> list = super.findAll(query);
+  public List<GlobalTarget> findAllByImpactArea(long impactAreaId) {
+    String query = "from " + GlobalTarget.class.getName() + " where st_impact_area_id=" + impactAreaId;
+    List<GlobalTarget> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -80,17 +80,16 @@ public class ImpactAreaMySQLDAO extends AbstractMarloDAO<ImpactArea, Long> imple
 
   }
 
-
   @Override
-  public ImpactArea save(ImpactArea impactArea) {
-    if (impactArea.getId() == null) {
-      super.saveEntity(impactArea);
+  public GlobalTarget save(GlobalTarget globalTarget) {
+    if (globalTarget.getId() == null) {
+      super.saveEntity(globalTarget);
     } else {
-      impactArea = super.update(impactArea);
+      globalTarget = super.update(globalTarget);
     }
 
 
-    return impactArea;
+    return globalTarget;
   }
 
 

@@ -15,9 +15,9 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.data.dao.ImpactAreaDAO;
-import org.cgiar.ccafs.marlo.data.manager.ImpactAreaManager;
-import org.cgiar.ccafs.marlo.data.model.ImpactArea;
+import org.cgiar.ccafs.marlo.data.dao.GlobalTargetDAO;
+import org.cgiar.ccafs.marlo.data.manager.GlobalTargetManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalTarget;
 
 import java.util.List;
 
@@ -28,57 +28,56 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ImpactAreaManagerImpl implements ImpactAreaManager {
+public class GlobalTargetManagerImpl implements GlobalTargetManager {
 
 
-  private ImpactAreaDAO impactAreaDAO;
+  private GlobalTargetDAO globalTargetDAO;
   // Managers
 
 
   @Inject
-  public ImpactAreaManagerImpl(ImpactAreaDAO impactAreaDAO) {
-    this.impactAreaDAO = impactAreaDAO;
+  public GlobalTargetManagerImpl(GlobalTargetDAO globalTargetDAO) {
+    this.globalTargetDAO = globalTargetDAO;
 
 
   }
 
   @Override
-  public void deleteImpactArea(long impactAreaId) {
+  public void deleteGlobalTarget(long globalTargetId) {
 
-    impactAreaDAO.deleteImpactArea(impactAreaId);
+    globalTargetDAO.deleteGlobalTarget(globalTargetId);
   }
 
   @Override
-  public boolean existImpactArea(long impactAreaID) {
+  public boolean existGlobalTarget(long globalTargetID) {
 
-    return impactAreaDAO.existImpactArea(impactAreaID);
+    return globalTargetDAO.existGlobalTarget(globalTargetID);
   }
 
   @Override
-  public List<ImpactArea> findAll() {
+  public List<GlobalTarget> findAll() {
 
-    return impactAreaDAO.findAll();
-
-  }
-
-
-  @Override
-  public List<ImpactArea> findAllCustom() {
-
-    return impactAreaDAO.findAllCustom();
+    return globalTargetDAO.findAll();
 
   }
 
   @Override
-  public ImpactArea getImpactAreaById(long impactAreaID) {
+  public List<GlobalTarget> findAllByImpactArea(long impactAreaId) {
 
-    return impactAreaDAO.find(impactAreaID);
+    return globalTargetDAO.findAllByImpactArea(impactAreaId);
+
   }
 
   @Override
-  public ImpactArea saveImpactArea(ImpactArea impactArea) {
+  public GlobalTarget getGlobalTargetById(long globalTargetID) {
 
-    return impactAreaDAO.save(impactArea);
+    return globalTargetDAO.find(globalTargetID);
+  }
+
+  @Override
+  public GlobalTarget saveGlobalTarget(GlobalTarget globalTarget) {
+
+    return globalTargetDAO.save(globalTarget);
   }
 
 
