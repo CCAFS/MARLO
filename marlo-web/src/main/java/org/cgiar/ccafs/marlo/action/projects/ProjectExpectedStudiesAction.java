@@ -314,13 +314,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<ProjectExpectedStudyTag> tagList;
   private List<QuantificationType> quantificationTypes;
 
-  private List<AllianceLever> allianceLever;
+  private List<AllianceLever> allianceLeverList;
+
   private List<ProjectPartner> partners;
+
+
   private List<ProjectPartnerPerson> partnerPersons;
+
+
   private List<Institution> partnerInstitutions;
   private Boolean isManagingPartnerPersonRequerid;
   private List<ImpactArea> impactAreasList;
-
 
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -440,7 +444,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.globalTargetManager = globalTargetManager;
   }
 
-
   /**
    * Delete all LocElements Records when Geographic Scope is Global or NULL
    * 
@@ -513,8 +516,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
 
-  public List<AllianceLever> getAllianceLever() {
-    return this.allianceLever;
+  public List<AllianceLever> getAllianceLeverList() {
+    return allianceLeverList;
   }
 
 
@@ -582,6 +585,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public List<RepIndGeographicScope> getGeographicScopes() {
     return this.geographicScopes;
   }
+
 
   public List<ImpactArea> getImpactAreasList() {
     return impactAreasList;
@@ -670,10 +674,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.projectID;
   }
 
-
   public List<ProjectOutcome> getProjectOutcomes() {
     return this.projectOutcomes;
   }
+
 
   public List<QuantificationType> getQuantificationTypes() {
     return this.quantificationTypes;
@@ -695,10 +699,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.stageProcesses;
   }
 
-
   public List<RepIndStageStudy> getStageStudies() {
     return this.stageStudies;
   }
+
 
   public List<GeneralStatus> getStatuses() {
     return this.statuses;
@@ -1572,12 +1576,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
 
       this.quantificationTypes = this.quantificationTypeManager.findAll();
-      this.allianceLever = this.allianceLeverManager.findAll();
+      this.allianceLeverList = this.allianceLeverManager.findAll();
 
 
       // get otucomes alliance lever list
-      if (this.allianceLever != null) {
-        for (final AllianceLever allianceLeverTmp : this.allianceLever) {
+      if (this.allianceLeverList != null) {
+        for (final AllianceLever allianceLeverTmp : this.allianceLeverList) {
           if (allianceLeverTmp.getAllianceLeverOutcomes() != null) {
             allianceLeverTmp.setOutcomes(new ArrayList<>(allianceLeverTmp.getAllianceLeverOutcomes().stream()
               .filter(o -> (o != null) && (o.getId() != null) && o.isActive()).collect(Collectors.toList())));
@@ -1586,8 +1590,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
 
       // get sdg alliance lever list
-      if (this.allianceLever != null) {
-        for (final AllianceLever allianceLeverTmp : this.allianceLever) {
+      if (this.allianceLeverList != null) {
+        for (final AllianceLever allianceLeverTmp : this.allianceLeverList) {
           if (this.expectedStudy.getProjectExpectedStudySdgAllianceLevers() != null) {
 
             allianceLeverTmp.setLeverSdgContributions(
@@ -2019,7 +2023,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
 
@@ -2319,6 +2322,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   /**
    * Save primary alliance lever Information
    * 
@@ -2402,7 +2406,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
   }
-
 
   /**
    * Save Expected Studies AllianceLeversOutcomes Information
@@ -2567,6 +2570,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * Save Expected Studies Crps Information
@@ -3159,7 +3163,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save Expected Studies Project Outcome Information
    * 
@@ -3255,6 +3258,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   /**
    * Save Expected Studies Publications
    * 
@@ -3314,7 +3318,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
-
 
   /**
    * Save Expected Studies Quantification Information
@@ -3465,6 +3468,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Expected Studies Regions Information
    * 
@@ -3511,7 +3515,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
-
 
   /**
    * Save Expected Studies SdgAllianceLever Information
@@ -3576,6 +3579,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
+
 
   /**
    * Save primary alliance lever Information
@@ -3810,8 +3814,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-  public void setAllianceLever(List<AllianceLever> allianceLever) {
-    this.allianceLever = allianceLever;
+
+  public void setAllianceLeverList(List<AllianceLever> allianceLeverList) {
+    this.allianceLeverList = allianceLeverList;
   }
 
   public void setCenters(List<Institution> centers) {
