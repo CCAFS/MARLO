@@ -3539,7 +3539,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       // save the other
       if (this.expectedStudy.getAllianceLever() != null && this.expectedStudy.getAllianceLever().getId() != null
         && this.expectedStudy.getAllianceLever().getLeverComments() != null
-        && this.expectedStudy.getAllianceLever().getLeverComments().length() > 0) {
+        && this.expectedStudy.getAllianceLever().getLeverComments().length() > 0
+        && this.expectedStudy.getAllianceLever().getSdgContributions() == null) {
         final ProjectExpectedStudySdgAllianceLever sdgAllianceLeverSaveTmp = new ProjectExpectedStudySdgAllianceLever();
         sdgAllianceLeverSaveTmp.setProjectExpectedStudy(projectExpectedStudy);
         sdgAllianceLeverSaveTmp.setPhase(phase);
