@@ -490,6 +490,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           this.getActualPhase().getId(), this.expectedStudy.getId(), this.expectedStudy.getAllianceLever().getId(), 1);
         this.expectedStudy.getAllianceLever().setSdgContributions(sDGContributionList);
 
+
         List<AllianceLeverOutcome> allianceLeverOutcomeList = new ArrayList<>();
         allianceLeverOutcomeList = this.allianceLeverOutcomeManager.findAllianceLeverOutcomeByExpectedPhaseAndLever(
           this.getActualPhase().getId(), this.expectedStudy.getId(), this.expectedStudy.getAllianceLever().getId());
@@ -506,9 +507,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
 
-      for (SDGContribution alo : this.expectedStudy.getAllianceLever().getSdgContributions()) {
 
-      }
     } catch (final Exception e) {
       Log.error(" error in fillallianceLevers function " + e.getMessage());
     }
@@ -1576,6 +1575,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
 
       this.quantificationTypes = this.quantificationTypeManager.findAll();
+
+
       this.allianceLeverList = this.allianceLeverManager.findAll();
 
 
@@ -1596,8 +1597,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
             allianceLeverTmp.setLeverSdgContributions(
               this.allianceLeversSdgContributionManager.findAllByLeverId(allianceLeverTmp.getId()));
-            allianceLeverTmp
-              .setSdgContributions(this.sDGContributionManager.findSDGcontributionByLever(allianceLeverTmp.getId()));
+
           }
         }
 
@@ -2019,7 +2019,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.expectedStudy.getProjectExpectedStudyInfo().setTag(null);
       this.expectedStudy.setAllianceLever(null);
     }
-
 
   }
 
