@@ -1,0 +1,1 @@
+DELETE FROM alliance_levers_sdg_contributions;
