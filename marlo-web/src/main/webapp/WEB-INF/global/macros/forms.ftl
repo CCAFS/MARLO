@@ -1179,10 +1179,12 @@
                     [#local listInnerContent = [] /] 
                   [/#attempt]
 
+                  [#-- iterate throught the innerContent list --]
                   [#if listInnerContent?has_content]
                     [#list listInnerContent as innerItem]
                       [#local isCheckedInner = false]
 
+                      [#-- Set Name and Id for inner content --]
                       [#if isChecked]
                         [#local customNameInnerName = "${baseName}.${keyFieldName}[${innerItem_index}].id" /]
                         [#local customIdInner = "innerCheckDisplay${fieldName}_${radioItem_index}_${keyFieldName}_${innerItem_index}"]
@@ -1191,12 +1193,14 @@
                         [#local customIdInner = "_TEMPLATE_innerCheckDisplay${fieldName}_${radioItem_index}_${keyFieldName}_${innerItem_index}"]
                       [/#if]
 
+                      [#-- Validate if inner checkbox are selected --]
                       [#if element?has_content && element[fieldName]?has_content]
                           [#if isRadioButton]
+                            [#--  --]
+                            
                             [#list element[fieldName][keyFieldName] as innerChecked]
                               [#if innerChecked.id == innerItem[classReferenceInnerCheckbox].id]
                                 [#local isCheckedInner = true /]
-                                [#break /]
                               [/#if]
                             [/#list]
                           [#else]
@@ -1210,7 +1214,7 @@
                           [/#if]
                       [/#if]
 
-                      [@customForm.checkBoxFlat value="${innerItem.id}" name=customNameInnerName id=customIdInner label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable checked=false  checked=isCheckedInner /]
+                      [@customForm.checkBoxFlat value="${innerItem[classReferenceInnerCheckbox].id}" name=customNameInnerName id=customIdInner label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable checked=false  checked=isCheckedInner /]
                     [/#list]
                   [/#if]
                 </div>
