@@ -90,11 +90,17 @@ public class SDGImageAction extends BaseAction {
     Map<String, Parameter> parameters = this.getParameters();
     try {
       if (parameters.get(APConstants.PARTNER_REQUEST_ID).isDefined()) {
-        sdgContributionID =
-          Long.parseLong(StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_ID).getMultipleValues()[0]));
+        String value = StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_ID).getMultipleValues()[0]);
+        if (StringUtils.isNumeric(value)) {
+          sdgContributionID = Long.parseLong(value);
+        } else {
+          logger.error("The value is not a valid number: " + value);
+        }
       }
+    } catch (NumberFormatException e) {
+      logger.error("Unable to convert to Long", e);
     } catch (Exception e) {
-      logger.error("unable to get field Description", e);
+      logger.error("An unexpected error occurred", e);
     }
   }
 
