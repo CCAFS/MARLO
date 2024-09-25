@@ -497,9 +497,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.expectedStudy.getAllianceLever().setLeverOutcomes(allianceLeverOutcomeList);
       }
 
-
       if ((this.expectedStudy.getAllianceLevers() != null) && !this.expectedStudy.getAllianceLevers().isEmpty()) {
-        for (final AllianceLever allianLever : this.expectedStudy.getAllianceLevers()) {
+        for (AllianceLever allianLever : this.expectedStudy.getAllianceLevers()) {
           List<SDGContribution> sDGContributionList = new ArrayList<>();
           sDGContributionList = this.sDGContributionManager.findSDGcontributionByExpectedPhaseAndLever(
             this.getActualPhase().getId(), this.expectedStudy.getId(), allianLever.getId(), 0);
@@ -1328,14 +1327,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
                 o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
               .collect(Collectors.toList()))));
 
-          // Set Alliance lever to study object
-          /*
-           * if (this.expectedStudy.getSdgAllianceLevers() != null
-           * && this.expectedStudy.getSdgAllianceLevers().get(0) != null
-           * && this.expectedStudy.getSdgAllianceLevers().get(0).getAllianceLever() != null) {
-           * this.expectedStudy.setAllianceLever(this.expectedStudy.getSdgAllianceLevers().get(0).getAllianceLever());
-           * }
-           */
 
           this.expectedStudy.setAllianceLevers(new ArrayList<>());
           for (final ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLeverTmp : this.expectedStudy
@@ -1343,13 +1334,18 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             if (projectExpectedStudySdgAllianceLeverTmp.getAllianceLever() != null) {
               if ((projectExpectedStudySdgAllianceLeverTmp.getIsPrimary() != null)
                 && projectExpectedStudySdgAllianceLeverTmp.getIsPrimary()) {
-                this.expectedStudy.setAllianceLever(projectExpectedStudySdgAllianceLeverTmp.getAllianceLever());
+                AllianceLever allianceLeverTmp = new AllianceLever();
+                allianceLeverTmp = projectExpectedStudySdgAllianceLeverTmp.getAllianceLever();
+                this.expectedStudy.setAllianceLever(allianceLeverTmp);
                 this.expectedStudy.getAllianceLever()
                   .setLeverComments(projectExpectedStudySdgAllianceLeverTmp.getLeverComments());
               } else {
                 if (!this.expectedStudy.getAllianceLevers()
                   .contains(projectExpectedStudySdgAllianceLeverTmp.getAllianceLever())) {
-                  AllianceLever leverTmp = projectExpectedStudySdgAllianceLeverTmp.getAllianceLever();
+                  AllianceLever leverTmp = new AllianceLever();
+                  leverTmp.setId(projectExpectedStudySdgAllianceLeverTmp.getAllianceLever().getId());
+                  leverTmp.setName(projectExpectedStudySdgAllianceLeverTmp.getAllianceLever().getName());
+                  leverTmp.setDescription(projectExpectedStudySdgAllianceLeverTmp.getAllianceLever().getDescription());
                   leverTmp.setLeverComments(projectExpectedStudySdgAllianceLeverTmp.getLeverComments());
                   this.expectedStudy.getAllianceLevers().add(leverTmp);
                 }
