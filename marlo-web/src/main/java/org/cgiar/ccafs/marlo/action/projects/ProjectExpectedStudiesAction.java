@@ -42,6 +42,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyFlagshipManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGeographicScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyImpactAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInstitutionManager;
@@ -106,6 +107,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGlobalTarget;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyImpactArea;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
@@ -262,6 +264,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private final AllianceLeversSdgContributionManager allianceLeversSdgContributionManager;
   private final ImpactAreaManager impactAreaManager;
   private final GlobalTargetManager globalTargetManager;
+  private final ProjectExpectedStudyImpactAreaManager projectExpectedStudyImpactAreaManager;
 
 
   // Variables
@@ -372,7 +375,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     UserManager userManager, SDGContributionManager sDGContributionManager,
     AllianceLeverOutcomeManager allianceLeverOutcomeManager,
     AllianceLeversSdgContributionManager allianceLeversSdgContributionManager, ImpactAreaManager impactAreaManager,
-    GlobalTargetManager globalTargetManager) {
+    GlobalTargetManager globalTargetManager,
+    ProjectExpectedStudyImpactAreaManager projectExpectedStudyImpactAreaManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -442,6 +446,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.allianceLeversSdgContributionManager = allianceLeversSdgContributionManager;
     this.impactAreaManager = impactAreaManager;
     this.globalTargetManager = globalTargetManager;
+    this.projectExpectedStudyImpactAreaManager = projectExpectedStudyImpactAreaManager;
   }
 
   /**
@@ -1454,7 +1459,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
                 o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
               .collect(Collectors.toList())));
           if (this.expectedStudy.getImpactAreas() != null && !this.expectedStudy.getImpactAreas().isEmpty()) {
-            this.expectedStudy.setImpactArea(this.expectedStudy.getImpactAreas().get(0).getImpactArea());
+            ImpactArea impactAreaTmp = new ImpactArea();
+            impactAreaTmp.setId(this.expectedStudy.getImpactAreas().get(0).getImpactArea().getId());
+            impactAreaTmp.setName(this.expectedStudy.getImpactAreas().get(0).getImpactArea().getName());
+            impactAreaTmp.setDescription(this.expectedStudy.getImpactAreas().get(0).getImpactArea().getDescription());
+            this.expectedStudy.setImpactArea(impactAreaTmp);
           }
         }
 
@@ -2031,6 +2040,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.expectedStudy.getPartnerships().clear();
       }
 
+      if (this.expectedStudy.getImpactAreas() != null) {
+        this.expectedStudy.getImpactAreas().clear();
+      }
+
       // HTTP Post info Values
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndOrganizationType(null);
@@ -2056,8 +2069,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
     this.fillAllianceLeversComment();
-
-
   }
 
   @Override
@@ -2090,6 +2101,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveAllianceLever(this.expectedStudyDB, phase);
       this.saveSingleAllianceLever(expectedStudy, phase);
       this.saveProjectExpectedPartnership(this.expectedStudyDB, phase);
+      this.saveImpactAreas(this.expectedStudyDB, phase);
 
       // AR 2019 Save
       this.saveCenters(this.expectedStudyDB, phase);
@@ -2492,7 +2504,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save Expected Studies Centers/PPA partners Information
    * 
@@ -2651,6 +2662,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Expected Studies Flagships Information
    * 
@@ -2742,6 +2754,52 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
 
+  }
+
+  /**
+   * Save imactArea related to the Expected Studies
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveImpactAreas(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+    try {
+      // delete data
+      if ((projectExpectedStudy.getProjectExpectedStudyImpactAreas() != null)
+        && !projectExpectedStudy.getProjectExpectedStudyImpactAreas().isEmpty()) {
+        final List<ProjectExpectedStudyImpactArea> impactAreaPrev =
+          new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyImpactAreas().stream()
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+        for (final ProjectExpectedStudyImpactArea impactArea : impactAreaPrev) {
+
+          this.projectExpectedStudyImpactAreaManager.deleteProjectExpectedStudyImpactArea(impactArea.getId());
+
+        }
+      }
+
+
+      // save data
+      if (this.expectedStudy.getImpactArea() != null) {
+        final ProjectExpectedStudyImpactArea projectExpectedStudyImpactAreaSave = new ProjectExpectedStudyImpactArea();
+        projectExpectedStudyImpactAreaSave.setProjectExpectedStudy(projectExpectedStudy);
+        projectExpectedStudyImpactAreaSave.setPhase(phase);
+        projectExpectedStudyImpactAreaSave.setImpactArea(this.expectedStudy.getImpactArea());
+
+        this.projectExpectedStudyImpactAreaManager
+          .saveProjectExpectedStudyImpactArea(projectExpectedStudyImpactAreaSave);
+
+        // This is to add studyQuantificationSave to generate
+        // correct auditlog.
+        this.expectedStudy.getProjectExpectedStudyImpactAreas().add(projectExpectedStudyImpactAreaSave);
+
+
+      }
+
+
+    } catch (Exception e) {
+      logger.info(" error in saveImpactAreas function " + e.getMessage());
+    }
   }
 
   /**
