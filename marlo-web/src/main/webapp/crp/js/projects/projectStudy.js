@@ -470,6 +470,8 @@ function attachEvents() {
   //after load functions
   disableRelatedLeversBasedOnPrimaryLever();
 
+  disabledTabAlliance();
+
 	//On change radio buttons
 	$('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
@@ -632,16 +634,41 @@ function updateAllianceTab() {
       if($option.length > 0) {
 
         if($option.toArray().some((item) => item.value == "7320")) {
-          $('#allianceTab').slideDown();
+          //remove disabled class alliance tab
+          $('.allianceTab').removeClass('disabled');
+          console.log("remove disabled");
+          disabledTabAlliance();
         } else {
-          $('#allianceTab').slideUp();
+          //add disabled class alliance tab
+          $('.allianceTab').addClass('disabled');
+          console.log("add disabled");
+          disabledTabAlliance();
         }
       }
     }, 1000);
 
-      
-
 }
+
+
+function disabledTabAlliance() {
+  var $tabs = $('.nav-tabs li');
+
+  $tabs.each(function() {
+    var $this = $(this);
+    if($this.attr('id') == "allianceTab") {
+      if($this.hasClass('disabled')) {
+        console.log("disabled");
+        $this.find('a').removeAttr('data-toggle');
+        $this.attr('title', "This tab will be available for reporting only if Alliance is part of the OICR key contributors.");
+      } else {
+        console.log("enabled");
+        $this.find('a').attr('data-toggle', 'tab');
+        $this.removeAttr('title');
+      }
+    }
+  });
+}
+      
 
 function displayInnerCheckbox() {
 
