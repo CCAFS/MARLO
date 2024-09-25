@@ -15,11 +15,15 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyGlobalTargetDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGlobalTargetManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGlobalTarget;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -32,12 +36,15 @@ public class ProjectExpectedStudyGlobalTargetManagerImpl implements ProjectExpec
 
 
   private ProjectExpectedStudyGlobalTargetDAO projectExpectedStudyGlobalTargetDAO;
+  private PhaseDAO phaseDAO;
   // Managers
 
 
   @Inject
-  public ProjectExpectedStudyGlobalTargetManagerImpl(ProjectExpectedStudyGlobalTargetDAO projectExpectedStudyGlobalTargetDAO) {
+  public ProjectExpectedStudyGlobalTargetManagerImpl(
+    ProjectExpectedStudyGlobalTargetDAO projectExpectedStudyGlobalTargetDAO, PhaseDAO phaseDAO) {
     this.projectExpectedStudyGlobalTargetDAO = projectExpectedStudyGlobalTargetDAO;
+    this.phaseDAO = phaseDAO;
 
 
   }
@@ -45,13 +52,52 @@ public class ProjectExpectedStudyGlobalTargetManagerImpl implements ProjectExpec
   @Override
   public void deleteProjectExpectedStudyGlobalTarget(long projectExpectedStudyGlobalTargetId) {
 
+    ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTarget =
+      this.getProjectExpectedStudyGlobalTargetById(projectExpectedStudyGlobalTargetId);
+    Phase currentPhase = projectExpectedStudyGlobalTarget.getPhase();
+
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null) {
+      this.deleteProjectExpectedStudyGlobalTargetPhase(currentPhase.getNext(), projectExpectedStudyGlobalTarget);
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectExpectedStudyGlobalTargetPhase(upkeepPhase.getNext(), projectExpectedStudyGlobalTarget);
+        }
+      }
+    }
+
+
     projectExpectedStudyGlobalTargetDAO.deleteProjectExpectedStudyGlobalTarget(projectExpectedStudyGlobalTargetId);
+  }
+
+  public void deleteProjectExpectedStudyGlobalTargetPhase(Phase next,
+    ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTarget) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectExpectedStudyGlobalTarget> projectExpectedStudyGlobalTargetList =
+      phase.getProjectExpectedStudyGlobalTargets().stream()
+        .filter(c -> c.isActive()
+          && c.getProjectExpectedStudy().getId() == projectExpectedStudyGlobalTarget.getProjectExpectedStudy().getId()
+          && c.getGlobalTarget().getId() == projectExpectedStudyGlobalTarget.getGlobalTarget().getId())
+        .collect(Collectors.toList());
+    for (ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTargetTmp : projectExpectedStudyGlobalTargetList) {
+      projectExpectedStudyGlobalTargetDAO
+        .deleteProjectExpectedStudyGlobalTarget(projectExpectedStudyGlobalTargetTmp.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deleteProjectExpectedStudyGlobalTargetPhase(phase.getNext(), projectExpectedStudyGlobalTarget);
+    }
   }
 
   @Override
   public boolean existProjectExpectedStudyGlobalTarget(long projectExpectedStudyGlobalTargetID) {
 
-    return projectExpectedStudyGlobalTargetDAO.existProjectExpectedStudyGlobalTarget(projectExpectedStudyGlobalTargetID);
+    return projectExpectedStudyGlobalTargetDAO
+      .existProjectExpectedStudyGlobalTarget(projectExpectedStudyGlobalTargetID);
   }
 
   @Override
@@ -62,15 +108,73 @@ public class ProjectExpectedStudyGlobalTargetManagerImpl implements ProjectExpec
   }
 
   @Override
-  public ProjectExpectedStudyGlobalTarget getProjectExpectedStudyGlobalTargetById(long projectExpectedStudyGlobalTargetID) {
+  public ProjectExpectedStudyGlobalTarget
+    getProjectExpectedStudyGlobalTargetById(long projectExpectedStudyGlobalTargetID) {
 
     return projectExpectedStudyGlobalTargetDAO.find(projectExpectedStudyGlobalTargetID);
   }
 
-  @Override
-  public ProjectExpectedStudyGlobalTarget saveProjectExpectedStudyGlobalTarget(ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTarget) {
 
-    return projectExpectedStudyGlobalTargetDAO.save(projectExpectedStudyGlobalTarget);
+  /**
+   * Reply the information to the next Phases
+   * 
+   * @param next - The next Phase
+   * @param projectExpectedStudyGlobalTarget - The project expected study Globaltarget into the
+   *        database.
+   */
+  public void saveInfoPhase(Phase next, ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTarget) {
+
+    Phase phase = phaseDAO.find(next.getId());
+    List<ProjectExpectedStudyGlobalTarget> projectExpectedStudyGlobalTargetList =
+      phase.getProjectExpectedStudyGlobalTargets().stream()
+        .filter(c -> c.isActive()
+          && c.getProjectExpectedStudy().getId() == projectExpectedStudyGlobalTarget.getProjectExpectedStudy().getId()
+          && c.getGlobalTarget().getId() == projectExpectedStudyGlobalTarget.getGlobalTarget().getId())
+        .collect(Collectors.toList());
+    if (projectExpectedStudyGlobalTargetList.isEmpty()) {
+
+      ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTargetAdd = new ProjectExpectedStudyGlobalTarget();
+
+      projectExpectedStudyGlobalTargetAdd
+        .setProjectExpectedStudy(projectExpectedStudyGlobalTarget.getProjectExpectedStudy());
+      projectExpectedStudyGlobalTargetAdd.setPhase(phase);
+      projectExpectedStudyGlobalTargetAdd.setGlobalTarget(projectExpectedStudyGlobalTarget.getGlobalTarget());
+
+
+      projectExpectedStudyGlobalTargetDAO.save(projectExpectedStudyGlobalTargetAdd);
+    }
+
+    if (phase.getNext() != null) {
+      this.saveInfoPhase(phase.getNext(), projectExpectedStudyGlobalTarget);
+    }
+  }
+
+  @Override
+  public ProjectExpectedStudyGlobalTarget
+    saveProjectExpectedStudyGlobalTarget(ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTarget) {
+    ProjectExpectedStudyGlobalTarget sourceInfo =
+      projectExpectedStudyGlobalTargetDAO.save(projectExpectedStudyGlobalTarget);
+
+    Phase phase = phaseDAO.find(sourceInfo.getPhase().getId());
+
+    if (phase.getDescription().equals(APConstants.PLANNING)) {
+      if (phase.getNext() != null) {
+        this.saveInfoPhase(phase.getNext(), projectExpectedStudyGlobalTarget);
+      }
+    }
+
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveInfoPhase(upkeepPhase, projectExpectedStudyGlobalTarget);
+        }
+      }
+    }
+
+
+    return sourceInfo;
+
   }
 
 
