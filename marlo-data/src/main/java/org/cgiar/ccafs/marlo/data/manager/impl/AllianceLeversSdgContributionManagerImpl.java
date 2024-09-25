@@ -61,6 +61,14 @@ public class AllianceLeversSdgContributionManagerImpl implements AllianceLeversS
 
   }
 
+
+  @Override
+  public List<AllianceLeversSdgContribution> findAllByLeverId(long leverId) {
+
+    return allianceLeversSdgContributionDAO.findAllByLeverId(leverId);
+
+  }
+
   @Override
   public AllianceLeversSdgContribution getAllianceLeversSdgContributionById(long allianceLeversSdgContributionID) {
 
@@ -68,7 +76,8 @@ public class AllianceLeversSdgContributionManagerImpl implements AllianceLeversS
   }
 
   @Override
-  public AllianceLeversSdgContribution saveAllianceLeversSdgContribution(AllianceLeversSdgContribution allianceLeversSdgContribution) {
+  public AllianceLeversSdgContribution
+    saveAllianceLeversSdgContribution(AllianceLeversSdgContribution allianceLeversSdgContribution) {
 
     return allianceLeversSdgContributionDAO.save(allianceLeversSdgContribution);
   }

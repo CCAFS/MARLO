@@ -118,7 +118,9 @@
               [#if expectedStudy.projectExpectedStudyInfo.studyType.id == 1]
                 <ul class="nav nav-tabs" role="tablist">
                   [#assign isOicrGeneralInformationComplete = action.isOicrGeneralInformationComplete()!false /]
-                  <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if] col-md-3 ${isOicrGeneralInformationComplete?then('submitted','toSubmit')}"><a index="1" href="#study-generalInformation" aria-controls="info" role="tab" data-toggle="tab">[@s.text name="study.general.generalInformation" /]</a></li>
+                  <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if] col-md-3 ${isOicrGeneralInformationComplete?then('submitted','toSubmit')}">
+                    <a index="1" href="#study-generalInformation" aria-controls="info" role="tab" data-toggle="tab">[@s.text name="study.general.generalInformation" /]</a>
+                  </li>
 
                   [#assign isAllianceContribution = false /]
                   [#list expectedStudy.centers as center]
@@ -127,15 +129,21 @@
                     [#break /]
                   [/#if]
                   [/#list]
-                  
+
                   [#assign isOicrAllianceAlignmentComplete = action.isOicrAllianceAlignmentComplete()!false /]
-                  <li role="presentation" class="[#if indexTab==2]active[/#if] col-md-3 ${isOicrAllianceAlignmentComplete?then('submitted','toSubmit')}" style="display:${isAllianceContribution?then('block','none')}" id="allianceTab"><a index="2" href="#study-alliance" aria-controls="metadata" role="tab" data-toggle="tab">[@s.text name="study.general.allianceAlignment" /]</a></li>
+                  <li role="presentation" class="[#if indexTab==2]active[/#if] col-md-3 ${isOicrAllianceAlignmentComplete?then('submitted','toSubmit')} ${isAllianceContribution?then('','disabled')}" id="allianceTab"  [#if !isOicrAllianceAlignmentComplete]title="This tab will be available for reporting only if Alliance is part of the OICR key contributors."[/#if]>
+                    <a index="2" href="#study-alliance" aria-controls="metadata" role="tab" [#if isOicrAllianceAlignmentComplete] data-toggle="tab" [/#if]>[@s.text name="study.general.allianceAlignment" /]</a>
+                  </li>
 
                   [#assign isOicrOneCgiarAlignmentComplete = action.isOicrOneCgiarAlignmentComplete()!false /]
-                  <li role="presentation" class="[#if indexTab==3]active[/#if] col-md-3 ${isOicrOneCgiarAlignmentComplete?then('submitted','toSubmit')}"><a index="3" href="#study-onecgiar" aria-controls="quality" role="tab" data-toggle="tab">[@s.text name="study.general.oneCGIARAlignment" /]</a></li>
+                  <li role="presentation" class="[#if indexTab==3]active[/#if] col-md-3 ${isOicrOneCgiarAlignmentComplete?then('submitted','toSubmit')}">
+                    <a index="3" href="#study-onecgiar" aria-controls="quality" role="tab" data-toggle="tab">[@s.text name="study.general.oneCGIARAlignment" /]</a>
+                  </li>
 
                   [#assign isOicrCommunicationsComplete = action.isOicrCommunicationsComplete()!false /]  
-                  <li role="presentation" class="[#if indexTab==4]active[/#if] col-md-3 ${isOicrCommunicationsComplete?then('submitted','toSubmit')}"><a index="4" href="#study-communications" aria-controls="communications" role="tab" data-toggle="tab">[@s.text name="study.general.communications" /]</a></li>
+                  <li role="presentation" class="[#if indexTab==4]active[/#if] col-md-3 ${isOicrCommunicationsComplete?then('submitted','toSubmit')}">
+                    <a index="4" href="#study-communications" aria-controls="communications" role="tab" data-toggle="tab">[@s.text name="study.general.communications" /]</a>
+                  </li>
                 </ul>
               [/#if]
 

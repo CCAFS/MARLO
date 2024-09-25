@@ -732,6 +732,24 @@
       </key>
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnership" />
-    </set>     
+    </set>
+    <set name="projectExpectedStudyImpactAreas"
+      table="project_expected_study_impact_areas" inverse="true" order-by="id"
+      lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyImpactArea" />
+    </set>
+    <set name="projectExpectedStudyGlobalTargets"
+      table="project_expected_study_global_targets" inverse="true" order-by="id"
+      lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGlobalTarget" />
+    </set>    
   </class>
 </hibernate-mapping>

@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class AllianceLeversSdgContributionMySQLDAO extends AbstractMarloDAO<AllianceLeversSdgContribution, Long> implements AllianceLeversSdgContributionDAO {
+public class AllianceLeversSdgContributionMySQLDAO extends AbstractMarloDAO<AllianceLeversSdgContribution, Long>
+  implements AllianceLeversSdgContributionDAO {
 
 
   @Inject
@@ -61,6 +62,18 @@ public class AllianceLeversSdgContributionMySQLDAO extends AbstractMarloDAO<Alli
   @Override
   public List<AllianceLeversSdgContribution> findAll() {
     String query = "from " + AllianceLeversSdgContribution.class.getName() + " where is_active=1";
+    List<AllianceLeversSdgContribution> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
+  public List<AllianceLeversSdgContribution> findAllByLeverId(long leverId) {
+    String query =
+      "from " + AllianceLeversSdgContribution.class.getName() + " where is_active=1 and alliance_lever_id =" + leverId;
     List<AllianceLeversSdgContribution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

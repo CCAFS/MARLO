@@ -52,6 +52,8 @@ public interface AllianceLeversSdgContributionManager {
   public List<AllianceLeversSdgContribution> findAll();
 
 
+  List<AllianceLeversSdgContribution> findAllByLeverId(long leverId);
+
   /**
    * This method gets a allianceLeversSdgContribution object by a given allianceLeversSdgContribution identifier.
    * 
@@ -60,15 +62,19 @@ public interface AllianceLeversSdgContributionManager {
    */
   public AllianceLeversSdgContribution getAllianceLeversSdgContributionById(long allianceLeversSdgContributionID);
 
+
   /**
    * This method saves the information of the given allianceLeversSdgContribution
    * 
-   * @param allianceLeversSdgContribution - is the allianceLeversSdgContribution object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the allianceLeversSdgContribution was
+   * @param allianceLeversSdgContribution - is the allianceLeversSdgContribution object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         allianceLeversSdgContribution was
    *         updated
    *         or -1 is some error occurred.
    */
-  public AllianceLeversSdgContribution saveAllianceLeversSdgContribution(AllianceLeversSdgContribution allianceLeversSdgContribution);
+  public AllianceLeversSdgContribution
+    saveAllianceLeversSdgContribution(AllianceLeversSdgContribution allianceLeversSdgContribution);
 
 
 }

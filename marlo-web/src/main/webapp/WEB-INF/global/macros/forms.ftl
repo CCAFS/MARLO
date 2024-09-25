@@ -1082,11 +1082,11 @@
   </div>
 [/#macro]
 
-[#macro selectableCheckToCheckboxMacro name="" fieldName="" keyFieldName="" label="" listName="" template=false isPrimaryLever=false hasInnerCheckbox=false listNameInnerCheckbox="" labelInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true checkedValue="" isRadioButton=true ]
-  [#local customName = "${template?string('_TEMPLATE_', '')}${name}"]
+[#macro selectableCheckToCheckboxMacro element name="" className="" fieldName="" keyFieldName="" label="" listName=""  isPrimaryLever=false hasInnerCheckbox=false listNameInnerCheckbox="" labelInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true isRadioButton=true ]
+  [#local customName = "${name}"]
 
   [#if listName?has_content]
-    <div class="form-group radioToCheckbox">
+    <div class="form-group radioToCheckbox ${isPrimaryLever?then('containerPrimaryLever','')} ${className}">
       <label for="">[@s.text name=label /][@req required=required && editable /]</label>
       <input type="hidden" name="${customName}.${fieldName}.isPrimary" value="${isPrimaryLever?c}" />
       [#list listName as radioItem]
@@ -1096,29 +1096,47 @@
         [#else]
           [#local radioItemName = "${radioItem.name}" /]
         [/#if]
-                
+      
         [#local isChecked = false]
-        [#if checkedValue?has_content]
-          [#if checkedValue == radioItem.id]
-            [#local isChecked = true /]
+
+        [#if element?has_content && element[fieldName]?has_content]
+          [#if isRadioButton]
+            [#if element[fieldName].id == radioItem.id]
+              [#local isChecked = true /]
+            [/#if]
+          [#else]
+            [#list element[fieldName] as radioItemChecked]              
+              [#if radioItemChecked.id == radioItem.id]
+                [#local isChecked = true /]
+                [#break /]
+              [/#if]
+            [/#list]
           [/#if]
         [/#if]
+
         <div class="containerRadioToCheckbox ${(radioItem.name == 'Other')?then('containerRadioToCheckbox--other','')}">
           [#if isRadioButton]
+            [#local baseName = "${customName}.${fieldName}" /]
             [@customForm.radioFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.${fieldName}.id" value="${radioItem.id}" i18nkey="${radioItemName}" editable=editable checked=isChecked /]
           [#else]
+            [#local baseName = "${customName}.${fieldName}[${radioItem_index}]" /]
             [@customForm.checkBoxFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.${fieldName}[${radioItem_index}].id" value="${radioItem.id}" label="${radioItemName}" editable=editable checked=isChecked /]
           [/#if]
 
 
           [#if radioItem.name == 'Other']
             <div class="form-group inputOther"> 
-              [@input name="${customName}.${fieldName}.leverComments" placeholder="Other" editable=editable showTitle=false /]
+              [#if isPrimaryLever]
+                [@input name="${customName}.${fieldName}.leverComments" placeholder="Other" editable=editable showTitle=false /]
+              [#else]
+                [@input name="${customName}.${fieldName}[${radioItem_index}].leverComments" placeholder="Other" editable=editable showTitle=false /]
+              [/#if]
             </div> 
           [#else]
             <div class="form-group" id="innerCheckbox" data-radioButton="${radioItem.id}" style="display:${isChecked?string('block','none')}" >
                 [#if isPrimaryLever]
                   [#attempt]
+                  <!--CONTROL LIST: alliances levers outcomes -->
                     [#local listPrimary = radioItem.allianceLeverOutcomes![] /]
                   [#recover]
                     [#local listPrimary = [] /] 
@@ -1127,28 +1145,79 @@
                   <div class="form-group" style="padding-left: 20px;">
                     <label for="" class="radio-label"><b>[@s.text name="study.allianceAligment.linkToLevers.options.text.strategicOutcome" /]</b></label>
                     [#list listPrimary as primaryItem]
-                      [@customForm.checkBoxFlat value="${primaryItem.id}" name="${customName}.${fieldName}.outcome[${primaryItem_index}].id" id="innerCheckDisplay${fieldName}_outcome_${primaryItem_index}" label="${primaryItem.description}" editable=editable checked=false /]
+
+                      [#local checkedPrimary = false]
+
+                      [#if isChecked]
+                        [#local customNameInnerName = "${baseName}.leverOutcomes[${primaryItem_index}].id"]
+                        [#local customIdInner = "innerCheckDisplay${fieldName}_outcome_${primaryItem_index}"]
+                      [#else]
+                        [#local customNameInnerName = "_TEMPLATE_${baseName}.leverOutcomes[${primaryItem_index}].id"]
+                        [#local customIdInner= "_TEMPLATE_innerCheckDisplay${fieldName}_outcome_${primaryItem_index}"]
+                      [/#if]
+
+                      [#if element?has_content && element.allianceLever?has_content && element.allianceLever.leverOutcomes?has_content]
+                        [#list element.allianceLever.leverOutcomes as primaryChecked]
+                          [#if primaryChecked.id == primaryItem.id]
+                            [#local checkedPrimary = true /]
+                            [#break /]
+                          [/#if]
+                        [/#list]
+                      [/#if]
+
+                      [@customForm.checkBoxFlat value="${primaryItem.id}" name=customNameInnerName id=customIdInner label="${primaryItem.description}" editable=editable checked=checkedPrimary /]
                     [/#list]
                   </div>
                 [/#if]
 
-                [#if hasInnerCheckbox]
-                  <div class="form-group" style="padding-left: 20px;">
-                    <label for="" class="radio-label"><b>[@s.text name=labelInnerCheckbox /]</b></label>
+                <div class="form-group" style="padding-left: 20px;">
+                  <label for="" class="radio-label"><b>[@s.text name=labelInnerCheckbox /]</b></label>
 
-                    [#attempt]
-                      [#local listInnerContent = radioItem[listNameInnerCheckbox]![] /]
-                    [#recover]
-                      [#local listInnerContent = [] /] 
-                    [/#attempt]
+                  [#attempt]
+                    [#local listInnerContent = radioItem[listNameInnerCheckbox]![] /]
+                  [#recover]
+                    [#local listInnerContent = [] /] 
+                  [/#attempt]
 
-                    [#if listInnerContent?has_content]
-                      [#list listInnerContent as innerItem]
-                        [@customForm.checkBoxFlat value="${innerItem.id}" name="${customName}.${fieldName}.${keyFieldName}[${innerItem_index}].id" id="innerCheckDisplay${fieldName}_${keyFieldName}_${innerItem_index}" label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable checked=false /]
-                      [/#list]
-                    [/#if]
-                  </div>
-                [/#if]
+                  [#-- iterate throught the innerContent list --]
+                  [#if listInnerContent?has_content]
+                    [#list listInnerContent as innerItem]
+                      [#local isCheckedInner = false]
+
+                      [#-- Set Name and Id for inner content --]
+                      [#if isChecked]
+                        [#local customNameInnerName = "${baseName}.${keyFieldName}[${innerItem_index}].id" /]
+                        [#local customIdInner = "innerCheckDisplay${fieldName}_${radioItem_index}_${keyFieldName}_${innerItem_index}"]
+                      [#else]
+                        [#local customNameInnerName = "_TEMPLATE_${baseName}.${keyFieldName}[${innerItem_index}].id" /]
+                        [#local customIdInner = "_TEMPLATE_innerCheckDisplay${fieldName}_${radioItem_index}_${keyFieldName}_${innerItem_index}"]
+                      [/#if]
+
+                      [#-- Validate if inner checkbox are selected --]
+                      [#if element?has_content && element[fieldName]?has_content]
+                          [#if isRadioButton]
+                            [#--  --]
+                            
+                            [#list element[fieldName][keyFieldName] as innerChecked]
+                              [#if innerChecked.id == innerItem[classReferenceInnerCheckbox].id]
+                                [#local isCheckedInner = true /]
+                              [/#if]
+                            [/#list]
+                          [#else]
+                            [#list element[fieldName] as innerChecked]
+                              [#list innerChecked[keyFieldName] as innerItemChecked]
+                                [#if innerItemChecked.id == innerItem[classReferenceInnerCheckbox].id]
+                                  [#local isCheckedInner = true /]
+                                [/#if]
+                              [/#list]
+                            [/#list]
+                          [/#if]
+                      [/#if]
+
+                      [@customForm.checkBoxFlat value="${innerItem[classReferenceInnerCheckbox].id}" name=customNameInnerName id=customIdInner label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable checked=false  checked=isCheckedInner /]
+                    [/#list]
+                  [/#if]
+                </div>
             </div>
           [/#if]
         </div>

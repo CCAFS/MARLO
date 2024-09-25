@@ -54,11 +54,15 @@ function init() {
   counterSharedCluster();
 
   // Update the dynamic visualization of the "Alliance" Tab after selecting in Key Contributors
+  updateAllianceTab()
   $('select.elementType-institution').on('change',updateAllianceTab);
   $('div.removeElementType-institution').on('click',updateAllianceTab);
 
   //init partners methods
   deliverablePartnersModule.init();
+
+  //init dynamic selector
+  dynamicSelectorSDGImageModule.init();
 }
 
 function bottonPading(){
@@ -209,8 +213,9 @@ function attachEvents() {
     $('.removeLink').on('click', removeItem);
 
     // Functions
-    function addItem() {
-      var $list = $(this).parents('.linksBlock').find('.linksList');
+    function addItem(e) {
+      var eventSelect = e instanceof jQuery.fn.init ? e : event.target;
+      var $list = $(eventSelect).parents('.linksBlock').find('.linksList');
       var $element = $('#studyLink-template').clone(true).removeAttr("id");
       // Remove template tag
       $element.find('input, textarea').each(function(_i,e) {
@@ -237,6 +242,13 @@ function attachEvents() {
         $(element).setNameIndexes(1, i);
       });
     }
+
+    setTimeout(() => {
+      var linksListLength = $('.linksList').children().length;
+      if (linksListLength == 0) {
+        addItem($('.addButtonLink'));
+      }
+    }, 1000);
 
   })();
   
@@ -344,8 +356,9 @@ function attachEvents() {
     validateEmptyLinks();
 
     // Functions
-    function addItem() {
-      var $list = $(this).parent('.publicationsBlock').find('.publicationsList');
+    function addItem(e) {
+      var eventSelect = e instanceof jQuery.fn.init ? e : event.target;
+      var $list = $(eventSelect).parent('.publicationsBlock').find('.publicationsList');
       var $element = $('#studyPublication-template').clone(true).removeAttr("id");
       var $listLength = $list.children().length;
       if ($listLength <= 30) {
@@ -394,6 +407,14 @@ function attachEvents() {
         }
       });
     }
+
+    setTimeout(() => {
+      var publicationListLength = $('.publicationsList').children().length - 1;
+      if (publicationListLength == 0) {
+        addItem($('.addPublication'));
+      }
+      
+    }, 1000);
 
   })();
 
@@ -464,12 +485,19 @@ function attachEvents() {
     }, 1000);
 
   })();
+  //after load functions
+  disableRelatedLeversBasedOnPrimaryLever();
+
 	//On change radio buttons
 	$('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
   $('input.radioType-contributionToCGIAR').on('change', onDisplayCommentForNoContributingCGIAR);
 
   $('input[id*="radioCheckDisplay_"]').on('change', displayInnerCheckbox);
+
+  $('.containerPrimaryLever input[name="expectedStudy.allianceLever.id"]').on('change', disableRelatedLeversBasedOnPrimaryLever);
+
+  $('.containerPrimaryLever input[id*="innerCheckDisplayallianceLever_sdgContributions_"]').on('change', dynamicSelectorSDGImageModule.init);
 }
 
 function addSelect2() {
@@ -622,16 +650,39 @@ function updateAllianceTab() {
       if($option.length > 0) {
 
         if($option.toArray().some((item) => item.value == "7320")) {
-          $('#allianceTab').slideDown();
+          //remove disabled class alliance tab
+          $('#allianceTab').removeClass('disabled');
+          console.log("remove disabled");
+          disabledTabAlliance();
         } else {
-          $('#allianceTab').slideUp();
+          //add disabled class alliance tab
+          $('#allianceTab').addClass('disabled');
+          console.log("add disabled");
+          disabledTabAlliance();
         }
       }
     }, 1000);
 
-      
-
 }
+
+
+function disabledTabAlliance() {
+  var $tabs = $('.nav-tabs li');
+
+  $tabs.each(function() {
+    var $this = $(this);
+    if($this.attr('id') == "allianceTab") {
+      if($this.hasClass('disabled')) {
+        $this.find('a').removeAttr('data-toggle');
+        $this.attr('title', "This tab will be available for reporting only if Alliance is part of the OICR key contributors.");
+      } else {
+        $this.find('a').attr('data-toggle', 'tab');
+        $this.removeAttr('title');
+      }
+    }
+  });
+}
+      
 
 function displayInnerCheckbox() {
 
@@ -643,12 +694,52 @@ function displayInnerCheckbox() {
     var $this = $(this);
     var $innerCheckbox = $parentMacro.find(`#innerCheckbox[data-radioButton='${$this.val()}']`);
     if($this.is($radioSelected)) {
-      $innerCheckbox.slideDown();
+      $innerCheckbox.slideDown("slow");
+      //get name inner inputs and remove _TEMPLATE_
+      $innerCheckbox.find('input').each(function(_i,e) {
+        e.name = (e.name).replace("_TEMPLATE_", "");
+        e.id = (e.id).replace("_TEMPLATE_", "");
+      });
+
+      $innerCheckbox.find('label').each(function(_i,e) {
+        e.htmlFor = (e.htmlFor).replace("_TEMPLATE_", "");
+      } );
     } else {
-      $innerCheckbox.slideUp();
+      $innerCheckbox.slideUp("slow");
+      //get name inner inputs and add _TEMPLATE_
+      $innerCheckbox.find('input').each(function(_i,e) {
+        if(e.name.indexOf("_TEMPLATE_") == -1){
+          e.name = "_TEMPLATE_" + (e.name);
+          e.id = "_TEMPLATE_" + (e.id);
+        } 
+      });
+
+      $innerCheckbox.find('label').each(function(_i,e) {
+        if(e.htmlFor.indexOf("_TEMPLATE_") == -1){
+          e.htmlFor = "_TEMPLATE_" + (e.htmlFor);
+        }
+      });
     }
   });
 
+}
+
+function disableRelatedLeversBasedOnPrimaryLever() {
+  //get selected option of primary lever
+  var $selectedPrimaryLever = $('.containerPrimaryLever input[name="expectedStudy.allianceLever.id"]:checked');
+  
+  //get all related levers options
+  var $relatedLevers = $('.containerRelatedLever input[name*="expectedStudy.allianceLevers"]');
+
+  //disable related lever that shares the same id with the selected primary lever
+  $relatedLevers.each(function() {
+    var $this = $(this);
+    if($this.val() == $selectedPrimaryLever.val()) {
+      $this.prop('disabled', true);
+    } else {
+      $this.prop('disabled', false);
+    }
+  });
 }
 
 var deliverablePartnersModule = (function () {
@@ -812,4 +903,55 @@ var deliverablePartnersModule = (function () {
   return {
     init: init
   }
+})();
+
+var dynamicSelectorSDGImageModule = (function (){
+
+  function init() {
+    console.log("Starting dynamicSelectorSDGImageModule");
+    changeCurrentDisplaySDGImage();
+  }
+
+  function changeCurrentDisplaySDGImage() {
+    const $containerImage = $('.selectedLeverContainer__image');
+    const $image = $containerImage.find('img');
+
+    const $containerPrimaryLever = $('.containerPrimaryLever');
+    const $checkedRadioButtonLever = $containerPrimaryLever.find('input[name="expectedStudy.allianceLever.id"]:checked');
+    const $checkedRadioButtonLeverParent = $checkedRadioButtonLever.parents('.containerRadioToCheckbox');
+    const $innerCheckbox = $checkedRadioButtonLeverParent.find('#innerCheckbox');
+    const $checkedInnerCheckbox = $innerCheckbox.find('input[name*="expectedStudy.allianceLever.sdgContributions"]:checked');
+    const $checkedInnerCheckboxValue = $checkedInnerCheckbox.val();
+
+    //Set image of the SDG Contribution
+    $.ajax({
+      url: baseURL + '/getSdgImage.do',
+      async: true,
+      data: {
+        requestID: Number.parseInt($checkedInnerCheckboxValue)
+      },
+      success: function(data) {
+        console.log(data);
+        $image.attr("src",data.image.adsoluteURL);
+      },
+      error: function(xhr, status, error) {
+        console.error(error);
+        reject(error);
+      }
+    });
+
+    //Set information of the SDG Contribution
+    const $containerSDGInformation = $('.selectedLeverContainer__content');
+    const $leverName = $containerSDGInformation.find('.selectedLeverContainer__content__lever');
+    const $leverContributionSDG = $containerSDGInformation.find('.selectedLeverContainer__content__contributionSDG');
+
+    $leverName.text($checkedRadioButtonLever.next().text());
+    $leverContributionSDG.text($checkedInnerCheckbox.next().text());
+
+  }
+
+  return {
+    init: init
+  }
+
 })();

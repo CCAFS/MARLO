@@ -62,6 +62,21 @@ public class SDGContributionManagerImpl implements SDGContributionManager {
   }
 
   @Override
+  public List<SDGContribution> findSDGcontributionByExpectedPhaseAndLever(long phase, long expectedId, long lever,
+    int isPrimary) {
+
+    return sDGContributionDAO.findSDGcontributionByExpectedPhaseAndLever(phase, expectedId, lever, isPrimary);
+
+  }
+
+  @Override
+  public List<SDGContribution> findSDGcontributionByLever(long lever) {
+
+    return sDGContributionDAO.findSDGcontributionByLever(lever);
+
+  }
+
+  @Override
   public SDGContribution getSDGContributionById(long sDGContributionID) {
 
     return sDGContributionDAO.find(sDGContributionID);

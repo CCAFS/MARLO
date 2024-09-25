@@ -55,6 +55,8 @@ public interface AllianceLeverOutcomeDAO {
   public List<AllianceLeverOutcome> findAll();
 
 
+  List<AllianceLeverOutcome> findAllianceLeverOutcomeByExpectedPhaseAndLever(long phase, long expectedId, long lever);
+
   /**
    * This method saves the information of the given allianceLeverOutcome
    * 
