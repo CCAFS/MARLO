@@ -960,7 +960,7 @@
       </div>
       [#-- Related Levers --]
       <div class="form-group">
-        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.relatedLever" name="${customName}" fieldName="allianceLevers" listName=allianceLeverList keyFieldName="sdgContributions" isPrimaryLever=false labelInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="leverSdgContributions" classReferenceInnerCheckbox="sDGContribution" isRadioButton=false element=element /]
+        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.relatedLever" name="${customName}" fieldName="allianceLevers" listName=allianceLeverList keyFieldName="sdgContributions" isPrimaryLever=false labelInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="leverSdgContributions" classReferenceInnerCheckbox="sDGContribution" isRadioButton=false element=element className="containerRelatedLever" /]
       </div>
     </div>
 
