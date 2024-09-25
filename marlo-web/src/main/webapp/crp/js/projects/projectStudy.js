@@ -212,8 +212,9 @@ function attachEvents() {
     $('.removeLink').on('click', removeItem);
 
     // Functions
-    function addItem() {
-      var $list = $(this).parents('.linksBlock').find('.linksList');
+    function addItem(e) {
+      var eventSelect = e instanceof jQuery.fn.init ? e : event.target;
+      var $list = $(eventSelect).parents('.linksBlock').find('.linksList');
       var $element = $('#studyLink-template').clone(true).removeAttr("id");
       // Remove template tag
       $element.find('input, textarea').each(function(_i,e) {
@@ -240,6 +241,13 @@ function attachEvents() {
         $(element).setNameIndexes(1, i);
       });
     }
+
+    setTimeout(() => {
+      var linksListLength = $('.linksList').children().length;
+      if (linksListLength == 0) {
+        addItem($('.addButtonLink'));
+      }
+    }, 1000);
 
   })();
   
@@ -347,8 +355,9 @@ function attachEvents() {
     validateEmptyLinks();
 
     // Functions
-    function addItem() {
-      var $list = $(this).parent('.publicationsBlock').find('.publicationsList');
+    function addItem(e) {
+      var eventSelect = e instanceof jQuery.fn.init ? e : event.target;
+      var $list = $(eventSelect).parent('.publicationsBlock').find('.publicationsList');
       var $element = $('#studyPublication-template').clone(true).removeAttr("id");
       var $listLength = $list.children().length;
       if ($listLength <= 30) {
@@ -397,6 +406,14 @@ function attachEvents() {
         }
       });
     }
+
+    setTimeout(() => {
+      var publicationListLength = $('.publicationsList').children().length - 1;
+      if (publicationListLength == 0) {
+        addItem($('.addPublication'));
+      }
+      
+    }, 1000);
 
   })();
 

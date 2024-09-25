@@ -131,7 +131,7 @@
                   [/#list]
 
                   [#assign isOicrAllianceAlignmentComplete = action.isOicrAllianceAlignmentComplete()!false /]
-                  <li role="presentation" class="[#if indexTab==2]active[/#if] col-md-3 ${isOicrAllianceAlignmentComplete?then('submitted','toSubmit')} ${isAllianceContribution?then('','disabled')}" id="allianceTab">
+                  <li role="presentation" class="[#if indexTab==2]active[/#if] col-md-3 ${isOicrAllianceAlignmentComplete?then('submitted','toSubmit')} ${isAllianceContribution?then('','disabled')}" id="allianceTab"  [#if !isOicrAllianceAlignmentComplete]title="This tab will be available for reporting only if Alliance is part of the OICR key contributors."[/#if]>
                     <a index="2" href="#study-alliance" aria-controls="metadata" role="tab" [#if isOicrAllianceAlignmentComplete] data-toggle="tab" [/#if]>[@s.text name="study.general.allianceAlignment" /]</a>
                   </li>
 
