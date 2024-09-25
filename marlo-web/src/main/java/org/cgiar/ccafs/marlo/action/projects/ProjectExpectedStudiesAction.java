@@ -1328,7 +1328,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
                 o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
               .collect(Collectors.toList())));
         }
-        logger.info(" linea 1331");
         // Expected Study SdgAllianceLever List
         if (this.expectedStudy.getProjectExpectedStudySdgAllianceLevers() != null) {
           this.expectedStudy.setSdgAllianceLevers(
@@ -1408,7 +1407,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               }
             }
           }
-          logger.info(" linea 1411");
           if (this.expectedStudy.getAllianceLeversOutcomes() != null) {
             for (final ProjectExpectedStudyAllianceLeversOutcome allianceLeverOutcome : this.expectedStudy
               .getAllianceLeversOutcomes()) {
@@ -1422,9 +1420,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // this function set the sdg and outocmes related to the levers
-        logger.info(" linea 1425");
         this.fillAllianceLevers();
-        logger.info(" linea 1427");
 
         // Expected Study projectExpectedStudyPartnerships List
         if (this.expectedStudy.getProjectExpectedStudyPartnerships() != null) {
@@ -1472,7 +1468,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             this.expectedStudy.setImpactArea(impactAreaTmp);
           }
         }
-        logger.info(" linea 1474");
         // Expected Study global target
         if (this.expectedStudy.getProjectExpectedStudyGlobalTargets() != null) {
           this.expectedStudy
@@ -1489,8 +1484,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             }
           }
         }
-
-        logger.info(" linea 1492");
 
 
         this.partners = new ArrayList<>();
@@ -2081,9 +2074,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.expectedStudy.getProjectExpectedStudyInfo().setTag(null);
       this.expectedStudy.setAllianceLever(null);
     }
-    logger.info(" linea 2079");
     this.fillAllianceLeversComment();
-    logger.info(" linea 2081");
   }
 
   @Override
@@ -3749,7 +3740,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
    */
   public void saveSingleAllianceLever(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
     try {
-      logger.info(" linea 3744");
       // save the other
       if (this.expectedStudy.getAllianceLever() != null && this.expectedStudy.getAllianceLever().getId() != null
         && this.expectedStudy.getAllianceLever().getLeverComments() != null
@@ -3771,7 +3761,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       }
 
-      logger.info(" linea 3766");
       if (this.expectedStudy.getAllianceLevers() != null) {
         for (AllianceLever allianceLeverTmp : this.expectedStudy.getAllianceLevers()) {
           if (allianceLeverTmp != null && allianceLeverTmp.getId() != null
@@ -3792,7 +3781,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
 
-      logger.info(" linea 3787");
     } catch (Exception e) {
       logger.info(" error in saveSingleAllianceLever function " + e.getMessage());
     }
