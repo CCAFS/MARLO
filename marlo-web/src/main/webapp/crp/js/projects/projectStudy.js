@@ -467,12 +467,17 @@ function attachEvents() {
     }, 1000);
 
   })();
+  //after load functions
+  disableRelatedLeversBasedOnPrimaryLever();
+
 	//On change radio buttons
 	$('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
   $('input.radioType-contributionToCGIAR').on('change', onDisplayCommentForNoContributingCGIAR);
 
   $('input[id*="radioCheckDisplay_"]').on('change', displayInnerCheckbox);
+
+  $('.containerPrimaryLever input[name="expectedStudy.allianceLever.id"]').on('change', disableRelatedLeversBasedOnPrimaryLever);
 
   $('.containerPrimaryLever input[id*="innerCheckDisplayallianceLever_sdgContributions_"]').on('change', dynamicSelectorSDGImageModule.init);
 }
@@ -676,6 +681,24 @@ function displayInnerCheckbox() {
     }
   });
 
+}
+
+function disableRelatedLeversBasedOnPrimaryLever() {
+  //get selected option of primary lever
+  var $selectedPrimaryLever = $('.containerPrimaryLever input[name="expectedStudy.allianceLever.id"]:checked');
+  
+  //get all related levers options
+  var $relatedLevers = $('.containerRelatedLever input[name*="expectedStudy.allianceLevers"]');
+
+  //disable related lever that shares the same id with the selected primary lever
+  $relatedLevers.each(function() {
+    var $this = $(this);
+    if($this.val() == $selectedPrimaryLever.val()) {
+      $this.prop('disabled', true);
+    } else {
+      $this.prop('disabled', false);
+    }
+  });
 }
 
 var deliverablePartnersModule = (function () {
