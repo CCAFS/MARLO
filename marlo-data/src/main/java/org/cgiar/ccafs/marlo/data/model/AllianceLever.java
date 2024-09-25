@@ -44,6 +44,7 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
   private List<SDGContribution> sdgContributions;
   private List<AllianceLeverOutcome> leverOutcomes;
   private String leverComments;
+  private String leverCommentsRelated;
 
 
   public AllianceLever() {
@@ -85,14 +86,20 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
     return description;
   }
 
+
   public String getLeverComments() {
     return leverComments;
   }
 
 
+  public String getLeverCommentsRelated() {
+    return leverCommentsRelated;
+  }
+
   public List<AllianceLeverOutcome> getLeverOutcomes() {
     return leverOutcomes;
   }
+
 
   public List<AllianceLeversSdgContribution> getLeverSdgContributions() {
     return leverSdgContributions;
@@ -105,10 +112,10 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
     return sb.toString();
   }
 
-
   public String getName() {
     return name;
   }
+
 
   public List<AllianceLeverOutcome> getOutcomes() {
     return outcomes;
@@ -132,6 +139,10 @@ public class AllianceLever extends MarloAuditableEntity implements java.io.Seria
 
   public void setLeverComments(String leverComments) {
     this.leverComments = leverComments;
+  }
+
+  public void setLeverCommentsRelated(String leverCommentsRelated) {
+    this.leverCommentsRelated = leverCommentsRelated;
   }
 
   public void setLeverOutcomes(List<AllianceLeverOutcome> leverOutcomes) {

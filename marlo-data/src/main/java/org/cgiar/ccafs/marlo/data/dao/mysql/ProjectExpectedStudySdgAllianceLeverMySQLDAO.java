@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectExpectedStudySdgAllianceLeverMySQLDAO extends AbstractMarloDAO<ProjectExpectedStudySdgAllianceLever, Long> implements ProjectExpectedStudySdgAllianceLeverDAO {
+public class ProjectExpectedStudySdgAllianceLeverMySQLDAO extends
+  AbstractMarloDAO<ProjectExpectedStudySdgAllianceLever, Long> implements ProjectExpectedStudySdgAllianceLeverDAO {
 
 
   @Inject
@@ -37,14 +38,16 @@ public class ProjectExpectedStudySdgAllianceLeverMySQLDAO extends AbstractMarloD
 
   @Override
   public void deleteProjectExpectedStudySdgAllianceLever(long projectExpectedStudySdgAllianceLeverId) {
-    ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLever = this.find(projectExpectedStudySdgAllianceLeverId);
+    ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLever =
+      this.find(projectExpectedStudySdgAllianceLeverId);
     projectExpectedStudySdgAllianceLever.setActive(false);
     this.update(projectExpectedStudySdgAllianceLever);
   }
 
   @Override
   public boolean existProjectExpectedStudySdgAllianceLever(long projectExpectedStudySdgAllianceLeverID) {
-    ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLever = this.find(projectExpectedStudySdgAllianceLeverID);
+    ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLever =
+      this.find(projectExpectedStudySdgAllianceLeverID);
     if (projectExpectedStudySdgAllianceLever == null) {
       return false;
     }
@@ -69,8 +72,23 @@ public class ProjectExpectedStudySdgAllianceLeverMySQLDAO extends AbstractMarloD
 
   }
 
+
   @Override
-  public ProjectExpectedStudySdgAllianceLever save(ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLever) {
+  public ProjectExpectedStudySdgAllianceLever findAllByPhaseExpectedAndLever(long phaseId, long expectedId,
+    long leverId) {
+    String query = "from " + ProjectExpectedStudySdgAllianceLever.class.getName() + " where is_active=1 and id_phase="
+      + phaseId + " and expected_id=" + expectedId + " and alliance_lever_id=" + leverId + " and is_primary=0";
+    List<ProjectExpectedStudySdgAllianceLever> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+
+  }
+
+  @Override
+  public ProjectExpectedStudySdgAllianceLever
+    save(ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLever) {
     if (projectExpectedStudySdgAllianceLever.getId() == null) {
       super.saveEntity(projectExpectedStudySdgAllianceLever);
     } else {

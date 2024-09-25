@@ -112,6 +112,15 @@ public class ProjectExpectedStudySdgAllianceLeverManagerImpl implements ProjectE
 
   }
 
+
+  @Override
+  public ProjectExpectedStudySdgAllianceLever findAllByPhaseExpectedAndLever(long phaseId, long expectedId,
+    long leverId) {
+
+    return projectExpectedStudySdgAllianceLeverDAO.findAllByPhaseExpectedAndLever(phaseId, expectedId, leverId);
+
+  }
+
   @Override
   public ProjectExpectedStudySdgAllianceLever
     getProjectExpectedStudySdgAllianceLeverById(long projectExpectedStudySdgAllianceLeverID) {

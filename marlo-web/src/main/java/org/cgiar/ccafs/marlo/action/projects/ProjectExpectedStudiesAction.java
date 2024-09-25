@@ -515,6 +515,45 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
 
+  public void fillAllianceLeversComment() {
+    try {
+
+
+      if (this.expectedStudy.getAllianceLevers() != null) {
+        for (AllianceLever allianceLeverTmp : this.expectedStudy.getAllianceLevers()) {
+          if (allianceLeverTmp.getSdgContributions().isEmpty()) {
+            ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLeverTmp =
+              this.projectExpectedStudySdgAllianceLeverManager
+                .findAllByPhaseExpectedAndLever(this.getActualPhase().getId(), expectedID, allianceLeverTmp.getId());
+            if (projectExpectedStudySdgAllianceLeverTmp != null) {
+              allianceLeverTmp.setLeverComments(projectExpectedStudySdgAllianceLeverTmp.getLeverComments());
+            }
+          }
+        }
+      }
+
+      for (final ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLeverTmp : this.expectedStudy
+        .getSdgAllianceLevers()) {
+        if (projectExpectedStudySdgAllianceLeverTmp.getAllianceLever() != null) {
+          if ((projectExpectedStudySdgAllianceLeverTmp.getIsPrimary() != null)
+            && projectExpectedStudySdgAllianceLeverTmp.getIsPrimary()) {
+            if (projectExpectedStudySdgAllianceLeverTmp.getLeverComments() != null) {
+              this.expectedStudy.getAllianceLever()
+                .setLeverComments(projectExpectedStudySdgAllianceLeverTmp.getLeverComments());
+            }
+          }
+
+        }
+      }
+
+
+    } catch (final Exception e) {
+      Log.error(" error in fillAllianceLeversComment function " + e.getMessage());
+    }
+
+  }
+
+
   public List<AllianceLever> getAllianceLeverList() {
     return allianceLeverList;
   }
@@ -2019,6 +2058,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.expectedStudy.getProjectExpectedStudyInfo().setTag(null);
       this.expectedStudy.setAllianceLever(null);
     }
+
+    this.fillAllianceLeversComment();
+
 
   }
 

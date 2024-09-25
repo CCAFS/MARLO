@@ -52,23 +52,31 @@ public interface ProjectExpectedStudySdgAllianceLeverManager {
   public List<ProjectExpectedStudySdgAllianceLever> findAll();
 
 
+  ProjectExpectedStudySdgAllianceLever findAllByPhaseExpectedAndLever(long phaseId, long expectedId, long leverId);
+
   /**
-   * This method gets a projectExpectedStudySdgAllianceLever object by a given projectExpectedStudySdgAllianceLever identifier.
+   * This method gets a projectExpectedStudySdgAllianceLever object by a given projectExpectedStudySdgAllianceLever
+   * identifier.
    * 
    * @param projectExpectedStudySdgAllianceLeverID is the projectExpectedStudySdgAllianceLever identifier.
    * @return a ProjectExpectedStudySdgAllianceLever object.
    */
-  public ProjectExpectedStudySdgAllianceLever getProjectExpectedStudySdgAllianceLeverById(long projectExpectedStudySdgAllianceLeverID);
+  public ProjectExpectedStudySdgAllianceLever
+    getProjectExpectedStudySdgAllianceLeverById(long projectExpectedStudySdgAllianceLeverID);
+
 
   /**
    * This method saves the information of the given projectExpectedStudySdgAllianceLever
    * 
-   * @param projectExpectedStudySdgAllianceLever - is the projectExpectedStudySdgAllianceLever object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudySdgAllianceLever was
+   * @param projectExpectedStudySdgAllianceLever - is the projectExpectedStudySdgAllianceLever object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudySdgAllianceLever was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectExpectedStudySdgAllianceLever saveProjectExpectedStudySdgAllianceLever(ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLever);
+  public ProjectExpectedStudySdgAllianceLever
+    saveProjectExpectedStudySdgAllianceLever(ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLever);
 
 
 }
