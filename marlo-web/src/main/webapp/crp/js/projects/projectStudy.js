@@ -54,6 +54,7 @@ function init() {
   counterSharedCluster();
 
   // Update the dynamic visualization of the "Alliance" Tab after selecting in Key Contributors
+  updateAllianceTab()
   $('select.elementType-institution').on('change',updateAllianceTab);
   $('div.removeElementType-institution').on('click',updateAllianceTab);
 
@@ -650,12 +651,12 @@ function updateAllianceTab() {
 
         if($option.toArray().some((item) => item.value == "7320")) {
           //remove disabled class alliance tab
-          $('.allianceTab').removeClass('disabled');
+          $('#allianceTab').removeClass('disabled');
           console.log("remove disabled");
           disabledTabAlliance();
         } else {
           //add disabled class alliance tab
-          $('.allianceTab').addClass('disabled');
+          $('#allianceTab').addClass('disabled');
           console.log("add disabled");
           disabledTabAlliance();
         }
