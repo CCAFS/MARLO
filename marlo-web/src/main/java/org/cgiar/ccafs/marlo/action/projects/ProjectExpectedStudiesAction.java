@@ -42,6 +42,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyFlagshipManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGeographicScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGlobalTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyImpactAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
@@ -91,6 +92,7 @@ import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
+import org.cgiar.ccafs.marlo.data.model.GlobalTarget;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -265,6 +267,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private final ImpactAreaManager impactAreaManager;
   private final GlobalTargetManager globalTargetManager;
   private final ProjectExpectedStudyImpactAreaManager projectExpectedStudyImpactAreaManager;
+  private final ProjectExpectedStudyGlobalTargetManager projectExpectedStudyGlobalTargetManager;
 
 
   // Variables
@@ -376,7 +379,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     AllianceLeverOutcomeManager allianceLeverOutcomeManager,
     AllianceLeversSdgContributionManager allianceLeversSdgContributionManager, ImpactAreaManager impactAreaManager,
     GlobalTargetManager globalTargetManager,
-    ProjectExpectedStudyImpactAreaManager projectExpectedStudyImpactAreaManager) {
+    ProjectExpectedStudyImpactAreaManager projectExpectedStudyImpactAreaManager,
+    ProjectExpectedStudyGlobalTargetManager projectExpectedStudyGlobalTargetManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -447,6 +451,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.impactAreaManager = impactAreaManager;
     this.globalTargetManager = globalTargetManager;
     this.projectExpectedStudyImpactAreaManager = projectExpectedStudyImpactAreaManager;
+    this.projectExpectedStudyGlobalTargetManager = projectExpectedStudyGlobalTargetManager;
   }
 
   /**
@@ -1323,7 +1328,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
                 o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
               .collect(Collectors.toList())));
         }
-
+        logger.info(" linea 1331");
         // Expected Study SdgAllianceLever List
         if (this.expectedStudy.getProjectExpectedStudySdgAllianceLevers() != null) {
           this.expectedStudy.setSdgAllianceLevers(
@@ -1403,7 +1408,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               }
             }
           }
-
+          logger.info(" linea 1411");
           if (this.expectedStudy.getAllianceLeversOutcomes() != null) {
             for (final ProjectExpectedStudyAllianceLeversOutcome allianceLeverOutcome : this.expectedStudy
               .getAllianceLeversOutcomes()) {
@@ -1417,8 +1422,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // this function set the sdg and outocmes related to the levers
+        logger.info(" linea 1425");
         this.fillAllianceLevers();
-
+        logger.info(" linea 1427");
 
         // Expected Study projectExpectedStudyPartnerships List
         if (this.expectedStudy.getProjectExpectedStudyPartnerships() != null) {
@@ -1466,7 +1472,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             this.expectedStudy.setImpactArea(impactAreaTmp);
           }
         }
-
+        logger.info(" linea 1474");
         // Expected Study global target
         if (this.expectedStudy.getProjectExpectedStudyGlobalTargets() != null) {
           this.expectedStudy
@@ -1483,6 +1489,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             }
           }
         }
+
+        logger.info(" linea 1492");
 
 
         this.partners = new ArrayList<>();
@@ -2044,6 +2052,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.expectedStudy.getImpactAreas().clear();
       }
 
+      /*
+       * if (this.expectedStudy.getGlobalTargets() != null) {
+       * this.expectedStudy.getGlobalTargets().clear();
+       * }
+       */
+
       // HTTP Post info Values
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndOrganizationType(null);
@@ -2067,8 +2081,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.expectedStudy.getProjectExpectedStudyInfo().setTag(null);
       this.expectedStudy.setAllianceLever(null);
     }
-
+    logger.info(" linea 2079");
     this.fillAllianceLeversComment();
+    logger.info(" linea 2081");
   }
 
   @Override
@@ -2102,6 +2117,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveSingleAllianceLever(expectedStudy, phase);
       this.saveProjectExpectedPartnership(this.expectedStudyDB, phase);
       this.saveImpactAreas(this.expectedStudyDB, phase);
+      this.saveGlobalTargetRelatedToImpactAreas(expectedStudy, phase);
 
       // AR 2019 Save
       this.saveCenters(this.expectedStudyDB, phase);
@@ -2398,7 +2414,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       if (this.expectedStudy.getAllianceLever() != null
         && this.expectedStudy.getAllianceLever().getSdgContributions() != null) {
         for (SDGContribution sDGContributionTmp : this.expectedStudy.getAllianceLever().getSdgContributions()) {
-          if (sDGContributionTmp != null) {
+          if (sDGContributionTmp != null && this.expectedStudy.getAllianceLever() != null
+            && this.expectedStudy.getAllianceLever().getId() != null) {
             final ProjectExpectedStudySdgAllianceLever sdgAllianceLeverSave =
               new ProjectExpectedStudySdgAllianceLever();
             sdgAllianceLeverSave.setProjectExpectedStudy(projectExpectedStudy);
@@ -2422,7 +2439,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           if (allianceLeverTmp != null && allianceLeverTmp.getSdgContributions() != null) {
             for (SDGContribution sDGContributionTmp : allianceLeverTmp.getSdgContributions()) {
 
-              if (sDGContributionTmp != null) {
+              if (sDGContributionTmp != null && allianceLeverTmp != null && allianceLeverTmp.getId() != null) {
 
                 final ProjectExpectedStudySdgAllianceLever sdgAllianceLeverSave =
                   new ProjectExpectedStudySdgAllianceLever();
@@ -2485,7 +2502,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     if (this.expectedStudy.getAllianceLever() != null
       && this.expectedStudy.getAllianceLever().getLeverOutcomes() != null) {
       for (AllianceLeverOutcome allianceLeverOutcomeTmp : this.expectedStudy.getAllianceLever().getLeverOutcomes()) {
-        if (allianceLeverOutcomeTmp != null) {
+        if (allianceLeverOutcomeTmp != null && this.expectedStudy.getAllianceLever() != null
+          && this.expectedStudy.getAllianceLever().getId() != null) {
           final ProjectExpectedStudyAllianceLeversOutcome allianceLeverOutcomeSave =
             new ProjectExpectedStudyAllianceLeversOutcome();
           allianceLeverOutcomeSave.setProjectExpectedStudy(projectExpectedStudy);
@@ -2755,6 +2773,53 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
+
+  /**
+   * Save imactArea related to the Expected Studies
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveGlobalTargetRelatedToImpactAreas(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+    try {
+      // delete data
+      if ((projectExpectedStudy.getProjectExpectedStudyGlobalTargets() != null)
+        && !projectExpectedStudy.getProjectExpectedStudyGlobalTargets().isEmpty()) {
+        final List<ProjectExpectedStudyGlobalTarget> globalTargetPrev =
+          new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyGlobalTargets().stream()
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+        for (final ProjectExpectedStudyGlobalTarget globalTarget : globalTargetPrev) {
+          this.projectExpectedStudyGlobalTargetManager.deleteProjectExpectedStudyGlobalTarget(globalTarget.getId());
+
+        }
+      }
+
+
+      // save data
+      if (this.expectedStudy.getImpactArea() != null && this.expectedStudy.getImpactArea().getGlobalTargets() != null) {
+        for (GlobalTarget globalTargetTmp : this.expectedStudy.getImpactArea().getGlobalTargets()) {
+          ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTargetSave =
+            new ProjectExpectedStudyGlobalTarget();
+          projectExpectedStudyGlobalTargetSave.setProjectExpectedStudy(projectExpectedStudy);
+          projectExpectedStudyGlobalTargetSave.setPhase(phase);
+          projectExpectedStudyGlobalTargetSave.setGlobalTarget(globalTargetTmp);
+          this.projectExpectedStudyGlobalTargetManager
+            .saveProjectExpectedStudyGlobalTarget(projectExpectedStudyGlobalTargetSave);
+
+          // This is to add studyQuantificationSave to generate
+          // correct auditlog.
+          this.expectedStudy.getProjectExpectedStudyGlobalTargets().add(projectExpectedStudyGlobalTargetSave);
+        }
+
+      }
+
+
+    } catch (Exception e) {
+      logger.info(" error in saveImpactAreas function " + e.getMessage());
+    }
+  }
+
 
   /**
    * Save imactArea related to the Expected Studies
@@ -3684,7 +3749,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
    */
   public void saveSingleAllianceLever(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
     try {
-
+      logger.info(" linea 3744");
       // save the other
       if (this.expectedStudy.getAllianceLever() != null && this.expectedStudy.getAllianceLever().getId() != null
         && this.expectedStudy.getAllianceLever().getLeverComments() != null
@@ -3706,7 +3771,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       }
 
-
+      logger.info(" linea 3766");
       if (this.expectedStudy.getAllianceLevers() != null) {
         for (AllianceLever allianceLeverTmp : this.expectedStudy.getAllianceLevers()) {
           if (allianceLeverTmp != null && allianceLeverTmp.getId() != null
@@ -3727,7 +3792,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
 
-
+      logger.info(" linea 3787");
     } catch (Exception e) {
       logger.info(" error in saveSingleAllianceLever function " + e.getMessage());
     }
