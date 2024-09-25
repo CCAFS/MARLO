@@ -470,8 +470,6 @@ function attachEvents() {
   //after load functions
   disableRelatedLeversBasedOnPrimaryLever();
 
-  disabledTabAlliance();
-
 	//On change radio buttons
 	$('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
@@ -657,11 +655,9 @@ function disabledTabAlliance() {
     var $this = $(this);
     if($this.attr('id') == "allianceTab") {
       if($this.hasClass('disabled')) {
-        console.log("disabled");
         $this.find('a').removeAttr('data-toggle');
         $this.attr('title', "This tab will be available for reporting only if Alliance is part of the OICR key contributors.");
       } else {
-        console.log("enabled");
         $this.find('a').attr('data-toggle', 'tab');
         $this.removeAttr('title');
       }
