@@ -1185,7 +1185,6 @@
                       [#local isCheckedInner = false]
 
                       [#local innerInformartion = isDirectInfo?then(innerItem,innerItem[classReferenceInnerCheckbox]) /]
-
                       [#-- Set Name and Id for inner content --]
                       [#if isChecked]
                         [#local customNameInnerName = "${baseName}.${keyFieldName}[${innerItem_index}].id" /]
@@ -1199,12 +1198,14 @@
                       [#if element?has_content && element[fieldName]?has_content]
                           [#if isRadioButton]
                             [#--  --]
-                            
-                            [#list element[fieldName][keyFieldName] as innerChecked]
-                              [#if innerChecked.id == innerInformartion.id]
-                                [#local isCheckedInner = true /]
-                              [/#if]
-                            [/#list]
+                            [#local innerMultiChecked = element[fieldName][keyFieldName] /]
+                            [#if innerMultiChecked?has_content]
+                              [#list innerMultiChecked as innerChecked]
+                                [#if innerChecked.id == innerInformartion.id]
+                                  [#local isCheckedInner = true /]
+                                [/#if]
+                              [/#list]
+                            [/#if]
                           [#else]
                             [#list element[fieldName] as innerChecked]
                               [#list innerChecked[keyFieldName] as innerItemChecked]
