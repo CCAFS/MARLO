@@ -1082,7 +1082,7 @@
   </div>
 [/#macro]
 
-[#macro selectableCheckToCheckboxMacro element name="" className="" fieldName="" keyFieldName="" label="" listName=""  isPrimaryLever=false hasInnerCheckbox=false listNameInnerCheckbox="" labelInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true isRadioButton=true ]
+[#macro selectableCheckToCheckboxMacro element name="" className="" fieldName="" keyFieldName="" label="" listName=""  isPrimaryLever=false hasInnerCheckbox=false listNameInnerCheckbox="" labelInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true isRadioButton=true isDirectInfo=false ]
   [#local customName = "${name}"]
 
   [#if listName?has_content]
@@ -1184,6 +1184,8 @@
                     [#list listInnerContent as innerItem]
                       [#local isCheckedInner = false]
 
+                      [#local innerInformartion = isDirectInfo?then(innerItem,innerItem[classReferenceInnerCheckbox]) /]
+
                       [#-- Set Name and Id for inner content --]
                       [#if isChecked]
                         [#local customNameInnerName = "${baseName}.${keyFieldName}[${innerItem_index}].id" /]
@@ -1199,14 +1201,14 @@
                             [#--  --]
                             
                             [#list element[fieldName][keyFieldName] as innerChecked]
-                              [#if innerChecked.id == innerItem[classReferenceInnerCheckbox].id]
+                              [#if innerChecked.id == innerInformartion.id]
                                 [#local isCheckedInner = true /]
                               [/#if]
                             [/#list]
                           [#else]
                             [#list element[fieldName] as innerChecked]
                               [#list innerChecked[keyFieldName] as innerItemChecked]
-                                [#if innerItemChecked.id == innerItem[classReferenceInnerCheckbox].id]
+                                [#if innerItemChecked.id == innerInformartion.id]
                                   [#local isCheckedInner = true /]
                                 [/#if]
                               [/#list]
@@ -1214,7 +1216,7 @@
                           [/#if]
                       [/#if]
 
-                      [@customForm.checkBoxFlat value="${innerItem[classReferenceInnerCheckbox].id}" name=customNameInnerName id=customIdInner label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable checked=false  checked=isCheckedInner /]
+                      [@customForm.checkBoxFlat value="${innerInformartion.id}" name=customNameInnerName id=customIdInner label="${innerInformartion.name}" editable=editable checked=false  checked=isCheckedInner /]
                     [/#list]
                   [/#if]
                 </div>
