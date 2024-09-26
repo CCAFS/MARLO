@@ -1096,6 +1096,10 @@
         [#else]
           [#local radioItemName = "${radioItem.name}" /]
         [/#if]
+
+        [#if fieldName == "impactArea"]
+          [#local radioItemName = "Impact Area ${radioItem_index+1}: ${radioItem.name}" /]
+        [/#if]
       
         [#local isChecked = false]
 
@@ -1120,7 +1124,7 @@
             [@customForm.radioFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.${fieldName}.id" value="${radioItem.id}" i18nkey="${radioItemName}" editable=editable checked=isChecked /]
           [#else]
             [#local baseName = "${customName}.${fieldName}[${radioItem_index}]" /]
-            [@customForm.checkBoxFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.${fieldName}[${radioItem_index}].id" value="${radioItem.id}" label="${radioItemName}" editable=editable checked=isChecked /]
+            [@customForm.checkBoxFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.${fieldName}[${radioItem_index}].id" value="${radioItem.id}" label="${radioItemName}?html" editable=editable checked=isChecked /]
           [/#if]
 
 
@@ -1129,7 +1133,14 @@
               [#if isPrimaryLever]
                 [@input name="${customName}.${fieldName}.leverComments" placeholder="Other" editable=editable showTitle=false /]
               [#else]
-                [@input name="${customName}.${fieldName}[${radioItem_index}].leverComments" placeholder="Other" editable=editable showTitle=false /]
+                [#local indexWithInformation = 0]
+                [#list element.allianceLevers as levers]
+                  [#if levers.leverComments?has_content]
+                    [#local indexWithInformation = levers_index /]
+                    [#break /]
+                  [/#if]
+                [/#list]
+                [@input name="${customName}.${fieldName}[${indexWithInformation}].leverComments" placeholder="Other" editable=editable showTitle=false /]
               [/#if]
             </div> 
           [#else]
