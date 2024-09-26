@@ -1587,6 +1587,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
       if (projectTemp == null) {
         // is a sumplementary evidence
+        // linea
         this.centers = this.institutionManager.findAll().stream()
           .filter(c -> c.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
             || (c.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE))
@@ -1726,9 +1727,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           && (p.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()))
         .collect(Collectors.toList());
 
-
-      this.institutions =
-        this.institutionManager.findAll().stream().filter(Institution::isActive).collect(Collectors.toList());
+      // 2024/09/26 the institutions have to be the same used in partners sections
+      /*
+       * this.institutions =
+       * this.institutionManager.findAll().stream().filter(Institution::isActive).collect(Collectors.toList());
+       */
+      this.institutions = new ArrayList<>();
+      try {
+        this.institutions = this.partnerInstitutions;
+      } catch (Exception e) {
+        logger.error(" unable to get institutions from partners");
+      }
 
 
       this.expectedStudyDB = this.projectExpectedStudyManager.getProjectExpectedStudyById(this.expectedID);
@@ -2045,11 +2054,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.expectedStudy.getImpactAreas().clear();
       }
 
-      /*
-       * if (this.expectedStudy.getGlobalTargets() != null) {
-       * this.expectedStudy.getGlobalTargets().clear();
-       * }
-       */
+
+      if (this.expectedStudy.getGlobalTargets() != null) {
+        this.expectedStudy.getGlobalTargets().clear();
+      }
+
 
       // HTTP Post info Values
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
@@ -2076,6 +2085,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
     this.fillAllianceLeversComment();
 
+
+    if (this.expectedStudy.getAllianceLevers() != null) {
+      for (AllianceLever alo : this.expectedStudy.getAllianceLevers()) {
+        logger.info(" linea 2083 ID " + alo.getId() + " comments " + alo.getLeverComments());
+      }
+    }
 
   }
 
