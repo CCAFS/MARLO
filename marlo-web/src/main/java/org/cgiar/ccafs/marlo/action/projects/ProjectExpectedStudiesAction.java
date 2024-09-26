@@ -2807,17 +2807,19 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       // save data
       if (this.expectedStudy.getImpactArea() != null && this.expectedStudy.getImpactArea().getGlobalTargets() != null) {
         for (GlobalTarget globalTargetTmp : this.expectedStudy.getImpactArea().getGlobalTargets()) {
-          ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTargetSave =
-            new ProjectExpectedStudyGlobalTarget();
-          projectExpectedStudyGlobalTargetSave.setProjectExpectedStudy(projectExpectedStudy);
-          projectExpectedStudyGlobalTargetSave.setPhase(phase);
-          projectExpectedStudyGlobalTargetSave.setGlobalTarget(globalTargetTmp);
-          this.projectExpectedStudyGlobalTargetManager
-            .saveProjectExpectedStudyGlobalTarget(projectExpectedStudyGlobalTargetSave);
+          if (globalTargetTmp != null) {
+            ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTargetSave =
+              new ProjectExpectedStudyGlobalTarget();
+            projectExpectedStudyGlobalTargetSave.setProjectExpectedStudy(projectExpectedStudy);
+            projectExpectedStudyGlobalTargetSave.setPhase(phase);
+            projectExpectedStudyGlobalTargetSave.setGlobalTarget(globalTargetTmp);
+            this.projectExpectedStudyGlobalTargetManager
+              .saveProjectExpectedStudyGlobalTarget(projectExpectedStudyGlobalTargetSave);
 
-          // This is to add studyQuantificationSave to generate
-          // correct auditlog.
-          this.expectedStudy.getProjectExpectedStudyGlobalTargets().add(projectExpectedStudyGlobalTargetSave);
+            // This is to add studyQuantificationSave to generate
+            // correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyGlobalTargets().add(projectExpectedStudyGlobalTargetSave);
+          }
         }
 
       }
