@@ -1124,7 +1124,7 @@
             [@customForm.radioFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.${fieldName}.id" value="${radioItem.id}" i18nkey="${radioItemName}" editable=editable checked=isChecked /]
           [#else]
             [#local baseName = "${customName}.${fieldName}[${radioItem_index}]" /]
-            [@customForm.checkBoxFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.${fieldName}[${radioItem_index}].id" value="${radioItem.id}" label="${radioItemName}?html" editable=editable checked=isChecked /]
+            [@customForm.checkBoxFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.${fieldName}[${radioItem_index}].id" value="${radioItem.id}" label="${radioItemName}" editable=editable checked=isChecked /]
           [/#if]
 
 
