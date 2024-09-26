@@ -2852,7 +2852,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
       // save data
-      if (this.expectedStudy.getImpactArea() != null) {
+      if (this.expectedStudy.getImpactArea() != null && this.expectedStudy.getImpactArea().getId() != null) {
         final ProjectExpectedStudyImpactArea projectExpectedStudyImpactAreaSave = new ProjectExpectedStudyImpactArea();
         projectExpectedStudyImpactAreaSave.setProjectExpectedStudy(projectExpectedStudy);
         projectExpectedStudyImpactAreaSave.setPhase(phase);
