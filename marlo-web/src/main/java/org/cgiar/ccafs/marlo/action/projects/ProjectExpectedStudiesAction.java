@@ -1587,7 +1587,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
       if (projectTemp == null) {
         // is a sumplementary evidence
-        // linea
         this.centers = this.institutionManager.findAll().stream()
           .filter(c -> c.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
             || (c.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE))
@@ -2086,12 +2085,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.fillAllianceLeversComment();
 
 
-    if (this.expectedStudy.getAllianceLevers() != null) {
-      for (AllianceLever alo : this.expectedStudy.getAllianceLevers()) {
-        logger.info(" linea 2083 ID " + alo.getId() + " comments " + alo.getLeverComments());
-      }
-    }
-
   }
 
   @Override
@@ -2124,8 +2117,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveAllianceLever(this.expectedStudyDB, phase);
       this.saveSingleAllianceLever(expectedStudy, phase);
       this.saveProjectExpectedPartnership(this.expectedStudyDB, phase);
-      this.saveImpactAreas(this.expectedStudyDB, phase);
-      this.saveGlobalTargetRelatedToImpactAreas(expectedStudy, phase);
+      // this.saveImpactAreas(this.expectedStudyDB, phase);
+      // this.saveGlobalTargetRelatedToImpactAreas(expectedStudy, phase);
 
       // AR 2019 Save
       this.saveCenters(this.expectedStudyDB, phase);
@@ -3786,6 +3779,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       }
 
+      String comments = "";
+      for (AllianceLever allianceLeverTmpInterno : this.expectedStudy.getAllianceLevers()) {
+        if (allianceLeverTmpInterno != null && allianceLeverTmpInterno.getLeverComments() != null
+          && allianceLeverTmpInterno.getLeverComments().length() > 0) {
+          comments = allianceLeverTmpInterno.getLeverComments();
+        }
+
+      }
+
       if (this.expectedStudy.getAllianceLevers() != null) {
         for (AllianceLever allianceLeverTmp : this.expectedStudy.getAllianceLevers()) {
           if (allianceLeverTmp != null && allianceLeverTmp.getId() != null
@@ -3798,7 +3800,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             sdgAllianceLeverSave.setAllianceLever(allianceLeverTmp);
             sdgAllianceLeverSave.setIsPrimary(false);
             if (APConstants.EXPECTED_OTHER_ALLIANCE_LEVER_ID == allianceLeverTmp.getId()) {
-              sdgAllianceLeverSave.setLeverComments(allianceLeverTmp.getLeverComments());
+
+              sdgAllianceLeverSave.setLeverComments(comments);
             }
             this.projectExpectedStudySdgAllianceLeverManager
               .saveProjectExpectedStudySdgAllianceLever(sdgAllianceLeverSave);
