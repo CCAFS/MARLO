@@ -176,6 +176,12 @@
     <property name="otherInnovationsNarrative" type="string">
         <column name="other_innovations_narrative" sql-type="TEXT" />
     </property>
+    <property name="hasCgiarContribution" type="java.lang.Boolean">
+      <column name="has_cgiar_contribution" />
+    </property>
+    <property name="reasonNotCgiarContribution" type="string">
+            <column name="reason_not_cgiar_contribution" sql-type="TEXT" />
+    </property>
     <many-to-one name="tag"
       class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyTag" fetch="select">
       <column name="tag_id" />
