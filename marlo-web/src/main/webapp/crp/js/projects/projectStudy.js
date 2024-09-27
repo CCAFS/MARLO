@@ -18,7 +18,7 @@ function init() {
 
   $('.removeElementType-repIndGeographicScope').on('click', displayLabelGeographicScope);
   $('select.elementType-repIndGeographicScope').on('change', displayLabelGeographicScope);
-  
+
   setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
 
   // Add file uploads
@@ -739,7 +739,12 @@ function disableRelatedLeversBasedOnPrimaryLever() {
   $relatedLevers.each(function() {
     var $this = $(this);
     if($this.val() == $selectedPrimaryLever.val()) {
-      $this.prop('disabled', true);
+      if($this.val() == "9" || $this.val() == 9){
+        $this.prop('disabled', false);
+        return
+      } 
+        $this.prop('disabled', true);
+      
     } else {
       $this.prop('disabled', false);
     }
