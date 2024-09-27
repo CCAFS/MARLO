@@ -1616,6 +1616,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.tagList = this.projectExpectedStudyTagManager.findAll();
       this.impactAreasList = this.impactAreaManager.findAllCustom();
       for (ImpactArea impactArea : this.impactAreasList) {
+        impactArea.setGlobalTargets(new ArrayList<>());
         impactArea.setGlobalTargets(this.globalTargetManager.findAllByImpactArea(impactArea.getId()));
       }
 
@@ -2049,13 +2050,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.expectedStudy.getPartnerships().clear();
       }
 
-      if (this.expectedStudy.getImpactAreas() != null) {
-        this.expectedStudy.getImpactAreas().clear();
-      }
-
 
       if (this.expectedStudy.getGlobalTargets() != null) {
         this.expectedStudy.getGlobalTargets().clear();
+      }
+
+      if (this.expectedStudy.getImpactAreas() != null) {
+        this.expectedStudy.getImpactAreas().clear();
       }
 
 
@@ -2081,6 +2082,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(null);
       this.expectedStudy.getProjectExpectedStudyInfo().setTag(null);
       this.expectedStudy.setAllianceLever(null);
+      this.expectedStudy.setImpactArea(null);
     }
     this.fillAllianceLeversComment();
 
@@ -2117,8 +2119,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveAllianceLever(this.expectedStudyDB, phase);
       this.saveSingleAllianceLever(expectedStudy, phase);
       this.saveProjectExpectedPartnership(this.expectedStudyDB, phase);
-      // this.saveImpactAreas(this.expectedStudyDB, phase);
-      // this.saveGlobalTargetRelatedToImpactAreas(expectedStudy, phase);
+
+      this.saveGlobalTargetRelatedToImpactAreas(expectedStudy, phase);
+      this.saveImpactAreas(this.expectedStudyDB, phase);
 
       // AR 2019 Save
       this.saveCenters(this.expectedStudyDB, phase);
@@ -2796,7 +2799,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
 
-
       // save data
       if (this.expectedStudy.getImpactArea() != null && this.expectedStudy.getImpactArea().getGlobalTargets() != null) {
         for (GlobalTarget globalTargetTmp : this.expectedStudy.getImpactArea().getGlobalTargets()) {
@@ -2844,7 +2846,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
         }
       }
-
 
       // save data
       if (this.expectedStudy.getImpactArea() != null && this.expectedStudy.getImpactArea().getId() != null) {
