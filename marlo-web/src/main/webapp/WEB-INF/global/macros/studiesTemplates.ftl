@@ -111,7 +111,7 @@
           <div class="form-group row">
             <div class="col-md-12">
               <label for="${customName}.geographicScopes" class="col-md-4">[@s.text name="study.generalInformation.geographicScope" /]: </label>
-              <label for="" class="col-md-8">[@s.text name="study.generalInformation.geographicImpact" /]:</label>
+              <label for="" name="study.generalInformation.geographicImpact" class="col-md-8" style="display:${(isMultiNational || isNational || isSubNational || isRegional)?string('block','none')}">[@s.text name="study.generalInformation.geographicImpact" /]:</label>
             </div>
           </div>
           <div class="form-group row">
@@ -652,7 +652,7 @@
       [#-- Alliance OICR ID --]
       [#if isOutcomeCaseStudy]
         <div class="col-md-2">
-          [@customForm.input name="${customName}.projectExpectedStudyInfo.allianceOicr" i18nkey="study.general.allianceID" helpIcon=false required=false editable=editable className="targetValueAllianceId" /]
+          [@customForm.input name="${customName}.projectExpectedStudyInfo.allianceOicr" i18nkey="study.general.allianceID" helpIcon=false required=false editable=editable className="targetValueAllianceId" placeholder="XXX-0000" /]
         </div>
       [/#if]
 
@@ -984,20 +984,26 @@
 
 [#macro studyOneCGIAR element name index=-1 template=false fromProject=true]
   [#local customName = "${name}"/]
-  [#local contributionToCGIAR = (element.projectExpectedStudyInfo.contributionToCGIAR)!"" ]
+  [#local contributionToCGIAR = (element.projectExpectedStudyInfo.hasCgiarContribution)!"" ]
   <div class="borderBox">
     <div class="form-group">
       <label for="">[@s.text name="study.oneCGIARAligment.contributionToCGIAR" /]:[@customForm.req required=false /]</label>
       <div class="form-group row">
-        [#list ["Yes", "No"] as option]
+        [#list [{"key": "Yes", "value": true}, {"key": "No", "value": false}] as option]
+          [#local isChecked = ((contributionToCGIAR) == (option.value?c))!false]
           <div class="col-md-2">
-            [@customForm.radioFlat id="optionOneCGIAR-${option}" name="${customName}.projectExpectedStudyInfo.contributionToCGIAR" i18nkey="study.oneCGIARAligment.contributionToCGIAR${option}" value="${option}" checked=(contributionToCGIAR == option) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /] 
+            [@customForm.radioFlat id="optionOneCGIAR-${option.key}" name="${customName}.projectExpectedStudyInfo.hasCgiarContribution" i18nkey="study.oneCGIARAligment.contributionToCGIAR${option.key}" value="${option.value?c}" checked=isChecked cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /] 
           </div>
         [/#list]
       </div>
-      <div class="form-group contributionToCGIARComment" style="display:${(contributionToCGIAR == 'No')?then('block','none')};" >
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.reasonToNoProvided" i18nkey="study.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=false editable=editable /]
+      <div class="form-group contributionToCGIARComment" style="display:${(contributionToCGIAR == 'false')?then('block','none')};" >
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.reasonNotCgiarContribution" i18nkey="study.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=false editable=editable /]
       </div>
+    </div>
+    <div class="form-group">
+      <label class="label--2" for=""><b>[@s.text name="study.oneCGIARAligment.linkToImpactAndTarget.title" /]</b>[@customForm.req required=false /]</label>
+      
+      [@customForm.selectableCheckToCheckboxMacro label="study.oneCGIARAligment.linkToImpactAndTarget.descripition" name="${customName}" fieldName="impactArea" listName=impactAreasList keyFieldName="globalTargets" isPrimaryLever=false labelInnerCheckbox="" listNameInnerCheckbox="globalTargets" classReferenceInnerCheckbox="impactArea" isRadioButton=true isDirectInfo=true element=element /]
     </div>
   </div>
 [/#macro]

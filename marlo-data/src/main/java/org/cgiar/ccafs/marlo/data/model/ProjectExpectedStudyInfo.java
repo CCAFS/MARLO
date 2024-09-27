@@ -158,6 +158,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public String otherInnovationsNarrative;
   @Expose
   public ProjectExpectedStudyTag tag;
+  @Expose
+  private String reasonNotCgiarContribution;
+  @Expose
+  private Boolean hasCgiarContribution;
 
   public ProjectExpectedStudyInfo() {
   }
@@ -258,6 +262,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   }
 
 
+  public Boolean getHasCgiarContribution() {
+    return hasCgiarContribution;
+  }
+
+
   public Boolean getHasCovidAnalysis() {
     return hasCovidAnalysis;
   }
@@ -272,6 +281,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return isContribution;
   }
 
+
   public Boolean getIsPublic() {
     return isPublic;
   }
@@ -279,7 +289,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public String getIsSrfTarget() {
     return isSrfTarget;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -299,6 +308,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -313,7 +323,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public String getOtherCrossCuttingSelection() {
     return otherCrossCuttingSelection;
   }
-
 
   public String getOtherInnovationsNarrative() {
     return otherInnovationsNarrative;
@@ -334,10 +343,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return outcomeImpactStatement;
   }
 
+
   public String getOutcomeStory() {
     return outcomeStory;
   }
-
 
   public Phase getPhase() {
     return phase;
@@ -356,6 +365,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
 
   public String getQuantification() {
     return quantification;
+  }
+
+
+  public String getReasonNotCgiarContribution() {
+    return reasonNotCgiarContribution;
   }
 
   public FileDB getReferencesFile() {
@@ -501,6 +515,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.genderLevel = genderLevel;
   }
 
+  public void setHasCgiarContribution(Boolean hasCgiarContribution) {
+    this.hasCgiarContribution = hasCgiarContribution;
+  }
+
   public void setHasCovidAnalysis(Boolean hasCovidAnalysis) {
     this.hasCovidAnalysis = hasCovidAnalysis;
   }
@@ -570,15 +588,19 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.projectExpectedStudy = projectExpectedStudy;
   }
 
+
   public void setQuantification(String quantification) {
     this.quantification = quantification;
   }
 
 
+  public void setReasonNotCgiarContribution(String reasonNotCgiarContribution) {
+    this.reasonNotCgiarContribution = reasonNotCgiarContribution;
+  }
+
   public void setReferencesFile(FileDB referencesFile) {
     this.referencesFile = referencesFile;
   }
-
 
   public void setReferencesText(String referencesText) {
     this.referencesText = referencesText;
@@ -635,6 +657,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public void setTopLevelComments(String topLevelComments) {
     this.topLevelComments = topLevelComments;
   }
+
 
   public void setYear(Integer year) {
     this.year = year;
@@ -705,6 +728,8 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.setTag(projectExpectedStudyInfoUpdate.getTag());
     this.setCommentsRelevance(projectExpectedStudyInfoUpdate.getCommentsRelevance());
     this.setOtherInnovationsNarrative(projectExpectedStudyInfoUpdate.getOtherInnovationsNarrative());
+    this.setReasonNotCgiarContribution(projectExpectedStudyInfoUpdate.getReasonNotCgiarContribution());
+    this.setHasCgiarContribution(projectExpectedStudyInfoUpdate.getHasCgiarContribution());
   }
 
 }

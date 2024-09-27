@@ -1082,7 +1082,7 @@
   </div>
 [/#macro]
 
-[#macro selectableCheckToCheckboxMacro element name="" className="" fieldName="" keyFieldName="" label="" listName=""  isPrimaryLever=false hasInnerCheckbox=false listNameInnerCheckbox="" labelInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true isRadioButton=true ]
+[#macro selectableCheckToCheckboxMacro element name="" className="" fieldName="" keyFieldName="" label="" listName=""  isPrimaryLever=false hasInnerCheckbox=false listNameInnerCheckbox="" labelInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true isRadioButton=true isDirectInfo=false ]
   [#local customName = "${name}"]
 
   [#if listName?has_content]
@@ -1095,6 +1095,10 @@
           [#local radioItemName = "${radioItem.name}: ${radioItem.description}" /]
         [#else]
           [#local radioItemName = "${radioItem.name}" /]
+        [/#if]
+
+        [#if fieldName == "impactArea"]
+          [#local radioItemName = "Impact Area ${radioItem_index+1}: ${radioItem.name}" /]
         [/#if]
       
         [#local isChecked = false]
@@ -1129,7 +1133,14 @@
               [#if isPrimaryLever]
                 [@input name="${customName}.${fieldName}.leverComments" placeholder="Other" editable=editable showTitle=false /]
               [#else]
-                [@input name="${customName}.${fieldName}[${radioItem_index}].leverComments" placeholder="Other" editable=editable showTitle=false /]
+                [#local indexWithInformation = 0]
+                [#list element.allianceLevers as levers]
+                  [#if levers.leverComments?has_content]
+                    [#local indexWithInformation = levers_index /]
+                    [#break /]
+                  [/#if]
+                [/#list]
+                [@input name="${customName}.${fieldName}[${indexWithInformation}].leverComments" placeholder="Other" editable=editable showTitle=false /]
               [/#if]
             </div> 
           [#else]
@@ -1184,6 +1195,7 @@
                     [#list listInnerContent as innerItem]
                       [#local isCheckedInner = false]
 
+                      [#local innerInformartion = isDirectInfo?then(innerItem,innerItem[classReferenceInnerCheckbox]) /]
                       [#-- Set Name and Id for inner content --]
                       [#if isChecked]
                         [#local customNameInnerName = "${baseName}.${keyFieldName}[${innerItem_index}].id" /]
@@ -1197,16 +1209,18 @@
                       [#if element?has_content && element[fieldName]?has_content]
                           [#if isRadioButton]
                             [#--  --]
-                            
-                            [#list element[fieldName][keyFieldName] as innerChecked]
-                              [#if innerChecked.id == innerItem[classReferenceInnerCheckbox].id]
-                                [#local isCheckedInner = true /]
-                              [/#if]
-                            [/#list]
+                            [#local innerMultiChecked = element[fieldName][keyFieldName] /]
+                            [#if innerMultiChecked?has_content]
+                              [#list innerMultiChecked as innerChecked]
+                                [#if innerChecked.id == innerInformartion.id]
+                                  [#local isCheckedInner = true /]
+                                [/#if]
+                              [/#list]
+                            [/#if]
                           [#else]
                             [#list element[fieldName] as innerChecked]
                               [#list innerChecked[keyFieldName] as innerItemChecked]
-                                [#if innerItemChecked.id == innerItem[classReferenceInnerCheckbox].id]
+                                [#if innerItemChecked.id == innerInformartion.id]
                                   [#local isCheckedInner = true /]
                                 [/#if]
                               [/#list]
@@ -1214,7 +1228,7 @@
                           [/#if]
                       [/#if]
 
-                      [@customForm.checkBoxFlat value="${innerItem[classReferenceInnerCheckbox].id}" name=customNameInnerName id=customIdInner label="${innerItem[classReferenceInnerCheckbox].name}" editable=editable checked=false  checked=isCheckedInner /]
+                      [@customForm.checkBoxFlat value="${innerInformartion.id}" name=customNameInnerName id=customIdInner label="${innerInformartion.name}" editable=editable checked=false  checked=isCheckedInner /]
                     [/#list]
                   [/#if]
                 </div>

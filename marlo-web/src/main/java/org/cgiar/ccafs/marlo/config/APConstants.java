@@ -867,6 +867,8 @@ public final class APConstants {
 
   public static final String IGNORE_NEWER_YEARS = "ignoreNewer";
 
+  public static final int EXPECTED_OTHER_ALLIANCE_LEVER_ID = 9;
+
   public static String getFilterBy() {
     return FILTER_BY;
   }

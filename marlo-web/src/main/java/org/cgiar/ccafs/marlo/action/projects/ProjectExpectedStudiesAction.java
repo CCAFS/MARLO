@@ -1616,6 +1616,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.tagList = this.projectExpectedStudyTagManager.findAll();
       this.impactAreasList = this.impactAreaManager.findAllCustom();
       for (ImpactArea impactArea : this.impactAreasList) {
+        impactArea.setGlobalTargets(new ArrayList<>());
         impactArea.setGlobalTargets(this.globalTargetManager.findAllByImpactArea(impactArea.getId()));
       }
 
@@ -1726,9 +1727,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           && (p.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()))
         .collect(Collectors.toList());
 
-
-      this.institutions =
-        this.institutionManager.findAll().stream().filter(Institution::isActive).collect(Collectors.toList());
+      // 2024/09/26 the institutions have to be the same used in partners sections
+      /*
+       * this.institutions =
+       * this.institutionManager.findAll().stream().filter(Institution::isActive).collect(Collectors.toList());
+       */
+      this.institutions = new ArrayList<>();
+      try {
+        this.institutions = this.partnerInstitutions;
+      } catch (Exception e) {
+        logger.error(" unable to get institutions from partners");
+      }
 
 
       this.expectedStudyDB = this.projectExpectedStudyManager.getProjectExpectedStudyById(this.expectedID);
@@ -2041,15 +2050,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.expectedStudy.getPartnerships().clear();
       }
 
+
+      if (this.expectedStudy.getGlobalTargets() != null) {
+        this.expectedStudy.getGlobalTargets().clear();
+      }
+
       if (this.expectedStudy.getImpactAreas() != null) {
         this.expectedStudy.getImpactAreas().clear();
       }
 
-      /*
-       * if (this.expectedStudy.getGlobalTargets() != null) {
-       * this.expectedStudy.getGlobalTargets().clear();
-       * }
-       */
 
       // HTTP Post info Values
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
@@ -2073,8 +2082,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(null);
       this.expectedStudy.getProjectExpectedStudyInfo().setTag(null);
       this.expectedStudy.setAllianceLever(null);
+      this.expectedStudy.setImpactArea(null);
     }
     this.fillAllianceLeversComment();
+
+
   }
 
   @Override
@@ -2107,8 +2119,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveAllianceLever(this.expectedStudyDB, phase);
       this.saveSingleAllianceLever(expectedStudy, phase);
       this.saveProjectExpectedPartnership(this.expectedStudyDB, phase);
-      this.saveImpactAreas(this.expectedStudyDB, phase);
+
       this.saveGlobalTargetRelatedToImpactAreas(expectedStudy, phase);
+      this.saveImpactAreas(this.expectedStudyDB, phase);
 
       // AR 2019 Save
       this.saveCenters(this.expectedStudyDB, phase);
@@ -2423,7 +2436,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
       }
-
       if (this.expectedStudy.getAllianceLevers() != null) {
         for (AllianceLever allianceLeverTmp : this.expectedStudy.getAllianceLevers()) {
 
@@ -2463,6 +2475,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
   }
+
 
   /**
    * Save Expected Studies AllianceLeversOutcomes Information
@@ -2556,7 +2569,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
-
 
   /**
    * Save study Crp Program Outcome Information
@@ -2719,6 +2731,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   /**
    * Save Expected Studies Geographic Scopes Information
    * 
@@ -2786,21 +2799,22 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
 
-
       // save data
       if (this.expectedStudy.getImpactArea() != null && this.expectedStudy.getImpactArea().getGlobalTargets() != null) {
         for (GlobalTarget globalTargetTmp : this.expectedStudy.getImpactArea().getGlobalTargets()) {
-          ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTargetSave =
-            new ProjectExpectedStudyGlobalTarget();
-          projectExpectedStudyGlobalTargetSave.setProjectExpectedStudy(projectExpectedStudy);
-          projectExpectedStudyGlobalTargetSave.setPhase(phase);
-          projectExpectedStudyGlobalTargetSave.setGlobalTarget(globalTargetTmp);
-          this.projectExpectedStudyGlobalTargetManager
-            .saveProjectExpectedStudyGlobalTarget(projectExpectedStudyGlobalTargetSave);
+          if (globalTargetTmp != null) {
+            ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTargetSave =
+              new ProjectExpectedStudyGlobalTarget();
+            projectExpectedStudyGlobalTargetSave.setProjectExpectedStudy(projectExpectedStudy);
+            projectExpectedStudyGlobalTargetSave.setPhase(phase);
+            projectExpectedStudyGlobalTargetSave.setGlobalTarget(globalTargetTmp);
+            this.projectExpectedStudyGlobalTargetManager
+              .saveProjectExpectedStudyGlobalTarget(projectExpectedStudyGlobalTargetSave);
 
-          // This is to add studyQuantificationSave to generate
-          // correct auditlog.
-          this.expectedStudy.getProjectExpectedStudyGlobalTargets().add(projectExpectedStudyGlobalTargetSave);
+            // This is to add studyQuantificationSave to generate
+            // correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyGlobalTargets().add(projectExpectedStudyGlobalTargetSave);
+          }
         }
 
       }
@@ -2810,7 +2824,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       logger.info(" error in saveImpactAreas function " + e.getMessage());
     }
   }
-
 
   /**
    * Save imactArea related to the Expected Studies
@@ -2834,9 +2847,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
 
-
       // save data
-      if (this.expectedStudy.getImpactArea() != null) {
+      if (this.expectedStudy.getImpactArea() != null && this.expectedStudy.getImpactArea().getId() != null) {
         final ProjectExpectedStudyImpactArea projectExpectedStudyImpactAreaSave = new ProjectExpectedStudyImpactArea();
         projectExpectedStudyImpactAreaSave.setProjectExpectedStudy(projectExpectedStudy);
         projectExpectedStudyImpactAreaSave.setPhase(phase);
@@ -2857,6 +2869,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       logger.info(" error in saveImpactAreas function " + e.getMessage());
     }
   }
+
 
   /**
    * Save Expected Studies Innovations Information
@@ -3096,6 +3109,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
+
 
   /**
    * Save Expected Studies Policies Information
@@ -3742,15 +3756,20 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     try {
       // save the other
       if (this.expectedStudy.getAllianceLever() != null && this.expectedStudy.getAllianceLever().getId() != null
-        && this.expectedStudy.getAllianceLever().getLeverComments() != null
-        && this.expectedStudy.getAllianceLever().getLeverComments().length() > 0
-        && this.expectedStudy.getAllianceLever().getSdgContributions() == null) {
+      /*
+       * && this.expectedStudy.getAllianceLever().getLeverComments() != null
+       * && this.expectedStudy.getAllianceLever().getLeverComments().length() > 0
+       */
+        && this.expectedStudy.getAllianceLever().getSdgContributions() == null
+        && this.expectedStudy.getAllianceLever().getOutcomes() == null) {
         final ProjectExpectedStudySdgAllianceLever sdgAllianceLeverSaveTmp = new ProjectExpectedStudySdgAllianceLever();
         sdgAllianceLeverSaveTmp.setProjectExpectedStudy(projectExpectedStudy);
         sdgAllianceLeverSaveTmp.setPhase(phase);
         sdgAllianceLeverSaveTmp.setAllianceLever(this.expectedStudy.getAllianceLever());
         sdgAllianceLeverSaveTmp.setIsPrimary(true);
-        sdgAllianceLeverSaveTmp.setLeverComments(this.expectedStudy.getAllianceLever().getLeverComments());
+        if (APConstants.EXPECTED_OTHER_ALLIANCE_LEVER_ID == this.expectedStudy.getAllianceLever().getId()) {
+          sdgAllianceLeverSaveTmp.setLeverComments(this.expectedStudy.getAllianceLever().getLeverComments());
+        }
         this.projectExpectedStudySdgAllianceLeverManager
           .saveProjectExpectedStudySdgAllianceLever(sdgAllianceLeverSaveTmp);
 
@@ -3761,17 +3780,30 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       }
 
+      String comments = "";
+      for (AllianceLever allianceLeverTmpInterno : this.expectedStudy.getAllianceLevers()) {
+        if (allianceLeverTmpInterno != null && allianceLeverTmpInterno.getLeverComments() != null
+          && allianceLeverTmpInterno.getLeverComments().length() > 0) {
+          comments = allianceLeverTmpInterno.getLeverComments();
+        }
+
+      }
+
       if (this.expectedStudy.getAllianceLevers() != null) {
         for (AllianceLever allianceLeverTmp : this.expectedStudy.getAllianceLevers()) {
           if (allianceLeverTmp != null && allianceLeverTmp.getId() != null
-            && allianceLeverTmp.getLeverComments() != null && allianceLeverTmp.getLeverComments().length() > 0) {
+          /* && allianceLeverTmp.getLeverComments() != null && allianceLeverTmp.getLeverComments().length() > 0 */
+            && allianceLeverTmp.getSdgContributions() == null) {
             final ProjectExpectedStudySdgAllianceLever sdgAllianceLeverSave =
               new ProjectExpectedStudySdgAllianceLever();
             sdgAllianceLeverSave.setProjectExpectedStudy(projectExpectedStudy);
             sdgAllianceLeverSave.setPhase(phase);
             sdgAllianceLeverSave.setAllianceLever(allianceLeverTmp);
             sdgAllianceLeverSave.setIsPrimary(false);
-            sdgAllianceLeverSave.setLeverComments(allianceLeverTmp.getLeverComments());
+            if (APConstants.EXPECTED_OTHER_ALLIANCE_LEVER_ID == allianceLeverTmp.getId()) {
+
+              sdgAllianceLeverSave.setLeverComments(comments);
+            }
             this.projectExpectedStudySdgAllianceLeverManager
               .saveProjectExpectedStudySdgAllianceLever(sdgAllianceLeverSave);
             // This is to add studyQuantificationSave to generate

@@ -15,6 +15,10 @@ function init() {
   $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(_event,_id,_name) {
     setGeographicScope(this);
   });
+
+  $('.removeElementType-repIndGeographicScope').on('click', displayLabelGeographicScope);
+  $('select.elementType-repIndGeographicScope').on('change', displayLabelGeographicScope);
+
   setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
 
   // Add file uploads
@@ -551,7 +555,7 @@ function onDisplayCommentForNoContributingCGIAR(){
   var $commentBox = $('.contributionToCGIARComment');
   var $radioButton = $('input.radioType-contributionToCGIAR:checked');
 
-  if($radioButton.val() === "No"){
+  if($radioButton.val() === "false"){
     $commentBox.slideDown();
   } else {
     $commentBox.slideUp();
@@ -735,11 +739,31 @@ function disableRelatedLeversBasedOnPrimaryLever() {
   $relatedLevers.each(function() {
     var $this = $(this);
     if($this.val() == $selectedPrimaryLever.val()) {
-      $this.prop('disabled', true);
+      if($this.val() == "9" || $this.val() == 9){
+        $this.prop('disabled', false);
+        return
+      } 
+        $this.prop('disabled', true);
+      
     } else {
       $this.prop('disabled', false);
     }
   });
+}
+
+function displayLabelGeographicScope() {
+  // Display label if there are elements in the geographic scope
+  var $label = $('label[name="study.generalInformation.geographicImpact"]');
+  var $geographicScope = $('select.elementType-repIndGeographicScope option:selected');
+  if($geographicScope.length > 0) {
+    if($geographicScope[0].value == "-1" || $geographicScope[0].value == "1") {
+      $label.hide();
+    } else {
+      $label.show();
+    }
+  } else {
+    $label.hide();
+  }
 }
 
 var deliverablePartnersModule = (function () {
