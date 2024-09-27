@@ -990,12 +990,13 @@
       <label for="">[@s.text name="study.oneCGIARAligment.contributionToCGIAR" /]:[@customForm.req required=false /]</label>
       <div class="form-group row">
         [#list [{"key": "Yes", "value": true}, {"key": "No", "value": false}] as option]
+          [#local isChecked = ((contributionToCGIAR) == (option.value?c))!false]
           <div class="col-md-2">
-            [@customForm.radioFlat id="optionOneCGIAR-${option.key}" name="${customName}.projectExpectedStudyInfo.hasCgiarContribution" i18nkey="study.oneCGIARAligment.contributionToCGIAR${option.key}" value="${option.value?c}" checked=((contributionToCGIAR?c) == (option.value?c)) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /] 
+            [@customForm.radioFlat id="optionOneCGIAR-${option.key}" name="${customName}.projectExpectedStudyInfo.hasCgiarContribution" i18nkey="study.oneCGIARAligment.contributionToCGIAR${option.key}" value="${option.value?c}" checked=isChecked cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /] 
           </div>
         [/#list]
       </div>
-      <div class="form-group contributionToCGIARComment" style="display:${(contributionToCGIAR == false)?then('block','none')};" >
+      <div class="form-group contributionToCGIARComment" style="display:${(contributionToCGIAR == 'false')?then('block','none')};" >
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.reasonNotCgiarContribution" i18nkey="study.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=false editable=editable /]
       </div>
     </div>
