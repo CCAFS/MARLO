@@ -1535,7 +1535,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         }
       }
 
-      /// add new items to oicrs (Project Expected Studies)
+      /// 2024/09/30 add new items to oicrs (Project Expected Studies)
 
       // Expected Study Publications List
       if (expectedStudy.getProjectExpectedStudyPublications() != null) {
@@ -1590,6 +1590,22 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           }
 
         }
+      }
+
+
+      // Expected Study impact areas
+      if (expectedStudy.getProjectExpectedStudyImpactAreas() != null) {
+        expectedStudy.setImpactAreas(new ArrayList<>(expectedStudy.getProjectExpectedStudyImpactAreas().stream()
+          .filter(o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+          .collect(Collectors.toList())));
+      }
+
+      // Expected Study global target
+      if (expectedStudy.getProjectExpectedStudyGlobalTargets() != null) {
+        expectedStudy.setGlobalTargets(new ArrayList<>(expectedStudy.getProjectExpectedStudyGlobalTargets().stream()
+          .filter(o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+          .collect(Collectors.toList())));
+
       }
 
 
