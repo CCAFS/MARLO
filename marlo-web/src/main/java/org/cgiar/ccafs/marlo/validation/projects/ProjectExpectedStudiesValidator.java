@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPublication;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
@@ -132,16 +133,16 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
     if (projectExpectedStudy.getAllianceLever() == null
       || (projectExpectedStudy.getAllianceLever() != null && projectExpectedStudy.getAllianceLever().getId() == null)) {
-      action.addMessage(action.getText("AllianceLever"));
-      action.addMissingField("allianceLever");
+      action.addMessage(action.getText("expectedStudy.allianceLever"));
+      action.addMissingField("expectedStudy.allianceLever.id");
       action.getInvalidFields().put("input-expectedStudy.allianceLever.id", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate Other field lever selection
     if (projectExpectedStudy.getAllianceLever() != null && projectExpectedStudy.getAllianceLever().getName() != null
       && projectExpectedStudy.getAllianceLever().getName().equalsIgnoreCase("Other")) {
-      action.addMessage(action.getText("leverComments"));
-      action.addMissingField("leverComments");
+      action.addMessage(action.getText("expectedStudy.allianceLever.leverComments"));
+      action.addMissingField("expectedStudy.allianceLever.leverComments");
       action.getInvalidFields().put("input-expectedStudy.allianceLever.leverComments",
         InvalidFieldsMessages.EMPTYFIELD);
     }
@@ -152,8 +153,8 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
 
       if (projectExpectedStudy.getAllianceLever().getLeverOutcomes() == null) {
-        action.addMessage(action.getText("leverOutcomes"));
-        action.addMissingField("leverOutcomes");
+        action.addMessage(action.getText("expectedStudy.allianceLever.leverOutcomes"));
+        action.addMissingField("expectedStudy.allianceLever.leverOutcomes[0].id");
         action.getInvalidFields().put("input-expectedStudy.allianceLever.leverOutcomes[0].id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
@@ -161,8 +162,8 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       // Validate lever outcomes selection
       if (projectExpectedStudy.getAllianceLever().getOutcomes() == null) {
         // Add message for missing outcomes
-        action.addMessage(action.getText("leverOutcomes"));
-        action.addMissingField("leverOutcomes");
+        action.addMessage(action.getText("expectedStudy.allianceLever.leverOutcomes"));
+        action.addMissingField("expectedStudy.allianceLever.leverOutcomes[0].id");
         action.getInvalidFields().put("input-expectedStudy.allianceLever.leverOutcomes[0].id",
           InvalidFieldsMessages.EMPTYFIELD);
       } else {
@@ -171,15 +172,15 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           for (AllianceLeverOutcome outcome : projectExpectedStudy.getAllianceLever().getOutcomes()) {
             if (outcome != null && outcome.getId() == null) {
               // Add message for missing outcome ID
-              action.addMessage(action.getText("outcome"));
-              action.addMissingField("outcome");
+              action.addMessage(action.getText("expectedStudy.allianceLever.leverOutcomes"));
+              action.addMissingField("expectedStudy.allianceLever.leverOutcomes[0].id");
               action.getInvalidFields().put("input-expectedStudy.allianceLever.leverOutcomes[0].id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
         } else {
-          action.addMessage(action.getText("leverOutcomes"));
-          action.addMissingField("leverOutcomes");
+          action.addMessage(action.getText("expectedStudy.allianceLever.leverOutcomes"));
+          action.addMissingField("expectedStudy.allianceLever.leverOutcomes[0].id");
           action.getInvalidFields().put("input-expectedStudy.allianceLever.leverOutcomes[0].id",
             InvalidFieldsMessages.EMPTYFIELD);
         }
@@ -189,8 +190,8 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       // Validate SDG contributions selection
       if (projectExpectedStudy.getAllianceLever().getSdgContributions() == null) {
         // Add message for missing SDG contributions
-        action.addMessage(action.getText("sdgContribution"));
-        action.addMissingField("sdgContribution");
+        action.addMessage(action.getText("expectedStudy.allianceLever.sdgContributions"));
+        action.addMissingField("expectedStudy.allianceLever.sdgContributions[0].id");
         action.getInvalidFields().put("input-expectedStudy.allianceLever.sdgContributions[0].id",
           InvalidFieldsMessages.EMPTYFIELD);
       } else {
@@ -198,8 +199,8 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         for (SDGContribution sdgContribution : projectExpectedStudy.getAllianceLever().getSdgContributions()) {
           if (sdgContribution != null && sdgContribution.getId() == null) {
             // Add message for missing SDG contribution ID
-            action.addMessage(action.getText("sdgContribution"));
-            action.addMissingField("sdgContribution");
+            action.addMessage(action.getText("expectedStudy.allianceLever.sdgContributions"));
+            action.addMissingField("expectedStudy.allianceLever.sdgContributions[0].id");
             action.getInvalidFields().put("input-expectedStudy.allianceLever.sdgContributions[0].id",
               InvalidFieldsMessages.EMPTYFIELD);
           }
@@ -222,8 +223,8 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         if (allianceLever != null && allianceLever.getId() != null) {
           // Validate Other field lever selection
           if (allianceLever.getName() != null && allianceLever.getName().equalsIgnoreCase("Other")) {
-            action.addMessage(action.getText("leverComments"));
-            action.addMissingField("leverComments");
+            action.addMessage(action.getText("expectedStudy.leverComments"));
+            action.addMissingField("expectedStudy.allianceLevers[0].leverComments");
             action.getInvalidFields().put("input-expectedStudy.allianceLevers[0].leverComments",
               InvalidFieldsMessages.EMPTYFIELD);
           }
@@ -233,8 +234,8 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           // Validate SDG contributions selection
           if (allianceLever.getSdgContributions() == null) {
             // Add message for missing SDG contributions
-            action.addMessage(action.getText("sdgContribution"));
-            action.addMissingField("sdgContribution");
+            action.addMessage(action.getText("expectedStudy.sdgContributions"));
+            action.addMissingField("expectedStudy.allianceLever.sdgContributions[0].id");
             action.getInvalidFields().put("input-expectedStudy.allianceLever.sdgContributions[0].id",
               InvalidFieldsMessages.EMPTYFIELD);
           } else {
@@ -242,8 +243,8 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
             for (SDGContribution sdgContribution : allianceLever.getSdgContributions()) {
               if (sdgContribution != null && sdgContribution.getId() == null) {
                 // Add message for missing SDG contribution ID
-                action.addMessage(action.getText("sdgContribution"));
-                action.addMissingField("sdgContribution");
+                action.addMessage(action.getText("expectedStudy.sdgContributions"));
+                action.addMissingField("expectedStudy.allianceLever.sdgContributions[0].id");
                 action.getInvalidFields().put("input-expectedStudy.allianceLever.sdgContributions[0].id",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
@@ -255,14 +256,14 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
       // If no alliance lever was selected, mark as missing
       if (!isAllianceLeverSelected) {
-        action.addMessage(action.getText("allianceLever"));
-        action.addMissingField("allianceLever");
+        action.addMessage(action.getText("expectedStudy.allianceLevers"));
+        action.addMissingField("expectedStudy.allianceLevers[0].id");
         action.getInvalidFields().put("input-expectedStudy.allianceLevers[0].id", InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
       // If the alliance levers list is null or empty, mark as missing
-      action.addMessage(action.getText("allianceLever"));
-      action.addMissingField("allianceLever");
+      action.addMessage(action.getText("expectedStudy.allianceLevers"));
+      action.addMissingField("expectedStudy.allianceLevers[0].id");
       action.getInvalidFields().put("input-expectedStudy.allianceLevers[0].id", InvalidFieldsMessages.EMPTYFIELD);
     }
   }
@@ -363,24 +364,25 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
    */
   public void validateOneCgiarAlignment(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy,
     boolean saving) {
-    if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null || projectExpectedStudy
+    if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null && projectExpectedStudy
       .getProjectExpectedStudyInfo(baseAction.getActualPhase()).getHasCgiarContribution() == null) {
-      action.addMessage(action.getText("HasCgiarContribution"));
-      action.addMissingField("HasCgiarContribution");
+      action.addMessage(action.getText("expectedStudy.hasCgiarContribution"));
+      action.addMissingField("expectedStudy.projectExpectedStudyInfo.hasCgiarContribution");
       action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.hasCgiarContribution",
         InvalidFieldsMessages.EMPTYFIELD);
     } else {
       // When the has CGIAR contribution question is not null
-      if (projectExpectedStudy.getImpactArea() == null) {
-        action.addMessage(action.getText("impactArea"));
-        action.addMissingField("impactArea");
+      if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
+        && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getHasCgiarContribution()) {
+        action.addMessage(action.getText("expectedStudy.impactArea"));
+        action.addMissingField("expectedStudy.impactArea.id");
         action.getInvalidFields().put("input-expectedStudy.impactArea.id", InvalidFieldsMessages.EMPTYFIELD);
       } else {
         // When the Impact area question is not null
         if (projectExpectedStudy.getImpactArea() != null
           && projectExpectedStudy.getImpactArea().getGlobalTargets() != null) {
-          action.addMessage(action.getText("globalTargets"));
-          action.addMissingField("globalTargets");
+          action.addMessage(action.getText("expectedStudy.globalTargets"));
+          action.addMissingField("expectedStudy.impactArea.globalTargets[0].id");
           action.getInvalidFields().put("input-expectedStudy.impactArea.globalTargets[0].id",
             InvalidFieldsMessages.EMPTYFIELD);
         }
@@ -995,6 +997,50 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
             }
           }
 
+        }
+      }
+    }
+
+    // Validate publications
+    int index = 0;
+    if (projectExpectedStudy.getPublications() == null
+      || (projectExpectedStudy.getPublications() != null && projectExpectedStudy.getPublications().isEmpty())) {
+      action.addMessage(action.getText("expectedStudy.publications.name"));
+      action.addMissingField("expectedStudy.publications[-1].name");
+      action.addMessage(action.getText("expectedStudy.publications.affiliation"));
+      action.addMissingField("expectedStudy.publications[-1].affiliation");
+      action.addMessage(action.getText("expectedStudy.publications.position"));
+      action.addMissingField("expectedStudy.publications[-1].position");
+
+      action.getInvalidFields().put("input-expectedStudy.publications[-1].name", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-expectedStudy.publications[-1].affiliation",
+        InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-expectedStudy.publications[-1].position", InvalidFieldsMessages.EMPTYFIELD);
+    } else {
+      if (projectExpectedStudy.getPublications() != null && !projectExpectedStudy.getPublications().isEmpty()) {
+        for (ProjectExpectedStudyPublication publication : projectExpectedStudy.getPublications()) {
+          if (publication.getName() == null || (publication.getName() != null && publication.getName().isEmpty())) {
+            action.addMessage(action.getText("expectedStudy.publications[" + index + "].name"));
+            action.addMissingField("expectedStudy.publications[" + index + "].name");
+            action.getInvalidFields().put("input-expectedStudy.publications[" + index + "].name",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          if (publication.getPosition() == null
+            || (publication.getPosition() != null && publication.getPosition().isEmpty())) {
+            action.addMessage(action.getText("expectedStudy.position[" + index + "].position"));
+            action.addMissingField("expectedStudy.position[" + index + "].position");
+            action.getInvalidFields().put("input-expectedStudy.publications[" + index + "].position",
+              InvalidFieldsMessages.EMPTYFIELD);
+
+          }
+          if (publication.getAffiliation() == null
+            || (publication.getAffiliation() != null && publication.getAffiliation().isEmpty())) {
+            action.addMessage(action.getText("expectedStudy.publications[" + index + "].affiliation"));
+            action.addMissingField("expectedStudy.publications[" + index + "].affiliation");
+            action.getInvalidFields().put("input-expectedStudy.publications[" + index + "].affiliation",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
       }
     }

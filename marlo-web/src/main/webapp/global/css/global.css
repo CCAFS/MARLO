@@ -325,19 +325,19 @@ p.emptyText {
 }
 
 ul.fieldError {
-	margin: 0;
-	padding: 0;
+	margin: 0 !important;
+	padding: 0 !important;
 }
 
 ul.fieldError li,
 a.fieldError {
-	color: red;
-	list-style-type: none;
-	text-align: left;
+	color: red !important;
+	list-style-type: none !important;
+	text-align: left !important;
 }
 
 span.badge.fieldError {
-	background-color: red;
+	background-color: red !important;
 }
 
 .radios {
@@ -363,7 +363,7 @@ input.fieldError,
 textarea.fieldError:focus,
 input.fieldError:focus {
 	border-color: #F44 !important;
-	background-color: #FFFAFA;
+	background-color: #FFFAFA !important;
 	color: #EE1D1D !important;
 }
 
@@ -454,8 +454,8 @@ label.readOnly {
 p.fieldError,
 span.remainingAmount.fieldError {
 	color: #F52626 !important;
-	font-weight: bold;
-	margin-right: 4px;
+	font-weight: bold !important;
+	margin-right: 4px !important;
 }
 
 p.fieldChecked {
@@ -5773,7 +5773,7 @@ table.evaluationRank thead th {
 }
 
 .radio-label.fieldError {
-	color: red;
+	color: red !important;
 }
 
 .radio-label .onoffswitch-radio:checked+label {
