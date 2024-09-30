@@ -495,7 +495,7 @@ function attachEvents() {
 	//On change radio buttons
 	$('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
-  $('input.radioType-contributionToCGIAR').on('change', onDisplayCommentForNoContributingCGIAR);
+  $('input.radioType-contributionToCGIAR').on('change', onDisplayItemsInOneCGIAR);
 
   $('input[id*="radioCheckDisplay_"]').on('change', displayInnerCheckbox);
 
@@ -551,13 +551,16 @@ function onChangeRadioButton() {
 	  }
 }
 
-function onDisplayCommentForNoContributingCGIAR(){
+function onDisplayItemsInOneCGIAR(){
   var $commentBox = $('.contributionToCGIARComment');
+  var $radioBox = $('.linkToImpactAndTarget');
   var $radioButton = $('input.radioType-contributionToCGIAR:checked');
 
   if($radioButton.val() === "false"){
+    $radioBox.slideUp();
     $commentBox.slideDown();
   } else {
+    $radioBox.slideDown();
     $commentBox.slideUp();
     
   }
