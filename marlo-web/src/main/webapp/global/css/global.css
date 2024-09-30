@@ -7006,10 +7006,13 @@ p.checkDisable:before {
 	border-color: #3197EE;
 }
 
+.inputsFlat input[type="checkbox"]:disabled+.checkbox-label{
+	color: #C6C6C6;
+}
+
 .inputsFlat input[type="checkbox"]:disabled+.checkbox-label:before {
-	box-shadow: inset 0 0 0 4px #f4f4f4;
-	border-color: #b4b4b4;
-	background: #b4b4b4;
+	border-color: #C6C6C6;
+	background: #C6C6C6;
 }
 
 .inputsFlat input[type="checkbox"]+.checkbox-label:empty:before {
