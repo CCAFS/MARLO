@@ -501,7 +501,7 @@ function attachEvents() {
 
   $('.containerPrimaryLever input[name="expectedStudy.allianceLever.id"]').on('change', disableRelatedLeversBasedOnPrimaryLever);
 
-  $('.containerPrimaryLever input[id*="innerCheckDisplayallianceLever_sdgContributions_"]').on('change', dynamicSelectorSDGImageModule.init);
+  $('.containerPrimaryLever input[name*="expectedStudy.allianceLever.sdgContributions"]').on('change', dynamicSelectorSDGImageModule.init);
 }
 
 function addSelect2() {
@@ -937,6 +937,7 @@ var dynamicSelectorSDGImageModule = (function (){
   }
 
   function changeCurrentDisplaySDGImage() {
+    const $containerReference = $('.selectedLeverContainer');
     const $containerImage = $('.selectedLeverContainer__image');
     const $image = $containerImage.find('img');
 
@@ -956,7 +957,14 @@ var dynamicSelectorSDGImageModule = (function (){
       },
       success: function(data) {
         console.log(data);
-        $image.attr("src",data.image.adsoluteURL);
+        if(data.image.adsoluteURL == null){
+          console.error("Image not found");
+          $containerReference.hide();
+        } else {
+          console.log("Image found");
+          $containerReference.show();
+          $image.attr("src",data.image.adsoluteURL);
+        }
       },
       error: function(xhr, status, error) {
         console.error(error);
