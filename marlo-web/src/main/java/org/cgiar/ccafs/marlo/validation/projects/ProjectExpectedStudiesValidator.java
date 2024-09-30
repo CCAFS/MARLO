@@ -95,7 +95,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     this.validateAllianceAlignment(action, project, projectExpectedStudy, saving);
     this.validateOneCgiarAlignment(action, project, projectExpectedStudy, saving);
     this.validateCommunications(action, project, projectExpectedStudy, saving);
-    this.validatePrimaryLevers(projectExpectedStudy, action);
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
@@ -123,107 +122,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
    */
   public void validateAllianceAlignment(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy,
     boolean saving) {
-  }
-
-  /**
-   * Validate the data of the Communications tab
-   *
-   * @param action base action
-   * @param project related project
-   * @param projectExpectedStudy An specific projectExpectedStudy
-   * @param saving related action
-   */
-  public void validateCommunications(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy,
-    boolean saving) {
-
-    try {
-
-      this.validateProjectExpectedStudyCommunications(projectExpectedStudy, action);
-
-
-      action.setOicrCommunicationsComplete(true);
-      if (this.validateCommunicationsFields(action.getMissingFields().toString())) {
-        action.setOicrCommunicationsComplete(false);
-      }
-    } catch (Exception e) {
-      LOG.error(" error in validateCommunications function " + e.getMessage());
-    }
-
-  }
-
-  /**
-   * Validate that the missing fields contain the fields of the communication section
-   *
-   * @param missingFields data related to missing fields
-   */
-  public boolean validateCommunicationsFields(String missingFields) {
-    try {
-      if (missingFields.contains("study.contacts")) {
-        return true;
-      }
-      return false;
-    } catch (Exception e) {
-      LOG.error(" error in validateCommunicationsFields function " + e.getMessage());
-      return false;
-    }
-  }
-
-  /**
-   * Validate the data of the general information tab
-   *
-   * @param action base action
-   * @param project related project
-   * @param projectExpectedStudy An specific projectExpectedStudy
-   * @param saving related action
-   */
-  public void validateGeneralInformation(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy,
-    boolean saving) {
-
-    this.validateProjectExpectedStudyGeneralInformation(projectExpectedStudy, action);
-
-
-    if (action.getMissingFields().toString().length() == 0) {
-      action.setOicrGeneralInformationComplete(true);
-    }
-
-
-  }
-
-
-  /**
-   * Validate if the current phase is progress
-   *
-   * @param action base action
-   * @param projectExpectedStudy An specific projectExpectedStudy
-   * @return validation result
-   */
-  public boolean validateIsProgressAndNotCompleteStatus(BaseAction action, ProjectExpectedStudy projectExpectedStudy) {
-    boolean result = false;
-    try {
-      if (action.isProgressActive() && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus().getId() != Integer
-        .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-        result = true;
-      }
-      return result;
-    } catch (Exception e) {
-      LOG.error(" error in validateIsProgressAndNotStatus function [ProjectExpectedStudiesValidator]");
-      return result;
-    }
-  }
-
-  /**
-   * Validate the data of the OneCgiarAlignment tab
-   *
-   * @param action base action
-   * @param project related project
-   * @param projectExpectedStudy An specific projectExpectedStudy
-   * @param saving related action
-   */
-  public void validateOneCgiarAlignment(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy,
-    boolean saving) {
-  }
-
-  private void validatePrimaryLevers(ProjectExpectedStudy projectExpectedStudy, BaseAction action) {
 
     // Validate primary levers
     AllianceLever allianceLeverTemp = null;
@@ -366,6 +264,127 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       action.addMessage(action.getText("allianceLever"));
       action.addMissingField("allianceLever");
       action.getInvalidFields().put("input-expectedStudy.allianceLevers[0].id", InvalidFieldsMessages.EMPTYFIELD);
+    }
+  }
+
+  /**
+   * Validate the data of the Communications tab
+   *
+   * @param action base action
+   * @param project related project
+   * @param projectExpectedStudy An specific projectExpectedStudy
+   * @param saving related action
+   */
+  public void validateCommunications(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy,
+    boolean saving) {
+
+    try {
+
+      this.validateProjectExpectedStudyCommunications(projectExpectedStudy, action);
+
+
+      action.setOicrCommunicationsComplete(true);
+      if (this.validateCommunicationsFields(action.getMissingFields().toString())) {
+        action.setOicrCommunicationsComplete(false);
+      }
+    } catch (Exception e) {
+      LOG.error(" error in validateCommunications function " + e.getMessage());
+    }
+
+  }
+
+  /**
+   * Validate that the missing fields contain the fields of the communication section
+   *
+   * @param missingFields data related to missing fields
+   */
+  public boolean validateCommunicationsFields(String missingFields) {
+    try {
+      if (missingFields.contains("study.contacts")) {
+        return true;
+      }
+      return false;
+    } catch (Exception e) {
+      LOG.error(" error in validateCommunicationsFields function " + e.getMessage());
+      return false;
+    }
+  }
+
+  /**
+   * Validate the data of the general information tab
+   *
+   * @param action base action
+   * @param project related project
+   * @param projectExpectedStudy An specific projectExpectedStudy
+   * @param saving related action
+   */
+  public void validateGeneralInformation(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy,
+    boolean saving) {
+
+    this.validateProjectExpectedStudyGeneralInformation(projectExpectedStudy, action);
+
+
+    if (action.getMissingFields().toString().length() == 0) {
+      action.setOicrGeneralInformationComplete(true);
+    }
+
+
+  }
+
+
+  /**
+   * Validate if the current phase is progress
+   *
+   * @param action base action
+   * @param projectExpectedStudy An specific projectExpectedStudy
+   * @return validation result
+   */
+  public boolean validateIsProgressAndNotCompleteStatus(BaseAction action, ProjectExpectedStudy projectExpectedStudy) {
+    boolean result = false;
+    try {
+      if (action.isProgressActive() && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus().getId() != Integer
+        .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        result = true;
+      }
+      return result;
+    } catch (Exception e) {
+      LOG.error(" error in validateIsProgressAndNotStatus function [ProjectExpectedStudiesValidator]");
+      return result;
+    }
+  }
+
+  /**
+   * Validate the data of the OneCgiarAlignment tab
+   *
+   * @param action base action
+   * @param project related project
+   * @param projectExpectedStudy An specific projectExpectedStudy
+   * @param saving related action
+   */
+  public void validateOneCgiarAlignment(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy,
+    boolean saving) {
+    if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null || projectExpectedStudy
+      .getProjectExpectedStudyInfo(baseAction.getActualPhase()).getHasCgiarContribution() == null) {
+      action.addMessage(action.getText("HasCgiarContribution"));
+      action.addMissingField("HasCgiarContribution");
+      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.hasCgiarContribution",
+        InvalidFieldsMessages.EMPTYFIELD);
+    } else {
+      // When the has CGIAR contribution question is not null
+      if (projectExpectedStudy.getImpactArea() == null) {
+        action.addMessage(action.getText("impactArea"));
+        action.addMissingField("impactArea");
+        action.getInvalidFields().put("input-expectedStudy.impactArea.id", InvalidFieldsMessages.EMPTYFIELD);
+      } else {
+        // When the Impact area question is not null
+        if (projectExpectedStudy.getImpactArea() != null
+          && projectExpectedStudy.getImpactArea().getGlobalTargets() != null) {
+          action.addMessage(action.getText("globalTargets"));
+          action.addMissingField("globalTargets");
+          action.getInvalidFields().put("input-expectedStudy.impactArea.globalTargets[0].id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
     }
   }
 

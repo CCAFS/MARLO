@@ -495,13 +495,13 @@ function attachEvents() {
 	//On change radio buttons
 	$('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
-  $('input.radioType-contributionToCGIAR').on('change', onDisplayCommentForNoContributingCGIAR);
+  $('input.radioType-contributionToCGIAR').on('change', onDisplayItemsInOneCGIAR);
 
   $('input[id*="radioCheckDisplay_"]').on('change', displayInnerCheckbox);
 
   $('.containerPrimaryLever input[name="expectedStudy.allianceLever.id"]').on('change', disableRelatedLeversBasedOnPrimaryLever);
 
-  $('.containerPrimaryLever input[id*="innerCheckDisplayallianceLever_sdgContributions_"]').on('change', dynamicSelectorSDGImageModule.init);
+  $('.containerPrimaryLever input[name*="expectedStudy.allianceLever.sdgContributions"]').on('change', dynamicSelectorSDGImageModule.init);
 }
 
 function addSelect2() {
@@ -551,13 +551,16 @@ function onChangeRadioButton() {
 	  }
 }
 
-function onDisplayCommentForNoContributingCGIAR(){
+function onDisplayItemsInOneCGIAR(){
   var $commentBox = $('.contributionToCGIARComment');
+  var $radioBox = $('.linkToImpactAndTarget');
   var $radioButton = $('input.radioType-contributionToCGIAR:checked');
 
   if($radioButton.val() === "false"){
+    $radioBox.slideUp();
     $commentBox.slideDown();
   } else {
+    $radioBox.slideDown();
     $commentBox.slideUp();
     
   }
@@ -937,6 +940,7 @@ var dynamicSelectorSDGImageModule = (function (){
   }
 
   function changeCurrentDisplaySDGImage() {
+    const $containerReference = $('.selectedLeverContainer');
     const $containerImage = $('.selectedLeverContainer__image');
     const $image = $containerImage.find('img');
 
@@ -956,7 +960,14 @@ var dynamicSelectorSDGImageModule = (function (){
       },
       success: function(data) {
         console.log(data);
-        $image.attr("src",data.image.adsoluteURL);
+        if(data.image.adsoluteURL == null){
+          console.error("Image not found");
+          $containerReference.hide();
+        } else {
+          console.log("Image found");
+          $containerReference.show();
+          $image.attr("src",data.image.adsoluteURL);
+        }
       },
       error: function(xhr, status, error) {
         console.error(error);
