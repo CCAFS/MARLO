@@ -1533,6 +1533,34 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         }
       }
 
+      /// add new items to oicrs (Project Expected Studies)
+
+      // Expected Study Publications List
+      if (expectedStudy.getProjectExpectedStudyPublications() != null) {
+        expectedStudy.setPublications(new ArrayList<>(expectedStudy.getProjectExpectedStudyPublications().stream()
+          .filter(o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+          .collect(Collectors.toList())));
+      }
+
+      // Expected Study SdgAllianceLever List
+      if (expectedStudy.getProjectExpectedStudySdgAllianceLevers() != null) {
+        expectedStudy
+          .setSdgAllianceLevers((new ArrayList<>(expectedStudy.getProjectExpectedStudySdgAllianceLevers().stream()
+            .filter(
+              o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+            .collect(Collectors.toList()))));
+      }
+
+      // Expected Study allianceLeversOutcomes List
+      if (expectedStudy.getProjectExpectedStudyAllianceLeversOutcomes() != null) {
+        expectedStudy.setAllianceLeversOutcomes(
+          (new ArrayList<>(expectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().stream()
+            .filter(
+              o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+            .collect(Collectors.toList()))));
+      }
+
+
       projectExpectedStudiesValidator.validate(action, project, expectedStudy, false);
 
     }
