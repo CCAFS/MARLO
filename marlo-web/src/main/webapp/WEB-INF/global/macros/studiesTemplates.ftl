@@ -984,19 +984,23 @@
 
 [#macro studyOneCGIAR element name index=-1 template=false fromProject=true]
   [#local customName = "${name}"/]
-  [#local contributionToCGIAR = (element.projectExpectedStudyInfo.hasCgiarContribution)!"" ]
+  [#if (element.projectExpectedStudyInfo.hasCgiarContribution)?has_content]
+    [#local hasContributionToCGIAR = (element.projectExpectedStudyInfo.hasCgiarContribution)!false ]
+  [/#if]
+
   <div class="borderBox">
     <div class="form-group">
       <label for="">[@s.text name="study.oneCGIARAligment.contributionToCGIAR" /]:[@customForm.req required=false /]</label>
       <div class="form-group row">
-        [#list [{"key": "Yes", "value": true}, {"key": "No", "value": false}] as option]
-          [#local isChecked = ((contributionToCGIAR) == (option.value?c))!false]
-          <div class="col-md-2">
-            [@customForm.radioFlat id="optionOneCGIAR-${option.key}" name="${customName}.projectExpectedStudyInfo.hasCgiarContribution" i18nkey="study.oneCGIARAligment.contributionToCGIAR${option.key}" value="${option.value?c}" checked=isChecked cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /] 
-          </div>
-        [/#list]
+      
+        <div class="col-md-2">
+          [@customForm.radioFlat id="optionOneCGIAR-Yes" name="${customName}.projectExpectedStudyInfo.hasCgiarContribution" i18nkey="study.oneCGIARAligment.contributionToCGIARYes" value="true" checked=((hasContributionToCGIAR)!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /]
+        </div>
+        <div class="col-md-2">
+          [@customForm.radioFlat id="optionOneCGIAR-No" name="${customName}.projectExpectedStudyInfo.hasCgiarContribution" i18nkey="study.oneCGIARAligment.contributionToCGIARNo" value="false" checked=((!hasContributionToCGIAR)!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /]
+        </div>
       </div>
-      <div class="form-group contributionToCGIARComment" style="display:${(contributionToCGIAR == 'false')?then('block','none')};" >
+      <div class="form-group contributionToCGIARComment" style="display:${(hasContributionToCGIAR == false)!false?then('block','none')};" >
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.reasonNotCgiarContribution" i18nkey="study.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=false editable=editable /]
       </div>
     </div>
