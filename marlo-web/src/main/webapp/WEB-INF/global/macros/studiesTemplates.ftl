@@ -956,11 +956,11 @@
       [@customForm.helpLabel name="study.allianceAligment.linkToLevers.note" showIcon=false editable=editable isNote=true /]
       [#-- Primary Levers --]
       <div class="form-group">
-        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" name="${customName}" fieldName="allianceLever" listName=allianceLeverList keyFieldName="sdgContributions" isPrimaryLever=true  labelInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="leverSdgContributions" classReferenceInnerCheckbox="sDGContribution" element=element /]
+        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" name="${customName}" fieldName="allianceLever" listName=allianceLeverList keyFieldName="sdgContributions" isPrimaryLever=true  subtitleInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="leverSdgContributions" classReferenceInnerCheckbox="sDGContribution" element=element /]
       </div>
       [#-- Related Levers --]
       <div class="form-group">
-        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.relatedLever" name="${customName}" fieldName="allianceLevers" listName=allianceLeverList keyFieldName="sdgContributions" isPrimaryLever=false labelInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="leverSdgContributions" classReferenceInnerCheckbox="sDGContribution" isRadioButton=false element=element className="containerRelatedLever" /]
+        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.relatedLever" name="${customName}" fieldName="allianceLevers" listName=allianceLeverList keyFieldName="sdgContributions" isPrimaryLever=false subtitleInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="leverSdgContributions" classReferenceInnerCheckbox="sDGContribution" isRadioButton=false element=element className="containerRelatedLever" /]
       </div>
     </div>
 
@@ -1007,7 +1007,7 @@
     <div class="form-group">
       <label class="label--2" for=""><b>[@s.text name="study.oneCGIARAligment.linkToImpactAndTarget.title" /]</b>[@customForm.req required=false /]</label>
       
-      [@customForm.selectableCheckToCheckboxMacro label="study.oneCGIARAligment.linkToImpactAndTarget.descripition" name="${customName}" fieldName="impactArea" listName=impactAreasList keyFieldName="globalTargets" isPrimaryLever=false labelInnerCheckbox="" listNameInnerCheckbox="globalTargets" classReferenceInnerCheckbox="impactArea" isRadioButton=true isDirectInfo=true element=element /]
+      [@customForm.selectableCheckToCheckboxMacro label="study.oneCGIARAligment.linkToImpactAndTarget.descripition" name="${customName}" fieldName="impactArea" listName=impactAreasList keyFieldName="globalTargets" isPrimaryLever=false subtitleInnerCheckbox="" listNameInnerCheckbox="globalTargets" classReferenceInnerCheckbox="impactArea" isRadioButton=true isDirectInfo=true element=element /]
     </div>
   </div>
 [/#macro]

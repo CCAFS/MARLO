@@ -1082,7 +1082,7 @@
   </div>
 [/#macro]
 
-[#macro selectableCheckToCheckboxMacro element name="" className="" fieldName="" keyFieldName="" label="" listName=""  isPrimaryLever=false hasInnerCheckbox=false listNameInnerCheckbox="" labelInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true isRadioButton=true isDirectInfo=false ]
+[#macro selectableCheckToCheckboxMacro element name="" className="" fieldName="" keyFieldName="" label="" listName=""  isPrimaryLever=false hasInnerCheckbox=false listNameInnerCheckbox="" subtitleInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true isRadioButton=true isDirectInfo=false ]
   [#local customName = "${name}"]
 
   [#if listName?has_content]
@@ -1182,7 +1182,7 @@
                 [/#if]
 
                 <div class="form-group" style="padding-left: 20px;">
-                  <label for="" class="radio-label"><b>[@s.text name=labelInnerCheckbox /]</b></label>
+                  <label for="" class="radio-label"><b>[@s.text name=subtitleInnerCheckbox /]</b></label>
 
                   [#attempt]
                     [#local listInnerContent = radioItem[listNameInnerCheckbox]![] /]
@@ -1228,7 +1228,14 @@
                           [/#if]
                       [/#if]
 
-                      [@customForm.checkBoxFlat value="${innerInformartion.id}" name=customNameInnerName id=customIdInner label="${innerInformartion.name}" editable=editable checked=false  checked=isCheckedInner /]
+                      [#-- label displayed --]
+                      [#if innerInformartion.code? has_content]
+                        [#local labelInnerCheckbox = "${innerInformartion.code} ${innerInformartion.name}" /]
+                      [#else]
+                        [#local labelInnerCheckbox = innerInformartion.name /]
+                      [/#if]
+
+                      [@customForm.checkBoxFlat value="${innerInformartion.id}" name=customNameInnerName id=customIdInner label=labelInnerCheckbox editable=editable checked=false  checked=isCheckedInner /]
                     [/#list]
                   [/#if]
                 </div>
