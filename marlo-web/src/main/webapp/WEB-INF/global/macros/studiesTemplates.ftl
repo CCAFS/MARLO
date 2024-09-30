@@ -983,9 +983,8 @@
 
 [#macro studyOneCGIAR element name index=-1 template=false fromProject=true]
   [#local customName = "${name}"/]
-  [#if (element.projectExpectedStudyInfo.hasCgiarContribution)?has_content]
-    [#local hasContributionToCGIAR = (element.projectExpectedStudyInfo.hasCgiarContribution)!false ]
-  [/#if]
+
+  [#local hasContributionToCGIAR = (element.projectExpectedStudyInfo.hasCgiarContribution)!false ]
 
   <div class="borderBox">
     <div class="form-group">
@@ -999,7 +998,6 @@
           [@customForm.radioFlat id="optionOneCGIAR-No" name="${customName}.projectExpectedStudyInfo.hasCgiarContribution" i18nkey="study.oneCGIARAligment.contributionToCGIARNo" value="false" checked=((!hasContributionToCGIAR)!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /]
         </div>
       </div>
-      <p>${hasContributionToCGIAR?c}</p>
       <div class="form-group contributionToCGIARComment" style="display:${((hasContributionToCGIAR?c) == 'false')?string('block','none')};" >
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.reasonNotCgiarContribution" i18nkey="study.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=false editable=editable /]
       </div>
