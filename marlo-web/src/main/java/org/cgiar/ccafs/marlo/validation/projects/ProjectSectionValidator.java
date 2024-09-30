@@ -75,6 +75,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnership;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnershipsPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
@@ -1558,6 +1560,36 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
             .filter(
               o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
             .collect(Collectors.toList()))));
+      }
+
+      // Expected Study projectExpectedStudyPartnerships List
+      if (expectedStudy.getProjectExpectedStudyPartnerships() != null) {
+
+        final List<ProjectExpectedStudyPartnership> deList = expectedStudy.getProjectExpectedStudyPartnerships()
+          .stream()
+          .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(phase.getId()) && dp
+            .getProjectExpectedStudyPartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+          .collect(Collectors.toList());
+
+        if ((deList != null) && !deList.isEmpty()) {
+          try {
+            Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+          } catch (final Exception e) {
+            this.logger.error("unable to sort dlist", e);
+          }
+          expectedStudy.setPartnerships(new ArrayList<>());
+          for (final ProjectExpectedStudyPartnership projectExpectedStudyPartnership : deList) {
+
+            if (projectExpectedStudyPartnership.getProjectExpectedStudyPartnershipsPersons() != null) {
+              final List<ProjectExpectedStudyPartnershipsPerson> partnershipPersons =
+                new ArrayList<>(projectExpectedStudyPartnership.getProjectExpectedStudyPartnershipsPersons().stream()
+                  .filter(ProjectExpectedStudyPartnershipsPerson::isActive).collect(Collectors.toList()));
+              projectExpectedStudyPartnership.setPartnershipPersons(partnershipPersons);
+            }
+            expectedStudy.getPartnerships().add(projectExpectedStudyPartnership);
+          }
+
+        }
       }
 
 
