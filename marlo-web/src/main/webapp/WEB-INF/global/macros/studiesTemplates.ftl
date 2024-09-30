@@ -999,11 +999,12 @@
           [@customForm.radioFlat id="optionOneCGIAR-No" name="${customName}.projectExpectedStudyInfo.hasCgiarContribution" i18nkey="study.oneCGIARAligment.contributionToCGIARNo" value="false" checked=((!hasContributionToCGIAR)!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /]
         </div>
       </div>
-      <div class="form-group contributionToCGIARComment" style="display:${(hasContributionToCGIAR == false)!false?then('block','none')};" >
+      <p>${hasContributionToCGIAR?c}</p>
+      <div class="form-group contributionToCGIARComment" style="display:${((hasContributionToCGIAR?c) == 'false')?string('block','none')};" >
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.reasonNotCgiarContribution" i18nkey="study.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=false editable=editable /]
       </div>
     </div>
-    <div class="form-group linkToImpactAndTarget" style="display:${(hasContributionToCGIAR == true)!false?then('block','none')};">
+    <div class="form-group linkToImpactAndTarget" style="display:${((hasContributionToCGIAR?c) == 'true')?string('block','none')};">
       <label class="label--2" for=""><b>[@s.text name="study.oneCGIARAligment.linkToImpactAndTarget.title" /]</b>[@customForm.req required=false /]</label>
       
       [@customForm.selectableCheckToCheckboxMacro label="study.oneCGIARAligment.linkToImpactAndTarget.descripition" name="${customName}" fieldName="impactArea" listName=impactAreasList keyFieldName="globalTargets" isPrimaryLever=false subtitleInnerCheckbox="" listNameInnerCheckbox="globalTargets" classReferenceInnerCheckbox="impactArea" isRadioButton=true isDirectInfo=true element=element /]
