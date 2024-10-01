@@ -169,6 +169,8 @@ div.nationalBlock div.selectList span.selection span.select2-selection ul{
   position: absolute;
   top: 30px;
   overflow:visible;
+  padding: 0;
+  width: 130%;
 }
 
 .margin-top-10{
