@@ -62,6 +62,8 @@ function init() {
   $('select.elementType-institution').on('change',updateAllianceTab);
   $('div.removeElementType-institution').on('click',updateAllianceTab);
 
+  $('select.countriesSelect').on('change', dynamicMarginToSelectedRender);
+
   //init partners methods
   deliverablePartnersModule.init();
 
@@ -659,12 +661,10 @@ function updateAllianceTab() {
         if($option.toArray().some((item) => item.value == "7320")) {
           //remove disabled class alliance tab
           $('#allianceTab').removeClass('disabled');
-          console.log("remove disabled");
           disabledTabAlliance();
         } else {
           //add disabled class alliance tab
           $('#allianceTab').addClass('disabled');
-          console.log("add disabled");
           disabledTabAlliance();
         }
       }
@@ -942,6 +942,7 @@ var dynamicSelectorSDGImageModule = (function (){
   function changeCurrentDisplaySDGImage() {
     const $containerReference = $('.selectedLeverContainer');
     const $containerImage = $('.selectedLeverContainer__image');
+    const $titleSelectedLeverContainer = $('.titleSelectedLeverContainer');
     const $image = $containerImage.find('img');
 
     const $containerPrimaryLever = $('.containerPrimaryLever');
@@ -962,9 +963,11 @@ var dynamicSelectorSDGImageModule = (function (){
         console.log(data);
         if(data.image.adsoluteURL == null){
           console.error("Image not found");
+          $titleSelectedLeverContainer.hide();
           $containerReference.hide();
         } else {
           console.log("Image found");
+          $titleSelectedLeverContainer.show();
           $containerReference.show();
           $image.attr("src",data.image.adsoluteURL);
         }
@@ -990,3 +993,16 @@ var dynamicSelectorSDGImageModule = (function (){
   }
 
 })();
+
+function dynamicMarginToSelectedRender(){
+  const $selectedMultiple = $('.select2-selection--multiple');
+  const $rendered = $('ul.select2-selection__rendered');
+
+  if($rendered.children().length > 0){
+    $selectedMultiple.css('margin-bottom',`${$rendered.height()+30}px`);
+  } else {
+    $selectedMultiple.css('margin-bottom','0');
+
+  }
+
+}

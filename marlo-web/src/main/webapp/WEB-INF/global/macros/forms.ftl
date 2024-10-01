@@ -1182,8 +1182,6 @@
                 [/#if]
 
                 <div class="form-group" style="padding-left: 20px;">
-                  <label for="" class="radio-label"><b>[@s.text name=subtitleInnerCheckbox /]</b></label>
-
                   [#attempt]
                     [#local listInnerContent = radioItem[listNameInnerCheckbox]![] /]
                   [#recover]
@@ -1192,6 +1190,7 @@
 
                   [#-- iterate throught the innerContent list --]
                   [#if listInnerContent?has_content]
+                    <label for="" class="radio-label"><b>[@s.text name=subtitleInnerCheckbox /]</b></label>
                     [#list listInnerContent as innerItem]
                       [#local isCheckedInner = false]
 
