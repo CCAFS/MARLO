@@ -52,6 +52,8 @@ public interface ProjectExpectedStudyImpactAreaManager {
   public List<ProjectExpectedStudyImpactArea> findAll();
 
 
+  ProjectExpectedStudyImpactArea findAllByStudyAndAreaAndPhase(long expectedId, long impactAreaId, long phaseId);
+
   /**
    * This method gets a projectExpectedStudyImpactArea object by a given projectExpectedStudyImpactArea identifier.
    * 
@@ -60,15 +62,19 @@ public interface ProjectExpectedStudyImpactAreaManager {
    */
   public ProjectExpectedStudyImpactArea getProjectExpectedStudyImpactAreaById(long projectExpectedStudyImpactAreaID);
 
+
   /**
    * This method saves the information of the given projectExpectedStudyImpactArea
    * 
-   * @param projectExpectedStudyImpactArea - is the projectExpectedStudyImpactArea object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyImpactArea was
+   * @param projectExpectedStudyImpactArea - is the projectExpectedStudyImpactArea object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyImpactArea was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectExpectedStudyImpactArea saveProjectExpectedStudyImpactArea(ProjectExpectedStudyImpactArea projectExpectedStudyImpactArea);
+  public ProjectExpectedStudyImpactArea
+    saveProjectExpectedStudyImpactArea(ProjectExpectedStudyImpactArea projectExpectedStudyImpactArea);
 
 
 }

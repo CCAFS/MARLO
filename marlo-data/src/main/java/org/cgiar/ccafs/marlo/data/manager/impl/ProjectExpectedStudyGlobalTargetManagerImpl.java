@@ -108,6 +108,14 @@ public class ProjectExpectedStudyGlobalTargetManagerImpl implements ProjectExpec
   }
 
   @Override
+  public ProjectExpectedStudyGlobalTarget findByExpectedAndGlobalAndPhase(long expectedId, long targetId,
+    long phaseId) {
+
+    return projectExpectedStudyGlobalTargetDAO.findByExpectedAndGlobalAndPhase(expectedId, targetId, phaseId);
+
+  }
+
+  @Override
   public ProjectExpectedStudyGlobalTarget
     getProjectExpectedStudyGlobalTargetById(long projectExpectedStudyGlobalTargetID) {
 

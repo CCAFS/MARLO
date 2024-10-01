@@ -2917,6 +2917,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   /**
    * Save imactArea related to the Expected Studies
    * 
@@ -2933,8 +2934,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (final ProjectExpectedStudyGlobalTarget globalTarget : globalTargetPrev) {
-          this.projectExpectedStudyGlobalTargetManager.deleteProjectExpectedStudyGlobalTarget(globalTarget.getId());
+          if ((this.expectedStudy.getImpactArea().getGlobalTargets() == null) || !(
+          // this.expectedStudy.getImpactArea().getGlobalTargets().contains(globalTarget.getGlobalTarget()))
+          this.validateIfconatinsGlobalTarget(this.expectedStudy.getImpactArea().getGlobalTargets(),
+            globalTarget.getGlobalTarget())
 
+          )) {
+            this.projectExpectedStudyGlobalTargetManager.deleteProjectExpectedStudyGlobalTarget(globalTarget.getId());
+          }
         }
       }
 
@@ -2942,17 +2949,31 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       if (this.expectedStudy.getImpactArea() != null && this.expectedStudy.getImpactArea().getGlobalTargets() != null) {
         for (GlobalTarget globalTargetTmp : this.expectedStudy.getImpactArea().getGlobalTargets()) {
           if (globalTargetTmp != null) {
-            ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTargetSave =
-              new ProjectExpectedStudyGlobalTarget();
-            projectExpectedStudyGlobalTargetSave.setProjectExpectedStudy(projectExpectedStudy);
-            projectExpectedStudyGlobalTargetSave.setPhase(phase);
-            projectExpectedStudyGlobalTargetSave.setGlobalTarget(globalTargetTmp);
-            this.projectExpectedStudyGlobalTargetManager
-              .saveProjectExpectedStudyGlobalTarget(projectExpectedStudyGlobalTargetSave);
+            ProjectExpectedStudyGlobalTarget internGlobaTarget = new ProjectExpectedStudyGlobalTarget();
+            internGlobaTarget = this.projectExpectedStudyGlobalTargetManager.findByExpectedAndGlobalAndPhase(expectedID,
+              globalTargetTmp.getId(), this.getActualPhase().getId());
+            if (internGlobaTarget == null) {
+              ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTargetSave =
+                new ProjectExpectedStudyGlobalTarget();
+              projectExpectedStudyGlobalTargetSave.setProjectExpectedStudy(projectExpectedStudy);
+              projectExpectedStudyGlobalTargetSave.setPhase(phase);
+              projectExpectedStudyGlobalTargetSave.setGlobalTarget(globalTargetTmp);
+              this.projectExpectedStudyGlobalTargetManager
+                .saveProjectExpectedStudyGlobalTarget(projectExpectedStudyGlobalTargetSave);
 
-            // This is to add studyQuantificationSave to generate
-            // correct auditlog.
-            this.expectedStudy.getProjectExpectedStudyGlobalTargets().add(projectExpectedStudyGlobalTargetSave);
+              // This is to add studyQuantificationSave to generate
+              // correct auditlog.
+              this.expectedStudy.getProjectExpectedStudyGlobalTargets().add(projectExpectedStudyGlobalTargetSave);
+            } else {
+              internGlobaTarget.setProjectExpectedStudy(projectExpectedStudy);
+              internGlobaTarget.setPhase(phase);
+              internGlobaTarget.setGlobalTarget(globalTargetTmp);
+              this.projectExpectedStudyGlobalTargetManager.saveProjectExpectedStudyGlobalTarget(internGlobaTarget);
+
+              // This is to add studyQuantificationSave to generate
+              // correct auditlog.
+              this.expectedStudy.getProjectExpectedStudyGlobalTargets().add(internGlobaTarget);
+            }
           }
         }
 
@@ -2980,25 +3001,42 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (final ProjectExpectedStudyImpactArea impactArea : impactAreaPrev) {
-
-          this.projectExpectedStudyImpactAreaManager.deleteProjectExpectedStudyImpactArea(impactArea.getId());
+          if ((this.expectedStudy.getImpactArea() == null)
+            || !(this.expectedStudy.getImpactArea().getId() == impactArea.getImpactArea().getId())) {
+            this.projectExpectedStudyImpactAreaManager.deleteProjectExpectedStudyImpactArea(impactArea.getId());
+          }
 
         }
       }
 
       // save data
       if (this.expectedStudy.getImpactArea() != null && this.expectedStudy.getImpactArea().getId() != null) {
-        final ProjectExpectedStudyImpactArea projectExpectedStudyImpactAreaSave = new ProjectExpectedStudyImpactArea();
-        projectExpectedStudyImpactAreaSave.setProjectExpectedStudy(projectExpectedStudy);
-        projectExpectedStudyImpactAreaSave.setPhase(phase);
-        projectExpectedStudyImpactAreaSave.setImpactArea(this.expectedStudy.getImpactArea());
+        ProjectExpectedStudyImpactArea impacAreaTmp = new ProjectExpectedStudyImpactArea();
+        impacAreaTmp = this.projectExpectedStudyImpactAreaManager.findAllByStudyAndAreaAndPhase(expectedID,
+          this.expectedStudy.getImpactArea().getId(), this.getActualPhase().getId());
+        if (impacAreaTmp == null) {
+          final ProjectExpectedStudyImpactArea projectExpectedStudyImpactAreaSave =
+            new ProjectExpectedStudyImpactArea();
+          projectExpectedStudyImpactAreaSave.setProjectExpectedStudy(projectExpectedStudy);
+          projectExpectedStudyImpactAreaSave.setPhase(phase);
+          projectExpectedStudyImpactAreaSave.setImpactArea(this.expectedStudy.getImpactArea());
 
-        this.projectExpectedStudyImpactAreaManager
-          .saveProjectExpectedStudyImpactArea(projectExpectedStudyImpactAreaSave);
+          this.projectExpectedStudyImpactAreaManager
+            .saveProjectExpectedStudyImpactArea(projectExpectedStudyImpactAreaSave);
 
-        // This is to add studyQuantificationSave to generate
-        // correct auditlog.
-        this.expectedStudy.getProjectExpectedStudyImpactAreas().add(projectExpectedStudyImpactAreaSave);
+          // This is to add studyQuantificationSave to generate
+          // correct auditlog.
+          this.expectedStudy.getProjectExpectedStudyImpactAreas().add(projectExpectedStudyImpactAreaSave);
+        } else {
+          impacAreaTmp.setProjectExpectedStudy(projectExpectedStudy);
+          impacAreaTmp.setPhase(phase);
+          impacAreaTmp.setImpactArea(this.expectedStudy.getImpactArea());
+          this.projectExpectedStudyImpactAreaManager.saveProjectExpectedStudyImpactArea(impacAreaTmp);
+
+          // This is to add studyQuantificationSave to generate
+          // correct auditlog.
+          this.expectedStudy.getProjectExpectedStudyImpactAreas().add(impacAreaTmp);
+        }
 
 
       }
@@ -3008,7 +3046,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       logger.info(" error in saveImpactAreas function " + e.getMessage());
     }
   }
-
 
   /**
    * Save Expected Studies Innovations Information
@@ -3054,6 +3091,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * Save Expected Studies Institutions Information
@@ -3304,7 +3342,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save Expected Studies Policies Information
    * 
@@ -3358,6 +3395,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * 08/01 save Deliverable Partnership Responsible
@@ -3571,7 +3609,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save Expected Studies Projects Information
    * 
@@ -3678,6 +3715,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   /**
    * Save Expected Studies Quantification Information
    * 
@@ -3761,7 +3799,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * Save Expected Studies References Information
@@ -3875,6 +3912,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   /**
    * Save Expected Studies SdgAllianceLever Information
    * 
@@ -3938,7 +3976,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
-
 
   /**
    * Save primary alliance lever Information
@@ -4013,6 +4050,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
   }
+
 
   /**
    * Save Expected Studies Srf Targets Information
@@ -4188,10 +4226,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   public void setAllianceLeverList(List<AllianceLever> allianceLeverList) {
     this.allianceLeverList = allianceLeverList;
   }
+
 
   public void setCenters(List<Institution> centers) {
     this.centers = centers;
@@ -4273,10 +4311,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.organizationTypes = organizationTypes;
   }
 
-
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;
   }
+
 
   public void setPartners(List<ProjectPartner> partners) {
     this.partners = partners;
@@ -4298,10 +4336,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectID = projectID;
   }
 
-
   public void setProjectOutcomes(List<ProjectOutcome> projectOutcomes) {
     this.projectOutcomes = projectOutcomes;
   }
+
 
   public void setQuantificationTypes(List<QuantificationType> quantificationTypes) {
     this.quantificationTypes = quantificationTypes;
@@ -4355,7 +4393,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.tags = tags;
   }
 
-
   public void setTargets(List<SrfSloIndicator> targets) {
     this.targets = targets;
   }
@@ -4370,6 +4407,27 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public void validate() {
     if (this.save) {
       this.projectExpectedStudiesValidator.validate(this, this.project, this.expectedStudy, true);
+    }
+  }
+
+
+  public boolean validateIfconatinsGlobalTarget(List<GlobalTarget> globalTargetList, GlobalTarget globaltTargetTmp) {
+    try {
+      int stockCounter = 0;
+      if (globalTargetList != null) {
+        for (GlobalTarget globalTarget : globalTargetList) {
+          if (globalTarget.getId() == globaltTargetTmp.getId()) {
+            stockCounter = 1;
+          }
+        }
+      }
+
+      if (stockCounter == 1) {
+        return true;
+      }
+      return false;
+    } catch (Exception e) {
+      return false;
     }
   }
 

@@ -107,6 +107,14 @@ public class ProjectExpectedStudyImpactAreaManagerImpl implements ProjectExpecte
   }
 
   @Override
+  public ProjectExpectedStudyImpactArea findAllByStudyAndAreaAndPhase(long expectedId, long impactAreaId,
+    long phaseId) {
+
+    return projectExpectedStudyImpactAreaDAO.findAllByStudyAndAreaAndPhase(expectedId, impactAreaId, phaseId);
+
+  }
+
+  @Override
   public ProjectExpectedStudyImpactArea getProjectExpectedStudyImpactAreaById(long projectExpectedStudyImpactAreaID) {
 
     return projectExpectedStudyImpactAreaDAO.find(projectExpectedStudyImpactAreaID);
