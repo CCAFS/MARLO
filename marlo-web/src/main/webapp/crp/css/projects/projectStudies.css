@@ -288,12 +288,29 @@ table#projectHighlights {
   background-color: #FFFAFA !important;
 }
 
-/* Style for sibling inputs that do not have the .fieldError class */
-.inputsFlat input[type="checkbox"]:not(.fieldError) + .checkbox-label {
-  color: #EE1D1D !important;
-}
-
-.inputsFlat input[type="checkbox"]:not(.fieldError) + .checkbox-label::before {
-  border-color: #F44 !important;
-  background-color: #FFFAFA !important;
+/* Select the parent div that contains the .fieldError input */
+.inputsFlat:has(input.fieldError[type="checkbox"]) {
+  /* Style the next two sibling elements */
+  & + * {
+    /* Style the .checkbox-label */
+    & input[type="checkbox"] + .checkbox-label {
+      color: #EE1D1D !important;
+    }
+    /* Style the .checkbox-label::before */
+    & input[type="checkbox"] + .checkbox-label::before {
+      border-color: #F44 !important;
+      background-color: #FFFAFA !important;
+    }
+    /* Select the third brother */
+    & + * {
+      & input[type="checkbox"] + .checkbox-label {
+        color: #EE1D1D !important;
+      }
+  
+      & input[type="checkbox"] + .checkbox-label::before {
+        border-color: #F44 !important;
+        background-color: #FFFAFA !important;
+      }
+    }
+  }  
 }
