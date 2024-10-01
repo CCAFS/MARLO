@@ -652,7 +652,7 @@
       [#-- Alliance OICR ID --]
       [#if isOutcomeCaseStudy]
         <div class="col-md-2">
-          [@customForm.input name="${customName}.projectExpectedStudyInfo.allianceOicr" i18nkey="study.general.allianceID" helpIcon=false required=false editable=editable className="targetValueAllianceId" placeholder="XXX-0000" /]
+          [@customForm.input name="${customName}.projectExpectedStudyInfo.allianceOicr" i18nkey="study.general.allianceID" helpIcon=false required=false editable=editable className="targetValueAllianceId" placeholder="XXX-0000" required=true /]
         </div>
       [/#if]
 

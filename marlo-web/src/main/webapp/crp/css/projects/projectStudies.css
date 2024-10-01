@@ -277,3 +277,23 @@ table#projectHighlights {
 #guide-button{
   display: block;
 }
+
+/* Field Error */
+.inputsFlat input.fieldError[type="checkbox"]+.checkbox-label{
+  color: #EE1D1D !important;
+}
+
+.inputsFlat input.fieldError[type="checkbox"]+.checkbox-label::before{
+  border-color: #F44 !important;
+  background-color: #FFFAFA !important;
+}
+
+/* Style for sibling inputs that do not have the .fieldError class */
+.inputsFlat input[type="checkbox"]:not(.fieldError) + .checkbox-label {
+  color: #EE1D1D !important;
+}
+
+.inputsFlat input[type="checkbox"]:not(.fieldError) + .checkbox-label::before {
+  border-color: #F44 !important;
+  background-color: #FFFAFA !important;
+}
