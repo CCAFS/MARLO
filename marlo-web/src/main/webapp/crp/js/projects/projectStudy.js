@@ -253,6 +253,7 @@ function attachEvents() {
       var linksListLength = $('.linksList').children().length;
       if (linksListLength == 0) {
         addItem($('.addButtonLink'));
+        updateIndexes();
       }
     }, 1000);
 
@@ -346,6 +347,7 @@ function attachEvents() {
       var referenceListLength = $('.referenceList').children().length - 1;
       if (referenceListLength == 0) {
         addItem($('.addButtonReference'));
+        updateIndexes();
       }
       
     }, 1000);
@@ -418,6 +420,7 @@ function attachEvents() {
       var publicationListLength = $('.publicationsList').children().length - 1;
       if (publicationListLength == 0) {
         addItem($('.addPublication'));
+        updateIndexes($('.addPublication'));
       }
       
     }, 1000);
@@ -486,6 +489,7 @@ function attachEvents() {
       var quantificationsListLength = $('.quantificationsList').children().length;
       if (quantificationsListLength == 0) {
         addItem($('.addStudyQualification'));
+        updateIndexes();
       }
 
     }, 1000);
@@ -496,6 +500,8 @@ function attachEvents() {
 
 	//On change radio buttons
 	$('input[class*="radioType-"]').on('change', onChangeRadioButton);
+
+  $('input[name*="expectedStudy."]').on('change', onChangeCheckboxButton);
 
   $('input.radioType-contributionToCGIAR').on('change', onDisplayItemsInOneCGIAR);
 
@@ -551,6 +557,18 @@ function onChangeRadioButton() {
 	  } else {
 	    $('.block-' + radioType).slideUp();
 	  }
+}
+
+function onChangeCheckboxButton() {
+
+  //Verify if contains the class fieldError
+  const $this = $(this);
+  const $parent = $this.parents('.containerRadioToCheckbox');
+
+  if($this.hasClass('fieldError')) {
+    $this.removeClass('fieldError');
+  }
+
 }
 
 function onDisplayItemsInOneCGIAR(){
