@@ -1154,7 +1154,7 @@
                   [/#attempt]
                   
                   <div class="form-group" style="padding-left: 20px;">
-                    <label for="" class="radio-label"><b>[@s.text name="study.allianceAligment.linkToLevers.options.text.strategicOutcome" /]</b></label>
+                    <label for="" class="radio-label"><b>[@s.text name="study.allianceAligment.linkToLevers.options.text.strategicOutcome" /]</b>[@req required=true /]</label>
                     [#list listPrimary as primaryItem]
 
                       [#local checkedPrimary = false]
@@ -1190,7 +1190,7 @@
 
                   [#-- iterate throught the innerContent list --]
                   [#if listInnerContent?has_content]
-                    <label for="" class="radio-label"><b>[@s.text name=subtitleInnerCheckbox /]</b></label>
+                    <label for="" class="radio-label"><b>[@s.text name=subtitleInnerCheckbox /]</b>[@req required=true /]</label>
                     [#list listInnerContent as innerItem]
                       [#local isCheckedInner = false]
 
