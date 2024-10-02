@@ -139,7 +139,8 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     boolean isAllianceSelected = false;
     if (projectExpectedStudy != null && projectExpectedStudy.getCenters() != null) {
       for (ProjectExpectedStudyPartnership center : projectExpectedStudy.getCenters()) {
-        if (center != null && center.getId() != null && center.getId() == APConstants.ALLIANCE_INSTITUTION_ID) {
+        if (center != null && center.getInstitution() != null && center.getInstitution().getId() != null
+          && center.getInstitution().getId() == APConstants.ALLIANCE_INSTITUTION_ID) {
           isAllianceSelected = true;
         }
       }
@@ -429,14 +430,20 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
                 InvalidFieldsMessages.EMPTYFIELD);
             } else if (projectExpectedStudy.getImpactArea().getGlobalTargets() != null) {
               int globalTargetIndex = 0;
+              boolean isSelectedGlobalTarget = false;
               for (GlobalTarget globalTarget : projectExpectedStudy.getImpactArea().getGlobalTargets()) {
-                if (globalTarget == null || (globalTarget != null && globalTarget.getId() == null)) {
+                if (globalTarget != null && globalTarget.getId() != null) {
+                  isSelectedGlobalTarget = true;
+                }
+              }
+              if (isSelectedGlobalTarget == false) {
+                for (int i = 0; i < projectExpectedStudy.getImpactArea().getGlobalTargets().size(); i++) {
                   action.addMessage(action.getText("expectedStudy.globalTargets"));
                   action.getInvalidFields().put(
                     "input-expectedStudy.impactArea.globalTargets[" + globalTargetIndex + "].id",
                     InvalidFieldsMessages.EMPTYFIELD);
-                } 
-                globalTargetIndex++;
+                  globalTargetIndex++;
+                }
               }
 
             }
