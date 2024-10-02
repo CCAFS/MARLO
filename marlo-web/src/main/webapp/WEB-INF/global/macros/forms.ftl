@@ -1190,7 +1190,9 @@
 
                   [#-- iterate throught the innerContent list --]
                   [#if listInnerContent?has_content]
-                    <label for="" class="radio-label"><b>[@s.text name=subtitleInnerCheckbox /]</b>[@req required=true /]</label>
+                    [#if subtitleInnerCheckbox?has_content]
+                      <label for="" class="radio-label"><b>[@s.text name=subtitleInnerCheckbox /]</b>[@req required=true /]</label>
+                    [/#if]
                     [#list listInnerContent as innerItem]
                       [#local isCheckedInner = false]
 
