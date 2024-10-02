@@ -54,6 +54,14 @@ public interface ProjectExpectedStudySdgAllianceLeverManager {
 
   ProjectExpectedStudySdgAllianceLever findAllByPhaseExpectedAndLever(long phaseId, long expectedId, long leverId);
 
+  ProjectExpectedStudySdgAllianceLever findByPhaseExpectedAndLever(long phaseId, long expectedId, long leverId,
+    long sdg, int isPrimary);
+
+
+  ProjectExpectedStudySdgAllianceLever findByPhaseExpectedAndLeverSingle(long phaseId, long expectedId, long leverId,
+    long sdg, int isPrimary);
+
+
   /**
    * This method gets a projectExpectedStudySdgAllianceLever object by a given projectExpectedStudySdgAllianceLever
    * identifier.

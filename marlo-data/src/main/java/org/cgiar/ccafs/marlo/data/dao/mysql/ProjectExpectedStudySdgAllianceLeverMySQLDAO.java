@@ -86,6 +86,35 @@ public class ProjectExpectedStudySdgAllianceLeverMySQLDAO extends
 
   }
 
+
+  @Override
+  public ProjectExpectedStudySdgAllianceLever findByPhaseExpectedAndLever(long phaseId, long expectedId, long leverId,
+    long sdg, int isPrimary) {
+    String query = "from " + ProjectExpectedStudySdgAllianceLever.class.getName() + " where is_active=1 and id_phase="
+      + phaseId + " and expected_id=" + expectedId + " and alliance_lever_id=" + leverId + " and sdg_contribution_id="
+      + sdg + " and is_primary=" + isPrimary;
+    List<ProjectExpectedStudySdgAllianceLever> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+
+  }
+
+  @Override
+  public ProjectExpectedStudySdgAllianceLever findByPhaseExpectedAndLeverSingle(long phaseId, long expectedId,
+    long leverId, long sdg, int isPrimary) {
+    String query = "from " + ProjectExpectedStudySdgAllianceLever.class.getName() + " where is_active=1 and id_phase="
+      + phaseId + " and expected_id=" + expectedId + " and alliance_lever_id=" + leverId + " and sdg_contribution_id="
+      + null + " and is_primary=" + isPrimary;
+    List<ProjectExpectedStudySdgAllianceLever> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+
+  }
+
   @Override
   public ProjectExpectedStudySdgAllianceLever
     save(ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLever) {

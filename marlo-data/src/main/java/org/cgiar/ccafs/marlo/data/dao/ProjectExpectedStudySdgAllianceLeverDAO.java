@@ -58,6 +58,12 @@ public interface ProjectExpectedStudySdgAllianceLeverDAO {
 
   ProjectExpectedStudySdgAllianceLever findAllByPhaseExpectedAndLever(long phaseId, long expectedId, long leverId);
 
+  ProjectExpectedStudySdgAllianceLever findByPhaseExpectedAndLever(long phaseId, long expectedId, long leverId,
+    long sdg, int isPrimary);
+
+  ProjectExpectedStudySdgAllianceLever findByPhaseExpectedAndLeverSingle(long phaseId, long expectedId, long leverId,
+    long sdg, int isPrimary);
+
   /**
    * This method saves the information of the given projectExpectedStudySdgAllianceLever
    * 
