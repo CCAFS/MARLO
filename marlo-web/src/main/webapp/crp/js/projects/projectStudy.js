@@ -14,8 +14,11 @@ function init() {
   // Add Geographic Scope
   $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(_event,_id,_name) {
     setGeographicScope(this);
+    dynamicMarginToSelectedRender();
+    displayLabelGeographicScope();
   });
 
+  dynamicMarginToSelectedRender();
   $('.removeElementType-repIndGeographicScope').on('click', displayLabelGeographicScope);
   $('select.elementType-repIndGeographicScope').on('change', displayLabelGeographicScope);
 
@@ -775,9 +778,10 @@ function disableRelatedLeversBasedOnPrimaryLever() {
 function displayLabelGeographicScope() {
   // Display label if there are elements in the geographic scope
   var $label = $('label[name="study.generalInformation.geographicImpact"]');
-  var $geographicScope = $('select.elementType-repIndGeographicScope option:selected');
+  var $geographicScope = $('select.elementType-repIndGeographicScope option:disabled');
   if($geographicScope.length > 0) {
-    if($geographicScope[0].value == "-1" || $geographicScope[0].value == "1") {
+    console.log($geographicScope);
+    if ($geographicScope.filter((_, option) => option.value == "-1" || option.value == "1").length > 0) {
       $label.hide();
     } else {
       $label.show();
