@@ -26,16 +26,35 @@ import org.apache.commons.io.IOUtils;
 
 public class Clone {
 
+  /**
+   * NOTE: This variable (projectRoot) should be changed according to the local project location on each developer's
+   * machine.
+   */
+  public static String projectRoot = "D:\\MARLO-PROJECT - 4.5\\";
+
   public static String pathdao =
-    "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao";
+    projectRoot + "MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao";
   public static String pathmysqldao =
-    "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao\\mysql";
+    projectRoot + "MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao\\mysql";
   public static String pathmanager =
-    "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager";
+    projectRoot + "MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager";
   public static String pathmodel =
-    "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\model";
+    projectRoot + "MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\model";
   public static String pathmanagerimpl =
-    "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager\\impl";
+    projectRoot + "MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager\\impl";
+
+  /*
+   * public static String pathdao =
+   * "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao";
+   * public static String pathmysqldao =
+   * "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao\\mysql";
+   * public static String pathmanager =
+   * "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager";
+   * public static String pathmodel =
+   * "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\model";
+   * public static String pathmanagerimpl =
+   * "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager\\impl";
+   */
 
   // Copy the source file to target file.
   // In case the dst file does not exist, it is created
