@@ -15,14 +15,17 @@ function init() {
   $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(_event,_id,_name) {
     setGeographicScope(this);
     dynamicMarginToSelectedRender();
+    disabledNationalOrMultiNational();
     displayLabelGeographicScope();
   });
 
-  dynamicMarginToSelectedRender();
   $('.removeElementType-repIndGeographicScope').on('click', displayLabelGeographicScope);
   $('select.elementType-repIndGeographicScope').on('change', displayLabelGeographicScope);
 
   setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+
+  disabledNationalOrMultiNational();
+  dynamicMarginToSelectedRender();
 
   // Add file uploads
   setFileUploads();
@@ -780,7 +783,6 @@ function displayLabelGeographicScope() {
   var $label = $('label[name="study.generalInformation.geographicImpact"]');
   var $geographicScope = $('select.elementType-repIndGeographicScope option:disabled');
   if($geographicScope.length > 0) {
-    console.log($geographicScope);
     if ($geographicScope.filter((_, option) => option.value == "-1" || option.value == "1").length > 0) {
       $label.hide();
     } else {
@@ -788,6 +790,35 @@ function displayLabelGeographicScope() {
     }
   } else {
     $label.hide();
+  }
+}
+
+function disabledNationalOrMultiNational() {
+  var $geographicScope = $('select.elementType-repIndGeographicScope');
+
+  var $listSelected = $('div[listname="expectedStudy.geographicScopes"] div.panel-body ul.list li');
+
+  if($listSelected.length == 0 || !$listSelected.toArray().some((item) => $(item).find('input.elementRelationID').val() == "3" || $(item).find('input.elementRelationID').val() == "4")) {
+    // Enable all options
+    console.log('enable all');	
+    $geographicScope.find('option[value="3"]').prop('disabled', false);
+    $geographicScope.find('option[value="4"]').prop('disabled', false);
+  }
+
+  var $geographicScopeDisabled = $geographicScope.find('option:disabled');
+  var $national = $geographicScopeDisabled.filter((_, option) => option.value == "4");
+  var $multiNational = $geographicScopeDisabled.filter((_, option) => option.value == "3");
+
+  if($national.length > 0) {
+    console.log('disable national');
+    $geographicScope.find('option[value="3"]').prop('disabled', true);
+    return;
+  }
+
+  if($multiNational.length > 0) {
+    console.log('disable multinational');
+    $geographicScope.find('option[value="4"]').prop('disabled', true);
+    return;
   }
 }
 
