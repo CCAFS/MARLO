@@ -83,8 +83,6 @@ public class ProjectExpectedStudyGlobalTargetManagerImpl implements ProjectExpec
           && c.getProjectExpectedStudy().getId() == projectExpectedStudyGlobalTarget.getProjectExpectedStudy().getId()
           && c.getGlobalTarget().getId() == projectExpectedStudyGlobalTarget.getGlobalTarget().getId())
         .collect(Collectors.toList());
-    System.out.println(" linea 86 " + phase.getProjectExpectedStudyGlobalTargets().size());
-    System.out.println(" linea 87 " + projectExpectedStudyGlobalTargetList.size());
     for (ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTargetTmp : projectExpectedStudyGlobalTargetList) {
       projectExpectedStudyGlobalTargetDAO
         .deleteProjectExpectedStudyGlobalTarget(projectExpectedStudyGlobalTargetTmp.getId());

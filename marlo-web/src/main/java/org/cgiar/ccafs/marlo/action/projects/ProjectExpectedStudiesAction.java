@@ -2575,7 +2575,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         for (AllianceLever allianceLeverTmp : this.expectedStudy.getAllianceLevers()) {
           if (allianceLeverTmp != null && allianceLeverTmp.getSdgContributions() != null) {
             for (SDGContribution sDGContributionTmp : allianceLeverTmp.getSdgContributions()) {
-
               if (sDGContributionTmp != null && allianceLeverTmp != null && allianceLeverTmp.getId() != null) {
                 ProjectExpectedStudySdgAllianceLever internsDGContribution = new ProjectExpectedStudySdgAllianceLever();
                 internsDGContribution = this.projectExpectedStudySdgAllianceLeverManager.findByPhaseExpectedAndLever(
@@ -2636,7 +2635,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public void saveAllianceLeversOutcomes(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
 
 
-    // delete outcomes data
     // Search and deleted form Information
     if ((projectExpectedStudy.getProjectExpectedStudyAllianceLeversOutcomes() != null)
       && !projectExpectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().isEmpty()) {
@@ -2645,10 +2643,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (final ProjectExpectedStudyAllianceLeversOutcome allianceLeversOutcome : allianceLeversOutcomePrev) {
+        if (allianceLeversOutcome.getAllianceLeverOutcome() != null) {
+          if (this.expectedStudy.getAllianceLever() == null
+            || (!this.validateIfcontainsOutcomes(this.expectedStudy.getAllianceLever().getLeverOutcomes(),
+              allianceLeversOutcome.getAllianceLeverOutcome())
 
-        this.projectExpectedStudyAllianceLeversOutcomeManager
-          .deleteProjectExpectedStudyAllianceLeversOutcome(allianceLeversOutcome.getId());
-
+            )) {
+            this.projectExpectedStudyAllianceLeversOutcomeManager
+              .deleteProjectExpectedStudyAllianceLeversOutcome(allianceLeversOutcome.getId());
+          }
+        }
       }
     }
 
@@ -2658,17 +2662,40 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       for (AllianceLeverOutcome allianceLeverOutcomeTmp : this.expectedStudy.getAllianceLever().getLeverOutcomes()) {
         if (allianceLeverOutcomeTmp != null && this.expectedStudy.getAllianceLever() != null
           && this.expectedStudy.getAllianceLever().getId() != null) {
-          final ProjectExpectedStudyAllianceLeversOutcome allianceLeverOutcomeSave =
-            new ProjectExpectedStudyAllianceLeversOutcome();
-          allianceLeverOutcomeSave.setProjectExpectedStudy(projectExpectedStudy);
-          allianceLeverOutcomeSave.setPhase(phase);
-          allianceLeverOutcomeSave.setAllianceLever(this.expectedStudy.getAllianceLever());
-          allianceLeverOutcomeSave.setAllianceLeverOutcome(allianceLeverOutcomeTmp);
-          this.projectExpectedStudyAllianceLeversOutcomeManager
-            .saveProjectExpectedStudyAllianceLeversOutcome(allianceLeverOutcomeSave);
-          // This is to add studyQuantificationSave to generate
-          // correct auditlog.
-          this.expectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().add(allianceLeverOutcomeSave);
+
+          ProjectExpectedStudyAllianceLeversOutcome internOutcome = new ProjectExpectedStudyAllianceLeversOutcome();
+          internOutcome = this.projectExpectedStudyAllianceLeversOutcomeManager
+            .findByExpectedAndPhaseAndLeverAndOutcome(expectedID, this.getActualPhase().getId(),
+              this.expectedStudy.getAllianceLever().getId(), allianceLeverOutcomeTmp.getId());
+          if (allianceLeverOutcomeTmp != null) {
+            if (internOutcome == null) {
+              final ProjectExpectedStudyAllianceLeversOutcome allianceLeverOutcomeSave =
+                new ProjectExpectedStudyAllianceLeversOutcome();
+              allianceLeverOutcomeSave.setProjectExpectedStudy(projectExpectedStudy);
+              allianceLeverOutcomeSave.setPhase(phase);
+              allianceLeverOutcomeSave.setAllianceLever(this.expectedStudy.getAllianceLever());
+              allianceLeverOutcomeTmp.setAllianceLever(this.expectedStudy.getAllianceLever());
+              allianceLeverOutcomeSave.setAllianceLeverOutcome(allianceLeverOutcomeTmp);
+              this.projectExpectedStudyAllianceLeversOutcomeManager
+                .saveProjectExpectedStudyAllianceLeversOutcome(allianceLeverOutcomeSave);
+              // This is to add studyQuantificationSave to generate
+              // correct auditlog.
+              this.expectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().add(allianceLeverOutcomeSave);
+            } else {
+              internOutcome.setProjectExpectedStudy(projectExpectedStudy);
+              internOutcome.setPhase(phase);
+              internOutcome.setAllianceLever(this.expectedStudy.getAllianceLever());
+              allianceLeverOutcomeTmp.setAllianceLever(this.expectedStudy.getAllianceLever());
+              internOutcome.setAllianceLeverOutcome(allianceLeverOutcomeTmp);
+              this.projectExpectedStudyAllianceLeversOutcomeManager
+                .saveProjectExpectedStudyAllianceLeversOutcome(internOutcome);
+              // This is to add studyQuantificationSave to generate
+              // correct auditlog.
+              this.expectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().add(internOutcome);
+            }
+          }
+
+
         }
       }
 
@@ -4620,6 +4647,30 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         for (SDGContribution SdgCont : sdgContributionList) {
           if (SdgCont != null && SdgCont.getId() != null) {
             if (SdgCont.getId() == sdgContributionTmp.getId()) {
+              stockCounter = 1;
+            }
+          }
+        }
+      }
+
+      if (stockCounter == 1) {
+        return true;
+      }
+      return false;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+
+  public boolean validateIfcontainsOutcomes(List<AllianceLeverOutcome> outcomeList, AllianceLeverOutcome outcomeTmp) {
+    try {
+
+      int stockCounter = 0;
+      if (outcomeList != null) {
+        for (AllianceLeverOutcome outcomeCont : outcomeList) {
+          if (outcomeCont != null && outcomeCont.getId() != null) {
+            if (outcomeCont.getId() == outcomeTmp.getId()) {
               stockCounter = 1;
             }
           }

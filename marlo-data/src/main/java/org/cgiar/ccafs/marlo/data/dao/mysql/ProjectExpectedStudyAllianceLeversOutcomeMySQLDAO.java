@@ -27,7 +27,9 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectExpectedStudyAllianceLeversOutcomeMySQLDAO extends AbstractMarloDAO<ProjectExpectedStudyAllianceLeversOutcome, Long> implements ProjectExpectedStudyAllianceLeversOutcomeDAO {
+public class ProjectExpectedStudyAllianceLeversOutcomeMySQLDAO
+  extends AbstractMarloDAO<ProjectExpectedStudyAllianceLeversOutcome, Long>
+  implements ProjectExpectedStudyAllianceLeversOutcomeDAO {
 
 
   @Inject
@@ -37,14 +39,16 @@ public class ProjectExpectedStudyAllianceLeversOutcomeMySQLDAO extends AbstractM
 
   @Override
   public void deleteProjectExpectedStudyAllianceLeversOutcome(long projectExpectedStudyAllianceLeversOutcomeId) {
-    ProjectExpectedStudyAllianceLeversOutcome projectExpectedStudyAllianceLeversOutcome = this.find(projectExpectedStudyAllianceLeversOutcomeId);
+    ProjectExpectedStudyAllianceLeversOutcome projectExpectedStudyAllianceLeversOutcome =
+      this.find(projectExpectedStudyAllianceLeversOutcomeId);
     projectExpectedStudyAllianceLeversOutcome.setActive(false);
     this.update(projectExpectedStudyAllianceLeversOutcome);
   }
 
   @Override
   public boolean existProjectExpectedStudyAllianceLeversOutcome(long projectExpectedStudyAllianceLeversOutcomeID) {
-    ProjectExpectedStudyAllianceLeversOutcome projectExpectedStudyAllianceLeversOutcome = this.find(projectExpectedStudyAllianceLeversOutcomeID);
+    ProjectExpectedStudyAllianceLeversOutcome projectExpectedStudyAllianceLeversOutcome =
+      this.find(projectExpectedStudyAllianceLeversOutcomeID);
     if (projectExpectedStudyAllianceLeversOutcome == null) {
       return false;
     }
@@ -69,8 +73,24 @@ public class ProjectExpectedStudyAllianceLeversOutcomeMySQLDAO extends AbstractM
 
   }
 
+
   @Override
-  public ProjectExpectedStudyAllianceLeversOutcome save(ProjectExpectedStudyAllianceLeversOutcome projectExpectedStudyAllianceLeversOutcome) {
+  public ProjectExpectedStudyAllianceLeversOutcome findByExpectedAndPhaseAndLeverAndOutcome(long expectedId,
+    long phaseId, long leverId, long outcomeId) {
+    String query = "from " + ProjectExpectedStudyAllianceLeversOutcome.class.getName()
+      + " where is_active=1 and expected_id=" + expectedId + " and id_phase=" + phaseId + " and alliance_lever_id="
+      + leverId + " and lever_outcome_id=" + outcomeId;
+    List<ProjectExpectedStudyAllianceLeversOutcome> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+
+  }
+
+  @Override
+  public ProjectExpectedStudyAllianceLeversOutcome
+    save(ProjectExpectedStudyAllianceLeversOutcome projectExpectedStudyAllianceLeversOutcome) {
     if (projectExpectedStudyAllianceLeversOutcome.getId() == null) {
       super.saveEntity(projectExpectedStudyAllianceLeversOutcome);
     } else {

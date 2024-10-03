@@ -116,6 +116,15 @@ public class ProjectExpectedStudyAllianceLeversOutcomeManagerImpl
   }
 
   @Override
+  public ProjectExpectedStudyAllianceLeversOutcome findByExpectedAndPhaseAndLeverAndOutcome(long expectedId,
+    long phaseId, long leverId, long outcomeId) {
+
+    return projectExpectedStudyAllianceLeversOutcomeDAO.findByExpectedAndPhaseAndLeverAndOutcome(expectedId, phaseId,
+      leverId, outcomeId);
+
+  }
+
+  @Override
   public ProjectExpectedStudyAllianceLeversOutcome
     getProjectExpectedStudyAllianceLeversOutcomeById(long projectExpectedStudyAllianceLeversOutcomeID) {
 
@@ -137,9 +146,11 @@ public class ProjectExpectedStudyAllianceLeversOutcomeManagerImpl
       phase.getProjectExpectedStudyAllianceLeversOutcomes().stream()
         .filter(c -> c.getProjectExpectedStudy().getId().longValue() == projectExpectedStudyAllianceLeversOutcome
           .getProjectExpectedStudy().getId()
-          && c.getAllianceLever() == projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome()
-            .getAllianceLever()
-          && c.getAllianceLeverOutcome() == projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome())
+          && c.getAllianceLever().getId() == projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome()
+            .getAllianceLever().getId()
+          && c.getAllianceLeverOutcome().getId() == projectExpectedStudyAllianceLeversOutcome.getAllianceLeverOutcome()
+            .getId()
+          && c.isActive())
         .collect(Collectors.toList());
     if (projectExpectedStudyAllianceLeversOutcomeList.isEmpty()) {
 
