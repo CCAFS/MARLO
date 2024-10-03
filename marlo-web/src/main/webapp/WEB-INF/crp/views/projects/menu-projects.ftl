@@ -110,7 +110,12 @@
         <ul><p class="menuTitle">${menu.title}</p>
           [#list menu.items as item]
             [#if (item.showCheck)!true]
-            [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
+            [#assign submitStatus = false /]
+              [#if item.action?has_content && projectID?has_content]
+                  [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
+              [#else]
+                  [#assign submitStatus = false /]
+              [/#if]
             [/#if]
             [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, item.action, project.id))!false /]
             [#if (item.show)!true ]
