@@ -1435,9 +1435,24 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       }
 
       // Expected Study Center List
-      if (expectedStudy.getProjectExpectedStudyCenters() != null) {
-        expectedStudy.setCenters(new ArrayList<>(expectedStudy.getProjectExpectedStudyCenters().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      if (expectedStudy.getProjectExpectedStudyPartnerships() != null) {
+        final List<ProjectExpectedStudyPartnership> deList = expectedStudy.getProjectExpectedStudyPartnerships()
+          .stream()
+          .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(phase.getId()) && dp
+            .getProjectExpectedStudyPartnerType().getId().equals(APConstants.EXPECTED_STUDIES_PARTNERSHIP_TYPE_CENTER))
+          .collect(Collectors.toList());
+        if ((deList != null) && !deList.isEmpty()) {
+          try {
+            Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+          } catch (final Exception e) {
+            this.logger.error("unable to sort dlist", e);
+          }
+          expectedStudy.setCenters(new ArrayList<>());
+          for (final ProjectExpectedStudyPartnership projectExpectedStudyPartnership : deList) {
+            expectedStudy.getCenters().add(projectExpectedStudyPartnership);
+          }
+
+        }
       }
 
       // Expected Study Flagship List
@@ -1481,10 +1496,27 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       }
 
       // Expected Study Institutions List
-      if (expectedStudy.getProjectExpectedStudyInstitutions() != null) {
-        expectedStudy.setInstitutions(new ArrayList<>(expectedStudy.getProjectExpectedStudyInstitutions().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      if (expectedStudy.getProjectExpectedStudyPartnerships() != null) {
+
+        final List<ProjectExpectedStudyPartnership> deList = expectedStudy
+          .getProjectExpectedStudyPartnerships().stream().filter(dp -> dp.isActive()
+            && dp.getPhase().getId().equals(phase.getId()) && dp.getProjectExpectedStudyPartnerType().getId().equals(2))
+          .collect(Collectors.toList());
+
+        if ((deList != null) && !deList.isEmpty()) {
+          try {
+            Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+          } catch (final Exception e) {
+            this.logger.error("unable to sort dlist", e);
+          }
+          expectedStudy.setInstitutions(new ArrayList<>());
+          for (final ProjectExpectedStudyPartnership projectExpectedStudyPartnership : deList) {
+            expectedStudy.getInstitutions().add(projectExpectedStudyPartnership);
+          }
+
+        }
       }
+
 
       // Expected Study Srf Target List
       if (expectedStudy.getProjectExpectedStudySrfTargets() != null) {

@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectExpectedStudyImpactAreaMySQLDAO extends AbstractMarloDAO<ProjectExpectedStudyImpactArea, Long> implements ProjectExpectedStudyImpactAreaDAO {
+public class ProjectExpectedStudyImpactAreaMySQLDAO extends AbstractMarloDAO<ProjectExpectedStudyImpactArea, Long>
+  implements ProjectExpectedStudyImpactAreaDAO {
 
 
   @Inject
@@ -64,6 +65,20 @@ public class ProjectExpectedStudyImpactAreaMySQLDAO extends AbstractMarloDAO<Pro
     List<ProjectExpectedStudyImpactArea> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
+    }
+    return null;
+
+  }
+
+
+  @Override
+  public ProjectExpectedStudyImpactArea findAllByStudyAndAreaAndPhase(long expectedId, long impactAreaId,
+    long phaseId) {
+    String query = "from " + ProjectExpectedStudyImpactArea.class.getName() + " where is_active=1 and expected_id="
+      + expectedId + " and st_impact_area_id=" + impactAreaId + " and id_phase=" + phaseId;
+    List<ProjectExpectedStudyImpactArea> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
     }
     return null;
 

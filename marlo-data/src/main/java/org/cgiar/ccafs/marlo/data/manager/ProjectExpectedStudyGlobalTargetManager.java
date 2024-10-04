@@ -52,23 +52,30 @@ public interface ProjectExpectedStudyGlobalTargetManager {
   public List<ProjectExpectedStudyGlobalTarget> findAll();
 
 
+  ProjectExpectedStudyGlobalTarget findByExpectedAndGlobalAndPhase(long expectedId, long targetId, long phaseId);
+
   /**
    * This method gets a projectExpectedStudyGlobalTarget object by a given projectExpectedStudyGlobalTarget identifier.
    * 
    * @param projectExpectedStudyGlobalTargetID is the projectExpectedStudyGlobalTarget identifier.
    * @return a ProjectExpectedStudyGlobalTarget object.
    */
-  public ProjectExpectedStudyGlobalTarget getProjectExpectedStudyGlobalTargetById(long projectExpectedStudyGlobalTargetID);
+  public ProjectExpectedStudyGlobalTarget
+    getProjectExpectedStudyGlobalTargetById(long projectExpectedStudyGlobalTargetID);
+
 
   /**
    * This method saves the information of the given projectExpectedStudyGlobalTarget
    * 
-   * @param projectExpectedStudyGlobalTarget - is the projectExpectedStudyGlobalTarget object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyGlobalTarget was
+   * @param projectExpectedStudyGlobalTarget - is the projectExpectedStudyGlobalTarget object with the new information
+   *        to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyGlobalTarget was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectExpectedStudyGlobalTarget saveProjectExpectedStudyGlobalTarget(ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTarget);
+  public ProjectExpectedStudyGlobalTarget
+    saveProjectExpectedStudyGlobalTarget(ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTarget);
 
 
 }

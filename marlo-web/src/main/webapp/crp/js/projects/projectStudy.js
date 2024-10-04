@@ -14,12 +14,18 @@ function init() {
   // Add Geographic Scope
   $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(_event,_id,_name) {
     setGeographicScope(this);
+    dynamicMarginToSelectedRender();
+    disabledNationalOrMultiNational();
+    displayLabelGeographicScope();
   });
 
   $('.removeElementType-repIndGeographicScope').on('click', displayLabelGeographicScope);
   $('select.elementType-repIndGeographicScope').on('change', displayLabelGeographicScope);
 
   setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+
+  disabledNationalOrMultiNational();
+  dynamicMarginToSelectedRender();
 
   // Add file uploads
   setFileUploads();
@@ -61,6 +67,8 @@ function init() {
   updateAllianceTab()
   $('select.elementType-institution').on('change',updateAllianceTab);
   $('div.removeElementType-institution').on('click',updateAllianceTab);
+
+  $('select.countriesSelect').on('change', dynamicMarginToSelectedRender);
 
   //init partners methods
   deliverablePartnersModule.init();
@@ -251,6 +259,7 @@ function attachEvents() {
       var linksListLength = $('.linksList').children().length;
       if (linksListLength == 0) {
         addItem($('.addButtonLink'));
+        updateIndexes();
       }
     }, 1000);
 
@@ -344,6 +353,7 @@ function attachEvents() {
       var referenceListLength = $('.referenceList').children().length - 1;
       if (referenceListLength == 0) {
         addItem($('.addButtonReference'));
+        updateIndexes();
       }
       
     }, 1000);
@@ -416,6 +426,7 @@ function attachEvents() {
       var publicationListLength = $('.publicationsList').children().length - 1;
       if (publicationListLength == 0) {
         addItem($('.addPublication'));
+        updateIndexes($('.addPublication'));
       }
       
     }, 1000);
@@ -484,6 +495,7 @@ function attachEvents() {
       var quantificationsListLength = $('.quantificationsList').children().length;
       if (quantificationsListLength == 0) {
         addItem($('.addStudyQualification'));
+        updateIndexes();
       }
 
     }, 1000);
@@ -494,6 +506,8 @@ function attachEvents() {
 
 	//On change radio buttons
 	$('input[class*="radioType-"]').on('change', onChangeRadioButton);
+
+  $('input[name*="expectedStudy."]').on('change', onChangeCheckboxButton);
 
   $('input.radioType-contributionToCGIAR').on('change', onDisplayItemsInOneCGIAR);
 
@@ -549,6 +563,18 @@ function onChangeRadioButton() {
 	  } else {
 	    $('.block-' + radioType).slideUp();
 	  }
+}
+
+function onChangeCheckboxButton() {
+
+  //Verify if contains the class fieldError
+  const $this = $(this);
+  const $parent = $this.parents('.containerRadioToCheckbox');
+
+  if($this.hasClass('fieldError')) {
+    $this.removeClass('fieldError');
+  }
+
 }
 
 function onDisplayItemsInOneCGIAR(){
@@ -659,12 +685,10 @@ function updateAllianceTab() {
         if($option.toArray().some((item) => item.value == "7320")) {
           //remove disabled class alliance tab
           $('#allianceTab').removeClass('disabled');
-          console.log("remove disabled");
           disabledTabAlliance();
         } else {
           //add disabled class alliance tab
           $('#allianceTab').addClass('disabled');
-          console.log("add disabled");
           disabledTabAlliance();
         }
       }
@@ -757,15 +781,44 @@ function disableRelatedLeversBasedOnPrimaryLever() {
 function displayLabelGeographicScope() {
   // Display label if there are elements in the geographic scope
   var $label = $('label[name="study.generalInformation.geographicImpact"]');
-  var $geographicScope = $('select.elementType-repIndGeographicScope option:selected');
+  var $geographicScope = $('select.elementType-repIndGeographicScope option:disabled');
   if($geographicScope.length > 0) {
-    if($geographicScope[0].value == "-1" || $geographicScope[0].value == "1") {
+    if ($geographicScope.filter((_, option) => option.value == "-1" || option.value == "1").length > 0) {
       $label.hide();
     } else {
       $label.show();
     }
   } else {
     $label.hide();
+  }
+}
+
+function disabledNationalOrMultiNational() {
+  var $geographicScope = $('select.elementType-repIndGeographicScope');
+
+  var $listSelected = $('div[listname="expectedStudy.geographicScopes"] div.panel-body ul.list li');
+
+  if($listSelected.length == 0 || !$listSelected.toArray().some((item) => $(item).find('input.elementRelationID').val() == "3" || $(item).find('input.elementRelationID').val() == "4")) {
+    // Enable all options
+    console.log('enable all');	
+    $geographicScope.find('option[value="3"]').prop('disabled', false);
+    $geographicScope.find('option[value="4"]').prop('disabled', false);
+  }
+
+  var $geographicScopeDisabled = $geographicScope.find('option:disabled');
+  var $national = $geographicScopeDisabled.filter((_, option) => option.value == "4");
+  var $multiNational = $geographicScopeDisabled.filter((_, option) => option.value == "3");
+
+  if($national.length > 0) {
+    console.log('disable national');
+    $geographicScope.find('option[value="3"]').prop('disabled', true);
+    return;
+  }
+
+  if($multiNational.length > 0) {
+    console.log('disable multinational');
+    $geographicScope.find('option[value="4"]').prop('disabled', true);
+    return;
   }
 }
 
@@ -942,6 +995,7 @@ var dynamicSelectorSDGImageModule = (function (){
   function changeCurrentDisplaySDGImage() {
     const $containerReference = $('.selectedLeverContainer');
     const $containerImage = $('.selectedLeverContainer__image');
+    const $titleSelectedLeverContainer = $('.titleSelectedLeverContainer');
     const $image = $containerImage.find('img');
 
     const $containerPrimaryLever = $('.containerPrimaryLever');
@@ -962,9 +1016,11 @@ var dynamicSelectorSDGImageModule = (function (){
         console.log(data);
         if(data.image.adsoluteURL == null){
           console.error("Image not found");
+          $titleSelectedLeverContainer.hide();
           $containerReference.hide();
         } else {
           console.log("Image found");
+          $titleSelectedLeverContainer.show();
           $containerReference.show();
           $image.attr("src",data.image.adsoluteURL);
         }
@@ -990,3 +1046,16 @@ var dynamicSelectorSDGImageModule = (function (){
   }
 
 })();
+
+function dynamicMarginToSelectedRender(){
+  const $selectedMultiple = $('.select2-selection--multiple');
+  const $rendered = $('ul.select2-selection__rendered');
+
+  if($rendered.children().length > 0){
+    $selectedMultiple.css('margin-bottom',`${$rendered.height()+30}px`);
+  } else {
+    $selectedMultiple.css('margin-bottom','0');
+
+  }
+
+}

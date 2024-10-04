@@ -97,7 +97,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   private List<ProjectExpectedStudyCrp> crps;
 
-  private List<ProjectExpectedStudyInstitution> institutions;
+  private List<ProjectExpectedStudyPartnership> institutions;
 
 
   private List<ProjectExpectedStudyCountry> countries;
@@ -149,7 +149,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
 
   // reporting 2019 field
-  private List<ProjectExpectedStudyCenter> centers;
+  private List<ProjectExpectedStudyPartnership> centers;
 
   private Set<ProjectExpectedStudyCenter> projectExpectedStudyCenters = new HashSet<ProjectExpectedStudyCenter>(0);
 
@@ -252,7 +252,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   }
 
 
-  public List<ProjectExpectedStudyCenter> getCenters() {
+  public List<ProjectExpectedStudyPartnership> getCenters() {
     return centers;
   }
 
@@ -372,7 +372,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   }
 
 
-  public List<ProjectExpectedStudyInstitution> getInstitutions() {
+  public List<ProjectExpectedStudyPartnership> getInstitutions() {
     return institutions;
   }
 
@@ -669,7 +669,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.casesStudy = casesStudy;
   }
 
-  public void setCenters(List<ProjectExpectedStudyCenter> centers) {
+  public void setCenters(List<ProjectExpectedStudyPartnership> centers) {
     this.centers = centers;
   }
 
@@ -737,7 +737,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.innovations = innovations;
   }
 
-  public void setInstitutions(List<ProjectExpectedStudyInstitution> institutions) {
+  public void setInstitutions(List<ProjectExpectedStudyPartnership> institutions) {
     this.institutions = institutions;
   }
 

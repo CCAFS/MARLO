@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySdgAllianceLeverMa
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgAllianceLever;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,15 +80,26 @@ public class ProjectExpectedStudySdgAllianceLeverManagerImpl implements ProjectE
   public void deleteProjectExpectedStudySdgAllianceLeverPhase(Phase next,
     ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLever) {
     Phase phase = phaseDAO.find(next.getId());
-
-    List<ProjectExpectedStudySdgAllianceLever> projectExpectedStudySdgAllianceLeverList = phase
-      .getProjectExpectedStudySdgAllianceLevers().stream()
-      .filter(c -> c.isActive()
-        && c.getProjectExpectedStudy().getId() == projectExpectedStudySdgAllianceLever.getProjectExpectedStudy().getId()
-        && c.getAllianceLever() == projectExpectedStudySdgAllianceLever.getAllianceLever()
-        && c.getsDGContribution() == projectExpectedStudySdgAllianceLever.getsDGContribution()
-        && c.getIsPrimary() == projectExpectedStudySdgAllianceLever.getIsPrimary())
-      .collect(Collectors.toList());
+    List<ProjectExpectedStudySdgAllianceLever> projectExpectedStudySdgAllianceLeverList = new ArrayList<>();
+    if (projectExpectedStudySdgAllianceLever.getsDGContribution() != null) {
+      projectExpectedStudySdgAllianceLeverList = phase.getProjectExpectedStudySdgAllianceLevers().stream()
+        .filter(c -> c.isActive()
+          && c.getProjectExpectedStudy().getId() == projectExpectedStudySdgAllianceLever.getProjectExpectedStudy()
+            .getId()
+          && c.getAllianceLever().getId() == projectExpectedStudySdgAllianceLever.getAllianceLever().getId()
+          && c.getsDGContribution() != null
+          && c.getsDGContribution().getId() == projectExpectedStudySdgAllianceLever.getsDGContribution().getId()
+          && c.getIsPrimary() == projectExpectedStudySdgAllianceLever.getIsPrimary())
+        .collect(Collectors.toList());
+    } else {
+      projectExpectedStudySdgAllianceLeverList = phase.getProjectExpectedStudySdgAllianceLevers().stream()
+        .filter(c -> c.isActive()
+          && c.getProjectExpectedStudy().getId() == projectExpectedStudySdgAllianceLever.getProjectExpectedStudy()
+            .getId()
+          && c.getAllianceLever().getId() == projectExpectedStudySdgAllianceLever.getAllianceLever().getId()
+          && c.getIsPrimary() == projectExpectedStudySdgAllianceLever.getIsPrimary())
+        .collect(Collectors.toList());
+    }
     for (ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLeverTmp : projectExpectedStudySdgAllianceLeverList) {
       projectExpectedStudySdgAllianceLeverDAO
         .deleteProjectExpectedStudySdgAllianceLever(projectExpectedStudySdgAllianceLeverTmp.getId());
@@ -122,6 +134,24 @@ public class ProjectExpectedStudySdgAllianceLeverManagerImpl implements ProjectE
   }
 
   @Override
+  public ProjectExpectedStudySdgAllianceLever findByPhaseExpectedAndLever(long phaseId, long expectedId, long leverId,
+    long sdg, int isPrimary) {
+
+    return projectExpectedStudySdgAllianceLeverDAO.findByPhaseExpectedAndLever(phaseId, expectedId, leverId, sdg,
+      isPrimary);
+
+  }
+
+  @Override
+  public ProjectExpectedStudySdgAllianceLever findByPhaseExpectedAndLeverSingle(long phaseId, long expectedId,
+    long leverId, long sdg, int isPrimary) {
+
+    return projectExpectedStudySdgAllianceLeverDAO.findByPhaseExpectedAndLeverSingle(phaseId, expectedId, leverId, sdg,
+      isPrimary);
+
+  }
+
+  @Override
   public ProjectExpectedStudySdgAllianceLever
     getProjectExpectedStudySdgAllianceLeverById(long projectExpectedStudySdgAllianceLeverID) {
 
@@ -138,14 +168,25 @@ public class ProjectExpectedStudySdgAllianceLeverManagerImpl implements ProjectE
   public void saveInfoPhase(Phase next, ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLever) {
 
     Phase phase = phaseDAO.find(next.getId());
-    List<ProjectExpectedStudySdgAllianceLever> projectExpectedStudySdgAllianceLeverList =
-      phase.getProjectExpectedStudySdgAllianceLevers().stream()
+    List<ProjectExpectedStudySdgAllianceLever> projectExpectedStudySdgAllianceLeverList = new ArrayList<>();
+    if (projectExpectedStudySdgAllianceLever.getsDGContribution() != null) {
+      projectExpectedStudySdgAllianceLeverList = phase.getProjectExpectedStudySdgAllianceLevers().stream()
         .filter(c -> c.getProjectExpectedStudy().getId().longValue() == projectExpectedStudySdgAllianceLever
           .getProjectExpectedStudy().getId()
-          && c.getAllianceLever() == projectExpectedStudySdgAllianceLever.getAllianceLever()
-          && c.getsDGContribution() == projectExpectedStudySdgAllianceLever.getsDGContribution()
-          && c.getIsPrimary() == projectExpectedStudySdgAllianceLever.getIsPrimary())
+          && c.getAllianceLever().getId() == projectExpectedStudySdgAllianceLever.getAllianceLever().getId()
+          && c.getsDGContribution() != null
+          && c.getsDGContribution().getId() == projectExpectedStudySdgAllianceLever.getsDGContribution().getId()
+          && c.getIsPrimary() == projectExpectedStudySdgAllianceLever.getIsPrimary() && c.isActive())
         .collect(Collectors.toList());
+    } else {
+      projectExpectedStudySdgAllianceLeverList = phase.getProjectExpectedStudySdgAllianceLevers().stream()
+        .filter(c -> c.getProjectExpectedStudy().getId().longValue() == projectExpectedStudySdgAllianceLever
+          .getProjectExpectedStudy().getId()
+          && c.getAllianceLever().getId() == projectExpectedStudySdgAllianceLever.getAllianceLever().getId()
+          && c.getIsPrimary() == projectExpectedStudySdgAllianceLever.getIsPrimary() && c.isActive())
+        .collect(Collectors.toList());
+    }
+
     if (projectExpectedStudySdgAllianceLeverList.isEmpty()) {
 
       ProjectExpectedStudySdgAllianceLever projectExpectedStudySdgAllianceLeverAdd =

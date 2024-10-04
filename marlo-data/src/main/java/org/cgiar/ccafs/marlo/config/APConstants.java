@@ -791,8 +791,14 @@ public final class APConstants {
   public static final int CLARISA_AVALIABLE_INFO_YEAR = 2018;
 
   public static final String IGNORE_NEWER_YEARS = "ignoreNewer";
-  
+
   public static final int EXPECTED_OTHER_ALLIANCE_LEVER_ID = 9;
+
+  public static final int ALLIANCE_INSTITUTION_ID = 7320;
+
+  // 01/10/2024 Expected study Partnerships Types
+  public static final Long EXPECTED_STUDIES_PARTNERSHIP_TYPE_INSTITUION = new Long(2L);
+  public static final Long EXPECTED_STUDIES_PARTNERSHIP_TYPE_CENTER = new Long(3L);
 
   public static String getFilterBy() {
     return FILTER_BY;

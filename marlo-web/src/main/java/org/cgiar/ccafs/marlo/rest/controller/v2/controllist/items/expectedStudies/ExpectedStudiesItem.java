@@ -74,6 +74,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyMilestone;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
@@ -1110,9 +1111,11 @@ public class ExpectedStudiesItem<T> {
             .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
         projectExpectedStudy.setGeographicScopes(projectExpectedStudyGeographicScopeList);
         // Institutions
-        List<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutionList =
-          projectExpectedStudy.getProjectExpectedStudyInstitutions().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        List<ProjectExpectedStudyPartnership> projectExpectedStudyInstitutionList =
+          projectExpectedStudy.getProjectExpectedStudyPartnerships().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase) && c.getProjectExpectedStudyPartnerType().getId()
+              .equals(APConstants.EXPECTED_STUDIES_PARTNERSHIP_TYPE_INSTITUION))
+            .collect(Collectors.toList());
         projectExpectedStudy.setInstitutions(projectExpectedStudyInstitutionList);
         // CRPs contribution
         List<ProjectExpectedStudyCrp> projectExpectedStudyCrpList = projectExpectedStudy.getProjectExpectedStudyCrps()
@@ -1299,11 +1302,13 @@ public class ExpectedStudiesItem<T> {
           .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
       projectExpectedStudy.setGeographicScopes(projectExpectedStudyGeographicScopeList);
       // Institutions
-      Comparator<ProjectExpectedStudyInstitution> compareByNameInstitution = (ProjectExpectedStudyInstitution o1,
-        ProjectExpectedStudyInstitution o2) -> o1.getInstitution().getName().compareTo(o2.getInstitution().getName());
-      List<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutionList =
-        projectExpectedStudy.getProjectExpectedStudyInstitutions().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+      Comparator<ProjectExpectedStudyPartnership> compareByNameInstitution = (ProjectExpectedStudyPartnership o1,
+        ProjectExpectedStudyPartnership o2) -> o1.getInstitution().getName().compareTo(o2.getInstitution().getName());
+      List<ProjectExpectedStudyPartnership> projectExpectedStudyInstitutionList =
+        projectExpectedStudy.getProjectExpectedStudyPartnerships().stream()
+          .filter(
+            c -> c.isActive() && c.getPhase().equals(phase) && c.getProjectExpectedStudyPartnerType().getId().equals(2))
+          .collect(Collectors.toList());
       Collections.sort(projectExpectedStudyInstitutionList, compareByNameInstitution);
       projectExpectedStudy.setInstitutions(projectExpectedStudyInstitutionList);
       // CRPs contribution
@@ -1405,11 +1410,12 @@ public class ExpectedStudiesItem<T> {
         .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
     projectExpectedStudy.setGeographicScopes(projectExpectedStudyGeographicScopeList);
     // Institutions
-    Comparator<ProjectExpectedStudyInstitution> compareByNameInstitution = (ProjectExpectedStudyInstitution o1,
-      ProjectExpectedStudyInstitution o2) -> o1.getInstitution().getName().compareTo(o2.getInstitution().getName());
-    List<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutionList =
-      projectExpectedStudy.getProjectExpectedStudyInstitutions().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+    Comparator<ProjectExpectedStudyPartnership> compareByNameInstitution = (ProjectExpectedStudyPartnership o1,
+      ProjectExpectedStudyPartnership o2) -> o1.getInstitution().getName().compareTo(o2.getInstitution().getName());
+    List<ProjectExpectedStudyPartnership> projectExpectedStudyInstitutionList = projectExpectedStudy
+      .getProjectExpectedStudyPartnerships().stream().filter(c -> c.isActive() && c.getPhase().equals(phase) && c
+        .getProjectExpectedStudyPartnerType().getId().equals(APConstants.EXPECTED_STUDIES_PARTNERSHIP_TYPE_INSTITUION))
+      .collect(Collectors.toList());
     Collections.sort(projectExpectedStudyInstitutionList, compareByNameInstitution);
     projectExpectedStudy.setInstitutions(projectExpectedStudyInstitutionList);
     // CRPs contribution
