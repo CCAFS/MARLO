@@ -184,10 +184,61 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private static final long serialVersionUID = -740360140511380630L;
 
-  private List<HistoryDifference> differences;
+  private static HashMap<String, String> isOicrGeneralInformationCompleteMap = new HashMap<>();
+  private static HashMap<String, String> isOicrAllianceAlignmentCompleteMap = new HashMap<>();
+  private static HashMap<String, String> isOicrOneCgiarAlignmentCompleteMap = new HashMap<>();
+  private static HashMap<String, String> isOicrCommunicationsCompleteMap = new HashMap<>();
 
+
+  public static HashMap<String, String> getIsOicrAllianceAlignmentCompleteMap() {
+    return isOicrAllianceAlignmentCompleteMap;
+  }
+
+
+  public static HashMap<String, String> getIsOicrCommunicationsCompleteMap() {
+    return isOicrCommunicationsCompleteMap;
+  }
+
+
+  public static HashMap<String, String> getIsOicrGeneralInformationCompleteMap() {
+    return isOicrGeneralInformationCompleteMap;
+  }
+
+
+  public static HashMap<String, String> getIsOicrOneCgiarAlignmentCompleteMap() {
+    return isOicrOneCgiarAlignmentCompleteMap;
+  }
+
+
+  public static void setIsOicrAllianceAlignmentCompleteMap(HashMap<String, String> isOicrAllianceAlignmentCompleteMap) {
+    BaseAction.isOicrAllianceAlignmentCompleteMap = isOicrAllianceAlignmentCompleteMap;
+  }
+
+
+  public static void setIsOicrCommunicationsCompleteMap(HashMap<String, String> isOicrCommunicationsCompleteMap) {
+    BaseAction.isOicrCommunicationsCompleteMap = isOicrCommunicationsCompleteMap;
+  }
+
+
+  public static void
+    setIsOicrGeneralInformationCompleteMap(HashMap<String, String> isOicrGeneralInformationCompleteMap) {
+    BaseAction.isOicrGeneralInformationCompleteMap = isOicrGeneralInformationCompleteMap;
+  }
+
+
+  public static void setIsOicrOneCgiarAlignmentCompleteMap(HashMap<String, String> isOicrOneCgiarAlignmentCompleteMap) {
+    BaseAction.isOicrOneCgiarAlignmentCompleteMap = isOicrOneCgiarAlignmentCompleteMap;
+  }
+
+
+  // OICR validation variables
+  private boolean isOicrGeneralInformationComplete;
+
+
+  private List<HistoryDifference> differences;
   // Years available per CRPs (used in Summaries)
   private ArrayList<String> years;
+
   protected boolean add;
 
   private Long phaseID;
@@ -198,13 +249,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   @Inject
   private AuditLogManager auditLogManager;
-
   @Inject
   private InstitutionManager institutionManager;
   @Inject
   private GlobalUnitTypeManager globalUnitTypeManager;
   private String basePermission;
   protected boolean cancel;
+
   private boolean editStatus = false; // If user is able to edit the form.
 
   private boolean otherUrl = false;
@@ -214,13 +265,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private boolean availabePhase = true; // If user is able to edit the form.
 
   private boolean canEditPhase = true; // If user is able to edit the form.
-
   private boolean canSwitchProject; // If user is able to Switch Project.
   // (generally is a project leader)
   private boolean switchSession;
   protected APConfig config;
   @Inject
   private PhaseManager phaseManager;
+
   @Inject
   private ClusterTypeManager clusterTypeManager;
 
@@ -237,10 +288,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   ActivityManager activityManager;
-
   @Inject
   private CrpMilestoneManager crpMilestoneManager;
   private Long crpID;
+
   // Managers
   @Inject
   private GlobalUnitManager crpManager;
@@ -253,9 +304,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private CrpProgramManager crpProgramManager;
-
   @Inject
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
+
   @Inject
   private CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
 
@@ -288,9 +339,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ProjectInnovationSharedManager projectInnovationSharedManager;
-
   @Inject
   private ExpectedStudyProjectManager expectedStudyProjectManager;
+
   // Variables
   private String crpSession;
 
@@ -299,15 +350,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean dataSaved;
 
   private GlobalUnit currentCrp;
-
   protected boolean delete;
+
   @Inject
   private DeliverableManager deliverableManager;
 
   @Inject
   private ProjectPolicyManager policyManager;
-
   private boolean draft;
+
   @Inject
   private SrfTargetUnitManager targetUnitManager;
 
@@ -322,11 +373,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ShfrmPriorityActionManager shfrmPriorityActionManager;
-
   @Inject
   private ProjectPartnerPersonManager partnerPersonManager;
   @Inject
   private UserManager userManager;
+
   @Inject
   private FileDBManager fileDBManager;
 
@@ -337,8 +388,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private HashMap<String, String> invalidFields;
 
+
+  private HashMap<String, String> testFields;
+
+
   // User actions
   private boolean isEditable; // If user is able to edit the form.
+
 
   // Justification of the changes
   private String justification;
@@ -347,13 +403,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private LiaisonUserManager liaisonUserManager;
+
   protected boolean next;
   private Map<String, Parameter> parameters;
   private boolean planningActive;
   private int planningYear;
   @Inject
   private ProjectComponentLessonManager projectComponentLessonManager;
-
   @Inject
   private ProjectManager projectManager;
 
@@ -362,11 +418,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private PowbSynthesisManager powbSynthesisManager;
+
   @Inject
   private LiaisonInstitutionManager liaisonInstitutionManager;
   @Inject
   private DeliverableTypeManager deliverableTypeManager;
-
   private boolean reportingActive;
 
   private int reportingYear;
@@ -385,9 +441,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ICenterImpactManager impactService;
+
   @Inject
   private ICenterOutcomeManager outcomeService;
-
   @Inject
   private ICenterOutputManager outputService;
 
@@ -402,9 +458,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ICenterDeliverableManager deliverableService;
+
   @Inject
   private ICenterSectionStatusManager sectionStatusService;
-
   @Inject
   private ICapacityDevelopmentService capacityDevelopmentService;
 
@@ -433,21 +489,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   // button actions
   protected boolean save;
+
   private boolean saveable; // If user is able to see the save, cancel, delete
   // buttons
   @Inject
   private SectionStatusManager sectionStatusManager;
-
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
 
   private Map<String, Object> session;
-  private Submission submission;
 
+  private Submission submission;
   protected boolean submit;
 
   private String url;
+
   @Inject
   private UserRoleManager userRoleManager;
   @Inject
@@ -467,29 +524,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private ProjectPartnerPersonManager projectPartnerPersonManager;
   @Inject
   private ProjectPartnerManager projectPartnerManager;
-
   @Inject
   private DeliverableTraineesIndicatorManager deliverableTraineesIndicatorManager;
 
   private StringBuilder validationMessage = new StringBuilder();
-  private StringBuilder missingFields = new StringBuilder();
 
+  private StringBuilder missingFields = new StringBuilder();
   private StringBuilder synthesisFlagships = new StringBuilder();
 
   private HashMap<Integer, Integer> deliverableListbyPhase = new HashMap<Integer, Integer>();
 
   private HashMap<Integer, Integer> completedeliverableListbyPhase = new HashMap<Integer, Integer>();
 
-  // OICR validation variables
-  private boolean isOicrGeneralInformationComplete = false;
+  private boolean isOicrAllianceAlignmentComplete;
 
-  private boolean isOicrAllianceAlignmentComplete = false;
+  private boolean isOicrOneCgiarAlignmentComplete;
 
-
-  private boolean isOicrOneCgiarAlignmentComplete = false;
-
-
-  private boolean isOicrCommunicationsComplete = false;
+  private boolean isOicrCommunicationsComplete;
 
 
   public BaseAction() {
@@ -540,6 +591,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   /**
    * This method add a missing field separated by a semicolon (;).
    *
@@ -553,6 +605,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       this.missingFields.append(field);
     }
   }
+
 
   /**
    * This method add a synthesis flagship separated by a semicolon (;).
@@ -586,11 +639,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean canAccessSuperAdmin() {
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
-
 
   /**
    * ***********************CENTER METHOD********************* return true if
@@ -613,6 +664,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.canAcessPublications() || this.canAcessSynthesisMog();
   }
 
+
   public boolean canAcessCrpAdmin() {
     try {
       String permission = this.generatePermission(Permission.CRP_ADMIN_VISIBLE_PRIVILEGES, this.getCrpSession());
@@ -621,6 +673,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
+
 
   public boolean canAcessFunding() {
 
@@ -670,7 +723,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean canAcessSynthesisMog() {
     String permission = this.generatePermission(Permission.SYNTHESIS_BY_MOG_PERMISSION, this.getCrpSession());
     return this.securityContext.hasPermission(permission);
@@ -680,6 +732,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     String permission = this.generatePermission(Permission.PROJECT_BILATERAL_ADD, this.getCrpSession());
     return this.securityContext.hasPermission(permission);
   }
+
 
   public boolean canAddCoreProject() {
     String permission = this.generatePermission(Permission.PROJECT_CORE_ADD, this.getCrpSession());
@@ -1799,7 +1852,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return synthesis;
   }
 
-
   /**
    * Create a liaison institution Annual Report Synthesis in this phase
    *
@@ -1827,6 +1879,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String crpActivitesModule() {
     return APConstants.CRP_ACTIVITES_MODULE;
   }
+
 
   public String crpDeliverableIntellectualAsset() {
     return APConstants.CRP_DELIVERABLES_INTELLECTUAL_ASSET;
@@ -4094,7 +4147,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * Get the folder path according if the user navigate in center,crp or
    * platform sections.
@@ -4117,6 +4169,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public long getIFPRIId() {
     return APConstants.IFPRI_ID;
   }
+
 
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section,
@@ -4195,7 +4248,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return innovations;
   }
 
-
   public SectionStatus getInnovationStatus(long innovationID) {
 
     ProjectInnovation innovation = this.projectInnovationManager.getProjectInnovationById(innovationID);
@@ -4244,6 +4296,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     allYears.add(this.getActualPhase().getYear());
     return allYears;
   }
+
 
   public HashMap<String, String> getInvalidFields() {
     return this.invalidFields;
@@ -5719,6 +5772,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public StringBuilder getSynthesisFlagships() {
     return synthesisFlagships;
+  }
+
+  public HashMap<String, String> getTestFields() {
+    return testFields;
   }
 
   public String getTimeZone() {
@@ -7418,7 +7475,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
-
   public boolean isEntityPlatform() {
     if (this.getCurrentCrp() != null) {
       if (this.getCurrentCrp().getGlobalUnitType().getId().intValue() == 3) {
@@ -7427,6 +7483,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
+
 
   /**
    * Get if the Evidence is new
@@ -7454,7 +7511,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
-
 
   public boolean isExpectedDeliverablesReportAllYearsVisible() {
     // Specificity for show expected deliverable summary - all years selection - in summaries section
@@ -7516,6 +7572,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isFullEditable() {
     return this.fullEditable;
   }
+
 
   public Boolean isFundingSourceNew(long fundingSourceID) {
 
@@ -8887,6 +8944,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setSynthesisFlagships(StringBuilder synthesisFlagships) {
     this.synthesisFlagships = synthesisFlagships;
+  }
+
+  public void setTestFields(HashMap<String, String> testFields) {
+    this.testFields = testFields;
   }
 
   public void setUrl(String url) {
