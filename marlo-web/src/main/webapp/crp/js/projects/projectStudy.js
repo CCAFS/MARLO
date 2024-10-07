@@ -684,36 +684,15 @@ function updateAllianceTab() {
 
         if($option.toArray().some((item) => item.value == "7320")) {
           //remove disabled class alliance tab
-          $('#allianceTab').removeClass('disabled');
-          disabledTabAlliance();
+          $('#allianceTab').slideDown();
         } else {
           //add disabled class alliance tab
-          $('#allianceTab').addClass('disabled');
-          disabledTabAlliance();
+          $('#allianceTab').slideUp();
         }
       }
     }, 1000);
 
-}
-
-
-function disabledTabAlliance() {
-  var $tabs = $('.nav-tabs li');
-
-  $tabs.each(function() {
-    var $this = $(this);
-    if($this.attr('id') == "allianceTab") {
-      if($this.hasClass('disabled')) {
-        $this.find('a').removeAttr('data-toggle');
-        $this.attr('title', "This tab will be available for reporting only if Alliance is part of the OICR key contributors.");
-      } else {
-        $this.find('a').attr('data-toggle', 'tab');
-        $this.removeAttr('title');
-      }
-    }
-  });
-}
-      
+}   
 
 function displayInnerCheckbox() {
 
