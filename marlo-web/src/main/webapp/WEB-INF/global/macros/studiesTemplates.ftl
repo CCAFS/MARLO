@@ -889,9 +889,9 @@
       <div class="publicationsBlock">
         <div class="publicationsList">
           <div class="row">
-            <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">Name[@customForm.req required=(editable && validateIsProgressWithStatus!true)  /]</div>
-            <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">Position[@customForm.req required=(editable && validateIsProgressWithStatus!true)  /]</div>
-            <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">Affiliation[@customForm.req required=(editable && validateIsProgressWithStatus!true)  /]</div>
+            <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">Name</div>
+            <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">Position</div>
+            <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">Affiliation</div>
           </div>
           [#if (element.publications?has_content) && (element.publications?size > 0)]
             [#list (element.publications)![{}] as publication]
