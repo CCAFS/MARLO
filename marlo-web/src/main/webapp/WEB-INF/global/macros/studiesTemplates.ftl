@@ -265,7 +265,7 @@
           [#local targetsOption = (element.projectExpectedStudyInfo.isSrfTarget)!""]
           <div class="row">
           [#list ["targetsOptionYes", "targetsOptionNo", "targetsOptionTooEarlyToSay"] as option]
-            <div class="col-md-3">
+            <div class="col-md-1">
               [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.isSrfTarget" i18nkey="study.generalInformation.${option}" value="${option}" checked=(option == targetsOption) cssClass="radioType-targetsOption" cssClassLabel="font-normal" editable=editable /] 
             </div>
           [/#list]
@@ -517,7 +517,7 @@
         <div class="form-group row">
           [#local otherCrossCuttingSelection = (element.projectExpectedStudyInfo.otherCrossCuttingSelection)!"" ]
           [#list ["Yes", "No", "NA"] as option]
-            <div class="col-md-2">
+            <div class="col-md-1">
               [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.otherCrossCuttingSelection" i18nkey="study.generalInformation.otherCrossCutting${option}" value="${option}" checked=(otherCrossCuttingSelection == option) cssClass="radioType-otherCrossCuttingOption" cssClassLabel="font-normal" editable=editable /] 
             </div>
           [/#list]
@@ -991,10 +991,10 @@
       <label for="">[@s.text name="study.oneCGIARAligment.contributionToCGIAR" /]:[@customForm.req required=(editable && validateIsProgressWithStatus!true) /]</label>
       <div class="form-group row">
       
-        <div class="col-md-2">
+        <div class="col-md-1">
           [@customForm.radioFlat id="optionOneCGIAR-Yes" name="${customName}.projectExpectedStudyInfo.hasCgiarContribution" i18nkey="study.oneCGIARAligment.contributionToCGIARYes" value="true" checked=(((element.projectExpectedStudyInfo.hasCgiarContribution??) && (hasContributionToCGIAR))!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /]
         </div>
-        <div class="col-md-2">
+        <div class="col-md-1">
           [@customForm.radioFlat id="optionOneCGIAR-No" name="${customName}.projectExpectedStudyInfo.hasCgiarContribution" i18nkey="study.oneCGIARAligment.contributionToCGIARNo" value="false" checked=(((element.projectExpectedStudyInfo.hasCgiarContribution??) && (!hasContributionToCGIAR))!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /]
         </div>
       </div>
