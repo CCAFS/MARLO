@@ -703,6 +703,7 @@ function displayInnerCheckbox() {
   $radioButtons.each(function() {
     var $this = $(this);
     var $innerCheckbox = $parentMacro.find(`#innerCheckbox[data-radioButton='${$this.val()}']`);
+
     if($this.is($radioSelected)) {
       $innerCheckbox.slideDown("slow");
       //get name inner inputs and remove _TEMPLATE_
@@ -722,6 +723,7 @@ function displayInnerCheckbox() {
           e.name = "_TEMPLATE_" + (e.name);
           e.id = "_TEMPLATE_" + (e.id);
         } 
+        $(e).prop('checked', false);
       });
 
       $innerCheckbox.find('label').each(function(_i,e) {
@@ -730,6 +732,8 @@ function displayInnerCheckbox() {
         }
       });
     }
+
+
   });
 
 }

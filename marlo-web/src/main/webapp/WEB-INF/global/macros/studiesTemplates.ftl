@@ -109,7 +109,7 @@
         </label>
         <div class="form-group ${isOutcomeCaseStudy?then('','simpleBox')} geographicScopeInput">
           <div class="form-group row">
-            <div class="col-md-12">
+            <div class="col-md-12 margin-top-10">
               <label for="${customName}.geographicScopes" class="col-md-4">[@s.text name="study.generalInformation.geographicScope" /]: [@customForm.req required=(editable && reportingActive) /] </label>
               <label for="" name="study.generalInformation.geographicImpact" class="col-md-8" style="display:${(isMultiNational || isNational || isSubNational || isRegional)?string('block','none')}">[@s.text name="study.generalInformation.geographicImpact" /]: [@customForm.req required=(editable && reportingActive) /]</label>
             </div>
