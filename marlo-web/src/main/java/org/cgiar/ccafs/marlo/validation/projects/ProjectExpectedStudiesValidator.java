@@ -65,6 +65,11 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
   private final AllianceLeverManager allianceLeverManager;
   private final SDGContributionManager sDGContributionManager;
 
+  String oicrGeneral = "";
+  String oicrAlliance = "";
+  String oicrOneCgiar = "";
+  String oicrCommunication = "";
+
   @Inject
   public ProjectExpectedStudiesValidator(GlobalUnitManager crpManager, AllianceLeverManager allianceLeverManager,
     SDGContributionManager sDGContributionManager) {
@@ -91,6 +96,33 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
    * @param saving related action
    */
   public void validate(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy, boolean saving) {
+
+
+    String value;
+    value = BaseAction.getIsOicrGeneralInformationCompleteMap().get(projectExpectedStudy.getId() + "");
+
+    if (value != null) {
+      BaseAction.getIsOicrGeneralInformationCompleteMap().remove(projectExpectedStudy.getId() + "");
+    }
+
+    value = BaseAction.getIsOicrAllianceAlignmentCompleteMap().get(projectExpectedStudy.getId() + "");
+
+    if (value != null) {
+      BaseAction.getIsOicrAllianceAlignmentCompleteMap().remove(projectExpectedStudy.getId() + "");
+    }
+
+    value = BaseAction.getIsOicrOneCgiarAlignmentCompleteMap().get(projectExpectedStudy.getId() + "");
+
+    if (value != null) {
+      BaseAction.getIsOicrOneCgiarAlignmentCompleteMap().remove(projectExpectedStudy.getId() + "");
+    }
+
+    value = BaseAction.getIsOicrCommunicationsCompleteMap().get(projectExpectedStudy.getId() + "");
+
+    if (value != null) {
+      BaseAction.getIsOicrCommunicationsCompleteMap().remove(projectExpectedStudy.getId() + "");
+    }
+
 
     action.setInvalidFields(new HashMap<>());
 
@@ -231,11 +263,19 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         allianceLeverSize = allianceLeverList.size();
       }
 
+      List<AllianceLever> allianceLeverListPrev = new ArrayList<>();
+      for (AllianceLever leverTmp : projectExpectedStudy.getAllianceLevers()) {
+        if (leverTmp != null) {
+          AllianceLever leverSave = new AllianceLever();
+          leverSave.setId(leverTmp.getId());
+          allianceLeverListPrev.add(leverSave);
+        }
+      }
 
-      if (projectExpectedStudy.getAllianceLevers() != null && !projectExpectedStudy.getAllianceLevers().isEmpty()) {
+      if (allianceLeverListPrev != null && !allianceLeverListPrev.isEmpty()) {
         boolean isAllianceLeverSelected = false;
         int allianceLeverIndex = 0;
-        for (AllianceLever allianceLever : projectExpectedStudy.getAllianceLevers()) {
+        for (AllianceLever allianceLever : allianceLeverListPrev) {
           if (allianceLever != null && allianceLever.getId() != null) {
             allianceLeverTemp = allianceLeverManager.getAllianceLeverById(allianceLever.getId());
             allianceLever.setName(allianceLeverTemp.getName());
@@ -304,6 +344,11 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         }
       }
     }
+
+    oicrAlliance = action.getMissingFields().toString();
+    if (oicrAlliance.length() > oicrGeneral.length()) {
+      BaseAction.getIsOicrAllianceAlignmentCompleteMap().put("" + projectExpectedStudy.getId(), "1");
+    }
   }
 
 
@@ -327,6 +372,13 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       if (this.validateCommunicationsFields(action.getMissingFields().toString())) {
         action.setOicrCommunicationsComplete(false);
       }
+
+      oicrCommunication = action.getMissingFields().toString();
+
+      if (oicrCommunication.length() > oicrOneCgiar.length()) {
+        BaseAction.getIsOicrCommunicationsCompleteMap().put("" + projectExpectedStudy.getId(), "1");
+      }
+
     } catch (Exception e) {
       LOG.error(" error in validateCommunications function " + e.getMessage());
     }
@@ -362,10 +414,9 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     boolean saving) {
 
     this.validateProjectExpectedStudyGeneralInformation(projectExpectedStudy, action);
-
-
-    if (action.getMissingFields().toString().length() == 0) {
-      action.setOicrGeneralInformationComplete(true);
+    oicrGeneral = action.getMissingFields().toString();
+    if (oicrGeneral.length() > 0) {
+      BaseAction.getIsOicrGeneralInformationCompleteMap().put("" + projectExpectedStudy.getId(), "1");
     }
 
 
@@ -467,6 +518,14 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
       }
     }
+
+
+    oicrOneCgiar = action.getMissingFields().toString();
+    if (oicrOneCgiar.length() > oicrAlliance.length()) {
+      BaseAction.getIsOicrOneCgiarAlignmentCompleteMap().put("" + projectExpectedStudy.getId(), "1");
+    }
+
+
   }
 
 
@@ -1147,6 +1206,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       action.addMessage(action.getText("Title"));
       action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.title",
         InvalidFieldsMessages.EMPTYFIELD);
+      action.setTestFields(new HashMap<>());
     }
 
 

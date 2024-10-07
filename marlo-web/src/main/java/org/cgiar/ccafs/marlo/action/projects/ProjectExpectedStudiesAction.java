@@ -188,14 +188,21 @@ public class ProjectExpectedStudiesAction extends BaseAction {
    */
   private static final long serialVersionUID = 597647662288518417L;
   private static final long[] EMPTY_ARRAY = {};
+  private static HashMap<String, String> isSaving = new HashMap<>();
+
+
+  public static HashMap<String, String> getIsSaving() {
+    return isSaving;
+  }
+
+  public static void setIsSaving(HashMap<String, String> isSaving) {
+    ProjectExpectedStudiesAction.isSaving = isSaving;
+  }
+
   private final Logger logger = LoggerFactory.getLogger(ProjectExpectedStudiesAction.class);
-
-
   // Managers
   private final ProjectExpectedStudyManager projectExpectedStudyManager;
-
   private final AuditLogManager auditLogManager;
-
   private final GlobalUnitManager crpManager;
   private final ProjectManager projectManager;
   private final PhaseManager phaseManager;
@@ -223,35 +230,35 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private final ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager;
   private final ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager;
   private final GeneralStatusManager generalStatusManager;
+
+
   private final CrpMilestoneManager milestoneManager;
   private final ProjectOutcomeManager projectOutcomeManager;
   private final CrpProgramOutcomeManager crpProgramOutcomeManager;
-
-
   // AR 2018 Managers
   private final EvidenceTagManager evidenceTagManager;
   private final ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager;
   private final ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
   private final ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager;
+
   private final ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
   private final ProjectInnovationManager projectInnovationManager;
   private final ProjectPolicyManager projectPolicyManager;
-
   // AR 2019 Managers
   private final ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager;
   private final ProjectExpectedStudyMilestoneManager projectExpectedStudyMilestoneManager;
   private final ProjectExpectedStudyProjectOutcomeManager projectExpectedStudyProjectOutcomeManager;
+
   private final ProjectExpectedStudyCrpOutcomeManager projectExpectedStudyCrpOutcomeManager;
   private final FeedbackQACommentManager feedbackQACommentManager;
   private final FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
-
   // AR 2022 Managers
   private final ProjectExpectedStudyReferenceManager projectExpectedStudyReferenceManager;
   private final ProjectExpectedStudyTagManager projectExpectedStudyTagManager;
+
   private final QuantificationTypeManager quantificationTypeManager;
   private final ProjectExpectedStudyPublicationManager projectExpectedStudyPublicationManager;
   private final AllianceLeverManager allianceLeverManager;
-
   private final ProjectExpectedStudySdgAllianceLeverManager projectExpectedStudySdgAllianceLeverManager;
   private final ProjectExpectedStudyAllianceLeversOutcomeManager projectExpectedStudyAllianceLeversOutcomeManager;
   private final ProjectPartnerManager projectPartnerManager;
@@ -263,15 +270,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private final AllianceLeverOutcomeManager allianceLeverOutcomeManager;
   private final AllianceLeversSdgContributionManager allianceLeversSdgContributionManager;
   private final ImpactAreaManager impactAreaManager;
+
+
   private final GlobalTargetManager globalTargetManager;
   private final ProjectExpectedStudyImpactAreaManager projectExpectedStudyImpactAreaManager;
+
   private final ProjectExpectedStudyGlobalTargetManager projectExpectedStudyGlobalTargetManager;
-
-
   // Variables
   private final ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
   private GlobalUnit loggedCrp;
-
   private Project project;
   private long projectID;
   private long expectedID;
@@ -301,10 +308,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<FeedbackQACommentableFields> feedbackComments;
   private String transaction;
   private String tag;
+
   private int previousYear;
   private int previousMaturityID;
   private int previousTagID;
-
   // AR 2018 Sel-List
   private List<EvidenceTag> tags;
   private List<ProjectPolicy> policyList;
@@ -314,20 +321,26 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<CrpMilestone> milestones;
   private int newExpectedYear;
   private List<ProjectOutcome> projectOutcomes;
+
   private List<CrpProgramOutcome> crpOutcomes;
+
   private List<ProjectExpectedStudyTag> tagList;
+
+
   private List<QuantificationType> quantificationTypes;
 
+
   private List<AllianceLever> allianceLeverList;
-
   private List<ProjectPartner> partners;
-
-
   private List<ProjectPartnerPerson> partnerPersons;
 
 
   private List<Institution> partnerInstitutions;
+
+
   private Boolean isManagingPartnerPersonRequerid;
+
+
   private List<ImpactArea> impactAreasList;
 
   @Inject
@@ -2168,10 +2181,57 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.fillAllianceLeversComment();
 
 
+    // the next code allows execute the validation process
+    String valueSaving;
+    valueSaving = ProjectExpectedStudiesAction.getIsSaving().get(expectedID + "");
+    if (valueSaving != null) {
+
+      String value = "0";
+      value = BaseAction.getIsOicrGeneralInformationCompleteMap().get(expectedID + "");
+
+      if (value != null && value.equals("1")) {
+        this.setOicrGeneralInformationComplete(false);
+      } else {
+        this.setOicrGeneralInformationComplete(true);
+      }
+
+      value = BaseAction.getIsOicrAllianceAlignmentCompleteMap().get(expectedID + "");
+
+      if (value != null && value.equals("1")) {
+        this.setOicrAllianceAlignmentComplete(false);
+      } else {
+        this.setOicrAllianceAlignmentComplete(true);
+      }
+
+
+      value = BaseAction.getIsOicrOneCgiarAlignmentCompleteMap().get(expectedID + "");
+
+      if (value != null && value.equals("1")) {
+        this.setOicrOneCgiarAlignmentComplete(false);
+      } else {
+        this.setOicrOneCgiarAlignmentComplete(true);
+      }
+
+      value = BaseAction.getIsOicrCommunicationsCompleteMap().get(expectedID + "");
+
+      if (value != null && value.equals("1")) {
+        this.setOicrCommunicationsComplete(false);
+      } else {
+        this.setOicrCommunicationsComplete(true);
+      }
+
+
+      ProjectExpectedStudiesAction.getIsSaving().remove(expectedID + "");
+    }
+
+
   }
 
   @Override
   public String save() {
+
+    ProjectExpectedStudiesAction.getIsSaving().put("" + expectedID, "1");
+
 
     final User user = this.getCurrentUser();
 
@@ -4588,6 +4648,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     if (this.save) {
       this.projectExpectedStudiesValidator.validate(this, this.project, this.expectedStudy, true);
     }
+
   }
 
 

@@ -3461,7 +3461,6 @@ button.ipGraph-btn {
 }
 
 .note--2 p{
-	font-style: italic;
 	color: #5F5E5E;
 	font-size: 1.25rem;
 	font-weight: 300;
@@ -3474,10 +3473,8 @@ button.ipGraph-btn {
 }
 
 .note--2 ul li{
-	font-style: italic;
     color: #5F5E5E;
     font-size: 1.25rem;
-    font-style: italic;
     font-weight: 300;
 }
 
