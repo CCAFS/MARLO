@@ -600,7 +600,7 @@
   </div>
 [/#macro]
 
-[#macro studyGeneral element name index=-1 template=false fromProject=true]
+[#macro studyGeneral element name index=-1 template=false fromProject=true isAllianceContribution=false]
   [#local customName = "${name}"/]
   [#local isOutcomeCaseStudy = ((element.projectExpectedStudyInfo.studyType.id == 1)!false)/]
   [#local isStatusExtended = (element.projectExpectedStudyInfo.status.id == 4)!false]
@@ -651,7 +651,7 @@
 
       [#-- Alliance OICR ID --]
       [#if isOutcomeCaseStudy]
-        <div class="col-md-2">
+        <div class="col-md-2" id="allianceOICRIdContainer" style="display: ${isAllianceContribution?string('block','none')};">
           [@customForm.input name="${customName}.projectExpectedStudyInfo.allianceOicr" i18nkey="study.general.allianceID" helpIcon=false required=false editable=editable className="targetValueAllianceId" placeholder="XXX-0000" required=true /]
         </div>
       [/#if]
