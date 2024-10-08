@@ -685,9 +685,11 @@ function updateAllianceTab() {
         if($option.toArray().some((item) => item.value == "7320")) {
           //remove disabled class alliance tab
           $('#allianceTab').slideDown();
+          $('#allianceOICRIdContainer').slideDown();
         } else {
           //add disabled class alliance tab
           $('#allianceTab').slideUp();
+          $('#allianceOICRIdContainer').slideUp();
         }
       }
     }, 1000);
