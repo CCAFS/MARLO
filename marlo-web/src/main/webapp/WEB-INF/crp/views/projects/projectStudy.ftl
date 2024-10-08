@@ -107,13 +107,22 @@
 
           <div id="caseStudiesBlock" class="">
 
+          [#assign isAllianceContribution = false /]
+          [#list expectedStudy.centers as center]
+          [#if center.institution.id == 7320]
+            [#assign isAllianceContribution = true /]
+            [#break /]
+          [/#if]
+          [/#list]
+
             [#-- General: Component were the information is always visible --]
-            [@studies.studyGeneral element=(expectedStudy)!{} name="expectedStudy" index=0  /]
+            [@studies.studyGeneral element=(expectedStudy)!{} name="expectedStudy" index=0 isAllianceContribution=isAllianceContribution  /]
 
             [#-- Content: All the information of the case study --]
             <input id="indexTab" name="indexTab" type="hidden" value="${(indexTab)!0}">
 
             <div class="studiesTab">
+
               [#-- Tab navigation --]
               [#if expectedStudy.projectExpectedStudyInfo.studyType.id == 1]
                 <ul class="nav nav-tabs" role="tablist">
@@ -121,14 +130,6 @@
                   <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if] col-md-3 ${isOicrGeneralInformationComplete?then('submitted','toSubmit')}">
                     <a index="1" href="#study-generalInformation" aria-controls="info" role="tab" data-toggle="tab">[@s.text name="study.general.generalInformation" /]</a>
                   </li>
-
-                  [#assign isAllianceContribution = false /]
-                  [#list expectedStudy.centers as center]
-                  [#if center.institution.id == 7320]
-                    [#assign isAllianceContribution = true /]
-                    [#break /]
-                  [/#if]
-                  [/#list]
 
                   [#assign isOicrAllianceAlignmentComplete = action.isOicrAllianceAlignmentComplete()!false /]
                   <li role="presentation" class="[#if indexTab==2]active[/#if] col-md-3 ${isOicrAllianceAlignmentComplete?then('submitted','toSubmit')}" style="display:${isAllianceContribution?then('block','none')}" id="allianceTab"  >
