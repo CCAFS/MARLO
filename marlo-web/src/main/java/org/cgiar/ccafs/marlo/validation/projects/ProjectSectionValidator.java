@@ -58,6 +58,8 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
+import org.cgiar.ccafs.marlo.data.model.DeliverableShfrmPriorityAction;
+import org.cgiar.ccafs.marlo.data.model.DeliverableShfrmSubAction;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
@@ -108,6 +110,7 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -937,10 +940,11 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     Project project = projectManager.getProjectById(projectID);
     project.setBudgetsFlagship(project.getProjectBudgetsFlagships().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
-    if (!(project.getProjectBudgetsFlagships().isEmpty() || project.getProjectBudgetsFlagships().size() == 1)) {
-      projectBudgetsFlagshipValidator.validate(action, project, false, sMessage);
-    }
-
+    /*
+     * if (!(project.getProjectBudgetsFlagships().isEmpty() || project.getProjectBudgetsFlagships().size() == 1)) {
+     * }
+     */
+    projectBudgetsFlagshipValidator.validate(action, project, false, sMessage);
   }
 
 
@@ -1183,6 +1187,32 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         if (deliverableCrossCuttingMarkers != null && !deliverableCrossCuttingMarkers.isEmpty()) {
           deliverable.setCrossCuttingMarkers(deliverableCrossCuttingMarkers);
         }
+
+        // Soil information
+        if (deliverable.getDeliverableShfrmPriorityAction() != null) {
+          deliverable.setShfrmPriorityActions(new ArrayList<>(deliverable.getDeliverableShfrmPriorityAction().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(action.getActualPhase().getId()))
+            .sorted(Comparator.comparing(DeliverableShfrmPriorityAction::getId)).collect(Collectors.toList())));
+        }
+
+        if (deliverable.getShfrmPriorityActions() != null && !deliverable.getShfrmPriorityActions().isEmpty()) {
+          for (DeliverableShfrmPriorityAction deliverablePriorityAction : deliverable.getShfrmPriorityActions()) {
+            try {
+
+              if (deliverablePriorityAction.getDeliverableShfrmSubAction() != null) {
+                deliverablePriorityAction
+                  .setShfrmSubActions(new ArrayList<>(deliverablePriorityAction.getDeliverableShfrmSubAction().stream()
+                    .filter(o -> o.isActive() && o.getPhase().getId().equals(action.getActualPhase().getId()))
+                    .sorted(Comparator.comparing(DeliverableShfrmSubAction::getId)).collect(Collectors.toList())));
+              }
+
+            } catch (Exception e) {
+              logger.error("unable to get deliverableSubActions for deliverablePriorityAction: {}",
+                deliverablePriorityAction, e);
+            }
+          }
+        }
+
 
         if (action.isReportingActive() || action.isUpKeepActive()) {
 

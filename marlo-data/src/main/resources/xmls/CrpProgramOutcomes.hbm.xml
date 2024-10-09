@@ -53,6 +53,12 @@
 		<property name="year" type="java.lang.Integer">
 			<column name="year" not-null="false" />
 		</property>
+		<property name="orderIndex" type="java.lang.Integer">
+            <column name="order_index" not-null="false" />
+        </property>
+        <property name="afPhase" type="java.lang.Integer">
+            <column name="af_phase" not-null="false" />
+        </property>
 		<property name="value" type="java.math.BigDecimal">
 			<column name="value" precision="20" not-null="false" />
 		</property>
