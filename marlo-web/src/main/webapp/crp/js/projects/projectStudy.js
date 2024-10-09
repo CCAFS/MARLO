@@ -673,14 +673,11 @@ function counterSharedCluster() {
 }
 
 function updateAllianceTab() {
-  var $selectCenters = $('select.elementType-institution');
+  var $selectCenters = $('div[listname="expectedStudy.centers"] select.elementType-institution');
 
 
     setTimeout(() => {
       $option = $selectCenters.find('option[disabled]');
-
-
-      if($option.length > 0) {
 
         if($option.toArray().some((item) => item.value == "7320")) {
           //remove disabled class alliance tab
@@ -691,7 +688,7 @@ function updateAllianceTab() {
           $('#allianceTab').slideUp();
           $('#allianceOICRIdContainer').slideUp();
         }
-      }
+
     }, 1000);
 
 }   

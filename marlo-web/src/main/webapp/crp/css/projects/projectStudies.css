@@ -195,6 +195,18 @@ table#projectHighlights {
   font-size: 0.94em;
 }
 
+div.radioFlat {
+	padding-left: 0;
+}
+
+div.stfTargets .col-md-1{
+  width: 10%;
+}
+
+div.stfTargets .col-md-1:last-of-type{
+  width: 20%;
+}
+
 .radioToCheckbox .containerRadioToCheckbox .radioFlat {
   padding-left: 0;
 } 
