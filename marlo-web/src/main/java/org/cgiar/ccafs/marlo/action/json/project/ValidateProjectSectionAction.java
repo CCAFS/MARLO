@@ -152,17 +152,17 @@ public class ValidateProjectSectionAction extends BaseAction {
           break;
         case PARTNERS:
           this.projectSectionValidator.validateProjectParnters(this, this.getProjectID(), this.loggedCrp);
-          /*
-           * case BUDGET:
-           * if (this.isPlanningActive() || ((this.isReportingActive() || this.isUpKeepActive())
-           * && this.hasSpecificities(this.getCrpEnableBudgetExecution()))) {
-           * this.projectSectionValidator.validateProjectBudgets(this, this.getProjectID());
-           * }
-           * break;
-           * case BUDGETBYFLAGSHIP:
-           * this.projectSectionValidator.validateProjectBudgetsFlagship(this, this.getProjectID(), true);
-           * break;
-           */
+
+        case BUDGET:
+          if (this.isPlanningActive() || ((this.isReportingActive() || this.isUpKeepActive())
+            && this.hasSpecificities(this.getCrpEnableBudgetExecution()))) {
+            this.projectSectionValidator.validateProjectBudgets(this, this.getProjectID());
+          }
+          break;
+        case BUDGETBYFLAGSHIP:
+          this.projectSectionValidator.validateProjectBudgetsFlagship(this, this.getProjectID(), true);
+          break;
+
         case DELIVERABLES:
           this.projectSectionValidator.validateProjectDeliverables(this, this.getProjectID());
           break;

@@ -65,8 +65,8 @@
     },
     { 'title': 'Budget', 'show': true,
       'items': [
-      { 'slug': 'budgetByPartners',  'name': 'projects.menu.budgetByPartners',  'action': 'budgetByPartners',  'active': true, 'show':true, "showCheck": isGlobalUnitProject },      
-      { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': true, 'show': action.getCountProjectFlagships(project.id) && !reportingActive && isCrpProject, "showCheck": isGlobalUnitProject},
+      { 'slug': 'budgetByPartners',  'name': 'projects.menu.budgetByPartners',  'action': 'budgetByPartners',  'active': true, 'show':true, "showCheck": false },      
+      { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': true, 'show': action.getCountProjectFlagships(project.id) && !reportingActive && isCrpProject, "showCheck": false},
       { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingActive && action.hasSpecificities("crp_leverages_module") && isCrpProject, "showCheck": isGlobalUnitProject}
       ]
     },
@@ -110,7 +110,12 @@
         <ul><p class="menuTitle">${menu.title}</p>
           [#list menu.items as item]
             [#if (item.showCheck)!true]
-            [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
+            [#assign submitStatus = false /]
+              [#if item.action?has_content && projectID?has_content]
+                  [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
+              [#else]
+                  [#assign submitStatus = false /]
+              [/#if]
             [/#if]
             [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, item.action, project.id))!false /]
             [#if (item.show)!true ]
