@@ -791,6 +791,7 @@ public final class APConstants {
   public static final int CLARISA_AVALIABLE_INFO_YEAR = 2018;
 
   public static final String IGNORE_NEWER_YEARS = "ignoreNewer";
+  public static final String DELIVERABLE_CRP_PROGRAM_OUTCOME_DEPRECATED = "DEPRECATED";
 
   public static final int EXPECTED_OTHER_ALLIANCE_LEVER_ID = 9;
 
