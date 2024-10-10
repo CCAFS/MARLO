@@ -1204,7 +1204,19 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
 
     // Validate Alliance OICR ID - only mandatory to AWPB phases
-    if (action.isAWPBActive()) {
+    // if (action.isAWPBActive()) {
+
+    boolean isAllianceSelected = false;
+    if (projectExpectedStudy != null && projectExpectedStudy.getCenters() != null) {
+      for (ProjectExpectedStudyPartnership center : projectExpectedStudy.getCenters()) {
+        if (center != null && center.getInstitution() != null && center.getInstitution().getId() != null
+          && center.getInstitution().getId() == APConstants.ALLIANCE_INSTITUTION_ID) {
+          isAllianceSelected = true;
+        }
+      }
+    }
+
+    if (isAllianceSelected) {
       if ((!this
         .isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getAllianceOicr()))
         || this.wordCount(
@@ -1214,6 +1226,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
     }
+    // }
 
     // Validate Tag as
 
