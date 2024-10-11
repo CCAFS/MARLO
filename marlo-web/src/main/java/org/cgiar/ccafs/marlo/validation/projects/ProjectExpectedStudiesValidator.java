@@ -19,11 +19,13 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AllianceLeverManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.SDGContributionManager;
 import org.cgiar.ccafs.marlo.data.model.AllianceLever;
 import org.cgiar.ccafs.marlo.data.model.AllianceLeverOutcome;
 import org.cgiar.ccafs.marlo.data.model.GlobalTarget;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
@@ -64,6 +66,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
   private BaseAction baseAction;
   private final AllianceLeverManager allianceLeverManager;
   private final SDGContributionManager sDGContributionManager;
+  private InstitutionManager institutionManager;
 
   String oicrGeneral = "";
   String oicrAlliance = "";
@@ -73,10 +76,11 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
   @Inject
   public ProjectExpectedStudiesValidator(GlobalUnitManager crpManager, AllianceLeverManager allianceLeverManager,
-    SDGContributionManager sDGContributionManager) {
+    SDGContributionManager sDGContributionManager, InstitutionManager institutionManager) {
     this.crpManager = crpManager;
     this.allianceLeverManager = allianceLeverManager;
     this.sDGContributionManager = sDGContributionManager;
+    this.institutionManager = institutionManager;
   }
 
   private Path getAutoSaveFilePath(ProjectExpectedStudy expectedStudy, long crpID, BaseAction action) {
@@ -190,17 +194,24 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     boolean saving) {
 
     // Validate if the Alliance institution is selected in center section to validate the Alliance Tab
-    boolean isAllianceSelected = false;
+    int isAllianceSelectedCounter = 0;
     if (projectExpectedStudy != null && projectExpectedStudy.getCenters() != null) {
       for (ProjectExpectedStudyPartnership center : projectExpectedStudy.getCenters()) {
+        if (center != null && center.getInstitution() != null && center.getInstitution().getId() != null) {
+          Institution institutiontmp = this.institutionManager.getInstitutionById(center.getInstitution().getId());
+          if (institutiontmp != null && institutiontmp.getName() != null) {
+            center.getInstitution().setName(institutiontmp.getName());
+          }
+        }
         if (center != null && center.getInstitution() != null && center.getInstitution().getId() != null
-          && center.getInstitution().getId() == APConstants.ALLIANCE_INSTITUTION_ID) {
-          isAllianceSelected = true;
+          && center.getInstitution().getName() != null
+          && center.getInstitution().getName().toLowerCase().contains(APConstants.ALLIANCE_INSTITUTION_NAME)) {
+          isAllianceSelectedCounter++;
         }
       }
     }
 
-    if (isAllianceSelected && projectExpectedStudy != null) {
+    if (isAllianceSelectedCounter > 0 && projectExpectedStudy != null) {
 
       // Validate primary levers
       AllianceLever allianceLeverTemp = null;
@@ -1206,17 +1217,25 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     // Validate Alliance OICR ID - only mandatory to AWPB phases
     // if (action.isAWPBActive()) {
 
-    boolean isAllianceSelected = false;
+    int isAllianceSelectedCounter = 0;
     if (projectExpectedStudy != null && projectExpectedStudy.getCenters() != null) {
       for (ProjectExpectedStudyPartnership center : projectExpectedStudy.getCenters()) {
+        if (center != null && center.getInstitution() != null && center.getInstitution().getId() != null) {
+          Institution institutiontmp = this.institutionManager.getInstitutionById(center.getInstitution().getId());
+          if (institutiontmp != null && institutiontmp.getName() != null) {
+            center.getInstitution().setName(institutiontmp.getName());
+          }
+        }
         if (center != null && center.getInstitution() != null && center.getInstitution().getId() != null
-          && center.getInstitution().getId() == APConstants.ALLIANCE_INSTITUTION_ID) {
-          isAllianceSelected = true;
+          && center.getInstitution().getName() != null
+          && center.getInstitution().getName().toLowerCase().contains(APConstants.ALLIANCE_INSTITUTION_NAME)) {
+          isAllianceSelectedCounter++;
         }
       }
     }
 
-    if (isAllianceSelected) {
+
+    if (isAllianceSelectedCounter > 0) {
       if ((!this
         .isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getAllianceOicr()))
         || this.wordCount(
