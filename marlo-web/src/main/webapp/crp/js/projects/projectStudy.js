@@ -679,12 +679,14 @@ function updateAllianceTab() {
     setTimeout(() => {
       $option = $selectCenters.find('option[disabled]');
 
-        if($option.toArray().some((item) => item.value == "7320")) {
+        if($option.toArray().some((item) => item.innerHTML.toLowerCase().includes("alliance"))) {
           //remove disabled class alliance tab
+          $('div.generalInformationStudies .note--2 p:first').slideDown();
           $('#allianceTab').slideDown();
           $('#allianceOICRIdContainer').slideDown();
         } else {
           //add disabled class alliance tab
+          $('div.generalInformationStudies .note--2 p:first').slideUp();
           $('#allianceTab').slideUp();
           $('#allianceOICRIdContainer').slideUp();
         }

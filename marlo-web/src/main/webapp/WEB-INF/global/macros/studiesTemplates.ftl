@@ -611,7 +611,7 @@
     [#-- Note for General Inputs description --]
     [#if isOutcomeCaseStudy] 
       <div class="note--2">
-        <p>[@s.text name="study.general.note.allianceId" /]</p>
+        <p style="display: ${isAllianceContribution?then('block','none')}">[@s.text name="study.general.note.allianceId" /]</p>
         <p>[@s.text name="study.general.note.currentYearReport" /]</p>
       </div>
     [/#if]
