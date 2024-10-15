@@ -109,7 +109,7 @@
 
           [#assign isAllianceContribution = false /]
           [#list expectedStudy.centers as center]
-          [#if center.institution.id == 7320]
+          [#if center.institution.name?lower_case?contains("alliance")]
             [#assign isAllianceContribution = true /]
             [#break /]
           [/#if]
