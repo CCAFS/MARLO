@@ -30,7 +30,6 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnership;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPublication;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
@@ -918,6 +917,12 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
                   action.getInvalidFields().put("input-expectedStudy.references[" + i + "].reference",
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
+                if (reference == null || !this.isValidString(reference.getLink())) {
+                  validReferences = false;
+                  action.addMessage(this.getTextCustom(action, "References Link"));
+                  action.getInvalidFields().put("input-expectedStudy.references[" + i + "].link",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                }
 
 
                 if (reference != null
@@ -1137,44 +1142,42 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
 
     // Validate publications
-    int index = 0;
-    if (projectExpectedStudy.getPublications() == null
-      || (projectExpectedStudy.getPublications() != null && projectExpectedStudy.getPublications().isEmpty())) {
-      action.addMessage(this.getTextCustom(action, "expectedStudy.publications.name"));
-      action.addMessage(this.getTextCustom(action, "expectedStudy.publications.affiliation"));
-      action.addMessage(this.getTextCustom(action, "expectedStudy.publications.position"));
-
-      action.getInvalidFields().put("input-expectedStudy.publications[0].name", InvalidFieldsMessages.EMPTYFIELD);
-      action.getInvalidFields().put("input-expectedStudy.publications[0].affiliation",
-        InvalidFieldsMessages.EMPTYFIELD);
-      action.getInvalidFields().put("input-expectedStudy.publications[0].position", InvalidFieldsMessages.EMPTYFIELD);
-    } else {
-      if (projectExpectedStudy.getPublications() != null && !projectExpectedStudy.getPublications().isEmpty()) {
-        for (ProjectExpectedStudyPublication publication : projectExpectedStudy.getPublications()) {
-          if (publication.getName() == null || (publication.getName() != null && publication.getName().isEmpty())) {
-            action.addMessage(this.getTextCustom(action, "expectedStudy.publications[" + index + "].name"));
-            action.getInvalidFields().put("input-expectedStudy.publications[" + index + "].name",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-
-          if (publication.getPosition() == null
-            || (publication.getPosition() != null && publication.getPosition().isEmpty())) {
-            action.addMessage(this.getTextCustom(action, "expectedStudy.publications[" + index + "].position"));
-            action.getInvalidFields().put("input-expectedStudy.publications[" + index + "].position",
-              InvalidFieldsMessages.EMPTYFIELD);
-
-          }
-          if (publication.getAffiliation() == null
-            || (publication.getAffiliation() != null && publication.getAffiliation().isEmpty())) {
-            action.addMessage(this.getTextCustom(action, "expectedStudy.publications[" + index + "].affiliation"));
-            action.getInvalidFields().put("input-expectedStudy.publications[" + index + "].affiliation",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-          index++;
-        }
-      }
-    }
-
+    /*
+     * int index = 0;
+     * if (projectExpectedStudy.getPublications() == null
+     * || (projectExpectedStudy.getPublications() != null && projectExpectedStudy.getPublications().isEmpty())) {
+     * action.addMessage(this.getTextCustom(action, "expectedStudy.publications.name"));
+     * action.addMessage(this.getTextCustom(action, "expectedStudy.publications.affiliation"));
+     * action.addMessage(this.getTextCustom(action, "expectedStudy.publications.position"));
+     * action.getInvalidFields().put("input-expectedStudy.publications[0].name", InvalidFieldsMessages.EMPTYFIELD);
+     * action.getInvalidFields().put("input-expectedStudy.publications[0].affiliation",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * action.getInvalidFields().put("input-expectedStudy.publications[0].position", InvalidFieldsMessages.EMPTYFIELD);
+     * } else {
+     * if (projectExpectedStudy.getPublications() != null && !projectExpectedStudy.getPublications().isEmpty()) {
+     * for (ProjectExpectedStudyPublication publication : projectExpectedStudy.getPublications()) {
+     * if (publication.getName() == null || (publication.getName() != null && publication.getName().isEmpty())) {
+     * action.addMessage(this.getTextCustom(action, "expectedStudy.publications[" + index + "].name"));
+     * action.getInvalidFields().put("input-expectedStudy.publications[" + index + "].name",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * if (publication.getPosition() == null
+     * || (publication.getPosition() != null && publication.getPosition().isEmpty())) {
+     * action.addMessage(this.getTextCustom(action, "expectedStudy.publications[" + index + "].position"));
+     * action.getInvalidFields().put("input-expectedStudy.publications[" + index + "].position",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * if (publication.getAffiliation() == null
+     * || (publication.getAffiliation() != null && publication.getAffiliation().isEmpty())) {
+     * action.addMessage(this.getTextCustom(action, "expectedStudy.publications[" + index + "].affiliation"));
+     * action.getInvalidFields().put("input-expectedStudy.publications[" + index + "].affiliation",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * index++;
+     * }
+     * }
+     * }
+     */
   }
 
   public void validateProjectExpectedStudyGeneralInformation(ProjectExpectedStudy projectExpectedStudy,
@@ -1656,12 +1659,13 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           }
 
           // Validate Quantification
-          if (projectExpectedStudy.getQuantifications() != null) {
-            for (int i = 0; i < projectExpectedStudy.getQuantifications().size(); i++) {
-              this.validateQuantifications(action, projectExpectedStudy.getQuantifications().get(i), i);
+          if (baseAction.isReportingActive()) {
+            if (projectExpectedStudy.getQuantifications() != null) {
+              for (int i = 0; i < projectExpectedStudy.getQuantifications().size(); i++) {
+                this.validateQuantifications(action, projectExpectedStudy.getQuantifications().get(i), i);
+              }
             }
           }
-
 
         } else {
           // Validate Srf Targets Selection
