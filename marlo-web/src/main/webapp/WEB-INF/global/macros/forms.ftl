@@ -955,8 +955,8 @@
   <div id="multiInput${class?has_content?string('-${class}', '')}-${(template?string('template', ''))}" class="multiInput form-group grayBox ${class}">
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <span class="pull-left" style="width:4%"><strong><span class="indexTag">${index + 1}</span>.</strong></span>
-    <span class="pull-left" style="width:42%">[@customForm.input name="${customName}.reference" placeholder="expectedStudy.reference.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
-    <span class="pull-left" style="width:42%; margin-left: 10px">[@customForm.input name="${customName}.link" placeholder="global.webSiteLink.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:42%">[@customForm.input name="${customName}.reference" placeholder="expectedStudy.reference.placeholder" showTitle=false i18nkey="" className="" editable=editable required=(!action.isAWPBActive()) /]</span>
+    <span class="pull-left" style="width:42%; margin-left: 10px">[@customForm.input name="${customName}.link" placeholder="global.webSiteLink.placeholder" showTitle=false i18nkey="" className="" editable=editable required=(!action.isAWPBActive()) /]</span>
     [#if element.externalAuthor??]
       <span class="pull-left" style="width:0%; margin-left: 2%">[@customForm.checkBoxFlat id="${customName}.externalAuthor" name="${customName}.externalAuthor" value="true" editable=editable  checked="${element.externalAuthor?string}"?boolean /]</span>
     [#else]

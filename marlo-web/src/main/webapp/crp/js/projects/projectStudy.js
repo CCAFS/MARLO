@@ -55,7 +55,6 @@ function init() {
   bottonPading();
   
   multiInputStudies = $('.multiInput').find('span input[name*="link"]');
-  checkHyperlinks();
 
   // Add mask to Alliance ID
   setMaskInputAllianceId();
@@ -337,6 +336,10 @@ function attachEvents() {
         validateEmptyLinks();
       } else {
         $('#warningEmptyReferencesTag').show();
+      }
+
+      if(linksList.length > 1) {
+        checkHyperlinks();
       }
     }
     function validateEmptyLinks() {
@@ -767,7 +770,9 @@ function displayLabelGeographicScope() {
   var $label = $('label[name="study.generalInformation.geographicImpact"]');
   var $geographicScope = $('select.elementType-repIndGeographicScope option:disabled');
   if($geographicScope.length > 0) {
-    if ($geographicScope.filter((_, option) => option.value == "-1" || option.value == "1").length > 0) {
+    if(($geographicScope.filter((_, option) => option.value == "1").length > 0) && ($geographicScope.length > 1)){
+      $label.show();
+    } else if ($geographicScope.filter((_, option) => option.value == "-1" || option.value == "1").length > 0) {
       $label.hide();
     } else {
       $label.show();

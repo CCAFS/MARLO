@@ -95,6 +95,7 @@
       [#--  4. Geographic scope - Countries  --]
       <div class="form-group geographicScopeBlock">
         [#local geographicScopeList = (element.geographicScopes)![] ]
+        [#local isGlobal =        findElementID(geographicScopeList,  action.reportingIndGeographicScopeGlobal) /]
         [#local isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
         [#local isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
         [#local isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
@@ -110,8 +111,9 @@
         <div class="form-group ${isOutcomeCaseStudy?then('','simpleBox')} geographicScopeInput">
           <div class="form-group row">
             <div class="col-md-12 margin-top-10">
+              [#local isDisplayTitleScope = ((isMultiNational || isNational || isSubNational || isRegional) || (isGlobal && (geographicScopeList.length >1)))!false /]
               <label for="${customName}.geographicScopes" class="col-md-4">[@s.text name="study.generalInformation.geographicScope" /]: [@customForm.req required=(editable && reportingActive) /] </label>
-              <label for="" name="study.generalInformation.geographicImpact" class="col-md-8" style="display:${(isMultiNational || isNational || isSubNational || isRegional)?string('block','none')}">[@s.text name="study.generalInformation.geographicImpact" /]: [@customForm.req required=(editable && reportingActive) /]</label>
+              <label for="" name="study.generalInformation.geographicImpact" class="col-md-8" style="display:${isDisplayTitleScope?string('block','none')}">[@s.text name="study.generalInformation.geographicImpact" /]: [@customForm.req required=(editable && reportingActive) /]</label>
             </div>
           </div>
           <div class="form-group row">
@@ -390,8 +392,8 @@
             <div class="referenceBlock ">
               <div class="referenceList">
                 <div class="row">
-                  <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Reference[@customForm.req required=(editable && validateIsProgressWithStatus!true)  /]</div>
-                  <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=(editable && validateIsProgressWithStatus!true)  /]</div>
+                  <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Reference[@customForm.req required=(!action.isAWPBActive())  /]</div>
+                  <div class="col-sm-4 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=(!action.isAWPBActive())  /]</div>
                   <div class="col-sm-2 colTitleCenter" style="font-weight: 600; text-align: center;">External Author[@customForm.req required=false  /]</div>
                 </div>
                 [#list (element.references)![{}] as link ]
