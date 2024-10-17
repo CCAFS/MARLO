@@ -967,9 +967,9 @@
     </div>
 
     [#-- SDG Representation --]
-    <div class="form-group">
+    <div class="form-group listSelectedLeverContainer">
       <label class="label--2 titleSelectedLeverContainer" for=""><b>[@s.text name="study.allianceAligment.generalContributionSDG" /]</b></label>
-      <div class="selectedLeverContainer">
+      <div class="_TEMPLATE_selectedLeverContainer" style="display:none;">
         <div class="selectedLeverContainer__image">
           <img src="" alt="Selected Lever"  />
         </div>
