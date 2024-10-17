@@ -543,7 +543,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
           .getHasCgiarContribution() == false) {
         if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-          .getReasonNotCgiarContribution() != null
+          .getReasonNotCgiarContribution() == null
           || (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
             .getReasonNotCgiarContribution() != null
             && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
