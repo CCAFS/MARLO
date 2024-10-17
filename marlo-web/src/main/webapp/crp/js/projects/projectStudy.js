@@ -55,7 +55,6 @@ function init() {
   bottonPading();
   
   multiInputStudies = $('.multiInput').find('span input[name*="link"]');
-  checkHyperlinks();
 
   // Add mask to Alliance ID
   setMaskInputAllianceId();
@@ -337,6 +336,10 @@ function attachEvents() {
         validateEmptyLinks();
       } else {
         $('#warningEmptyReferencesTag').show();
+      }
+
+      if(linksList.length > 1) {
+        checkHyperlinks();
       }
     }
     function validateEmptyLinks() {
@@ -767,7 +770,9 @@ function displayLabelGeographicScope() {
   var $label = $('label[name="study.generalInformation.geographicImpact"]');
   var $geographicScope = $('select.elementType-repIndGeographicScope option:disabled');
   if($geographicScope.length > 0) {
-    if ($geographicScope.filter((_, option) => option.value == "-1" || option.value == "1").length > 0) {
+    if(($geographicScope.filter((_, option) => option.value == "1").length > 0) && ($geographicScope.length > 1)){
+      $label.show();
+    } else if ($geographicScope.filter((_, option) => option.value == "-1" || option.value == "1").length > 0) {
       $label.hide();
     } else {
       $label.show();
@@ -977,51 +982,68 @@ var dynamicSelectorSDGImageModule = (function (){
   }
 
   function changeCurrentDisplaySDGImage() {
-    const $containerReference = $('.selectedLeverContainer');
-    const $containerImage = $('.selectedLeverContainer__image');
+    const $listSelectedLeverContainer = $('.listSelectedLeverContainer');
+    const $templateContainerReference = $('._TEMPLATE_selectedLeverContainer');
     const $titleSelectedLeverContainer = $('.titleSelectedLeverContainer');
-    const $image = $containerImage.find('img');
 
     const $containerPrimaryLever = $('.containerPrimaryLever');
     const $checkedRadioButtonLever = $containerPrimaryLever.find('input[name="expectedStudy.allianceLever.id"]:checked');
     const $checkedRadioButtonLeverParent = $checkedRadioButtonLever.parents('.containerRadioToCheckbox');
     const $innerCheckbox = $checkedRadioButtonLeverParent.find('#innerCheckbox');
     const $checkedInnerCheckbox = $innerCheckbox.find('input[name*="expectedStudy.allianceLever.sdgContributions"]:checked');
-    const $checkedInnerCheckboxValue = $checkedInnerCheckbox.val();
 
-    //Set image of the SDG Contribution
-    $.ajax({
-      url: baseURL + '/getSdgImage.do',
-      async: true,
-      data: {
-        requestID: Number.parseInt($checkedInnerCheckboxValue)
-      },
-      success: function(data) {
-        console.log(data);
-        if(data.image.adsoluteURL == null){
-          console.error("Image not found");
-          $titleSelectedLeverContainer.hide();
-          $containerReference.hide();
-        } else {
-          console.log("Image found");
-          $titleSelectedLeverContainer.show();
-          $containerReference.show();
-          $image.attr("src",data.image.adsoluteURL);
+    //remove all items added after a new checked
+    $listSelectedLeverContainer.find('.selectedLeverContainer').remove();
+
+    if($checkedInnerCheckbox.length === 0){
+      $titleSelectedLeverContainer.hide();
+    }
+    
+    $checkedInnerCheckbox.toArray().forEach(element => {
+      const $value = $(element).val();
+
+      const $cloneSelectedLeverContainer = $templateContainerReference.clone(true).removeAttr('style').removeClass('_TEMPLATE_selectedLeverContainer');
+      $cloneSelectedLeverContainer.addClass('selectedLeverContainer');
+
+      const $containerImage = $cloneSelectedLeverContainer.find('.selectedLeverContainer__image');
+      const $image = $containerImage.find('img');
+      
+      //Set image of the SDG Contribution
+      $.ajax({
+        url: baseURL + '/getSdgImage.do',
+        async: true,
+        data: {
+          requestID: Number.parseInt($value)
+        },
+        success: function(data) {
+          console.log(data);
+          if(data.image.adsoluteURL == null){
+            console.error("Image not found");
+          } else {
+            console.log("Image found");
+            $titleSelectedLeverContainer.show();
+            //$containerReference.show();
+            $image.attr("src",data.image.adsoluteURL);
+
+            //Set information of the SDG Contribution
+            const $containerSDGInformation = $cloneSelectedLeverContainer.find('.selectedLeverContainer__content');
+            const $leverName = $containerSDGInformation.find('.selectedLeverContainer__content__lever');
+            const $leverContributionSDG = $containerSDGInformation.find('.selectedLeverContainer__content__contributionSDG');
+
+            $leverName.text($checkedRadioButtonLever.next().text());
+            $leverContributionSDG.text($(element).next().text());
+
+            //add to list $listSelectedLeverContainer
+            $listSelectedLeverContainer.append($cloneSelectedLeverContainer);
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error(error);
+          reject(error);
         }
-      },
-      error: function(xhr, status, error) {
-        console.error(error);
-        reject(error);
-      }
+      });
+
     });
-
-    //Set information of the SDG Contribution
-    const $containerSDGInformation = $('.selectedLeverContainer__content');
-    const $leverName = $containerSDGInformation.find('.selectedLeverContainer__content__lever');
-    const $leverContributionSDG = $containerSDGInformation.find('.selectedLeverContainer__content__contributionSDG');
-
-    $leverName.text($checkedRadioButtonLever.next().text());
-    $leverContributionSDG.text($checkedInnerCheckbox.next().text());
 
   }
 
