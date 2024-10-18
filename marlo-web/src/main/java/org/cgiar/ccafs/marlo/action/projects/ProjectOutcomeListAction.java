@@ -56,6 +56,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jfree.util.Log;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -178,7 +179,7 @@ public class ProjectOutcomeListAction extends BaseAction {
       projectOutcome.setCrpProgramOutcome(crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId));
       projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
       projectOutcomeID = projectOutcome.getId().longValue();
-      projectOutcome.setOrder(this.defineProjectOutcomeOrder(projectOutcome));
+      projectOutcome.setOrder(this.defineProjectOutcomeOrderNew(projectOutcome));
       if (this.isAiccra()) {
         this.addAllCrpMilestones(projectOutcome);
       }
@@ -262,6 +263,20 @@ public class ProjectOutcomeListAction extends BaseAction {
       if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.5")) {
         orderIndex = 35;
       }
+    }
+    return orderIndex;
+  }
+
+
+  public double defineProjectOutcomeOrderNew(ProjectOutcome projectOutcome) {
+    double orderIndex = 0;
+    try {
+      if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
+        && projectOutcome.getCrpProgramOutcome().getOrderIndex() != null) {
+        orderIndex = projectOutcome.getCrpProgramOutcome().getOrderIndex();
+      }
+    } catch (Exception e) {
+      Log.error("error getting order index from crp program outcome " + e);
     }
     return orderIndex;
   }
@@ -465,9 +480,17 @@ public class ProjectOutcomeListAction extends BaseAction {
 
     if (project.getOutcomes() != null) {
       for (ProjectOutcome projectOutcome : project.getOutcomes()) {
-        this.defineProjectOutcomeOrder(projectOutcome);
+        if (projectOutcome != null && projectOutcome.getId() != null) {
+          projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcome.getId());
+          if (projectOutcome.getCrpProgramOutcome() != null && projectOutcome.getCrpProgramOutcome().getId() != null) {
+            projectOutcome.setCrpProgramOutcome(
+              crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId()));
+          }
+          projectOutcome.setOrder(this.defineProjectOutcomeOrderNew(projectOutcome));
+        }
       }
     }
+
   }
 
 
