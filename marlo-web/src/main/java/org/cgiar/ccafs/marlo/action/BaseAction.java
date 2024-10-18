@@ -3982,6 +3982,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } catch (Exception e) {
       e.printStackTrace();
     }
+
+    // 10/10/2024 add functionality to avoid no active oicr
+    try {
+      expectedStudies = expectedStudies.stream().filter(o -> o.isActive()).collect(Collectors.toList());
+    } catch (Exception e) {
+      LOG.error(" error in function getexpectedCrpOutcomes - unable to extract inactive oicr");
+    }
     return expectedStudies;
   }
 

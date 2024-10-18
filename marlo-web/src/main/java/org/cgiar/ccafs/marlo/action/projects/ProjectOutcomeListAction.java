@@ -56,6 +56,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jfree.util.Log;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -178,7 +179,7 @@ public class ProjectOutcomeListAction extends BaseAction {
       projectOutcome.setCrpProgramOutcome(crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId));
       projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
       projectOutcomeID = projectOutcome.getId().longValue();
-      projectOutcome.setOrder(this.defineProjectOutcomeOrder(projectOutcome));
+      projectOutcome.setOrder(this.defineProjectOutcomeOrderNew(projectOutcome));
       if (this.isAiccra()) {
         this.addAllCrpMilestones(projectOutcome);
       }
@@ -193,75 +194,94 @@ public class ProjectOutcomeListAction extends BaseAction {
     double orderIndex = 1;
     if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
       && projectOutcome.getCrpProgramOutcome().getDescription() != null) {
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 1")) {
-        orderIndex = 1;
+      if (projectOutcome.getCrpProgramOutcome().getDescription()
+        .contains(APConstants.DELIVERABLE_CRP_PROGRAM_OUTCOME_DEPRECATED)) {
+        orderIndex = 500;
+      } else {
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 1")) {
+          orderIndex = 1;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 2")) {
+          orderIndex = 2;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 3")) {
+          orderIndex = 3;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 4")) {
+          orderIndex = 4;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 5")) {
+          orderIndex = 5;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.1")) {
+          orderIndex = 11;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.2")) {
+          orderIndex = 12;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.3")) {
+          orderIndex = 13;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.4")) {
+          orderIndex = 14;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.5")) {
+          orderIndex = 15;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.1")) {
+          orderIndex = 21;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.1")) {
+          orderIndex = 21;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.2")) {
+          orderIndex = 22;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.3")) {
+          orderIndex = 23;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.4")) {
+          orderIndex = 24;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.5")) {
+          orderIndex = 25;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.6")) {
+          orderIndex = 26;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.1")) {
+          orderIndex = 31;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.1")) {
+          orderIndex = 31;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.2")) {
+          orderIndex = 32;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.3")) {
+          orderIndex = 33;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.4")) {
+          orderIndex = 34;
+        }
+        if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.5")) {
+          orderIndex = 35;
+        }
       }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 2")) {
-        orderIndex = 2;
+    }
+    return orderIndex;
+  }
+
+
+  public double defineProjectOutcomeOrderNew(ProjectOutcome projectOutcome) {
+    double orderIndex = 0;
+    try {
+      if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null
+        && projectOutcome.getCrpProgramOutcome().getOrderIndex() != null) {
+        orderIndex = projectOutcome.getCrpProgramOutcome().getOrderIndex();
       }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 3")) {
-        orderIndex = 3;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 4")) {
-        orderIndex = 4;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("Indicator 5")) {
-        orderIndex = 5;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.1")) {
-        orderIndex = 11;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.2")) {
-        orderIndex = 12;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.3")) {
-        orderIndex = 13;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.4")) {
-        orderIndex = 14;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("1.5")) {
-        orderIndex = 15;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.1")) {
-        orderIndex = 21;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.1")) {
-        orderIndex = 21;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.2")) {
-        orderIndex = 22;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.3")) {
-        orderIndex = 23;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.4")) {
-        orderIndex = 24;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.5")) {
-        orderIndex = 25;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("2.6")) {
-        orderIndex = 26;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.1")) {
-        orderIndex = 31;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.1")) {
-        orderIndex = 31;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.2")) {
-        orderIndex = 32;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.3")) {
-        orderIndex = 33;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.4")) {
-        orderIndex = 34;
-      }
-      if (projectOutcome.getCrpProgramOutcome().getDescription().contains("3.5")) {
-        orderIndex = 35;
-      }
+    } catch (Exception e) {
+      Log.error("error getting order index from crp program outcome " + e);
     }
     return orderIndex;
   }
@@ -465,9 +485,21 @@ public class ProjectOutcomeListAction extends BaseAction {
 
     if (project.getOutcomes() != null) {
       for (ProjectOutcome projectOutcome : project.getOutcomes()) {
-        this.defineProjectOutcomeOrder(projectOutcome);
+        if (projectOutcome != null && projectOutcome.getId() != null) {
+          projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcome.getId());
+          if (projectOutcome.getCrpProgramOutcome() != null && projectOutcome.getCrpProgramOutcome().getId() != null) {
+            projectOutcome.setCrpProgramOutcome(
+              crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId()));
+          }
+          if (this.defineProjectOutcomeOrderNew(projectOutcome) != 0) {
+            projectOutcome.setOrder(this.defineProjectOutcomeOrderNew(projectOutcome));
+          } else {
+            projectOutcome.setOrder(this.defineProjectOutcomeOrder(projectOutcome));
+          }
+        }
       }
     }
+
   }
 
 
