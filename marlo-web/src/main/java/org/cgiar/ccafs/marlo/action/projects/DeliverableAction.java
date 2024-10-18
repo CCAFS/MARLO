@@ -1154,9 +1154,11 @@ public class DeliverableAction extends BaseAction {
         if (deliverableTraineesIndicator != null && deliverableTraineesIndicator.getIndicator() != null
           && !deliverableTraineesIndicator.getIndicator().isEmpty()) {
           String indicator = deliverableTraineesIndicator.getIndicator();
-          crpProgramOutcomeIPI =
-            programOutcomes.stream().filter(o -> o.getAcronym() != null && o.getAcronym().equals(indicator))
-              .collect(Collectors.toList()).get(0);
+          crpProgramOutcomeIPI = programOutcomes.stream()
+            .filter(o -> o.getAcronym() != null && o.getAcronym().equals(indicator)
+              && (o.getDescription() == null
+                || !o.getDescription().contains(APConstants.DELIVERABLE_CRP_PROGRAM_OUTCOME_DEPRECATED)))
+            .collect(Collectors.toList()).get(0);
         }
       }
 
