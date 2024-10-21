@@ -47,7 +47,7 @@
     </many-to-one>
     
         <property name="achievedValue" type="java.lang.Long">
-            <column name="achieved_value" precision="10" scale="0" />
+            <column name="achieved_value" precision="12" scale="2" />
         </property>
         <property name="narrativeTarget" type="string">
             <column name="narrative_target" sql-type="TEXT"  />

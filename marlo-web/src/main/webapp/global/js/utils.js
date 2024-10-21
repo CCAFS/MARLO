@@ -808,12 +808,30 @@ function setCustomEvent(event_category,eventName,event_label) {
  * Sets the format for input fields with numbers to have commas and separators.
  */
 function setFormatInput() {
-      
+  
     $("input.targetValueNumber").each(function (i, ele) {
 
-      $(ele).mask("00,000,000", {reverse: true});
+      const initialMask = $(ele).attr("value").includes('.') ? '900.99' : '999,999,000';
 
+      const options = {
+        onKeyPress: function (currentValue, event, element, opti) {
+          const masks = ['999,999,000', '900.99'];
+          const mask = (event.originalEvent.data === '.' || currentValue.includes('.')) ? masks[1] : masks[0];
+          
+          if((!currentValue.includes('.')) && (event.originalEvent.data === '.')) {
+            $(ele).val(currentValue+= '.');
+          } 
+          setTimeout(() => {
+            $(ele).mask(mask, options);
+          }, 100);
+        },
+        reverse: true,
+        clearIfNotMatch: false
+      };
 
+      $(ele).mask(initialMask, options);
+
+      
       if($(ele).attr("value") === "") {
         $(ele).empty();
         $(ele).unmask();
@@ -822,7 +840,7 @@ function setFormatInput() {
 
       $(ele).on("focus", function () {
         if($(ele).attr("value") === "") {
-          $(ele).mask("00,000,000", {reverse: true});
+          $(ele).mask(initialMask,options);
         }
         
       });
