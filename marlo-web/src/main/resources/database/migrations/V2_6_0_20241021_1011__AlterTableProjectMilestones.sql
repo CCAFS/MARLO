@@ -1,0 +1,1 @@
+ALTER TABLE project_milestones MODIFY COLUMN achieved_value decimal(12,2) NULL;
