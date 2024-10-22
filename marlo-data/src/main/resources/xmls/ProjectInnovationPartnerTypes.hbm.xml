@@ -11,7 +11,15 @@
 		</id>
 		<property name="name" type="string" >
 			<column name="name" sql-type="TEXT" />
-		</property>	
+		</property>
+		<set name="projectInnovationPartnerships" table="project_innovation_partnerships"
+            inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="innovation_partner_type_id" />
+            </key>
+            <one-to-many
+                class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationPartnership" />
+        </set>      	
 	</class>
 	
 </hibernate-mapping>

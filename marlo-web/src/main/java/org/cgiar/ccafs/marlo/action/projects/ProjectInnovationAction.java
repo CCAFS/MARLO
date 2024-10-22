@@ -41,6 +41,9 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationOrganizationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationPartnerTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationPartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationPartnershipPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
@@ -182,6 +185,9 @@ public class ProjectInnovationAction extends BaseAction {
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
   private ProjectInnovationCrpOutcomeManager projectInnovationCrpOutcomeManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private ProjectInnovationPartnershipManager projectInnovationPartnershipManager;
+  private ProjectInnovationPartnerTypeManager projectInnovationPartnerTypeManager;
+  private ProjectInnovationPartnershipPersonManager projectInnovationPartnershipPersonManager;
 
   // Variables
   private long projectID;
@@ -259,7 +265,10 @@ public class ProjectInnovationAction extends BaseAction {
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
     FeedbackQACommentManager feedbackQACommentManager,
     ProjectInnovationCrpOutcomeManager projectInnovationCrpOutcomeManager,
-    CrpProgramOutcomeManager crpProgramOutcomeManager) {
+    CrpProgramOutcomeManager crpProgramOutcomeManager,
+    ProjectInnovationPartnershipManager projectInnovationPartnershipManager,
+    ProjectInnovationPartnerTypeManager projectInnovationPartnerTypeManager,
+    ProjectInnovationPartnershipPersonManager projectInnovationPartnershipPersonManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -305,6 +314,9 @@ public class ProjectInnovationAction extends BaseAction {
     this.feedbackQACommentManager = feedbackQACommentManager;
     this.projectInnovationCrpOutcomeManager = projectInnovationCrpOutcomeManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.projectInnovationPartnershipManager = projectInnovationPartnershipManager;
+    this.projectInnovationPartnerTypeManager = projectInnovationPartnerTypeManager;
+    this.projectInnovationPartnershipPersonManager = projectInnovationPartnershipPersonManager;
   }
 
   /**

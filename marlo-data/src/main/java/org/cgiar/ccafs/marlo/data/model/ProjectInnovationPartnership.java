@@ -17,6 +17,10 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.google.gson.annotations.Expose;
 
 public class ProjectInnovationPartnership extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
@@ -31,6 +35,10 @@ public class ProjectInnovationPartnership extends MarloAuditableEntity implement
   private ProjectInnovationPartnerType projectInnovationPartnerType;
   @Expose
   private Institution institution;
+
+  private Set<ProjectInnovationPartnershipPerson> projectInnovationPartnershipsPersons = new HashSet<>(0);
+  private List<ProjectInnovationPartnershipPerson> partnershipPersons;
+
 
   public ProjectInnovationPartnership() {
   }
@@ -66,12 +74,20 @@ public class ProjectInnovationPartnership extends MarloAuditableEntity implement
     return sb.toString();
   }
 
+  public List<ProjectInnovationPartnershipPerson> getPartnershipPersons() {
+    return partnershipPersons;
+  }
+
   public Phase getPhase() {
     return phase;
   }
 
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
+  }
+
+  public Set<ProjectInnovationPartnershipPerson> getProjectInnovationPartnershipsPersons() {
+    return projectInnovationPartnershipsPersons;
   }
 
   public ProjectInnovationPartnerType getProjectInnovationPartnerType() {
@@ -82,12 +98,22 @@ public class ProjectInnovationPartnership extends MarloAuditableEntity implement
     this.institution = institution;
   }
 
+  public void setPartnershipPersons(List<ProjectInnovationPartnershipPerson> partnershipPersons) {
+    this.partnershipPersons = partnershipPersons;
+  }
+
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
 
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
+  }
+
+  public void setProjectInnovationPartnershipsPersons(
+    Set<ProjectInnovationPartnershipPerson> projectInnovationPartnershipsPersons) {
+    this.projectInnovationPartnershipsPersons = projectInnovationPartnershipsPersons;
   }
 
   public void setProjectInnovationPartnerType(ProjectInnovationPartnerType projectInnovationPartnerType) {

@@ -17,6 +17,10 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.google.gson.annotations.Expose;
 
 public class ProjectInnovationPartnerType extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
@@ -25,11 +29,11 @@ public class ProjectInnovationPartnerType extends MarloAuditableEntity implement
 
   @Expose
   private String name;
-
+  private Set<ProjectInnovationPartnership> projectInnovationPartnerships = new HashSet<>(0);
+  private List<ProjectInnovationPartnership> partnerships;
 
   public ProjectInnovationPartnerType() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -62,8 +66,24 @@ public class ProjectInnovationPartnerType extends MarloAuditableEntity implement
     return name;
   }
 
+  public List<ProjectInnovationPartnership> getPartnerships() {
+    return partnerships;
+  }
+
+  public Set<ProjectInnovationPartnership> getProjectInnovationPartnerships() {
+    return projectInnovationPartnerships;
+  }
+
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setPartnerships(List<ProjectInnovationPartnership> partnerships) {
+    this.partnerships = partnerships;
+  }
+
+  public void setProjectInnovationPartnerships(Set<ProjectInnovationPartnership> projectInnovationPartnerships) {
+    this.projectInnovationPartnerships = projectInnovationPartnerships;
   }
 
   @Override
