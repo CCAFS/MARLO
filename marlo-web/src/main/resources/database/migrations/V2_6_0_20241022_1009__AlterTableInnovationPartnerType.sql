@@ -1,0 +1,1 @@
+RENAME TABLE project_innovation_partner_type TO project_innovation_partner_types;
