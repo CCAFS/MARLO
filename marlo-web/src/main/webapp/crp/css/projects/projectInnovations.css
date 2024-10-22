@@ -1,3 +1,7 @@
+.innovationsTab{
+  margin-top: 2rem;
+}
+
 table tr {
   list-style: none;
   padding-bottom: 9px;
@@ -105,4 +109,84 @@ form .form-group.margin-panel {
 }
 #guide-button{
   display: block;
+}
+
+div.nationalBlock div.selectList span.selection{
+  height: 50px;
+}
+
+div.nationalBlock div.selectList span.selection span.select2-selection{
+  position: relative;
+  width: 170px;
+}
+
+div.nationalBlock div.selectList span.selection span.select2-selection::before{
+  content: "Select a Country(s)";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+div.nationalBlock div.selectList span.selection span.select2-selection ul{
+  position: absolute;
+  top: 30px;
+  overflow:visible;
+  padding: 0;
+  width: 130%;
+}
+
+.generalInformationInnovations {
+  position: relative;
+}
+
+.generalInformationInnovations .form-group {
+  position: relative;
+}
+
+.generalInformationInnovations .form-group .line-hr{
+  position: absolute; 
+  top: 14%;
+  height: 2px;
+  background-color: #CCC;
+  width: 68%;
+  left: 15px;
+}
+
+@media screen and (max-width: 768px) {
+  .generalInformationInnovations .form-group .line-hr{
+    width: 100%;
+  }
+  
+}
+
+@media screen and (min-width: 1366px) {
+  .generalInformationInnovations .form-group .line-hr{
+    width: 70%;
+  }
+  
+}
+
+@media screen and (min-width: 1978){
+  .generalInformationInnovations .form-group .line-hr{
+    width: 71%;
+  }
+}
+
+.generalInformationInnovations .form-group .feedback-flex-items{
+  align-items: flex-end;
+}
+
+.generalInformationInnovations label{
+  font-size: 12px;
+  margin-bottom: 1.25rem;
+  max-width: 180%;
+  width: 180%;
+}
+
+.copyButton{
+  position: relative;
+  top: 11px;
 }

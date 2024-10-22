@@ -101,8 +101,19 @@ public class ProjectInnovationValidator extends BaseValidator {
         }
       }
 
+      // Validate Short Title
+      if (!(this.isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getShortTitle())
+        && this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getShortTitle()) <= 30)) {
+        if (struts) {
+          action.addMessage(action.getText("projectInnovations.shortTitle"));
+          action.addMissingField("projectInnovations.shortTitle");
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.shortTitle",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+
       // Validate Narrative
-      if (!(this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getNarrative()) <= 75)) {
+      if (!(this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getNarrative()) <= 80)) {
         if (struts) {
           action.addMessage(action.getText("projectInnovations.narrative"));
           action.addMissingField("projectInnovations.narrative");
@@ -316,6 +327,30 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
 
       if (!resultProgessValidate) {
+
+        // Validate Innovation Nature
+        if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase())
+          .getRepIndInnovationNature() != null) {
+          if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndInnovationNature()
+            .getId() == null
+            || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndInnovationNature()
+              .getId() == -1) {
+            if (struts) {
+              action.addMessage(action.getText("projectInnovations.innovationNature"));
+              action.addMissingField("projectInnovations.innovationNature");
+              action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndInnovationNature.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+        } else {
+          if (struts) {
+            action.addMessage(action.getText("projectInnovations.innovationNature"));
+            action.addMissingField("projectInnovations.innovationNature");
+            action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndInnovationNature.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+
         // Validate Innovation Type
         if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndInnovationType() != null) {
           if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndInnovationType()

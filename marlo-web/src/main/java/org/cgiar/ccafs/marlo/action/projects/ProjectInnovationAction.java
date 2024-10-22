@@ -51,6 +51,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndContributionOfCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndDegreeInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationNatureManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
@@ -95,6 +96,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp;
 import org.cgiar.ccafs.marlo.data.model.RepIndDegreeInnovation;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.RepIndInnovationNature;
 import org.cgiar.ccafs.marlo.data.model.RepIndInnovationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
@@ -145,6 +147,7 @@ public class ProjectInnovationAction extends BaseAction {
   private RepIndStageInnovationManager repIndStageInnovationManager;
   private RepIndGeographicScopeManager repIndGeographicScopeManager;
   private RepIndInnovationTypeManager repIndInnovationTypeManager;
+  private RepIndInnovationNatureManager repIndInnovationNatureManager;
   private RepIndRegionManager repIndRegionManager;
   private RepIndContributionOfCrpManager repIndContributionOfCrpManager;
   private RepIndDegreeInnovationManager repIndDegreeInnovationManager;
@@ -200,6 +203,7 @@ public class ProjectInnovationAction extends BaseAction {
   private String transaction;
   private List<RepIndGeographicScope> geographicScopeList;
   private List<RepIndInnovationType> innovationTypeList;
+  private List<RepIndInnovationNature> innovationNatureList;
   private List<RepIndContributionOfCrp> contributionCrpList;
   private List<RepIndDegreeInnovation> degreeInnovationList;
   private List<RepIndRegion> regionList;
@@ -231,10 +235,10 @@ public class ProjectInnovationAction extends BaseAction {
     RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager,
     RepIndStageInnovationManager repIndStageInnovationManager,
     RepIndGeographicScopeManager repIndGeographicScopeManager, RepIndInnovationTypeManager repIndInnovationTypeManager,
-    RepIndRegionManager repIndRegionManager, LocElementManager locElementManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager, DeliverableManager deriverableManager,
-    RepIndGenderYouthFocusLevelManager focusLevelManager, ProjectInnovationInfoManager projectInnovationInfoManager,
-    ProjectInnovationCrpManager projectInnovationCrpManager,
+    RepIndInnovationNatureManager repIndInnovationNatureManager, RepIndRegionManager repIndRegionManager,
+    LocElementManager locElementManager, ProjectExpectedStudyManager projectExpectedStudyManager,
+    DeliverableManager deriverableManager, RepIndGenderYouthFocusLevelManager focusLevelManager,
+    ProjectInnovationInfoManager projectInnovationInfoManager, ProjectInnovationCrpManager projectInnovationCrpManager,
     ProjectInnovationOrganizationManager projectInnovationOrganizationManager,
     ProjectInnovationDeliverableManager projectInnovationDeliverableManager,
     ProjectInnovationCountryManager projectInnovationCountryManager,
@@ -265,6 +269,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.repIndStageInnovationManager = repIndStageInnovationManager;
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
     this.repIndInnovationTypeManager = repIndInnovationTypeManager;
+    this.repIndInnovationNatureManager = repIndInnovationNatureManager;
     this.repIndRegionManager = repIndRegionManager;
     this.locElementManager = locElementManager;
     this.deriverableManager = deriverableManager;
@@ -435,6 +440,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public long getInnovationID() {
     return innovationID;
+  }
+
+  public List<RepIndInnovationNature> getInnovationNatureList() {
+    return innovationNatureList;
   }
 
   public List<RepIndInnovationType> getInnovationTypeList() {
@@ -975,7 +984,7 @@ public class ProjectInnovationAction extends BaseAction {
       stageInnovationList = repIndStageInnovationManager.findAll();
       geographicScopeList = repIndGeographicScopeManager.findAll();
       innovationTypeList = repIndInnovationTypeManager.findAll();
-      regionList = repIndRegionManager.findAll();
+      innovationNatureList = repIndInnovationNatureManager.findAll();
       focusLevelList = focusLevelManager.findAll();
       organizationTypeList = repIndOrganizationTypeManager.findAll();
       contributionCrpList = repIndContributionOfCrpManager.findAll();
@@ -1310,6 +1319,7 @@ public class ProjectInnovationAction extends BaseAction {
       innovation.getProjectInnovationInfo().setRepIndPhaseResearchPartnership(null);
       innovation.getProjectInnovationInfo().setRepIndStageInnovation(null);
       innovation.getProjectInnovationInfo().setRepIndInnovationType(null);
+      innovation.getProjectInnovationInfo().setRepIndInnovationNature(null);
       innovation.getProjectInnovationInfo().setRepIndRegion(null);
       innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
       innovation.getProjectInnovationInfo().setLeadOrganization(null);
@@ -1325,7 +1335,6 @@ public class ProjectInnovationAction extends BaseAction {
       srfIdos.add(srfIdo);
     }
   }
-
 
   @Override
   public String save() {
@@ -1459,6 +1468,12 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
+      if (innovation.getProjectInnovationInfo().getRepIndInnovationNature() != null) {
+        if (innovation.getProjectInnovationInfo().getRepIndInnovationNature().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndInnovationNature(null);
+        }
+      }
+
       if (innovation.getProjectInnovationInfo().getRepIndRegion() != null) {
         if (innovation.getProjectInnovationInfo().getRepIndRegion().getId() == -1) {
           innovation.getProjectInnovationInfo().setRepIndRegion(null);
@@ -1539,6 +1554,7 @@ public class ProjectInnovationAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
+
 
   public void saveCenters(ProjectInnovation projectInnovation, Phase phase) {
 
@@ -2284,6 +2300,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setInnovationID(long innovationID) {
     this.innovationID = innovationID;
+  }
+
+  public void setInnovationNatureList(List<RepIndInnovationNature> innovationNatureList) {
+    this.innovationNatureList = innovationNatureList;
   }
 
   public void setInnovationTypeList(List<RepIndInnovationType> innovationTypeList) {

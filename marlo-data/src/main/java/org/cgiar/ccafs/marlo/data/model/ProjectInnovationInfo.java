@@ -34,6 +34,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   private RepIndInnovationType repIndInnovationType;
 
   @Expose
+  private RepIndInnovationNature repIndInnovationNature;
+
+  @Expose
   private RepIndGeographicScope repIndGeographicScope;
 
   @Expose
@@ -49,6 +52,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   private String title;
 
   @Expose
+  private String shortTitle;
+
+  @Expose
   private String narrative;
 
   @Expose
@@ -62,7 +68,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   @Expose
   private Long year;
-  
+
   @Expose
   private Long innovationNumber;
 
@@ -106,9 +112,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public ProjectInnovationInfo(ProjectInnovation projectInnovation,
     RepIndPhaseResearchPartnership repIndPhaseResearchPartnership, RepIndStageInnovation repIndStageInnovation,
     Phase phase, RepIndRegion repIndRegion, RepIndInnovationType repIndInnovationType,
-    RepIndGeographicScope repIndGeographicScope, RepIndGenderYouthFocusLevel genderFocusLevel,
-    RepIndGenderYouthFocusLevel youthFocusLevel, String title, String narrative, String descriptionStage,
-    String evidenceLink, String genderExplaniation, String youthExplaniation, Long year) {
+    RepIndInnovationNature repIndInnovationNature, RepIndGeographicScope repIndGeographicScope,
+    RepIndGenderYouthFocusLevel genderFocusLevel, RepIndGenderYouthFocusLevel youthFocusLevel, String title,
+    String narrative, String descriptionStage, String evidenceLink, String genderExplaniation, String youthExplaniation,
+    Long year) {
     super();
     this.projectInnovation = projectInnovation;
     this.repIndPhaseResearchPartnership = repIndPhaseResearchPartnership;
@@ -116,6 +123,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.phase = phase;
     this.repIndRegion = repIndRegion;
     this.repIndInnovationType = repIndInnovationType;
+    this.repIndInnovationNature = repIndInnovationNature;
     this.repIndGeographicScope = repIndGeographicScope;
     this.genderFocusLevel = genderFocusLevel;
     this.youthFocusLevel = youthFocusLevel;
@@ -127,15 +135,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.youthExplaniation = youthExplaniation;
     this.year = year;
   }
-  
-  
-  public Long getInnovationNumber() {
-	return innovationNumber;
-  }
 
-  public void setInnovationNumber(Long innovationNumber) {
-	this.innovationNumber = innovationNumber;
-  }
 
   public String getAdaptativeResearchNarrative() {
     return adaptativeResearchNarrative;
@@ -145,22 +145,14 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return clearLead;
   }
 
-
   public String getDescriptionStage() {
     return descriptionStage;
-  }
-  
-  public Boolean getHasMilestones() {
-	return hasMilestones;
-  }
-
-  public void setHasMilestones(Boolean hasMilestones) {
-	this.hasMilestones = hasMilestones;
   }
 
   public String getEvidenceLink() {
     return evidenceLink;
   }
+
 
   public String getGenderExplaniation() {
     return genderExplaniation;
@@ -168,6 +160,14 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public RepIndGenderYouthFocusLevel getGenderFocusLevel() {
     return genderFocusLevel;
+  }
+
+  public Boolean getHasMilestones() {
+    return hasMilestones;
+  }
+
+  public Long getInnovationNumber() {
+    return innovationNumber;
   }
 
   public Institution getLeadOrganization() {
@@ -197,7 +197,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return narrative;
   }
 
-
   public String getOtherInnovationType() {
     return otherInnovationType;
   }
@@ -211,7 +210,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return projectExpectedStudy;
   }
 
-
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
   }
@@ -224,6 +222,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public RepIndGeographicScope getRepIndGeographicScope() {
     return repIndGeographicScope;
+  }
+
+  public RepIndInnovationNature getRepIndInnovationNature() {
+    return repIndInnovationNature;
   }
 
 
@@ -244,6 +246,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public RepIndStageInnovation getRepIndStageInnovation() {
     return repIndStageInnovation;
+  }
+
+
+  public String getShortTitle() {
+    return shortTitle;
   }
 
 
@@ -282,7 +289,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.clearLead = clearLead;
   }
 
-
   public void setDescriptionStage(String descriptionStage) {
     this.descriptionStage = descriptionStage;
   }
@@ -299,9 +305,18 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.genderFocusLevel = genderFocusLevel;
   }
 
+  public void setHasMilestones(Boolean hasMilestones) {
+    this.hasMilestones = hasMilestones;
+  }
+
+  public void setInnovationNumber(Long innovationNumber) {
+    this.innovationNumber = innovationNumber;
+  }
+
   public void setLeadOrganization(Institution leadOrganization) {
     this.leadOrganization = leadOrganization;
   }
+
 
   @Override
   public void setModifiedBy(User modifiedBy) {
@@ -315,7 +330,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public void setOtherInnovationType(String otherInnovationType) {
     this.otherInnovationType = otherInnovationType;
   }
-
 
   public void setPhase(Phase phase) {
     this.phase = phase;
@@ -333,18 +347,24 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.repIndDegreeInnovation = repIndDegreeInnovation;
   }
 
+
   public void setRepIndGeographicScope(RepIndGeographicScope repIndGeographicScope) {
     this.repIndGeographicScope = repIndGeographicScope;
+  }
+
+
+  public void setRepIndInnovationNature(RepIndInnovationNature repIndInnovationNature) {
+    this.repIndInnovationNature = repIndInnovationNature;
   }
 
   public void setRepIndInnovationType(RepIndInnovationType repIndInnovationType) {
     this.repIndInnovationType = repIndInnovationType;
   }
 
+
   public void setRepIndPhaseResearchPartnership(RepIndPhaseResearchPartnership repIndPhaseResearchPartnership) {
     this.repIndPhaseResearchPartnership = repIndPhaseResearchPartnership;
   }
-
 
   public void setRepIndRegion(RepIndRegion repIndRegion) {
     this.repIndRegion = repIndRegion;
@@ -354,6 +374,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.repIndStageInnovation = repIndStageInnovation;
   }
 
+  public void setShortTitle(String shortTitle) {
+    this.shortTitle = shortTitle;
+  }
 
   public void setTitle(String title) {
     this.title = title;
@@ -363,11 +386,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.year = year;
   }
 
-
   public void setYouthExplaniation(String youthExplaniation) {
     this.youthExplaniation = youthExplaniation;
   }
-
 
   public void setYouthFocusLevel(RepIndGenderYouthFocusLevel youthFocusLevel) {
     this.youthFocusLevel = youthFocusLevel;
@@ -390,12 +411,14 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setPhase(phase);
 
     this.setTitle(projectInnovationInfoUpdate.getTitle());
+    this.setShortTitle(projectInnovationInfoUpdate.getShortTitle());
     this.setNarrative(projectInnovationInfoUpdate.getNarrative());
     this.setProjectInnovation(projectInnovationInfoUpdate.getProjectInnovation());
     this.setRepIndPhaseResearchPartnership(projectInnovationInfoUpdate.getRepIndPhaseResearchPartnership());
     this.setRepIndStageInnovation(projectInnovationInfoUpdate.getRepIndStageInnovation());
     this.setRepIndRegion(projectInnovationInfoUpdate.getRepIndRegion());
     this.setRepIndInnovationType(projectInnovationInfoUpdate.getRepIndInnovationType());
+    this.setRepIndInnovationNature(projectInnovationInfoUpdate.getRepIndInnovationNature());
     this.setRepIndGeographicScope(projectInnovationInfoUpdate.getRepIndGeographicScope());
     this.setRepIndDegreeInnovation(projectInnovationInfoUpdate.getRepIndDegreeInnovation());
     this.setGenderFocusLevel(projectInnovationInfoUpdate.getGenderFocusLevel());
