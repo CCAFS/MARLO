@@ -50,6 +50,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndContributionOfCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndDegreeInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
@@ -94,6 +95,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp;
 import org.cgiar.ccafs.marlo.data.model.RepIndDegreeInnovation;
@@ -188,6 +190,8 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationPartnershipManager projectInnovationPartnershipManager;
   private ProjectInnovationPartnerTypeManager projectInnovationPartnerTypeManager;
   private ProjectInnovationPartnershipPersonManager projectInnovationPartnershipPersonManager;
+  private ProjectPartnerManager projectPartnerManager;
+
 
   // Variables
   private long projectID;
@@ -224,6 +228,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<Project> myProjects;
   private ProjectInnovationValidator validator;
   private Boolean clearLead;
+  private Boolean isManagingPartnerPersonRequerid;
   private List<Institution> centers;
   private List<CrpMilestone> milestones;
   private List<SrfSubIdo> subIdos;
@@ -233,7 +238,9 @@ public class ProjectInnovationAction extends BaseAction {
   private List<ProjectOutcome> projectOutcomes;
   private List<FeedbackQACommentableFields> feedbackComments;
   private List<CrpProgramOutcome> crpOutcomes;
-
+  private List<ProjectPartner> partners;
+  private List<ProjectPartnerPerson> partnerPersons;
+  private List<Institution> partnerInstitutions;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -268,7 +275,8 @@ public class ProjectInnovationAction extends BaseAction {
     CrpProgramOutcomeManager crpProgramOutcomeManager,
     ProjectInnovationPartnershipManager projectInnovationPartnershipManager,
     ProjectInnovationPartnerTypeManager projectInnovationPartnerTypeManager,
-    ProjectInnovationPartnershipPersonManager projectInnovationPartnershipPersonManager) {
+    ProjectInnovationPartnershipPersonManager projectInnovationPartnershipPersonManager,
+    ProjectPartnerManager projectPartnerManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -317,6 +325,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationPartnershipManager = projectInnovationPartnershipManager;
     this.projectInnovationPartnerTypeManager = projectInnovationPartnerTypeManager;
     this.projectInnovationPartnershipPersonManager = projectInnovationPartnershipPersonManager;
+    this.projectPartnerManager = projectPartnerManager;
   }
 
   /**
@@ -484,6 +493,18 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<RepIndOrganizationType> getOrganizationTypeList() {
     return organizationTypeList;
+  }
+
+  public List<Institution> getPartnerInstitutions() {
+    return partnerInstitutions;
+  }
+
+  public List<ProjectPartnerPerson> getPartnerPersons() {
+    return partnerPersons;
+  }
+
+  public List<ProjectPartner> getPartners() {
+    return partners;
   }
 
   public List<RepIndPhaseResearchPartnership> getPhaseResearchList() {
@@ -970,6 +991,33 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
 
+      }
+
+      this.partners = new ArrayList<>();
+      this.partnerInstitutions = new ArrayList<>();
+      this.isManagingPartnerPersonRequerid = this.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
+
+      final List<ProjectPartner> partnersTmp = this.projectPartnerManager
+        .findAllByPhaseProject(this.innovation.getProject().getId(), this.getActualPhase().getId());
+
+      if (partnersTmp != null) {
+        for (final ProjectPartner partner : partnersTmp) {
+          final List<ProjectPartnerPerson> persons = partner.getProjectPartnerPersons().stream()
+            .filter(ProjectPartnerPerson::isActive).collect(Collectors.toList());
+          if (!this.isManagingPartnerPersonRequerid) {
+            this.partners.add(partner);
+            this.partnerInstitutions.add(partner.getInstitution());
+          } else {
+            if (!persons.isEmpty()) {
+              this.partners.add(partner);
+              this.partnerInstitutions.add(partner.getInstitution());
+            }
+          }
+        }
+        this.partnerPersons = new ArrayList<>();
+
+        this.partnerPersons =
+          this.partners.stream().flatMap(e -> e.getProjectPartnerPersons().stream()).collect(Collectors.toList());
       }
 
       if (!this.isDraft()) {
@@ -1566,7 +1614,6 @@ public class ProjectInnovationAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
-
 
   public void saveCenters(ProjectInnovation projectInnovation, Phase phase) {
 
@@ -2344,6 +2391,18 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setOrganizationTypeList(List<RepIndOrganizationType> organizationTypeList) {
     this.organizationTypeList = organizationTypeList;
+  }
+
+  public void setPartnerInstitutions(List<Institution> partnerInstitutions) {
+    this.partnerInstitutions = partnerInstitutions;
+  }
+
+  public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
+    this.partnerPersons = partnerPersons;
+  }
+
+  public void setPartners(List<ProjectPartner> partners) {
+    this.partners = partners;
   }
 
   public void setPhaseResearchList(List<RepIndPhaseResearchPartnership> phaseResearchList) {
