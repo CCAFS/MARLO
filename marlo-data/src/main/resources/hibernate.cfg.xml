@@ -452,5 +452,6 @@
   <mapping resource="xmls/ProjectExpectedStudyGlobalTargets.hbm.xml"/>
   <mapping resource="xmls/RepIndInnovationNatures.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationPartnerTypes.hbm.xml"/>
+  <mapping resource="xmls/ProjectInnovationPartnerships.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>
