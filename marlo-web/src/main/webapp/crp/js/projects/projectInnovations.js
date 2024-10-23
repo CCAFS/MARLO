@@ -15,6 +15,10 @@ $(document).ready(function() {
   // Attach Events
   attachEvents();
   AddRequired();
+
+  //init partners methods
+  deliverablePartnersModule.init();
+
   feedbackAutoImplementation();
 });
 
@@ -121,3 +125,136 @@ function formatStateCountries(state) {
   }
   return $state;
 };
+
+var deliverablePartnersModule = (function () {
+
+  function init() {
+    console.log('Starting deliverablePartnersModule');
+
+    updateInstitutionSelects();
+
+    attachEvents();
+  }
+
+  function attachEvents() {
+    // On change institution
+    $('select.partnerInstitutionID').on('change', changePartnerInstitution);
+    // On remove a deliverable partner item
+    $('.removePartnerItem').on('click', removePartnerItem);
+    // On add a new deliverable partner Item
+    $('.addPartnerItem').on('click', addPartnerItem);
+
+    updateIndexes();
+
+  }
+
+  function addPartnerItem() {
+    var $listBlock = $('.projectInnovationsPartners');
+    var $template = $('#deliverablePartnerItem-template');
+
+    if($template.find('select').data('select2')){
+      $template.find('select').select2("destroy");
+    }
+    
+    var $newItem = $template.clone(true).removeAttr('id');
+
+    $template.find('select').select2();
+    $newItem.find('select').select2();
+    $listBlock.append($newItem);
+    $newItem.show();
+    updateIndexes();
+  }
+
+  function removePartnerItem() {
+    var $item = $(this).parents('.deliverablePartnerItem');
+    $item.hide(500, function () {
+      $item.remove();
+      updateIndexes();
+    });
+  }
+
+  function changePartnerInstitution() {
+    var $deliverablePartner = $(this).parents('.deliverablePartnerItem');
+    var $usersBlock = $deliverablePartner.find('.usersBlock');
+    var typeID = $deliverablePartner.find('input.partnerTypeID').val();
+    var isResponsible = (typeID == 1);
+    // Clean users list
+    $usersBlock.empty();
+    // Get new users list
+    var $newUsersBlock = $('#partnerUsers .institution-' + this.value + ' .users-' + typeID).clone(true);
+    //Remove name _TEMPLATE_ from inputs
+    $newUsersBlock.find('input').each(function(_i,e) {
+      e.name = (e.name).replace("_TEMPLATE_", "");
+      e.id = (e.id).replace("_TEMPLATE_", "");
+    });
+
+    // Show them
+    $usersBlock.append($newUsersBlock.html());
+    // Update indexes
+    if (!isResponsible) {
+      updateIndexes();
+    }
+  }
+
+  function updateIndexes() {
+    $('.projectInnovationsPartners .deliverablePartnerItem').each(function (i, partner) {
+
+      // Update deliverable partner index
+      $(partner).setNameIndexes(1, i);
+
+      $(partner).find('.deliverableUserItem').each(function (j, user) {
+        var personID = $(user).find('input[type="checkbox"]').val();
+        var customID = "jsGenerated-" + i + "-" + j + "-" + personID;
+        // Update user index
+        $(user).setNameIndexes(2, j);
+
+        //Remove name _TEMPLATE_ from inputs
+        $(user).find('input').each(function(_i,e) {
+          e.name = (e.name).replace("_TEMPLATE_", "");
+          e.id = (e.id).replace("_TEMPLATE_", "");
+        });
+
+        // Update user checks/radios labels and inputs ids
+        $(user).find('input[type="checkbox"]').attr('id', customID);
+        $(user).find('label.checkbox-label').attr('for', customID);
+      });
+
+    });
+
+    updateInstitutionSelects()
+  }
+
+  function updateInstitutionSelects() {
+    var $listBlock = $('.projectInnovationsPartners');
+    var $institutionsSelects = $listBlock.find('select.partnerInstitutionID');
+
+    // Get selected values
+    selectedValues = $institutionsSelects.map(function (i, select) {
+      return select.value;
+    });
+
+    $institutionsSelects.each(function (i, select) {
+      // Enable options
+      $(select).find('option').prop('disabled', false);
+
+      // Disable only the selected values
+      $.each(selectedValues, function (key, val) {
+        if (select.value != val) {
+          $(select).find('option[value="' + val + '"]').prop('disabled', true);
+        }
+      });
+    });
+
+    // Reset Select2
+    setTimeout(function () {
+      $institutionsSelects.select2({
+        width: '98%'
+      });
+    });
+
+  }
+
+  return {
+    init: init
+  }
+})();
