@@ -21,6 +21,8 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SafeguardsManager;
@@ -30,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.Safeguards;
@@ -94,13 +97,15 @@ public class SafeguardAction extends BaseAction {
   private List<FeedbackQACommentableFields> feedbackComments;
   private FeedbackQACommentManager feedbackQACommentManager;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
+  private GlobalUnitManager crpManager;
+  private PhaseManager phaseManager;
 
   @Inject
   public SafeguardAction(APConfig config, ProjectManager projectManager, UserManager userManager,
     SectionStatusManager sectionStatusManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
     SafeguardValidator validator, HistoryComparator historyComparator, ProjectInfoManager projectInfoManagerManager,
     SafeguardsManager safeguardsManager, FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
-    FeedbackQACommentManager feedbackQACommentManager) {
+    FeedbackQACommentManager feedbackQACommentManager, GlobalUnitManager crpManager, PhaseManager phaseManager) {
     super(config);
     this.projectManager = projectManager;
     this.projectInfoManagerManager = projectInfoManagerManager;
@@ -112,6 +117,8 @@ public class SafeguardAction extends BaseAction {
     this.safeguardsManager = safeguardsManager;
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.feedbackQACommentManager = feedbackQACommentManager;
+    this.crpManager = crpManager;
+    this.phaseManager = phaseManager;
   }
 
   /**
@@ -189,7 +196,16 @@ public class SafeguardAction extends BaseAction {
   }
 
   public String getBaseLineFileUrlPath(String safeguardID) {
-    return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=safeguard&id=" + safeguardID;
+    String acronym = "";
+    if (this.getActualPhase().getCrp() != null) {
+      acronym = this.getActualPhase().getCrp().getAcronym();
+    } else {
+      Phase phaseTmp = this.phaseManager.getPhaseById(this.getActualPhase().getId());
+      acronym = this.crpManager.getGlobalUnitById(phaseTmp.getCrp().getId()).getAcronym();
+    }
+
+    // return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=safeguard&id=" + safeguardID;
+    return "crp=" + acronym + "&category=safeguard&id=" + safeguardID;
   }
 
   /**

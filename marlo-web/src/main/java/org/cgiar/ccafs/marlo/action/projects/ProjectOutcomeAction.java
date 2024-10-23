@@ -899,7 +899,15 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
   public String getBaseLineFileUrlPath(String outcomeID) {
-    return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
+    String acronym = "";
+    if (this.getActualPhase().getCrp() != null) {
+      acronym = this.getActualPhase().getCrp().getAcronym();
+    } else {
+      Phase phaseTmp = this.phaseManager.getPhaseById(this.getActualPhase().getId());
+      acronym = this.crpManager.getGlobalUnitById(phaseTmp.getCrp().getId()).getAcronym();
+    }
+    // return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
+    return "crp=" + acronym + "&category=projects&id=" + outcomeID;
   }
 
   public List<Deliverable> getDeliverableJournals() {
