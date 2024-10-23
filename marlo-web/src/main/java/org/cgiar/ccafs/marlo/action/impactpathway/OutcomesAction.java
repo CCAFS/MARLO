@@ -267,7 +267,7 @@ public class OutcomesAction extends BaseAction {
 
   public String getBaseLineFileUrlPath(String outcomeID) {
     String acronym = "";
-    if (this.getActualPhase().getCrp() != null) {
+    if (this.getActualPhase().getCrp() != null && this.getActualPhase().getCrp().getAcronym() != null) {
       acronym = this.getActualPhase().getCrp().getAcronym();
     } else {
       Phase phaseTmp = this.phaseManager.getPhaseById(this.getActualPhase().getId());
