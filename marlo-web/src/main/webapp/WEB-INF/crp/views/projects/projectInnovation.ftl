@@ -85,12 +85,17 @@
         </div>
       [/#if]
       
+      [#--  Innovation Title --]
+      <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3> 
 
-        
       [@s.form action=actionName cssClass="pure-form" enctype="multipart/form-data" ]
         
         [#assign isProgressActive = action.isProgressActive() /]
 
+        [#-- Innovation Description --]
+        [@innovations.innovationDescription element=(innovation)!{} name="innovation" index=0 /]          
+
+        [#-- Innovation General --]
         [@innovations.innovationGeneral element=(innovation)!{} name="innovation" index=0 /]          
       
       [#-- Section Buttons & hidden inputs--]
