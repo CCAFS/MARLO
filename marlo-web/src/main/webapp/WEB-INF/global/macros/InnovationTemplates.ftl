@@ -42,7 +42,7 @@
 [#macro innovationGeneral element name index=-1 template=false ]
         [#local isProgressActive = action.isProgressActive() ]
         
-        <div id="innovations" class="borderBox clearfix">   
+        <div id="general" class="borderBox clearfix">   
 
           <div class="">        
             <div class="form-group row">
@@ -329,12 +329,53 @@
       </div>
 [/#macro]
 
+[#macro innovationAlliance element name index=-1 template=false]
+  <div id="alliance" class="borderBox clearfix">
+    <div class="form-group row">
+      <hr class="line-hr" />
+      <div class="col-md-12">
+        <h3>[@s.text name="projectInnovations.alliance" /]</h3>
+      </div>
+    </div>
+  </div>
+[/#macro]
+
+[#macro innovationOneCGIAR element name index=-1 template=false]
+  <div id="oneCGIAR" class="borderBox clearfix">
+    <div class="form-group row">
+      <hr class="line-hr" />
+      <div class="col-md-12">
+        <h3>[@s.text name="projectInnovations.oneCGIAR" /]</h3>
+      </div>
+    </div>
+  </div>
+[/#macro]
+
+[#macro innovationReadiness element name index=-1 template=false]
+  <div id="readiness" class="borderBox clearfix">
+    <div class="form-group row">
+      <hr class="line-hr" />
+      <div class="col-md-12">
+        <h3>[@s.text name="projectInnovations.readiness" /]</h3>
+      </div>
+    </div>
+  </div>
+[/#macro]
+
+[#macro innovationFunding element name index=-1 template=false]
+  <div id="funding" class="borderBox clearfix">
+    <div class="form-group row">
+      <hr class="line-hr" />
+      <div class="col-md-12">
+        <h3>[@s.text name="projectInnovations.funding" /]</h3>
+      </div>
+    </div>
+  </div>
+[/#macro]
+
 [#function findElementID list id]
   [#list (list)![] as item]
     [#if (item.repIndGeographicScope.id == id)!false][#return true][/#if]
   [/#list]
   [#return false]
 [/#function]
-
-[#macro innovationAlliance element name index=-1 template=false ]
-[/#macro]

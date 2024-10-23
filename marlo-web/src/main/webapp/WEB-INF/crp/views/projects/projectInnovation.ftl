@@ -36,6 +36,8 @@
 <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
 <input type="hidden" id="sectionNameToFeedback" value="innovation" />
 
+[#assign indexTab = 0]
+
 [#assign geographicScopeList = (element.geographicScopes)![] ]
 [#assign isGlobal =        findElementID(geographicScopeList,  action.reportingIndGeographicScopeGlobal) /]
 [#assign isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
@@ -95,8 +97,60 @@
         [#-- Innovation Description --]
         [@innovations.innovationDescription element=(innovation)!{} name="innovation" index=0 /]          
 
-        [#-- Innovation General --]
-        [@innovations.innovationGeneral element=(innovation)!{} name="innovation" index=0 /]          
+        [#-- Content: All the information of the case study --]
+        <input id="indexTab" name="indexTab" type="hidden" value="${(indexTab)!0}">
+        
+        <div class="innovationTabs">
+          [#-- Tabs Navigation --]
+          <ul class="nav nav-tabs" role="tablist">
+
+            <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if] col-md">
+              <a href="#innovationGeneral" role="tab" data-toggle="tab">[@s.text name="projectInnovations.innovationGeneral" /]</a>
+            </li>
+
+            <li role="presentation" class="[#if indexTab==2]active[/#if] col-md">
+              <a href="#innovationAlliance" role="tab" data-toggle="tab">[@s.text name="projectInnovations.innovationAlliance" /]</a>
+            </li>
+
+            <li role="presentation" class="[#if indexTab==3]active[/#if] col-md">
+              <a href="#innovationOneCGIAR" role="tab" data-toggle="tab">[@s.text name="projectInnovations.innovationOneCGIAR" /]</a>
+            </li>
+
+            <li role="presentation" class="[#if indexTab==4]active[/#if] col-md">
+              <a href="#innovationReadiness" role="tab" data-toggle="tab">[@s.text name="projectInnovations.innovationReadiness" /]</a>
+            </li>
+
+            <li role="presentation" class="[#if indexTab==5]active[/#if] col-md">
+              <a href="#innovationFunding" role="tab" data-toggle="tab">[@s.text name="projectInnovations.innovationFunding" /]</a>
+            </li>
+          </ul>
+
+          [#-- Tabs Content --]
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade [#if indexTab==1 || indexTab==0]in active[/#if]" id="innovationGeneral">
+              [#-- Innovation General --]
+              [@innovations.innovationGeneral element=(innovation)!{} name="innovation" index=0 /]
+            </div>
+            <div role="tabpanel" class="tab-pane fade [#if indexTab==2]in active[/#if]" id="innovationAlliance">
+              [#-- Innovation Alliance Aligment--]
+              [@innovations.innovationAlliance element=(innovation)!{} name="innovation" index=0 /]
+            </div>
+            <div role="tabpanel" class="tab-pane fade [#if indexTab==3]in active[/#if]" id="innovationOneCGIAR">
+              [#-- Innovation OneCGIAR Aligment--]
+              [@innovations.innovationOneCGIAR element=(innovation)!{} name="innovation" index=0 /]
+            </div>
+            <div role="tabpanel" class="tab-pane fade [#if indexTab==4]in active[/#if]" id="innovationReadiness">
+              [#-- Innovation Readiness --]
+              [@innovations.innovationReadiness element=(innovation)!{} name="innovation" index=0 /]
+            </div>
+            <div role="tabpanel" class="tab-pane fade [#if indexTab==5]in active[/#if]" id="innovationFunding">
+              [#-- Innovation IP Rights and Funding --]
+              [@innovations.innovationFunding element=(innovation)!{} name="innovation" index=0 /]
+            </div>
+          </div>
+
+        </div>
+        
       
       [#-- Section Buttons & hidden inputs--]
       [#include "/WEB-INF/crp/views/projects/buttons-innovation.ftl" /]
