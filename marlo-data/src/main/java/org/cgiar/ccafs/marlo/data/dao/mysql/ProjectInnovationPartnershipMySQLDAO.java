@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectInnovationPartnershipMySQLDAO extends AbstractMarloDAO<ProjectInnovationPartnership, Long> implements ProjectInnovationPartnershipDAO {
+public class ProjectInnovationPartnershipMySQLDAO extends AbstractMarloDAO<ProjectInnovationPartnership, Long>
+  implements ProjectInnovationPartnershipDAO {
 
 
   @Inject
@@ -62,11 +63,33 @@ public class ProjectInnovationPartnershipMySQLDAO extends AbstractMarloDAO<Proje
   public List<ProjectInnovationPartnership> findAll() {
     String query = "from " + ProjectInnovationPartnership.class.getName() + " where is_active=1";
     List<ProjectInnovationPartnership> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
 
+  }
+
+  @Override
+  public List<ProjectInnovationPartnership> findByInnovation(long innovationID) {
+    String query = "from " + ProjectInnovationPartnership.class.getName()
+      + " where is_active=1 and project_innovation_id=" + innovationID;
+    List<ProjectInnovationPartnership> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return null;
+  }
+
+  @Override
+  public List<ProjectInnovationPartnership> findByInnovationAndPhase(long innovationID, long phaseId) {
+    String query = "from " + ProjectInnovationPartnership.class.getName() + " where is_active=1 and id_phase=" + phaseId
+      + " and project_innovation_id=" + innovationID;
+    List<ProjectInnovationPartnership> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return null;
   }
 
   @Override

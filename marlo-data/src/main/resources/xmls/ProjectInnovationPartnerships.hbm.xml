@@ -38,7 +38,7 @@
         <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
             <column name="institution_id" not-null="true" />
         </many-to-one>     
-        <set name="projectInnovationPartnershipsPersons" table="project_innovation_partnerships_persons"
+        <set name="projectInnovationPartnershipPersons" table="project_innovation_partnerships_persons"
             inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="partnership_id" />

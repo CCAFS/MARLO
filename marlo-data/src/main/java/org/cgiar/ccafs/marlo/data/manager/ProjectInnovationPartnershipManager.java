@@ -53,6 +53,23 @@ public interface ProjectInnovationPartnershipManager {
 
 
   /**
+   * This method gets a projectInnovationPartnership list by a given projectInnovation.
+   * 
+   * @param innovationID is the projectInnovationPartnership identifier.
+   * @return a ProjectInnovationPartnership list.
+   */
+  List<ProjectInnovationPartnership> findByInnovation(long innovationID);
+
+  /**
+   * This method gets a projectInnovationPartnership list by a given projectInnovation and phase identifier.
+   * 
+   * @param innovationID is the projectInnovationPartnership identifier.
+   * @param phaseID is the phase identifier.
+   * @return a ProjectInnovationPartnership list.
+   */
+  List<ProjectInnovationPartnership> findByInnovationAndPhase(long innovationID, long phaseId);
+
+  /**
    * This method gets a projectInnovationPartnership object by a given projectInnovationPartnership identifier.
    * 
    * @param projectInnovationPartnershipID is the projectInnovationPartnership identifier.
@@ -63,12 +80,14 @@ public interface ProjectInnovationPartnershipManager {
   /**
    * This method saves the information of the given projectInnovationPartnership
    * 
-   * @param projectInnovationPartnership - is the projectInnovationPartnership object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationPartnership was
+   * @param projectInnovationPartnership - is the projectInnovationPartnership object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectInnovationPartnership was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectInnovationPartnership saveProjectInnovationPartnership(ProjectInnovationPartnership projectInnovationPartnership);
-
+  public ProjectInnovationPartnership
+    saveProjectInnovationPartnership(ProjectInnovationPartnership projectInnovationPartnership);
 
 }

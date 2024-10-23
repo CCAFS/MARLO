@@ -36,7 +36,7 @@ public class ProjectInnovationPartnership extends MarloAuditableEntity implement
   @Expose
   private Institution institution;
 
-  private Set<ProjectInnovationPartnershipPerson> projectInnovationPartnershipsPersons = new HashSet<>(0);
+  private Set<ProjectInnovationPartnershipPerson> projectInnovationPartnershipPersons = new HashSet<>(0);
   private List<ProjectInnovationPartnershipPerson> partnershipPersons;
 
 
@@ -86,8 +86,8 @@ public class ProjectInnovationPartnership extends MarloAuditableEntity implement
     return projectInnovation;
   }
 
-  public Set<ProjectInnovationPartnershipPerson> getProjectInnovationPartnershipsPersons() {
-    return projectInnovationPartnershipsPersons;
+  public Set<ProjectInnovationPartnershipPerson> getProjectInnovationPartnershipPersons() {
+    return projectInnovationPartnershipPersons;
   }
 
   public ProjectInnovationPartnerType getProjectInnovationPartnerType() {
@@ -111,9 +111,9 @@ public class ProjectInnovationPartnership extends MarloAuditableEntity implement
     this.projectInnovation = projectInnovation;
   }
 
-  public void setProjectInnovationPartnershipsPersons(
-    Set<ProjectInnovationPartnershipPerson> projectInnovationPartnershipsPersons) {
-    this.projectInnovationPartnershipsPersons = projectInnovationPartnershipsPersons;
+  public void setProjectInnovationPartnershipPersons(
+    Set<ProjectInnovationPartnershipPerson> projectInnovationPartnershipPersons) {
+    this.projectInnovationPartnershipPersons = projectInnovationPartnershipPersons;
   }
 
   public void setProjectInnovationPartnerType(ProjectInnovationPartnerType projectInnovationPartnerType) {
