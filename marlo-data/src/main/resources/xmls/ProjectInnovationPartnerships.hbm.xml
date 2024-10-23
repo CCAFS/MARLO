@@ -25,7 +25,7 @@
         </many-to-one>
         <many-to-one name="projectInnovation"
             class="org.cgiar.ccafs.marlo.data.model.ProjectInnovation" fetch="select">
-            <column name="expected_id" />
+            <column name="project_innovation_id" />
         </many-to-one>
         <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
             fetch="select">
