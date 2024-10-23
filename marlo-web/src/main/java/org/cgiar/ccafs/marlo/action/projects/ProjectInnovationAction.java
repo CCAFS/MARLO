@@ -62,6 +62,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.SdgManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -113,6 +114,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
+import org.cgiar.ccafs.marlo.data.model.Sdg;
 import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -199,6 +201,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectPartnerManager projectPartnerManager;
   private AllianceLeverManager allianceLeverManager;
   private UserManager userManager;
+  private SdgManager sdgManager;
 
   // Variables
   private long projectID;
@@ -249,6 +252,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<ProjectPartnerPerson> partnerPersons;
   private List<Institution> partnerInstitutions;
   private List<AllianceLever> allianceLeverList;
+  private List<Sdg> sdgList;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -284,7 +288,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationPartnershipManager projectInnovationPartnershipManager,
     ProjectInnovationPartnerTypeManager projectInnovationPartnerTypeManager,
     ProjectInnovationPartnershipPersonManager projectInnovationPartnershipPersonManager,
-    ProjectPartnerManager projectPartnerManager, AllianceLeverManager allianceLeverManager, UserManager userManager) {
+    ProjectPartnerManager projectPartnerManager, AllianceLeverManager allianceLeverManager, UserManager userManager,
+    SdgManager sdgManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -336,6 +341,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectPartnerManager = projectPartnerManager;
     this.allianceLeverManager = allianceLeverManager;
     this.userManager = userManager;
+    this.sdgManager = sdgManager;
   }
 
   /**
@@ -547,6 +553,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<LocElement> getRegions() {
     return regions;
+  }
+
+  public List<Sdg> getSdgList() {
+    return sdgList;
   }
 
   public List<SrfIdo> getSrfIdos() {
@@ -1040,6 +1050,7 @@ public class ProjectInnovationAction extends BaseAction {
       this.partners = new ArrayList<>();
       this.partnerInstitutions = new ArrayList<>();
       this.isManagingPartnerPersonRequerid = this.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
+      this.sdgList = this.sdgManager.findAll();
 
       final List<ProjectPartner> partnersTmp = this.projectPartnerManager
         .findAllByPhaseProject(this.innovation.getProject().getId(), this.getActualPhase().getId());
@@ -2646,6 +2657,10 @@ public class ProjectInnovationAction extends BaseAction {
     this.regions = regions;
   }
 
+  public void setSdgList(List<Sdg> sdgList) {
+    this.sdgList = sdgList;
+  }
+
   public void setSrfIdos(List<SrfIdo> srfIdos) {
     this.srfIdos = srfIdos;
   }
@@ -2678,5 +2693,4 @@ public class ProjectInnovationAction extends BaseAction {
         this.getActualPhase().getUpkeep());
     }
   }
-
 }
