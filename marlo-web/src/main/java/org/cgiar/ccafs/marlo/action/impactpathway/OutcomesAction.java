@@ -262,13 +262,7 @@ public class OutcomesAction extends BaseAction {
     return path;
   }
 
-  public String getBaseLineFileUrlPath(String outcomeID) {
-    System.out.println("linea 265 " + this.getActualPhase());
-    System.out.println("linea 266 " + this.getActualPhase().getCrp());
-    System.out.println("linea 267 " + this.getActualPhase().getCrp().getAcronym());
-    LOG.info("linea 265 " + this.getActualPhase());
-    LOG.info("linea 266 " + this.getActualPhase().getCrp());
-    LOG.info("linea 267 " + this.getActualPhase().getCrp().getAcronym());
+  public String getBaseLineFileUrlPath(String outcomeID) {    
     return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
   }
 
