@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbIndAssesmentRiskManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbIndFollowingMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbIndMilestoneRiskManager;
@@ -172,6 +173,7 @@ public class OutcomesAction extends BaseAction {
   private PowbIndFollowingMilestoneManager powbIndFollowingMilestoneManager;
 
   private List<GeneralStatus> generalStatuses;
+  private PhaseManager phaseManager;
 
   @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
@@ -205,6 +207,7 @@ public class OutcomesAction extends BaseAction {
     this.powbIndMilestoneRiskManager = powbIndMilestoneRiskManager;
     this.powbIndFollowingMilestoneManager = powbIndFollowingMilestoneManager;
     this.generalStatusManager = generalStatusManager;
+    this.phaseManager = phaseManager;
   }
 
 
@@ -263,7 +266,15 @@ public class OutcomesAction extends BaseAction {
   }
 
   public String getBaseLineFileUrlPath(String outcomeID) {
-    return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
+    String acronym = "";
+    if (this.getActualPhase().getCrp() != null) {
+      acronym = this.getActualPhase().getCrp().getAcronym();
+    } else {
+      Phase phaseTmp = this.phaseManager.getPhaseById(this.getActualPhase().getId());
+      acronym = this.crpManager.getGlobalUnitById(phaseTmp.getCrp().getId()).getAcronym();
+    }
+    // return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=projects&id=" + outcomeID;
+    return "crp=" + acronym + "&category=projects&id=" + outcomeID;
   }
 
   public long getCrpProgramID() {
