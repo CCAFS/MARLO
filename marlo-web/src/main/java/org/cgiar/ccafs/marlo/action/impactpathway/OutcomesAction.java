@@ -185,7 +185,8 @@ public class OutcomesAction extends BaseAction {
     PowbIndAssesmentRiskManager powbIndAssesmentRiskManager,
     RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
     PowbIndMilestoneRiskManager powbIndMilestoneRiskManager,
-    PowbIndFollowingMilestoneManager powbIndFollowingMilestoneManager, GeneralStatusManager generalStatusManager) {
+    PowbIndFollowingMilestoneManager powbIndFollowingMilestoneManager, GeneralStatusManager generalStatusManager,
+    PhaseManager phaseManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
