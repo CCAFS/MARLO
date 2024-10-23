@@ -151,7 +151,7 @@ div.nationalBlock div.selectList span.selection span.select2-selection ul{
   top: 14%;
   height: 2px;
   background-color: #CCC;
-  width: 68%;
+  width: 63%;
   left: 15px;
 }
 
@@ -164,14 +164,14 @@ div.nationalBlock div.selectList span.selection span.select2-selection ul{
 
 @media screen and (min-width: 1366px) {
   .generalInformationInnovations .form-group .line-hr{
-    width: 70%;
+    width: 64%;
   }
   
 }
 
 @media screen and (min-width: 1978){
   .generalInformationInnovations .form-group .line-hr{
-    width: 71%;
+    width: 65%;
   }
 }
 
@@ -184,6 +184,40 @@ div.nationalBlock div.selectList span.selection span.select2-selection ul{
   margin-bottom: 1.25rem;
   max-width: 180%;
   width: 180%;
+}
+
+.generalInnovationsOptions{
+  position: absolute;
+  right: 0;
+  padding: 0 15px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.generalInnovationsOptions button{
+  width: 100%;
+  color: #fff;
+  border-radius: 0.3125rem;
+  background: #337AB7;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.generalInnovationsOptions button p{
+  margin: 0;
+}
+
+.generalInnovationsOptions button p span{
+  margin-right: 0.25rem;
+}
+
+#modalCounterShared{
+  background-color: #fff;
+  color: #337AB7;
+  width: 16px;
+  border-radius: 100%;
 }
 
 .copyButton{
