@@ -10,7 +10,7 @@
       <generator class="identity" />
     </id>
     <many-to-one name="crp"
-      class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select" lazy="true">
+      class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select" >
       <column name="global_unit_id" not-null="true" />
     </many-to-one>
     <property name="name" type="string">
