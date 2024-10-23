@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AllianceLeverManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
@@ -63,6 +64,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
+import org.cgiar.ccafs.marlo.data.model.AllianceLever;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -191,7 +193,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationPartnerTypeManager projectInnovationPartnerTypeManager;
   private ProjectInnovationPartnershipPersonManager projectInnovationPartnershipPersonManager;
   private ProjectPartnerManager projectPartnerManager;
-
+  private AllianceLeverManager allianceLeverManager;
 
   // Variables
   private long projectID;
@@ -241,6 +243,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<ProjectPartner> partners;
   private List<ProjectPartnerPerson> partnerPersons;
   private List<Institution> partnerInstitutions;
+  private List<AllianceLever> allianceLeverList;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -276,7 +279,7 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationPartnershipManager projectInnovationPartnershipManager,
     ProjectInnovationPartnerTypeManager projectInnovationPartnerTypeManager,
     ProjectInnovationPartnershipPersonManager projectInnovationPartnershipPersonManager,
-    ProjectPartnerManager projectPartnerManager) {
+    ProjectPartnerManager projectPartnerManager, AllianceLeverManager allianceLeverManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -326,6 +329,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationPartnerTypeManager = projectInnovationPartnerTypeManager;
     this.projectInnovationPartnershipPersonManager = projectInnovationPartnershipPersonManager;
     this.projectPartnerManager = projectPartnerManager;
+    this.allianceLeverManager = allianceLeverManager;
   }
 
   /**
@@ -384,6 +388,10 @@ public class ProjectInnovationAction extends BaseAction {
 
       }
     }
+  }
+
+  public List<AllianceLever> getAllianceLeverList() {
+    return allianceLeverList;
   }
 
   /**
@@ -993,6 +1001,7 @@ public class ProjectInnovationAction extends BaseAction {
 
       }
 
+      this.allianceLeverList = this.allianceLeverManager.findAll();
       this.partners = new ArrayList<>();
       this.partnerInstitutions = new ArrayList<>();
       this.isManagingPartnerPersonRequerid = this.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
@@ -2295,6 +2304,10 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     }
+  }
+
+  public void setAllianceLeverList(List<AllianceLever> allianceLeverList) {
+    this.allianceLeverList = allianceLeverList;
   }
 
   public void setCenters(List<Institution> centers) {
