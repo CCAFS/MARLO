@@ -979,6 +979,35 @@ public class ProjectInnovationAction extends BaseAction {
 
         }
 
+        // Expected Study projectInnovationPartnerships List
+        if (this.innovation.getProjectInnovationPartnerships() != null) {
+
+          final List<ProjectInnovationPartnership> deList = this.innovation.getProjectInnovationPartnerships().stream()
+            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId()) && dp
+              .getProjectInnovationPartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+            .collect(Collectors.toList());
+
+          if ((deList != null) && !deList.isEmpty()) {
+            try {
+              Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            } catch (final Exception e) {
+              this.logger.error("unable to sort dlist", e);
+            }
+            this.innovation.setPartnerships(new ArrayList<>());
+            for (final ProjectInnovationPartnership projectInnovationPartnership : deList) {
+
+              if (projectInnovationPartnership.getProjectInnovationPartnershipPersons() != null) {
+                final List<ProjectInnovationPartnershipPerson> partnershipPersons =
+                  new ArrayList<>(projectInnovationPartnership.getProjectInnovationPartnershipPersons().stream()
+                    .filter(ProjectInnovationPartnershipPerson::isActive).collect(Collectors.toList()));
+                projectInnovationPartnership.setPartnershipPersons(partnershipPersons);
+              }
+              this.innovation.getPartnerships().add(projectInnovationPartnership);
+            }
+
+          }
+        }
+
         // Innovation shared Projects List
         if (this.innovation.getProjectInnovationShareds() != null) {
           this.innovation.setSharedInnovations(new ArrayList<>(this.innovation.getProjectInnovationShareds().stream()
@@ -1387,12 +1416,16 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getCrpOutcomes() != null) {
         innovation.getCrpOutcomes().clear();
       }
+      if (innovation.getPartnerships() != null) {
+        innovation.getPartnerships().clear();
+      }
       // HTTP Post info Values
       // innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
       // innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
       innovation.getProjectInnovationInfo().setProjectExpectedStudy(null);
       innovation.getProjectInnovationInfo().setRepIndPhaseResearchPartnership(null);
       innovation.getProjectInnovationInfo().setRepIndStageInnovation(null);
+      innovation.getProjectInnovationInfo().setRepIndInnovationNature(null);
       innovation.getProjectInnovationInfo().setRepIndInnovationType(null);
       innovation.getProjectInnovationInfo().setRepIndInnovationNature(null);
       innovation.getProjectInnovationInfo().setRepIndRegion(null);
