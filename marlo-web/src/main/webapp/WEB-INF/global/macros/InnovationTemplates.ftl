@@ -45,7 +45,6 @@
         
         <div id="general" class="borderBox clearfix">   
 
-          <div class="">        
             <div class="form-group row">
             [#--  
               <div class="col-md-4">
@@ -71,38 +70,29 @@
           
             [#-- Narrative --] 
             <div class="form-group">
-              [@customForm.textArea name="innovation.projectInnovationInfo.narrative"  i18nkey="projectInnovations.narrative"  placeholder="" className="limitWords-80" help="" helpIcon=false required=false editable=editable /]         
-            </div>
-            <div class="note--2">
-                <p>[@s.text name="projectInnovations.narrative.helpText" /]</p>
+              [@customForm.textArea name="innovation.projectInnovationInfo.narrative"  i18nkey="projectInnovations.narrative"  placeholder="" className="limitWords-80" help="projectInnovations.narrative.helpText" isNote=true helpIcon=false required=false editable=editable /]         
             </div>
             
-            [#-- Phase of research and Stage of innovation --] 
-            <div class="form-group row">
+            [#-- Phase of research and Stage of innovation - DEPRECIATED --] 
+            [#-- <div class="form-group row">
               <div class="col-md-6 ">
                 [@customForm.select name="innovation.projectInnovationInfo.repIndStageInnovation.id" label=""  i18nkey="projectInnovations.stage" listName="stageInnovationList" keyFieldName="id"  displayFieldName="name"   required=!isProgressActive  className="stageInnovationSelect" editable=editable/]
                 [#local isStageFour = (innovation.projectInnovationInfo.repIndStageInnovation.id == 4)!false]
               </div>
               <div class="col-md-6 ">
               </div>
-            </div>
+            </div>  --]
             
             [#-- Innovation nature --]
             <div class="form-group row">  
               <!-- Primera columna: Innovation Nature -->
               <div class="col-md-6">
-                [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationNature.id" label="" i18nkey="projectInnovations.innovationNature" listName="innovationNatureList" keyFieldName="id" displayFieldName="name" required=!isProgressActive className="innovationTypeSelect" editable=editable/]
-                <div class="note--2">
-                  <p>[@s.text name="projectInnovations.innovationNature.helpText" /]</p>
-                </div>
+                [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationNature.id" label="" i18nkey="projectInnovations.innovationNature" listName="innovationNatureList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationNature.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable/]
               </div>
             
               <!-- second column: Innovation Type -->
               <div class="col-md-6">
-                [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label="" i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=!isProgressActive className="innovationTypeSelect" editable=editable/]
-                <div class="note--2">
-                  <p>[@s.text name="projectInnovations.innovationType.helpText" /]</p>
-                </div>
+                [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label="" i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationType.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable/]
               </div>
             </div>
           
@@ -127,10 +117,10 @@
               </div>
             </div>--]
             
-            [#-- Specify next user organizational type (Only if stage 4) --]
-            <div class="form-group stageFourBlock-true" style="display:${isStageFour?string('block','none')}">
+            [#-- Specify next user organizational type (Only if stage 4) - DEPRECIATED --]
+            [#-- <div class="form-group stageFourBlock-true" >
               [@customForm.elementsListComponent name="innovation.organizations" elementType="repIndOrganizationType" elementList=innovation.organizations label="projectInnovations.nextUserOrganizationalType"  listName="organizationTypeList" keyFieldName="id" displayFieldName="name"/]
-            </div>
+            </div> --]
 
             [#-- 6.  Geographic scope - Countries
             <div class="form-group geographicScopeBlock">
@@ -155,7 +145,7 @@
               </div>
             </div>
             --]
-            [#--  6. Geographic scope - Countries  --]
+            [#-- Geographic scope - Countries  --]
             <div class="form-group geographicScopeBlock">
               [#local geographicScopeList = (element.geographicScopes)![] ]
               [#local isGlobal =        findElementID(geographicScopeList,  action.reportingIndGeographicScopeGlobal) /]
@@ -198,159 +188,155 @@
                 </div>
               </div>
             </div>
-            
-            [#-- Description of Stage reached--] 
-            <div class="form-group">
-              [@customForm.textArea name="innovation.projectInnovationInfo.descriptionStage" i18nkey="projectInnovations.stageDescription" help="projectInnovations.stageDescription.help" helpIcon=false placeholder="" className="limitWords-50" required=!isProgressActive editable=editable /]
-            </div>
-            
-            [#-- Is clear lead  --]
-            [#local isClearLead = (innovation.projectInnovationInfo.clearLead)!false /]
 
-            <div class="form-group isClearLead">
-              [@customForm.checkmark id="isClearLeadToAddRequired" name="clearLead" i18nkey="projectInnovations.clearLead" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(innovation.projectInnovationInfo.clearLead)!false cssClass="isClearLead" cssClassLabel=""  /]
-            </div>
-            [#-- Lead Organization --]
-            <div class="form-group lead-organization" style="display:${isClearLead?string('none','block')}">
-              [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="composedName" className="" editable=editable required=!isProgressActive /]
+            [#-- Contributing Centers/ PPA partners  --]
+            <div class="form-group contributionsCenters">
+              <label>[@s.text name="projectInnovations.contributingCenters" /]: [@customForm.req required=true /]</label>
+              <div class="note">
+                <span class="glyphicon glyphicon-question-sign"></span> [@s.text name="study.generalInformation.ppapartner.note"][@s.param] 
+                <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]
+              </div>
+              
+              [#-- Contributing Centers --]
+              <div class="col-md-6">
+                [@customForm.elementsListComponent name="innovation.centers" i18nkey="innovation.centers" elementType="institution" elementList=innovation.centers label="projectInnovations.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=!isProgressActive /]
+              </div>
+
+              <div class="col-md-6 top-five-contributing">
+                [@customForm.elementsListComponent name="innovation.contributingOrganizations" i18nkey="innovation.contributingOrganizations" maxLimit=5 elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations"  listName="institutions" keyFieldName="id" displayFieldName="composedName" /]
+
+                [#-- Request partner adition --]
+                [#if editable]
+                  <p id="addPartnerText" class="helpMessage">
+                    If you cannot find the organization you are looking for, please 
+                    <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='projectID']${(projectID)!}[/@s.param][@s.param name='context'](${(actionName)!}: ID-${(innovation.id)!})[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                      click here to [@s.text name="projectPartners.addPartnerMessage.second" /]
+                    </a>
+                  </p>
+                  <br />
+                [/#if]
+              </div>
+
             </div>
             
-            [#-- Top Five Contributing Organizations --]
-            <div class="form-group top-five-contributing">
-              [@customForm.elementsListComponent name="innovation.contributingOrganizations" i18nkey="innovation.contributingOrganizations" maxLimit=5 elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations"  listName="institutions" keyFieldName="id" displayFieldName="composedName" /]
-            </div>
+            [#-- Description of Stage reached - DEPRECIATED --] 
+            [#-- <div class="form-group">
+              [@customForm.textArea name="innovation.projectInnovationInfo.descriptionStage" i18nkey="projectInnovations.stageDescription" help="projectInnovations.stageDescription.help" helpIcon=false placeholder="" className="limitWords-50" required=!isProgressActive editable=editable /]
+            </div> --]
+            
+
+
+            [#-- Lead Organization --]
+            [#-- Is clear lead  --]
+            [#--[#local isClearLead = (innovation.projectInnovationInfo.clearLead)!false /]--}
+            [#--  <div class="oldManageContributions">
+              <div class="form-group isClearLead">
+                [@customForm.checkmark id="isClearLeadToAddRequired" name="clearLead" i18nkey="projectInnovations.clearLead" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(innovation.projectInnovationInfo.clearLead)!false cssClass="isClearLead" cssClassLabel=""  /]
+              </div>
+              <div class="form-group lead-organization" style="display:${isClearLead?string('none','block')}">
+                [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="composedName" className="" editable=editable required=!isProgressActive /]
+              </div>
+            </div>  --]
+            
+
             
             [#-- Novel or Adaptive research --]
-            [#--<div class="form-group">
+            [#-- <div class="form-group">
               [@customForm.textArea name="innovation.projectInnovationInfo.adaptativeResearchNarrative" i18nkey="projectInnovations.novelOrAdaptative" placeholder="" className="" required=false editable=editable /]
             </div>--]
-            
-            [#-- Request partner adition --]
-            [#if editable]
-            <p id="addPartnerText" class="helpMessage">
-              If you cannot find the organization you are looking for, please 
-              <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='projectID']${(projectID)!}[/@s.param][@s.param name='context'](${(actionName)!}: ID-${(innovation.id)!})[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-                click here to [@s.text name="projectPartners.addPartnerMessage.second" /]
-              </a>
-            </p>
-            <br />
-            [/#if]
           
-            [#-- Specify an Outcome Case Study (Only if stage 4) --]
-            <div class="form-group stageFourBlock-true" style="display:${isStageFour?string('block','none')}">
-              [#--  
-              [@customForm.select name="innovation.projectInnovationInfo.projectExpectedStudy.id" label=""  i18nkey="projectInnovations.outcomeCaseStudy" listName="expectedStudyList" keyFieldName="id"  displayFieldName="composedNameAlternative"  multiple=false required=true  className="keyOutput" editable=editable/]
-              --]
+            [#-- Specify an Outcome Case Study (Only if stage 4) - DEPRECIATED --]
+            [#-- <div class="form-group stageFourBlock-true">
               [@customForm.elementsListComponent name="innovation.studies" elementType="projectExpectedStudy" elementList=innovation.studies label="projectInnovations.outcomeCaseStudy" helpIcon=false listName="expectedStudyList" keyFieldName="id" displayFieldName="composedNameAlternative" required=(isEvidenceRequired!false && !isProgressActive)/]
-            </div>
+            </div> --]
                   
-            [#-- Evidence Link --] 
-            <div class="form-group stageFourBlock-false" style="display:${isStageFour?string('none','block')}">
+            [#-- Evidence Link - DEPRECIATED --] 
+            [#-- <div class="form-group stageFourBlock-false" >
               [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink"  placeholder="marloRequestCreation.webSiteLink.placeholder" className="" required=!isProgressActive editable=editable /]
-            </div>
+            </div> --]
           
-            [#-- Or Deliverable ID (optional) --]
-            <div class="form-group">
+            [#-- Or Deliverable ID (optional) - DEPRECIATED --]
+
+            [#-- <div class="form-group">
               [@customForm.elementsListComponent name="innovation.deliverables" elementType="deliverable" elementList=innovation.deliverables label="projectInnovations.deliverableId"  listName="deliverableList" required=false keyFieldName="id" displayFieldName="tagTitle"/]
-            </div>
+            </div> --]
             
-          [#-- Milestones Contribution --]
-          <div class="form-group">    
-              <label for="">[@s.text name="innovation.outcomes" /]:[@customForm.req required=(editable && !isProgressActive) /]
-                <div class="feedback-flex-items">
-                  [@customForm.helpLabel name="innovation.outcomes.help" showIcon=false editable=editable/]
-                </div> 
-              </label>
-              [#local innovationMilestoneLink = "innovationMilestoneLink"]
-              [#local showMilestoneIndicator = (innovation.projectInnovationInfo.hasMilestones?string)!"" /]
-              [@customForm.radioFlat id="${innovationMilestoneLink}-yes" name="innovation.projectInnovationInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
-              [@customForm.radioFlat id="${innovationMilestoneLink}-no" name="innovation.projectInnovationInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
-          </div> 
-          <div class="note left">
-            <span class="glyphicon glyphicon-question-sign"></span>
-            [@s.text name="project.deliverable.generalInformation.keyOutputNotice2"][@s.param] <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">&nbsp;clicking here</a>[/@] [/@]  
-          </div>
-          
-          [#--    
-          <div class="form-group simpleBox block-${innovationMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
-            [@customForm.elementsListComponent name="innovation.milestones" elementType="crpMilestone" elementList=(innovation.milestones)![] label="innovation.milestones" helpIcon=false listName="milestones" keyFieldName="id" displayFieldName="composedName" required=false hasPrimary=true /]
-            [#-- [@customForm.primaryListComponent name="innovation.milestones" checkName="milestonePrimaryId" elementType="crpMilestone" elementList=(innovation.milestones)!"" label="innovation.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestones" keyFieldName="id" displayFieldName="composedName" required=false /]
-          <div class="note">[@s.text name="innovation.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
-          <br/>
-          </div> 
-          --] 
-          
-          [#--  
-          <div class="form-group simpleBox block-${innovationMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
-            [@customForm.elementsListComponent name="innovation.projectOutcomes" elementType="projectOutcome" elementList=(innovation.projectOutcomes)![] label="innovation.outcomes" helpIcon=false listName="projectOutcomes" keyFieldName="id" displayFieldName="composedName" required=false /]
-            [@customForm.primaryListComponent name="innovation.milestones" checkName="milestonePrimaryId" elementType="crpMilestone" elementList=(innovation.milestones)!"" label="innovation.milestones" labelPrimary="policy.primaryMilestone" helpIcon=false listName="milestones" keyFieldName="id" displayFieldName="composedName" required=false /]
-          <div class="note">[@s.text name="innovation.outcomes.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
-          <br/>
-          </div> 
-          --]
-          
-          
-          <div class="form-group simpleBox block-${innovationMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
-            [@customForm.elementsListComponent name="innovation.crpOutcomes" elementType="crpOutcome" elementList=(innovation.crpOutcomes)![] label="innovation.outcomes" helpIcon=false listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=!isProgressActive /]
-          <div class="note">[@s.text name="innovation.outcomes.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
-          <br/>
-          </div> 
-          
-            [#-- Contributing CRPs/Platforms --]
-          [#if !action.isAiccra()]
+            [#-- Milestones Contribution --]
             <div class="form-group">
-              [@customForm.elementsListComponent name="innovation.crps" elementType="globalUnit" elementList=innovation.crps label="projectInnovations.contributing"  listName="crpList" keyFieldName="id" displayFieldName="composedName" required=false /]
-            </div>
-          [/#if]
-            
-            [#-- Contributing Centers/ PPA partners  --]
-            <div class="form-group">
-              [@customForm.elementsListComponent name="innovation.centers" i18nkey="innovation.centers" elementType="institution" elementList=innovation.centers label="projectInnovations.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=!isProgressActive /]
-              <div class="note"><span class="glyphicon glyphicon-question-sign"></span> [@s.text name="study.generalInformation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
-            </div>
-
-          [#if !action.isAiccra()]
-          [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
-          <div class="form-group simpleBox">
-            [@customForm.elementsListComponent name="innovation.subIdos" elementType="srfSubIdo" elementList=(innovation.subIdos)![] label="innovation.subIDOs" helpIcon=false listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=!isProgressActive hasPrimary=true/]
-          [#--  <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div> --]
-            [#-- [@customForm.primaryListComponent name="innovation.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(innovation.subIdos)!"" label="innovation.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
-            --]
-          </div> 
-          [/#if]
-          </div>
-
-          [#-- Partner users TEMPLATE --]
-          <div id="partnerUsers" style="display:none">
-            [#list partners as partner]
-              <div class="institution-${partner.institution.id}">
-                [#assign usersList = (action.getUserList(partner.institution.id))![]]
-                <div class="users-2">
-                  [#list usersList as user]
-                    [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="_TEMPLATE_innovation.partnerships[0].partnershipPersons" isUserChecked=false isResponsable=false /]
-                  [/#list]
+                <div class="col-md-12">
+                  <label for="">[@s.text name="innovation.outcomes" /]:[@customForm.req required=(editable && !isProgressActive) /]
+                    <div class="feedback-flex-items">
+                      [@customForm.helpLabel name="innovation.outcomes.help" showIcon=false editable=editable/]
+                    </div> 
+                  </label>
+                </div>    
+                [#local innovationMilestoneLink = "innovationMilestoneLink"]
+                [#local showMilestoneIndicator = (innovation.projectInnovationInfo.hasMilestones?string)!"" /]
+                <div class="col-md-1">
+                  [@customForm.radioFlat id="${innovationMilestoneLink}-yes" name="innovation.projectInnovationInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
                 </div>
+                <div class="col-md-1">
+                  [@customForm.radioFlat id="${innovationMilestoneLink}-no" name="innovation.projectInnovationInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
+                </div>
+            </div> 
+
+          
+            <div class="form-group col-md-12 block-${innovationMilestoneLink}" style="display:${(showMilestoneIndicator == 'true')?string('block','none')}">
+              [@customForm.elementsListComponent name="innovation.crpOutcomes" elementType="crpOutcome" elementList=(innovation.crpOutcomes)![] label="innovation.outcomes" helpIcon=false listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=!isProgressActive /]
+              <div class="note left">
+                <span class="glyphicon glyphicon-question-sign"></span>
+                [@s.text name="project.deliverable.generalInformation.keyOutputNotice2"][@s.param] <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">&nbsp;clicking here</a>[/@] [/@]  
               </div>
-            [/#list]
-          </div>
+              <br/>
+            </div> 
+          
+            [#-- Contributing cNE/Platforms --]
+            [#if !action.isAiccra()]
+              <div class="form-group">
+                [@customForm.elementsListComponent name="innovation.crps" elementType="globalUnit" elementList=innovation.crps label="projectInnovations.contributing"  listName="crpList" keyFieldName="id" displayFieldName="composedName" required=false /]
+              </div>
+            [/#if]
+              
+
+            [#if !action.isAiccra()]
+            [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
+            <div class="form-group simpleBox">
+              [@customForm.elementsListComponent name="innovation.subIdos" elementType="srfSubIdo" elementList=(innovation.subIdos)![] label="innovation.subIDOs" helpIcon=false listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=!isProgressActive hasPrimary=true/]
+            [#--  <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div> --]
+              [#-- [@customForm.primaryListComponent name="innovation.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(innovation.subIdos)!"" label="innovation.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
+              --]
+            </div> 
+            [/#if]
+            [#-- Partner users TEMPLATE --]
+            <div id="partnerUsers" style="display:none">
+              [#list partners as partner]
+                <div class="institution-${partner.institution.id}">
+                  [#assign usersList = (action.getUserList(partner.institution.id))![]]
+                  <div class="users-2">
+                    [#list usersList as user]
+                      [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="_TEMPLATE_innovation.partnerships[0].partnershipPersons" isUserChecked=false isResponsable=false /]
+                    [/#list]
+                  </div>
+                </div>
+              [/#list]
+            </div>
       
 
-          [#--  Contact person    --]
-          <div class="form-group stageProcessOne">
-            <label for="">[@s.text name="study.communications.contacts" /]:</label>
-            <div id="addPartnerText" class="note--2">
-              <p>
-                [@s.text name="study.communications.contacts.help" /]
-                <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave'][@s.param name='expectedID']${(expectedID)!}[/@s.param][/@s.url]">
-                  [@s.text name="study.communications.contacts.help2" /]
-                </a>
-              </p>
+            [#--  Contact person    --]
+            <div class="form-group stageProcessOne col-md-12">
+              <label for="">[@s.text name="study.communications.contacts" /]:</label>
+              <div id="addPartnerText" class="note--2">
+                <p>
+                  [@s.text name="study.communications.contacts.help" /]
+                  <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave'][@s.param name='expectedID']${(expectedID)!}[/@s.param][/@s.url]">
+                    [@s.text name="study.communications.contacts.help2" /]
+                  </a>
+                </p>
+              </div>
+              <div class="projectInnovationsPartners">
+                [@deliverableMacros.deliverablePartnerMacro element=(element.partnerships[0])!{} name="innovation.partnerships" index=0 defaultType=2 /]
+              </div>
             </div>
-            <div class="projectInnovationsPartners">
-              [@deliverableMacros.deliverablePartnerMacro element=(element.partnerships[0])!{} name="innovation.partnerships" index=0 defaultType=2 /]
-            </div>
-          </div>
-          
           
         </div>
         

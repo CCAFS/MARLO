@@ -158,7 +158,7 @@
   </div>
 [/#macro]
 
-[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" isFlex=false editable=true isMainTitle=false]
+[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" help="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true isNote=false header=true display=true showTitle=true stringKey=false placeholder="" isFlex=false editable=true isMainTitle=false]
   <div class="feedback-flex-items"></div>
   <div class="select fieldReference ${isFlex?then('select--flex','')} ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
@@ -167,7 +167,7 @@
     <label for="" class="${isMainTitle?string('label--2','')}">
       [#if labelTitle != ""]${labelTitle}:[/#if][@req required=required && editable /]
       [#--  Help Text --]
-      [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+      [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon isNote=isNote editable=editable/]
     </label>
     [/#if]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
