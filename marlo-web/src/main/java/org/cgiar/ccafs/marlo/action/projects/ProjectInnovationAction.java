@@ -85,6 +85,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
@@ -99,6 +100,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSDG;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -1479,6 +1481,12 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getPartnerships() != null) {
         innovation.getPartnerships().clear();
       }
+      if (innovation.getSdgs() != null) {
+        innovation.getSdgs().clear();
+      }
+      if (innovation.getAllianceLevers() != null) {
+        innovation.getAllianceLevers().clear();
+      }
       // HTTP Post info Values
       // innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
       // innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
@@ -1527,6 +1535,8 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveCrpOutcomes(innovationDB, phase);
       this.saveGeographicScope(innovationDB, phase);
       this.saveProjectInnovationPartnership(innovationDB, phase);
+      this.saveAllianceLevers(innovationDB, phase);
+      this.saveSDGs(innovationDB, phase);
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -1721,6 +1731,46 @@ public class ProjectInnovationAction extends BaseAction {
 
     } else {
       return NOT_AUTHORIZED;
+    }
+  }
+
+  /**
+   * Save Project Innovation Alliance Levers
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  public void saveAllianceLevers(ProjectInnovation projectInnovation, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectInnovation.getProjectInnovationAllianceLevers() != null
+      && !projectInnovation.getProjectInnovationAllianceLevers().isEmpty()) {
+
+      List<ProjectInnovationAllianceLevers> allianceLeverPrev =
+        new ArrayList<>(projectInnovation.getProjectInnovationAllianceLevers().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectInnovationAllianceLevers allianceLever : allianceLeverPrev) {
+        if (innovation.getAllianceLevers() == null || !innovation.getAllianceLevers().contains(allianceLever)) {
+          projectInnovationAllianceLeversManager.deleteProjectInnovationAllianceLevers(allianceLever.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (innovation.getAllianceLevers() != null) {
+      for (ProjectInnovationAllianceLevers innovationAllianceLever : innovation.getAllianceLevers()) {
+        if (innovationAllianceLever.getId() == null) {
+          ProjectInnovationAllianceLevers innovationAllianceLeverSave = new ProjectInnovationAllianceLevers();
+          innovationAllianceLeverSave.setAllianceLever(innovationAllianceLever.getAllianceLever());
+          innovationAllianceLeverSave.setProjectInnovation(projectInnovation);
+          innovationAllianceLeverSave.setPhase(phase);
+
+          projectInnovationAllianceLeversManager.saveProjectInnovationAllianceLevers(innovationAllianceLeverSave);
+          // This is to add innovationAllianceLeverSave to generate correct auditlog.
+          innovation.getProjectInnovationAllianceLevers().add(innovationAllianceLeverSave);
+        }
+      }
     }
   }
 
@@ -2448,6 +2498,46 @@ public class ProjectInnovationAction extends BaseAction {
           projectInnovationRegionManager.saveProjectInnovationRegion(innovationRegionSave);
           // This is to add innovationCrpSave to generate correct auditlog.
           innovation.getProjectInnovationRegions().add(innovationRegionSave);
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Project Innovation SDG
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  public void saveSDGs(ProjectInnovation projectInnovation, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectInnovation.getProjectInnovationSDGs() != null
+      && !projectInnovation.getProjectInnovationSDGs().isEmpty()) {
+
+      List<ProjectInnovationSDG> sdgPrev = new ArrayList<>(projectInnovation.getProjectInnovationSDGs().stream()
+        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectInnovationSDG sdg : sdgPrev) {
+        if (innovation.getSdgs() == null || !innovation.getSdgs().contains(sdg)) {
+          projectInnovationSDGManager.deleteProjectInnovationSDG(sdg.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (innovation.getSdgs() != null) {
+      for (ProjectInnovationSDG innovationSdg : innovation.getSdgs()) {
+        if (innovationSdg.getId() == null) {
+          ProjectInnovationSDG innovationSdgSave = new ProjectInnovationSDG();
+          innovationSdgSave.setPhase(this.getActualPhase());
+          innovationSdgSave.setSdg(innovationSdg.getSdg());
+          innovationSdgSave.setProjectInnovation(projectInnovation);
+          innovationSdgSave.setPhase(phase);
+
+          projectInnovationSDGManager.saveProjectInnovationSDG(innovationSdgSave);
+          // This is to add innovationSdgSave to generate correct auditlog.
+          innovation.getProjectInnovationSDGs().add(innovationSdgSave);
         }
       }
     }
