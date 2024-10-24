@@ -197,12 +197,8 @@ public class SafeguardAction extends BaseAction {
 
   public String getBaseLineFileUrlPath(String safeguardID) {
     String acronym = "";
-    if (this.getActualPhase().getCrp() != null & this.getActualPhase().getCrp().getAcronym() != null) {
-      acronym = this.getActualPhase().getCrp().getAcronym();
-    } else {
-      Phase phaseTmp = this.phaseManager.getPhaseById(this.getActualPhase().getId());
-      acronym = this.crpManager.getGlobalUnitById(phaseTmp.getCrp().getId()).getAcronym();
-    }
+    Phase phaseTmp = this.phaseManager.getPhaseById(this.getActualPhase().getId());
+    acronym = this.crpManager.getGlobalUnitById(phaseTmp.getCrp().getId()).getAcronym();
 
     // return "crp=" + this.getActualPhase().getCrp().getAcronym() + "&category=safeguard&id=" + safeguardID;
     return "crp=" + acronym + "&category=safeguard&id=" + safeguardID;
