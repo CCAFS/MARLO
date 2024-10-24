@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceLeversManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
@@ -47,6 +48,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationPartnershipPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSDGManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -117,6 +119,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
 import org.cgiar.ccafs.marlo.data.model.Sdg;
 import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -202,6 +205,8 @@ public class ProjectInnovationAction extends BaseAction {
   private AllianceLeverManager allianceLeverManager;
   private UserManager userManager;
   private SdgManager sdgManager;
+  private ProjectInnovationSDGManager projectInnovationSDGManager;
+  private ProjectInnovationAllianceLeversManager projectInnovationAllianceLeversManager;
 
   // Variables
   private long projectID;
@@ -289,7 +294,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationPartnerTypeManager projectInnovationPartnerTypeManager,
     ProjectInnovationPartnershipPersonManager projectInnovationPartnershipPersonManager,
     ProjectPartnerManager projectPartnerManager, AllianceLeverManager allianceLeverManager, UserManager userManager,
-    SdgManager sdgManager) {
+    SdgManager sdgManager, ProjectInnovationAllianceLeversManager projectInnovationAllianceLeversManager,
+    ProjectInnovationSDGManager projectInnovationSDGManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -342,6 +348,9 @@ public class ProjectInnovationAction extends BaseAction {
     this.allianceLeverManager = allianceLeverManager;
     this.userManager = userManager;
     this.sdgManager = sdgManager;
+    this.projectInnovationAllianceLeversManager = projectInnovationAllianceLeversManager;
+    this.projectInnovationSDGManager = projectInnovationSDGManager;
+
   }
 
   /**
@@ -581,6 +590,35 @@ public class ProjectInnovationAction extends BaseAction {
 
   public String getTransaction() {
     return transaction;
+  }
+
+  /**
+   * This method gets a list of users
+   *
+   * @param institutionId institution identifier
+   * @return User list
+   */
+  public List<User> getUserList(Long institutionId) {
+
+    final List<User> users = new ArrayList<>();
+    List<ProjectPartner> partnersTmp = new ArrayList<>();
+    try {
+      partnersTmp = this.projectPartnerManager.findAllByPhaseProjectAndInstitution(this.projectID,
+        this.getActualPhase().getId(), institutionId);
+    } catch (final Exception e) {
+      this.logger.error("unable to get partners");
+    }
+    if ((partnersTmp != null) && !partnersTmp.isEmpty()) {
+      final ProjectPartner projectPartner = partnersTmp.get(0);
+      final List<ProjectPartnerPerson> partnerPersons = new ArrayList<>(projectPartner.getProjectPartnerPersons()
+        .stream().filter(ProjectPartnerPerson::isActive).collect(Collectors.toList()));
+      for (final ProjectPartnerPerson projectPartnerPerson : partnerPersons) {
+
+        users.add(projectPartnerPerson.getUser());
+      }
+    }
+
+    return users;
   }
 
   public Boolean isClearLead() {
@@ -986,15 +1024,14 @@ public class ProjectInnovationAction extends BaseAction {
               srfSubIdoPrimary = projectPolicies.get(0).getSrfSubIdo().getId(); //
             }
           }
-
         }
 
         // Expected Study projectInnovationPartnerships List
         if (this.innovation.getProjectInnovationPartnerships() != null) {
 
           final List<ProjectInnovationPartnership> deList = this.innovation.getProjectInnovationPartnerships().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId()) && dp
-              .getProjectInnovationPartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+              && dp.getProjectInnovationPartnerType().getId().equals(APConstants.INNOVATION_PARTNERSHIP_TYPE_CENTER))
             .collect(Collectors.toList());
 
           if ((deList != null) && !deList.isEmpty()) {
@@ -1016,6 +1053,18 @@ public class ProjectInnovationAction extends BaseAction {
             }
 
           }
+        }
+
+        // Innovations Alliance levers
+        if (innovation.getProjectInnovationAllianceLevers() != null) {
+          innovation.setAllianceLevers(new ArrayList<>(innovation.getProjectInnovationAllianceLevers().stream()
+            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
+        // Innovations SDGs
+        if (innovation.getProjectInnovationSDGs() != null) {
+          innovation.setSdgs(new ArrayList<>(innovation.getProjectInnovationSDGs().stream()
+            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovation shared Projects List
