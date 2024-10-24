@@ -35,7 +35,33 @@
         [@customForm.input name="innovation.projectExpectedStudyInfo.link" i18nkey="study.general.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable display=false readOnly=true/]
         <div class="message text-center" style="display:none; margin-top:6px;">[@s.text name="study.general.link.copy" /]</div>
 
-      </div>            
+      </div>
+
+      [#-- Shared Cluster Modal --]
+      <div class="form-group col-md-12 sharedClusterMessage">
+        <div class="modal fade" id="sharedClusterModal" tabindex="-1" role="dialog" aria-labelledby="sharedClusterModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="sharedClusterModalLabel">[@s.text name="projectInnovations.sharedProjects.title" /]</h4>
+              </div>
+              <div class="modal-body">
+                      [#-- Projects shared --]
+                <h5 class="headTitle">[@s.text name="projectInnovations.sharedProjects.title" /]</h5>
+                [@customForm.elementsListComponent name="innovation.sharedInnovations" elementType="project" elementList=(innovation.sharedInnovations)![] label="projectInnovations.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">[@s.text name="projectInnovations.sharedProjects.close" /]</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="clearfix"></div>
+      </div>
+              
+
     </div>         
   </div>
 [/#macro]
@@ -340,11 +366,6 @@
           
         </div>
         
-      [#-- Projects shared --]
-      <h3 class="headTitle">[@s.text name="projectInnovations.sharedProjects.title" /]</h3>
-      <div class="borderBox">
-        [@customForm.elementsListComponent name="innovation.sharedInnovations" elementType="project" elementList=(innovation.sharedInnovations)![] label="projectInnovations.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
-      </div>
 [/#macro]
 
 [#macro innovationAlliance element name index=-1 template=false]

@@ -16,6 +16,9 @@ $(document).ready(function() {
   attachEvents();
   AddRequired();
 
+  // Change counter value of Shared Cluster
+  counterSharedCluster();
+
   //init partners methods
   deliverablePartnersModule.init();
 
@@ -125,6 +128,18 @@ function formatStateCountries(state) {
   }
   return $state;
 };
+
+function counterSharedCluster() {
+
+  let currentAmount = $('div[listname="innovation.sharedInnovations"] ul.list li').length;
+  const $counter = $('#modalCounterShared');
+  $counter.text(currentAmount);
+  
+  $('div[listname="innovation.sharedInnovations"] .setSelect2').on('change', function() {
+    currentAmount = $('div[listname="innovation.sharedInnovations"] ul.list li').length;
+    $counter.text(currentAmount);
+  });
+}
 
 var deliverablePartnersModule = (function () {
 
