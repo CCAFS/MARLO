@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ImpactAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -77,6 +78,7 @@ import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -208,6 +210,7 @@ public class ProjectInnovationAction extends BaseAction {
   private AllianceLeverManager allianceLeverManager;
   private UserManager userManager;
   private SdgManager sdgManager;
+  private ImpactAreaManager impactAreaManager;
   private ProjectInnovationSDGManager projectInnovationSDGManager;
   private ProjectInnovationAllianceLeversManager projectInnovationAllianceLeversManager;
 
@@ -261,6 +264,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<Institution> partnerInstitutions;
   private List<AllianceLever> allianceLeverList;
   private List<Sdg> sdgList;
+  private List<ImpactArea> impactAreaList;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -298,7 +302,7 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationPartnershipPersonManager projectInnovationPartnershipPersonManager,
     ProjectPartnerManager projectPartnerManager, AllianceLeverManager allianceLeverManager, UserManager userManager,
     SdgManager sdgManager, ProjectInnovationAllianceLeversManager projectInnovationAllianceLeversManager,
-    ProjectInnovationSDGManager projectInnovationSDGManager) {
+    ProjectInnovationSDGManager projectInnovationSDGManager, ImpactAreaManager impactAreaManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -353,6 +357,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.sdgManager = sdgManager;
     this.projectInnovationAllianceLeversManager = projectInnovationAllianceLeversManager;
     this.projectInnovationSDGManager = projectInnovationSDGManager;
+    this.impactAreaManager = impactAreaManager;
 
   }
 
@@ -485,6 +490,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public HashMap<Long, String> getIdoList() {
     return idoList;
+  }
+
+  public List<ImpactArea> getImpactAreaList() {
+    return impactAreaList;
   }
 
   public ProjectInnovation getInnovation() {
@@ -1166,6 +1175,7 @@ public class ProjectInnovationAction extends BaseAction {
       this.partnerInstitutions = new ArrayList<>();
       this.isManagingPartnerPersonRequerid = this.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
       this.sdgList = this.sdgManager.findAll();
+      this.impactAreaList = this.impactAreaManager.findAll();
 
       final List<ProjectPartner> partnersTmp = this.projectPartnerManager
         .findAllByPhaseProject(this.innovation.getProject().getId(), this.getActualPhase().getId());
@@ -2778,6 +2788,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setIdoList(HashMap<Long, String> idoList) {
     this.idoList = idoList;
+  }
+
+  public void setImpactAreaList(List<ImpactArea> impactAreaList) {
+    this.impactAreaList = impactAreaList;
   }
 
   public void setInnovation(ProjectInnovation innovation) {
