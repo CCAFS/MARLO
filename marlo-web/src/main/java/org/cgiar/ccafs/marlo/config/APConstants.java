@@ -877,7 +877,7 @@ public final class APConstants {
   // 01/10/2024 Expected study Partnerships Types
   public static final Long EXPECTED_STUDIES_PARTNERSHIP_TYPE_INSTITUION = new Long(2L);
   public static final Long EXPECTED_STUDIES_PARTNERSHIP_TYPE_CENTER = new Long(3L);
-  public static final Long INNOVATION_PARTNERSHIP_TYPE_INSTITUION = new Long(2L);
+  public static final Long INNOVATION_PARTNERSHIP_TYPE_INSTITUTION = new Long(2L);
   public static final Long INNOVATION_PARTNERSHIP_TYPE_CENTER = new Long(3L);
 
   public static String getFilterBy() {

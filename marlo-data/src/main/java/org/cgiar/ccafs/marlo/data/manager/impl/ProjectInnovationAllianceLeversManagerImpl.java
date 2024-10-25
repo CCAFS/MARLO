@@ -15,11 +15,15 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationAllianceLeversDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceLeversManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -32,20 +36,60 @@ public class ProjectInnovationAllianceLeversManagerImpl implements ProjectInnova
 
 
   private ProjectInnovationAllianceLeversDAO projectInnovationAllianceLeversDAO;
-  // Managers
-
+  private PhaseDAO phaseDAO;
 
   @Inject
-  public ProjectInnovationAllianceLeversManagerImpl(ProjectInnovationAllianceLeversDAO projectInnovationAllianceLeversDAO) {
+  public ProjectInnovationAllianceLeversManagerImpl(
+    ProjectInnovationAllianceLeversDAO projectInnovationAllianceLeversDAO, PhaseDAO phaseDAO) {
     this.projectInnovationAllianceLeversDAO = projectInnovationAllianceLeversDAO;
-
-
+    this.phaseDAO = phaseDAO;
   }
 
   @Override
   public void deleteProjectInnovationAllianceLevers(long projectInnovationAllianceLeversId) {
 
+    ProjectInnovationAllianceLevers projectInnovationAllianceLever =
+      this.getProjectInnovationAllianceLeversById(projectInnovationAllianceLeversId);
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (projectInnovationAllianceLever.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectInnovationAllianceLever.getPhase().getNext() != null) {
+      this.deleteProjectInnovationAllianceLeversPhase(projectInnovationAllianceLever.getPhase().getNext(),
+        projectInnovationAllianceLever.getProjectInnovation().getId(), projectInnovationAllianceLever);
+    }
+
+    if (projectInnovationAllianceLever.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectInnovationAllianceLever.getPhase().getNext() != null
+        && projectInnovationAllianceLever.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectInnovationAllianceLever.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectInnovationAllianceLeversPhase(upkeepPhase,
+            projectInnovationAllianceLever.getProjectInnovation().getId(), projectInnovationAllianceLever);
+        }
+      }
+    }
     projectInnovationAllianceLeversDAO.deleteProjectInnovationAllianceLevers(projectInnovationAllianceLeversId);
+  }
+
+  public void deleteProjectInnovationAllianceLeversPhase(Phase next, long innovationID,
+    ProjectInnovationAllianceLevers projectInnovationAllianceLevers) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectInnovationAllianceLevers> innovationAllianceLevers =
+      projectInnovationAllianceLeversDAO.findAll().stream()
+        .filter(c -> c.isActive() && c.getPhase().getId().longValue() == phase.getId().longValue()
+          && c.getProjectInnovation().getId().longValue() == innovationID
+          && c.getAllianceLever().getId().equals(projectInnovationAllianceLevers.getAllianceLever().getId()))
+        .collect(Collectors.toList());
+
+    for (ProjectInnovationAllianceLevers projectInnovationAllianceLeversDB : innovationAllianceLevers) {
+      projectInnovationAllianceLeversDAO
+        .deleteProjectInnovationAllianceLevers(projectInnovationAllianceLeversDB.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deleteProjectInnovationAllianceLeversPhase(phase.getNext(), innovationID, projectInnovationAllianceLevers);
+    }
   }
 
   @Override
@@ -62,15 +106,59 @@ public class ProjectInnovationAllianceLeversManagerImpl implements ProjectInnova
   }
 
   @Override
-  public ProjectInnovationAllianceLevers getProjectInnovationAllianceLeversById(long projectInnovationAllianceLeversID) {
+  public ProjectInnovationAllianceLevers
+    getProjectInnovationAllianceLeversById(long projectInnovationAllianceLeversID) {
 
     return projectInnovationAllianceLeversDAO.find(projectInnovationAllianceLeversID);
   }
 
   @Override
-  public ProjectInnovationAllianceLevers saveProjectInnovationAllianceLevers(ProjectInnovationAllianceLevers projectInnovationAllianceLevers) {
+  public ProjectInnovationAllianceLevers
+    saveProjectInnovationAllianceLevers(ProjectInnovationAllianceLevers projectInnovationAllianceLevers) {
 
-    return projectInnovationAllianceLeversDAO.save(projectInnovationAllianceLevers);
+    ProjectInnovationAllianceLevers innovationAllianceLever =
+      projectInnovationAllianceLeversDAO.save(projectInnovationAllianceLevers);
+    Phase phase = phaseDAO.find(innovationAllianceLever.getPhase().getId());
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.saveProjectInnovationAllianceLeversPhase(innovationAllianceLever.getPhase().getNext(),
+        innovationAllianceLever.getProjectInnovation().getId(), projectInnovationAllianceLevers);
+    }
+
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveProjectInnovationAllianceLeversPhase(upkeepPhase,
+            innovationAllianceLever.getProjectInnovation().getId(), projectInnovationAllianceLevers);
+        }
+      }
+    }
+    return innovationAllianceLever;
+  }
+
+  private void saveProjectInnovationAllianceLeversPhase(Phase next, Long innovationid,
+    ProjectInnovationAllianceLevers projectInnovationAllianceLevers) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectInnovationAllianceLevers> innovationAllianceLevers =
+      projectInnovationAllianceLeversDAO.findAll().stream()
+        .filter(c -> c.getProjectInnovation().getId().longValue() == innovationid
+          && c.getPhase().getId().equals(phase.getId())
+          && c.getAllianceLever().getId().equals(projectInnovationAllianceLevers.getAllianceLever().getId()))
+        .collect(Collectors.toList());
+
+    if (innovationAllianceLevers.isEmpty()) {
+      ProjectInnovationAllianceLevers projectInnovationAllianceLeversAdd = new ProjectInnovationAllianceLevers();
+      projectInnovationAllianceLeversAdd.setProjectInnovation(projectInnovationAllianceLevers.getProjectInnovation());
+      projectInnovationAllianceLeversAdd.setPhase(phase);
+      projectInnovationAllianceLeversAdd.setAllianceLever(projectInnovationAllianceLevers.getAllianceLever());
+      projectInnovationAllianceLeversDAO.save(projectInnovationAllianceLeversAdd);
+    }
+    if (phase.getNext() != null) {
+      this.saveProjectInnovationAllianceLeversPhase(phase.getNext(), innovationid, projectInnovationAllianceLevers);
+    }
   }
 
 
