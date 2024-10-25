@@ -23,13 +23,13 @@
       <div class="col-md-4 generalInnovationsOptions">
         [#-- Shared Clusters --]
         <button type="button" class="btn btn-default btn-sm" style="margin-right: 5px;" data-toggle="modal" data-target="#sharedClusterModal">
-          <p><span class="glyphicon glyphicon-log-out"></span>[@s.text name="study.general.button.shared" /]</p>
+          <p><span class="glyphicon glyphicon-log-out"></span>[@s.text name="projectInnovations.shared" /]</p>
           <p id="modalCounterShared">0</p>
         </button>
 
         [#-- Copy --]
         <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px;">
-          <p><span class="glyphicon glyphicon-duplicate"></span>[@s.text name="study.general.button.copylink" /]</p> 
+          <p><span class="glyphicon glyphicon-duplicate"></span>[@s.text name="projectInnovations.copylink" /]</p> 
         </button>
         [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
         [@customForm.input name="innovation.projectExpectedStudyInfo.link" i18nkey="study.general.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable display=false readOnly=true/]
@@ -86,17 +86,17 @@
           
             [#-- Title --]
             <div class="form-group">
-              [@customForm.input name="innovation.projectInnovationInfo.title" type="text" i18nkey="projectInnovations.title"  placeholder="" className="limitWords-30" help="projectInnovations.title.helpText" helpIcon=false required=true editable=editable /]
+              [@customForm.input name="innovation.projectInnovationInfo.title" type="text" i18nkey="projectInnovations.title"  placeholder="" className="limitWords-30" help="projectInnovations.title.helpText" helpIcon=false required=true editable=editable isMainTitle=true /]
             </div>
             
             [#-- Short Title --]
             <div class="form-group">
-              [@customForm.input name="innovation.projectInnovationInfo.shortTitle" type="text" i18nkey="projectInnovations.shortTitle"  placeholder="" className="limitWords-30" help="projectInnovations.shortTitle.helpText" helpIcon=false required=true editable=editable /]
+              [@customForm.input name="innovation.projectInnovationInfo.shortTitle" type="text" i18nkey="projectInnovations.shortTitle"  placeholder="" className="limitWords-30" help="projectInnovations.shortTitle.helpText" helpIcon=false required=true editable=editable isMainTitle=true /]
             </div>
           
             [#-- Narrative --] 
             <div class="form-group">
-              [@customForm.textArea name="innovation.projectInnovationInfo.narrative"  i18nkey="projectInnovations.narrative"  placeholder="" className="limitWords-80" help="projectInnovations.narrative.helpText" isNote=true helpIcon=false required=false editable=editable /]         
+              [@customForm.textArea name="innovation.projectInnovationInfo.narrative"  i18nkey="projectInnovations.narrative"  placeholder="" className="limitWords-80" help="projectInnovations.narrative.helpText" isNote=true helpIcon=false required=true editable=editable isMainTitle=true /]         
             </div>
             
             [#-- Phase of research and Stage of innovation - DEPRECIATED --] 
@@ -111,14 +111,14 @@
             
             [#-- Innovation nature --]
             <div class="form-group row">  
-              <!-- Primera columna: Innovation Nature -->
+              <!-- First column: Innovation Nature -->
               <div class="col-md-6">
-                [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationNature.id" label="" i18nkey="projectInnovations.innovationNature" listName="innovationNatureList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationNature.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable/]
+                [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationNature.id" label="" i18nkey="projectInnovations.innovationNature" listName="innovationNatureList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationNature.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable isMainTitle=true /]
               </div>
             
               <!-- second column: Innovation Type -->
               <div class="col-md-6">
-                [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label="" i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationType.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable/]
+                [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label="" i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationType.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable isMainTitle=true /]
               </div>
             </div>
           
@@ -190,7 +190,7 @@
                   <div class="col-md-12 margin-top-10">
                     [#local isDisplayTitleScope = ((isMultiNational || isNational || isSubNational || isRegional) || (isGlobal && (geographicScopeList.length >1)))!false /]
                     <label for="innovation.geographicScopes" class="col-md-4">[@s.text name="study.generalInformation.geographicScope" /]: [@customForm.req required=(editable && reportingActive) /] </label>
-                    <label for="" name="study.generalInformation.geographicImpact" class="col-md-8" style="display:${isDisplayTitleScope?string('block','none')}">[@s.text name="study.generalInformation.geographicImpact" /]: [@customForm.req required=(editable && reportingActive) /]</label>
+                    <label for="" name="study.generalInformation.geographicImpact" class="col-md-8" style="display:${isDisplayTitleScope?string('block','none')}">[@s.text name="projectInnovations.geographicImpact" /]: [@customForm.req required=(editable && reportingActive) /]</label>
                   </div>
                 </div>
                 <div class="form-group row">
@@ -217,7 +217,7 @@
 
             [#-- Contributing Centers/ PPA partners  --]
             <div class="form-group contributionsCenters">
-              <label>[@s.text name="projectInnovations.contributingCenters" /]: [@customForm.req required=true /]</label>
+              <label class="label--2">[@s.text name="projectInnovations.contributingCenters" /]: [@customForm.req required=true /]</label>
               <div class="note">
                 <span class="glyphicon glyphicon-question-sign"></span> [@s.text name="study.generalInformation.ppapartner.note"][@s.param] 
                 <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]
@@ -228,6 +228,7 @@
                 [@customForm.elementsListComponent name="innovation.centers" i18nkey="innovation.centers" elementType="institution" elementList=innovation.centers label="projectInnovations.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=!isProgressActive /]
               </div>
 
+              [#-- External Contributing Centers --]
               <div class="col-md-6 top-five-contributing">
                 [@customForm.elementsListComponent name="innovation.contributingOrganizations" i18nkey="innovation.contributingOrganizations" maxLimit=5 elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations"  listName="institutions" keyFieldName="id" displayFieldName="composedName" /]
 
@@ -287,14 +288,14 @@
               [@customForm.elementsListComponent name="innovation.deliverables" elementType="deliverable" elementList=innovation.deliverables label="projectInnovations.deliverableId"  listName="deliverableList" required=false keyFieldName="id" displayFieldName="tagTitle"/]
             </div> --]
             
-            [#-- Milestones Contribution --]
+            [#-- Milestones Contribution or Performance Indicators --]
             <div class="form-group">
                 <div class="col-md-12">
-                  <label for="">[@s.text name="innovation.outcomes" /]:[@customForm.req required=(editable && !isProgressActive) /]
-                    <div class="feedback-flex-items">
-                      [@customForm.helpLabel name="innovation.outcomes.help" showIcon=false editable=editable/]
-                    </div> 
+                  <label class="label--2" style="width:100%;">[@s.text name="innovation.outcomes" /]:[@customForm.req required=(editable && !isProgressActive) /]
                   </label>
+                  <label>
+                    [@s.text name="innovation.outcomes.help" /]
+                  </label> 
                 </div>    
                 [#local innovationMilestoneLink = "innovationMilestoneLink"]
                 [#local showMilestoneIndicator = (innovation.projectInnovationInfo.hasMilestones?string)!"" /]
@@ -350,7 +351,7 @@
 
             [#--  Contact person    --]
             <div class="form-group stageProcessOne col-md-12">
-              <label for="">[@s.text name="study.communications.contacts" /]:</label>
+              <label class="label--2">[@s.text name="study.communications.contacts" /]:</label>
               <div id="addPartnerText" class="note--2">
                 <p>
                   [@s.text name="study.communications.contacts.help" /]

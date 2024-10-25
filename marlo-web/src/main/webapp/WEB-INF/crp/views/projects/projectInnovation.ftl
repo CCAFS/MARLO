@@ -105,23 +105,23 @@
           <ul class="nav nav-tabs" role="tablist">
 
             <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if] col-md">
-              <a href="#innovationGeneral" role="tab" data-toggle="tab">[@s.text name="projectInnovations.innovationGeneral" /]</a>
+              <a href="#innovationGeneral" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.general" /]</a>
             </li>
 
             <li role="presentation" class="[#if indexTab==2]active[/#if] col-md">
-              <a href="#innovationAlliance" role="tab" data-toggle="tab">[@s.text name="projectInnovations.innovationAlliance" /]</a>
+              <a href="#innovationAlliance" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.allianceAlignment" /]</a>
             </li>
 
             <li role="presentation" class="[#if indexTab==3]active[/#if] col-md">
-              <a href="#innovationOneCGIAR" role="tab" data-toggle="tab">[@s.text name="projectInnovations.innovationOneCGIAR" /]</a>
+              <a href="#innovationOneCGIAR" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.oneCGIARAlignment" /]</a>
             </li>
 
             <li role="presentation" class="[#if indexTab==4]active[/#if] col-md">
-              <a href="#innovationReadiness" role="tab" data-toggle="tab">[@s.text name="projectInnovations.innovationReadiness" /]</a>
+              <a href="#innovationReadiness" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.innovationReadiness=" /]</a>
             </li>
 
             <li role="presentation" class="[#if indexTab==5]active[/#if] col-md">
-              <a href="#innovationFunding" role="tab" data-toggle="tab">[@s.text name="projectInnovations.innovationFunding" /]</a>
+              <a href="#innovationFunding" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.innovationFunding" /]</a>
             </li>
           </ul>
 
