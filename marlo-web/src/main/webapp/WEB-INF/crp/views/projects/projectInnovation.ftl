@@ -117,7 +117,7 @@
             </li>
 
             <li role="presentation" class="[#if indexTab==4]active[/#if] col-md">
-              <a href="#innovationReadiness" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.innovationReadiness=" /]</a>
+              <a href="#innovationReadiness" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.innovationReadiness" /]</a>
             </li>
 
             <li role="presentation" class="[#if indexTab==5]active[/#if] col-md">
