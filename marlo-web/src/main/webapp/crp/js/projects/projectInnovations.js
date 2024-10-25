@@ -3,11 +3,17 @@ $(document).ready(function() {
   // Add select2
   addSelect2();
 
+
   // Add Geographic Scope
   $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(event,id,name) {
     setGeographicScope(this);
+    dynamicMarginToSelectedRender();
   });
   setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+
+  dynamicMarginToSelectedRender();
+
+  $('select.countriesSelect').on('change', dynamicMarginToSelectedRender);
 
   // Activate Popup
   popups();
@@ -139,6 +145,19 @@ function counterSharedCluster() {
     currentAmount = $('div[listname="innovation.sharedInnovations"] ul.list li').length;
     $counter.text(currentAmount);
   });
+}
+
+function dynamicMarginToSelectedRender(){
+  const $selectedMultiple = $('.select2-selection--multiple');
+  const $rendered = $('ul.select2-selection__rendered');
+
+  if($rendered.children().length > 0){
+    $selectedMultiple.css('margin-bottom',`${$rendered.height()+30}px`);
+  } else {
+    $selectedMultiple.css('margin-bottom','0');
+
+  }
+
 }
 
 var deliverablePartnersModule = (function () {
