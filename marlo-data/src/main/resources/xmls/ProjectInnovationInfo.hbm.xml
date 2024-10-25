@@ -111,5 +111,11 @@
         <property name="innovationNumber" type="java.lang.Long">
 			<column name="number_of_innovations" />
 		</property>
+		<property name="hasCgiarContribution" type="java.lang.Boolean">
+            <column name="has_cgiar_contribution" />
+	    </property>
+	    <property name="reasonNotCgiarContribution" type="string">
+	         <column name="reason_not_cgiar_contribution" sql-type="TEXT" />
+	    </property>
 	</class>
 </hibernate-mapping>
