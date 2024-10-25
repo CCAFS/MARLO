@@ -1,5 +1,5 @@
 UPDATE st_impact_areas
-  SET icon='v1/1png'
+  SET icon='v1/1.png'
   WHERE id=1;
 UPDATE st_impact_areas
   SET icon='v1/2.png'
