@@ -1,0 +1,15 @@
+UPDATE st_impact_areas
+  SET icon='v1/1png'
+  WHERE id=1;
+UPDATE st_impact_areas
+  SET icon='v1/2.png'
+  WHERE id=2;
+UPDATE st_impact_areas
+  SET icon='v1/3.png'
+  WHERE id=3;
+UPDATE st_impact_areas
+  SET icon='v1/4.png'
+  WHERE id=4;
+UPDATE st_impact_areas
+  SET icon='v1/5.png'
+  WHERE id=5;
