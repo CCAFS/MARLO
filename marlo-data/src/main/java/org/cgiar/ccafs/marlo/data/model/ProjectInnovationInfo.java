@@ -91,6 +91,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   private String otherInnovationType;
   @Expose
   private Boolean hasMilestones;
+  @Expose
+  private String reasonNotCgiarContribution;
+  @Expose
+  private Boolean hasCgiarContribution;
 
   public ProjectInnovationInfo() {
   }
@@ -162,6 +166,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return genderFocusLevel;
   }
 
+  public Boolean getHasCgiarContribution() {
+    return hasCgiarContribution;
+  }
+
   public Boolean getHasMilestones() {
     return hasMilestones;
   }
@@ -201,19 +209,24 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return otherInnovationType;
   }
 
+
   public Phase getPhase() {
     return phase;
   }
-
 
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
   }
 
+
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
   }
 
+
+  public String getReasonNotCgiarContribution() {
+    return reasonNotCgiarContribution;
+  }
 
   public RepIndDegreeInnovation getRepIndDegreeInnovation() {
     return repIndDegreeInnovation;
@@ -223,6 +236,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public RepIndGeographicScope getRepIndGeographicScope() {
     return repIndGeographicScope;
   }
+
 
   public RepIndInnovationNature getRepIndInnovationNature() {
     return repIndInnovationNature;
@@ -279,11 +293,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return true;
   }
 
-
   public void setAdaptativeResearchNarrative(String adaptativeResearchNarrative) {
     this.adaptativeResearchNarrative = adaptativeResearchNarrative;
   }
-
 
   public void setClearLead(Boolean clearLead) {
     this.clearLead = clearLead;
@@ -305,6 +317,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.genderFocusLevel = genderFocusLevel;
   }
 
+  public void setHasCgiarContribution(Boolean hasCgiarContribution) {
+    this.hasCgiarContribution = hasCgiarContribution;
+  }
+
+
   public void setHasMilestones(Boolean hasMilestones) {
     this.hasMilestones = hasMilestones;
   }
@@ -316,7 +333,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public void setLeadOrganization(Institution leadOrganization) {
     this.leadOrganization = leadOrganization;
   }
-
 
   @Override
   public void setModifiedBy(User modifiedBy) {
@@ -335,23 +351,28 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.phase = phase;
   }
 
+
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
   }
+
 
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
   }
 
+  public void setReasonNotCgiarContribution(String reasonNotCgiarContribution) {
+    this.reasonNotCgiarContribution = reasonNotCgiarContribution;
+  }
+
+
   public void setRepIndDegreeInnovation(RepIndDegreeInnovation repIndDegreeInnovation) {
     this.repIndDegreeInnovation = repIndDegreeInnovation;
   }
 
-
   public void setRepIndGeographicScope(RepIndGeographicScope repIndGeographicScope) {
     this.repIndGeographicScope = repIndGeographicScope;
   }
-
 
   public void setRepIndInnovationNature(RepIndInnovationNature repIndInnovationNature) {
     this.repIndInnovationNature = repIndInnovationNature;
@@ -360,7 +381,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public void setRepIndInnovationType(RepIndInnovationType repIndInnovationType) {
     this.repIndInnovationType = repIndInnovationType;
   }
-
 
   public void setRepIndPhaseResearchPartnership(RepIndPhaseResearchPartnership repIndPhaseResearchPartnership) {
     this.repIndPhaseResearchPartnership = repIndPhaseResearchPartnership;
@@ -433,6 +453,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setClearLead(projectInnovationInfoUpdate.getClearLead());
     this.setLeadOrganization(projectInnovationInfoUpdate.getLeadOrganization());
     this.setHasMilestones(projectInnovationInfoUpdate.getHasMilestones());
+    this.setReasonNotCgiarContribution(projectInnovationInfoUpdate.getReasonNotCgiarContribution());
+    this.setHasCgiarContribution(projectInnovationInfoUpdate.getHasCgiarContribution());
   }
 }
 

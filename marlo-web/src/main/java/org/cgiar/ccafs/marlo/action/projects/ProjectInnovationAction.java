@@ -154,6 +154,7 @@ import org.slf4j.LoggerFactory;
 public class ProjectInnovationAction extends BaseAction {
 
   private static final long serialVersionUID = 2025842196563364380L;
+  private static final long[] EMPTY_ARRAY = {};
   // Logger
   private final Logger logger = LoggerFactory.getLogger(ProjectInnovationAction.class);
   // Managers
@@ -536,6 +537,28 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<ProjectPartner> getPartners() {
     return partners;
+  }
+
+  /**
+   * @return an array of integers.
+   */
+  public long[] getPersonsIds(ProjectInnovationPartnership projectInnovationPartnership) {
+    if (projectInnovationPartnership != null) {
+      final List<ProjectInnovationPartnershipPerson> pPersons = projectInnovationPartnership.getPartnershipPersons()
+        .stream().filter(pp -> (pp.getUser() != null) && (pp.getUser().getId() != null) && (pp.getUser().getId() > 0))
+        .collect(Collectors.toList());
+      if (pPersons != null) {
+        final long[] ids = new long[pPersons.size()];
+        for (int i = 0; i < ids.length; i++) {
+          if ((pPersons.get(i).getUser() != null) && (pPersons.get(i).getUser().getId() != null)) {
+            ids[i] = pPersons.get(i).getUser().getId();
+          }
+        }
+        return ids;
+      }
+    }
+
+    return EMPTY_ARRAY;
   }
 
   public List<RepIndPhaseResearchPartnership> getPhaseResearchList() {
@@ -1032,8 +1055,8 @@ public class ProjectInnovationAction extends BaseAction {
         if (this.innovation.getProjectInnovationPartnerships() != null) {
 
           final List<ProjectInnovationPartnership> deList = this.innovation.getProjectInnovationPartnerships().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
-              && dp.getProjectInnovationPartnerType().getId().equals(APConstants.INNOVATION_PARTNERSHIP_TYPE_CENTER))
+            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId()) && dp
+              .getProjectInnovationPartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
             .collect(Collectors.toList());
 
           if ((deList != null) && !deList.isEmpty()) {
@@ -1056,6 +1079,47 @@ public class ProjectInnovationAction extends BaseAction {
 
           }
         }
+
+        // Expected Study projectInnovationPartnerships List (Institutions)
+        // Expected Study projectInnovationPartnerships List (Centers)
+
+        /*
+         * if (this.innovation.getProjectInnovationPartnerships() != null) {
+         * final List<ProjectInnovationPartnership> deList = this.innovation.getProjectInnovationPartnerships().stream()
+         * .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId()) && dp
+         * .getProjectInnovationPartnerType().getId().equals(APConstants.INNOVATION_PARTNERSHIP_TYPE_INSTITUTION))
+         * .collect(Collectors.toList());
+         * if ((deList != null) && !deList.isEmpty()) {
+         * try {
+         * Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+         * } catch (final Exception e) {
+         * this.logger.error("unable to sort dlist", e);
+         * }
+         * this.innovation.setInstitutions(new ArrayList<>());
+         * for (final ProjectInnovationPartnership projectInnovationPartnership : deList) {
+         * this.innovation.getInstitutions().add(projectInnovationPartnership);
+         * }
+         * }
+         * }
+         * if (this.innovation.getProjectInnovationPartnerships() != null) {
+         * final List<ProjectInnovationPartnership> deList = this.innovation.getProjectInnovationPartnerships().stream()
+         * .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+         * && dp.getProjectInnovationPartnerType().getId().equals(APConstants.INNOVATION_PARTNERSHIP_TYPE_CENTER))
+         * .collect(Collectors.toList());
+         * if ((deList != null) && !deList.isEmpty()) {
+         * try {
+         * Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+         * } catch (final Exception e) {
+         * this.logger.error("unable to sort dlist", e);
+         * }
+         * this.innovation.setCenters(new ArrayList<>());
+         * for (final ProjectInnovationPartnership projectInnovationPartnership : deList) {
+         * this.innovation.getCenters().add(projectInnovationPartnership);
+         * }
+         * }
+         * }
+         */
+
 
         // Innovations Alliance levers
         if (innovation.getProjectInnovationAllianceLevers() != null) {
