@@ -371,11 +371,28 @@
 
 [#macro innovationAlliance element name index=-1 template=false]
   <div id="alliance" class="borderBox clearfix">
-    <div class="form-group row">
-      <hr class="line-hr" />
-      <div class="col-md-12">
-        <h3>[@s.text name="projectInnovations.alliance" /]</h3>
-      </div>
+    [#-- SDG Targets --]
+    <div class="form-group">
+      <label class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.sdgTargets" /]:</label>
+      <label>[@s.text name="projectInnovations.alliance.sdgTargets.subtitle" /]</label>
+      [@customForm.elementsListComponent name="innovation.sdgTargets" elementType="sdgTarget" elementList=(innovation.sdgTargets)![] label="projectInnovations.alliance.sdgTargets" helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=false showTitle=false /]
+    </div>
+    [#-- Alliance Research Theme --]
+    <div class="form-group">
+      <label class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.researchTheme" /]:</label>
+      <label>[@s.text name="projectInnovations.alliance.researchTheme.subtitle" /]</label>
+      [#if allianceLeverList?has_content]
+        [#list allianceLeverList as lever]
+          [#if lever.description?has_content]
+            [#local customLabel = "${lever.name} : ${lever.description}" /]
+          [#else]
+            [#local customLabel = "${lever.name}" /]
+          [/#if]
+          [@customForm.checkBoxFlat id="lever-${lever.id}" name="innovation.allianceLevers" label="${customLabel}" value="${lever.id}" checked=(innovation.allianceLevers?seq_contains(lever.id)) editable=editable /]
+        [/#list]
+      [#else]
+        <p>No information available</p>
+      [/#if]
     </div>
   </div>
 [/#macro]
