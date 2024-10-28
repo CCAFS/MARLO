@@ -40,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationGeographicScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationImpactAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationMilestoneManager;
@@ -95,6 +96,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationImpactArea;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationPartnerType;
@@ -213,6 +215,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ImpactAreaManager impactAreaManager;
   private ProjectInnovationSDGManager projectInnovationSDGManager;
   private ProjectInnovationAllianceLeversManager projectInnovationAllianceLeversManager;
+  private ProjectInnovationImpactAreaManager projectInnovationImpactAreaManager;
 
   // Variables
   private long projectID;
@@ -302,7 +305,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationPartnershipPersonManager projectInnovationPartnershipPersonManager,
     ProjectPartnerManager projectPartnerManager, AllianceLeverManager allianceLeverManager, UserManager userManager,
     SdgManager sdgManager, ProjectInnovationAllianceLeversManager projectInnovationAllianceLeversManager,
-    ProjectInnovationSDGManager projectInnovationSDGManager, ImpactAreaManager impactAreaManager) {
+    ProjectInnovationSDGManager projectInnovationSDGManager, ImpactAreaManager impactAreaManager,
+    ProjectInnovationImpactAreaManager projectInnovationImpactAreaManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -358,6 +362,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationAllianceLeversManager = projectInnovationAllianceLeversManager;
     this.projectInnovationSDGManager = projectInnovationSDGManager;
     this.impactAreaManager = impactAreaManager;
+    this.projectInnovationImpactAreaManager = projectInnovationImpactAreaManager;
 
   }
 
@@ -1142,6 +1147,18 @@ public class ProjectInnovationAction extends BaseAction {
             .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
+        // Innovations impact area
+        if (innovation.getProjectInnovationImpactAreas() != null) {
+          innovation.setImpactAreas(new ArrayList<>(innovation.getProjectInnovationImpactAreas().stream()
+            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
+        // Innovations references
+        if (innovation.getProjectInnovationReferences() != null) {
+          innovation.setReferences(new ArrayList<>(innovation.getProjectInnovationReferences().stream()
+            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
         // Innovation shared Projects List
         if (this.innovation.getProjectInnovationShareds() != null) {
           this.innovation.setSharedInnovations(new ArrayList<>(this.innovation.getProjectInnovationShareds().stream()
@@ -1561,6 +1578,12 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getAllianceLevers() != null) {
         innovation.getAllianceLevers().clear();
       }
+      if (innovation.getReferences() != null) {
+        innovation.getReferences().clear();
+      }
+      if (innovation.getImpactAreas() != null) {
+        innovation.getImpactAreas().clear();
+      }
       // HTTP Post info Values
       // innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
       // innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
@@ -1611,6 +1634,7 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveProjectInnovationPartnership(innovationDB, phase);
       this.saveAllianceLevers(innovationDB, phase);
       this.saveSDGs(innovationDB, phase);
+      this.saveImpactAreas(innovationDB, phase);
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -2130,6 +2154,46 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     }
+  }
+
+  /**
+   * Save Project Innovation Impact Area
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  public void saveImpactAreas(ProjectInnovation projectInnovation, Phase phase) {
+    // Search and deleted form Information
+    if (projectInnovation.getProjectInnovationImpactAreas() != null
+      && !projectInnovation.getProjectInnovationImpactAreas().isEmpty()) {
+
+      List<ProjectInnovationImpactArea> impactAreaPrev =
+        new ArrayList<>(projectInnovation.getProjectInnovationImpactAreas().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectInnovationImpactArea impactArea : impactAreaPrev) {
+        if (innovation.getImpactAreas() == null || !innovation.getImpactAreas().contains(impactArea)) {
+          projectInnovationImpactAreaManager.deleteProjectInnovationImpactArea(impactArea.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (innovation.getImpactAreas() != null) {
+      for (ProjectInnovationImpactArea innovationImpactArea : innovation.getImpactAreas()) {
+        if (innovationImpactArea.getId() == null) {
+          ProjectInnovationImpactArea innovationImpactAreaSave = new ProjectInnovationImpactArea();
+          innovationImpactAreaSave.setImpactArea(innovationImpactArea.getImpactArea());
+          innovationImpactAreaSave.setProjectInnovation(projectInnovation);
+          innovationImpactAreaSave.setPhase(phase);
+
+          projectInnovationImpactAreaManager.saveProjectInnovationImpactArea(innovationImpactAreaSave);
+          // This is to add innovationImpactAreaSave to generate correct auditlog.
+          innovation.getProjectInnovationImpactAreas().add(innovationImpactAreaSave);
+        }
+      }
+    }
+
   }
 
   /**

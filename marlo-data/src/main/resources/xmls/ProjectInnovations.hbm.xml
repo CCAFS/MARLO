@@ -180,5 +180,29 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers" />
     </set>
+    <set name="projectInnovationReferences" table="project_innovation_references"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationReference" />
+    </set>
+    <set name="projectInnovationImpactAreas" table="project_innovation_impact_areas"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationImpactArea" />
+    </set>
+    <set name="projectInnovationSDGs" table="project_innovation_sdgs"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationSDG" />
+    </set>
 	</class>
 </hibernate-mapping>

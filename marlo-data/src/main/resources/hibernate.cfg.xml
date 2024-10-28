@@ -457,5 +457,6 @@
   <mapping resource="xmls/ProjectInnovationAllianceLevers.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationReferences.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationImpactAreas.hbm.xml"/>
+  <mapping resource="xmls/ProjectInnovationSDGs.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>
