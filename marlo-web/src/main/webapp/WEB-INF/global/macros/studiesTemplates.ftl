@@ -236,55 +236,57 @@
       [/#if]
       
       [#-- 7. Links to the Strategic Results Framework  --]
-      <div class="form-group ${isOutcomeCaseStudy?then('','simpleBox')}">
-        [#if isOutcomeCaseStudy]
-          <label for="" class="label--2">[@s.text name="study.generalInformation.stratgicResultsLink" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
-            [@customForm.helpLabel name="study.generalInformation.stratgicResultsLink.help" showIcon=false editable=editable/]
-          </label>
-        [#elseif !action.isAiccra()]
-          <label for="">[@s.text name="study.generalInformation.relevantTo" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true)/]
-          </label> 
-        [/#if]
-        [#-- Sub IDOs (maxLimit=3) --]
-        [#if !action.isAiccra()]
-          <div class="form-group simpleBox">
-            [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.generalInformation.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" hasPrimary=true/]
-          </div> 
-        [/#if]
-        
-        [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
-        [#-- <div class="form-group simpleBox">
-          [@customForm.primaryListComponent name="${customName}.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(element.subIdos)!"" label="policy.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
-        </div>--] 
-        
-        [#-- SRF Targets (maxLimit=2)  --]
-        <div class="form-group stageProcessOne">
-            <label for="">[@s.text name="study.generalInformation.targetsOption" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
-            <div class="feedback-flex-items">
-              [@customForm.helpLabel name="study.generalInformation.targetsOption.help" showIcon=false editable=editable/]
-            </div>            
-            </label><br />
-          [#local targetsOption = (element.projectExpectedStudyInfo.isSrfTarget)!""]
-          <div class="row stfTargets">
-          [#list ["targetsOptionYes", "targetsOptionNo", "targetsOptionTooEarlyToSay"] as option]
-            <div class="col-md-1">
-              [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.isSrfTarget" i18nkey="study.generalInformation.${option}" value="${option}" checked=(option == targetsOption) cssClass="radioType-targetsOption" cssClassLabel="font-normal" editable=editable /] 
+      [#if !isOutcomeCaseStudy]
+        <div class="form-group ${isOutcomeCaseStudy?then('','simpleBox')}">
+          [#if isOutcomeCaseStudy]
+            <label for="" class="label--2">[@s.text name="study.generalInformation.stratgicResultsLink" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
+              [@customForm.helpLabel name="study.generalInformation.stratgicResultsLink.help" showIcon=false editable=editable/]
+            </label>
+          [#elseif !action.isAiccra()]
+            <label for="">[@s.text name="study.generalInformation.relevantTo" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true)/]
+            </label> 
+          [/#if]
+          [#-- Sub IDOs (maxLimit=3) --]
+          [#if !action.isAiccra()]
+            <div class="form-group simpleBox">
+              [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.generalInformation.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" hasPrimary=true/]
+            </div> 
+          [/#if]
+          
+          [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
+          [#-- <div class="form-group simpleBox">
+            [@customForm.primaryListComponent name="${customName}.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(element.subIdos)!"" label="policy.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
+          </div>--] 
+          
+          [#-- SRF Targets (maxLimit=2)  --]
+          <div class="form-group stageProcessOne">
+              <label for="">[@s.text name="study.generalInformation.targetsOption" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
+              <div class="feedback-flex-items">
+                [@customForm.helpLabel name="study.generalInformation.targetsOption.help" showIcon=false editable=editable/]
+              </div>            
+              </label><br />
+            [#local targetsOption = (element.projectExpectedStudyInfo.isSrfTarget)!""]
+            <div class="row stfTargets">
+            [#list ["targetsOptionYes", "targetsOptionNo", "targetsOptionTooEarlyToSay"] as option]
+              <div class="col-md-1">
+                [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.isSrfTarget" i18nkey="study.generalInformation.${option}" value="${option}" checked=(option == targetsOption) cssClass="radioType-targetsOption" cssClassLabel="font-normal" editable=editable /] 
+              </div>
+            [/#list]
             </div>
-          [/#list]
+            [#local showTargetsComponent = (element.projectExpectedStudyInfo.isSrfTarget == "targetsOptionYes")!false /]
+            <div class="srfTargetsComponent" style="display:${showTargetsComponent?string('block', 'none')}">
+              [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.generalInformation.stratgicResultsLink.srfTargets" listName="targets" maxLimit=2  keyFieldName="id" displayFieldName="title" required=(editable && !action.isPOWB() && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true)/]          
+            </div>
           </div>
-          [#local showTargetsComponent = (element.projectExpectedStudyInfo.isSrfTarget == "targetsOptionYes")!false /]
-          <div class="srfTargetsComponent" style="display:${showTargetsComponent?string('block', 'none')}">
-            [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.generalInformation.stratgicResultsLink.srfTargets" listName="targets" maxLimit=2  keyFieldName="id" displayFieldName="title" required=(editable && !action.isPOWB() && !(isPolicy && stageProcessOne) && validateIsProgressWithStatus!true)/]          
+          
+          [#-- Comments  --]
+          [#if isOutcomeCaseStudy]
+          <div class="form-group stageProcessOne">
+            [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.generalInformation.stratgicResultsLink.comments" help="study.generalInformation.stratgicResultsLink.comments.help" helpIcon=false className="limitWords-100" editable=editable required=false /]
           </div>
+          [/#if]
         </div>
-        
-        [#-- Comments  --]
-        [#if isOutcomeCaseStudy]
-        <div class="form-group stageProcessOne">
-          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.generalInformation.stratgicResultsLink.comments" help="study.generalInformation.stratgicResultsLink.comments.help" helpIcon=false className="limitWords-100" editable=editable required=false /]
-        </div>
-        [/#if]
-      </div>
+      [/#if]
       
       [#-- 8. Link to Performance Indicators: / Milestones --]
       [#if !isOutcomeCaseStudy]
