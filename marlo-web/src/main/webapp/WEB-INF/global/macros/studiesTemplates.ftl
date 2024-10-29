@@ -990,7 +990,7 @@
 
   <div class="borderBox">
     <div class="form-group">
-      <label for="">[@s.text name="study.oneCGIARAligment.contributionToCGIAR" /]:[@customForm.req required=(editable) /]</label>
+      <label class="label--2">[@s.text name="study.oneCGIARAligment.contributionToCGIAR" /]:[@customForm.req required=(editable) /]</label>
       <div class="form-group row">
       
         <div class="col-md-1">

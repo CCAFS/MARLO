@@ -209,11 +209,37 @@ div.stfTargets .col-md-1:last-of-type{
   width: 20%;
 }
 
+.radioToCheckbox > label{
+  margin-bottom: 12px;
+}
+
 .radioToCheckbox .containerRadioToCheckbox .radioFlat {
   padding-left: 0;
+  margin-bottom: 12px;
 } 
 
 .radioToCheckbox .containerRadioToCheckbox .inputsFlat {
+  margin-bottom: 12px;
+}
+
+.radioToCheckbox .containerRadioToCheckbox .radioFlat input[type="radio"]+.radio-label:before{
+  margin-right: 0.6em;
+}
+
+.radioToCheckbox .containerRadioToCheckbox .radioFlat input[type="radio"]+.radio-label.innerCheckboxLabel{
+  display: contents;
+}
+
+.radioToCheckbox .containerRadioToCheckbox .feedback-flex-items.radioFlat-flex{
+  display: contents !important;
+}
+
+.radioToCheckbox .containerRadioToCheckbox #innerCheckbox .form-group {
+  padding-left: 20px;
+  padding-top: 10px;
+}
+
+.radioToCheckbox .containerRadioToCheckbox #innerCheckbox > .form-group > label.radio-label{
   margin-bottom: 12px;
 }
 
