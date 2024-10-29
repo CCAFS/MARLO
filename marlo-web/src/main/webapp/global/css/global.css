@@ -3462,9 +3462,10 @@ button.ipGraph-btn {
 
 .note--2 p{
 	color: #5F5E5E;
-	font-size: 1.25rem;
+	font-size: 11px;
 	font-weight: 300;
 	margin: 5px 0;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .note--2 ul{
@@ -3474,8 +3475,9 @@ button.ipGraph-btn {
 
 .note--2 ul li{
     color: #5F5E5E;
-    font-size: 1.25rem;
     font-weight: 300;
+	font-size: 11px;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .topNote {
