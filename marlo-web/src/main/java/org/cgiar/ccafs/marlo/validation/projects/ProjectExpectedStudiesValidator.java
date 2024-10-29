@@ -227,7 +227,8 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
       // Validate Other field lever selection
       if (projectExpectedStudy.getAllianceLever() != null && projectExpectedStudy.getAllianceLever().getName() != null
-        && projectExpectedStudy.getAllianceLever().getName().equalsIgnoreCase("Other")) {
+        && projectExpectedStudy.getAllianceLever().getName().equalsIgnoreCase("Other")
+        && !this.isValidString(projectExpectedStudy.getAllianceLever().getLeverComments())) {
         action.addMessage(this.getTextCustom(action, "expectedStudy.leverComments"));
         action.getInvalidFields().put("input-expectedStudy.allianceLever.leverComments",
           InvalidFieldsMessages.EMPTYFIELD);
@@ -321,10 +322,10 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
 
             // Validate Other field lever selection
-            if (allianceLever.getName() != null && allianceLever.getName().equalsIgnoreCase("Other")) {
+            if (allianceLever.getName() != null && allianceLever.getName().equalsIgnoreCase("Other")
+              && !this.isValidString(allianceLever.getLeverComments())) {
               action.addMessage(this.getTextCustom(action, "expectedStudy.leverComments"));
-              action.getInvalidFields().put(
-                "input-expectedStudy.allianceLevers[" + allianceLeverIndex + "].leverComments",
+              action.getInvalidFields().put("input-expectedStudy.allianceLevers[" + 0 + "].leverComments",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
 
