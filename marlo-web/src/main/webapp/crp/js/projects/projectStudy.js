@@ -514,7 +514,10 @@ function attachEvents() {
 
   $('input.radioType-contributionToCGIAR').on('change', onDisplayItemsInOneCGIAR);
 
-  $('input[id*="radioCheckDisplay_"]').on('change', displayInnerCheckbox);
+  displayInnerOtherInput();
+
+  $('input[id*="radioCheckDisplay_"]').on('change',displayInnerCheckbox);
+  $('.containerRadioToCheckbox--other input[id*="radioCheckDisplay_"]').on('change',displayInnerOtherInput);
 
   $('.containerPrimaryLever input[name="expectedStudy.allianceLever.id"]').on('change', disableRelatedLeversBasedOnPrimaryLever);
 
@@ -735,10 +738,33 @@ function displayInnerCheckbox() {
           e.htmlFor = "_TEMPLATE_" + (e.htmlFor);
         }
       });
-    }
 
+      if($this.val() == "9") {
+        displayInnerOtherInput();
+      }
+    }
+    
 
   });
+
+}
+
+function displayInnerOtherInput() {
+  const $containerrMacro = $('.containerRadioToCheckbox--other');
+  const $inputButton = $containerrMacro.find('input[id*="radioCheckDisplay_"]');
+
+  $inputButton.each(function(i) {
+
+    const $parentContainer = $($inputButton[i]).closest('.containerRadioToCheckbox--other');
+    const $inputOther = $parentContainer.find('.inputOther');
+
+    if($inputButton[i].checked) {
+      $inputOther.slideDown();
+    } else {
+      $inputOther.slideUp();
+    }
+
+  })
 
 }
 
