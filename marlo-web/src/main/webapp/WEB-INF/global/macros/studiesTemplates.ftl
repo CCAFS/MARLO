@@ -75,7 +75,7 @@
 
       [#-- 3.  Maturity of change reported (tick-box)  --]
       [#if isOutcomeCaseStudy]
-      <div class="form-group stageProcessOne">
+      <div class="form-group stageProcessOne" style="position: relative;">
         <div class="form-group">
           [#assign guideSheetURL = "https://cgiar.sharepoint.com/sites/Alliance-SPRM/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAlliance%2DSPRM%2FShared%20Documents%2F2%20Project%20Monitoring%2C%20Evaluation%20and%20Learning%2F2%2E5%20Project%20Monitoring%2C%20Evaluation%20and%20Learning%20%2D%20Projects%2F2%2E5%2E1%20Outcomes%2F2024%20Outcomes%2F2024%20OICR%20Guidance%20Note%20%28Version%2014%2E08%2E24%29%2Epdf&parent=%2Fsites%2FAlliance%2DSPRM%2FShared%20Documents%2F2%20Project%20Monitoring%2C%20Evaluation%20and%20Learning%2F2%2E5%20Project%20Monitoring%2C%20Evaluation%20and%20Learning%20%2D%20Projects%2F2%2E5%2E1%20Outcomes%2F2024%20Outcomes" /]
           <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" />[@s.text name="study.general.guideSheetURL.levelMaturity" /]</a> </small>
@@ -151,7 +151,7 @@
             [@customForm.radioFlat id="${studyIndicatorThree}-no" name="${name}.projectExpectedStudyInfo.isContribution" label="No" value="false" checked=(showPolicyIndicator == "false") cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-no" editable=editable /]
           </div>        
           [#-- Disaggregates for CGIAR Indicator   --]
-          <div class="form-group simpleBox block-${studyIndicatorThree}" style="display:${(showPolicyIndicator == "true")?string('block','none')}">
+          <div class="form-group simpleBox block-${studyIndicatorThree}" style="display:${(showPolicyIndicator == "true")?string('block','none')}; position: relative;">
             [@customForm.elementsListComponent name="${customName}.policies" elementType="projectPolicy" elementList=element.policies label="study.generalInformation.policies"  listName="policyList" keyFieldName="id" displayFieldName="composedNameAlternative"/]
             [#-- Note --]
             <div class="note">[@s.text name="study.generalInformation.policies.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/policies'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a>[/@][/@]</div>
@@ -457,7 +457,7 @@
       
       [#-- 11.Cross-cutting markers - Gender, Youth, and Capacity Development  --]
       [#if isOutcomeCaseStudy]
-      <div class="form-group">
+      <div class="form-group" style="position: relative;">
         [#assign ccGuideSheetURL = "https://drive.google.com/file/d/1oXb5UHABZIbyUUczZ8eqnDsgdzwABXPk/view?usp=sharing" /]
         <small class="pull-right"><a href="${ccGuideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" />[@s.text name="study.general.guideSheetURL.crossMarkets" /]</a> </small>
       </div>
