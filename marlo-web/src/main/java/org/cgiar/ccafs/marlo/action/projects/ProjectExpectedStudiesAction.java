@@ -2008,7 +2008,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       } else {
         this.previousTagID = 0;
       }
-
+      this.validateOICRTag(this.expectedStudyDB, phase);
       /*
        * get feedback comments
        */
