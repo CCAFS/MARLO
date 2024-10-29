@@ -282,6 +282,9 @@ $(document).ready(function () {
       var messageType = "error";
       notifyErrorMessage(messageType, message);
     }
+    
+    console.log("Message Selector: ", messageSelector);
+    console.log("Llega aqui")
 
   }
 
@@ -350,11 +353,26 @@ $(document).ready(function () {
     // });
   }
 
+
+  /**
+   * Alerts the admin when changing the status with trainees.
+   * 
+   * This condition MUST only be used in the deliverables component.
+   * This function checks if the user is an admin and if certain conditions are met,
+   * it generates a message to alert the admin about the potential impact of changing the status.
+   * 
+   * @returns {string} - A message to alert the admin or an empty string if no alert is needed.
+   */
   function alertAdminForChangingStatusWithTrainess() {
-    var isAdmin = document.getElementById("adminRole").value || "false";
+    const isAdmin = (document.getElementById("adminRole") !== null) ? document.getElementById("adminRole").value:  "false";
+    
+    //WARNING: This condition is created to avoid error with the system in components different to deliverables like OICR or innovations
+    if(isAdmin === "false"){
+      return "";
+    }
 
     $statuses = $('select.status') || null;
-    let statusValue = $statuses.val();
+    const statusValue = $statuses.val() || null;
 
 
     let message = "";

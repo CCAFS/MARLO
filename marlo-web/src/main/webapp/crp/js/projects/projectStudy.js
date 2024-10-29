@@ -1042,11 +1042,9 @@ var dynamicSelectorSDGImageModule = (function (){
           requestID: Number.parseInt($value)
         },
         success: function(data) {
-          console.log(data);
           if(data.image.adsoluteURL == null){
             console.error("Image not found");
           } else {
-            console.log("Image found");
             $titleSelectedLeverContainer.show();
             //$containerReference.show();
             $image.attr("src",data.image.adsoluteURL);
