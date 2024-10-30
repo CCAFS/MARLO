@@ -282,9 +282,6 @@ $(document).ready(function () {
       var messageType = "error";
       notifyErrorMessage(messageType, message);
     }
-    
-    console.log("Message Selector: ", messageSelector);
-    console.log("Llega aqui")
 
   }
 

@@ -433,16 +433,17 @@
       [/#if]
       
       [#-- 10. Quantification (where data is available)  --]
+      [#local isLeverOfMaturityOnThree = (element.projectExpectedStudyInfo.repIndStageStudy.id == 3)!false]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         [#--
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.quantification" i18nkey="study.quantification" help="study.quantification.help" helpIcon=false className=" " required=editable && !(isPolicy && stageProcessOne) editable=editable /]
         --]
-        <label for="" class="label--2">[@s.text name="study.generalInformation.quantification" /]: [@customForm.req required=(editable && reportingActive) /] [@customForm.helpLabel name="study.generalInformation.quantification.help" isNote=true showIcon=false editable=editable/]</label><br />
+        <label for="" class="label--2">[@s.text name="study.generalInformation.quantification" /]: [@customForm.req required=(editable && reportingActive && isLeverOfMaturityOnThree) /] [@customForm.helpLabel name="study.generalInformation.quantification.help" isNote=true showIcon=false editable=editable/]</label><br />
         <div class="quantificationsBlock">
           <div class="quantificationsList">
           [#list (element.quantifications)![] as item]
-            [@quantificationMacro name="${customName}.quantifications" element=item index=item_index /]
+            [@quantificationMacro name="${customName}.quantifications" element=item index=item_index additionalRequired=isLeverOfMaturityOnThree /]
           [/#list]
           </div>
           [#if editable]
@@ -451,7 +452,7 @@
         </div>
         [#-- Element item Template --]
         <div style="display:none">
-          [@quantificationMacro name="${customName}.quantifications" element={} index=-1 template=true /]
+          [@quantificationMacro name="${customName}.quantifications" element={} index=-1 template=true additionalRequired=isLeverOfMaturityOnThree /]
         </div>
         <br />
       </div>
@@ -1029,7 +1030,7 @@
   </div>
 [/#macro]
 
-[#macro quantificationMacro name element index=-1 template=false]
+[#macro quantificationMacro name element index=-1 template=false additionalRequired=false]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   <div id="quantification-${(template?string('template', ''))}" class="quantification form-group simpleBox">
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
@@ -1045,20 +1046,20 @@
     <div class="form-group row">
       [#-- Quantification type --]
       <div class="col-md-4">
-        [@customForm.select name="${customName}.quantificationType.id" value="${(element.quantificationType.id)!-1}" className="setSelect2" i18nkey="study.quantificationType" listName="quantificationTypes"  keyFieldName="id" displayFieldName="name" required=(editable && reportingActive) editable=editable /]
+        [@customForm.select name="${customName}.quantificationType.id" value="${(element.quantificationType.id)!-1}" className="setSelect2" i18nkey="study.quantificationType" listName="quantificationTypes"  keyFieldName="id" displayFieldName="name" required=(editable && reportingActive && additionalRequired) editable=editable /]
       </div>
       [#-- Number --]
       <div class="col-md-4">
-        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" className="numericInput" required=(editable && reportingActive) editable=editable /]
+        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" className="numericInput" required=(editable && reportingActive && additionalRequired) editable=editable /]
       </div>
       [#-- Unit --]
       <div class="col-md-4"> 
-        [@customForm.input name="${customName}.targetUnit" i18nkey="study.quantification.targetUnit" className="" required=(editable && reportingActive) editable=editable /]
+        [@customForm.input name="${customName}.targetUnit" i18nkey="study.quantification.targetUnit" className="" required=(editable && reportingActive && additionalRequired) editable=editable /]
       </div> 
     </div>
     [#-- Comments --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.comments" i18nkey="study.quantification.comments" help="study.quantification.comments.help"  placeholder="" className="" required=(editable && reportingActive) editable=editable /]
+      [@customForm.textArea name="${customName}.comments" i18nkey="study.quantification.comments" help="study.quantification.comments.help"  placeholder="" className="" required=(editable && reportingActive && additionalRequired) editable=editable /]
     </div>
   </div>
 [/#macro]

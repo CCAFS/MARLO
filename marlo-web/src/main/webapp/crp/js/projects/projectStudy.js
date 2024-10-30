@@ -495,10 +495,19 @@ function attachEvents() {
     }
 
     setTimeout(() => {
-      var quantificationsListLength = $('.quantificationsList').children().length;
-      if (quantificationsListLength == 0) {
-        addItem($('.addStudyQualification'));
-        updateIndexes();
+      const $quantificationsListLength = $('.quantificationsList').children().length;
+      const $selectLevelMaturity = $('select[name="expectedStudy.projectExpectedStudyInfo.repIndStageStudy.id"]');
+      let isLeverOfMaturityOnThree = false;
+
+      if ($selectLevelMaturity.length > 0) {
+        isLeverOfMaturityOnThree = $selectLevelMaturity.val() == 3;
+      }
+
+      if(isLeverOfMaturityOnThree) {
+        if ($quantificationsListLength == 0) {
+          addItem($('.addStudyQualification'));
+          updateIndexes();
+        }
       }
 
     }, 1000);
