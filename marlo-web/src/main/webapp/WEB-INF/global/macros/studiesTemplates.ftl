@@ -662,10 +662,12 @@
       [/#if]
 
       [#-- Tag --]
-      [#if isOutcomeCaseStudy]          
-      <div class="col-md-2">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.tag.id" value="${(element.projectExpectedStudyInfo.tag.id)!-1}" className="setSelect2 studyTag" i18nkey="study.general.tag" listName="tagList" keyFieldName="id"  displayFieldName="tagName" required=false editable=(editable && isOutcomeCaseStudy && action.canAccessSuperAdmin()) && action.hasSpecificities('oicr_tag_field_manual_manage_active') /]
-        </div>
+      [#if isOutcomeCaseStudy]
+        [#if (element.projectExpectedStudyInfo.tag.id)?has_content ]          
+        <div class="col-md-2">
+            [@customForm.select name="${customName}.projectExpectedStudyInfo.tag.id" value="${(element.projectExpectedStudyInfo.tag.id)!-1}" className="setSelect2 studyTag" i18nkey="study.general.tag" listName="tagList" keyFieldName="id"  displayFieldName="tagName" required=false editable=(editable && isOutcomeCaseStudy && action.canAccessSuperAdmin()) && action.hasSpecificities('oicr_tag_field_manual_manage_active') /]
+          </div>
+        [/#if]
       [/#if]
 
       [#-- Score for MELIAs --]
