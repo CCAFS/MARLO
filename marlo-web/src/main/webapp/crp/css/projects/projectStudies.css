@@ -220,6 +220,10 @@ div.stfTargets .col-md-1:last-of-type{
   margin-bottom: 12px;
 }
 
+.containerPrimaryLever > label{
+  margin-top: 12px;
+}
+
 .radioToCheckbox .containerRadioToCheckbox .radioFlat {
   padding-left: 0;
   margin-bottom: 12px;
@@ -252,7 +256,6 @@ div.stfTargets .col-md-1:last-of-type{
 
 .radioToCheckbox .containerRadioToCheckbox--other {
   display: flex;
-  margin-top: 16px;
   width: 100%;
 }
 
