@@ -5,11 +5,15 @@
   margin-top: 2rem;
 }
 
+.form-group .pull-right:first-of-type{
+  top: 4.5%;
+}
+
 .form-group .pull-right{
   position: absolute;
   right: 0;
   text-align: right;
-  top: 5%;
+  top: 4%;
 }
 
 li[role="presentation"] {
