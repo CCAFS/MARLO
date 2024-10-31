@@ -2540,20 +2540,21 @@ public class ProjectExpectedStudiesAction extends BaseAction {
    * @param phase
    */
   public void saveAllianceLever(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
-    try {
-      // delete data
-      if ((projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers() != null)
-        && !projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers().isEmpty()) {
+    // Delete data
+    if ((projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers() != null)
+      && !projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers().isEmpty()) {
+      // Primary levers delete
+      try {
         final List<ProjectExpectedStudySdgAllianceLever> sdgAllianceLeverPrev =
           new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers().stream()
-            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId()) && nu.getIsPrimary() == true)
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId()) && nu.getIsPrimary())
             .collect(Collectors.toList()));
 
         // allianceLever
         for (final ProjectExpectedStudySdgAllianceLever sdgAllianceLever : sdgAllianceLeverPrev) {
           if (sdgAllianceLever.getsDGContribution() != null) {
             if (this.expectedStudy.getAllianceLever() == null
-              || (!this.validateIfconatinsSdgcontribution(this.expectedStudy.getAllianceLever().getSdgContributions(),
+              || (!this.validateIfcontainsSdgcontribution(this.expectedStudy.getAllianceLever().getSdgContributions(),
                 sdgAllianceLever.getsDGContribution())
 
               )) {
@@ -2562,43 +2563,49 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             }
           }
         }
+      } catch (Exception e) {
+        logger.info(" error in primary lever delete function " + e.getMessage());
+      }
 
-        // allianceLevers
-
-
+      // Related levers delete
+      try {
         final List<ProjectExpectedStudySdgAllianceLever> sdgAllianceLeverPrevToLevers =
           new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers().stream()
-            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId()) && nu.getIsPrimary() == false)
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId()) && !nu.getIsPrimary())
             .collect(Collectors.toList()));
 
-        // allianceLever
         for (final ProjectExpectedStudySdgAllianceLever sdgAllianceLever : sdgAllianceLeverPrevToLevers) {
           if (sdgAllianceLever.getsDGContribution() != null) {
             for (AllianceLever allianceLeverTmp : this.expectedStudy.getAllianceLevers()) {
-              if ((allianceLeverTmp == null
-                || (!this.validateIfconatinsSdgcontribution(allianceLeverTmp.getSdgContributions(),
-                  sdgAllianceLever.getsDGContribution())
-
-
-                )) && allianceLeverTmp.getId() == sdgAllianceLever.getAllianceLever().getId()) {
+              if (((allianceLeverTmp == null)
+                || (!this.validateIfcontainsSdgcontribution(allianceLeverTmp.getSdgContributions(),
+                  sdgAllianceLever.getsDGContribution())))
+                && allianceLeverTmp != null && allianceLeverTmp.getId() != null && sdgAllianceLever.getId() != null
+                && sdgAllianceLever.getAllianceLever() != null && sdgAllianceLever.getAllianceLever().getId() != null
+                && allianceLeverTmp.getId().equals(sdgAllianceLever.getAllianceLever().getId())) {
                 this.projectExpectedStudySdgAllianceLeverManager
                   .deleteProjectExpectedStudySdgAllianceLever(sdgAllianceLever.getId());
               }
             }
           }
         }
-
-
+      } catch (Exception e) {
+        logger.info(" error in related levers delete function " + e.getMessage());
       }
 
-      // save data
+    }
+
+    // save data
+
+    // Primary levers save
+    try {
       if (this.expectedStudy.getAllianceLever() != null
         && this.expectedStudy.getAllianceLever().getSdgContributions() != null) {
         for (SDGContribution sDGContributionTmp : this.expectedStudy.getAllianceLever().getSdgContributions()) {
           if (sDGContributionTmp != null && this.expectedStudy.getAllianceLever() != null
             && this.expectedStudy.getAllianceLever().getId() != null) {
 
-            ProjectExpectedStudySdgAllianceLever internsDGContribution = new ProjectExpectedStudySdgAllianceLever();
+            ProjectExpectedStudySdgAllianceLever internsDGContribution = null;
             internsDGContribution = this.projectExpectedStudySdgAllianceLeverManager.findByPhaseExpectedAndLever(
               this.getActualPhase().getId(), expectedID, this.expectedStudy.getAllianceLever().getId(),
               sDGContributionTmp.getId(), 1);
@@ -2614,7 +2621,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
                 .saveProjectExpectedStudySdgAllianceLever(sdgAllianceLeverSave);
               // This is to add studyQuantificationSave to generate
               // correct auditlog.
-              this.expectedStudy.getProjectExpectedStudySdgAllianceLevers().add(sdgAllianceLeverSave);
+              // this.expectedStudy.getProjectExpectedStudySdgAllianceLevers().add(sdgAllianceLeverSave);
             } else {
               internsDGContribution.setProjectExpectedStudy(projectExpectedStudy);
               internsDGContribution.setPhase(phase);
@@ -2625,12 +2632,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
                 .saveProjectExpectedStudySdgAllianceLever(internsDGContribution);
               // This is to add studyQuantificationSave to generate
               // correct auditlog.
-              this.expectedStudy.getProjectExpectedStudySdgAllianceLevers().add(internsDGContribution);
+              // this.expectedStudy.getProjectExpectedStudySdgAllianceLevers().add(internsDGContribution);
             }
           }
         }
       }
-
+    } catch (Exception e) {
+      logger.info(" error in primary levers save function " + e.getMessage());
+    }
+    try {
+      // Related levers save
       if (this.expectedStudy.getAllianceLevers() != null) {
         for (AllianceLever allianceLeverTmp : this.expectedStudy.getAllianceLevers()) {
           if (allianceLeverTmp != null && allianceLeverTmp.getSdgContributions() != null) {
@@ -2652,7 +2663,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
                   // This is to add studyQuantificationSave to generate
                   // correct auditlog.
-                  this.expectedStudy.getProjectExpectedStudySdgAllianceLevers().add(sdgAllianceLeverSave);
+                  // this.expectedStudy.getProjectExpectedStudySdgAllianceLevers().add(sdgAllianceLeverSave);
                 } else {
                   internsDGContribution.setProjectExpectedStudy(projectExpectedStudy);
                   internsDGContribution.setPhase(phase);
@@ -2664,7 +2675,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
                   // This is to add studyQuantificationSave to generate
                   // correct auditlog.
-                  this.expectedStudy.getProjectExpectedStudySdgAllianceLevers().add(internsDGContribution);
+                  // this.expectedStudy.getProjectExpectedStudySdgAllianceLevers().add(internsDGContribution);
                 }
               }
 
@@ -2679,7 +2690,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
     } catch (Exception e) {
-      logger.info(" error in saveAllianceLever function " + e.getMessage());
+      logger.info(" error in related levers save function " + e.getMessage());
     }
 
 
@@ -3037,7 +3048,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     // Search and deleted form Information
     if ((projectExpectedStudy.getProjectExpectedStudyGeographicScopes() != null)
-      && (projectExpectedStudy.getProjectExpectedStudyGeographicScopes().size() > 0)) {
+      && (!projectExpectedStudy.getProjectExpectedStudyGeographicScopes().isEmpty())) {
 
       final List<ProjectExpectedStudyGeographicScope> scopePrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
@@ -4698,51 +4709,38 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
 
-  public boolean validateIfconatinsSdgcontribution(List<SDGContribution> sdgContributionList,
-    SDGContribution sdgContributionTmp) {
+  public boolean validateIfcontainsOutcomes(List<AllianceLeverOutcome> outcomeList, AllianceLeverOutcome outcomeTmp) {
     try {
-      for (SDGContribution sdgContribution : sdgContributionList) {
-      }
-      int stockCounter = 0;
-      if (sdgContributionList != null) {
-        for (SDGContribution SdgCont : sdgContributionList) {
-          if (SdgCont != null && SdgCont.getId() != null) {
-            if (SdgCont.getId() == sdgContributionTmp.getId()) {
-              stockCounter = 1;
-            }
+      if (outcomeList != null) {
+        for (AllianceLeverOutcome outcomeCont : outcomeList) {
+          if (outcomeCont != null && outcomeCont.getId() != null && outcomeCont.getId().equals(outcomeTmp.getId())) {
+            return true;
           }
         }
       }
-
-      if (stockCounter == 1) {
-        return true;
-      }
       return false;
     } catch (Exception e) {
+      Log.error("error in validateIfcontainsOutcomes method " + e);
       return false;
     }
   }
 
 
-  public boolean validateIfcontainsOutcomes(List<AllianceLeverOutcome> outcomeList, AllianceLeverOutcome outcomeTmp) {
+  public boolean validateIfcontainsSdgcontribution(List<SDGContribution> sdgContributionList,
+    SDGContribution sdgContributionTmp) {
     try {
 
-      int stockCounter = 0;
-      if (outcomeList != null) {
-        for (AllianceLeverOutcome outcomeCont : outcomeList) {
-          if (outcomeCont != null && outcomeCont.getId() != null) {
-            if (outcomeCont.getId() == outcomeTmp.getId()) {
-              stockCounter = 1;
-            }
+      if (sdgContributionList != null) {
+        for (SDGContribution SdgCont : sdgContributionList) {
+          if (SdgCont != null && SdgCont.getId() != null && SdgCont.getId().equals(sdgContributionTmp.getId())) {
+            return true;
           }
         }
       }
 
-      if (stockCounter == 1) {
-        return true;
-      }
       return false;
     } catch (Exception e) {
+      Log.error("error in validateIfcontainsSdgcontribution method " + e);
       return false;
     }
   }
@@ -4755,7 +4753,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
    * @param phase
    */
   public void validateOICRTag(ProjectExpectedStudy projectExpectedStudyDB, Phase phase) {
-
 
     if (this.previousTagID == 0) {
       /* New OICR: When creating a new OICR and maintaining the same "Current reporting year" */
