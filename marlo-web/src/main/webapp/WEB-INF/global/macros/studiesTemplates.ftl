@@ -435,7 +435,7 @@
       [#-- 10. Quantification (where data is available)  --]
       [#local isLeverOfMaturityOnThree = (element.projectExpectedStudyInfo.repIndStageStudy.id == 3)!false]
       [#if isOutcomeCaseStudy]
-      <div class="form-group stageProcessOne">
+      <div class="form-group stageProcessOne quantificationsBlockContainer">
         [#--
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.quantification" i18nkey="study.quantification" help="study.quantification.help" helpIcon=false className=" " required=editable && !(isPolicy && stageProcessOne) editable=editable /]
         --]

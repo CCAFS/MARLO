@@ -528,8 +528,13 @@ function attachEvents() {
   $('input[id*="radioCheckDisplay_"]').on('change',displayInnerCheckbox);
   $('.containerRadioToCheckbox--other input[id*="radioCheckDisplay_"]').on('change',displayInnerOtherInput);
 
+  //add required to Quantification
+  $('select[name="expectedStudy.projectExpectedStudyInfo.repIndStageStudy.id"]').on('change', displayRequiredTagInQuantification);
+
+  //disabled option of related lever based on selection in primary lever
   $('.containerPrimaryLever input[name="expectedStudy.allianceLever.id"]').on('change', disableRelatedLeversBasedOnPrimaryLever);
 
+  //add dynamic SDG Image Selector list items to display
   $('.containerPrimaryLever input[name*="expectedStudy.allianceLever.sdgContributions"]').on('change', dynamicSelectorSDGImageModule.init);
 }
 
@@ -756,6 +761,19 @@ function displayInnerCheckbox() {
 
   });
 
+}
+
+function displayRequiredTagInQuantification() {
+  const $selectLevelMaturity = $('select[name="expectedStudy.projectExpectedStudyInfo.repIndStageStudy.id"]');
+  const isLeverOfMaturityOnThree = $selectLevelMaturity.val() == 3;
+
+  const $quantificationsBlockContainer = $('.quantificationsBlockContainer');
+
+  if(isLeverOfMaturityOnThree) {
+    $quantificationsBlockContainer.find('.requiredTag').slideDown();
+  } else {
+    $quantificationsBlockContainer.find('.requiredTag').slideUp();
+  }
 }
 
 function displayInnerOtherInput() {
