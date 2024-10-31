@@ -478,6 +478,10 @@ span.fieldError {
 	/* float: left; */
 }
 
+span.fieldError span.selection span.select2-selection {
+	border: 1px solid #F44;
+}
+
 p.warning-info {
 	background-color: #F6BB42;
 	border-color: #F6BB42;
