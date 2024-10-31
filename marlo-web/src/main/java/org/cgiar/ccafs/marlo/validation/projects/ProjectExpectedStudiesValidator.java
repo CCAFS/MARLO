@@ -322,10 +322,18 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
 
             // Validate Other field lever selection
+            if (allianceLever.getId() != null) {
+              AllianceLever allianceLeverDB = allianceLeverManager.getAllianceLeverById(allianceLever.getId());
+              if (allianceLeverDB != null && allianceLeverDB.getName() != null) {
+                allianceLever.setName(allianceLeverDB.getName());
+              }
+            }
             if (allianceLever.getName() != null && allianceLever.getName().equalsIgnoreCase("Other")
               && !this.isValidString(allianceLever.getLeverComments())) {
               action.addMessage(this.getTextCustom(action, "expectedStudy.leverComments"));
-              action.getInvalidFields().put("input-expectedStudy.allianceLevers[" + 0 + "].leverComments",
+              int allianceLeverID = (allianceLever.getId() != null ? allianceLever.getId().intValue() - 1 : 0);
+              action.getInvalidFields().put(
+                "input-expectedStudy.allianceLevers[" + (allianceLeverID) + "].leverComments",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
 
