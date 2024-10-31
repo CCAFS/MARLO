@@ -1,5 +1,6 @@
 [#ftl]
-    <span id="test" class="errorTag glyphicon glyphicon-info-sign" style="display:none;"> </span>
+    <!-- The errorTag is DEPRECIATED right now it's not being use -->
+    <!-- <span id="test" class="errorTag glyphicon glyphicon-info-sign" style="display:none;"> </span>-->
     <!-- ${actionName} Content end-->
     <footer class="footer">    
       <div class="container">
