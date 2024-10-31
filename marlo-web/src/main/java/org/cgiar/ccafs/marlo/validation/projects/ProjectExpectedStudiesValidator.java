@@ -1051,23 +1051,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
               InvalidFieldsMessages.EMPTYFIELD);
           }
 
-          // Validate Quantification
-
-          // Validate only when lever of maturity is 3
-          if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-            .getRepIndStageStudy() != null) {
-            if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndStageStudy()
-              .getId() != null
-              && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndStageStudy()
-                .getId() == 3) {
-              if (projectExpectedStudy.getQuantifications() != null) {
-                for (int i = 0; i < projectExpectedStudy.getQuantifications().size(); i++) {
-                  this.validateQuantifications(action, projectExpectedStudy.getQuantifications().get(i), i);
-                }
-              }
-            }
-          }
-
 
           // REMOVED FOR AR 2020
           // Validate Evidence Tag
@@ -1282,6 +1265,22 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       action.addMessage(this.getTextCustom(action, "Title"));
       action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.", InvalidFieldsMessages.EMPTYFIELD);
       action.setTestFields(new HashMap<>());
+    }
+
+    // Validate Quantification
+
+    // Validate only when lever of maturity is 3
+    if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndStageStudy() != null) {
+      if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndStageStudy()
+        .getId() != null
+        && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndStageStudy()
+          .getId() == 3) {
+        if (projectExpectedStudy.getQuantifications() != null) {
+          for (int i = 0; i < projectExpectedStudy.getQuantifications().size(); i++) {
+            this.validateQuantifications(action, projectExpectedStudy.getQuantifications().get(i), i);
+          }
+        }
+      }
     }
 
 
@@ -1747,6 +1746,13 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
     // Validate Number
     if (!this.isValidNumber(String.valueOf(projectExpectedStudyQuantification.getNumber()))) {
+      action.addMessage(this.getTextCustom(action, "quantifications.Number"));
+      action.getInvalidFields().put("input-expectedStudy.quantifications[" + i + "].number",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate cero Number
+    if (projectExpectedStudyQuantification.getNumber() == 0) {
       action.addMessage(this.getTextCustom(action, "quantifications.Number"));
       action.getInvalidFields().put("input-expectedStudy.quantifications[" + i + "].number",
         InvalidFieldsMessages.EMPTYFIELD);
