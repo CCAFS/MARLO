@@ -94,7 +94,7 @@ public class ProjectExpectedStudySdgAllianceLeverMySQLDAO extends
       + phaseId + " and expected_id=" + expectedId + " and alliance_lever_id=" + leverId + " and sdg_contribution_id="
       + sdg + " and is_primary=" + isPrimary;
     List<ProjectExpectedStudySdgAllianceLever> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list.get(0);
     }
     return null;
