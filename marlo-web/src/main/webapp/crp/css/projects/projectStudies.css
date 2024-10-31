@@ -238,7 +238,10 @@ div.stfTargets .col-md-1:last-of-type{
 }
 
 .radioToCheckbox .containerRadioToCheckbox .radioFlat input[type="radio"]+.radio-label.innerCheckboxLabel{
-  display: contents;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .radioToCheckbox .containerRadioToCheckbox .feedback-flex-items.radioFlat-flex{
