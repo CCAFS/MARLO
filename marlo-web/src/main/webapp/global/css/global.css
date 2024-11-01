@@ -766,6 +766,10 @@ input.target {
 	width: 30% !important;
 }
 
+input.targetValueNumber{
+	text-align: right;
+}
+
 .halfPartBlock .checkbox input {
 	width: 15px;
 	/* margin-left: 20px; */
