@@ -536,6 +536,17 @@ function attachEvents() {
 
   //add dynamic SDG Image Selector list items to display
   $('.containerPrimaryLever input[name*="expectedStudy.allianceLever.sdgContributions"]').on('change', dynamicSelectorSDGImageModule.init);
+
+  $('input[type="radio"], input[type="checkbox"]').tooltip({
+    open: function(event, ui) {
+      setTimeout(function() {
+        $(ui.tooltip).fadeOut(300, function() {
+          $(this).remove(); 
+        });
+      }, 2000); 
+    }
+  })
+
 }
 
 function addSelect2() {
