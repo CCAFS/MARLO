@@ -124,7 +124,7 @@
             <div class="studiesTab">
 
               [#-- Tab navigation --]
-              [#if expectedStudy.projectExpectedStudyInfo.studyType.id == 1]
+              [#if (expectedStudy.projectExpectedStudyInfo.studyType?has_content && expectedStudy.projectExpectedStudyInfo.studyType.id?has_content) && (expectedStudy.projectExpectedStudyInfo.studyType.id == 1)]
                 <ul class="nav nav-tabs" role="tablist">
                   [#assign isOicrGeneralInformationComplete = action.isOicrGeneralInformationComplete()!false /]
                   <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if] col-md-3 ${isOicrGeneralInformationComplete?then('submitted','toSubmit')}">
