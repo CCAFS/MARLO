@@ -43,8 +43,11 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -296,74 +299,72 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         allianceLeverSize = allianceLeverList.size();
       }
 
-      List<AllianceLever> allianceLeverListPrev = new ArrayList<>();
-      if (projectExpectedStudy.getAllianceLevers() != null) {
-        for (AllianceLever leverTmp : projectExpectedStudy.getAllianceLevers()) {
-          if (leverTmp != null) {
-            AllianceLever leverSave = new AllianceLever();
-            leverSave.setId(leverTmp.getId());
-            allianceLeverListPrev.add(leverSave);
-          }
-        }
-      }
+      List<AllianceLever> allianceLeverListPrev = Optional.ofNullable(projectExpectedStudy.getAllianceLevers())
+        .orElse(Collections.emptyList()).stream().filter(Objects::nonNull).collect(Collectors.toList());
 
       if (allianceLeverListPrev != null && !allianceLeverListPrev.isEmpty()) {
         boolean isAllianceLeverSelected = false;
         int allianceLeverIndex = 0;
+        boolean existLeverComment = allianceLeverListPrev.stream().filter(Objects::nonNull) // Elimina los elementos
+                                                                                            // nulos de la lista
+          .anyMatch(allianceLever -> this.isValidString(allianceLever.getLeverComments()));
         for (AllianceLever allianceLever : allianceLeverListPrev) {
           if (allianceLever != null && allianceLever.getId() != null) {
             allianceLeverTemp = allianceLeverManager.getAllianceLeverById(allianceLever.getId());
             allianceLever.setName(allianceLeverTemp.getName());
             allianceLever.setDescription(allianceLeverTemp.getDescription());
 
-            sDGContributionList = this.sDGContributionManager.findSDGcontributionByExpectedPhaseAndLever(
-              action.getActualPhase().getId(), projectExpectedStudy.getId(), allianceLeverTemp.getId(), 1);
-            allianceLever.setSdgContributions(sDGContributionList);
+            /*
+             * sDGContributionList = this.sDGContributionManager.findSDGcontributionByExpectedPhaseAndLever(
+             * action.getActualPhase().getId(), projectExpectedStudy.getId(), allianceLeverTemp.getId(), 1);
+             * allianceLever.setSdgContributions(sDGContributionList);
+             */
 
 
             // Validate Other field lever selection
-            if (allianceLever.getId() != null) {
-              AllianceLever allianceLeverDB = allianceLeverManager.getAllianceLeverById(allianceLever.getId());
-              if (allianceLeverDB != null && allianceLeverDB.getName() != null) {
-                allianceLever.setName(allianceLeverDB.getName());
-              }
-            }
-            if (allianceLever.getName() != null && allianceLever.getName().equalsIgnoreCase("Other")
+            if (!existLeverComment && allianceLever.getId() != null
+              && (allianceLever.getId() == APConstants.EXPECTED_OTHER_ALLIANCE_LEVER_ID)
               && !this.isValidString(allianceLever.getLeverComments())) {
-              action.addMessage(this.getTextCustom(action, "expectedStudy.leverComments"));
-              int allianceLeverID = (allianceLever.getId() != null ? allianceLever.getId().intValue() - 1 : 0);
-              action.getInvalidFields().put(
-                "input-expectedStudy.allianceLevers[" + (allianceLeverID) + "].leverComments",
+              action.addMessage(this.getTextCustom(action, "expectedStudy.allianceLevers[" + (0) + "].leverComments"));
+              action.getInvalidFields().put("input-expectedStudy.allianceLevers[" + (0) + "].leverComments",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
+
 
             isAllianceLeverSelected = true;
 
             // Validate SDG contributions selection
-            if (allianceLever.getSdgContributions() == null) {
-              // Add message for missing SDG contributions
-              action.addMessage(this.getTextCustom(action, "expectedStudy.sdgContributions"));
-              for (int i = 0; i < sDGContributionList.size(); i++) {
+            if (allianceLever != null) {
+              if ((allianceLever.getSdgContributions() == null || allianceLever.getSdgContributions().isEmpty())
+                && (allianceLever.getId() != null
+                  && allianceLever.getId() != APConstants.EXPECTED_OTHER_ALLIANCE_LEVER_ID)) {
+                // Add message for missing SDG contributions
+                // for (int i = 0; i < sDGContributionList.size(); i++) {
+                action.addMessage(this.getTextCustom(action,
+                  "expectedStudy.allianceLevers[" + allianceLeverIndex + "].sdgContributions[" + 0 + "].id"));
                 action.getInvalidFields().put(
-                  "input-expectedStudy.allianceLevers[" + allianceLeverIndex + "].sdgContributions[" + i + "].id",
+                  "input-expectedStudy.allianceLevers[" + allianceLeverIndex + "].sdgContributions[" + 0 + "].id",
                   InvalidFieldsMessages.CHECKBOX);
-              }
-            } else {
-              // Validate each SDG contribution
-              for (SDGContribution sdgContribution : allianceLever.getSdgContributions()) {
-                if (sdgContribution != null && sdgContribution.getId() == null) {
-                  // Add message for missing SDG contribution ID
-                  action.addMessage(this.getTextCustom(action, "expectedStudy.sdgContributions"));
+                // }
+              } else {
+                // Validate each SDG contribution
+                if (allianceLever.getSdgContributions() != null) {
+                  for (SDGContribution sdgContribution : allianceLever.getSdgContributions()) {
+                    if (sdgContribution != null && sdgContribution.getId() == null) {
+                      // Add message for missing SDG contribution ID
 
-                  for (int i = 0; i < sDGContributionList.size(); i++) {
-                    action.getInvalidFields().put(
-                      "input-expectedStudy.allianceLevers[" + allianceLeverIndex + "].sdgContributions[" + i + "].id",
-                      InvalidFieldsMessages.CHECKBOX);
+                      for (int i = 0; i < sDGContributionList.size(); i++) {
+                        action.addMessage(this.getTextCustom(action, "input-expectedStudy.allianceLevers["
+                          + allianceLeverIndex + "].sdgContributions[" + i + "].id"));
+                        action.getInvalidFields().put("input-expectedStudy.allianceLevers[" + allianceLeverIndex
+                          + "].sdgContributions[" + i + "].id", InvalidFieldsMessages.CHECKBOX);
+                      }
+                    }
                   }
                 }
               }
-            }
 
+            }
           }
           allianceLeverIndex++;
         }

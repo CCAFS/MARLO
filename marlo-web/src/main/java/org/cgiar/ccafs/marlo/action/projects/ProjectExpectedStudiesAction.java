@@ -2573,25 +2573,48 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers().stream()
             .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId()) && !nu.getIsPrimary())
             .collect(Collectors.toList()));
-
         for (final ProjectExpectedStudySdgAllianceLever sdgAllianceLever : sdgAllianceLeverPrevToLevers) {
           if (sdgAllianceLever.getsDGContribution() != null) {
+            if (this.expectedStudy.getAllianceLevers() == null && sdgAllianceLever != null
+              && sdgAllianceLever.getId() != null) {
+              this.projectExpectedStudySdgAllianceLeverManager
+                .deleteProjectExpectedStudySdgAllianceLever(sdgAllianceLever.getId());
+            }
+            boolean existAllianceLever = false;
             for (AllianceLever allianceLeverTmp : this.expectedStudy.getAllianceLevers()) {
-              if (allianceLeverTmp == null && sdgAllianceLever != null && sdgAllianceLever.getId() != null) {
-                this.projectExpectedStudySdgAllianceLeverManager
-                  .deleteProjectExpectedStudySdgAllianceLever(sdgAllianceLever.getId());
+              if (allianceLeverTmp != null && allianceLeverTmp.getId() != null
+                && sdgAllianceLever.getAllianceLever() != null && sdgAllianceLever.getAllianceLever().getId() != null) {
 
-              } else {
-
-                if (allianceLeverTmp != null && allianceLeverTmp.getSdgContributions() != null
-                  && !this.validateIfcontainsSdgcontribution(allianceLeverTmp.getSdgContributions(),
-                    sdgAllianceLever.getsDGContribution())
-                  && allianceLeverTmp.getId() != null && sdgAllianceLever.getId() != null
-                  && sdgAllianceLever.getAllianceLever() != null && sdgAllianceLever.getAllianceLever().getId() != null
+                // If not SDG is selected
+                if ((allianceLeverTmp.getSdgContributions() == null || allianceLeverTmp.getSdgContributions().isEmpty())
                   && allianceLeverTmp.getId().equals(sdgAllianceLever.getAllianceLever().getId())) {
                   this.projectExpectedStudySdgAllianceLeverManager
                     .deleteProjectExpectedStudySdgAllianceLever(sdgAllianceLever.getId());
                 }
+
+                if (allianceLeverTmp != null && allianceLeverTmp.getId() != null
+                  && sdgAllianceLever.getAllianceLever() != null && sdgAllianceLever.getAllianceLever().getId() != null
+                  && allianceLeverTmp.getId().equals(sdgAllianceLever.getAllianceLever().getId())) {
+                  existAllianceLever = true;
+                }
+
+                if (allianceLeverTmp.getSdgContributions() != null
+                  && !this.validateIfcontainsSdgcontribution(allianceLeverTmp.getSdgContributions(),
+                    sdgAllianceLever.getsDGContribution())
+                  && allianceLeverTmp.getId() != null && sdgAllianceLever.getId() != null
+                  && allianceLeverTmp.getId().equals(sdgAllianceLever.getAllianceLever().getId())) {
+                  this.projectExpectedStudySdgAllianceLeverManager
+                    .deleteProjectExpectedStudySdgAllianceLever(sdgAllianceLever.getId());
+                }
+              }
+            } // end for allianceLeverTmp
+
+            if (existAllianceLever == false) {
+              try {
+                this.projectExpectedStudySdgAllianceLeverManager
+                  .deleteProjectExpectedStudySdgAllianceLever(sdgAllianceLever.getId());
+              } catch (Exception e) {
+                logger.info(" error in delete alliance lever function " + e.getMessage());
               }
             }
           }
@@ -4193,16 +4216,19 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               && nu.getsDGContribution() == null)
             .collect(Collectors.toList()));
 
-        if (this.expectedStudy.getAllianceLevers() != null) {
-          for (final ProjectExpectedStudySdgAllianceLever sdgAllianceLever : sdgAllianceLeverPrevToLevers) {
-            if (!this.validateIfconatinsAllianceLever(this.expectedStudy.getAllianceLevers(),
-              sdgAllianceLever.getAllianceLever())) {
+        try {
+          if (this.expectedStudy.getAllianceLevers() != null) {
+            for (final ProjectExpectedStudySdgAllianceLever sdgAllianceLever : sdgAllianceLeverPrevToLevers) {
+              if (!this.validateIfconatinsAllianceLever(this.expectedStudy.getAllianceLevers(),
+                sdgAllianceLever.getAllianceLever())) {
+                this.projectExpectedStudySdgAllianceLeverManager
+                  .deleteProjectExpectedStudySdgAllianceLever(sdgAllianceLever.getId());
+              }
 
-              this.projectExpectedStudySdgAllianceLeverManager
-                .deleteProjectExpectedStudySdgAllianceLever(sdgAllianceLever.getId());
             }
-
           }
+        } catch (Exception e) {
+          logger.info(" error in saveSingleAllianceLever delete related function " + e.getMessage());
         }
 
 
@@ -4673,46 +4699,38 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public boolean validateIfconatinsAllianceLever(List<AllianceLever> allianceLeverList,
     AllianceLever allianceLeverTmp) {
     try {
-      int stockCounter = 0;
-      if (allianceLeverList != null) {
+      if (allianceLeverList != null && !allianceLeverList.isEmpty()) {
         for (AllianceLever internAllianceLever : allianceLeverList) {
-          if (internAllianceLever.getId() == allianceLeverTmp.getId()) {
-            stockCounter = 1;
+          if (allianceLeverTmp != null && allianceLeverTmp.getId() != null && allianceLeverTmp.getId() != null
+            && internAllianceLever != null && internAllianceLever.getId() != null
+            && internAllianceLever.getId() == allianceLeverTmp.getId()) {
+            return true;
           }
         }
       }
-
-      if (stockCounter == 1) {
-        return true;
-      }
       return false;
     } catch (Exception e) {
+      logger.error("error in validate contains method " + e);
       return false;
     }
   }
 
 
   public boolean validateIfconatinsGlobalTarget(List<GlobalTarget> globalTargetList, GlobalTarget globaltTargetTmp) {
-    // ry {
-    int stockCounter = 0;
+
     if (globalTargetList != null) {
 
       for (GlobalTarget globalTarget : globalTargetList) {
-        if (globalTarget != null && globalTarget.getId() != null) {
+        if (globalTarget != null && globalTarget.getId() != null && globaltTargetTmp.getId() != null) {
           if (globalTarget.getId() == globaltTargetTmp.getId()) {
-            stockCounter = 1;
+            return true;
+
           }
         }
       }
     }
 
-    if (stockCounter == 1) {
-      return true;
-    }
     return false;
-    // } catch (Exception e) {
-    // return false;
-    // }
   }
 
 
