@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
@@ -1731,6 +1732,29 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         }
       }
     }
+
+    // Validate Cross-cutting markers fields - for Progress and AR phases
+    if ((action.isProgressActive() || action.isReportingActive())
+      && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null) {
+
+      ProjectExpectedStudyInfo studyInfo =
+        projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase());
+
+      // Validate other cross cutting markets question
+      if (studyInfo.getOtherCrossCuttingSelection() == null || studyInfo.getOtherCrossCuttingSelection().isEmpty()) {
+        action.addMessage(this.getTextCustom(action, "Other cross cutting markets"));
+        action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.otherCrossCuttingSelection",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      // Validate other cross cutting dimension narrative
+      if (studyInfo.getOtherCrossCuttingDimensions() == null || studyInfo.getOtherCrossCuttingDimensions().isEmpty()) {
+        action.addMessage(this.getTextCustom(action, "Describe other cross cutting markets"));
+        action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.otherCrossCuttingDimensions",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
   }
 
 
