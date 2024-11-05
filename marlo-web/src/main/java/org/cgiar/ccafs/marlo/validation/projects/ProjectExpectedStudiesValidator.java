@@ -341,10 +341,9 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
                 // Add message for missing SDG contributions
                 // for (int i = 0; i < sDGContributionList.size(); i++) {
                 action.addMessage(this.getTextCustom(action,
-                  "expectedStudy.allianceLevers[" + allianceLeverIndex + "].sdgContributions[" + 0 + "].id"));
-                action.getInvalidFields().put(
-                  "input-expectedStudy.allianceLevers[" + allianceLeverIndex + "].sdgContributions[" + 0 + "].id",
-                  InvalidFieldsMessages.CHECKBOX);
+                  "expectedStudy.allianceLevers[" + (allianceLever.getId() - 1) + "].sdgContributions[" + 0 + "].id"));
+                action.getInvalidFields().put("input-expectedStudy.allianceLevers[" + (allianceLever.getId() - 1)
+                  + "].sdgContributions[" + 0 + "].id", InvalidFieldsMessages.CHECKBOX);
                 // }
               } else {
                 // Validate each SDG contribution
@@ -355,7 +354,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
                       for (int i = 0; i < sDGContributionList.size(); i++) {
                         action.addMessage(this.getTextCustom(action, "input-expectedStudy.allianceLevers["
-                          + allianceLeverIndex + "].sdgContributions[" + i + "].id"));
+                          + (allianceLever.getId() - 1) + "].sdgContributions[" + i + "].id"));
                         action.getInvalidFields().put("input-expectedStudy.allianceLevers[" + allianceLeverIndex
                           + "].sdgContributions[" + i + "].id", InvalidFieldsMessages.CHECKBOX);
                       }
@@ -390,7 +389,8 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
 
     oicrAlliance = action.getMissingFields().toString();
-    if (oicrAlliance.length() > oicrGeneral.length()) {
+    if (projectExpectedStudy != null && projectExpectedStudy.getId() != null
+      && (oicrAlliance.length() > oicrGeneral.length())) {
       BaseAction.getIsOicrAllianceAlignmentCompleteMap().put("" + projectExpectedStudy.getId(), "1");
     }
   }
