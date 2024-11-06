@@ -495,10 +495,19 @@ function attachEvents() {
     }
 
     setTimeout(() => {
-      var quantificationsListLength = $('.quantificationsList').children().length;
-      if (quantificationsListLength == 0) {
-        addItem($('.addStudyQualification'));
-        updateIndexes();
+      const $quantificationsListLength = $('.quantificationsList').children().length;
+      const $selectLevelMaturity = $('select[name="expectedStudy.projectExpectedStudyInfo.repIndStageStudy.id"]');
+      let isLeverOfMaturityOnThree = false;
+
+      if ($selectLevelMaturity.length > 0) {
+        isLeverOfMaturityOnThree = $selectLevelMaturity.val() == 3;
+      }
+
+      if(isLeverOfMaturityOnThree) {
+        if ($quantificationsListLength == 0) {
+          addItem($('.addStudyQualification'));
+          updateIndexes();
+        }
       }
 
     }, 1000);
@@ -514,11 +523,30 @@ function attachEvents() {
 
   $('input.radioType-contributionToCGIAR').on('change', onDisplayItemsInOneCGIAR);
 
-  $('input[id*="radioCheckDisplay_"]').on('change', displayInnerCheckbox);
+  displayInnerOtherInput();
 
+  $('input[id*="radioCheckDisplay_"]').on('change',displayInnerCheckbox);
+  $('.containerRadioToCheckbox--other input[id*="radioCheckDisplay_"]').on('change',displayInnerOtherInput);
+
+  //add required to Quantification
+  $('select[name="expectedStudy.projectExpectedStudyInfo.repIndStageStudy.id"]').on('change', displayRequiredTagInQuantification);
+
+  //disabled option of related lever based on selection in primary lever
   $('.containerPrimaryLever input[name="expectedStudy.allianceLever.id"]').on('change', disableRelatedLeversBasedOnPrimaryLever);
 
+  //add dynamic SDG Image Selector list items to display
   $('.containerPrimaryLever input[name*="expectedStudy.allianceLever.sdgContributions"]').on('change', dynamicSelectorSDGImageModule.init);
+
+  $('input[type="radio"], input[type="checkbox"]').tooltip({
+    open: function(event, ui) {
+      setTimeout(function() {
+        $(ui.tooltip).fadeOut(300, function() {
+          $(this).remove(); 
+        });
+      }, 2000); 
+    }
+  })
+
 }
 
 function addSelect2() {
@@ -735,10 +763,46 @@ function displayInnerCheckbox() {
           e.htmlFor = "_TEMPLATE_" + (e.htmlFor);
         }
       });
-    }
 
+      if($this.val() == "9") {
+        displayInnerOtherInput();
+      }
+    }
+    
 
   });
+
+}
+
+function displayRequiredTagInQuantification() {
+  const $selectLevelMaturity = $('select[name="expectedStudy.projectExpectedStudyInfo.repIndStageStudy.id"]');
+  const isLeverOfMaturityOnThree = $selectLevelMaturity.val() == 3;
+
+  const $quantificationsBlockContainer = $('.quantificationsBlockContainer');
+
+  if(isLeverOfMaturityOnThree) {
+    $quantificationsBlockContainer.find('.requiredTag').slideDown();
+  } else {
+    $quantificationsBlockContainer.find('.requiredTag').slideUp();
+  }
+}
+
+function displayInnerOtherInput() {
+  const $containerrMacro = $('.containerRadioToCheckbox--other');
+  const $inputButton = $containerrMacro.find('input[id*="radioCheckDisplay_"]');
+
+  $inputButton.each(function(i) {
+
+    const $parentContainer = $($inputButton[i]).closest('.containerRadioToCheckbox--other');
+    const $inputOther = $parentContainer.find('.inputOther');
+
+    if($inputButton[i].checked) {
+      $inputOther.slideDown();
+    } else {
+      $inputOther.slideUp();
+    }
+
+  })
 
 }
 
@@ -1016,11 +1080,9 @@ var dynamicSelectorSDGImageModule = (function (){
           requestID: Number.parseInt($value)
         },
         success: function(data) {
-          console.log(data);
           if(data.image.adsoluteURL == null){
             console.error("Image not found");
           } else {
-            console.log("Image found");
             $titleSelectedLeverContainer.show();
             //$containerReference.show();
             $image.attr("src",data.image.adsoluteURL);

@@ -30,6 +30,9 @@
             class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy" fetch="select">
             <column name="expected_id" />
         </many-to-one>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
 		<many-to-one name="allianceLever"
             class="org.cgiar.ccafs.marlo.data.model.AllianceLever" fetch="select">
             <column name="alliance_lever_id" />

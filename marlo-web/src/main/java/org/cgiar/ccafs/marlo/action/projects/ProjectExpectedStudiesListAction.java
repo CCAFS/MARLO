@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyTagManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
@@ -48,6 +49,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -55,7 +58,7 @@ import org.apache.commons.lang3.StringUtils;
 public class ProjectExpectedStudiesListAction extends BaseAction {
 
   private static final long serialVersionUID = 5533305942651533875L;
-
+  private final Logger logger = LoggerFactory.getLogger(ProjectExpectedStudiesListAction.class);
 
   // Managers
   private SectionStatusManager sectionStatusManager;
@@ -66,6 +69,8 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   private ExpectedStudyProjectManager expectedStudyProjectManager;
   private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
   private FeedbackQACommentManager commentManager;
+  private ProjectExpectedStudyTagManager projectExpectedStudyTagManager;
+
 
   // Parameters or Variables
   private List<ProjectExpectedStudy> nonProjectStudies;
@@ -85,6 +90,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     ProjectManager projectManager, ProjectExpectedStudyManager projectExpectedStudyManager,
     ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, StudyTypeManager studyTypeManager,
     ExpectedStudyProjectManager expectedStudyProjectManager,
+    ProjectExpectedStudyTagManager projectExpectedStudyTagManager,
     FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentManager) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
@@ -95,6 +101,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     this.expectedStudyProjectManager = expectedStudyProjectManager;
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.commentManager = commentManager;
+    this.projectExpectedStudyTagManager = projectExpectedStudyTagManager;
   }
 
   @Override
@@ -121,6 +128,11 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     projectExpectedStudyInfo.setYear(this.getActualPhase().getYear());
     projectExpectedStudyInfo.setIsContribution(true);
 
+    try {
+      projectExpectedStudyInfo.setTag(this.projectExpectedStudyTagManager.getProjectExpectedStudyTagById(1));
+    } catch (Exception e) {
+      logger.error("Error getting tag " + e);
+    }
     // when a project expected study is created, it is assigned by default status 2 = On going
     GeneralStatus status = new GeneralStatus();
     status.setId(new Long(2));

@@ -544,7 +544,15 @@
   <div class="feedback-flex-items radioFlat-flex"></div>
   <div class="fieldReference radioFlat [#if columns > 1]col-md-${columns}[/#if] ${inline?string('radio-inline', '')}">
     <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
-    <label for="${id}" class="radio-label ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>
+    [#local labelValue][#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if][/#local]
+    <label for="${id}" class="radio-label ${cssClassLabel}">
+      [#if labelValue?contains(":")]
+        [#local labelArray = labelValue?split(":") /]
+        <b>${labelArray[0]}</b>:${labelArray[1]}
+      [#else]
+        ${labelValue}
+      [/#if]
+    </label>
   </div>
   <div class="commentNumberContainer">
     <div class="numberOfCommentsBubble">
@@ -561,7 +569,13 @@
   <div class="inputsFlat [#if columns > 0]col-md-${columns}[/#if]">
     [#if editable]
     <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] />
-    <label for="${id}" class="checkbox-label ${cssClassLabel}"> [@s.text name=label /] 
+    <label for="${id}" class="checkbox-label ${cssClassLabel}"> 
+      [#if label?contains(":")]
+        [#local labelArray = label?split(":") /]
+        <b>[@s.text name=labelArray[0] /]</b>:[@s.text name=labelArray[1] /]
+      [#else]
+        [@s.text name=label /]
+      [/#if] 
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
     </label>
@@ -1121,10 +1135,10 @@
         <div class="containerRadioToCheckbox ${(radioItem.name == 'Other')?then('containerRadioToCheckbox--other','')}">
           [#if isRadioButton]
             [#local baseName = "${customName}.${fieldName}" /]
-            [@customForm.radioFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.${fieldName}.id" value="${radioItem.id}" i18nkey="${radioItemName}" editable=editable checked=isChecked /]
+            [@customForm.radioFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.${fieldName}.id" value="${radioItem.id}" i18nkey="${radioItemName}" editable=editable checked=isChecked cssClassLabel="innerCheckboxLabel" /]
           [#else]
             [#local baseName = "${customName}.${fieldName}[${radioItem_index}]" /]
-            [@customForm.checkBoxFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.${fieldName}[${radioItem_index}].id" value="${radioItem.id}" label="${radioItemName}" editable=editable checked=isChecked /]
+            [@customForm.checkBoxFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.${fieldName}[${radioItem_index}].id" value="${radioItem.id}" label="${radioItemName}" editable=editable checked=isChecked cssClassLabel="innerCheckboxLabel" /]
           [/#if]
 
 
@@ -1214,7 +1228,7 @@
                               [#local innerMultiChecked = element[fieldName][keyFieldName] /]
                               [#if innerMultiChecked?has_content]
                                 [#list innerMultiChecked as innerChecked]
-                                  [#if innerChecked.id == innerInformartion.id]
+                                  [#if (innerChecked.id == innerInformartion.id) && (isChecked)]
                                     [#local isCheckedInner = true /]
                                   [/#if]
                                 [/#list]
@@ -1222,7 +1236,7 @@
                             [#else]
                               [#list element[fieldName] as innerChecked]
                                 [#list innerChecked[keyFieldName] as innerItemChecked]
-                                  [#if innerItemChecked.id == innerInformartion.id]
+                                  [#if (innerItemChecked.id == innerInformartion.id) && (isChecked) && (innerChecked.id == radioItem.id)]
                                     [#local isCheckedInner = true /]
                                   [/#if]
                                 [/#list]

@@ -478,6 +478,10 @@ span.fieldError {
 	/* float: left; */
 }
 
+span.fieldError span.selection span.select2-selection {
+	border: 1px solid #F44;
+}
+
 p.warning-info {
 	background-color: #F6BB42;
 	border-color: #F6BB42;
@@ -3462,9 +3466,10 @@ button.ipGraph-btn {
 
 .note--2 p{
 	color: #5F5E5E;
-	font-size: 1.25rem;
+	font-size: 11px;
 	font-weight: 300;
 	margin: 5px 0;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .note--2 ul{
@@ -3474,8 +3479,9 @@ button.ipGraph-btn {
 
 .note--2 ul li{
     color: #5F5E5E;
-    font-size: 1.25rem;
     font-weight: 300;
+	font-size: 11px;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .topNote {
@@ -7004,12 +7010,12 @@ p.checkDisable:before {
 }
 
 .inputsFlat input[type="checkbox"]:disabled+.checkbox-label{
-	color: #C6C6C6;
+	color: #C6C6C6 !important;
 }
 
 .inputsFlat input[type="checkbox"]:disabled+.checkbox-label:before {
-	border-color: #C6C6C6;
-	background: #C6C6C6;
+	border-color: #C6C6C6 !important;
+	background: #C6C6C6 !important;
 }
 
 .inputsFlat input[type="checkbox"]+.checkbox-label:empty:before {

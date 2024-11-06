@@ -5,6 +5,17 @@
   margin-top: 2rem;
 }
 
+.form-group .pull-right:first-of-type{
+  top: 4.5%;
+}
+
+.form-group .pull-right{
+  position: absolute;
+  right: 0;
+  text-align: right;
+  top: 4%;
+}
+
 li[role="presentation"] {
   margin-right: 0;
   padding: 0;
@@ -209,17 +220,49 @@ div.stfTargets .col-md-1:last-of-type{
   width: 20%;
 }
 
+.radioToCheckbox > label{
+  margin-bottom: 12px;
+}
+
+.containerPrimaryLever > label{
+  margin-top: 12px;
+}
+
 .radioToCheckbox .containerRadioToCheckbox .radioFlat {
   padding-left: 0;
+  margin-bottom: 12px;
 } 
 
 .radioToCheckbox .containerRadioToCheckbox .inputsFlat {
   margin-bottom: 12px;
 }
 
+.radioToCheckbox .containerRadioToCheckbox .radioFlat input[type="radio"]+.radio-label:before{
+  margin-right: 0.6em;
+}
+
+.radioToCheckbox .containerRadioToCheckbox .radioFlat input[type="radio"]+.radio-label.innerCheckboxLabel{
+  display: flex;
+  align-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.radioToCheckbox .containerRadioToCheckbox .feedback-flex-items.radioFlat-flex{
+  display: contents !important;
+}
+
+.radioToCheckbox .containerRadioToCheckbox #innerCheckbox .form-group {
+  padding-left: 20px;
+  padding-top: 10px;
+}
+
+.radioToCheckbox .containerRadioToCheckbox #innerCheckbox > .form-group > label.radio-label{
+  margin-bottom: 12px;
+}
+
 .radioToCheckbox .containerRadioToCheckbox--other {
   display: flex;
-  margin-top: 16px;
   width: 100%;
 }
 
