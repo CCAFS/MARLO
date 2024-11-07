@@ -3405,14 +3405,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     // Search and deleted form Information
     if ((projectExpectedStudy.getProjectExpectedStudyLinks() != null)
-      && (projectExpectedStudy.getProjectExpectedStudyLinks().size() > 0)) {
+      && (!projectExpectedStudy.getProjectExpectedStudyLinks().isEmpty())) {
       final List<ProjectExpectedStudyLink> linkPrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyLinks().stream()
           .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-
-      for (final ProjectExpectedStudyLink studyLink : linkPrev) {
-        if ((this.expectedStudy.getLinks() == null) || !this.expectedStudy.getLinks().contains(studyLink)) {
-          this.projectExpectedStudyLinkManager.deleteProjectExpectedStudyLink(studyLink.getId());
+      if (linkPrev != null && !linkPrev.isEmpty()) {
+        for (final ProjectExpectedStudyLink studyLink : linkPrev) {
+          if ((this.expectedStudy.getLinks() == null) || !this.expectedStudy.getLinks().contains(studyLink)) {
+            this.projectExpectedStudyLinkManager.deleteProjectExpectedStudyLink(studyLink.getId());
+          }
         }
       }
     }
@@ -3431,8 +3432,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           // auditlog.
           this.expectedStudy.getProjectExpectedStudyLinks().add(studyLinkSave);
         } else {
-          final ProjectExpectedStudyLink studyLinkSave =
-            this.projectExpectedStudyLinkManager.getProjectExpectedStudyLinkById(studyLink.getId());
+          ProjectExpectedStudyLink studyLinkSave = new ProjectExpectedStudyLink();
+          try {
+            studyLinkSave = this.projectExpectedStudyLinkManager.getProjectExpectedStudyLinkById(studyLink.getId());
+          } catch (Exception e) {
+            Log.error("error getting project expected study link " + e);
+          }
           studyLinkSave.setProjectExpectedStudy(projectExpectedStudy);
           studyLinkSave.setPhase(phase);
           studyLinkSave.setLink(studyLink.getLink());
