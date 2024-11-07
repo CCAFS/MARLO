@@ -167,11 +167,11 @@ function attachEvents() {
 
   // Other CrossCutting Component validation
   $('input.radioType-otherCrossCuttingOption').on('change', function() {
-    var showComponent = $(this).val() == "Yes";
+    var showComponent = $(this).val().toLowerCase() !== "na";
     if(showComponent) {
-      // $('.otherCrossCuttingOptionsComponent').slideDown(); // Show
+      $('.otherCrossCuttingOptionsComponent').slideDown(); // Show
     } else {
-      // $('.otherCrossCuttingOptionsComponent').slideUp(); // Hide
+      $('.otherCrossCuttingOptionsComponent').slideUp(); // Hide
     }
   });
 
@@ -600,10 +600,19 @@ function onChangeCheckboxButton() {
 
   //Verify if contains the class fieldError
   const $this = $(this);
-  const $parent = $this.parents('.containerRadioToCheckbox');
+  const $parent = $this.parents('#innerCheckbox');
 
   if($this.hasClass('fieldError')) {
     $this.removeClass('fieldError');
+    return;
+  } 
+  
+  if($parent.length > 0) {
+    const $firstInnerInput = $parent.find('.inputsFlat:first').find('input');
+
+    if($firstInnerInput.hasClass('fieldError')){
+      $firstInnerInput.removeClass('fieldError');
+    }
   }
 
 }
