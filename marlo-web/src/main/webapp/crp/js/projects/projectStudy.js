@@ -167,11 +167,11 @@ function attachEvents() {
 
   // Other CrossCutting Component validation
   $('input.radioType-otherCrossCuttingOption').on('change', function() {
-    var showComponent = $(this).val() == "Yes";
+    var showComponent = $(this).val().toLowerCase() !== "na";
     if(showComponent) {
-      // $('.otherCrossCuttingOptionsComponent').slideDown(); // Show
+      $('.otherCrossCuttingOptionsComponent').slideDown(); // Show
     } else {
-      // $('.otherCrossCuttingOptionsComponent').slideUp(); // Hide
+      $('.otherCrossCuttingOptionsComponent').slideUp(); // Hide
     }
   });
 
@@ -536,6 +536,7 @@ function attachEvents() {
 
   //add dynamic SDG Image Selector list items to display
   $('.containerPrimaryLever input[name*="expectedStudy.allianceLever.sdgContributions"]').on('change', dynamicSelectorSDGImageModule.init);
+  $('.containerRelatedLever input[name*="expectedStudy.allianceLevers"]').on('change', dynamicSelectorSDGImageModule.init);
 
   $('input[type="radio"], input[type="checkbox"]').tooltip({
     open: function(event, ui) {
@@ -600,10 +601,19 @@ function onChangeCheckboxButton() {
 
   //Verify if contains the class fieldError
   const $this = $(this);
-  const $parent = $this.parents('.containerRadioToCheckbox');
+  const $parent = $this.parents('#innerCheckbox');
 
   if($this.hasClass('fieldError')) {
     $this.removeClass('fieldError');
+    return;
+  } 
+  
+  if($parent.length > 0) {
+    const $firstInnerInput = $parent.find('.inputsFlat:first').find('input');
+
+    if($firstInnerInput.hasClass('fieldError')){
+      $firstInnerInput.removeClass('fieldError');
+    }
   }
 
 }
@@ -1046,28 +1056,42 @@ var dynamicSelectorSDGImageModule = (function (){
   }
 
   function changeCurrentDisplaySDGImage() {
+    //Basic information - list of rendered, title of the subsection and template to clone
     const $listSelectedLeverContainer = $('.listSelectedLeverContainer');
     const $templateContainerReference = $('._TEMPLATE_selectedLeverContainer');
     const $titleSelectedLeverContainer = $('.titleSelectedLeverContainer');
 
+    //Primary lever information
     const $containerPrimaryLever = $('.containerPrimaryLever');
     const $checkedRadioButtonLever = $containerPrimaryLever.find('input[name="expectedStudy.allianceLever.id"]:checked');
     const $checkedRadioButtonLeverParent = $checkedRadioButtonLever.parents('.containerRadioToCheckbox');
     const $innerCheckbox = $checkedRadioButtonLeverParent.find('#innerCheckbox');
     const $checkedInnerCheckbox = $innerCheckbox.find('input[name*="expectedStudy.allianceLever.sdgContributions"]:checked');
 
+    //Related lever information
+    const $containerRelatedLever = $('.containerRelatedLever');
+    const $checkedRadioButtonRelatedLever = $containerRelatedLever.find('input[name*="expectedStudy.allianceLevers["]:checked');
+    const $checkedRadioButtonRelatedLeverParent = $checkedRadioButtonRelatedLever.parents('.containerRadioToCheckbox');
+    const $innerCheckboxRelatedLever = $checkedRadioButtonRelatedLeverParent.find('#innerCheckbox');
+    const $checkedInnerCheckboxRelatedLever = $innerCheckboxRelatedLever.find('input[name*="expectedStudy.allianceLevers["]:checked');
+
     //remove all items added after a new checked
     $listSelectedLeverContainer.find('.selectedLeverContainer').remove();
 
-    if($checkedInnerCheckbox.length === 0){
+    if($checkedInnerCheckbox.length === 0 || $checkedInnerCheckboxRelatedLever.length === 0){
       $titleSelectedLeverContainer.hide();
     }
-    
-    $checkedInnerCheckbox.toArray().forEach(element => {
-      const $value = $(element).val();
 
+    const primaryRawInformation = convertToRawInformation($checkedInnerCheckbox, true);
+
+    const relatedRawInformation = convertToRawInformation($checkedInnerCheckboxRelatedLever, false);
+
+    const groupedInformation = groupListRawInformation([primaryRawInformation, relatedRawInformation]);
+
+    groupedInformation.forEach(element => { 
       const $cloneSelectedLeverContainer = $templateContainerReference.clone(true).removeAttr('style').removeClass('_TEMPLATE_selectedLeverContainer');
       $cloneSelectedLeverContainer.addClass('selectedLeverContainer');
+      element.isPrimaryLever ? $cloneSelectedLeverContainer.addClass('selectedLeverContainer--primary') : $cloneSelectedLeverContainer.addClass('selectedLeverContainer--related');
 
       const $containerImage = $cloneSelectedLeverContainer.find('.selectedLeverContainer__image');
       const $image = $containerImage.find('img');
@@ -1077,14 +1101,13 @@ var dynamicSelectorSDGImageModule = (function (){
         url: baseURL + '/getSdgImage.do',
         async: true,
         data: {
-          requestID: Number.parseInt($value)
+          requestID: Number.parseInt(element.value)
         },
         success: function(data) {
           if(data.image.adsoluteURL == null){
             console.error("Image not found");
           } else {
             $titleSelectedLeverContainer.show();
-            //$containerReference.show();
             $image.attr("src",data.image.adsoluteURL);
 
             //Set information of the SDG Contribution
@@ -1092,8 +1115,9 @@ var dynamicSelectorSDGImageModule = (function (){
             const $leverName = $containerSDGInformation.find('.selectedLeverContainer__content__lever');
             const $leverContributionSDG = $containerSDGInformation.find('.selectedLeverContainer__content__contributionSDG');
 
-            $leverName.text($checkedRadioButtonLever.next().text());
-            $leverContributionSDG.text($(element).next().text());
+            const leverName = element.isPrimaryLever ?  `${element.leverText} - Primary Lever` : `${element.leverText} - Related Lever`;
+            $leverName.text(leverName);
+            $leverContributionSDG.html(element.text);
 
             //add to list $listSelectedLeverContainer
             $listSelectedLeverContainer.append($cloneSelectedLeverContainer);
@@ -1104,9 +1128,80 @@ var dynamicSelectorSDGImageModule = (function (){
           reject(error);
         }
       });
-
     });
 
+  }
+
+  function convertToRawInformation($listSDGInformation, isPrimaryLever) {
+
+    let rawInformation = []
+
+    $listSDGInformation.toArray().forEach(element => {
+      const $value = $(element).val();
+      const $text = $(element).next().text();
+      const $leverText = $(element).parents('.containerRadioToCheckbox').find('input:first').next().text();
+
+      rawInformation.push({
+        value: $value,
+        text: $text,
+        isPrimaryLever: isPrimaryLever,
+        leverText: $leverText
+      });
+      
+    });
+    
+
+    return rawInformation;
+  }
+
+  function groupListRawInformation(listOfArrays) {
+    let groupedInformation = [];
+
+    listOfArrays.forEach(element => {
+      element.forEach(innerElement => {
+        groupedInformation.push(innerElement);
+      });
+    });
+
+    return groupByLeverAndSDG(groupedInformation);
+  }
+
+  function groupByLeverAndSDG(listInformation){
+    let groupedInformation = [];
+
+    groupedInformation = listInformation.reduce((acc, element) => {
+
+      const currentLever = element.leverText;
+      const currentSDG = element.text;
+
+      const numberLever = extractLeverNumber(currentLever);
+      const numberSDG = extractSDGNumber(currentSDG);
+
+
+      const found = acc.find(item => extractLeverNumber(item.leverText) === numberLever && extractSDGNumber(item.text) === numberSDG);
+
+      if(found){
+        found.text = `${found.text} <br> ${element.text}`;
+      } else {
+        acc.push(element);
+      }
+
+      return acc;
+    }, []);
+
+    return groupedInformation;
+  }
+
+  function extractLeverNumber(leverText){
+    const textSplit = leverText.split(" ");
+    const indexOfText = textSplit.findIndex(item => item.includes(":"));
+    return textSplit[indexOfText].split(":")[0].trim();
+  }
+
+  function extractSDGNumber(sdgText){
+    const textSplit = sdgText.split(" ");
+    const indexOfText = textSplit.findIndex(item => item.includes("."));
+    return textSplit[indexOfText].split(".")[0].trim();
   }
 
   return {
