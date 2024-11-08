@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AllianceLeverOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
@@ -40,8 +41,12 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.SDGContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.SafeguardsManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
+import org.cgiar.ccafs.marlo.data.model.AllianceLever;
+import org.cgiar.ccafs.marlo.data.model.AllianceLeverOutcome;
+import org.cgiar.ccafs.marlo.data.model.AllianceLeversSdgContribution;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.CountryFundingSources;
@@ -76,10 +81,12 @@ import org.cgiar.ccafs.marlo.data.model.ProjectCenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyAllianceLeversOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnershipsPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgAllianceLever;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
@@ -106,6 +113,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.SDGContribution;
 import org.cgiar.ccafs.marlo.data.model.Safeguards;
 import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -122,6 +130,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -217,6 +226,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   private final ProjectImpactsManager projectImpactsManager;
 
   private final SafeguardsManager safeguardsManager;
+  private final SDGContributionManager sDGContributionManager;
+  private final AllianceLeverOutcomeManager allianceLeverOutcomeManager;
 
   private final ProjectImpactsValidator projectImpactsValidator;
   private final Logger logger = LoggerFactory.getLogger(ProjectSectionValidator.class);
@@ -250,7 +261,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager,
     ProjectInnovationRegionManager projectInnovationRegionManager, ProjectImpactsManager projectImpactsManager,
     ProjectImpactsValidator projectImpactsValidator, SafeguardValidator safeguardValidator,
-    FeedbackStatusValidator feedbackStatusValidator, ExpectedStudyProjectManager expectedStudyProjectManager) {
+    FeedbackStatusValidator feedbackStatusValidator, ExpectedStudyProjectManager expectedStudyProjectManager,
+    SDGContributionManager sDGContributionManager, AllianceLeverOutcomeManager allianceLeverOutcomeManager) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -298,6 +310,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.safeguardsManager = safeguardsManager;
     this.feedbackStatusValidator = feedbackStatusValidator;
     this.expectedStudyProjectManager = expectedStudyProjectManager;
+    this.sDGContributionManager = sDGContributionManager;
+    this.allianceLeverOutcomeManager = allianceLeverOutcomeManager;
   }
 
 
@@ -1614,6 +1628,20 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
               o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
             .collect(Collectors.toList()))));
       }
+      try {
+        // Expected Study alliance lever object
+        if (expectedStudy.getProjectExpectedStudySdgAllianceLevers() != null) {
+          ProjectExpectedStudySdgAllianceLever expectedAllianceLeverTemp = expectedStudy
+            .getProjectExpectedStudySdgAllianceLevers().stream().filter(o -> o != null && o.getId() != null
+              && o.getIsPrimary() && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+            .findFirst().orElse(null);
+          if (expectedAllianceLeverTemp != null && expectedAllianceLeverTemp.getAllianceLever() != null) {
+            expectedStudy.setAllianceLever(expectedAllianceLeverTemp.getAllianceLever());
+          }
+        }
+      } catch (Exception e) {
+        Log.error("error trying to set expected study alliance lever " + e);
+      }
 
       // Expected Study allianceLeversOutcomes List
       if (expectedStudy.getProjectExpectedStudyAllianceLeversOutcomes() != null) {
@@ -1668,6 +1696,50 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           .filter(o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
           .collect(Collectors.toList())));
 
+      }
+
+      if (expectedStudy.getAllianceLever() != null) {
+        if (expectedStudy.getAllianceLever().getLeverSdgContributions() != null) {
+          for (final AllianceLeversSdgContribution leverSdgContribution : expectedStudy.getAllianceLever()
+            .getLeverSdgContributions()) {
+
+            if ((leverSdgContribution != null) && (leverSdgContribution.getsDGContribution() != null)) {
+              expectedStudy.getAllianceLever().getSdgContributions().add(leverSdgContribution.getsDGContribution());
+            }
+          }
+        }
+
+        if (expectedStudy.getAllianceLeversOutcomes() != null) {
+          for (final ProjectExpectedStudyAllianceLeversOutcome allianceLeverOutcome : expectedStudy
+            .getAllianceLeversOutcomes()) {
+            if ((allianceLeverOutcome != null) && (allianceLeverOutcome.getAllianceLeverOutcome() != null)) {
+              expectedStudy.getAllianceLever().setLeverOutcomes(new ArrayList<>());
+              expectedStudy.getAllianceLever().getLeverOutcomes().add(allianceLeverOutcome.getAllianceLeverOutcome());
+            }
+          }
+        }
+
+        if (expectedStudy.getAllianceLever() != null) {
+          List<SDGContribution> sDGContributionList = new ArrayList<>();
+          sDGContributionList = this.sDGContributionManager.findSDGcontributionByExpectedPhaseAndLever(phase.getId(),
+            expectedStudy.getId(), expectedStudy.getAllianceLever().getId(), 1);
+          expectedStudy.getAllianceLever().setSdgContributions(sDGContributionList);
+
+
+          List<AllianceLeverOutcome> allianceLeverOutcomeList = new ArrayList<>();
+          allianceLeverOutcomeList = this.allianceLeverOutcomeManager.findAllianceLeverOutcomeByExpectedPhaseAndLever(
+            phase.getId(), expectedStudy.getId(), expectedStudy.getAllianceLever().getId());
+          expectedStudy.getAllianceLever().setLeverOutcomes(allianceLeverOutcomeList);
+        }
+
+        if ((expectedStudy.getAllianceLevers() != null) && !expectedStudy.getAllianceLevers().isEmpty()) {
+          for (AllianceLever allianLever : expectedStudy.getAllianceLevers()) {
+            List<SDGContribution> sDGContributionList = new ArrayList<>();
+            sDGContributionList = this.sDGContributionManager.findSDGcontributionByExpectedPhaseAndLever(phase.getId(),
+              expectedStudy.getId(), allianLever.getId(), 0);
+            allianLever.setSdgContributions(sDGContributionList);
+          }
+        }
       }
 
 
