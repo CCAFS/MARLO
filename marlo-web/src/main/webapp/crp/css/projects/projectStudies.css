@@ -322,6 +322,25 @@ div.stfTargets .col-md-1:last-of-type{
   font-size: 11px;
 }
 
+.selectedLeverContainer.selectedLeverContainer--related{
+  padding: 0.5rem;
+  padding-left: 1rem;
+}
+
+.selectedLeverContainer--related .selectedLeverContainer__image{
+  width: 40px;
+  height: 40px;
+}
+
+.selectedLeverContainer--related .selectedLeverContainer__content__lever{
+  font-size: 11px;
+}
+
+.selectedLeverContainer--related .selectedLeverContainer__content__contributionSDG{
+  font-size: 9px;
+  margin: 0;
+}
+
 /* NEW */
 .panel .panel-body {
   min-height: 38px;
