@@ -394,6 +394,64 @@
         <p>No information available</p>
       [/#if]
     </div>
+    [#-- Intellectual property rights --]
+    <div class="form-group">
+      <label class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.intellectualProperty" /]:</label>
+      <label class="note--2">[@s.text name="projectInnovations.alliance.intellectualProperty.subtitle" /]</label>
+      [@customForm.elementsListComponent name="innovation.intellectualProperties" elementType="intellectualProperty" elementList=(innovation.intellectualProperties)![] helpIcon=false listName="intellectualPropertyList" keyFieldName="id" displayFieldName="name" required=false showTitle=true label="projectInnovations.alliance.intellectualProperty.description" /]
+      [#-- Intellectual property rights - Legal Restrictions --]
+      <div class="form-group">
+        <div class="col-md-12">
+          <label>
+            [@s.text name="projectInnovations.alliance.intellectualProperty.legalRestrictions" /]
+          </label> 
+        </div>
+        [#local innovationIntellectualLegalRestrictions = "innovationIntellectualLegalRestrictions" /]
+        [#local showLegalRestrictions = (innovation.projectInnovationInfo.hasLegalRestrictions?string)!"" /]    
+
+        <div class="col-md-1">
+          [@customForm.radioFlat id="${innovationIntellectualLegalRestrictions}-yes" name="innovation.projectInnovationInfo.hasLegalRestrictions" label="Yes" value="true" checked=(showLegalRestrictions == "true") cssClass="radioType-${innovationIntellectualLegalRestrictions}" cssClassLabel="radio-label-yes" editable=editable /]
+        </div>
+        <div class="col-md-1">
+          [@customForm.radioFlat id="${innovationIntellectualLegalRestrictions}-no" name="innovation.projectInnovationInfo.hasLegalRestrictions" label="No" value="false" checked=(showLegalRestrictions == "false") cssClass="radioType-${innovationIntellectualLegalRestrictions}" cssClassLabel="radio-label-no" editable=editable /]
+        </div>
+      </div>
+      [#-- Intellectual property rights - Commercialization --]
+      <div class="form-group">
+        <div class="col-md-12">
+          <label>
+            [@s.text name="projectInnovations.alliance.intellectualProperty.commercialization" /]
+          </label> 
+        </div>
+        [#local innovationIntellectualCommercialization = "innovationIntellectualCommercialization" /]
+        [#local showCommercialization = (innovation.projectInnovationInfo.hasCommercialization?string)!"" /]    
+
+        <div class="col-md-1">
+          [@customForm.radioFlat id="${innovationIntellectualCommercialization}-yes" name="innovation.projectInnovationInfo.hasCommercialization" label="Yes" value="true" checked=(showCommercialization == "true") cssClass="radioType-${innovationIntellectualCommercialization}" cssClassLabel="radio-label-yes" editable=editable /]
+        </div>
+        <div class="col-md-1">
+          [@customForm.radioFlat id="${innovationIntellectualCommercialization}-no" name="innovation.projectInnovationInfo.hasCommercialization" label="No" value="false" checked=(showCommercialization == "false") cssClass="radioType-${innovationIntellectualCommercialization}" cssClassLabel="radio-label-no" editable=editable /]
+        </div>
+      </div>
+      [#-- Intellectual property rights - Further Development --]
+      <div class="form-group">
+        <div class="col-md-12">
+          <label>
+            [@s.text name="projectInnovations.alliance.intellectualProperty.furtherDevelopment" /]
+          </label> 
+        </div>
+        [#local innovationIntellectualFurtherDevelopment = "innovationIntellectualFurtherDevelopment" /]
+        [#local showFurtherDevelopment = (innovation.projectInnovationInfo.hasFurtherDevelopment?string)!"" /]    
+
+        <div class="col-md-1">
+          [@customForm.radioFlat id="${innovationIntellectualFurtherDevelopment}-yes" name="innovation.projectInnovationInfo.hasFurtherDevelopment" label="Yes" value="true" checked=(showFurtherDevelopment == "true") cssClass="radioType-${innovationIntellectualFurtherDevelopment}" cssClassLabel="radio-label-yes" editable=editable /]
+        </div>
+        <div class="col-md-1">
+          [@customForm.radioFlat id="${innovationIntellectualFurtherDevelopment}-no" name="innovation.projectInnovationInfo.hasFurtherDevelopment" label="No" value="false" checked=(showFurtherDevelopment == "false") cssClass="radioType-${innovationIntellectualFurtherDevelopment}" cssClassLabel="radio-label-no" editable=editable /]
+        </div>
+      </div>
+      
+    </div>
   </div>
 [/#macro]
 

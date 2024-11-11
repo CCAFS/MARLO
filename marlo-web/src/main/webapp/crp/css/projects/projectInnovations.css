@@ -248,3 +248,11 @@ div.nationalBlock div.selectList span.selection span.select2-selection ul{
   margin: 0.5rem 1.5rem 0.5rem 0;
 
 }
+
+.inputsFlat {
+  margin-bottom: 6px;
+}
+
+.inputsFlat:first-of-type{
+  margin-top: 12px;
+}
