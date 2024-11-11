@@ -334,6 +334,49 @@
               --]
             </div> 
             [/#if]
+
+            [#-- Anticipated users --]
+            <div class="form-group col-md-12">
+              <label class="label--2">[@s.text name="projectInnovations.anticipatedUsers" /][@customForm.req required=true /]</label>
+              <div class="col-md-12">
+                <div class="col-md-4">
+                  [@customForm.checkBoxFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.hasMilestones" label="projectInnovations.anticipatedUsers.determined" value="true" checked=false cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=editable /]
+                </div>
+                <div class="col-md-4">
+                  [@customForm.checkBoxFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.hasMilestones" label="projectInnovations.anticipatedUsers.undetermined" value="false" checked=false cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
+                </div>
+              </div>
+              <div class="col-md-12">
+                [#-- Actors --]
+                <div class="col-md-6 actorsBlock">
+                  <label for="">[@s.text name="projectInnovations.anticipatedUsers.actors" /]:[@customForm.req required=false /]</label>
+                  [#-- list of items --]
+                  <div class="actorsList">
+                  </div>
+                  [#if editable]
+                    <div class="addActors bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add actor </div>
+                    <div class="clearfix"></div>
+                  [/#if]
+                </div>
+                [#-- Organizations --]
+                <div class="col-md-6 organizationsBlock">
+                  <label for="">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=false /]</label>
+                  [#-- list of items --]
+                  <div class="organizationsList">
+                  </div>
+                  [#if editable]
+                    <div class="addOrganizations bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add organization </div>
+                    <div class="clearfix"></div>
+                  [/#if]
+                </div>
+                [#-- Element item Template --]
+                <div style="display:none">
+                  [@actorsMacro name="innovations.actors" element={} index=-1 template=true /]
+                </div>
+
+              </div>
+                
+            </div>
             [#-- Partner users TEMPLATE --]
             <div id="partnerUsers" style="display:none">
               [#list partners as partner]
@@ -505,23 +548,24 @@
     [#-- Checkbox Actors - Genders --]
     <div class="col-md-12">
       <div class="col-md-4">
-        <label>[@s.text name="projectInnovations.actors.women" /]:</label>
-        [@customForm.checkBoxFlat id="testing" name="projectInnovations.actors.women" label="Texto" value="${lever.id}" checked= editable=true /]
-        [@customForm.checkBoxFlat id="testing" name="projectInnovations.actors.women" label="Texto" value="${lever.id}" checked= editable=true /]
+        <label>[@s.text name="projectInnovations.anticipatedUsers.actors.women" /]:</label>
+        [@customForm.checkBoxFlat id="testing" name="innovations.actors.women" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="testing" name="innovations.actors.women" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="false" checked=false editable=true /]
       </div>
       <div class="col-md-4">
-        <label>[@s.text name="projectInnovations.actors.women" /]:</label>
-        [@customForm.checkBoxFlat id="testing" name="projectInnovations.actors.women" label="Texto" value="${lever.id}" checked= editable=true /]
-        [@customForm.checkBoxFlat id="testing" name="projectInnovations.actors.women" label="Texto" value="${lever.id}" checked= editable=true /]
+        <label>[@s.text name="projectInnovations.anticipatedUsers.actors.men" /]:</label>
+        [@customForm.checkBoxFlat id="testing" name="innovations.actors.men" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="testing" name="innovations.actors.men" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="false" checked=false editable=true /]
       </div>
       <div class="col-md-4">
-        <label>[@s.text name="projectInnovations.actors.women" /]:</label>
-        [@customForm.checkBoxFlat id="testing" name="projectInnovations.actors.women" label="Texto" value="${lever.id}" checked= editable=true /]
-        [@customForm.checkBoxFlat id="testing" name="projectInnovations.actors.women" label="Texto" value="${lever.id}" checked= editable=true /]
+        <label>[@s.text name="projectInnovations.anticipatedUsers.actors.noBinary" /]:</label>
+        [@customForm.checkBoxFlat id="testing" name="innovations.actors.noBinary" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="testing" name="innovations.actors.noBinary" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="false" checked=false editable=true /]
       </div>
-
-      [#if editable]<div class="removeElement sm removeIcon removeActor ${class}" title="Remove"></div>[/#if]
-      <div class="clearfix"></div>
     </div>
+
+    [#-- Remove --]
+    [#if editable]<div class="removeElement sm removeIcon removeActor ${class}" title="Remove"></div>[/#if]
+    <div class="clearfix"></div>
   </div>
 [/#macro]
