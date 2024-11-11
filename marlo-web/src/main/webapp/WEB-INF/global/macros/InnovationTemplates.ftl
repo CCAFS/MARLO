@@ -494,3 +494,34 @@
   [/#list]
   [#return false]
 [/#function]
+
+[#macro actorsMacro name element index=-1 template=false class=""]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div id="actorsInnovation-${(template?string('template', ''))}" class="actorsInnovation form-group grayBlueBox ${class}">
+    [#-- Dropdown Actors - Type --]
+    <div class="col-md-12">
+      [@customForm.elementsListComponent name="${customName}.actors" showTitle=false elementType="actor" elementList=(element.actors)![] label="projectInnovations.actors" listName="actors" keyFieldName="id" displayFieldName="composedName" required=false /]
+    </div>
+    [#-- Checkbox Actors - Genders --]
+    <div class="col-md-12">
+      <div class="col-md-4">
+        <label>[@s.text name="projectInnovations.actors.women" /]:</label>
+        [@customForm.checkBoxFlat id="testing" name="projectInnovations.actors.women" label="Texto" value="${lever.id}" checked= editable=true /]
+        [@customForm.checkBoxFlat id="testing" name="projectInnovations.actors.women" label="Texto" value="${lever.id}" checked= editable=true /]
+      </div>
+      <div class="col-md-4">
+        <label>[@s.text name="projectInnovations.actors.women" /]:</label>
+        [@customForm.checkBoxFlat id="testing" name="projectInnovations.actors.women" label="Texto" value="${lever.id}" checked= editable=true /]
+        [@customForm.checkBoxFlat id="testing" name="projectInnovations.actors.women" label="Texto" value="${lever.id}" checked= editable=true /]
+      </div>
+      <div class="col-md-4">
+        <label>[@s.text name="projectInnovations.actors.women" /]:</label>
+        [@customForm.checkBoxFlat id="testing" name="projectInnovations.actors.women" label="Texto" value="${lever.id}" checked= editable=true /]
+        [@customForm.checkBoxFlat id="testing" name="projectInnovations.actors.women" label="Texto" value="${lever.id}" checked= editable=true /]
+      </div>
+
+      [#if editable]<div class="removeElement sm removeIcon removeActor ${class}" title="Remove"></div>[/#if]
+      <div class="clearfix"></div>
+    </div>
+  </div>
+[/#macro]

@@ -5322,6 +5322,14 @@ ul#deliverablesFilesMessages>li {
 	position: relative;
 }
 
+.grayBlueBox {
+	background: #ECF3F4;
+	border-radius: 10px;
+	border: 1px solid #B4B4B4;
+	padding: 6px 16px;
+	position: relative;
+}
+
 .borderBox {
 	border: 1px solid #D1D1D1;
 	padding: 9px 22px 9px 22px;
