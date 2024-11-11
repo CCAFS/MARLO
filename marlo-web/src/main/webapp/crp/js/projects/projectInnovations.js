@@ -28,6 +28,9 @@ $(document).ready(function() {
   //init partners methods
   deliverablePartnersModule.init();
 
+  // Add image to SDG Targets
+  $('select.elementType-sdgTarget').on("change", addImageToSelectSDGTargets);
+
   feedbackAutoImplementation();
 });
 
@@ -158,6 +161,41 @@ function dynamicMarginToSelectedRender(){
 
   }
 
+}
+
+function addImageToSelectSDGTargets() {
+
+  const $listRender = $('div[listname="innovation.sdgTargets"] .panel-body li.relationElement');
+
+  $listRender.each(function(index, element) {
+    const $elementVisualization = $(element);
+    const $elementId = $(element).find('input[type="hidden"].elementRelationID').val();
+
+    if($elementVisualization.find('.sdgImage').length == 0) {
+      
+      $.ajax({
+        url: baseURL + '/getSdgImage.do',
+        async: true,
+        data: {
+          requestID: Number.parseInt(Number.parseInt($elementId))
+        },
+        success: function(data) {
+          console.log(data);
+  
+          if(data) {
+            //render image in a before element in the elementVisualization
+            $elementVisualization.find('.elementName').before(`<img src="${data.image.adsoluteURL}" class="sdgImage" alt="sdg-${$elementId}">`);
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error(error);
+          reject(error);
+        }
+      });
+    }
+
+  });
+  
 }
 
 var deliverablePartnersModule = (function () {

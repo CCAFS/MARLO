@@ -375,7 +375,7 @@
     <div class="form-group">
       <label class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.sdgTargets" /]:</label>
       <label>[@s.text name="projectInnovations.alliance.sdgTargets.subtitle" /]</label>
-      [@customForm.elementsListComponent name="innovation.sdgTargets" elementType="sdgTarget" elementList=(innovation.sdgTargets)![] label="projectInnovations.alliance.sdgTargets" helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=false showTitle=false /]
+      [@customForm.elementsListComponent name="innovation.sdgTargets" elementType="sdgTarget" elementList=(innovation.sdgTargets)![] helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=false showTitle=false /]
     </div>
     [#-- Alliance Research Theme --]
     <div class="form-group">

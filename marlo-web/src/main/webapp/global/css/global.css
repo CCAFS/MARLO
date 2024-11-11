@@ -1297,6 +1297,11 @@ select#partnerSave_activityPartner_partner_type_id {
 	margin-left: 1px;
 }
 
+.panel.tertiary .panel-body>ul.list {
+	padding: 0;
+    margin-top: 1rem;
+}
+
 .panel.tertiary .panel-body>ul.list>li {
 	list-style: none;
 	padding: 1px 24px 0px 6px;
