@@ -1,3 +1,16 @@
+.col-md-12{
+  padding-left: 0;
+}
+
+.col-md-1 {
+  padding-left: 0;
+  margin-bottom: 15px;
+}
+
+.col-md-1 .radioFlat {
+  padding-left: 0;
+}
+
 .innovationsTab{
   margin-top: 2rem;
 }
@@ -223,6 +236,10 @@ div.nationalBlock div.selectList span.selection span.select2-selection ul{
 .copyButton{
   position: relative;
   top: 11px;
+}
+
+.projectInnovationsPartners .removePartnerItem{
+  display: none;
 }
 
 .sdgImage{
