@@ -1097,7 +1097,8 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase());
 
       // Validate other cross cutting dimension narrative when NA is selected
-      if (!studyInfo.getOtherCrossCuttingSelection().equalsIgnoreCase("NA")
+      if (studyInfo.getOtherCrossCuttingSelection() != null
+        && !studyInfo.getOtherCrossCuttingSelection().equalsIgnoreCase("NA")
         && (studyInfo.getOtherCrossCuttingDimensions() == null
           || studyInfo.getOtherCrossCuttingDimensions().isEmpty())) {
         action.addMessage(this.getTextCustom(action, "Describe other cross cutting markets"));
