@@ -601,7 +601,7 @@ function onChangeCheckboxButton() {
 
   //Verify if contains the class fieldError
   const $this = $(this);
-  const $parent = $this.parents('#innerCheckbox');
+  const $parent = $this.parents('.form-group');
 
   if($this.hasClass('fieldError')) {
     $this.removeClass('fieldError');
@@ -609,7 +609,7 @@ function onChangeCheckboxButton() {
   } 
   
   if($parent.length > 0) {
-    const $firstInnerInput = $parent.find('.inputsFlat:first').find('input');
+    const $firstInnerInput = $($parent[0]).find('.inputsFlat:first').find('input');
 
     if($firstInnerInput.hasClass('fieldError')){
       $firstInnerInput.removeClass('fieldError');
@@ -1088,7 +1088,9 @@ var dynamicSelectorSDGImageModule = (function (){
 
     const groupedInformation = groupListRawInformation([primaryRawInformation, relatedRawInformation]);
 
-    groupedInformation.forEach(element => { 
+    const orderGroupedInformation = groupedInformation.sort((a,b) => { a.isPrimaryLever ? -1 : 1 });
+
+    orderGroupedInformation.forEach(element => { 
       const $cloneSelectedLeverContainer = $templateContainerReference.clone(true).removeAttr('style').removeClass('_TEMPLATE_selectedLeverContainer');
       $cloneSelectedLeverContainer.addClass('selectedLeverContainer');
       element.isPrimaryLever ? $cloneSelectedLeverContainer.addClass('selectedLeverContainer--primary') : $cloneSelectedLeverContainer.addClass('selectedLeverContainer--related');
