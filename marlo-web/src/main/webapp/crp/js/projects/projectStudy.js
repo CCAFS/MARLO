@@ -1088,7 +1088,9 @@ var dynamicSelectorSDGImageModule = (function (){
 
     const groupedInformation = groupListRawInformation([primaryRawInformation, relatedRawInformation]);
 
-    groupedInformation.forEach(element => { 
+    const orderGroupedInformation = groupedInformation.sort((a,b) => { a.isPrimaryLever ? -1 : 1 });
+
+    orderGroupedInformation.forEach(element => { 
       const $cloneSelectedLeverContainer = $templateContainerReference.clone(true).removeAttr('style').removeClass('_TEMPLATE_selectedLeverContainer');
       $cloneSelectedLeverContainer.addClass('selectedLeverContainer');
       element.isPrimaryLever ? $cloneSelectedLeverContainer.addClass('selectedLeverContainer--primary') : $cloneSelectedLeverContainer.addClass('selectedLeverContainer--related');
