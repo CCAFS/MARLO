@@ -601,7 +601,7 @@ function onChangeCheckboxButton() {
 
   //Verify if contains the class fieldError
   const $this = $(this);
-  const $parent = $this.parents('#innerCheckbox');
+  const $parent = $this.parents('.form-group');
 
   if($this.hasClass('fieldError')) {
     $this.removeClass('fieldError');
@@ -609,7 +609,7 @@ function onChangeCheckboxButton() {
   } 
   
   if($parent.length > 0) {
-    const $firstInnerInput = $parent.find('.inputsFlat:first').find('input');
+    const $firstInnerInput = $($parent[0]).find('.inputsFlat:first').find('input');
 
     if($firstInnerInput.hasClass('fieldError')){
       $firstInnerInput.removeClass('fieldError');
