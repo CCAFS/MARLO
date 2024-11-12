@@ -458,7 +458,7 @@ function attachEvents() {
       // clone the item
       var $clone = $element.clone(true).removeAttr("id");
       // Remove template tag
-      $clone.find('input, textarea').each(function(_i,e) {
+      $clone.find('input, textarea, select').each(function(_i,e) {
         e.name = (e.name).replace("_TEMPLATE_", "");
         e.id = (e.id).replace("_TEMPLATE_", "");
       });
