@@ -1317,9 +1317,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // Expected Study Link List
-        if (this.expectedStudy.getProjectExpectedStudyLinks() != null) {
-          this.expectedStudy.setLinks(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyLinks().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        Set<ProjectExpectedStudyLink> projectLinks = this.expectedStudy.getProjectExpectedStudyLinks();
+
+        if (projectLinks != null && !projectLinks.isEmpty() && phase != null && phase.getId() != null) {
+          List<ProjectExpectedStudyLink> filteredAndSortedLinks = projectLinks.stream()
+            .filter(o -> o != null && o.isActive() && o.getPhase() != null && o.getPhase().getId() != null
+              && o.getPhase().getId().equals(phase.getId()))
+            .sorted(Comparator.comparing(ProjectExpectedStudyLink::getId)).collect(Collectors.toList());
+
+          this.expectedStudy.setLinks(new ArrayList<>(filteredAndSortedLinks));
         }
 
         // Expected Study Policies List
