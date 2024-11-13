@@ -527,6 +527,10 @@ public class ProjectInnovationAction extends BaseAction {
     return institutions;
   }
 
+  public List<IntellectualPropertyRightsInstitution> getIntellectualInstitutionsList() {
+    return intellectualInstitutionsList;
+  }
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
@@ -2895,6 +2899,11 @@ public class ProjectInnovationAction extends BaseAction {
     this.institutions = institutions;
   }
 
+  public void
+    setIntellectualInstitutionsList(List<IntellectualPropertyRightsInstitution> intellectualInstitutionsList) {
+    this.intellectualInstitutionsList = intellectualInstitutionsList;
+  }
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -2978,6 +2987,7 @@ public class ProjectInnovationAction extends BaseAction {
   public void setSubIdos(List<SrfSubIdo> subIdos) {
     this.subIdos = subIdos;
   }
+
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
