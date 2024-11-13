@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationAllianceLeversDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,7 +28,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectInnovationAllianceLeversMySQLDAO extends AbstractMarloDAO<ProjectInnovationAllianceLevers, Long> implements ProjectInnovationAllianceLeversDAO {
+public class ProjectInnovationAllianceLeversMySQLDAO extends AbstractMarloDAO<ProjectInnovationAllianceLevers, Long>
+  implements ProjectInnovationAllianceLeversDAO {
 
 
   @Inject
@@ -62,11 +64,33 @@ public class ProjectInnovationAllianceLeversMySQLDAO extends AbstractMarloDAO<Pr
   public List<ProjectInnovationAllianceLevers> findAll() {
     String query = "from " + ProjectInnovationAllianceLevers.class.getName() + " where is_active=1";
     List<ProjectInnovationAllianceLevers> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
+  }
 
+  @Override
+  public List<ProjectInnovationAllianceLevers> getProjectInnovationAllianceLeversByInnovationAndPhase(long innovationID,
+    long phaseID) {
+    String query = "from " + ProjectInnovationAllianceLevers.class.getName() + " where is_active=1 and id_phase="
+      + phaseID + " innovation_id=" + innovationID;
+    List<ProjectInnovationAllianceLevers> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
+  }
+
+  @Override
+  public List<ProjectInnovationAllianceLevers> getProjectInnovationAllianceLeversByPhase(long phaseID) {
+    String query =
+      "from " + ProjectInnovationAllianceLevers.class.getName() + " where is_active=1 and id_phase=" + phaseID;
+    List<ProjectInnovationAllianceLevers> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
   }
 
   @Override

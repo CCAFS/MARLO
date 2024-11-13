@@ -75,12 +75,10 @@ public class ProjectInnovationAllianceLeversManagerImpl implements ProjectInnova
     ProjectInnovationAllianceLevers projectInnovationAllianceLevers) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<ProjectInnovationAllianceLevers> innovationAllianceLevers =
-      projectInnovationAllianceLeversDAO.findAll().stream()
-        .filter(c -> c.isActive() && c.getPhase().getId().longValue() == phase.getId().longValue()
-          && c.getProjectInnovation().getId().longValue() == innovationID
-          && c.getAllianceLever().getId().equals(projectInnovationAllianceLevers.getAllianceLever().getId()))
-        .collect(Collectors.toList());
+    List<ProjectInnovationAllianceLevers> innovationAllianceLevers = projectInnovationAllianceLeversDAO
+      .getProjectInnovationAllianceLeversByInnovationAndPhase(innovationID, phase.getId()).stream()
+      .filter(c -> c.getAllianceLever().getId().equals(projectInnovationAllianceLevers.getAllianceLever().getId()))
+      .collect(Collectors.toList());
 
     for (ProjectInnovationAllianceLevers projectInnovationAllianceLeversDB : innovationAllianceLevers) {
       projectInnovationAllianceLeversDAO
@@ -110,6 +108,18 @@ public class ProjectInnovationAllianceLeversManagerImpl implements ProjectInnova
     getProjectInnovationAllianceLeversById(long projectInnovationAllianceLeversID) {
 
     return projectInnovationAllianceLeversDAO.find(projectInnovationAllianceLeversID);
+  }
+
+  @Override
+  public List<ProjectInnovationAllianceLevers> getProjectInnovationAllianceLeversByInnovationAndPhase(long innovationId,
+    long phaseID) {
+    return projectInnovationAllianceLeversDAO.getProjectInnovationAllianceLeversByInnovationAndPhase(innovationId,
+      phaseID);
+  }
+
+  @Override
+  public List<ProjectInnovationAllianceLevers> getProjectInnovationAllianceLeversByPhase(long phaseID) {
+    return projectInnovationAllianceLeversDAO.getProjectInnovationAllianceLeversByPhase(phaseID);
   }
 
   @Override
@@ -143,10 +153,10 @@ public class ProjectInnovationAllianceLeversManagerImpl implements ProjectInnova
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectInnovationAllianceLevers> innovationAllianceLevers =
-      projectInnovationAllianceLeversDAO.findAll().stream()
-        .filter(c -> c.getProjectInnovation().getId().longValue() == innovationid
-          && c.getPhase().getId().equals(phase.getId())
-          && c.getAllianceLever().getId().equals(projectInnovationAllianceLevers.getAllianceLever().getId()))
+
+      projectInnovationAllianceLeversDAO
+        .getProjectInnovationAllianceLeversByInnovationAndPhase(innovationid, phase.getId()).stream()
+        .filter(c -> c.getAllianceLever().getId().equals(projectInnovationAllianceLevers.getAllianceLever().getId()))
         .collect(Collectors.toList());
 
     if (innovationAllianceLevers.isEmpty()) {
