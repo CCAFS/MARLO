@@ -567,3 +567,26 @@
     <div class="clearfix"></div>
   </div>
 [/#macro]
+
+[#macro organizationsMacro name element index=-1 template=false class=""]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div id="organizationsInnovation-${(template?string('template', ''))}" class="organizationsInnovation form-group grayBlueBox ${class}">
+    [#-- "Dropdown Organizations - Type --]
+    <div class="col-md-12">
+      [@customForm.elementsListComponent name="${customName}.organizations" showTitle=false elementType="organization" elementList=(element.organizations)![] label="projectInnovations.organizations" listName="organizations" keyFieldName="id" displayFieldName="composedName" required=false /]
+    </div>
+    [#-- Input Organization name --]
+    <div class="col-md-12">
+      <label>[@s.text name="projectInnovations.anticipatedUsers.organizations.name" /]:</label>
+      [@customForm.input name="${customName}.organizationName" type="text" i18nkey="projectInnovations.anticipatedUsers.organizations.organizationName" helpIcon=false required=false editable=true /]
+    </div>
+    [#-- Checkbox - is a co-development --]
+    <div class="col-md-12">
+      [@customForm.checkBoxFlat id="testing" name="innovations.organizations.coDevelopment" label="projectInnovations.anticipatedUsers.organizations.coDevelopment" value="true" checked=false editable=true /]
+    </div>
+
+    [#-- Remove --]
+    [#if editable]<div class="removeElement sm removeIcon removeOrganization ${class}" title="Remove"></div>[/#if]
+    <div class="clearfix"></div>
+  </div>
+[/#macro]
