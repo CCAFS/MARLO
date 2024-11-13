@@ -1600,15 +1600,19 @@ public class ProjectInnovationAction extends BaseAction {
       // HTTP Post info Values
       // innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
       // innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
-      innovation.getProjectInnovationInfo().setProjectExpectedStudy(null);
-      innovation.getProjectInnovationInfo().setRepIndPhaseResearchPartnership(null);
-      innovation.getProjectInnovationInfo().setRepIndStageInnovation(null);
-      innovation.getProjectInnovationInfo().setRepIndInnovationNature(null);
-      innovation.getProjectInnovationInfo().setRepIndInnovationType(null);
-      innovation.getProjectInnovationInfo().setRepIndInnovationNature(null);
-      innovation.getProjectInnovationInfo().setRepIndRegion(null);
-      innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
-      innovation.getProjectInnovationInfo().setLeadOrganization(null);
+      try {
+        innovation.getProjectInnovationInfo().setProjectExpectedStudy(null);
+        innovation.getProjectInnovationInfo().setRepIndPhaseResearchPartnership(null);
+        innovation.getProjectInnovationInfo().setRepIndStageInnovation(null);
+        innovation.getProjectInnovationInfo().setRepIndInnovationNature(null);
+        innovation.getProjectInnovationInfo().setRepIndInnovationType(null);
+        innovation.getProjectInnovationInfo().setRepIndInnovationNature(null);
+        innovation.getProjectInnovationInfo().setRepIndRegion(null);
+        innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
+        innovation.getProjectInnovationInfo().setLeadOrganization(null);
+      } catch (Exception e) {
+        logger.error("unable to clean info properties", e);
+      }
     }
 
     // SrfIDO
