@@ -110,19 +110,15 @@
             </div>  --]
             
             [#-- Innovation nature --]
-            <div class="form-group row">  
-              <!-- First column: Innovation Nature -->
-              <div class="col-md-6">
-                [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationNature.id" label="" i18nkey="projectInnovations.innovationNature" listName="innovationNatureList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationNature.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable isMainTitle=true /]
-              </div>
-            
-              <!-- second column: Innovation Type -->
-              <div class="col-md-6">
-                [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label="" i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationType.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable isMainTitle=true /]
-              </div>
+            <div class="form-group ">  
+              [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationNature.id" label="" i18nkey="projectInnovations.innovationNature" listName="innovationNatureList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationNature.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable isMainTitle=true /]
             </div>
-          
-          
+
+            [#-- Innovation Type --]
+            <div class="form-group">
+              [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label="" i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationType.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable isMainTitle=true /]
+            </div>
+
             [#-- Contribution of CRP --] 
             <div class="form-group row">
             
@@ -336,14 +332,14 @@
             [/#if]
 
             [#-- Anticipated users --]
-            <div class="form-group col-md-12">
+            <div class="form-group col-md-12 block-innovationAnticipatedUsers">
               <label class="label--2">[@s.text name="projectInnovations.anticipatedUsers" /][@customForm.req required=true /]</label>
               <div class="col-md-12">
                 <div class="col-md-4">
-                  [@customForm.checkBoxFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.hasMilestones" label="projectInnovations.anticipatedUsers.determined" value="true" checked=false cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=editable /]
+                  [@customForm.radioFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.hasMilestones" i18nkey="projectInnovations.anticipatedUsers.determined" value="true" checked=false cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=editable /]
                 </div>
                 <div class="col-md-4">
-                  [@customForm.checkBoxFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.hasMilestones" label="projectInnovations.anticipatedUsers.undetermined" value="false" checked=false cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
+                  [@customForm.radioFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.hasMilestones" i18nkey="projectInnovations.anticipatedUsers.undetermined" value="false" checked=false cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
                 </div>
               </div>
               <div class="col-md-12">
@@ -440,7 +436,9 @@
     [#-- Intellectual property rights --]
     <div class="form-group">
       <label class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.intellectualProperty" /]:</label>
-      <label class="note--2">[@s.text name="projectInnovations.alliance.intellectualProperty.subtitle" /]</label>
+      <label class="note--2">
+        <p>[@s.text name="projectInnovations.alliance.intellectualProperty.subtitle" /]</p>
+      </label>
       [@customForm.elementsListComponent name="innovation.intellectualProperties" elementType="intellectualProperty" elementList=(innovation.intellectualProperties)![] helpIcon=false listName="intellectualPropertyList" keyFieldName="id" displayFieldName="name" required=false showTitle=true label="projectInnovations.alliance.intellectualProperty.description" /]
       [#-- Intellectual property rights - Legal Restrictions --]
       <div class="form-group">

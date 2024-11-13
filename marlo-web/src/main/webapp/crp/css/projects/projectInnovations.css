@@ -11,6 +11,15 @@
   padding-left: 0;
 }
 
+.block-innovationAnticipatedUsers .col-md-4{
+  padding-left: 0;
+  margin-bottom: 15px;
+}
+
+.block-innovationAnticipatedUsers .col-md-4 .radioFlat{
+  padding-left: 0;
+}
+
 .innovationsTab{
   margin-top: 2rem;
 }
