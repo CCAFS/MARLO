@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ImpactAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.IntellectualPropertyRightsInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
@@ -81,6 +82,7 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.IntellectualPropertyRightsInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -217,6 +219,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationSDGManager projectInnovationSDGManager;
   private ProjectInnovationAllianceLeversManager projectInnovationAllianceLeversManager;
   private ProjectInnovationImpactAreaManager projectInnovationImpactAreaManager;
+  private IntellectualPropertyRightsInstitutionManager intellectualPropertyRightsInstitutionManager;
 
   // Variables
   private long projectID;
@@ -269,6 +272,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<AllianceLever> allianceLeverList;
   private List<Sdg> sdgList;
   private List<ImpactArea> impactAreaList;
+  private List<IntellectualPropertyRightsInstitution> intellectualInstitutionsList;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -307,7 +311,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectPartnerManager projectPartnerManager, AllianceLeverManager allianceLeverManager, UserManager userManager,
     SdgManager sdgManager, ProjectInnovationAllianceLeversManager projectInnovationAllianceLeversManager,
     ProjectInnovationSDGManager projectInnovationSDGManager, ImpactAreaManager impactAreaManager,
-    ProjectInnovationImpactAreaManager projectInnovationImpactAreaManager) {
+    ProjectInnovationImpactAreaManager projectInnovationImpactAreaManager,
+    IntellectualPropertyRightsInstitutionManager intellectualPropertyRightsInstitutionManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -364,7 +369,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationSDGManager = projectInnovationSDGManager;
     this.impactAreaManager = impactAreaManager;
     this.projectInnovationImpactAreaManager = projectInnovationImpactAreaManager;
-
+    this.intellectualPropertyRightsInstitutionManager = intellectualPropertyRightsInstitutionManager;
   }
 
   /**
@@ -1194,6 +1199,7 @@ public class ProjectInnovationAction extends BaseAction {
       this.isManagingPartnerPersonRequerid = this.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
       this.sdgList = this.sdgManager.findAll();
       this.impactAreaList = this.impactAreaManager.findAll();
+      this.intellectualInstitutionsList = this.intellectualPropertyRightsInstitutionManager.findAll();
 
       // Order SDG list by ID
       if (this.sdgList != null) {
@@ -1237,7 +1243,7 @@ public class ProjectInnovationAction extends BaseAction {
         .collect(Collectors.toList());
 
       // Getting the list of institution
-      institutions = institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
+      institutions = institutionManager.findAll().stream().collect(Collectors.toList());
 
       // Regions for Geographic Scope Regional Selection
       regions = locElementManager.findAll().stream()

@@ -458,5 +458,6 @@
   <mapping resource="xmls/ProjectInnovationReferences.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationImpactAreas.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationSDGs.hbm.xml"/>
+  <mapping resource="xmls/IntellectualPropertyRightsInstitutions.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>

@@ -1,0 +1,1 @@
+ALTER TABLE intellectual_property_rights_institutions ADD custom_name text NULL;
