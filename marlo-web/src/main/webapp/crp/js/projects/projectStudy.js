@@ -1122,7 +1122,6 @@ var dynamicSelectorSDGImageModule = (function (){
           $leverName.text(leverName);
           $leverContributionSDG.html(element.text);
   
-          console.log("Image found");
           resolve($cloneSelectedLeverContainer);
         }
         },
@@ -1143,7 +1142,6 @@ var dynamicSelectorSDGImageModule = (function (){
       $listSelectedLeverContainer.find('.selectedLeverContainer').sort(function(a, b) {
       return sortByLeverAndPrimary(a, b, false);
       }).appendTo($listSelectedLeverContainer);
-      console.log("All AJAX requests completed");
     }).catch(error => {
       console.error("An error occurred in one of the AJAX requests:", error);
     });;
