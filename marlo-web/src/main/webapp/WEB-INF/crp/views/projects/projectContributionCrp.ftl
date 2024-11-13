@@ -111,7 +111,7 @@
             [#if showOutcomeValue]
               <div class="form-group">          
                 <div class="col-md-4"><strong>AICCRA Target Value:</strong> ${projectOutcome.crpProgramOutcome.value?string(",##0")} </div>
-                <div class="col-md-6"><strong>Target Unit:</strong> ${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</div>
+                <div class="col-md-6 targetUnit-block" data-targetUnit="${projectOutcome.crpProgramOutcome.srfTargetUnit.id}"><strong>Target Unit:</strong> ${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</div>
               </div>
             [/#if]
             </br>

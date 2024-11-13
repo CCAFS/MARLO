@@ -811,25 +811,36 @@ function setFormatInput() {
   
     $("input.targetValueNumber").each(function (i, ele) {
 
-      const initialMask = $(ele).attr("value").includes('.') ? '900.99' : '999,999,000';
+      const $parentAvailable = $(ele).closest('.targetValue-block');
+      let targetUnitSelected;
+
+      if($parentAvailable.length > 0) {
+        $brotherContent = $parentAvailable.siblings('.targetUnit-block');
+        let $select = ($brotherContent.find('select').length > 0) ? $brotherContent.find('select') : null;
+        console.log($select);
+        targetUnitSelected = ($select !== null) ? $select.val() : '-1';
+      } else {
+        $brotherContent = $('.targetUnit-block');
+        targetUnitSelected = $brotherContent.attr('data-targetunit');
+      }
+
+      const modifiedMask = (targetUnit) => {
+        const typeTargetUnit = {
+          "129": '900.99',
+          "42": '999,999,000',
+          "35": '900.99',
+          "1": "900.99",
+          "-1": "999,999,000"
+        }
+        return typeTargetUnit[targetUnit] || "999,999,000";
+      }
 
       const options = {
-        onKeyPress: function (currentValue, event, element, opti) {
-          const masks = ['999,999,000', '900.99'];
-          const mask = (event.originalEvent.data === '.' || currentValue.includes('.')) ? masks[1] : masks[0];
-          
-          if((!currentValue.includes('.')) && (event.originalEvent.data === '.')) {
-            $(ele).val(currentValue+= '.');
-          } 
-          setTimeout(() => {
-            $(ele).mask(mask, options);
-          }, 100);
-        },
         reverse: true,
         clearIfNotMatch: false
       };
 
-      $(ele).mask(initialMask, options);
+      $(ele).mask(modifiedMask(targetUnitSelected), options);
 
       
       if($(ele).attr("value") === "") {
@@ -840,7 +851,7 @@ function setFormatInput() {
 
       $(ele).on("focus", function () {
         if($(ele).attr("value") === "") {
-          $(ele).mask(initialMask,options);
+          $(ele).mask(modifiedMask(targetUnitSelected),options);
         }
         
       });
