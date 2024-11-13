@@ -15,11 +15,15 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationSDGDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSDGManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSDG;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,22 +34,56 @@ import javax.inject.Named;
 @Named
 public class ProjectInnovationSDGManagerImpl implements ProjectInnovationSDGManager {
 
-
-  private ProjectInnovationSDGDAO projectInnovationSDGDAO;
   // Managers
+  private ProjectInnovationSDGDAO projectInnovationSDGDAO;
+  private PhaseDAO phaseDAO;
 
 
   @Inject
-  public ProjectInnovationSDGManagerImpl(ProjectInnovationSDGDAO projectInnovationSDGDAO) {
+  public ProjectInnovationSDGManagerImpl(ProjectInnovationSDGDAO projectInnovationSDGDAO, PhaseDAO phaseDAO) {
     this.projectInnovationSDGDAO = projectInnovationSDGDAO;
-
-
+    this.phaseDAO = phaseDAO;
   }
 
   @Override
   public void deleteProjectInnovationSDG(long projectInnovationSDGId) {
+    ProjectInnovationSDG projectInnovationSDG = this.getProjectInnovationSDGById(projectInnovationSDGId);
 
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (projectInnovationSDG.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectInnovationSDG.getPhase().getNext() != null) {
+      this.deleteProjectInnovationSDGPhase(projectInnovationSDG.getPhase().getNext(),
+        projectInnovationSDG.getProjectInnovation().getId(), projectInnovationSDG);
+    }
+
+    if (projectInnovationSDG.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectInnovationSDG.getPhase().getNext() != null
+        && projectInnovationSDG.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectInnovationSDG.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectInnovationSDGPhase(upkeepPhase, projectInnovationSDG.getProjectInnovation().getId(),
+            projectInnovationSDG);
+        }
+      }
+    }
     projectInnovationSDGDAO.deleteProjectInnovationSDG(projectInnovationSDGId);
+  }
+
+  public void deleteProjectInnovationSDGPhase(Phase next, long innovationID,
+    ProjectInnovationSDG projectInnovationSDG) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectInnovationSDG> projectInnovationSDGs =
+      projectInnovationSDGDAO.getProjectInnovationSDGByInnovationAndPhase(innovationID, phase.getId()).stream()
+        .filter(c -> c.getSdg().getId().equals(projectInnovationSDG.getSdg().getId())).collect(Collectors.toList());
+
+    for (ProjectInnovationSDG projectInnovationSDGDB : projectInnovationSDGs) {
+      projectInnovationSDGDAO.deleteProjectInnovationSDG(projectInnovationSDGDB.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deleteProjectInnovationSDGPhase(phase.getNext(), innovationID, projectInnovationSDG);
+    }
   }
 
   @Override
@@ -68,10 +106,54 @@ public class ProjectInnovationSDGManagerImpl implements ProjectInnovationSDGMana
   }
 
   @Override
-  public ProjectInnovationSDG saveProjectInnovationSDG(ProjectInnovationSDG projectInnovationSDG) {
-
-    return projectInnovationSDGDAO.save(projectInnovationSDG);
+  public List<ProjectInnovationSDG> getProjectInnovationSDGByInnovationAndPhase(long innovationId, long phaseID) {
+    return projectInnovationSDGDAO.getProjectInnovationSDGByInnovationAndPhase(innovationId, phaseID);
   }
 
+  @Override
+  public List<ProjectInnovationSDG> getProjectInnovationSDGByPhase(long phaseID) {
+    return projectInnovationSDGDAO.getProjectInnovationSDGByPhase(phaseID);
+  }
+
+  public void saveInnovationSDGPhase(Phase next, long innovationID, ProjectInnovationSDG projectInnovationSDG) {
+
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectInnovationSDG> projectInnovationSDGs =
+      projectInnovationSDGDAO.getProjectInnovationSDGByInnovationAndPhase(innovationID, phase.getId()).stream()
+        .filter(c -> c.getSdg().getId().equals(projectInnovationSDG.getSdg().getId())).collect(Collectors.toList());
+
+    if (projectInnovationSDGs.isEmpty()) {
+      ProjectInnovationSDG projectInnovationSDGAdd = new ProjectInnovationSDG();
+      projectInnovationSDGAdd.setProjectInnovation(projectInnovationSDG.getProjectInnovation());
+      projectInnovationSDGAdd.setPhase(phase);
+      projectInnovationSDGAdd.setSdg(projectInnovationSDG.getSdg());
+      projectInnovationSDGDAO.save(projectInnovationSDGAdd);
+    }
+    if (phase.getNext() != null) {
+      this.saveInnovationSDGPhase(phase.getNext(), innovationID, projectInnovationSDG);
+    }
+  }
+
+
+  @Override
+  public ProjectInnovationSDG saveProjectInnovationSDG(ProjectInnovationSDG projectInnovationSDG) {
+    ProjectInnovationSDG innovationSDG = projectInnovationSDGDAO.save(projectInnovationSDG);
+    Phase phase = phaseDAO.find(innovationSDG.getPhase().getId());
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.saveInnovationSDGPhase(innovationSDG.getPhase().getNext(), innovationSDG.getProjectInnovation().getId(),
+        projectInnovationSDG);
+    }
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveInnovationSDGPhase(upkeepPhase, innovationSDG.getProjectInnovation().getId(), projectInnovationSDG);
+        }
+      }
+    }
+    return innovationSDG;
+  }
 
 }

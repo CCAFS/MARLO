@@ -54,6 +54,22 @@ public interface ProjectInnovationSDGDAO {
    */
   public List<ProjectInnovationSDG> findAll();
 
+  /**
+   * This method gets a projectInnovationSDG object by a given Phase identifier.
+   * 
+   * @param innovationID is the innovation identifier.
+   * @param phaseID is the Phase identifier.
+   * @return a list from ProjectInnovationSDG null if no exist records.
+   */
+  public List<ProjectInnovationSDG> getProjectInnovationSDGByInnovationAndPhase(long innovationID, long phaseID);
+
+  /**
+   * This method validate if the projectInnovationSDG identify with the given id exists in the system.
+   * 
+   * @param phaseID is a phase identifier.
+   * @return a list from ProjectInnovationSDG null if no exist records
+   */
+  public List<ProjectInnovationSDG> getProjectInnovationSDGByPhase(long phaseID);
 
   /**
    * This method saves the information of the given projectInnovationSDG

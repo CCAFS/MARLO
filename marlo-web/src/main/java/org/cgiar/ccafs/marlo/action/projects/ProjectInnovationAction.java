@@ -139,6 +139,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -1193,6 +1194,12 @@ public class ProjectInnovationAction extends BaseAction {
       this.isManagingPartnerPersonRequerid = this.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
       this.sdgList = this.sdgManager.findAll();
       this.impactAreaList = this.impactAreaManager.findAll();
+
+      // Order SDG list by ID
+      if (this.sdgList != null) {
+        this.sdgList = this.sdgList.stream().filter(sdg -> sdg != null && sdg.getId() != null)
+          .sorted(Comparator.comparing(Sdg::getId)).collect(Collectors.toList());
+      }
 
       final List<ProjectPartner> partnersTmp = this.projectPartnerManager
         .findAllByPhaseProject(this.innovation.getProject().getId(), this.getActualPhase().getId());

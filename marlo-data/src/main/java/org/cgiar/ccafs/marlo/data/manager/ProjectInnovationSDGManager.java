@@ -61,6 +61,23 @@ public interface ProjectInnovationSDGManager {
   public ProjectInnovationSDG getProjectInnovationSDGById(long projectInnovationSDGID);
 
   /**
+   * This method gets a projectInnovationSDG object by a given Phase identifier.
+   * 
+   * @param innovationID is the innovation identifier.
+   * @param phaseID is the Phase identifier.
+   * @return a list from ProjectInnovationSDG null if no exist records.
+   */
+  public List<ProjectInnovationSDG> getProjectInnovationSDGByInnovationAndPhase(long innovationID, long phaseID);
+
+  /**
+   * This method gets a projectInnovationSDG object by a given Phase identifier.
+   * 
+   * @param phaseID is the Phase identifier.
+   * @return a list from ProjectInnovationSDG null if no exist records.
+   */
+  public List<ProjectInnovationSDG> getProjectInnovationSDGByPhase(long phaseID);
+
+  /**
    * This method saves the information of the given projectInnovationSDG
    * 
    * @param projectInnovationSDG - is the projectInnovationSDG object with the new information to be added/updated.
