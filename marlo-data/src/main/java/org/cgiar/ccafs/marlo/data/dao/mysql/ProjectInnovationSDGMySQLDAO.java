@@ -51,23 +51,21 @@ public class ProjectInnovationSDGMySQLDAO extends AbstractMarloDAO<ProjectInnova
       return false;
     }
     return true;
-
   }
 
   @Override
   public ProjectInnovationSDG find(long id) {
     return super.find(ProjectInnovationSDG.class, id);
-
   }
 
   @Override
   public List<ProjectInnovationSDG> findAll() {
     String query = "from " + ProjectInnovationSDG.class.getName() + " where is_active=1";
     List<ProjectInnovationSDG> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
-    return null;
+    return Collections.emptyList();
 
   }
 
@@ -84,7 +82,7 @@ public class ProjectInnovationSDGMySQLDAO extends AbstractMarloDAO<ProjectInnova
 
   @Override
   public List<ProjectInnovationSDG> getProjectInnovationSDGByPhase(long phaseID) {
-    String query = "from " + ProjectInnovationSDG.class.getName() + " where is_active=1 && id_phase=" + phaseID;
+    String query = "from " + ProjectInnovationSDG.class.getName() + " where is_active=1 and id_phase=" + phaseID;
     List<ProjectInnovationSDG> list = super.findAll(query);
     if (!list.isEmpty()) {
       return list;
@@ -99,10 +97,6 @@ public class ProjectInnovationSDGMySQLDAO extends AbstractMarloDAO<ProjectInnova
     } else {
       projectInnovationSDG = super.update(projectInnovationSDG);
     }
-
-
     return projectInnovationSDG;
   }
-
-
 }
