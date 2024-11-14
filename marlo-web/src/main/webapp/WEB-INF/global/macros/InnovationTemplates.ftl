@@ -516,7 +516,7 @@
           [@customForm.radioFlat id="optionOneCGIAR-No" name="${customName}.projectInnovationInfo.hasCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIARNo" value="false" checked=(((element.projectInnovationInfo.hasCgiarContribution??) && (!hasContributionToCGIAR))!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /]
         </div>
       </div>
-      <div class="form-group contributionToCGIARComment" [#if element.projectInnovationInfo.hasCgiarContribution??]style="display:${((hasContributionToCGIAR?c) == 'false')?string('block','none')};"[#else] style="display: none;" [/#if] >
+      <div class="form-group contributionToCGIARComment col-md-12" [#if element.projectInnovationInfo.hasCgiarContribution??]style="display:${((hasContributionToCGIAR?c) == 'false')?string('block','none')};"[#else] style="display: none;" [/#if] >
         [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=(editable) editable=editable /]
       </div>
     </div>

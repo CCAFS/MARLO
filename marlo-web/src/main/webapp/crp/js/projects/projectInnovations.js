@@ -30,6 +30,13 @@ $(document).ready(function() {
 
   // Add image to SDG Targets
   $('select.elementType-sdgTarget').on("change", addImageToSelectSDGTargets);
+  addImageToSelectSDGTargets();
+  // Add image to Impact Areas
+  $('select.elementType-impactArea').on("change", addImageToSelectImpactAreas);
+  addImageToSelectImpactAreas();
+
+
+
 
   feedbackAutoImplementation();
 });
@@ -300,6 +307,40 @@ function addImageToSelectSDGTargets() {
 
   });
   
+}
+
+function addImageToSelectImpactAreas() {
+  
+    const $listRender = $('div[listname="innovation.impactAreas"] .panel-body li.relationElement');
+  
+    $listRender.each(function(index, element) {
+      const $elementVisualization = $(element);
+      const $elementId = $(element).find('input[type="hidden"].elementRelationID').val();
+  
+      if($elementVisualization.find('.impactAreaImage').length == 0) {
+        
+        $.ajax({
+          url: baseURL + '/getImpactAreaImage.do',
+          async: true,
+          data: {
+            requestID: Number.parseInt(Number.parseInt($elementId))
+          },
+          success: function(data) {
+            console.log(data);
+    
+            if(data) {
+              //render image in a before element in the elementVisualization
+              $elementVisualization.find('.elementName').before(`<img src="${data.image.adsoluteURL}" class="impactAreaImage" alt="impactArea-${$elementId}">`);
+            }
+          },
+          error: function(xhr, status, error) {
+            console.error(error);
+            reject(error);
+          }
+        });
+      }
+  
+    });
 }
 
 var deliverablePartnersModule = (function () {
