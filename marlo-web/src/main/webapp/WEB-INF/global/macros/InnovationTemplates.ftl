@@ -528,7 +528,7 @@
 
     [#-- Impact Areas --]
     <div class="form-group col-md-12">
-      <label class="label--2">[@s.text name="projectInnovations.oneCGIARAligment.impactAreas" /]:</label>
+      <label class="label--2 col-md-12">[@s.text name="projectInnovations.oneCGIARAligment.impactAreas" /]:</label>
       <label>[@s.text name="projectInnovations.oneCGIARAligment.impactAreas.subtitle" /]</label>
       [@customForm.elementsListComponent name="${customName}.impactAreas" elementType="impactArea" elementList=(element.impactAreas)![] helpIcon=false listName="impactAreaList" keyFieldName="id" displayFieldName="name" required=false showTitle=false /]
     </div>
