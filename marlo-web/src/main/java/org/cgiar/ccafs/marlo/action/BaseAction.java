@@ -189,51 +189,92 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private static HashMap<String, String> isOicrOneCgiarAlignmentCompleteMap = new HashMap<>();
   private static HashMap<String, String> isOicrCommunicationsCompleteMap = new HashMap<>();
 
+  // Innovation tabs validators
+  private static HashMap<String, String> isInnovationGeneralInformationCompleteMap = new HashMap<>();
+  private static HashMap<String, String> isInnovationAllianceAlignmentCompleteMap = new HashMap<>();
+  private static HashMap<String, String> isInnovationOneCgiarAlignmentCompleteMap = new HashMap<>();
+  private static HashMap<String, String> isInnovationReadinessCompleteMap = new HashMap<>();
+  private static HashMap<String, String> isInnovationRightsCompleteMap = new HashMap<>();
+
+
+  public static HashMap<String, String> getIsInnovationAllianceAlignmentCompleteMap() {
+    return isInnovationAllianceAlignmentCompleteMap;
+  }
+
+  public static HashMap<String, String> getIsInnovationGeneralInformationCompleteMap() {
+    return isInnovationGeneralInformationCompleteMap;
+  }
+
+  public static HashMap<String, String> getIsInnovationOneCgiarAlignmentCompleteMap() {
+    return isInnovationOneCgiarAlignmentCompleteMap;
+  }
+
+  public static HashMap<String, String> getIsInnovationReadinessCompleteMap() {
+    return isInnovationReadinessCompleteMap;
+  }
+
+  public static HashMap<String, String> getIsInnovationRightsCompleteMap() {
+    return isInnovationRightsCompleteMap;
+  }
 
   public static HashMap<String, String> getIsOicrAllianceAlignmentCompleteMap() {
     return isOicrAllianceAlignmentCompleteMap;
   }
 
-
   public static HashMap<String, String> getIsOicrCommunicationsCompleteMap() {
     return isOicrCommunicationsCompleteMap;
   }
-
 
   public static HashMap<String, String> getIsOicrGeneralInformationCompleteMap() {
     return isOicrGeneralInformationCompleteMap;
   }
 
-
   public static HashMap<String, String> getIsOicrOneCgiarAlignmentCompleteMap() {
     return isOicrOneCgiarAlignmentCompleteMap;
   }
 
+  public static void
+    setIsInnovationAllianceAlignmentCompleteMap(HashMap<String, String> isInnovationAllianceAlignmentCompleteMap) {
+    BaseAction.isInnovationAllianceAlignmentCompleteMap = isInnovationAllianceAlignmentCompleteMap;
+  }
+
+  public static void
+    setIsInnovationGeneralInformationCompleteMap(HashMap<String, String> isInnovationGeneralInformationCompleteMap) {
+    BaseAction.isInnovationGeneralInformationCompleteMap = isInnovationGeneralInformationCompleteMap;
+  }
+
+  public static void
+    setIsInnovationOneCgiarAlignmentCompleteMap(HashMap<String, String> isInnovationOneCgiarAlignmentCompleteMap) {
+    BaseAction.isInnovationOneCgiarAlignmentCompleteMap = isInnovationOneCgiarAlignmentCompleteMap;
+  }
+
+  public static void setIsInnovationReadinessCompleteMap(HashMap<String, String> isInnovationReadinessCompleteMap) {
+    BaseAction.isInnovationReadinessCompleteMap = isInnovationReadinessCompleteMap;
+  }
+
+  public static void setIsInnovationRightsCompleteMap(HashMap<String, String> isInnovationRightsCompleteMap) {
+    BaseAction.isInnovationRightsCompleteMap = isInnovationRightsCompleteMap;
+  }
 
   public static void setIsOicrAllianceAlignmentCompleteMap(HashMap<String, String> isOicrAllianceAlignmentCompleteMap) {
     BaseAction.isOicrAllianceAlignmentCompleteMap = isOicrAllianceAlignmentCompleteMap;
   }
 
-
   public static void setIsOicrCommunicationsCompleteMap(HashMap<String, String> isOicrCommunicationsCompleteMap) {
     BaseAction.isOicrCommunicationsCompleteMap = isOicrCommunicationsCompleteMap;
   }
-
 
   public static void
     setIsOicrGeneralInformationCompleteMap(HashMap<String, String> isOicrGeneralInformationCompleteMap) {
     BaseAction.isOicrGeneralInformationCompleteMap = isOicrGeneralInformationCompleteMap;
   }
 
-
   public static void setIsOicrOneCgiarAlignmentCompleteMap(HashMap<String, String> isOicrOneCgiarAlignmentCompleteMap) {
     BaseAction.isOicrOneCgiarAlignmentCompleteMap = isOicrOneCgiarAlignmentCompleteMap;
   }
 
-
   // OICR validation variables
   private boolean isOicrGeneralInformationComplete;
-
 
   private List<HistoryDifference> differences;
   // Years available per CRPs (used in Summaries)

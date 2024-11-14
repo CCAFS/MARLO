@@ -2988,7 +2988,6 @@ public class ProjectInnovationAction extends BaseAction {
     this.subIdos = subIdos;
   }
 
-
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
