@@ -36,8 +36,112 @@ $(document).ready(function() {
 
 function attachEvents() {
 
-    // 
-    $('#isClearLeadToAddRequired').on('click', AddRequired);
+  /**
+   * Actors Component
+   */
+
+  ( function () {
+    // Events
+    $('.addActors').on('click', addActor);
+    $('.removeActor').on('click', removeActor);
+
+    // Function
+    function addActor() {
+
+      const $listBlock = $('.actorsList');
+      const $template = $('#actorsInnovation-template');
+
+      // remove select2 data to avoid corruption in clone process
+      if ($template.find('select').data('select2')) {
+        $template.find('select').select2("destroy");
+      }
+
+      const $newItem = $template.clone(true).removeAttr('id');
+      $newItem.find('input, select').each(function(_i,e) {
+        e.name = (e.name).replace("_TEMPLATE_", "");
+        e.id = (e.id).replace("_TEMPLATE_", "");
+      });
+      // Add select2 to select2 library
+      $template.find('select').select2();
+      $newItem.find('select').select2();
+
+      // Show the element
+      $newItem.appendTo($listBlock).hide().show(350);
+      // Update indexes
+      updateIndexes();
+
+    }
+
+    function removeActor() {
+      var $parent = $(this).parents('.actorsInnovation');
+      $parent.hide(500, function() {
+        // Remove DOM element
+        $parent.remove();
+        // Update indexes
+        updateIndexes();
+      });
+    }
+
+    function updateIndexes() {}
+
+  })();
+
+  /**
+   * Organizations Component
+   */
+  ( function () {
+    // Events
+    $('.addOrganizations').on('click', addOrganization);
+    $('.removeOrganization').on('click', removeOrganization);
+
+    // Function
+    function addOrganization() {
+
+      const $listBlock = $('.organizationsList');
+      const $template = $('#organizationsInnovation-template');
+
+      // remove select2 data to avoid corruption in clone process
+      if ($template.find('select').data('select2')) {
+        $template.find('select').select2("destroy");
+      }
+
+      const $newItem = $template.clone(true).removeAttr('id');
+      $newItem.find('input, select').each(function(_i,e) {
+        e.name = (e.name).replace("_TEMPLATE_", "");
+        e.id = (e.id).replace("_TEMPLATE_", "");
+      });
+      // Add select2 to select2 library
+      $template.find('select').select2();
+      $newItem.find('select').select2();
+
+      // Show the element
+      $newItem.appendTo($listBlock).hide().show(350);
+      // Update indexes
+      updateIndexes();
+
+    }
+
+    function removeOrganization() {
+      var $parent = $(this).parents('.organizationsInnovation');
+      $parent.hide(500, function() {
+        // Remove DOM element
+        $parent.remove();
+        // Update indexes
+        updateIndexes();
+      });
+    }
+
+    function updateIndexes() {
+      $('organizationsList').find('.organizationsInnovation').each(function(i, organization) {
+        $(organization).setNameIndexes(1, i);
+
+      });
+    }
+
+  })();
+
+  // 
+  $('#isClearLeadToAddRequired').on('click', AddRequired);
 
   // Check the stage of innovation
   $('select.stageInnovationSelect').on('change', function() {

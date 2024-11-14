@@ -367,12 +367,14 @@
                 </div>
                 [#-- Element item Template --]
                 <div style="display:none">
-                  [@actorsMacro name="innovations.actors" element={} index=-1 template=true /]
+                  [@actorsMacro name="innovation.actors" element={} index=-1 template=true /]
+                  [@organizationsMacro name="innovation.organizations" element={} index=-1 template=true /]
                 </div>
 
               </div>
                 
             </div>
+
             [#-- Partner users TEMPLATE --]
             <div id="partnerUsers" style="display:none">
               [#list partners as partner]
@@ -547,18 +549,18 @@
     <div class="col-md-12">
       <div class="col-md-4">
         <label>[@s.text name="projectInnovations.anticipatedUsers.actors.women" /]:</label>
-        [@customForm.checkBoxFlat id="testing" name="innovations.actors.women" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
-        [@customForm.checkBoxFlat id="testing" name="innovations.actors.women" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="false" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="innovation_actors_women_${index}" name="${customName}.actors.women" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="innovation_actors_women_${index}" name="${customName}.actors.women" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="false" checked=false editable=true /]
       </div>
       <div class="col-md-4">
         <label>[@s.text name="projectInnovations.anticipatedUsers.actors.men" /]:</label>
-        [@customForm.checkBoxFlat id="testing" name="innovations.actors.men" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
-        [@customForm.checkBoxFlat id="testing" name="innovations.actors.men" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="false" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="innovation_actors_men_${index}" name="${customName}.actors.men" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="innovation_actors_men_${index}" name="${customName}.actors.men" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="false" checked=false editable=true /]
       </div>
       <div class="col-md-4">
         <label>[@s.text name="projectInnovations.anticipatedUsers.actors.noBinary" /]:</label>
-        [@customForm.checkBoxFlat id="testing" name="innovations.actors.noBinary" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
-        [@customForm.checkBoxFlat id="testing" name="innovations.actors.noBinary" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="false" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="innovation_actors_noBinary_${index}" name="${customName}.actors.noBinary" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="innovation_actors_noBinary_${index}" name="${customName}.actors.noBinary" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="false" checked=false editable=true /]
       </div>
     </div>
 
@@ -578,11 +580,11 @@
     [#-- Input Organization name --]
     <div class="col-md-12">
       <label>[@s.text name="projectInnovations.anticipatedUsers.organizations.name" /]:</label>
-      [@customForm.input name="${customName}.organizationName" type="text" i18nkey="projectInnovations.anticipatedUsers.organizations.organizationName" helpIcon=false required=false editable=true /]
+      [@customForm.input name="${customName}.organizations.name" type="text" i18nkey="projectInnovations.anticipatedUsers.organizations" helpIcon=false required=false editable=true showTitle=false /]
     </div>
     [#-- Checkbox - is a co-development --]
     <div class="col-md-12">
-      [@customForm.checkBoxFlat id="testing" name="innovations.organizations.coDevelopment" label="projectInnovations.anticipatedUsers.organizations.coDevelopment" value="true" checked=false editable=true /]
+      [@customForm.checkBoxFlat id="innovation_organizations_coDevelopment_${index}" name="${customName}.organizations.coDevelopment" label="projectInnovations.anticipatedUsers.organizations.coDevelopment" value="true" checked=false editable=true /]
     </div>
 
     [#-- Remove --]
