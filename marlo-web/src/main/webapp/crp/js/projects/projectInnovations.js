@@ -276,7 +276,7 @@ function dynamicMarginToSelectedRender(){
 
 function addImageToSelectSDGTargets() {
 
-  const $listRender = $('div[listname="innovation.sdgTargets"] .panel-body li.relationElement');
+  const $listRender = $('div[listname="innovation.sdgs"] .panel-body li.relationElement');
 
   $listRender.each(function(index, element) {
     const $elementVisualization = $(element);
