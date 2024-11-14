@@ -31,7 +31,7 @@
         <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px;">
           <p><span class="glyphicon glyphicon-duplicate"></span>[@s.text name="projectInnovations.copylink" /]</p> 
         </button>
-        [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+        [#local summaryPDF = "${baseUrl}/projects/${crpSession}/projectInnovationsSummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
         [@customForm.input name="innovation.projectExpectedStudyInfo.link" i18nkey="study.general.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable display=false readOnly=true/]
         <div class="message text-center" style="display:none; margin-top:6px;">[@s.text name="study.general.link.copy" /]</div>
 
@@ -499,12 +499,38 @@
 [/#macro]
 
 [#macro innovationOneCGIAR element name index=-1 template=false]
-  <div id="oneCGIAR" class="borderBox clearfix">
-    <div class="form-group row">
-      <hr class="line-hr" />
-      <div class="col-md-12">
-        <h3>[@s.text name="projectInnovations.oneCGIAR" /]</h3>
+  [#local customName = "${name}"/]
+
+  [#local hasContributionToCGIAR = (element.projectInnovationInfo.hasCgiarContribution)! ]
+
+  <div id="oneCGIAR" class="borderBox">
+    [#-- reflect a contribution --]
+    <div class="form-group">
+      <label class="label--2">[@s.text name="projectInnovations.oneCGIARAligment.contributionToCGIAR" /]:[@customForm.req required=(editable) /]</label>
+      <div class="form-group">
+      
+        <div class="col-md-1">
+          [@customForm.radioFlat id="optionOneCGIAR-Yes" name="${customName}.projectInnovationInfo.hasCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIARYes" value="true" checked=(((element.projectInnovationInfo.hasCgiarContribution??) && (hasContributionToCGIAR))!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /]
+        </div>
+        <div class="col-md-1">
+          [@customForm.radioFlat id="optionOneCGIAR-No" name="${customName}.projectInnovationInfo.hasCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIARNo" value="false" checked=(((element.projectInnovationInfo.hasCgiarContribution??) && (!hasContributionToCGIAR))!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /]
+        </div>
       </div>
+      <div class="form-group contributionToCGIARComment" [#if element.projectInnovationInfo.hasCgiarContribution??]style="display:${((hasContributionToCGIAR?c) == 'false')?string('block','none')};"[#else] style="display: none;" [/#if] >
+        [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=(editable) editable=editable /]
+      </div>
+    </div>
+
+    [#-- Innovation importance --]
+    <div class="form-group col-md-12">
+      [@customForm.textArea name="${customName}.projectInnovationInfo.innovationImportance" i18nkey="projectInnovations.oneCGIARAligment.innovationImportance" help="projectInnovations.oneCGIARAligment.innovationImportance.help" helpIcon=false className="limitWords-200" required=(editable) editable=editable isNote=true /]
+    </div>
+
+    [#-- Impact Areas --]
+    <div class="form-group col-md-12">
+      <label class="label--2">[@s.text name="projectInnovations.oneCGIARAligment.impactAreas" /]:</label>
+      <label>[@s.text name="projectInnovations.oneCGIARAligment.impactAreas.subtitle" /]</label>
+      [@customForm.elementsListComponent name="${customName}.impactAreas" elementType="impactArea" elementList=(element.impactAreas)![] helpIcon=false listName="impactAreaList" keyFieldName="id" displayFieldName="name" required=false showTitle=false /]
     </div>
   </div>
 [/#macro]
