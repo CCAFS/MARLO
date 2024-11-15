@@ -73,9 +73,10 @@ public class ProjectInnovationSDGManagerImpl implements ProjectInnovationSDGMana
     ProjectInnovationSDG projectInnovationSDG) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<ProjectInnovationSDG> projectInnovationSDGs =
-      projectInnovationSDGDAO.getProjectInnovationSDGByInnovationAndPhase(innovationID, phase.getId()).stream()
-        .filter(c -> c.getSdg().getId().equals(projectInnovationSDG.getSdg().getId())).collect(Collectors.toList());
+    List<ProjectInnovationSDG> projectInnovationSDGs = projectInnovationSDGDAO
+      .getProjectInnovationSDGByInnovationAndPhase(innovationID, phase.getId()).stream().filter(c -> c.getSdg() != null
+        && projectInnovationSDG.getSdg() != null && c.getSdg().getId().equals(projectInnovationSDG.getSdg().getId()))
+      .collect(Collectors.toList());
 
     for (ProjectInnovationSDG projectInnovationSDGDB : projectInnovationSDGs) {
       projectInnovationSDGDAO.deleteProjectInnovationSDG(projectInnovationSDGDB.getId());

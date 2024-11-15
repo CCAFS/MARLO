@@ -2690,7 +2690,9 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovationSdg.getId() == null) {
           ProjectInnovationSDG innovationSdgSave = new ProjectInnovationSDG();
           innovationSdgSave.setPhase(this.getActualPhase());
-          innovationSdgSave.setSdg(innovationSdg.getSdg());
+          if (innovationSdg.getSdg() != null) {
+            innovationSdgSave.setSdg(innovationSdg.getSdg());
+          }
           innovationSdgSave.setProjectInnovation(projectInnovation);
           innovationSdgSave.setPhase(phase);
 
