@@ -1088,50 +1088,65 @@ var dynamicSelectorSDGImageModule = (function (){
 
     const groupedInformation = groupListRawInformation([primaryRawInformation, relatedRawInformation]);
 
-    const orderGroupedInformation = groupedInformation.sort((a,b) => { a.isPrimaryLever ? -1 : 1 });
+    const orderGroupedInformation = groupedInformation.sort((a,b) => sortByLeverAndPrimary(a,b,true));
 
-    orderGroupedInformation.forEach(element => { 
+    const ajaxPromises = orderGroupedInformation.map(element => {
+      return new Promise((resolve, reject) => {
       const $cloneSelectedLeverContainer = $templateContainerReference.clone(true).removeAttr('style').removeClass('_TEMPLATE_selectedLeverContainer');
       $cloneSelectedLeverContainer.addClass('selectedLeverContainer');
+      $cloneSelectedLeverContainer.attr('data-lever', element.leverValue);
       element.isPrimaryLever ? $cloneSelectedLeverContainer.addClass('selectedLeverContainer--primary') : $cloneSelectedLeverContainer.addClass('selectedLeverContainer--related');
-
+  
       const $containerImage = $cloneSelectedLeverContainer.find('.selectedLeverContainer__image');
       const $image = $containerImage.find('img');
-      
-      //Set image of the SDG Contribution
+  
       $.ajax({
         url: baseURL + '/getSdgImage.do',
         async: true,
         data: {
-          requestID: Number.parseInt(element.value)
+        requestID: Number.parseInt(element.value)
         },
         success: function(data) {
-          if(data.image.adsoluteURL == null){
-            console.error("Image not found");
-          } else {
-            $titleSelectedLeverContainer.show();
-            $image.attr("src",data.image.adsoluteURL);
-
-            //Set information of the SDG Contribution
-            const $containerSDGInformation = $cloneSelectedLeverContainer.find('.selectedLeverContainer__content');
-            const $leverName = $containerSDGInformation.find('.selectedLeverContainer__content__lever');
-            const $leverContributionSDG = $containerSDGInformation.find('.selectedLeverContainer__content__contributionSDG');
-
-            const leverName = element.isPrimaryLever ?  `${element.leverText} - Primary Lever` : `${element.leverText} - Related Lever`;
-            $leverName.text(leverName);
-            $leverContributionSDG.html(element.text);
-
-            //add to list $listSelectedLeverContainer
-            $listSelectedLeverContainer.append($cloneSelectedLeverContainer);
-          }
+        if (data.image.adsoluteURL == null) {
+          console.error("Image not found");
+          reject("Image not found");
+        } else {
+          $titleSelectedLeverContainer.show();
+          $image.attr("src", data.image.adsoluteURL);
+  
+          const $containerSDGInformation = $cloneSelectedLeverContainer.find('.selectedLeverContainer__content');
+          const $leverName = $containerSDGInformation.find('.selectedLeverContainer__content__lever');
+          const $leverContributionSDG = $containerSDGInformation.find('.selectedLeverContainer__content__contributionSDG');
+  
+          const leverName = element.isPrimaryLever ? `${element.leverText} - Primary Lever` : `${element.leverText} - Related Lever`;
+          $leverName.text(leverName);
+          $leverContributionSDG.html(element.text);
+  
+          resolve($cloneSelectedLeverContainer);
+        }
         },
         error: function(xhr, status, error) {
-          console.error(error);
-          reject(error);
+        console.error(error);
+        reject(error);
         }
+      });
       });
     });
 
+    Promise.all(ajaxPromises).then((values) => {
+      $listSelectedLeverContainer.find('.selectedLeverContainer').remove();
+      values.forEach(element => {
+        $listSelectedLeverContainer.append(element);
+      });
+    }).then(() => {
+      $listSelectedLeverContainer.find('.selectedLeverContainer').sort(function(a, b) {
+      return sortByLeverAndPrimary(a, b, false);
+      }).appendTo($listSelectedLeverContainer);
+    }).catch(error => {
+      console.error("An error occurred in one of the AJAX requests:", error);
+    });;
+
+      
   }
 
   function convertToRawInformation($listSDGInformation, isPrimaryLever) {
@@ -1147,7 +1162,8 @@ var dynamicSelectorSDGImageModule = (function (){
         value: $value,
         text: $text,
         isPrimaryLever: isPrimaryLever,
-        leverText: $leverText
+        leverText: $leverText,
+        leverValue: extractLeverNumber($leverText)
       });
       
     });
@@ -1204,6 +1220,23 @@ var dynamicSelectorSDGImageModule = (function (){
     const textSplit = sdgText.split(" ");
     const indexOfText = textSplit.findIndex(item => item.includes("."));
     return textSplit[indexOfText].split(".")[0].trim();
+  }
+
+  function sortByLeverAndPrimary(a, b, isObject) {
+    const getPrimaryValue = (item) => (isObject ? item.isPrimaryLever : $(item).hasClass('selectedLeverContainer--primary')) ? 1 : 0;
+    const getLeverValue = (item) => parseInt(isObject ? item.leverValue : $(item).data('lever'));
+
+    const primaryA = getPrimaryValue(a);
+    const primaryB = getPrimaryValue(b);
+
+    if (primaryA !== primaryB) {
+      return primaryB - primaryA;
+    }
+
+    const leverA = getLeverValue(a);
+    const leverB = getLeverValue(b);
+
+    return leverA - leverB;
   }
 
   return {
