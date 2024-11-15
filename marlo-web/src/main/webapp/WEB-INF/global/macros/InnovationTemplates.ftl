@@ -541,10 +541,41 @@
 
 [#macro innovationReadiness element name index=-1 template=false]
   <div id="readiness" class="borderBox clearfix">
-    <div class="form-group row">
-      <hr class="line-hr" />
-      <div class="col-md-12">
-        <h3>[@s.text name="projectInnovations.readiness" /]</h3>
+    <div class="form-group">
+      [#-- Innovation Scaling Readiness --]
+      <div class="form-group">
+      </div>
+
+      [#-- Innovation Readiness reason --]
+      <div class="form-group">
+        [@customForm.textArea name="${name}.projectInnovationInfo.readinessReason" i18nkey="projectInnovations.readiness.reason" help="projectInnovations.readiness.reason.help" helpIcon=false className="limitWords-80" required=true isNote=true showTitle=true isMainTitle=true editable=editable /]
+      </div>
+      [#-- Evidence and Reference --]
+      <div class="form-group">
+        <label class="label--2">[@s.text name="projectInnovations.readiness.evidence" /]:</label>
+        <p class="note--2">[@s.text name="projectInnovations.readiness.evidence.help" /]</p>
+        <div class="col-md-12">
+          <div class="referenceBlock">
+            <div class="referenceList">
+              <div class="row">
+                <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Evidence/Reference[@customForm.req required=true  /]
+                </div>
+                <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=true  /]
+                </div>
+              </div>
+            </div>
+            [#if editable]
+            <div class="addButtonReference bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>
+            <div class="clearfix"></div>
+            [/#if]
+          </div>
+          [#-- Element item Template --]
+          <div style="display:none">
+            [@customForm.references name="innovation.references" element={} index=-1 template=true /]
+          </div>
+        </div>
+          
+        
       </div>
     </div>
   </div>
