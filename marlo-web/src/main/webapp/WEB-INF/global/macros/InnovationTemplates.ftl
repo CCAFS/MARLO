@@ -544,6 +544,7 @@
     <div class="form-group">
       [#-- Innovation Scaling Readiness --]
       <div class="form-group">
+        [@scalingMacro name="innovation.projectInnovationInfo.readinessScale" element=element.allianceLevers editable=true label="projectInnovations.readiness.scale" helpLabel="projectInnovations.readiness.scale.help" listName=allianceLeverList class="innovationScaling" /]
       </div>
 
       [#-- Innovation Readiness reason --]
@@ -656,27 +657,50 @@
 
 [#macro scalingMacro name element editable label="" helpLabel="" listName=[] class=""]
   [#local customName = "${name}"]
-  <div id="scalingInnovation" class="scalingInnovation form-group ${class}">
-    <label class="label--2" style="width:100%">[@s.text name="projectInnovations.readiness.readinessScale" /]:</label>
+  <div id="scalingInnovation" class="scaling form-group ${class}">
+    <label class="label--2" style="width:100%">[@s.text name=label /]:</label>
     <label class="note--2">
-      <p>[@s.text name="projectInnovations.readiness.readinessScale.help" /]</p>
+      <p>[@s.text name=helpLabel /]</p>
     </label>
-    <div class="scalingInnovation__container">
+    [#if listName?size > 0]
+        [#local listLength = listName?size - 1 /]
+    [#else]
+        [#local listLength = 0 /]
+    [/#if]
+    <div class="scaling__container">
+      <div class="scaling__line col-md-${listLength}"></div>
       [#if listName?has_content]
         [#list listName as item]
-          <div class="col-md-1 scalingInnovation__item">
-            [@customForm.radioFlat id="${customName}_${item_index}" name="${customName}" label="${item.id}" value="${item.id}" checked=(element.id == item.id) editable=editable cssClass="scalingInnovation__item__value" /]
+          <div class="col-md-1 scaling__item">
+            [@customForm.radioFlat id="${customName}_${item_index}" name="${customName}" label="${item.id}" value="${item.id}" checked=(element?seq_contains(item.id)) editable=editable cssClass="scalingInnovation__item__value" /]
           </div>
         [/#list]
       [/#if]
     </div>
-    <div class="scalingInnovation__message grayBox">
+    <div class="scaling__message grayBox">
       [#if element?has_content]
         <h5>[@s.text name=element.name /]</h5>
         <p>[@s.text name=element.description /]</p>
       [#else]
-        <p>[@s.text name="projectInnovations.readiness.readinessScale.message" /]</p>
+        <h5>[@s.text name="projectInnovations.readiness.scale.message1" /]</h5>
+        <p>[@s.text name="projectInnovations.readiness.scale.message2" /]</p>
       [/#if]
     </div>
+    <div class="scaling_hiddenInfo" style="display: none">
+      [#if listName?has_content]
+        [#list listName as item]
+          <div class="scaling_hiddenInfo__item" class="scaling_hiddenInfo__item_${item_index}" id="${item.id}">
+            <h5>[@s.text name=item.name /]</h5>
+            [#if item.description?has_content]
+              <p>[@s.text name=item.description /]</p>
+            [#else]
+              <p>No descripition available</p>
+            [/#if]
+          </div>
+        [/#list]
+      [/#if]
+        
+    </div>
+    <div class="clearfix"></div>
   </div>
 [/#macro]

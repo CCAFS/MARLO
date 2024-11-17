@@ -282,3 +282,51 @@ div.nationalBlock div.selectList span.selection span.select2-selection ul{
 .inputsFlat:first-of-type{
   margin-top: 12px;
 }
+
+.scaling__container {
+  display: flex;
+  height: 100%;
+  min-height: -webkit-fill-available;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+.scaling__line {
+  position: absolute;
+  height: 1rem;
+  background-color: #f5f5f5;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.scaling__item {
+  position: relative;
+}
+
+.scaling__item input[type="radio"].radio-input.scalingInnovation__item__value +.radio-label{
+  width: 4rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  border-radius: 100%;
+  transition: all 400ms ease;
+}
+
+.scaling__item input[type="radio"].radio-input.scalingInnovation__item__value:checked +.radio-label{
+  background-color: #7AB800;
+  color: #FFFFFF;
+  transition: all 400ms ease;
+}
+
+.scaling__item input[type="radio"].radio-input.scalingInnovation__item__value +.radio-label:before{
+  display: none;
+}
