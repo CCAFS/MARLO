@@ -653,3 +653,30 @@
     <div class="clearfix"></div>
   </div>
 [/#macro]
+
+[#macro scalingMacro name element editable label="" helpLabel="" listName=[] class=""]
+  [#local customName = "${name}"]
+  <div id="scalingInnovation" class="scalingInnovation form-group ${class}">
+    <label class="label--2" style="width:100%">[@s.text name="projectInnovations.readiness.readinessScale" /]:</label>
+    <label class="note--2">
+      <p>[@s.text name="projectInnovations.readiness.readinessScale.help" /]</p>
+    </label>
+    <div class="scalingInnovation__container">
+      [#if listName?has_content]
+        [#list listName as item]
+          <div class="col-md-1 scalingInnovation__item">
+            [@customForm.radioFlat id="${customName}_${item_index}" name="${customName}" label="${item.id}" value="${item.id}" checked=(element.id == item.id) editable=editable cssClass="scalingInnovation__item__value" /]
+          </div>
+        [/#list]
+      [/#if]
+    </div>
+    <div class="scalingInnovation__message grayBox">
+      [#if element?has_content]
+        <h5>[@s.text name=element.name /]</h5>
+        <p>[@s.text name=element.description /]</p>
+      [#else]
+        <p>[@s.text name="projectInnovations.readiness.readinessScale.message" /]</p>
+      [/#if]
+    </div>
+  </div>
+[/#macro]
