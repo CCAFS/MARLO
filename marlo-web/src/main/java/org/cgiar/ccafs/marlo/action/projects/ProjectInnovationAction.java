@@ -67,6 +67,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ScalingReadinessManager;
 import org.cgiar.ccafs.marlo.data.manager.SdgManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
@@ -124,6 +125,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
+import org.cgiar.ccafs.marlo.data.model.ScalingReadiness;
 import org.cgiar.ccafs.marlo.data.model.Sdg;
 import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
@@ -220,6 +222,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationAllianceLeversManager projectInnovationAllianceLeversManager;
   private ProjectInnovationImpactAreaManager projectInnovationImpactAreaManager;
   private IntellectualPropertyRightsInstitutionManager intellectualPropertyRightsInstitutionManager;
+  private ScalingReadinessManager scalingReadinessManager;
 
   // Variables
   private long projectID;
@@ -273,6 +276,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<Sdg> sdgList;
   private List<ImpactArea> impactAreaList;
   private List<IntellectualPropertyRightsInstitution> intellectualInstitutionsList;
+  private List<ScalingReadiness> scalingReadinessList;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -312,7 +316,8 @@ public class ProjectInnovationAction extends BaseAction {
     SdgManager sdgManager, ProjectInnovationAllianceLeversManager projectInnovationAllianceLeversManager,
     ProjectInnovationSDGManager projectInnovationSDGManager, ImpactAreaManager impactAreaManager,
     ProjectInnovationImpactAreaManager projectInnovationImpactAreaManager,
-    IntellectualPropertyRightsInstitutionManager intellectualPropertyRightsInstitutionManager) {
+    IntellectualPropertyRightsInstitutionManager intellectualPropertyRightsInstitutionManager,
+    ScalingReadinessManager scalingReadinessManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -370,6 +375,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.impactAreaManager = impactAreaManager;
     this.projectInnovationImpactAreaManager = projectInnovationImpactAreaManager;
     this.intellectualPropertyRightsInstitutionManager = intellectualPropertyRightsInstitutionManager;
+    this.scalingReadinessManager = scalingReadinessManager;
   }
 
   /**
@@ -611,6 +617,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<LocElement> getRegions() {
     return regions;
+  }
+
+  public List<ScalingReadiness> getScalingReadinessList() {
+    return scalingReadinessList;
   }
 
   public List<Sdg> getSdgList() {
@@ -1204,6 +1214,7 @@ public class ProjectInnovationAction extends BaseAction {
       this.sdgList = this.sdgManager.findAll();
       this.impactAreaList = this.impactAreaManager.findAll();
       this.intellectualInstitutionsList = this.intellectualPropertyRightsInstitutionManager.findAll();
+      this.scalingReadinessList = this.scalingReadinessManager.findAll();
 
       // Order SDG list by ID
       if (this.sdgList != null) {
@@ -2964,6 +2975,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setRegions(List<LocElement> regions) {
     this.regions = regions;
+  }
+
+  public void setScalingReadinessList(List<ScalingReadiness> scalingReadinessList) {
+    this.scalingReadinessList = scalingReadinessList;
   }
 
   public void setSdgList(List<Sdg> sdgList) {
