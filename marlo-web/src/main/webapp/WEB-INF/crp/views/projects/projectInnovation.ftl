@@ -121,7 +121,7 @@
             </li>
 
             <li role="presentation" class="[#if indexTab==5]active[/#if] col-md">
-              <a href="#innovationFunding" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.innovationFunding" /]</a>
+              <a href="#innovationSharing" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.innovationSharing" /]</a>
             </li>
           </ul>
 
@@ -143,9 +143,9 @@
               [#-- Innovation Readiness --]
               [@innovations.innovationReadiness element=(innovation)!{} name="innovation" index=0 /]
             </div>
-            <div role="tabpanel" class="tab-pane fade [#if indexTab==5]in active[/#if]" id="innovationFunding">
+            <div role="tabpanel" class="tab-pane fade [#if indexTab==5]in active[/#if]" id="innovationSharing">
               [#-- Innovation IP Rights and Funding --]
-              [@innovations.innovationFunding element=(innovation)!{} name="innovation" index=0 /]
+              [@innovations.innovationSharing element=(innovation)!{} name="innovation" index=0 /]
             </div>
           </div>
 
