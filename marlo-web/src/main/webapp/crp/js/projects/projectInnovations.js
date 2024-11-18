@@ -35,6 +35,9 @@ $(document).ready(function() {
   $('select.elementType-impactArea').on("change", addImageToSelectImpactAreas);
   addImageToSelectImpactAreas();
 
+  // Change display message in Scaling
+  $('input[name="innovation.projectInnovationInfo.readinessScale"]').on('change', changeDisplayMessageInScaling);
+  changeDisplayMessageInScaling();
 
 
 
@@ -291,7 +294,6 @@ function addImageToSelectSDGTargets() {
           requestID: Number.parseInt(Number.parseInt($elementId))
         },
         success: function(data) {
-          console.log(data);
   
           if(data) {
             //render image in a before element in the elementVisualization
@@ -326,7 +328,6 @@ function addImageToSelectImpactAreas() {
             requestID: Number.parseInt(Number.parseInt($elementId))
           },
           success: function(data) {
-            console.log(data);
     
             if(data) {
               //render image in a before element in the elementVisualization
@@ -341,6 +342,25 @@ function addImageToSelectImpactAreas() {
       }
   
     });
+}
+
+function changeDisplayMessageInScaling() {
+  const $readinessScale = $('input[name="innovation.projectInnovationInfo.readinessScale"]:checked').val();
+  console.log('readiness value',$readinessScale);
+
+  const $scalingMessageContainer = $('.scaling__message');
+  const $listScalingHiddenInfo = $('.scaling__hiddenInfo .scaling__hiddenInfo__item');
+
+  $listScalingHiddenInfo.each(function(index, element) {
+    const $element = $(element);
+    const $elementValue = $element.attr('id');
+
+    if($elementValue == $readinessScale) {
+      console.log('elementValue',$elementValue);
+      $scalingMessageContainer.find('h5').html($element.find('h5').html());
+      $scalingMessageContainer.find('p').html($element.find('p').html());
+    }
+  });
 }
 
 var deliverablePartnersModule = (function () {

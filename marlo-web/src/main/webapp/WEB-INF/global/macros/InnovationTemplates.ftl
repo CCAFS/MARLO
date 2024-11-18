@@ -686,10 +686,10 @@
         <p>[@s.text name="projectInnovations.readiness.scale.message2" /]</p>
       [/#if]
     </div>
-    <div class="scaling_hiddenInfo" style="display: none">
+    <div class="scaling__hiddenInfo" style="display: none">
       [#if listName?has_content]
         [#list listName as item]
-          <div class="scaling_hiddenInfo__item" class="scaling_hiddenInfo__item_${item_index}" id="${item.id}">
+          <div class="scaling__hiddenInfo__item" class="scaling__hiddenInfo__item_${item_index}" id="${item.id}">
             <h5>[@s.text name=item.name /]</h5>
             [#if item.description?has_content]
               <p>[@s.text name=item.description /]</p>
