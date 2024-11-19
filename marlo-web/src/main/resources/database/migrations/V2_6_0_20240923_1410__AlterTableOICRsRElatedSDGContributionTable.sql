@@ -1,0 +1,2 @@
+ALTER TABLE project_expected_study_sdg_alliance_levers MODIFY COLUMN sdg_contribution_id bigint(20) NULL;
+ALTER TABLE project_expected_study_sdg_alliance_levers MODIFY COLUMN alliance_lever_id bigint(20) NULL;

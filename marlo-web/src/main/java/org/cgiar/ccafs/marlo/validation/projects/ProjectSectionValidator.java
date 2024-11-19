@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AllianceLeverOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
@@ -40,8 +41,12 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.SDGContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.SafeguardsManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
+import org.cgiar.ccafs.marlo.data.model.AllianceLever;
+import org.cgiar.ccafs.marlo.data.model.AllianceLeverOutcome;
+import org.cgiar.ccafs.marlo.data.model.AllianceLeversSdgContribution;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.CountryFundingSources;
@@ -76,8 +81,12 @@ import org.cgiar.ccafs.marlo.data.model.ProjectCenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyAllianceLeversOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnership;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnershipsPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgAllianceLever;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
@@ -104,6 +113,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.SDGContribution;
 import org.cgiar.ccafs.marlo.data.model.Safeguards;
 import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -120,6 +130,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -215,6 +226,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   private final ProjectImpactsManager projectImpactsManager;
 
   private final SafeguardsManager safeguardsManager;
+  private final SDGContributionManager sDGContributionManager;
+  private final AllianceLeverOutcomeManager allianceLeverOutcomeManager;
 
   private final ProjectImpactsValidator projectImpactsValidator;
   private final Logger logger = LoggerFactory.getLogger(ProjectSectionValidator.class);
@@ -248,7 +261,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager,
     ProjectInnovationRegionManager projectInnovationRegionManager, ProjectImpactsManager projectImpactsManager,
     ProjectImpactsValidator projectImpactsValidator, SafeguardValidator safeguardValidator,
-    FeedbackStatusValidator feedbackStatusValidator, ExpectedStudyProjectManager expectedStudyProjectManager) {
+    FeedbackStatusValidator feedbackStatusValidator, ExpectedStudyProjectManager expectedStudyProjectManager,
+    SDGContributionManager sDGContributionManager, AllianceLeverOutcomeManager allianceLeverOutcomeManager) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -296,6 +310,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.safeguardsManager = safeguardsManager;
     this.feedbackStatusValidator = feedbackStatusValidator;
     this.expectedStudyProjectManager = expectedStudyProjectManager;
+    this.sDGContributionManager = sDGContributionManager;
+    this.allianceLeverOutcomeManager = allianceLeverOutcomeManager;
   }
 
 
@@ -1463,9 +1479,24 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       }
 
       // Expected Study Center List
-      if (expectedStudy.getProjectExpectedStudyCenters() != null) {
-        expectedStudy.setCenters(new ArrayList<>(expectedStudy.getProjectExpectedStudyCenters().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      if (expectedStudy.getProjectExpectedStudyPartnerships() != null) {
+        final List<ProjectExpectedStudyPartnership> deList = expectedStudy.getProjectExpectedStudyPartnerships()
+          .stream()
+          .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(phase.getId()) && dp
+            .getProjectExpectedStudyPartnerType().getId().equals(APConstants.EXPECTED_STUDIES_PARTNERSHIP_TYPE_CENTER))
+          .collect(Collectors.toList());
+        if ((deList != null) && !deList.isEmpty()) {
+          try {
+            Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+          } catch (final Exception e) {
+            this.logger.error("unable to sort dlist", e);
+          }
+          expectedStudy.setCenters(new ArrayList<>());
+          for (final ProjectExpectedStudyPartnership projectExpectedStudyPartnership : deList) {
+            expectedStudy.getCenters().add(projectExpectedStudyPartnership);
+          }
+
+        }
       }
 
       // Expected Study Flagship List
@@ -1509,10 +1540,27 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       }
 
       // Expected Study Institutions List
-      if (expectedStudy.getProjectExpectedStudyInstitutions() != null) {
-        expectedStudy.setInstitutions(new ArrayList<>(expectedStudy.getProjectExpectedStudyInstitutions().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      if (expectedStudy.getProjectExpectedStudyPartnerships() != null) {
+
+        final List<ProjectExpectedStudyPartnership> deList = expectedStudy
+          .getProjectExpectedStudyPartnerships().stream().filter(dp -> dp.isActive()
+            && dp.getPhase().getId().equals(phase.getId()) && dp.getProjectExpectedStudyPartnerType().getId().equals(2))
+          .collect(Collectors.toList());
+
+        if ((deList != null) && !deList.isEmpty()) {
+          try {
+            Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+          } catch (final Exception e) {
+            this.logger.error("unable to sort dlist", e);
+          }
+          expectedStudy.setInstitutions(new ArrayList<>());
+          for (final ProjectExpectedStudyPartnership projectExpectedStudyPartnership : deList) {
+            expectedStudy.getInstitutions().add(projectExpectedStudyPartnership);
+          }
+
+        }
       }
+
 
       // Expected Study Srf Target List
       if (expectedStudy.getProjectExpectedStudySrfTargets() != null) {
@@ -1562,6 +1610,138 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           expectedStudy.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
         }
       }
+
+      /// 2024/09/30 add new items to oicrs (Project Expected Studies)
+
+      // Expected Study Publications List
+      if (expectedStudy.getProjectExpectedStudyPublications() != null) {
+        expectedStudy.setPublications(new ArrayList<>(expectedStudy.getProjectExpectedStudyPublications().stream()
+          .filter(o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+          .collect(Collectors.toList())));
+      }
+
+      // Expected Study SdgAllianceLever List
+      if (expectedStudy.getProjectExpectedStudySdgAllianceLevers() != null) {
+        expectedStudy
+          .setSdgAllianceLevers((new ArrayList<>(expectedStudy.getProjectExpectedStudySdgAllianceLevers().stream()
+            .filter(
+              o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+            .collect(Collectors.toList()))));
+      }
+      try {
+        // Expected Study alliance lever object
+        if (expectedStudy.getProjectExpectedStudySdgAllianceLevers() != null) {
+          ProjectExpectedStudySdgAllianceLever expectedAllianceLeverTemp = expectedStudy
+            .getProjectExpectedStudySdgAllianceLevers().stream().filter(o -> o != null && o.getId() != null
+              && o.getIsPrimary() && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+            .findFirst().orElse(null);
+          if (expectedAllianceLeverTemp != null && expectedAllianceLeverTemp.getAllianceLever() != null) {
+            expectedStudy.setAllianceLever(expectedAllianceLeverTemp.getAllianceLever());
+          }
+        }
+      } catch (Exception e) {
+        Log.error("error trying to set expected study alliance lever " + e);
+      }
+
+      // Expected Study allianceLeversOutcomes List
+      if (expectedStudy.getProjectExpectedStudyAllianceLeversOutcomes() != null) {
+        expectedStudy.setAllianceLeversOutcomes(
+          (new ArrayList<>(expectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().stream()
+            .filter(
+              o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+            .collect(Collectors.toList()))));
+      }
+
+      // Expected Study projectExpectedStudyPartnerships List
+      if (expectedStudy.getProjectExpectedStudyPartnerships() != null) {
+
+        final List<ProjectExpectedStudyPartnership> deList = expectedStudy.getProjectExpectedStudyPartnerships()
+          .stream()
+          .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(phase.getId()) && dp
+            .getProjectExpectedStudyPartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+          .collect(Collectors.toList());
+
+        if ((deList != null) && !deList.isEmpty()) {
+          try {
+            Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+          } catch (final Exception e) {
+            this.logger.error("unable to sort dlist", e);
+          }
+          expectedStudy.setPartnerships(new ArrayList<>());
+          for (final ProjectExpectedStudyPartnership projectExpectedStudyPartnership : deList) {
+
+            if (projectExpectedStudyPartnership.getProjectExpectedStudyPartnershipsPersons() != null) {
+              final List<ProjectExpectedStudyPartnershipsPerson> partnershipPersons =
+                new ArrayList<>(projectExpectedStudyPartnership.getProjectExpectedStudyPartnershipsPersons().stream()
+                  .filter(ProjectExpectedStudyPartnershipsPerson::isActive).collect(Collectors.toList()));
+              projectExpectedStudyPartnership.setPartnershipPersons(partnershipPersons);
+            }
+            expectedStudy.getPartnerships().add(projectExpectedStudyPartnership);
+          }
+
+        }
+      }
+
+
+      // Expected Study impact areas
+      if (expectedStudy.getProjectExpectedStudyImpactAreas() != null) {
+        expectedStudy.setImpactAreas(new ArrayList<>(expectedStudy.getProjectExpectedStudyImpactAreas().stream()
+          .filter(o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+          .collect(Collectors.toList())));
+      }
+
+      // Expected Study global target
+      if (expectedStudy.getProjectExpectedStudyGlobalTargets() != null) {
+        expectedStudy.setGlobalTargets(new ArrayList<>(expectedStudy.getProjectExpectedStudyGlobalTargets().stream()
+          .filter(o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+          .collect(Collectors.toList())));
+
+      }
+
+      if (expectedStudy.getAllianceLever() != null) {
+        if (expectedStudy.getAllianceLever().getLeverSdgContributions() != null) {
+          for (final AllianceLeversSdgContribution leverSdgContribution : expectedStudy.getAllianceLever()
+            .getLeverSdgContributions()) {
+
+            if ((leverSdgContribution != null) && (leverSdgContribution.getsDGContribution() != null)) {
+              expectedStudy.getAllianceLever().getSdgContributions().add(leverSdgContribution.getsDGContribution());
+            }
+          }
+        }
+
+        if (expectedStudy.getAllianceLeversOutcomes() != null) {
+          for (final ProjectExpectedStudyAllianceLeversOutcome allianceLeverOutcome : expectedStudy
+            .getAllianceLeversOutcomes()) {
+            if ((allianceLeverOutcome != null) && (allianceLeverOutcome.getAllianceLeverOutcome() != null)) {
+              expectedStudy.getAllianceLever().setLeverOutcomes(new ArrayList<>());
+              expectedStudy.getAllianceLever().getLeverOutcomes().add(allianceLeverOutcome.getAllianceLeverOutcome());
+            }
+          }
+        }
+
+        if (expectedStudy.getAllianceLever() != null) {
+          List<SDGContribution> sDGContributionList = new ArrayList<>();
+          sDGContributionList = this.sDGContributionManager.findSDGcontributionByExpectedPhaseAndLever(phase.getId(),
+            expectedStudy.getId(), expectedStudy.getAllianceLever().getId(), 1);
+          expectedStudy.getAllianceLever().setSdgContributions(sDGContributionList);
+
+
+          List<AllianceLeverOutcome> allianceLeverOutcomeList = new ArrayList<>();
+          allianceLeverOutcomeList = this.allianceLeverOutcomeManager.findAllianceLeverOutcomeByExpectedPhaseAndLever(
+            phase.getId(), expectedStudy.getId(), expectedStudy.getAllianceLever().getId());
+          expectedStudy.getAllianceLever().setLeverOutcomes(allianceLeverOutcomeList);
+        }
+
+        if ((expectedStudy.getAllianceLevers() != null) && !expectedStudy.getAllianceLevers().isEmpty()) {
+          for (AllianceLever allianLever : expectedStudy.getAllianceLevers()) {
+            List<SDGContribution> sDGContributionList = new ArrayList<>();
+            sDGContributionList = this.sDGContributionManager.findSDGcontributionByExpectedPhaseAndLever(phase.getId(),
+              expectedStudy.getId(), allianLever.getId(), 0);
+            allianLever.setSdgContributions(sDGContributionList);
+          }
+        }
+      }
+
 
       projectExpectedStudiesValidator.validate(action, project, expectedStudy, false);
 

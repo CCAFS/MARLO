@@ -1,0 +1,1 @@
+ALTER TABLE project_expected_study_info ADD comments_relevance text NULL;

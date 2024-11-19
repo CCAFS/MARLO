@@ -48,6 +48,14 @@ label {
 	cursor: pointer;
 }
 
+label.label--2{
+	font-weight: 700;
+	font-size: 15px;
+	color: #0A2842;
+	margin-top: 0.5rem;
+	margin-bottom: 0.125rem;
+}
+
 .input-sm {
 	padding: 4px 10px;
 	height: 27px;
@@ -117,6 +125,10 @@ a#btn-revokeChoice {
 	font-weight: normal;
 }
 
+.select--flex{
+	display: flex;
+}
+
 .select.button,
 .textArea.button {
 	float: left;
@@ -147,20 +159,23 @@ a#btn-revokeChoice {
 }
 
 .bigAddButton {
-	border-style: dashed;
-	border-width: 2px;
-	border-color: #ccc;
-	color: #b1afaf;
-	font-size: 1.5em;
+	background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='10' ry='10' stroke='%230B7BA6' stroke-width='2' stroke-dasharray='15px' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+	color: #0B7BA6;
+	font-size: 1.5rem;
 	padding: 10px 0;
 	margin: 0 7px;
 	cursor: pointer;
-	border-radius: 4px;
 	display: block;
+	gap: 0.625rem;
+	margin-top: 14px;
+}
+
+.bigAddButton span {
+	margin-right: 12px;
 }
 
 .bigAddButton:hover {
-	border-color: #9c9c9c;
+	background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='10' ry='10' stroke='%239C9C9CFF' stroke-width='2' stroke-dasharray='15px' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
 	color: #757575;
 }
 
@@ -224,6 +239,18 @@ input.disabled {
 	text-align: center;
 }
 
+.modal-header {
+	padding: 10px 15px;
+}
+
+.modal-body .panel.tertiary .panel-head{
+	border-bottom: none;
+}
+
+.modal-footer {
+	border-top: none;
+}
+
 @media screen and (min-width: 768px) {
 	.modal:before {
 		display: inline-block;
@@ -277,6 +304,7 @@ div.disabled {
 	font-weight: bold;
 	font-size: 1.2em;
 	padding: 0.15em;
+	line-height: 0;
 }
 
 .fieldset {
@@ -297,19 +325,19 @@ p.emptyText {
 }
 
 ul.fieldError {
-	margin: 0;
-	padding: 0;
+	margin: 0 !important;
+	padding: 0 !important;
 }
 
 ul.fieldError li,
 a.fieldError {
-	color: red;
-	list-style-type: none;
-	text-align: left;
+	color: red !important;
+	list-style-type: none !important;
+	text-align: left !important;
 }
 
 span.badge.fieldError {
-	background-color: red;
+	background-color: red !important;
 }
 
 .radios {
@@ -335,7 +363,7 @@ input.fieldError,
 textarea.fieldError:focus,
 input.fieldError:focus {
 	border-color: #F44 !important;
-	background-color: #FFFAFA;
+	background-color: #FFFAFA !important;
 	color: #EE1D1D !important;
 }
 
@@ -426,8 +454,8 @@ label.readOnly {
 p.fieldError,
 span.remainingAmount.fieldError {
 	color: #F52626 !important;
-	font-weight: bold;
-	margin-right: 4px;
+	font-weight: bold !important;
+	margin-right: 4px !important;
 }
 
 p.fieldChecked {
@@ -448,6 +476,10 @@ span.fieldError {
 	/* border-radius: 2px; */
 	/* font-size: 0.85em; */
 	/* float: left; */
+}
+
+span.fieldError span.selection span.select2-selection {
+	border: 1px solid #F44;
 }
 
 p.warning-info {
@@ -552,7 +584,7 @@ textarea#justification {
 	line-height: 1.5em;
 	word-wrap: break-word;
 	color: #828282;
-	margin: 0;
+	margin: 0.25rem 0;
 }
 
 .dont-break-out {
@@ -764,6 +796,10 @@ select:-webkit-autofill {
 
 input.target {
 	width: 30% !important;
+}
+
+input.targetValueNumber{
+	text-align: right;
 }
 
 .halfPartBlock .checkbox input {
@@ -1340,6 +1376,19 @@ select#partnerSave_activityPartner_partner_type_id {
 .panel span.name {
 	cursor: pointer;
 	/* padding: 5px 3px; */
+}
+
+.panel.panel--flex{
+	display: flex;
+	
+}
+
+.panel.panel--flex .panel-head{
+	border-bottom: none;
+}
+
+.panel.panel--flex .panel-body{
+	border-left: none;
 }
 
 .remove {
@@ -3378,11 +3427,25 @@ button.ipGraph-btn {
 }
 
 .note {
-	background-color: #FFF7CF;
-	padding: 6px;
-	text-align: center;
-	/* border-bottom: 2px solid #fff; */
-	font-style: italic;
+	background-color: #D9EDF7;
+	padding: 8px;
+	display: flex;
+	align-items: center;
+	border-radius: 0.3125rem;
+	font-size: 13px;
+	font-weight: 400;
+	line-height: 20px;
+	text-align: left;
+	border-left: 5px solid #40AAD4;
+	margin-bottom: 6px;
+	max-width: 100%;
+	width: 100%;
+}
+
+.note span {
+	color: #40AAD4;
+	font-size: 20px;
+	margin-right: 1rem;
 }
 
 .note--2{
@@ -3392,12 +3455,37 @@ button.ipGraph-btn {
 	border-left: 5px solid #8DC955;
 	background: rgba(232, 247, 227, 0.40);
 	padding: 0.3125rem 0.625rem 0.3125rem 0.9375rem;
-	justify-content: center;
+	justify-content: left;
 	align-items: center;
 	gap: 0.625rem;
 	font-style: normal;
 	margin-bottom: 18px;
 	margin-top: 12px;
+	flex-wrap: wrap;
+}
+
+.note--2__margin-none{
+	margin: 0;
+}
+
+.note--2 p{
+	color: #5F5E5E;
+	font-size: 11px;
+	font-weight: 300;
+	margin: 5px 0;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.note--2 ul{
+	width: 100%;
+	text-align: left;
+}
+
+.note--2 ul li{
+    color: #5F5E5E;
+    font-weight: 300;
+	font-size: 11px;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .topNote {
@@ -5692,7 +5780,7 @@ table.evaluationRank thead th {
 }
 
 .radio-label.fieldError {
-	color: red;
+	color: red !important;
 }
 
 .radio-label .onoffswitch-radio:checked+label {
@@ -6925,10 +7013,13 @@ p.checkDisable:before {
 	border-color: #3197EE;
 }
 
+.inputsFlat input[type="checkbox"]:disabled+.checkbox-label{
+	color: #C6C6C6 !important;
+}
+
 .inputsFlat input[type="checkbox"]:disabled+.checkbox-label:before {
-	box-shadow: inset 0 0 0 4px #f4f4f4;
-	border-color: #b4b4b4;
-	background: #b4b4b4;
+	border-color: #C6C6C6 !important;
+	background: #C6C6C6 !important;
 }
 
 .inputsFlat input[type="checkbox"]+.checkbox-label:empty:before {

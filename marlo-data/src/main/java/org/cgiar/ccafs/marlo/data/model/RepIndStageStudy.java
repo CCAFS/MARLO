@@ -16,10 +16,14 @@ public class RepIndStageStudy extends MarloBaseEntity implements java.io.Seriali
   @Expose
   private String description;
 
+  @Expose
+  private String descriptionAF;
+
+  private String composedName;
+
 
   public RepIndStageStudy() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -43,14 +47,21 @@ public class RepIndStageStudy extends MarloBaseEntity implements java.io.Seriali
     return true;
   }
 
+  public String getComposedName() {
+    return composedName;
+  }
+
   public String getDescription() {
     return description;
+  }
+
+  public String getDescriptionAF() {
+    return descriptionAF;
   }
 
   public String getName() {
     return name;
   }
-
 
   @Override
   public int hashCode() {
@@ -60,14 +71,20 @@ public class RepIndStageStudy extends MarloBaseEntity implements java.io.Seriali
     return result;
   }
 
+  public void setComposedName(String composedName) {
+    this.composedName = composedName;
+  }
+
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public void setDescriptionAF(String descriptionAF) {
+    this.descriptionAF = descriptionAF;
   }
 
   public void setName(String name) {
     this.name = name;
   }
-
-
 }
 

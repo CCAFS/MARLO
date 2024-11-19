@@ -1,12 +1,12 @@
 [#ftl]
 [#macro text name="" readText=false param=""][#assign customName][#if readText]${name}.readText[#else]${name}[/#if][/#assign][@s.text name="${customName}"][@s.param]${param}[/@s.param][/@s.text][/#macro]
 
-[#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" helpIcon=true display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder="" inputGroupText="" maxlength="" id=""]
+[#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" helpIcon=true display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder="" inputGroupText="" maxlength="" id="" isMainTitle=false]
   <div class="feedback-flex-items"></div>
   <div class="input fieldReference ${changedField(name)}" style="display:${display?string('block','none')};">
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#if showTitle]
-      <label for="${name}" class="${editable?string('editable', 'readOnly')}">${labelTitle}:[@req required=required && editable /]</label>
+      <label for="${name}" class="${editable?string('editable', 'readOnly')} ${isMainTitle?string('label--2','')}">${labelTitle}:[@req required=required && editable /]</label>
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
     [/#if]
@@ -53,7 +53,7 @@
   </div>
 [/#macro]
 
-[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false]
+[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false isNote=false isMainTitle=false]
   <div class="feedback-flex-items"></div>
   <div class="textArea fieldReference ${changedField(name)}" [#if !display]style="display: none;"[#else]style="width: 100%;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
@@ -61,9 +61,9 @@
     [#-- Get Custom Value --]
     [#assign customValue][#if value=="-NULL"][@s.property value="${name?string}"/][#else]${value}[/#if][/#assign]
   	[#if showTitle]
-      <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass} [#if powbInclude]powb-label[/#if]"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
+      <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass} ${isMainTitle?string('label--2','')} [#if powbInclude]powb-label[/#if]"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
         [#--  Help Text --]
-        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon isNote=isNote editable=editable/]
         [#if powbInclude]
           <span class="powb-doc badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
         [/#if]
@@ -158,13 +158,13 @@
   </div>
 [/#macro]
 
-[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" editable=true]
+[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" isFlex=false editable=true isMainTitle=false]
   <div class="feedback-flex-items"></div>
-  <div class="select fieldReference ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
+  <div class="select fieldReference ${isFlex?then('select--flex','')} ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
     [#if showTitle]
-    <label for="">
+    <label for="" class="${isMainTitle?string('label--2','')}">
       [#if labelTitle != ""]${labelTitle}:[/#if][@req required=required && editable /]
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
@@ -260,10 +260,10 @@
   </div>
 [/#macro]
 
-[#macro selectGroup name list element  subListName="" keyFieldName="" displayFieldName="" i18nkey="" paramText="" disabled=false required=false className="" help="" helpIcon=true header=true showTitle=true placeholder="form.select.placeholder" editable=true]
+[#macro selectGroup name list element  subListName="" keyFieldName="" displayFieldName="" i18nkey="" paramText="" disabled=false required=false className="" help="" helpIcon=true header=true showTitle=true placeholder="form.select.placeholder" editable=true isMainTitle=false]
   [#local valueSelected = (element[keyFieldName])!-1 /]
   [#if showTitle]
-    <label for="">[@s.text name=i18nkey /]:[@req required=required && editable /]
+    <label for="" class="${isMainTitle?string('label--2','')}">[@s.text name=i18nkey /]:[@req required=required && editable /]
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
     </label>
@@ -544,7 +544,15 @@
   <div class="feedback-flex-items radioFlat-flex"></div>
   <div class="fieldReference radioFlat [#if columns > 1]col-md-${columns}[/#if] ${inline?string('radio-inline', '')}">
     <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
-    <label for="${id}" class="radio-label ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>
+    [#local labelValue][#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if][/#local]
+    <label for="${id}" class="radio-label ${cssClassLabel}">
+      [#if labelValue?contains(":")]
+        [#local labelArray = labelValue?split(":") /]
+        <b>${labelArray[0]}</b>:${labelArray[1]}
+      [#else]
+        ${labelValue}
+      [/#if]
+    </label>
   </div>
   <div class="commentNumberContainer">
     <div class="numberOfCommentsBubble">
@@ -561,7 +569,13 @@
   <div class="inputsFlat [#if columns > 0]col-md-${columns}[/#if]">
     [#if editable]
     <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] />
-    <label for="${id}" class="checkbox-label ${cssClassLabel}"> [@s.text name=label /] 
+    <label for="${id}" class="checkbox-label ${cssClassLabel}"> 
+      [#if label?contains(":")]
+        [#local labelArray = label?split(":") /]
+        <b>[@s.text name=labelArray[0] /]</b>:[@s.text name=labelArray[1] /]
+      [#else]
+        [@s.text name=label /]
+      [/#if] 
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
     </label>
@@ -618,7 +632,7 @@
   </div>
 [/#macro]
 
-[#macro helpLabel name="" paramText="" showIcon=true editable=true helpMore=false]
+[#macro helpLabel name="" paramText="" showIcon=true isNote=false editable=true helpMore=false]
   [#local nameValue][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][/#local]
   [#--  Help Text --]
   [#if nameValue?has_content && editable]
@@ -626,7 +640,11 @@
       <img src="${baseUrlCdn}/global/images/icon-help2.png" title="${nameValue}" />
       <span class="hint" style="display:none" title="${nameValue}"> [HINT] </span>
     [#else]
-      <br /><i class="helpLabel">${nameValue}</i>
+      [#if isNote]
+        <div class="note--2 note--2__margin-none"><p>${nameValue}</p></div>
+      [#else]
+        <br /><i class="helpLabel">${nameValue}</i>
+      [/#if]
     [/#if]
   [/#if]
   [#if editable && helpMore]
@@ -648,7 +666,7 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey=""]
+[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey="" showTitle=true isFlex=false isNote=false isMainTitle=false]
   [#attempt]
     [#local list = ((listName?eval)?sort_by((displayFieldName?split("."))))![] /] 
   [#recover]
@@ -660,13 +678,17 @@
     [#local composedID = "${elementType}-${id}" /]
   [/#if]
   <div class="feedback-flex-items"></div>
-  <div class="fieldReference panel tertiary elementsListComponent" listname="${name}" style="position:relative">
-    <div class="panel-head">
-      <label for="">[@s.text name=label /]:[@req required=required && (editable || forceEditable) /]
-        [#--  Help Text --]
-        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=(editable || forceEditable)/]
-      </label>
-    </div>
+  <div class="fieldReference panel tertiary elementsListComponent  ${isFlex?then('panel--flex','')}" listname="${name}" style="position:relative">
+    [#if showTitle]
+      <div class="panel-head">
+        <label for="" class="${isMainTitle?string('label--2','')}">[@s.text name=label /]:[@req required=required && (editable || forceEditable) /]
+          [#--  Help Text --]
+          [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon isNote=isNote editable=(editable || forceEditable)/]
+        </label>
+      </div>
+    [#else]
+      <div class="panel-head"></div>
+    [/#if]
     <div class="panel-body" style="min-height: 30px;">
       <div class="loading listComponentLoading" style="display:none"></div>
       <ul class="list">
@@ -947,8 +969,8 @@
   <div id="multiInput${class?has_content?string('-${class}', '')}-${(template?string('template', ''))}" class="multiInput form-group grayBox ${class}">
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <span class="pull-left" style="width:4%"><strong><span class="indexTag">${index + 1}</span>.</strong></span>
-    <span class="pull-left" style="width:42%">[@customForm.input name="${customName}.reference" placeholder="expectedStudy.reference.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
-    <span class="pull-left" style="width:42%; margin-left: 10px">[@customForm.input name="${customName}.link" placeholder="global.webSiteLink.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:42%">[@customForm.input name="${customName}.reference" placeholder="expectedStudy.reference.placeholder" showTitle=false i18nkey="" className="" editable=editable required=(!action.isAWPBActive()) /]</span>
+    <span class="pull-left" style="width:42%; margin-left: 10px">[@customForm.input name="${customName}.link" placeholder="global.webSiteLink.placeholder" showTitle=false i18nkey="" className="" editable=editable required=(!action.isAWPBActive()) /]</span>
     [#if element.externalAuthor??]
       <span class="pull-left" style="width:0%; margin-left: 2%">[@customForm.checkBoxFlat id="${customName}.externalAuthor" name="${customName}.externalAuthor" value="true" editable=editable  checked="${element.externalAuthor?string}"?boolean /]</span>
     [#else]
@@ -960,16 +982,16 @@
   </div>
 [/#macro]
 
-[#macro textAreaReferences name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false oldReference=true]
+[#macro textAreaReferences name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false oldReference=true isNote=false isMainTitle=false]
   <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
     [#-- Get Custom Value --]
     [#assign customValue][#if value=="-NULL"][@s.property value="${name?string}"/][#else]${value}[/#if][/#assign]
     [#if showTitle]
-      <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass} [#if powbInclude]powb-label[/#if]"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
+      <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass} [#if powbInclude]powb-label[/#if] ${isMainTitle?string('label--2','')}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
         [#--  Help Text --]
-        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable isNote=isNote /]
         [#if powbInclude]
           <span class="powb-doc badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
         [/#if]
@@ -1072,4 +1094,174 @@
     </div>
     <br>
   </div>
+[/#macro]
+
+[#macro selectableCheckToCheckboxMacro element name="" className="" fieldName="" keyFieldName="" label="" listName=""  isPrimaryLever=false hasInnerCheckbox=true listNameInnerCheckbox="" subtitleInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true isRadioButton=true isDirectInfo=false ]
+  [#local customName = "${name}"]
+
+  [#if listName?has_content]
+    <div class="form-group radioToCheckbox ${isPrimaryLever?then('containerPrimaryLever','')} ${className}">
+      <label for="">[@s.text name=label /][@req required=required && editable /]</label>
+      <input type="hidden" name="${customName}.${fieldName}.isPrimary" value="${isPrimaryLever?c}" />
+      [#list listName as radioItem]
+
+        [#if radioItem.description?has_content]
+          [#local radioItemName = "${radioItem.name}: ${radioItem.description}" /]
+        [#else]
+          [#local radioItemName = "${radioItem.name}" /]
+        [/#if]
+
+        [#if fieldName == "impactArea"]
+          [#local radioItemName = "Impact Area ${radioItem_index+1}: ${radioItem.name}" /]
+        [/#if]
+      
+        [#local isChecked = false]
+
+        [#if element?has_content && element[fieldName]?has_content]
+          [#if isRadioButton]
+            [#if element[fieldName].id == radioItem.id]
+              [#local isChecked = true /]
+            [/#if]
+          [#else]
+            [#list element[fieldName] as radioItemChecked]              
+              [#if radioItemChecked.id == radioItem.id]
+                [#local isChecked = true /]
+                [#break /]
+              [/#if]
+            [/#list]
+          [/#if]
+        [/#if]
+
+        <div class="containerRadioToCheckbox ${(radioItem.name == 'Other')?then('containerRadioToCheckbox--other','')}">
+          [#if isRadioButton]
+            [#local baseName = "${customName}.${fieldName}" /]
+            [@customForm.radioFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.${fieldName}.id" value="${radioItem.id}" i18nkey="${radioItemName}" editable=editable checked=isChecked cssClassLabel="innerCheckboxLabel" /]
+          [#else]
+            [#local baseName = "${customName}.${fieldName}[${radioItem_index}]" /]
+            [@customForm.checkBoxFlat id="radioCheckDisplay_${fieldName}_${radioItem.id}" name="${customName}.${fieldName}[${radioItem_index}].id" value="${radioItem.id}" label="${radioItemName}" editable=editable checked=isChecked cssClassLabel="innerCheckboxLabel" /]
+          [/#if]
+
+
+          [#if radioItem.name == 'Other']
+            <div class="form-group inputOther"> 
+              [#if isPrimaryLever]
+                [@input name="${customName}.${fieldName}.leverComments" placeholder="Other" editable=editable showTitle=false /]
+              [#else]
+                [#local indexWithInformation = 0]
+                [#list element.allianceLevers as levers]
+                  [#if levers.leverComments?has_content]
+                    [#local indexWithInformation = levers_index /]
+                    [#break /]
+                  [/#if]
+                [/#list]
+                [@input name="${customName}.${fieldName}[${indexWithInformation}].leverComments" placeholder="Other" editable=editable showTitle=false /]
+              [/#if]
+            </div> 
+          [#else]
+            <div class="form-group" id="innerCheckbox" data-radioButton="${radioItem.id}" style="display:${isChecked?string('block','none')}" >
+                [#if isPrimaryLever]
+                  [#attempt]
+                  <!--CONTROL LIST: alliances levers outcomes -->
+                    [#local listPrimary = radioItem.allianceLeverOutcomes![] /]
+                  [#recover]
+                    [#local listPrimary = [] /] 
+                  [/#attempt]
+                  
+                  <div class="form-group" style="padding-left: 20px;">
+                    <label for="" class="radio-label"><b>[@s.text name="study.allianceAligment.linkToLevers.options.text.strategicOutcome" /]</b>[@req required=true /]</label>
+                    [#list listPrimary as primaryItem]
+
+                      [#local checkedPrimary = false]
+
+                      [#if isChecked]
+                        [#local customNameInnerName = "${baseName}.leverOutcomes[${primaryItem_index}].id"]
+                        [#local customIdInner = "innerCheckDisplay${fieldName}_outcome_${primaryItem_index}"]
+                      [#else]
+                        [#local customNameInnerName = "_TEMPLATE_${baseName}.leverOutcomes[${primaryItem_index}].id"]
+                        [#local customIdInner= "_TEMPLATE_innerCheckDisplay${fieldName}_outcome_${primaryItem_index}"]
+                      [/#if]
+
+                      [#if element?has_content && element.allianceLever?has_content && element.allianceLever.leverOutcomes?has_content]
+                        [#list element.allianceLever.leverOutcomes as primaryChecked]
+                          [#if primaryChecked.id == primaryItem.id]
+                            [#local checkedPrimary = true /]
+                            [#break /]
+                          [/#if]
+                        [/#list]
+                      [/#if]
+
+                      [@customForm.checkBoxFlat value="${primaryItem.id}" name=customNameInnerName id=customIdInner label="${primaryItem.description}" editable=editable checked=checkedPrimary /]
+                    [/#list]
+                  </div>
+                [/#if]
+
+                [#if hasInnerCheckbox]
+                  <div class="form-group" style="padding-left: 20px;">
+                    [#attempt]
+                      [#local listInnerContent = radioItem[listNameInnerCheckbox]![] /]
+                    [#recover]
+                      [#local listInnerContent = [] /] 
+                    [/#attempt]
+
+                    [#-- iterate throught the innerContent list --]
+                    [#if listInnerContent?has_content]
+                      [#if subtitleInnerCheckbox?has_content]
+                        <label for="" class="radio-label"><b>[@s.text name=subtitleInnerCheckbox /]</b>[@req required=true /]</label>
+                      [/#if]
+                      [#list listInnerContent as innerItem]
+                        [#local isCheckedInner = false]
+
+                        [#local innerInformartion = isDirectInfo?then(innerItem,innerItem[classReferenceInnerCheckbox]) /]
+                        [#-- Set Name and Id for inner content --]
+                        [#if isChecked]
+                          [#local customNameInnerName = "${baseName}.${keyFieldName}[${innerItem_index}].id" /]
+                          [#local customIdInner = "innerCheckDisplay${fieldName}_${radioItem_index}_${keyFieldName}_${innerItem_index}"]
+                        [#else]
+                          [#local customNameInnerName = "_TEMPLATE_${baseName}.${keyFieldName}[${innerItem_index}].id" /]
+                          [#local customIdInner = "_TEMPLATE_innerCheckDisplay${fieldName}_${radioItem_index}_${keyFieldName}_${innerItem_index}"]
+                        [/#if]
+
+                        [#-- Validate if inner checkbox are selected --]
+                        [#if element?has_content && element[fieldName]?has_content]
+                            [#if isRadioButton]
+                              [#--  --]
+                              [#local innerMultiChecked = element[fieldName][keyFieldName] /]
+                              [#if innerMultiChecked?has_content]
+                                [#list innerMultiChecked as innerChecked]
+                                  [#if (innerChecked.id == innerInformartion.id) && (isChecked)]
+                                    [#local isCheckedInner = true /]
+                                  [/#if]
+                                [/#list]
+                              [/#if]
+                            [#else]
+                              [#list element[fieldName] as innerChecked]
+                                [#list innerChecked[keyFieldName] as innerItemChecked]
+                                  [#if (innerItemChecked.id == innerInformartion.id) && (isChecked) && (innerChecked.id == radioItem.id)]
+                                    [#local isCheckedInner = true /]
+                                  [/#if]
+                                [/#list]
+                              [/#list]
+                            [/#if]
+                        [/#if]
+
+                        [#-- label displayed --]
+                        [#if innerInformartion.code? has_content]
+                          [#local labelInnerCheckbox = "${innerInformartion.code} ${innerInformartion.name}" /]
+                        [#else]
+                          [#local labelInnerCheckbox = innerInformartion.name /]
+                        [/#if]
+
+                        [@customForm.checkBoxFlat value="${innerInformartion.id}" name=customNameInnerName id=customIdInner label=labelInnerCheckbox editable=editable checked=false  checked=isCheckedInner /]
+                      [/#list]
+                    [/#if]
+                  </div>
+                [/#if]
+            </div>
+          [/#if]
+        </div>
+      [/#list]
+
+    </div>
+  [/#if]
+  
 [/#macro]

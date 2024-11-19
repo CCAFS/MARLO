@@ -1,0 +1,1 @@
+ALTER TABLE project_expected_study_related_sdg_contributions MODIFY COLUMN lever_sdg_contribution_id bigint(20) NULL;

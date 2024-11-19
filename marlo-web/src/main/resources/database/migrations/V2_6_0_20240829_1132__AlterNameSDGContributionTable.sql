@@ -1,0 +1,1 @@
+RENAME TABLE related_alliance_lever_sdg_contributions TO sdg_contributions;

@@ -808,12 +808,41 @@ function setCustomEvent(event_category,eventName,event_label) {
  * Sets the format for input fields with numbers to have commas and separators.
  */
 function setFormatInput() {
-      
+  
     $("input.targetValueNumber").each(function (i, ele) {
 
-      $(ele).mask("00,000,000", {reverse: true});
+      const $parentAvailable = $(ele).closest('.targetValue-block');
+      let targetUnitSelected;
 
+      if($parentAvailable.length > 0) {
+        $brotherContent = $parentAvailable.siblings('.targetUnit-block');
+        let $select = ($brotherContent.find('select').length > 0) ? $brotherContent.find('select') : null;
+        console.log($select);
+        targetUnitSelected = ($select !== null) ? $select.val() : '-1';
+      } else {
+        $brotherContent = $('.targetUnit-block');
+        targetUnitSelected = $brotherContent.attr('data-targetunit');
+      }
 
+      const modifiedMask = (targetUnit) => {
+        const typeTargetUnit = {
+          "129": '900.99',
+          "42": '999,999,000',
+          "35": '900.99',
+          "1": "900.99",
+          "-1": "999,999,000"
+        }
+        return typeTargetUnit[targetUnit] || "999,999,000";
+      }
+
+      const options = {
+        reverse: true,
+        clearIfNotMatch: false
+      };
+
+      $(ele).mask(modifiedMask(targetUnitSelected), options);
+
+      
       if($(ele).attr("value") === "") {
         $(ele).empty();
         $(ele).unmask();
@@ -822,11 +851,39 @@ function setFormatInput() {
 
       $(ele).on("focus", function () {
         if($(ele).attr("value") === "") {
-          $(ele).mask("00,000,000", {reverse: true});
+          $(ele).mask(modifiedMask(targetUnitSelected),options);
         }
         
       });
 
     });
 
+}
+
+function setMaskInputAllianceId(){
+
+  const translation = {
+    'translation': {
+      Z: { pattern: /[A-Z]/, optional: false },
+      0: { pattern: /[0-9]/, optional: false }
+    }
+  }
+
+  $("input.targetValueAllianceId").each(function(i,ele){
+
+    $(ele).mask('ZZZ-0000', translation);
+
+    if($(ele).attr("value") === "") {
+      $(ele).empty();
+      $(ele).unmask();
+      $(ele).val("");
+    }
+
+    $(ele).on("focus", function () {
+      if($(ele).attr("value") === "") {
+        $(ele).mask('ZZZ-0000', translation);
+      }
+    });
+
+  });
 }

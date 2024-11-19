@@ -19,51 +19,50 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import com.google.gson.annotations.Expose;
 
-public class Sdg implements java.io.Serializable {
-
+public class Sdg extends MarloAuditableEntity implements java.io.Serializable {
 
   private static final long serialVersionUID = -1544587780872590887L;
-  private Long id;
+  @Expose
   private String smoCode;
+  @Expose
   private String shortName;
+  @Expose
   private String fullName;
+  @Expose
   private String description;
+  @Expose
+  private String icon;
 
   public Sdg() {
     super();
   }
 
 
-  public Sdg(Long id, String smoCode, String shortName, String fullName, String description) {
+  public Sdg(String smoCode, String shortName, String fullName, String description) {
     super();
-    this.id = id;
     this.smoCode = smoCode;
     this.shortName = shortName;
     this.fullName = fullName;
     this.description = description;
   }
 
-
   public String getDescription() {
     return description;
   }
-
 
   public String getFullName() {
     return fullName;
   }
 
-
-  public Long getId() {
-    return id;
+  public String getIcon() {
+    return icon;
   }
-
 
   public String getShortName() {
     return shortName;
   }
-
 
   public String getSmoCode() {
     return smoCode;
@@ -77,10 +76,9 @@ public class Sdg implements java.io.Serializable {
     this.fullName = fullName;
   }
 
-  public void setId(Long id) {
-    this.id = id;
+  public void setIcon(String icon) {
+    this.icon = icon;
   }
-
 
   public void setShortName(String shortName) {
     this.shortName = shortName;

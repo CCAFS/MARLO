@@ -129,6 +129,7 @@ public final class APConstants {
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19 = "crp_show_section_impact_covid19";
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
     "crp_show_section_impact_covid19_ranges_years";
+  public static final String OICR_TAG_FIELD_MANUAL_MANAGE_ACTIVE = "oicr_tag_field_manual_manage_active";
   public static final String FEEDBACK_ACTIVE = "feedback_active";
   public static final String FEEDBACK_CLARIFICATION_NEEDED_ACTIVE = "feedback_clarification_needed_active";
   public static final String FEEDBACK_DRAFT_ACTIVE = "feedback_draft_active";
@@ -791,6 +792,15 @@ public final class APConstants {
 
   public static final String IGNORE_NEWER_YEARS = "ignoreNewer";
   public static final String DELIVERABLE_CRP_PROGRAM_OUTCOME_DEPRECATED = "DEPRECATED";
+
+  public static final int EXPECTED_OTHER_ALLIANCE_LEVER_ID = 9;
+
+  public static final int ALLIANCE_INSTITUTION_ID = 7320;
+  public static final String ALLIANCE_INSTITUTION_NAME = "alliance";
+
+  // 01/10/2024 Expected study Partnerships Types
+  public static final Long EXPECTED_STUDIES_PARTNERSHIP_TYPE_INSTITUION = new Long(2L);
+  public static final Long EXPECTED_STUDIES_PARTNERSHIP_TYPE_CENTER = new Long(3L);
 
   public static String getFilterBy() {
     return FILTER_BY;

@@ -1,0 +1,1 @@
+ALTER TABLE project_expected_study_info ADD other_innovations_narrative text NULL;
