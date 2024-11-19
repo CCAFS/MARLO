@@ -19,7 +19,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import com.google.gson.annotations.Expose;
 
-public class ScalingReadiness extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
+public class Actor extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -963914989396761020L;
 
@@ -28,8 +28,9 @@ public class ScalingReadiness extends MarloAuditableEntity implements java.io.Se
   @Expose
   private String description;
 
-  public ScalingReadiness() {
+  public Actor() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -40,7 +41,7 @@ public class ScalingReadiness extends MarloAuditableEntity implements java.io.Se
       return false;
     }
 
-    ScalingReadiness other = (ScalingReadiness) obj;
+    Actor other = (Actor) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
         return false;
@@ -51,13 +52,11 @@ public class ScalingReadiness extends MarloAuditableEntity implements java.io.Se
     return true;
   }
 
-  public String getComposedName() {
-    return this.getName() + ": " + this.getDescription();
-  }
 
   public String getDescription() {
     return description;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -65,6 +64,7 @@ public class ScalingReadiness extends MarloAuditableEntity implements java.io.Se
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   public String getName() {
     return name;
@@ -80,6 +80,6 @@ public class ScalingReadiness extends MarloAuditableEntity implements java.io.Se
 
   @Override
   public String toString() {
-    return "Activity [id=" + this.getId() + ", name=" + name + ", description=" + description + "]";
+    return "Actor [id=" + this.getId() + ", name=" + name + ", description=" + description + "]";
   }
 }

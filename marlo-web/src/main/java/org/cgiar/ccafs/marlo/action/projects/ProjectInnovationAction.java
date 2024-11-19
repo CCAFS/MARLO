@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.ActorManager;
 import org.cgiar.ccafs.marlo.data.manager.AllianceLeverManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
@@ -50,6 +51,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationPartnerTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationPartnershipPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationProjectOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationReferenceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSDGManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
@@ -72,6 +74,7 @@ import org.cgiar.ccafs.marlo.data.manager.SdgManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.Actor;
 import org.cgiar.ccafs.marlo.data.model.AllianceLever;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -106,6 +109,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationPartnerType;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSDG;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
@@ -154,6 +158,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.exception.LockAcquisitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -223,6 +228,8 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationImpactAreaManager projectInnovationImpactAreaManager;
   private IntellectualPropertyRightsInstitutionManager intellectualPropertyRightsInstitutionManager;
   private ScalingReadinessManager scalingReadinessManager;
+  private ProjectInnovationReferenceManager projectInnovationReferenceManager;
+  private ActorManager actorManager;
 
   // Variables
   private long projectID;
@@ -277,6 +284,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<ImpactArea> impactAreaList;
   private List<IntellectualPropertyRightsInstitution> intellectualInstitutionsList;
   private List<ScalingReadiness> scalingReadinessList;
+  private List<Actor> actorList;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -317,7 +325,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationSDGManager projectInnovationSDGManager, ImpactAreaManager impactAreaManager,
     ProjectInnovationImpactAreaManager projectInnovationImpactAreaManager,
     IntellectualPropertyRightsInstitutionManager intellectualPropertyRightsInstitutionManager,
-    ScalingReadinessManager scalingReadinessManager) {
+    ScalingReadinessManager scalingReadinessManager,
+    ProjectInnovationReferenceManager projectInnovationReferenceManager, ActorManager actorManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -376,6 +385,8 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationImpactAreaManager = projectInnovationImpactAreaManager;
     this.intellectualPropertyRightsInstitutionManager = intellectualPropertyRightsInstitutionManager;
     this.scalingReadinessManager = scalingReadinessManager;
+    this.projectInnovationReferenceManager = projectInnovationReferenceManager;
+    this.actorManager = actorManager;
   }
 
   /**
@@ -434,6 +445,10 @@ public class ProjectInnovationAction extends BaseAction {
 
       }
     }
+  }
+
+  public List<Actor> getActorList() {
+    return actorList;
   }
 
   public List<AllianceLever> getAllianceLeverList() {
@@ -1215,6 +1230,7 @@ public class ProjectInnovationAction extends BaseAction {
       this.impactAreaList = this.impactAreaManager.findAll();
       this.intellectualInstitutionsList = this.intellectualPropertyRightsInstitutionManager.findAll();
       this.scalingReadinessList = this.scalingReadinessManager.findAll();
+      this.actorList = this.actorManager.findAll();
 
       // Order SDG list by ID
       if (this.sdgList != null) {
@@ -1667,6 +1683,8 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveAllianceLevers(innovationDB, phase);
       this.saveSDGs(innovationDB, phase);
       this.saveImpactAreas(innovationDB, phase);
+      this.saveRegions(innovationDB, phase);
+      this.saveReferences(innovationDB, phase);
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -2631,6 +2649,68 @@ public class ProjectInnovationAction extends BaseAction {
   }
 
   /**
+   * Save Expected Studies References Information
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  private void saveReferences(ProjectInnovation projectInnovation, Phase phase) {
+    // Search and deleted form Information
+    if (projectInnovation.getProjectInnovationReferences() != null) {
+      final List<ProjectInnovationReference> referencesPrev =
+        new ArrayList<>(projectInnovation.getProjectInnovationReferences().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (final ProjectInnovationReference studyReference : referencesPrev) {
+        if ((this.innovation.getReferences() == null) || !this.innovation.getReferences().contains(studyReference)) {
+          this.projectInnovationReferenceManager.deleteProjectInnovationReference(studyReference.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.innovation.getReferences() != null) {
+      for (final ProjectInnovationReference studyReference : this.innovation.getReferences()) {
+        if (studyReference.getId() == null) {
+          final ProjectInnovationReference studyReferenceSave = new ProjectInnovationReference();
+          studyReferenceSave.setProjectInnovation(projectInnovation);
+          studyReferenceSave.setPhase(phase);
+          studyReferenceSave.setReference(studyReference.getReference());
+          studyReferenceSave.setLink(studyReference.getLink());
+          boolean externalAutor = false;
+          if (studyReference.getExternalAuthor() != null) {
+            externalAutor = true;
+          }
+          studyReferenceSave.setExternalAuthor(externalAutor);
+
+          this.projectInnovationReferenceManager.saveProjectInnovationReference(studyReferenceSave);
+          // This is to add studyReferenceSave to generate correct
+          // auditlog.
+          this.innovation.getProjectInnovationReferences().add(studyReferenceSave);
+        } else {
+          try {
+            final ProjectInnovationReference studyReferenceSave =
+              this.projectInnovationReferenceManager.getProjectInnovationReferenceById(studyReference.getId());
+            if ((studyReferenceSave != null) && (projectInnovation != null)) {
+              studyReferenceSave.setProjectInnovation(projectInnovation);
+              studyReferenceSave.setPhase(phase);
+              studyReferenceSave.setReference(studyReference.getReference());
+              studyReferenceSave.setLink(studyReference.getLink());
+              studyReferenceSave.setExternalAuthor(studyReference.getExternalAuthor());
+            }
+
+            this.projectInnovationReferenceManager.saveProjectInnovationReference(studyReferenceSave);
+            // This is to add studyReferenceSave to generate correct
+            // auditlog.
+            this.innovation.getProjectInnovationReferences().add(studyReferenceSave);
+          } catch (final LockAcquisitionException lae) {
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Save Project Innovation Region Information
    * 
    * @param projectInnovation
@@ -2826,6 +2906,10 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     }
+  }
+
+  public void setActorList(List<Actor> actorList) {
+    this.actorList = actorList;
   }
 
   public void setAllianceLeverList(List<AllianceLever> allianceLeverList) {

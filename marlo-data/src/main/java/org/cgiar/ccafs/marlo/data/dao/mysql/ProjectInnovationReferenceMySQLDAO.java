@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationReferenceDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReference;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,7 +28,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectInnovationReferenceMySQLDAO extends AbstractMarloDAO<ProjectInnovationReference, Long> implements ProjectInnovationReferenceDAO {
+public class ProjectInnovationReferenceMySQLDAO extends AbstractMarloDAO<ProjectInnovationReference, Long>
+  implements ProjectInnovationReferenceDAO {
 
 
   @Inject
@@ -62,11 +64,23 @@ public class ProjectInnovationReferenceMySQLDAO extends AbstractMarloDAO<Project
   public List<ProjectInnovationReference> findAll() {
     String query = "from " + ProjectInnovationReference.class.getName() + " where is_active=1";
     List<ProjectInnovationReference> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
 
+  }
+
+  @Override
+  public List<ProjectInnovationReference> getProjectInnovationReferenceByPhaseAndInnovation(long phaseID,
+    long innovationID) {
+    String query = "from " + ProjectInnovationReference.class.getName() + " where project_innovation_id=" + innovationID
+      + " and id_phase=" + phaseID;
+    List<ProjectInnovationReference> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
   }
 
   @Override

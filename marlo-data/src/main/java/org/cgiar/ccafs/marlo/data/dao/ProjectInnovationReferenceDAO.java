@@ -56,10 +56,22 @@ public interface ProjectInnovationReferenceDAO {
 
 
   /**
+   * This method gets a projectInnovationReference list by a given projectInnovationReference identifier.
+   * 
+   * @param projectInnovationReferenceID is the projectInnovationReference identifier.
+   * @param PhaseID is the phase identifier.
+   * @return a ProjectInnovationReference object.
+   */
+  public List<ProjectInnovationReference> getProjectInnovationReferenceByPhaseAndInnovation(long phaseID,
+    long innovationID);
+
+  /**
    * This method saves the information of the given projectInnovationReference
    * 
-   * @param projectInnovationReference - is the projectInnovationReference object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationReference was
+   * @param projectInnovationReference - is the projectInnovationReference object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectInnovationReference was
    *         updated
    *         or -1 is some error occurred.
    */
