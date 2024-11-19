@@ -15,6 +15,9 @@
 		<property name="acronym" type="string">
 			<column name="acronym" length="200" />
 		</property>
+		 <property name="source" type="java.lang.Long">
+            <column name="source_id"/>
+        </property>
 		<property name="subDepartmentActive" type="java.lang.Boolean">
       <column name="sub_department_active" not-null="true" default="0" />
     </property>

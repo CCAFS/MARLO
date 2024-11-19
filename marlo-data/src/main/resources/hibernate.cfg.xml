@@ -461,5 +461,6 @@
   <mapping resource="xmls/IntellectualPropertyRightsInstitutions.hbm.xml"/>
   <mapping resource="xmls/ScalingReadiness.hbm.xml"/>
   <mapping resource="xmls/Actors.hbm.xml"/>
+  <mapping resource="xmls/ProjectInnovationAllianceOrganizations.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>

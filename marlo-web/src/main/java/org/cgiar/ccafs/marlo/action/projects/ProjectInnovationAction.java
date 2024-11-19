@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ImpactAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.IntellectualPropertyRightsInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -35,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceLeversManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
@@ -86,6 +88,7 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.IntellectualPropertyRightsInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -95,6 +98,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
@@ -150,6 +154,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -159,6 +164,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -230,6 +236,8 @@ public class ProjectInnovationAction extends BaseAction {
   private ScalingReadinessManager scalingReadinessManager;
   private ProjectInnovationReferenceManager projectInnovationReferenceManager;
   private ActorManager actorManager;
+  private InstitutionTypeManager institutionTypeManager;
+  private ProjectInnovationAllianceOrganizationManager projectInnovationAllianceOrganizationManager;
 
   // Variables
   private long projectID;
@@ -285,6 +293,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<IntellectualPropertyRightsInstitution> intellectualInstitutionsList;
   private List<ScalingReadiness> scalingReadinessList;
   private List<Actor> actorList;
+  private List<InstitutionType> institutionTypeList;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -326,7 +335,9 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationImpactAreaManager projectInnovationImpactAreaManager,
     IntellectualPropertyRightsInstitutionManager intellectualPropertyRightsInstitutionManager,
     ScalingReadinessManager scalingReadinessManager,
-    ProjectInnovationReferenceManager projectInnovationReferenceManager, ActorManager actorManager) {
+    ProjectInnovationReferenceManager projectInnovationReferenceManager, ActorManager actorManager,
+    InstitutionTypeManager institutionTypeManager,
+    ProjectInnovationAllianceOrganizationManager projectInnovationAllianceOrganizationManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -387,6 +398,8 @@ public class ProjectInnovationAction extends BaseAction {
     this.scalingReadinessManager = scalingReadinessManager;
     this.projectInnovationReferenceManager = projectInnovationReferenceManager;
     this.actorManager = actorManager;
+    this.institutionTypeManager = institutionTypeManager;
+    this.projectInnovationAllianceOrganizationManager = projectInnovationAllianceOrganizationManager;
   }
 
   /**
@@ -546,6 +559,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<Institution> getInstitutions() {
     return institutions;
+  }
+
+  public List<InstitutionType> getInstitutionTypeList() {
+    return institutionTypeList;
   }
 
   public List<IntellectualPropertyRightsInstitution> getIntellectualInstitutionsList() {
@@ -1187,6 +1204,11 @@ public class ProjectInnovationAction extends BaseAction {
           innovation.setImpactAreas(new ArrayList<>(innovation.getProjectInnovationImpactAreas().stream()
             .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
+        // Innovations alliance organizations
+        if (innovation.getProjectInnovationAllianceOrganizations() != null) {
+          innovation.setAllianceOrganizations(new ArrayList<>(innovation.getProjectInnovationAllianceOrganizations()
+            .stream().filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
 
         // Innovations references
         if (innovation.getProjectInnovationReferences() != null) {
@@ -1231,6 +1253,13 @@ public class ProjectInnovationAction extends BaseAction {
       this.intellectualInstitutionsList = this.intellectualPropertyRightsInstitutionManager.findAll();
       this.scalingReadinessList = this.scalingReadinessManager.findAll();
       this.actorList = this.actorManager.findAll();
+      try {
+        this.institutionTypeList =
+          Optional.ofNullable(this.institutionTypeManager.findAll()).orElse(Collections.emptyList()).stream()
+            .filter(it -> it != null && it.getSource() != null && it.getSource() == 1).collect(Collectors.toList());
+      } catch (Exception e) {
+        Log.error("error getting institution types " + e);
+      }
 
       // Order SDG list by ID
       if (this.sdgList != null) {
@@ -1628,6 +1657,9 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getImpactAreas() != null) {
         innovation.getImpactAreas().clear();
       }
+      if (innovation.getAllianceLevers() != null) {
+        innovation.getAllianceLevers().clear();
+      }
       // HTTP Post info Values
       // innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
       // innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
@@ -1685,6 +1717,7 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveImpactAreas(innovationDB, phase);
       this.saveRegions(innovationDB, phase);
       this.saveReferences(innovationDB, phase);
+      this.saveAllianceOrganizations(innovationDB, phase);
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -1920,6 +1953,53 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     }
+  }
+
+  /**
+   * Save Project Innovation Alliance Organizations
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  public void saveAllianceOrganizations(ProjectInnovation projectInnovation, Phase phase) {
+    // Search and deleted form Information
+    if (projectInnovation.getProjectInnovationAllianceOrganizations() != null
+      && !projectInnovation.getProjectInnovationAllianceOrganizations().isEmpty()) {
+
+      List<ProjectInnovationAllianceOrganization> allianceOrganizationPrev =
+        new ArrayList<>(projectInnovation.getProjectInnovationAllianceOrganizations().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectInnovationAllianceOrganization allianceOrganization : allianceOrganizationPrev) {
+        if (innovation.getAllianceOrganizations() == null
+          || !innovation.getAllianceOrganizations().contains(allianceOrganization)) {
+          projectInnovationAllianceOrganizationManager
+            .deleteProjectInnovationAllianceOrganization(allianceOrganization.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (innovation.getAllianceOrganizations() != null) {
+      for (ProjectInnovationAllianceOrganization innovationAllianceOrganization : innovation
+        .getAllianceOrganizations()) {
+        if (innovationAllianceOrganization.getId() == null) {
+          ProjectInnovationAllianceOrganization innovationAllianceOrganizationSave =
+            new ProjectInnovationAllianceOrganization();
+          innovationAllianceOrganizationSave.setInstitutionType(innovationAllianceOrganization.getInstitutionType());
+          innovationAllianceOrganizationSave.setOrganizationName(innovationAllianceOrganization.getOrganizationName());
+          innovationAllianceOrganizationSave.setScalingPartner(innovationAllianceOrganization.getScalingPartner());
+          innovationAllianceOrganizationSave.setProjectInnovation(projectInnovation);
+          innovationAllianceOrganizationSave.setPhase(phase);
+
+          projectInnovationAllianceOrganizationManager
+            .saveProjectInnovationAllianceOrganization(innovationAllianceOrganizationSave);
+          // This is to add innovationAllianceOrganizationSave to generate correct auditlog.
+          innovation.getProjectInnovationAllianceOrganizations().add(innovationAllianceOrganizationSave);
+        }
+      }
+    }
+
   }
 
   public void saveCenters(ProjectInnovation projectInnovation, Phase phase) {
@@ -2994,6 +3074,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
+  }
+
+  public void setInstitutionTypeList(List<InstitutionType> institutionTypeList) {
+    this.institutionTypeList = institutionTypeList;
   }
 
   public void

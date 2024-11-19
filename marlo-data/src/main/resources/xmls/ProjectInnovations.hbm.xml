@@ -196,6 +196,14 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationImpactArea" />
     </set>
+    <set name="projectInnovationAllianceOrganizations" table="project_innovation_alliance_organizations"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization" />
+    </set>
     <set name="projectInnovationSDGs" table="project_innovation_sdgs"
       inverse="true" lazy="true" fetch="select">
       <key>
