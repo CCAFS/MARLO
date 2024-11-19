@@ -1551,11 +1551,11 @@
         <p><small>[@s.text name="deliverable.shfrmContribution.question.help" /] </small></p>
       </span>
       <div class="col-md-3">
-        [@customForm.yesNoInputDeliverable name="${name}.contributingShfrm"  editable=editable inverse=false cssClass="type-findable text-center" /] 
+        [@customForm.yesNoInputDeliverable name="${name}.contributingShfrm"  editable=editable inverse=false cssClass="type-yesNo text-center" /] 
       </div>  
     </div>
     [#local isContributingShfrm = (deliverable.deliverableInfo.contributingShfrm?string)!""]
-    <div class="block-findable findableOptions" style="display:${(isContributingShfrm == "true")?string('block', 'none')}">
+    <div class="block-yesNo " style="display:${(isContributingShfrm == "true")?string('block', 'none')}">
       <hr />
       
       [#-- Shfrm Contribution Narrative --]
