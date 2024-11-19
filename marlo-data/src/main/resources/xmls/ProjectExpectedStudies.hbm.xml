@@ -169,7 +169,7 @@
       </key>
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification" />
-    </set>
+    </set>    
     <set name="projectExpectedStudyInnovations" table="project_expected_study_innovations"
       inverse="true" lazy="true" fetch="select">
       <key>
@@ -225,6 +225,54 @@
       </key>
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference" />
+    </set>
+	<set name="projectExpectedStudyPublications" table="project_expected_study_publications"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPublication" />
+    </set>
+	<set name="projectExpectedStudySdgAllianceLevers" table="project_expected_study_sdg_alliance_levers"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgAllianceLever" />
+    </set>
+	<set name="projectExpectedStudyAllianceLeversOutcomes" table="project_expected_study_alliance_levers_outcomes"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyAllianceLeversOutcome" />
+    </set>
+	<set name="projectExpectedStudyPartnerships" table="project_expected_study_partnerships"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnership" />
+    </set>
+	<set name="projectExpectedStudyGlobalTargets" table="project_expected_study_global_targets"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGlobalTarget" />
+    </set>
+	<set name="projectExpectedStudyImpactAreas" table="project_expected_study_impact_areas"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyImpactArea" />
     </set>
 	</class>
 </hibernate-mapping>

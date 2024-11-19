@@ -1,4 +1,113 @@
-#projectOutcomesList {
+.textArea p, .input p, .select p, .uploadContainer p{
+  text-align: initial;
+}
+
+.studiesTab{
+  margin-top: 2rem;
+}
+
+.caseStudy .form-group .pull-right:first-of-type{
+  top: 4.5%;
+}
+
+.caseStudy .form-group .pull-right{
+  position: absolute;
+  right: 0;
+  text-align: right;
+  top: 4%;
+}
+
+li[role="presentation"] {
+  margin-right: 0;
+  padding: 0;
+}
+
+ul.nav li a {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+}
+
+.nav-tabs>li>a {
+  color: #6f6f6f;
+  border-radius: 0 0 0;
+  padding: 14px 22px !important;
+  border: 1px solid #f1f1f1;
+}
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+  border-top: 4px solid #1882aa;
+  border-bottom-color: transparent;
+  font-weight: bold;
+}
+
+.tab-content>.active {
+  display: block;
+  /* background-color: #f5f5f5; */
+  padding: 12px 14px;
+  border-bottom: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+
+.nav-tabs li.submitted a {
+  background-image: url(../../../global/images/submitted.png?20190411);
+  background-repeat: no-repeat;
+  /* background-size: 15px; */
+  background-position: 97% -50%;
+}
+
+.nav-tabs li.toSubmit a {
+  background-image: url(../../../global/images/submitted.png?20190411);
+  background-repeat: no-repeat;
+  background-position: 97% 150%;
+}
+
+.generalInformationStudies {
+  position: relative;
+}
+
+.generalInformationStudies .form-group {
+  position: relative;
+}
+
+.generalInformationStudies .form-group .line-hr{
+  position: absolute; 
+  top: 14%;
+  height: 2px;
+  background-color: #CCC;
+  width: 68%;
+  left: 15px;
+}
+
+@media screen and (max-width: 768px) {
+  .generalInformationStudies .form-group .line-hr{
+    width: 100%;
+  }
+  
+}
+
+@media screen and (min-width: 1366px) {
+  .generalInformationStudies .form-group .line-hr{
+    width: 70%;
+  }
+  
+}
+
+@media screen and (min-width: 1978){
+  .generalInformationStudies .form-group .line-hr{
+    width: 71%;
+  }
+}
+
+.generalInformationStudies .form-group .feedback-flex-items{
+  align-items: flex-end;
+}
+
+.generalInformationStudies label{
+  font-size: 12px;
+  margin-bottom: 1.25rem;
+  max-width: 180%;
+  width: 180%;
 }
 
 .copyButton{
@@ -17,7 +126,69 @@
   color: #444;
 }
 
-a {
+.generalStudyOptions{
+  position: absolute;
+  right: 0;
+  padding: 0 15px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.generalStudyOptions button{
+  width: 100%;
+  color: #fff;
+  border-radius: 0.3125rem;
+  background: #337AB7;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.generalStudyOptions button p{
+  margin: 0;
+}
+
+.generalStudyOptions button p span{
+  margin-right: 0.25rem;
+}
+
+#modalCounterShared{
+  background-color: #fff;
+  color: #337AB7;
+  width: 16px;
+  border-radius: 100%;
+}
+
+div.nationalBlock div.selectList span.selection{
+  height: 50px;
+}
+
+div.nationalBlock div.selectList span.selection span.select2-selection{
+  position: relative;
+  width: 170px;
+}
+
+div.nationalBlock div.selectList span.selection span.select2-selection::before{
+  content: "Select a Country(s)";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+div.nationalBlock div.selectList span.selection span.select2-selection ul{
+  position: absolute;
+  top: 30px;
+  overflow:visible;
+  padding: 0;
+  width: 130%;
+}
+
+.margin-top-10{
+  margin-top: 1rem;
 }
 
 thead {
@@ -38,6 +209,138 @@ table#projectHighlights {
   font-size: 0.94em;
 }
 
+div.radioFlat {
+	padding-left: 0;
+}
+
+div.stfTargets .col-md-1{
+  width: 10%;
+}
+
+div.stfTargets .col-md-1:last-of-type{
+  width: 20%;
+}
+
+.radioToCheckbox > label{
+  margin-bottom: 12px;
+}
+
+.containerPrimaryLever > label{
+  margin-top: 12px;
+}
+
+.radioToCheckbox .containerRadioToCheckbox .radioFlat {
+  padding-left: 0;
+  margin-bottom: 12px;
+} 
+
+.radioToCheckbox .containerRadioToCheckbox .inputsFlat {
+  margin-bottom: 12px;
+}
+
+.radioToCheckbox .containerRadioToCheckbox .radioFlat input[type="radio"]+.radio-label:before{
+  margin-right: 0.6em;
+}
+
+.radioToCheckbox .containerRadioToCheckbox .radioFlat input[type="radio"]+.radio-label.innerCheckboxLabel{
+  display: flex;
+  align-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.radioToCheckbox .containerRadioToCheckbox .feedback-flex-items.radioFlat-flex{
+  display: contents !important;
+}
+
+.radioToCheckbox .containerRadioToCheckbox #innerCheckbox .form-group {
+  padding-left: 20px;
+  padding-top: 10px;
+}
+
+.radioToCheckbox .containerRadioToCheckbox #innerCheckbox > .form-group > label.radio-label{
+  margin-bottom: 12px;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other {
+  display: flex;
+  width: 100%;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other .radioFlat {
+  width: 10% !important;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other .inputsFlat {
+  width: 10% !important;
+  margin-top: 0;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other .inputOther {
+  width: -webkit-fill-available;
+  width: -moz-available;
+}
+
+#innerCheckbox {
+  padding-left: 20px;
+}
+
+/* Dynamic Lever Selector */
+.selectedLeverContainer{
+  display: flex;
+  width: 100%;
+  padding: 1rem;
+  border: 0.5px solid #808080;
+  border-radius: 5px;
+  margin-top: 1rem;
+}
+
+.selectedLeverContainer__image{
+  width: 60px;
+  height: 60px;
+  border-radius: 2px;
+  background-color: #6f6f6f;
+}
+
+.selectedLeverContainer__image img{
+  width: inherit;
+  height: inherit;
+}
+
+.selectedLeverContainer__content{
+  width: -webkit-fill-available;
+  width: -moz-available;
+  padding-left: 1rem;
+}
+
+.selectedLeverContainer__content__lever{
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.selectedLeverContainer__content__contributionSDG{
+  font-size: 11px;
+}
+
+.selectedLeverContainer.selectedLeverContainer--related{
+  padding: 0.5rem;
+  padding-left: 1rem;
+}
+
+.selectedLeverContainer--related .selectedLeverContainer__image{
+  width: 40px;
+  height: 40px;
+}
+
+.selectedLeverContainer--related .selectedLeverContainer__content__lever{
+  font-size: 11px;
+}
+
+.selectedLeverContainer--related .selectedLeverContainer__content__contributionSDG{
+  font-size: 9px;
+  margin: 0;
+}
+
 /* NEW */
 .panel .panel-body {
   min-height: 38px;
@@ -53,4 +356,52 @@ table#projectHighlights {
 
 #guide-button{
   display: block;
+}
+
+/* Field Error */
+.inputsFlat input.fieldError[type="checkbox"]+.checkbox-label{
+  color: #EE1D1D;
+}
+
+.inputsFlat input.fieldError[type="checkbox"]+.checkbox-label::before{
+  border-color: #F44;
+  background-color: #FFFAFA;
+}
+
+/* Select the parent div that contains the .fieldError input */
+.inputsFlat:has(input.fieldError[type="checkbox"]) {
+  /* Style the next two sibling elements */
+  & + * {
+    /* Style the .checkbox-label */
+    & input[type="checkbox"] + .checkbox-label {
+      color: #EE1D1D;
+    }
+    /* Style the .checkbox-label::before */
+    & input[type="checkbox"] + .checkbox-label::before {
+      border-color: #F44;
+      background-color: #FFFAFA;
+    }
+    /* Select the third brother */
+    & + * {
+      & input[type="checkbox"] + .checkbox-label {
+        color: #EE1D1D;
+      }
+  
+      & input[type="checkbox"] + .checkbox-label::before {
+        border-color: #F44;
+        background-color: #FFFAFA;
+      }
+
+      & + * {
+        & input[type="checkbox"] + .checkbox-label {
+          color: #EE1D1D;
+        }
+    
+        & input[type="checkbox"] + .checkbox-label::before {
+          border-color: #F44;
+          background-color: #FFFAFA;
+        }
+      }
+    }
+  }  
 }

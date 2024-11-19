@@ -14,15 +14,18 @@
     </id>
     <many-to-one
       class="org.cgiar.ccafs.marlo.data.model.Phase" embed-xml="true"
-      fetch="select" insert="true" name="phase" not-found="exception"
-      optimistic-lock="true" unique="false" update="true">
+      fetch="select" insert="true" name="phase">
       <column name="id_phase" />
     </many-to-one>
     <many-to-one class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy"
-      embed-xml="true" fetch="select" insert="true"
-      name="projectExpectedStudy" not-found="exception"
-      optimistic-lock="true" unique="false" update="true">
-      <column name="expected_id" />
+      fetch="select"
+      name="projectExpectedStudy">
+      <column name="expected_id"/>
+    </many-to-one>
+    <many-to-one class="org.cgiar.ccafs.marlo.data.model.QuantificationType"
+     fetch="select"
+      name="quantificationType">
+      <column name="quantification_type_id" />
     </many-to-one>
     <property generated="never" lazy="false"
       name="typeQuantification" optimistic-lock="true" type="string"

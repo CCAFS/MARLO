@@ -62,6 +62,12 @@ function getListElement(fieldName,message) {
         left: left
     });
     tagElement.fadeIn(2000);
+
+    var $spanSelector = $(elementQuery).find('span.select2');
+    if($spanSelector) {
+      $spanSelector.addClass('fieldError');
+      $spanSelector.attr("title", message);
+    }
   }
 }
 

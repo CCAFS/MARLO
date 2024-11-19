@@ -1,0 +1,1 @@
+ALTER TABLE rep_ind_stage_studies ADD description_af text NULL COMMENT 'Description for AICCRA AF';

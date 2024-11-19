@@ -24,6 +24,19 @@ span.badge.globalUnitTag {
 
 .modal-header {
   font-family: 'Open Sans', 'Segoe UI', Helvetica, Verdana;
+  background: #0B7BA6;
+  color: #fff;
+  position: relative;
+  border-radius: 0.375rem 0.375rem 0rem 0rem;
+}
+
+.modal-header [data-dismiss="modal"] {
+  color: #fff;
+  opacity: 1;
+  position: absolute;
+  right: 15px;
+  top: 20%;
+  font-size: 32px;
 }
 
 btn {

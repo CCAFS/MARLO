@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${expectedID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload", "flag-icon-css", "components-font-awesome"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectStudy.js?20240221",
+  "${baseUrlMedia}/js/projects/projectStudy.js?20240812",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20240313"
   ] 
@@ -40,6 +40,7 @@
 [/#if]
 <input type="hidden"  name="expectedStudy.id" value="${(expectedStudy.id)!}" />
 [#assign isOutcomeCaseStudy = ((expectedStudy.projectExpectedStudyInfo.studyType.id == 1)!false) && reportingActive/]
+[#assign indexTab = 0]
 [#if isOutcomeCaseStudy]
   <!--  <div class="container helpText viewMore-block">
     <div class="helpMessage infoText">
@@ -98,9 +99,77 @@
           [/#if]
           
           [#-- Outcome case studies list --]
-          <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformation" /]</h3>
+          [#if (expectedStudy.projectExpectedStudyInfo.studyType?has_content) && (expectedStudy.projectExpectedStudyInfo.studyType.id == 1)]
+            <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformationOICR" /]</h3>
+          [#else]  
+            <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformation" /]</h3>
+          [/#if]
+
           <div id="caseStudiesBlock" class="">
-            [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0  /]
+
+          [#assign isAllianceContribution = false /]
+          [#list expectedStudy.centers as center]
+          [#if center.institution.name?lower_case?contains("alliance")]
+            [#assign isAllianceContribution = true /]
+            [#break /]
+          [/#if]
+          [/#list]
+
+            [#-- General: Component were the information is always visible --]
+            [@studies.studyGeneral element=(expectedStudy)!{} name="expectedStudy" index=0 isAllianceContribution=isAllianceContribution  /]
+
+            [#-- Content: All the information of the case study --]
+            <input id="indexTab" name="indexTab" type="hidden" value="${(indexTab)!0}">
+
+            <div class="studiesTab">
+
+              [#-- Tab navigation --]
+              [#if (expectedStudy.projectExpectedStudyInfo.studyType?has_content && expectedStudy.projectExpectedStudyInfo.studyType.id?has_content) && (expectedStudy.projectExpectedStudyInfo.studyType.id == 1)]
+                <ul class="nav nav-tabs" role="tablist">
+                  [#assign isOicrGeneralInformationComplete = action.isOicrGeneralInformationComplete()!false /]
+                  <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if] col-md-3 ${isOicrGeneralInformationComplete?then('submitted','toSubmit')}">
+                    <a index="1" href="#study-generalInformation" aria-controls="info" role="tab" data-toggle="tab">[@s.text name="study.general.generalInformation" /]</a>
+                  </li>
+
+                  [#assign isOicrAllianceAlignmentComplete = action.isOicrAllianceAlignmentComplete()!false /]
+                  <li role="presentation" class="[#if indexTab==2]active[/#if] col-md-3 ${isOicrAllianceAlignmentComplete?then('submitted','toSubmit')}" style="display:${isAllianceContribution?then('block','none')}" id="allianceTab"  >
+                    <a index="2" href="#study-alliance" aria-controls="metadata" role="tab" data-toggle="tab">[@s.text name="study.general.allianceAlignment" /]</a>
+                  </li>
+
+                  [#assign isOicrOneCgiarAlignmentComplete = action.isOicrOneCgiarAlignmentComplete()!false /]
+                  <li role="presentation" class="[#if indexTab==3]active[/#if] col-md-3 ${isOicrOneCgiarAlignmentComplete?then('submitted','toSubmit')}">
+                    <a index="3" href="#study-onecgiar" aria-controls="quality" role="tab" data-toggle="tab">[@s.text name="study.general.oneCGIARAlignment" /]</a>
+                  </li>
+
+                  [#assign isOicrCommunicationsComplete = action.isOicrCommunicationsComplete()!false /]  
+                  <li role="presentation" class="[#if indexTab==4]active[/#if] col-md-3 ${isOicrCommunicationsComplete?then('submitted','toSubmit')}">
+                    <a index="4" href="#study-communications" aria-controls="communications" role="tab" data-toggle="tab">[@s.text name="study.general.communications" /]</a>
+                  </li>
+                </ul>
+              [/#if]
+
+              [#-- Tab content --]
+              <div class="tab-content ">
+
+                <div id="study-generalInformation" role="tabpanel" class="tab-pane fade [#if indexTab==1 || indexTab==0]in active[/#if]">
+                  [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0  /]
+                </div>
+
+                <div id="study-alliance" role="tabpanel" class="tab-pane fade [#if indexTab==2]in active[/#if]">
+                  [@studies.studyAlliance element=(expectedStudy)!{} name="expectedStudy" index=0  /]
+                </div>
+
+                <div id="study-onecgiar" role="tabpanel" class="tab-pane fade [#if indexTab==3]in active[/#if]">
+                  [@studies.studyOneCGIAR element=(expectedStudy)!{} name="expectedStudy" index=0  /]
+                </div>
+
+                <div id="study-communications" role="tabpanel" class="tab-pane fade [#if indexTab==4]in active[/#if]">
+                  [@studies.studyCommunications element=(expectedStudy)!{} name="expectedStudy" index=0  /]
+                </div>
+              </div>
+                
+            </div>
+
           </div> 
           
           [#-- Section Buttons & hidden inputs--]

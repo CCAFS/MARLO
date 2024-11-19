@@ -104,6 +104,7 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
     return projectExpectedStudies;
   }
 
+
   @Override
   public List<ProjectExpectedStudy> getStudiesByOrganizationType(RepIndOrganizationType repIndOrganizationType,
     Phase phase) {
@@ -232,6 +233,7 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
 
     return projectExpectedStudy;
   }
+
 
   @Override
   public ProjectExpectedStudy save(ProjectExpectedStudy projectExpectedStudy, String section,

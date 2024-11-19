@@ -1,0 +1,1 @@
+INSERT INTO project_expected_study_partner_type (name) VALUES ('Resp');
