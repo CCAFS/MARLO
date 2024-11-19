@@ -334,12 +334,13 @@
             [#-- Anticipated users --]
             <div class="form-group col-md-12 block-innovationAnticipatedUsers">
               <label class="label--2">[@s.text name="projectInnovations.anticipatedUsers" /][@customForm.req required=true /]</label>
+              [#local areUsersDetermined = (innovation.projectInnovationInfo.areUsersDetermined)!false /]
               <div class="col-md-12">
                 <div class="col-md-4">
-                  [@customForm.radioFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.hasMilestones" i18nkey="projectInnovations.anticipatedUsers.determined" value="true" checked=false cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=editable /]
+                  [@customForm.radioFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.determined" value="true" checked=(areUsersDetermined) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=editable /]
                 </div>
                 <div class="col-md-4">
-                  [@customForm.radioFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.hasMilestones" i18nkey="projectInnovations.anticipatedUsers.undetermined" value="false" checked=false cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
+                  [@customForm.radioFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.undetermined" value="false" checked=(!areUsersDetermined) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
                 </div>
               </div>
               <div class="col-md-12">
@@ -368,7 +369,7 @@
                 [#-- Element item Template --]
                 <div style="display:none">
                   [@actorsMacro name="innovation.actors" element={} index=-1 template=true /]
-                  [@organizationsMacro name="innovation.organizations" element={} index=-1 template=true /]
+                  [@organizationsMacro name="innovation.allianceOrganizations" element=innovation.allianceOrganizations index=-1 template=true /]
                 </div>
 
               </div>
@@ -544,7 +545,7 @@
     <div class="form-group">
       [#-- Innovation Scaling Readiness --]
       <div class="form-group">
-        [@scalingMacro name="innovation.projectInnovationInfo.readinessScale" element=element.allianceLevers editable=true label="projectInnovations.readiness.scale" helpLabel="projectInnovations.readiness.scale.help" listName=allianceLeverList class="innovationScaling" /]
+        [@scalingMacro name="innovation.projectInnovationInfo.readinessScale" element=innovation.projectInnovationInfo.readinessScale editable=true label="projectInnovations.readiness.scale" helpLabel="projectInnovations.readiness.scale.help" listName=scalingReadinessList class="innovationScaling" /]
       </div>
 
       [#-- Innovation Readiness reason --]
@@ -618,8 +619,8 @@
         </label>
         <div class="col-md-12">
           [#-- Objetive --]
-          <div class="col-md-12 row">
-            [@customForm.select name="${customName}.knowledgeToolObjetive" label="projectInnovations.sharing.aboutTheTool.objetive" listName="knowledgeToolObjetive" keyFieldName="id" displayFieldName="name" editable=editable required=false /]
+          <div class="col-md-12">
+            [@customForm.select name="${customName}.knowledgeToolObjetive" label="" i18nkey="projectInnovations.sharing.aboutTheTool.objetive" listName="knowledgeToolObjetive" keyFieldName="id" displayFieldName="name" editable=editable required=false /]
           </div>
           [#-- knowledgeToolUsesNarrative --]
           <div class="col-md-12">
@@ -665,7 +666,7 @@
             [@customForm.radioFlat id="${hasToolUrlText}-no" name="${customName}.projectInnovationInfo.sharing.knowledge" label="No" value="false" checked=((element.projectInnovationInfo.hasToolUrl??) &&(!hasToolUrl)) cssClass="radioType-${hasToolUrlText}" cssClassLabel="radio-label-no" editable=editable /]
           </div>
 
-          <label class="note--2 col-md-12">[@s.text name="projectInnovations.sharing.urls.tool.help" /]</label>
+          <label class="note--2" style="width:100%"><p class="col-md-12">[@s.text name="projectInnovations.sharing.urls.tool.help" /]</p></label>
 
           [#-- If yes - Evidence/Reference --]
           <div class="col-md-12" style="">
@@ -744,7 +745,7 @@
             
           [#-- If not - reasonNotToolUrl --]
           <div class="col-md-12" style="">
-            [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotKnowledgePotential" i18nkey="projectInnovations.sharing.urls.reasonNoProvided"  helpIcon=false className="limitWords-500" required=(editable) editable=editable /]
+            [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotToolUrl" i18nkey="projectInnovations.sharing.urls.reasonNoProvided"  helpIcon=false className="limitWords-500" required=(editable) editable=editable /]
           </div>
         </div>
       </div>
@@ -755,7 +756,7 @@
         <div class="col-md-12">
           [#-- knowledgeCollaboration --]
           <div class="col-md-12">
-            <label class="note--2">[@s.text name="projectInnovations.sharing.collaboration.help" /]</label>
+            <label class="note--2"><p>[@s.text name="projectInnovations.sharing.collaboration.help" /]</p></label>
             [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeCollaboration" i18nkey="projectInnovations.sharing.collaboration.knowledgeCollaboration" helpIcon=false className="limitWords-200" required=false editable=editable /]  
           </div>
           [#-- urls Complementary Solutions --]
@@ -800,7 +801,7 @@
   <div id="actorsInnovation-${(template?string('template', ''))}" class="actorsInnovation form-group grayBlueBox ${class}">
     [#-- Dropdown Actors - Type --]
     <div class="col-md-12">
-      [@customForm.elementsListComponent name="${customName}.actors" showTitle=false elementType="actor" elementList=(element.actors)![] label="projectInnovations.actors" listName="actors" keyFieldName="id" displayFieldName="composedName" required=false /]
+      [@customForm.elementsListComponent name="${customName}.actors" showTitle=false elementType="actor" elementList=(element.actors)![] label="projectInnovations.actors" listName="actorList" keyFieldName="id" displayFieldName="name" required=false /]
     </div>
     [#-- Checkbox Actors - Genders --]
     <div class="col-md-12">
@@ -832,16 +833,16 @@
   <div id="organizationsInnovation-${(template?string('template', ''))}" class="organizationsInnovation form-group grayBlueBox ${class}">
     [#-- "Dropdown Organizations - Type --]
     <div class="col-md-12">
-      [@customForm.elementsListComponent name="${customName}.organizations" showTitle=false elementType="organization" elementList=(element.organizations)![] label="projectInnovations.organizations" listName="organizations" keyFieldName="id" displayFieldName="composedName" required=false /]
+      [@customForm.elementsListComponent name="${customName}.institutionType" showTitle=false elementType="organization" elementList=(element.organizations)![] label="projectInnovations.organizations" listName="institutionTypeList" keyFieldName="id" displayFieldName="name" required=false /]
     </div>
     [#-- Input Organization name --]
     <div class="col-md-12">
       <label>[@s.text name="projectInnovations.anticipatedUsers.organizations.name" /]:</label>
-      [@customForm.input name="${customName}.organizations.name" type="text" i18nkey="projectInnovations.anticipatedUsers.organizations" helpIcon=false required=false editable=true showTitle=false /]
+      [@customForm.input name="${customName}.organizationName" type="text" i18nkey="projectInnovations.anticipatedUsers.organizations" helpIcon=false required=false editable=true showTitle=false /]
     </div>
     [#-- Checkbox - is a co-development --]
     <div class="col-md-12">
-      [@customForm.checkBoxFlat id="innovation_organizations_coDevelopment_${index}" name="${customName}.organizations.coDevelopment" label="projectInnovations.anticipatedUsers.organizations.coDevelopment" value="true" checked=false editable=true /]
+      [@customForm.checkBoxFlat id="innovation_organizations_coDevelopment_${index}" name="${customName}.scalingPartner" label="projectInnovations.anticipatedUsers.organizations.coDevelopment" value="true" checked=false editable=true /]
     </div>
 
     [#-- Remove --]
@@ -867,15 +868,16 @@
       [#if listName?has_content]
         [#list listName as item]
           <div class="col-md-1 scaling__item">
-            [@customForm.radioFlat id="${customName}_${item_index}" name="${customName}" label="${item.id}" value="${item.id}" checked=(element?seq_contains(item.id)) editable=editable cssClass="scalingInnovation__item__value" /]
+            [@customForm.radioFlat id="${customName}_${item_index}" name="${customName}" label="${item.id-1}" value="${item.id}" checked=(element == (item.id)) editable=editable cssClass="scalingInnovation__item__value" /]
           </div>
         [/#list]
       [/#if]
     </div>
     <div class="scaling__message grayBox">
       [#if element?has_content]
-        <h5>[@s.text name=element.name /]</h5>
-        <p>[@s.text name=element.description /]</p>
+        [#local elemInformation = listName?filter(it -> (it.id == element)) /]
+        <h5>[@s.text name=elemInformation[0].name /]</h5>
+        <p>[@s.text name=elemInformation[0].description /]</p>
       [#else]
         <h5>[@s.text name="projectInnovations.readiness.scale.message1" /]</h5>
         <p>[@s.text name="projectInnovations.readiness.scale.message2" /]</p>
