@@ -523,24 +523,21 @@
       </div>
     </div>
   </div>
-
-  <div class="block-hasCgiarContribution" style="display:${(element.projectInnovationInfo.hasCgiarContribution??)?string('block','none')};" >
     
-    <div class="form-group contributionToCGIARComment col-md-12" style="display:${((hasContributionToCGIAR?c) == 'false')?string('block','none')};">
-      [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=(editable) editable=editable /]
+  <div class="form-group contributionToCGIARComment col-md-12" style="display:${(((hasContributionToCGIAR?c) == 'false') && (element.projectInnovationInfo.hasCgiarContribution??))?string('block','none')};">
+    [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=(editable) editable=editable /]
+  </div>
+  [#-- Innovation importance --]
+  <div class="form-group linkToImpactAreas" style="display:${(((hasContributionToCGIAR?c) == 'true')&& (element.projectInnovationInfo.hasCgiarContribution??))?string('block','none')};" >
+    <div class="form-group col-md-12">
+      [@customForm.textArea name="${customName}.projectInnovationInfo.innovationImportance" i18nkey="projectInnovations.oneCGIARAligment.innovationImportance" help="projectInnovations.oneCGIARAligment.innovationImportance.help" helpIcon=false className="limitWords-200" required=(editable) editable=editable isNote=true /]
     </div>
-    [#-- Innovation importance --]
-    <div class="form-group linkToImpactAreas" style="display:${((hasContributionToCGIAR?c) == 'true')?string('block','none')};" >
-      <div class="form-group col-md-12">
-        [@customForm.textArea name="${customName}.projectInnovationInfo.innovationImportance" i18nkey="projectInnovations.oneCGIARAligment.innovationImportance" help="projectInnovations.oneCGIARAligment.innovationImportance.help" helpIcon=false className="limitWords-200" required=(editable) editable=editable isNote=true /]
-      </div>
 
-      [#-- Impact Areas --]
-      <div class="form-group  col-md-12">
-        <label class="label--2 col-md-12">[@s.text name="projectInnovations.oneCGIARAligment.impactAreas" /]:</label>
-        <label>[@s.text name="projectInnovations.oneCGIARAligment.impactAreas.subtitle" /]</label>
-        [@customForm.elementsListComponent name="${customName}.impactAreas" elementType="impactArea" elementList=(element.impactAreas)![] helpIcon=false listName="impactAreaList" keyFieldName="id" displayFieldName="name" required=false showTitle=false /]
-      </div>
+    [#-- Impact Areas --]
+    <div class="form-group  col-md-12">
+      <label class="label--2 col-md-12">[@s.text name="projectInnovations.oneCGIARAligment.impactAreas" /]:</label>
+      <label>[@s.text name="projectInnovations.oneCGIARAligment.impactAreas.subtitle" /]</label>
+      [@customForm.elementsListComponent name="${customName}.impactAreas" elementType="impactArea" elementList=(element.impactAreas)![] helpIcon=false listName="impactAreaList" keyFieldName="id" displayFieldName="name" required=false showTitle=false /]
     </div>
   </div>
 
@@ -552,7 +549,7 @@
     <div class="form-group">
       [#-- Innovation Scaling Readiness --]
       <div class="form-group">
-        [@scalingMacro name="innovation.projectInnovationInfo.readinessScale" element=innovation.projectInnovationInfo.readinessScale editable=true label="projectInnovations.readiness.scale" helpLabel="projectInnovations.readiness.scale.help" listName=scalingReadinessList class="innovationScaling" /]
+        [@scalingMacro name="innovation.projectInnovationInfo.readinessScale" element=innovation.projectInnovationInfo.readinessScale!-1 editable=true label="projectInnovations.readiness.scale" helpLabel="projectInnovations.readiness.scale.help" listName=scalingReadinessList class="innovationScaling" /]
       </div>
 
       [#-- Innovation Readiness reason --]
@@ -875,16 +872,18 @@
       [#if listName?has_content]
         [#list listName as item]
           <div class="col-md-1 scaling__item">
-            [@customForm.radioFlat id="${customName}_${item_index}" name="${customName}" label="${item.id-1}" value="${item.id}" checked=(element == (item.id)) editable=editable cssClass="scalingInnovation__item__value" /]
+            [@customForm.radioFlat id="${customName}_${item_index}" name="${customName}" label="${item.id-1}" value="${item.id}" checked=((element??) && (element == (item.id)))!false editable=editable cssClass="scalingInnovation__item__value" /]
           </div>
         [/#list]
       [/#if]
     </div>
     <div class="scaling__message grayBox">
-      [#if element?has_content]
+      [#if element??]
         [#local elemInformation = listName?filter(it -> (it.id == element)) /]
-        <h5>[@s.text name=elemInformation[0].name /]</h5>
-        <p>[@s.text name=elemInformation[0].description /]</p>
+        [#if elemInformation?size > 0]
+          <h5>[@s.text name=elemInformation[0].name /]</h5>
+          <p>[@s.text name=elemInformation[0].description /]</p>
+        [/#if]
       [#else]
         <h5>[@s.text name="projectInnovations.readiness.scale.message1" /]</h5>
         <p>[@s.text name="projectInnovations.readiness.scale.message2" /]</p>

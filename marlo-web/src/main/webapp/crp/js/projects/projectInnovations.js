@@ -348,15 +348,14 @@ function addImageToSelectImpactAreas() {
 }
 
 function onDisplayItemsInOneCGIAR(){
-  var $commentBox = $('.contributionToCGIARComment');
-  var $selectImpactArea = $('.linkToImpactAreas');
-  var $radioButton = $('input.radioType-contributionToCGIAR:checked');
+  const $commentBox = $('.contributionToCGIARComment');
+  const $selectImpactArea = $('.linkToImpactAreas');
+  const $radioButton = $('input.radioType-contributionToCGIAR:checked');
 
   if($radioButton.val() === "false"){
     $selectImpactArea.slideUp();
     $commentBox.slideDown();
   } else {
-    console.log('else');
     $selectImpactArea.slideDown();
     $commentBox.slideUp();
     
