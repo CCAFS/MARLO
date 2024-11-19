@@ -506,37 +506,44 @@
 [#macro innovationOneCGIAR element name index=-1 template=false]
   [#local customName = "${name}"/]
 
-  [#local hasContributionToCGIAR = (element.projectInnovationInfo.hasCgiarContribution)! ]
+  [#local hasContributionToCGIAR = (element.projectInnovationInfo.hasCgiarContribution)!false ]
 
   <div id="oneCGIAR" class="borderBox">
-    [#-- reflect a contribution --]
-    <div class="form-group">
-      <label class="label--2">[@s.text name="projectInnovations.oneCGIARAligment.contributionToCGIAR" /]:[@customForm.req required=(editable) /]</label>
-      <div class="form-group">
-      
-        <div class="col-md-1">
-          [@customForm.radioFlat id="optionOneCGIAR-Yes" name="${customName}.projectInnovationInfo.hasCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIARYes" value="true" checked=(((element.projectInnovationInfo.hasCgiarContribution??) && (hasContributionToCGIAR))!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /]
-        </div>
-        <div class="col-md-1">
-          [@customForm.radioFlat id="optionOneCGIAR-No" name="${customName}.projectInnovationInfo.hasCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIARNo" value="false" checked=(((element.projectInnovationInfo.hasCgiarContribution??) && (!hasContributionToCGIAR))!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /]
-        </div>
+
+  [#-- reflect a contribution --]
+  <div class="form-group">
+    <label class="label--2">[@s.text name="projectInnovations.oneCGIARAligment.contributionToCGIAR" /]:[@customForm.req required=(editable) /]</label>
+    <div class="form-group col-md-12">
+    
+      <div class="col-md-1">
+        [@customForm.radioFlat id="optionOneCGIAR-Yes" name="${customName}.projectInnovationInfo.hasCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIARYes" value="true" checked=(((element.projectInnovationInfo.hasCgiarContribution??) && (hasContributionToCGIAR))!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /]
       </div>
-      <div class="form-group contributionToCGIARComment col-md-12" [#if element.projectInnovationInfo.hasCgiarContribution??]style="display:${((hasContributionToCGIAR?c) == 'false')?string('block','none')};"[#else] style="display: none;" [/#if] >
-        [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=(editable) editable=editable /]
+      <div class="col-md-1">
+        [@customForm.radioFlat id="optionOneCGIAR-No" name="${customName}.projectInnovationInfo.hasCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIARNo" value="false" checked=(((element.projectInnovationInfo.hasCgiarContribution??) && (!hasContributionToCGIAR))!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /]
       </div>
     </div>
+  </div>
 
+  <div class="block-hasCgiarContribution" style="display:${(element.projectInnovationInfo.hasCgiarContribution??)?string('block','none')};" >
+    
+    <div class="form-group contributionToCGIARComment col-md-12" style="display:${((hasContributionToCGIAR?c) == 'false')?string('block','none')};">
+      [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=(editable) editable=editable /]
+    </div>
     [#-- Innovation importance --]
-    <div class="form-group col-md-12">
-      [@customForm.textArea name="${customName}.projectInnovationInfo.innovationImportance" i18nkey="projectInnovations.oneCGIARAligment.innovationImportance" help="projectInnovations.oneCGIARAligment.innovationImportance.help" helpIcon=false className="limitWords-200" required=(editable) editable=editable isNote=true /]
-    </div>
+    <div class="form-group linkToImpactAreas" style="display:${((hasContributionToCGIAR?c) == 'true')?string('block','none')};" >
+      <div class="form-group col-md-12">
+        [@customForm.textArea name="${customName}.projectInnovationInfo.innovationImportance" i18nkey="projectInnovations.oneCGIARAligment.innovationImportance" help="projectInnovations.oneCGIARAligment.innovationImportance.help" helpIcon=false className="limitWords-200" required=(editable) editable=editable isNote=true /]
+      </div>
 
-    [#-- Impact Areas --]
-    <div class="form-group col-md-12">
-      <label class="label--2 col-md-12">[@s.text name="projectInnovations.oneCGIARAligment.impactAreas" /]:</label>
-      <label>[@s.text name="projectInnovations.oneCGIARAligment.impactAreas.subtitle" /]</label>
-      [@customForm.elementsListComponent name="${customName}.impactAreas" elementType="impactArea" elementList=(element.impactAreas)![] helpIcon=false listName="impactAreaList" keyFieldName="id" displayFieldName="name" required=false showTitle=false /]
+      [#-- Impact Areas --]
+      <div class="form-group  col-md-12">
+        <label class="label--2 col-md-12">[@s.text name="projectInnovations.oneCGIARAligment.impactAreas" /]:</label>
+        <label>[@s.text name="projectInnovations.oneCGIARAligment.impactAreas.subtitle" /]</label>
+        [@customForm.elementsListComponent name="${customName}.impactAreas" elementType="impactArea" elementList=(element.impactAreas)![] helpIcon=false listName="impactAreaList" keyFieldName="id" displayFieldName="name" required=false showTitle=false /]
+      </div>
     </div>
+  </div>
+
   </div>
 [/#macro]
 

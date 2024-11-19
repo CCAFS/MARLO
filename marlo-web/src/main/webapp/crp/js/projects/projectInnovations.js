@@ -192,8 +192,11 @@ function attachEvents() {
 
   })
 
-//On change radio buttons
+  //On change radio buttons
   $('input[class*="radioType-"]').on('change', onChangeRadioButton);
+
+  //On change radio buttons - One CGIAR
+  $('input.radioType-contributionToCGIAR').on('change', onDisplayItemsInOneCGIAR);
 
 }
 function AddRequired(){
@@ -342,6 +345,22 @@ function addImageToSelectImpactAreas() {
       }
   
     });
+}
+
+function onDisplayItemsInOneCGIAR(){
+  var $commentBox = $('.contributionToCGIARComment');
+  var $selectImpactArea = $('.linkToImpactAreas');
+  var $radioButton = $('input.radioType-contributionToCGIAR:checked');
+
+  if($radioButton.val() === "false"){
+    $selectImpactArea.slideUp();
+    $commentBox.slideDown();
+  } else {
+    console.log('else');
+    $selectImpactArea.slideDown();
+    $commentBox.slideUp();
+    
+  }
 }
 
 function changeDisplayMessageInScaling() {
