@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -117,6 +118,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     this.struts = struts;
     this.validateGeneralInformation(action, project, projectInnovation, saving);
     this.validateAllianceAlignment(action, project, projectInnovation, saving);
+    this.validateOneCgiarAlignment(action, project, projectInnovation, saving);
 
     // The validator is called by Struts
     if (struts) {
@@ -558,7 +560,6 @@ public class ProjectInnovationValidator extends BaseValidator {
 
   }
 
-
   /**
    * Validate if the current phase is progress
    *
@@ -575,6 +576,48 @@ public class ProjectInnovationValidator extends BaseValidator {
     } catch (Exception e) {
       LOG.error(" error in validateIsProgress function [ProjectInnovationValidator]");
       return result;
+    }
+  }
+
+
+  /**
+   * Validate the data of the oneCgiarAllignment tab
+   *
+   * @param action base action
+   * @param project related project
+   * @param projectInnovation An specific projectInnovation
+   * @param saving related action
+   */
+  public void validateOneCgiarAlignment(BaseAction action, Project project, ProjectInnovation projectInnovation,
+    boolean saving) {
+    if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
+      ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
+
+      if (innovationInfo.getHasCgiarContribution() == null) {
+        action.addMessage(action.getText("innovation.projectInnovationInfo.hasCgiarContribution"));
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.hasCgiarContribution",
+          InvalidFieldsMessages.EMPTYFIELD);
+      } else {
+        // When the has CGIAR contribution question is true
+        if (innovationInfo.getHasCgiarContribution()) {
+          if (!(this.isValidString(innovationInfo.getInnovationImportance()))) {
+            action.addMessage(action.getText("innovation.projectInnovationInfo.innovationImportance"));
+            action.getInvalidFields().put("input-innovation.projectInnovationInfo.innovationImportance",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+          // When the CGIAR contribution is false
+        } else if (innovationInfo.getHasCgiarContribution() == false
+          && !(this.isValidString(innovationInfo.getReasonNotCgiarContribution()))) {
+          action.addMessage(action.getText("innovation.projectInnovationInfo.reasonNotCgiarContribution"));
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.reasonNotCgiarContribution",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+      }
+    }
+    innovationOneCgiar = action.getMissingFields().toString();
+    if (projectInnovation.getId() != null && (innovationAlliance.length() > 0)) {
+      BaseAction.getIsInnovationGeneralInformationCompleteMap().put("" + projectInnovation.getId(), "1");
     }
   }
 

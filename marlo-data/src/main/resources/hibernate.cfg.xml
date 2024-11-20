@@ -462,5 +462,8 @@
   <mapping resource="xmls/ScalingReadiness.hbm.xml"/>
   <mapping resource="xmls/Actors.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationAllianceOrganizations.hbm.xml"/>
+  <mapping resource="xmls/ProjectInnovationReferenceUrls.hbm.xml"/>
+  <mapping resource="xmls/ProjectInnovationReferenceDatasets.hbm.xml"/>
+  <mapping resource="xmls/ProjectInnovationReferenceComplementarySolutions.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>

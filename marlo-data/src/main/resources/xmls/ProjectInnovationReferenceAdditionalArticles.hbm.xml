@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated Jan 31, 2019 9:21:00 AM by Hibernate Tools 5.3.6.Final -->
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class 
+        name="org.cgiar.ccafs.marlo.data.model.ProjectInnovationReferenceAdditionalArticles" optimistic-lock="none"
+        table="project_innovation_reference_additional_articles">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="reference" type="string">
+            <column name="reference" sql-type="TEXT" />
+        </property>
+        <property name="link" type="string">
+            <column name="link" sql-type="TEXT" />
+        </property>
+        <property name="externalAuthor" type="java.lang.Boolean">
+            <column name="is_external_author" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp" update="false">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" sql-type="TEXT"
+                not-null="true" />
+        </property>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+            fetch="select" update="false">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
+            fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
+        <many-to-one class="org.cgiar.ccafs.marlo.data.model.ProjectInnovation"
+            embed-xml="true" fetch="select" 
+            name="projectInnovation" 
+            optimistic-lock="true" update="true">
+            <column name="project_innovation_id" />
+        </many-to-one>
+
+    </class>
+</hibernate-mapping>
