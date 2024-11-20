@@ -445,7 +445,7 @@
       <label class="note--2">
         <p>[@s.text name="projectInnovations.alliance.intellectualProperty.subtitle" /]</p>
       </label>
-      [@customForm.elementsListComponent name="${customName}.intellectualProperties" elementType="intellectualProperty" elementList=(innovation.intellectualProperties)![] helpIcon=false listName="intellectualInstitutionsList" keyFieldName="id" displayFieldName="customName" required=false showTitle=true label="projectInnovations.alliance.intellectualProperty.description" /]
+      [@customForm.elementsListComponent name="${customName}.intellectualPropertyInstitution" elementType="intellectualProperty" elementList=(innovation.intellectualPropertyInstitution)![] helpIcon=false listName="intellectualInstitutionsList" keyFieldName="id" displayFieldName="customName" required=false showTitle=true label="projectInnovations.alliance.intellectualProperty.description" /]
       [#-- Intellectual property rights - Legal Restrictions --]
       <div class="form-group">
         <div class="col-md-12">
@@ -454,13 +454,13 @@
           </label> 
         </div>
         [#local innovationIntellectualLegalRestrictions = "innovationIntellectualLegalRestrictions" /]
-        [#local showLegalRestrictions = (element.projectInnovationInfo.hasLegalRestrictions)! /]    
+        [#local showLegalRestrictions = (innovation.projectInnovationInfo.hasLegalRestrictions)! /]    
 
         <div class="col-md-1">
-          [@customForm.radioFlat id="${innovationIntellectualLegalRestrictions}-yes" name="${customName}.projectInnovationInfo.hasLegalRestrictions" label="Yes" value="true" checked=((element.projectInnovationInfo.hasLegalRestrictions??) &&(showLegalRestrictions)) cssClass="radioType-${innovationIntellectualLegalRestrictions}" cssClassLabel="radio-label-yes" editable=editable /]
+          [@customForm.radioFlat id="${innovationIntellectualLegalRestrictions}-yes" name="${customName}.projectInnovationInfo.hasLegalRestrictions" label="Yes" value="true" checked=((innovation.projectInnovationInfo.hasLegalRestrictions??) &&(showLegalRestrictions)) cssClass="radioType-${innovationIntellectualLegalRestrictions}" cssClassLabel="radio-label-yes" editable=editable /]
         </div>
         <div class="col-md-1">
-          [@customForm.radioFlat id="${innovationIntellectualLegalRestrictions}-no" name="${customName}.projectInnovationInfo.hasLegalRestrictions" label="No" value="false" checked=((element.projectInnovationInfo.hasLegalRestrictions??) &&(!showLegalRestrictions)) cssClass="radioType-${innovationIntellectualLegalRestrictions}" cssClassLabel="radio-label-no" editable=editable /]
+          [@customForm.radioFlat id="${innovationIntellectualLegalRestrictions}-no" name="${customName}.projectInnovationInfo.hasLegalRestrictions" label="No" value="false" checked=((innovation.projectInnovationInfo.hasLegalRestrictions??) &&(!showLegalRestrictions)) cssClass="radioType-${innovationIntellectualLegalRestrictions}" cssClassLabel="radio-label-no" editable=editable /]
         </div>
       </div>
       [#-- Intellectual property rights - Commercialization --]
@@ -471,13 +471,13 @@
           </label> 
         </div>
         [#local innovationIntellectualCommercialization = "innovationIntellectualCommercialization" /]
-        [#local showCommercialization = (element.projectInnovationInfo.hasAssetPotential)! /]   
+        [#local showCommercialization = (innovation.projectInnovationInfo.hasAssetPotential)! /]   
 
         <div class="col-md-1">
-          [@customForm.radioFlat id="${innovationIntellectualCommercialization}-yes" name="${customName}.projectInnovationInfo.hasAssetPotential" label="Yes" value="true" checked=((element.projectInnovationInfo.hasAssetPotential??) && (showCommercialization)) cssClass="radioType-${innovationIntellectualCommercialization}" cssClassLabel="radio-label-yes" editable=editable /]
+          [@customForm.radioFlat id="${innovationIntellectualCommercialization}-yes" name="${customName}.projectInnovationInfo.hasAssetPotential" label="Yes" value="true" checked=((innovation.projectInnovationInfo.hasAssetPotential??) && (showCommercialization)) cssClass="radioType-${innovationIntellectualCommercialization}" cssClassLabel="radio-label-yes" editable=editable /]
         </div>
         <div class="col-md-1">
-          [@customForm.radioFlat id="${innovationIntellectualCommercialization}-no" name="${customName}.projectInnovationInfo.hasAssetPotential" label="No" value="false" checked=((element.projectInnovationInfo.hasAssetPotential??) && (!showCommercialization))  cssClass="radioType-${innovationIntellectualCommercialization}" cssClassLabel="radio-label-no" editable=editable /]
+          [@customForm.radioFlat id="${innovationIntellectualCommercialization}-no" name="${customName}.projectInnovationInfo.hasAssetPotential" label="No" value="false" checked=((innovation.projectInnovationInfo.hasAssetPotential??) && (!showCommercialization))  cssClass="radioType-${innovationIntellectualCommercialization}" cssClassLabel="radio-label-no" editable=editable /]
         </div>
       </div>
       [#-- Intellectual property rights - Further Development --]
@@ -488,14 +488,14 @@
           </label> 
         </div>
         [#local innovationIntellectualFurtherDevelopment = "innovationIntellectualFurtherDevelopment" /]
-        [#local showFurtherDevelopment = (element.projectInnovationInfo.hasFurtherDevelopment)! /]
+        [#local showFurtherDevelopment = (innovation.projectInnovationInfo.hasFurtherDevelopment)! /]
         <p>${showFurtherDevelopment}</p>    
 
         <div class="col-md-1">
-          [@customForm.radioFlat id="${innovationIntellectualFurtherDevelopment}-yes" name="${customName}.projectInnovationInfo.hasFurtherDevelopment" label="Yes" value="true" checked=((element.projectInnovationInfo.hasFurtherDevelopment??)&&(showFurtherDevelopment)) cssClass="radioType-${innovationIntellectualFurtherDevelopment}" cssClassLabel="radio-label-yes" editable=editable /]
+          [@customForm.radioFlat id="${innovationIntellectualFurtherDevelopment}-yes" name="${customName}.projectInnovationInfo.hasFurtherDevelopment" label="Yes" value="true" checked=((innovation.projectInnovationInfo.hasFurtherDevelopment??)&&(showFurtherDevelopment)) cssClass="radioType-${innovationIntellectualFurtherDevelopment}" cssClassLabel="radio-label-yes" editable=editable /]
         </div>
         <div class="col-md-1">
-          [@customForm.radioFlat id="${innovationIntellectualFurtherDevelopment}-no" name="${customName}.projectInnovationInfo.hasFurtherDevelopment" label="No" value="false" checked=((element.projectInnovationInfo.hasFurtherDevelopment??)&&(showFurtherDevelopment)) cssClass="radioType-${innovationIntellectualFurtherDevelopment}" cssClassLabel="radio-label-no" editable=editable /]
+          [@customForm.radioFlat id="${innovationIntellectualFurtherDevelopment}-no" name="${customName}.projectInnovationInfo.hasFurtherDevelopment" label="No" value="false" checked=((innovation.projectInnovationInfo.hasFurtherDevelopment??)&&(showFurtherDevelopment)) cssClass="radioType-${innovationIntellectualFurtherDevelopment}" cssClassLabel="radio-label-no" editable=editable /]
         </div>
       </div>
       
@@ -621,7 +621,7 @@
         <label class="label--2 col-md-12">
           [@s.text name="projectInnovations.sharing.aboutTheTool" /]:
         </label>
-        <div class="col-md-12">
+        <div class="col-md-12 padding-left-2">
           [#-- Objetive --]
           <div class="col-md-12">
             [@customForm.select name="${customName}.knowledgeToolObjetive" label="" i18nkey="projectInnovations.sharing.aboutTheTool.objetive" listName="knowledgeToolObjetive" keyFieldName="id" displayFieldName="name" editable=editable required=false /]
@@ -658,7 +658,7 @@
       <div class="form-group">
         <label class="label--2 col-md-12">[@s.text name="projectInnovations.sharing.urls" /]:</label>
         [#-- hasToolUrl ---]
-        <div class="col-md-12">
+        <div class="col-md-12 padding-left-2">
           <label class="col-md-12">[@s.text name="projectInnovations.sharing.urls.tool" /]:</label>
           [#local hasToolUrlText = "hasToolUrl" /]
           [#local hasToolUrl = (element.projectInnovationInfo.hasToolUrl)!false /]    
@@ -757,7 +757,7 @@
       [#-- Collaboration with other innovations --]
       <div class="form-group">
         <label class="label--2 col-md-12">[@s.text name="projectInnovations.sharing.collaboration" /]:</label>
-        <div class="col-md-12">
+        <div class="col-md-12 padding-left-2">
           [#-- knowledgeCollaboration --]
           <div class="col-md-12">
             <label class="note--2"><p>[@s.text name="projectInnovations.sharing.collaboration.help" /]</p></label>
@@ -878,7 +878,7 @@
       [/#if]
     </div>
     <div class="scaling__message grayBox">
-      [#if element??]
+      [#if element != -1]
         [#local elemInformation = listName?filter(it -> (it.id == element)) /]
         [#if elemInformation?size > 0]
           <h5>[@s.text name=elemInformation[0].name /]</h5>

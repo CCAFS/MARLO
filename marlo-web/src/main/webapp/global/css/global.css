@@ -8323,6 +8323,10 @@ img.qaOptionsComment {
 	display: inline-block;
 }
 
+.padding-left-2{
+	padding-left: 2rem !important;
+}
+
 
 @media only screen and (max-width: 768px){
 		/************* 2. HEADER ***************/
