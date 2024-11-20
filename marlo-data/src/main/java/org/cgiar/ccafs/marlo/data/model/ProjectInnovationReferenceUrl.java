@@ -19,7 +19,15 @@ public class ProjectInnovationReferenceUrl extends MarloAuditableEntity implemen
   @Expose
   private String link;
   @Expose
-  private Boolean externalAuthor;
+  private Boolean evidenceByDeliverable;
+  @Expose
+  private Boolean innovationType;
+  @Expose
+  private Boolean additionalArticleType;
+  @Expose
+  private Boolean datasetType;
+  @Expose
+  private Deliverable deliverable;
 
   public ProjectInnovationReferenceUrl() {
   }
@@ -51,13 +59,31 @@ public class ProjectInnovationReferenceUrl extends MarloAuditableEntity implemen
     return true;
   }
 
-  public Boolean getExternalAuthor() {
-    return externalAuthor;
+  public Boolean getAdditionalArticleType() {
+    return additionalArticleType;
+  }
+
+  public Boolean getDatasetType() {
+    return datasetType;
+  }
+
+  public Deliverable getDeliverable() {
+    return deliverable;
+  }
+
+  public Boolean getEvidenceByDeliverable() {
+    return evidenceByDeliverable;
+  }
+
+
+  public Boolean getInnovationType() {
+    return innovationType;
   }
 
   public String getLink() {
     return link;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -78,7 +104,6 @@ public class ProjectInnovationReferenceUrl extends MarloAuditableEntity implemen
     return u;
   }
 
-
   public Phase getPhase() {
     return phase;
   }
@@ -86,7 +111,6 @@ public class ProjectInnovationReferenceUrl extends MarloAuditableEntity implemen
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
   }
-
 
   public String getReference() {
     return reference;
@@ -110,8 +134,24 @@ public class ProjectInnovationReferenceUrl extends MarloAuditableEntity implemen
     return true;
   }
 
-  public void setExternalAuthor(Boolean externalAuthor) {
-    this.externalAuthor = externalAuthor;
+  public void setAdditionalArticleType(Boolean additionalArticleType) {
+    this.additionalArticleType = additionalArticleType;
+  }
+
+  public void setDatasetType(Boolean datasetType) {
+    this.datasetType = datasetType;
+  }
+
+  public void setDeliverable(Deliverable deliverable) {
+    this.deliverable = deliverable;
+  }
+
+  public void setEvidenceByDeliverable(Boolean evidenceByDeliverable) {
+    this.evidenceByDeliverable = evidenceByDeliverable;
+  }
+
+  public void setInnovationType(Boolean innovationType) {
+    this.innovationType = innovationType;
   }
 
   public void setLink(String link) {
@@ -130,7 +170,6 @@ public class ProjectInnovationReferenceUrl extends MarloAuditableEntity implemen
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
   }
-
 
   public void setReference(String link) {
     this.reference = link;

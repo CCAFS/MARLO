@@ -6,7 +6,8 @@ import com.google.gson.annotations.Expose;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 
-public class ProjectInnovationReferenceComplementarySolution extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
+public class ProjectInnovationReferenceComplementarySolution extends MarloAuditableEntity
+  implements java.io.Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = -8855879487687610305L;
@@ -19,7 +20,9 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
   @Expose
   private String link;
   @Expose
-  private Boolean externalAuthor;
+  private Boolean evidenceByDeliverable;
+  @Expose
+  private Deliverable deliverable;
 
   public ProjectInnovationReferenceComplementarySolution() {
   }
@@ -51,8 +54,12 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
     return true;
   }
 
-  public Boolean getExternalAuthor() {
-    return externalAuthor;
+  public Deliverable getDeliverable() {
+    return deliverable;
+  }
+
+  public Boolean getEvidenceByDeliverable() {
+    return evidenceByDeliverable;
   }
 
   public String getLink() {
@@ -65,6 +72,7 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -86,7 +94,6 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
   }
-
 
   public String getReference() {
     return reference;
@@ -110,8 +117,12 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
     return true;
   }
 
-  public void setExternalAuthor(Boolean externalAuthor) {
-    this.externalAuthor = externalAuthor;
+  public void setDeliverable(Deliverable deliverable) {
+    this.deliverable = deliverable;
+  }
+
+  public void setEvidenceByDeliverable(Boolean evidenceByDeliverable) {
+    this.evidenceByDeliverable = evidenceByDeliverable;
   }
 
   public void setLink(String link) {
@@ -130,7 +141,6 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
   }
-
 
   public void setReference(String link) {
     this.reference = link;

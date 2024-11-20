@@ -100,6 +100,11 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   private Set<ProjectInnovationCrpOutcome> projectInnovationCrpOutcomes = new HashSet<ProjectInnovationCrpOutcome>(0);
   private Set<ProjectInnovationReference> projectInnovationReferences = new HashSet<>(0);
   private List<ProjectInnovationReference> references;
+  private Set<ProjectInnovationReferenceUrl> projectInnovationReferenceUrls = new HashSet<>(0);
+  private List<ProjectInnovationReferenceUrl> referenceUrls;
+  private Set<ProjectInnovationReferenceComplementarySolution> projectInnovationReferenceComplementarySolutions =
+    new HashSet<>(0);
+  private List<ProjectInnovationReferenceComplementarySolution> referenceComplementarySolutions;
   private Set<ProjectInnovationImpactArea> projectInnovationImpactAreas = new HashSet<>(0);
   private List<ProjectInnovationImpactArea> impactAreas;
   private Set<ProjectInnovationAllianceOrganization> projectInnovationAllianceOrganizations = new HashSet<>(0);
@@ -323,8 +328,16 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return projectInnovationProjectOutcomes;
   }
 
+  public Set<ProjectInnovationReferenceComplementarySolution> getProjectInnovationReferenceComplementarySolutions() {
+    return projectInnovationReferenceComplementarySolutions;
+  }
+
   public Set<ProjectInnovationReference> getProjectInnovationReferences() {
     return projectInnovationReferences;
+  }
+
+  public Set<ProjectInnovationReferenceUrl> getProjectInnovationReferenceUrls() {
+    return projectInnovationReferenceUrls;
   }
 
   public Set<ProjectInnovationRegion> getProjectInnovationRegions() {
@@ -347,8 +360,16 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return projectOutcomes;
   }
 
+  public List<ProjectInnovationReferenceComplementarySolution> getReferenceComplementarySolutions() {
+    return referenceComplementarySolutions;
+  }
+
   public List<ProjectInnovationReference> getReferences() {
     return references;
+  }
+
+  public List<ProjectInnovationReferenceUrl> getReferenceUrls() {
+    return referenceUrls;
   }
 
   public List<ProjectInnovationRegion> getRegions() {
@@ -398,9 +419,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
       this.setContributingOrganizations(this.getContributingOrganizations(phase));
       this.setCrps(this.getProjectInnovationCrps(phase));
       this.setOrganizations(this.getProjectInnovationOrganizations(phase));
-
     }
-
   }
 
   public void setAllianceLevers(List<ProjectInnovationAllianceLevers> allianceLevers) {
@@ -430,7 +449,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public void setCountriesIds(List<String> countriesIds) {
     this.countriesIds = countriesIds;
   }
-
 
   public void setCountriesIdsText(String countriesIdsText) {
     this.countriesIdsText = countriesIdsText;
@@ -463,6 +481,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public void setOrganizations(List<ProjectInnovationOrganization> organizations) {
     this.organizations = organizations;
   }
+
 
   public void setPartnerships(List<ProjectInnovationPartnership> partnerships) {
     this.partnerships = partnerships;
@@ -523,7 +542,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.projectInnovationImpactAreas = projectInnovationImpactAreas;
   }
 
-
   public void setProjectInnovationInfo(ProjectInnovationInfo projectInnovationInfo) {
     this.projectInnovationInfo = projectInnovationInfo;
   }
@@ -549,8 +567,18 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.projectInnovationProjectOutcomes = projectInnovationProjectOutcomes;
   }
 
+  public void setProjectInnovationReferenceComplementarySolutions(
+    Set<ProjectInnovationReferenceComplementarySolution> projectInnovationReferenceComplementarySolutions) {
+    this.projectInnovationReferenceComplementarySolutions = projectInnovationReferenceComplementarySolutions;
+  }
+
   public void setProjectInnovationReferences(Set<ProjectInnovationReference> projectInnovationReferences) {
     this.projectInnovationReferences = projectInnovationReferences;
+  }
+
+
+  public void setProjectInnovationReferenceUrls(Set<ProjectInnovationReferenceUrl> projectInnovationReferenceUrls) {
+    this.projectInnovationReferenceUrls = projectInnovationReferenceUrls;
   }
 
   public void setProjectInnovationRegions(Set<ProjectInnovationRegion> projectInnovationRegions) {
@@ -573,8 +601,17 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.projectOutcomes = projectOutcomes;
   }
 
+  public void setReferenceComplementarySolutions(
+    List<ProjectInnovationReferenceComplementarySolution> referenceComplementarySolutions) {
+    this.referenceComplementarySolutions = referenceComplementarySolutions;
+  }
+
   public void setReferences(List<ProjectInnovationReference> references) {
     this.references = references;
+  }
+
+  public void setReferenceUrls(List<ProjectInnovationReferenceUrl> referenceUrls) {
+    this.referenceUrls = referenceUrls;
   }
 
   public void setRegions(List<ProjectInnovationRegion> regions) {

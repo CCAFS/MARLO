@@ -53,7 +53,9 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationPartnerTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationPartnershipPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationProjectOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationReferenceComplementarySolutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationReferenceManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationReferenceUrlManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSDGManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
@@ -114,6 +116,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReference;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReferenceComplementarySolution;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReferenceUrl;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSDG;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
@@ -235,6 +239,8 @@ public class ProjectInnovationAction extends BaseAction {
   private IntellectualPropertyRightsInstitutionManager intellectualPropertyRightsInstitutionManager;
   private ScalingReadinessManager scalingReadinessManager;
   private ProjectInnovationReferenceManager projectInnovationReferenceManager;
+  private ProjectInnovationReferenceUrlManager projectInnovationReferenceUrlManager;
+  private ProjectInnovationReferenceComplementarySolutionManager projectInnovationReferenceComplementarySolutionManager;
   private ActorManager actorManager;
   private InstitutionTypeManager institutionTypeManager;
   private ProjectInnovationAllianceOrganizationManager projectInnovationAllianceOrganizationManager;
@@ -337,7 +343,9 @@ public class ProjectInnovationAction extends BaseAction {
     ScalingReadinessManager scalingReadinessManager,
     ProjectInnovationReferenceManager projectInnovationReferenceManager, ActorManager actorManager,
     InstitutionTypeManager institutionTypeManager,
-    ProjectInnovationAllianceOrganizationManager projectInnovationAllianceOrganizationManager) {
+    ProjectInnovationAllianceOrganizationManager projectInnovationAllianceOrganizationManager,
+    ProjectInnovationReferenceUrlManager projectInnovationReferenceUrlManager,
+    ProjectInnovationReferenceComplementarySolutionManager projectInnovationReferenceComplementarySolutionManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -400,6 +408,9 @@ public class ProjectInnovationAction extends BaseAction {
     this.actorManager = actorManager;
     this.institutionTypeManager = institutionTypeManager;
     this.projectInnovationAllianceOrganizationManager = projectInnovationAllianceOrganizationManager;
+    this.projectInnovationReferenceUrlManager = projectInnovationReferenceUrlManager;
+    this.projectInnovationReferenceComplementarySolutionManager =
+      projectInnovationReferenceComplementarySolutionManager;
   }
 
   /**
@@ -1216,6 +1227,19 @@ public class ProjectInnovationAction extends BaseAction {
             .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
+        // Innovations references URL
+        if (innovation.getProjectInnovationReferenceUrls() != null) {
+          innovation.setReferenceUrls(new ArrayList<>(innovation.getProjectInnovationReferenceUrls().stream()
+            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
+        // Innovations references Complementary solutions
+        if (innovation.getProjectInnovationReferenceComplementarySolutions() != null) {
+          innovation.setReferenceComplementarySolutions(
+            new ArrayList<>(innovation.getProjectInnovationReferenceComplementarySolutions().stream()
+              .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
         // Innovation shared Projects List
         if (this.innovation.getProjectInnovationShareds() != null) {
           this.innovation.setSharedInnovations(new ArrayList<>(this.innovation.getProjectInnovationShareds().stream()
@@ -1345,7 +1369,7 @@ public class ProjectInnovationAction extends BaseAction {
       List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
         .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null)
         .collect(Collectors.toList());
-      if (studies != null && studies.size() > 0) {
+      if (studies != null && !studies.isEmpty()) {
         allProjectStudies.addAll(studies);
       }
 
@@ -1363,24 +1387,27 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
-      if (allProjectStudies != null && allProjectStudies.size() > 0) {
+      if (allProjectStudies != null && !allProjectStudies.isEmpty()) {
         // Editable project studies: Current cycle year-1 will be editable except
         // Complete and Cancelled.
         // Every study of the current cycle year will be editable
-        expectedStudyList = new ArrayList<ProjectExpectedStudy>();
+        expectedStudyList = new ArrayList<>();
         expectedStudyList = allProjectStudies.stream()
           .filter(ex -> ex.isActive() && ex.getProjectExpectedStudyInfo(phase) != null
             && ex.getProjectExpectedStudyInfo().getStudyType() != null
             && ex.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1 && ex.getProject() != null)
           .collect(Collectors.toList());
       }
-
-      List<ProjectExpectedStudy> evidences = projectExpectedStudyManager.findAll().stream()
-        .filter(s -> s != null && s.getProject() == null && s.getProjectExpectedStudyInfo(this.getActualPhase()) != null
-          && s.getProjectExpectedStudyInfo().getPhase() != null
-          && s.getProjectExpectedStudyInfo().getPhase().getId().equals(this.getActualPhase().getId()))
-        .collect(Collectors.toList());
-
+      List<ProjectExpectedStudy> evidences = projectExpectedStudyManager.getStudiesByPhase(phase).stream()
+        .filter(s -> s != null && s.getProject() == null).collect(Collectors.toList());
+      /*
+       * List<ProjectExpectedStudy> evidences = projectExpectedStudyManager.findAll().stream()
+       * .filter(s -> s != null && s.getProject() == null && s.getProjectExpectedStudyInfo(this.getActualPhase()) !=
+       * null
+       * && s.getProjectExpectedStudyInfo().getPhase() != null
+       * && s.getProjectExpectedStudyInfo().getPhase().getId().equals(this.getActualPhase().getId()))
+       * .collect(Collectors.toList());
+       */
       if (evidences != null) {
         if (expectedStudyList != null && !expectedStudyList.isEmpty()) {
           expectedStudyList.addAll(evidences);
@@ -1390,7 +1417,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
 
       if (phase != null && phase.getDeliverableInfos() != null && project != null
-        && phase.getDeliverableInfos().size() > 0) {
+        && !phase.getDeliverableInfos().isEmpty()) {
         List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
           .filter(c -> c != null && c.getDeliverable() != null && c.getDeliverable().getProject() != null
             && c.getDeliverable().getProject().equals(project) && c.getDeliverable().isActive())
@@ -1443,7 +1470,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
 
       List<Project> projectSharedList = new ArrayList<>();
-      if (innovation.getSharedInnovations() != null && innovation.getSharedInnovations().size() > 0) {
+      if (innovation.getSharedInnovations() != null && !innovation.getSharedInnovations().isEmpty()) {
         for (ProjectInnovationShared sharedInnovation : innovation.getSharedInnovations()) {
           if (sharedInnovation != null && sharedInnovation.getProject() != null
             && sharedInnovation.getProject().getId() != null) {
@@ -1570,11 +1597,18 @@ public class ProjectInnovationAction extends BaseAction {
       if (feedbackComments != null) {
         for (FeedbackQACommentableFields field : feedbackComments) {
           List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
-          comments = feedbackQACommentManager.findAll().stream()
-            .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
-              && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == innovation.getId()
-              && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
+          feedbackQACommentManager.findAllByPhase(this.getActualPhase().getId()).stream()
+            .filter(f -> f != null && f.getParentId() == innovation.getId() && f.getField() != null
+              && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
             .collect(Collectors.toList());
+
+          /*
+           * comments = feedbackQACommentManager.findAll().stream()
+           * .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+           * && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == innovation.getId()
+           * && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
+           * .collect(Collectors.toList());
+           */
           field.setQaComments(comments);
         }
       }
@@ -1654,11 +1688,20 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getReferences() != null) {
         innovation.getReferences().clear();
       }
+      if (innovation.getReferenceUrls() != null) {
+        innovation.getReferenceUrls().clear();
+      }
+      if (innovation.getReferenceComplementarySolutions() != null) {
+        innovation.getReferenceComplementarySolutions().clear();
+      }
       if (innovation.getImpactAreas() != null) {
         innovation.getImpactAreas().clear();
       }
       if (innovation.getAllianceLevers() != null) {
         innovation.getAllianceLevers().clear();
+      }
+      if (innovation.getAllianceOrganizations() != null) {
+        innovation.getAllianceOrganizations().clear();
       }
       // HTTP Post info Values
       // innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
@@ -1717,6 +1760,8 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveImpactAreas(innovationDB, phase);
       this.saveRegions(innovationDB, phase);
       this.saveReferences(innovationDB, phase);
+      this.saveReferenceUrls(innovationDB, phase);
+      this.saveReferenceComplementarySolution(innovationDB, phase);
       this.saveAllianceOrganizations(innovationDB, phase);
 
       boolean haveRegions = false;
@@ -1922,36 +1967,39 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveAllianceLevers(ProjectInnovation projectInnovation, Phase phase) {
+    try {
+      // Search and deleted form Information
+      if (projectInnovation.getProjectInnovationAllianceLevers() != null
+        && !projectInnovation.getProjectInnovationAllianceLevers().isEmpty()) {
 
-    // Search and deleted form Information
-    if (projectInnovation.getProjectInnovationAllianceLevers() != null
-      && !projectInnovation.getProjectInnovationAllianceLevers().isEmpty()) {
+        List<ProjectInnovationAllianceLevers> allianceLeverPrev =
+          new ArrayList<>(projectInnovation.getProjectInnovationAllianceLevers().stream()
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
-      List<ProjectInnovationAllianceLevers> allianceLeverPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationAllianceLevers().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-
-      for (ProjectInnovationAllianceLevers allianceLever : allianceLeverPrev) {
-        if (innovation.getAllianceLevers() == null || !innovation.getAllianceLevers().contains(allianceLever)) {
-          projectInnovationAllianceLeversManager.deleteProjectInnovationAllianceLevers(allianceLever.getId());
+        for (ProjectInnovationAllianceLevers allianceLever : allianceLeverPrev) {
+          if (innovation.getAllianceLevers() == null || !innovation.getAllianceLevers().contains(allianceLever)) {
+            projectInnovationAllianceLeversManager.deleteProjectInnovationAllianceLevers(allianceLever.getId());
+          }
         }
       }
-    }
 
-    // Save form Information
-    if (innovation.getAllianceLevers() != null) {
-      for (ProjectInnovationAllianceLevers innovationAllianceLever : innovation.getAllianceLevers()) {
-        if (innovationAllianceLever.getId() == null) {
-          ProjectInnovationAllianceLevers innovationAllianceLeverSave = new ProjectInnovationAllianceLevers();
-          innovationAllianceLeverSave.setAllianceLever(innovationAllianceLever.getAllianceLever());
-          innovationAllianceLeverSave.setProjectInnovation(projectInnovation);
-          innovationAllianceLeverSave.setPhase(phase);
+      // Save form Information
+      if (innovation.getAllianceLevers() != null) {
+        for (ProjectInnovationAllianceLevers innovationAllianceLever : innovation.getAllianceLevers()) {
+          if (innovationAllianceLever.getId() == null) {
+            ProjectInnovationAllianceLevers innovationAllianceLeverSave = new ProjectInnovationAllianceLevers();
+            innovationAllianceLeverSave.setAllianceLever(innovationAllianceLever.getAllianceLever());
+            innovationAllianceLeverSave.setProjectInnovation(projectInnovation);
+            innovationAllianceLeverSave.setPhase(phase);
 
-          projectInnovationAllianceLeversManager.saveProjectInnovationAllianceLevers(innovationAllianceLeverSave);
-          // This is to add innovationAllianceLeverSave to generate correct auditlog.
-          innovation.getProjectInnovationAllianceLevers().add(innovationAllianceLeverSave);
+            projectInnovationAllianceLeversManager.saveProjectInnovationAllianceLevers(innovationAllianceLeverSave);
+            // This is to add innovationAllianceLeverSave to generate correct auditlog.
+            innovation.getProjectInnovationAllianceLevers().add(innovationAllianceLeverSave);
+          }
         }
       }
+    } catch (Exception e) {
+      Log.error("Error saving alliance levers " + e);
     }
   }
 
@@ -2725,7 +2773,71 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     }
+  }
 
+  /**
+   * Save Expected Studies References Information
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  private void saveReferenceComplementarySolution(ProjectInnovation projectInnovation, Phase phase) {
+    // Search and deleted form Information
+    if (projectInnovation.getProjectInnovationReferenceComplementarySolutions() != null) {
+      final List<ProjectInnovationReferenceComplementarySolution> referencesPrev =
+        new ArrayList<>(projectInnovation.getProjectInnovationReferenceComplementarySolutions().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (final ProjectInnovationReferenceComplementarySolution innovationReference : referencesPrev) {
+        if ((this.innovation.getReferences() == null)
+          || !this.innovation.getReferences().contains(innovationReference)) {
+          this.projectInnovationReferenceComplementarySolutionManager
+            .deleteProjectInnovationReferenceComplementarySolution(innovationReference.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.innovation.getReferences() != null) {
+      for (final ProjectInnovationReferenceComplementarySolution innovationReference : this.innovation
+        .getReferenceComplementarySolutions()) {
+        if (innovationReference.getId() == null) {
+          final ProjectInnovationReferenceComplementarySolution innovationReferenceSave =
+            new ProjectInnovationReferenceComplementarySolution();
+          innovationReferenceSave.setProjectInnovation(projectInnovation);
+          innovationReferenceSave.setPhase(phase);
+          innovationReferenceSave.setReference(innovationReference.getReference());
+          innovationReferenceSave.setLink(innovationReference.getLink());
+          innovationReferenceSave.setEvidenceByDeliverable(innovationReference.getEvidenceByDeliverable());
+
+          this.projectInnovationReferenceComplementarySolutionManager
+            .saveProjectInnovationReferenceComplementarySolution(innovationReferenceSave);
+          // This is to add innovationReferenceSave to generate correct
+          // auditlog.
+          this.innovation.getProjectInnovationReferenceComplementarySolutions().add(innovationReferenceSave);
+        } else {
+          try {
+            final ProjectInnovationReferenceComplementarySolution innovationReferenceSave =
+              this.projectInnovationReferenceComplementarySolutionManager
+                .getProjectInnovationReferenceComplementarySolutionById(innovationReference.getId());
+            if ((innovationReferenceSave != null) && (projectInnovation != null)) {
+              innovationReferenceSave.setProjectInnovation(projectInnovation);
+              innovationReferenceSave.setPhase(phase);
+              innovationReferenceSave.setReference(innovationReference.getReference());
+              innovationReferenceSave.setLink(innovationReference.getLink());
+              innovationReferenceSave.setEvidenceByDeliverable(innovationReference.getEvidenceByDeliverable());
+            }
+
+            this.projectInnovationReferenceComplementarySolutionManager
+              .saveProjectInnovationReferenceComplementarySolution(innovationReferenceSave);
+            // This is to add innovationReferenceSave to generate correct
+            // auditlog.
+            this.innovation.getProjectInnovationReferenceComplementarySolutions().add(innovationReferenceSave);
+          } catch (final LockAcquisitionException lae) {
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -2758,10 +2870,11 @@ public class ProjectInnovationAction extends BaseAction {
           studyReferenceSave.setReference(studyReference.getReference());
           studyReferenceSave.setLink(studyReference.getLink());
           boolean externalAutor = false;
-          if (studyReference.getExternalAuthor() != null) {
+          if (studyReference.getEvidenceByDeliverable() != null) {
             externalAutor = true;
           }
           studyReferenceSave.setExternalAuthor(externalAutor);
+          studyReferenceSave.setEvidenceByDeliverable(studyReference.getEvidenceByDeliverable());
 
           this.projectInnovationReferenceManager.saveProjectInnovationReference(studyReferenceSave);
           // This is to add studyReferenceSave to generate correct
@@ -2776,13 +2889,86 @@ public class ProjectInnovationAction extends BaseAction {
               studyReferenceSave.setPhase(phase);
               studyReferenceSave.setReference(studyReference.getReference());
               studyReferenceSave.setLink(studyReference.getLink());
-              studyReferenceSave.setExternalAuthor(studyReference.getExternalAuthor());
+              studyReferenceSave.setEvidenceByDeliverable(studyReference.getEvidenceByDeliverable());
+              boolean externalAutor = false;
+              if (studyReference.getEvidenceByDeliverable() != null) {
+                externalAutor = true;
+              }
+              studyReferenceSave.setExternalAuthor(externalAutor);
             }
 
             this.projectInnovationReferenceManager.saveProjectInnovationReference(studyReferenceSave);
             // This is to add studyReferenceSave to generate correct
             // auditlog.
             this.innovation.getProjectInnovationReferences().add(studyReferenceSave);
+          } catch (final LockAcquisitionException lae) {
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Expected Studies ReferenceUrls Information
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  private void saveReferenceUrls(ProjectInnovation projectInnovation, Phase phase) {
+    // Search and deleted form Information
+    if (projectInnovation.getProjectInnovationReferenceUrls() != null) {
+      final List<ProjectInnovationReferenceUrl> referencesPrev =
+        new ArrayList<>(projectInnovation.getProjectInnovationReferenceUrls().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (final ProjectInnovationReferenceUrl innovationReferenceUrl : referencesPrev) {
+        if ((this.innovation.getReferenceUrls() == null)
+          || !this.innovation.getReferenceUrls().contains(innovationReferenceUrl)) {
+          this.projectInnovationReferenceUrlManager.deleteProjectInnovationReferenceUrl(innovationReferenceUrl.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (this.innovation.getReferenceUrls() != null) {
+      for (final ProjectInnovationReferenceUrl innovationReferenceUrl : this.innovation.getReferenceUrls()) {
+        if (innovationReferenceUrl.getId() == null) {
+          final ProjectInnovationReferenceUrl innovationReferenceUrlSave = new ProjectInnovationReferenceUrl();
+          innovationReferenceUrlSave.setProjectInnovation(projectInnovation);
+          innovationReferenceUrlSave.setPhase(phase);
+          innovationReferenceUrlSave.setReference(innovationReferenceUrl.getReference());
+          innovationReferenceUrlSave.setLink(innovationReferenceUrl.getLink());
+
+          innovationReferenceUrlSave.setInnovationType(innovationReferenceUrl.getInnovationType());
+          innovationReferenceUrlSave.setAdditionalArticleType(innovationReferenceUrl.getAdditionalArticleType());
+          innovationReferenceUrlSave.setDatasetType(innovationReferenceUrl.getDatasetType());
+          innovationReferenceUrlSave.setEvidenceByDeliverable(innovationReferenceUrl.getEvidenceByDeliverable());
+
+          this.projectInnovationReferenceUrlManager.saveProjectInnovationReferenceUrl(innovationReferenceUrlSave);
+          // This is to add innovationReferenceUrlSave to generate correct
+          // auditlog.
+          this.innovation.getProjectInnovationReferenceUrls().add(innovationReferenceUrlSave);
+        } else {
+          try {
+            final ProjectInnovationReferenceUrl innovationReferenceUrlSave = this.projectInnovationReferenceUrlManager
+              .getProjectInnovationReferenceUrlById(innovationReferenceUrl.getId());
+            if ((innovationReferenceUrlSave != null) && (projectInnovation != null)) {
+              innovationReferenceUrlSave.setProjectInnovation(projectInnovation);
+              innovationReferenceUrlSave.setPhase(phase);
+              innovationReferenceUrlSave.setReference(innovationReferenceUrl.getReference());
+              innovationReferenceUrlSave.setLink(innovationReferenceUrl.getLink());
+              innovationReferenceUrlSave.setEvidenceByDeliverable(innovationReferenceUrl.getEvidenceByDeliverable());
+
+              innovationReferenceUrlSave.setInnovationType(innovationReferenceUrl.getInnovationType());
+              innovationReferenceUrlSave.setAdditionalArticleType(innovationReferenceUrl.getAdditionalArticleType());
+              innovationReferenceUrlSave.setDatasetType(innovationReferenceUrl.getDatasetType());
+              innovationReferenceUrlSave.setEvidenceByDeliverable(innovationReferenceUrl.getEvidenceByDeliverable());
+            }
+
+            this.projectInnovationReferenceUrlManager.saveProjectInnovationReferenceUrl(innovationReferenceUrlSave);
+            // This is to add innovationReferenceUrlSave to generate correct
+            // auditlog.
+            this.innovation.getProjectInnovationReferenceUrls().add(innovationReferenceUrlSave);
           } catch (final LockAcquisitionException lae) {
           }
         }

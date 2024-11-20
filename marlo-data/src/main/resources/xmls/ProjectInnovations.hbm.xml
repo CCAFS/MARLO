@@ -188,6 +188,22 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationReference" />
     </set>
+    <set name="projectInnovationReferenceUrls" table="project_innovation_reference_urls"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationReferenceUrl" />
+    </set>
+    <set name="projectInnovationReferenceComplementarySolutions" table="project_innovation_reference_complementary_solutions"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationReferenceComplementarySolution" />
+    </set>
     <set name="projectInnovationImpactAreas" table="project_innovation_impact_areas"
       inverse="true" lazy="true" fetch="select">
       <key>

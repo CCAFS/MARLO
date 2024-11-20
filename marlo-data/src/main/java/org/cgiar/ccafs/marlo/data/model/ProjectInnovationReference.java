@@ -19,7 +19,11 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
   @Expose
   private String link;
   @Expose
+  private Boolean evidenceByDeliverable;
+  @Expose
   private Boolean externalAuthor;
+  @Expose
+  private Deliverable deliverable;
 
   public ProjectInnovationReference() {
   }
@@ -51,6 +55,14 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
     return true;
   }
 
+  public Deliverable getDeliverable() {
+    return deliverable;
+  }
+
+  public Boolean getEvidenceByDeliverable() {
+    return evidenceByDeliverable;
+  }
+
   public Boolean getExternalAuthor() {
     return externalAuthor;
   }
@@ -71,13 +83,13 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
     u.setId(new Long(3));
     return u;
   }
-
 
   public Phase getPhase() {
     return phase;
@@ -86,7 +98,6 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
   }
-
 
   public String getReference() {
     return reference;
@@ -110,6 +121,14 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
     return true;
   }
 
+  public void setDeliverable(Deliverable deliverable) {
+    this.deliverable = deliverable;
+  }
+
+  public void setEvidenceByDeliverable(Boolean evidenceByDeliverable) {
+    this.evidenceByDeliverable = evidenceByDeliverable;
+  }
+
   public void setExternalAuthor(Boolean externalAuthor) {
     this.externalAuthor = externalAuthor;
   }
@@ -130,7 +149,6 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
   }
-
 
   public void setReference(String link) {
     this.reference = link;

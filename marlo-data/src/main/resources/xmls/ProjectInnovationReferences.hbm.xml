@@ -15,6 +15,9 @@
         <property name="link" type="string">
             <column name="link" sql-type="TEXT" />
         </property>
+        <property name="evidenceByDeliverable" type="java.lang.Boolean">
+            <column name="has_evidence_by_deliverable" />
+        </property>
         <property name="externalAuthor" type="java.lang.Boolean">
             <column name="is_external_author" />
         </property>
@@ -35,6 +38,10 @@
         <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
             fetch="select">
             <column name="id_phase" />
+        </many-to-one>
+        <many-to-one name="deliverable" class="org.cgiar.ccafs.marlo.data.model.Deliverable"
+            fetch="select">
+            <column name="deliverable_id" />
         </many-to-one>
         <many-to-one class="org.cgiar.ccafs.marlo.data.model.ProjectInnovation"
             embed-xml="true" fetch="select" 

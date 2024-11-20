@@ -161,6 +161,7 @@ public class ProjectInnovationReferenceManagerImpl implements ProjectInnovationR
       projectInnovationReferenceAdd.setPhase(phase);
       projectInnovationReferenceAdd.setReference(projectInnovationReference.getReference());
       projectInnovationReferenceAdd.setLink(projectInnovationReference.getLink());
+      projectInnovationReferenceAdd.setEvidenceByDeliverable(projectInnovationReference.getEvidenceByDeliverable());
       projectInnovationReferenceAdd.setExternalAuthor(projectInnovationReference.getExternalAuthor());
       projectInnovationReferenceDAO.save(projectInnovationReferenceAdd);
     } else {
@@ -169,6 +170,7 @@ public class ProjectInnovationReferenceManagerImpl implements ProjectInnovationR
       projectInnovationReferenceAdd.setPhase(phase);
       projectInnovationReferenceAdd.setReference(projectInnovationReference.getReference());
       projectInnovationReferenceAdd.setLink(projectInnovationReference.getLink());
+      projectInnovationReferenceAdd.setEvidenceByDeliverable(projectInnovationReference.getEvidenceByDeliverable());
       projectInnovationReferenceAdd.setExternalAuthor(projectInnovationReference.getExternalAuthor());
       projectInnovationReferenceDAO.save(projectInnovationReferenceAdd);
 

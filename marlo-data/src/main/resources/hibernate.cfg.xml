@@ -463,7 +463,7 @@
   <mapping resource="xmls/Actors.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationAllianceOrganizations.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationReferenceUrls.hbm.xml"/>
-  <mapping resource="xmls/ProjectInnovationReferenceDatasets.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationReferenceComplementarySolutions.hbm.xml"/>
+  <mapping resource="xmls/ProjectInnovationActors.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>
