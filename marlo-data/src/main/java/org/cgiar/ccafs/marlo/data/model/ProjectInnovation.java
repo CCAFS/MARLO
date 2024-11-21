@@ -109,11 +109,17 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   private List<ProjectInnovationImpactArea> impactAreas;
   private Set<ProjectInnovationAllianceOrganization> projectInnovationAllianceOrganizations = new HashSet<>(0);
   private List<ProjectInnovationAllianceOrganization> allianceOrganizations;
+  private Set<ProjectInnovationActor> projectInnovationActors = new HashSet<>(0);
+  private List<ProjectInnovationActor> actors;
+
+  public List<ProjectInnovationActor> getActors() {
+    return actors;
+  }
+
 
   public List<ProjectInnovationAllianceLevers> getAllianceLevers() {
     return allianceLevers;
   }
-
 
   public List<ProjectInnovationAllianceOrganization> getAllianceOrganizations() {
     return allianceOrganizations;
@@ -127,6 +133,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return commentStatus;
   }
 
+
   public String getComposedName() {
     if ((this.projectInnovationInfo != null) && (this.projectInnovationInfo.getTitle() != null)
       && (this.projectInnovationInfo.getTitle().trim().length() > 0)) {
@@ -135,7 +142,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
       return "" + this.getId() + " - Untitled";
     }
   }
-
 
   public String getComposedNameAlternative() {
     if ((this.projectInnovationInfo != null)) {
@@ -203,6 +209,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return impactAreas;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -220,7 +227,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return this.organizations;
   }
 
-
   public List<ProjectInnovationPartnership> getPartnerships() {
     return partnerships;
   }
@@ -237,6 +243,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return projectExpectedStudyInnovations;
   }
 
+  public Set<ProjectInnovationActor> getProjectInnovationActors() {
+    return projectInnovationActors;
+  }
+
   public Set<ProjectInnovationAllianceLevers> getProjectInnovationAllianceLevers() {
     return projectInnovationAllianceLevers;
   }
@@ -245,6 +255,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return projectInnovationAllianceOrganizations;
   }
 
+
   public Set<ProjectInnovationCenter> getProjectInnovationCenters() {
     return projectInnovationCenters;
   }
@@ -252,7 +263,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public Set<ProjectInnovationContributingOrganization> getProjectInnovationContributingOrganization() {
     return this.projectInnovationContributingOrganization;
   }
-
 
   public Set<ProjectInnovationCountry> getProjectInnovationCountries() {
     return this.projectInnovationCountries;
@@ -410,6 +420,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
       .collect(Collectors.toList()));
   }
 
+  public void setActors(List<ProjectInnovationActor> actors) {
+    this.actors = actors;
+  }
+
   public void setAllbyPhase(Phase phase) {
     // TODO: Include all others many to many Relationships
     if (this.getProjectInnovationInfo(phase) != null) {
@@ -470,6 +484,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.geographicScopes = geographicScopes;
   }
 
+
   public void setImpactAreas(List<ProjectInnovationImpactArea> impactAreas) {
     this.impactAreas = impactAreas;
   }
@@ -481,7 +496,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public void setOrganizations(List<ProjectInnovationOrganization> organizations) {
     this.organizations = organizations;
   }
-
 
   public void setPartnerships(List<ProjectInnovationPartnership> partnerships) {
     this.partnerships = partnerships;
@@ -497,6 +511,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   public void setProjectExpectedStudyInnovations(Set<ProjectExpectedStudyInnovation> projectExpectedStudyInnovations) {
     this.projectExpectedStudyInnovations = projectExpectedStudyInnovations;
+  }
+
+  public void setProjectInnovationActors(Set<ProjectInnovationActor> projectInnovationActors) {
+    this.projectInnovationActors = projectInnovationActors;
   }
 
   public void setProjectInnovationAllianceLevers(Set<ProjectInnovationAllianceLevers> projectInnovationAllianceLevers) {
@@ -558,6 +576,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.projectInnovationOrganizations = projectInnovationOrganizations;
   }
 
+
   public void setProjectInnovationPartnerships(Set<ProjectInnovationPartnership> projectInnovationPartnerships) {
     this.projectInnovationPartnerships = projectInnovationPartnerships;
   }
@@ -575,7 +594,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public void setProjectInnovationReferences(Set<ProjectInnovationReference> projectInnovationReferences) {
     this.projectInnovationReferences = projectInnovationReferences;
   }
-
 
   public void setProjectInnovationReferenceUrls(Set<ProjectInnovationReferenceUrl> projectInnovationReferenceUrls) {
     this.projectInnovationReferenceUrls = projectInnovationReferenceUrls;

@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationReferenceComplementarySolutionDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReferenceComplementarySolution;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,7 +28,9 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectInnovationReferenceComplementarySolutionMySQLDAO extends AbstractMarloDAO<ProjectInnovationReferenceComplementarySolution, Long> implements ProjectInnovationReferenceComplementarySolutionDAO {
+public class ProjectInnovationReferenceComplementarySolutionMySQLDAO
+  extends AbstractMarloDAO<ProjectInnovationReferenceComplementarySolution, Long>
+  implements ProjectInnovationReferenceComplementarySolutionDAO {
 
 
   @Inject
@@ -36,15 +39,19 @@ public class ProjectInnovationReferenceComplementarySolutionMySQLDAO extends Abs
   }
 
   @Override
-  public void deleteProjectInnovationReferenceComplementarySolution(long projectInnovationReferenceComplementarySolutionId) {
-    ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolution = this.find(projectInnovationReferenceComplementarySolutionId);
+  public void
+    deleteProjectInnovationReferenceComplementarySolution(long projectInnovationReferenceComplementarySolutionId) {
+    ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolution =
+      this.find(projectInnovationReferenceComplementarySolutionId);
     projectInnovationReferenceComplementarySolution.setActive(false);
     this.update(projectInnovationReferenceComplementarySolution);
   }
 
   @Override
-  public boolean existProjectInnovationReferenceComplementarySolution(long projectInnovationReferenceComplementarySolutionID) {
-    ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolution = this.find(projectInnovationReferenceComplementarySolutionID);
+  public boolean
+    existProjectInnovationReferenceComplementarySolution(long projectInnovationReferenceComplementarySolutionID) {
+    ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolution =
+      this.find(projectInnovationReferenceComplementarySolutionID);
     if (projectInnovationReferenceComplementarySolution == null) {
       return false;
     }
@@ -62,7 +69,7 @@ public class ProjectInnovationReferenceComplementarySolutionMySQLDAO extends Abs
   public List<ProjectInnovationReferenceComplementarySolution> findAll() {
     String query = "from " + ProjectInnovationReferenceComplementarySolution.class.getName() + " where is_active=1";
     List<ProjectInnovationReferenceComplementarySolution> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
@@ -70,7 +77,20 @@ public class ProjectInnovationReferenceComplementarySolutionMySQLDAO extends Abs
   }
 
   @Override
-  public ProjectInnovationReferenceComplementarySolution save(ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolution) {
+  public List<ProjectInnovationReferenceComplementarySolution>
+    getProjectInnovationReferenceComplementarySolutionByPhaseAndInnovation(long phaseID, long innovationID) {
+    String query = "from " + ProjectInnovationReferenceComplementarySolution.class.getName()
+      + " where project_innovation_id=" + innovationID + " and id_phase=" + phaseID;
+    List<ProjectInnovationReferenceComplementarySolution> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
+  }
+
+  @Override
+  public ProjectInnovationReferenceComplementarySolution
+    save(ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolution) {
     if (projectInnovationReferenceComplementarySolution.getId() == null) {
       super.saveEntity(projectInnovationReferenceComplementarySolution);
     } else {

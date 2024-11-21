@@ -61,14 +61,26 @@ public interface ProjectInnovationReferenceUrlManager {
   public ProjectInnovationReferenceUrl getProjectInnovationReferenceUrlById(long projectInnovationReferenceUrlID);
 
   /**
+   * This method gets a projectInnovationReferenceUrl list by a given projectInnovationReference identifier.
+   * 
+   * @param projectInnovationReferenceID is the projectInnovationReference identifier.
+   * @param PhaseID is the phase identifier.
+   * @return a ProjectInnovationReference object.
+   */
+  public List<ProjectInnovationReferenceUrl> getProjectInnovationReferenceUrlByPhaseAndInnovation(long phaseID,
+    long innovationID);
+
+  /**
    * This method saves the information of the given projectInnovationReferenceUrl
    * 
-   * @param projectInnovationReferenceUrl - is the projectInnovationReferenceUrl object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationReferenceUrl was
+   * @param projectInnovationReferenceUrl - is the projectInnovationReferenceUrl object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectInnovationReferenceUrl was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectInnovationReferenceUrl saveProjectInnovationReferenceUrl(ProjectInnovationReferenceUrl projectInnovationReferenceUrl);
-
+  public ProjectInnovationReferenceUrl
+    saveProjectInnovationReferenceUrl(ProjectInnovationReferenceUrl projectInnovationReferenceUrl);
 
 }

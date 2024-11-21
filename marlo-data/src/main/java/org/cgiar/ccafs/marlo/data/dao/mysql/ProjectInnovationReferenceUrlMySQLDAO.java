@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationReferenceUrlDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReferenceUrl;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,7 +28,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectInnovationReferenceUrlMySQLDAO extends AbstractMarloDAO<ProjectInnovationReferenceUrl, Long> implements ProjectInnovationReferenceUrlDAO {
+public class ProjectInnovationReferenceUrlMySQLDAO extends AbstractMarloDAO<ProjectInnovationReferenceUrl, Long>
+  implements ProjectInnovationReferenceUrlDAO {
 
 
   @Inject
@@ -70,6 +72,18 @@ public class ProjectInnovationReferenceUrlMySQLDAO extends AbstractMarloDAO<Proj
   }
 
   @Override
+  public List<ProjectInnovationReferenceUrl> getProjectInnovationReferenceUrlByPhaseAndInnovation(long phaseID,
+    long innovationID) {
+    String query = "from " + ProjectInnovationReferenceUrl.class.getName() + " where project_innovation_id="
+      + innovationID + " and id_phase=" + phaseID;
+    List<ProjectInnovationReferenceUrl> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
+  }
+
+  @Override
   public ProjectInnovationReferenceUrl save(ProjectInnovationReferenceUrl projectInnovationReferenceUrl) {
     if (projectInnovationReferenceUrl.getId() == null) {
       super.saveEntity(projectInnovationReferenceUrl);
@@ -80,6 +94,4 @@ public class ProjectInnovationReferenceUrlMySQLDAO extends AbstractMarloDAO<Proj
 
     return projectInnovationReferenceUrl;
   }
-
-
 }

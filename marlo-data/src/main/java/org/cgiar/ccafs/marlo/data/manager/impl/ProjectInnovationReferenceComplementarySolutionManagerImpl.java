@@ -15,11 +15,15 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationReferenceComplementarySolutionDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationReferenceComplementarySolutionManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReferenceComplementarySolution;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,30 +32,77 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ProjectInnovationReferenceComplementarySolutionManagerImpl implements ProjectInnovationReferenceComplementarySolutionManager {
-
+public class ProjectInnovationReferenceComplementarySolutionManagerImpl
+  implements ProjectInnovationReferenceComplementarySolutionManager {
 
   private ProjectInnovationReferenceComplementarySolutionDAO projectInnovationReferenceComplementarySolutionDAO;
+  private PhaseDAO phaseDAO;
   // Managers
 
-
   @Inject
-  public ProjectInnovationReferenceComplementarySolutionManagerImpl(ProjectInnovationReferenceComplementarySolutionDAO projectInnovationReferenceComplementarySolutionDAO) {
+  public ProjectInnovationReferenceComplementarySolutionManagerImpl(
+    ProjectInnovationReferenceComplementarySolutionDAO projectInnovationReferenceComplementarySolutionDAO,
+    PhaseDAO phaseDAO) {
     this.projectInnovationReferenceComplementarySolutionDAO = projectInnovationReferenceComplementarySolutionDAO;
+    this.phaseDAO = phaseDAO;
+  }
 
+  @Override
+  public void
+    deleteProjectInnovationReferenceComplementarySolution(long projectInnovationReferenceComplementarySolutionId) {
+    ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolution =
+      this.getProjectInnovationReferenceComplementarySolutionById(projectInnovationReferenceComplementarySolutionId);
+    Phase currentPhase = projectInnovationReferenceComplementarySolution.getPhase();
+
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null) {
+      this.deleteProjectInnovationReferenceComplementarySolutionPhase(currentPhase.getNext(),
+        projectInnovationReferenceComplementarySolution.getProjectInnovation().getId(),
+        projectInnovationReferenceComplementarySolution);
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING) && currentPhase.getNext() != null
+      && currentPhase.getNext().getNext() != null) {
+      Phase upkeepPhase = currentPhase.getNext().getNext();
+      if (upkeepPhase != null) {
+        this.deleteProjectInnovationReferenceComplementarySolutionPhase(upkeepPhase,
+          projectInnovationReferenceComplementarySolution.getProjectInnovation().getId(),
+          projectInnovationReferenceComplementarySolution);
+      }
+    }
+
+
+    projectInnovationReferenceComplementarySolutionDAO
+      .deleteProjectInnovationReferenceComplementarySolution(projectInnovationReferenceComplementarySolutionId);
+  }
+
+  public void deleteProjectInnovationReferenceComplementarySolutionPhase(Phase next, long innovationID,
+    ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolution) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectInnovationReferenceComplementarySolution> projectInnovationReferenceComplementarySolutions =
+      this.getProjectInnovationReferenceComplementarySolutionByPhaseAndInnovation(innovationID, next.getId()).stream()
+        .filter(c -> c != null && c.getId() != null
+          && c.getReference().equals(projectInnovationReferenceComplementarySolution.getReference()))
+        .collect(Collectors.toList());
+
+    for (ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolutionDel : projectInnovationReferenceComplementarySolutions) {
+      projectInnovationReferenceComplementarySolutionDAO.deleteProjectInnovationReferenceComplementarySolution(
+        projectInnovationReferenceComplementarySolutionDel.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deleteProjectInnovationReferenceComplementarySolutionPhase(phase.getNext(), innovationID,
+        projectInnovationReferenceComplementarySolution);
+    }
 
   }
 
   @Override
-  public void deleteProjectInnovationReferenceComplementarySolution(long projectInnovationReferenceComplementarySolutionId) {
+  public boolean
+    existProjectInnovationReferenceComplementarySolution(long projectInnovationReferenceComplementarySolutionID) {
 
-    projectInnovationReferenceComplementarySolutionDAO.deleteProjectInnovationReferenceComplementarySolution(projectInnovationReferenceComplementarySolutionId);
-  }
-
-  @Override
-  public boolean existProjectInnovationReferenceComplementarySolution(long projectInnovationReferenceComplementarySolutionID) {
-
-    return projectInnovationReferenceComplementarySolutionDAO.existProjectInnovationReferenceComplementarySolution(projectInnovationReferenceComplementarySolutionID);
+    return projectInnovationReferenceComplementarySolutionDAO
+      .existProjectInnovationReferenceComplementarySolution(projectInnovationReferenceComplementarySolutionID);
   }
 
   @Override
@@ -62,16 +113,97 @@ public class ProjectInnovationReferenceComplementarySolutionManagerImpl implemen
   }
 
   @Override
-  public ProjectInnovationReferenceComplementarySolution getProjectInnovationReferenceComplementarySolutionById(long projectInnovationReferenceComplementarySolutionID) {
+  public ProjectInnovationReferenceComplementarySolution
+    getProjectInnovationReferenceComplementarySolutionById(long projectInnovationReferenceComplementarySolutionID) {
 
     return projectInnovationReferenceComplementarySolutionDAO.find(projectInnovationReferenceComplementarySolutionID);
   }
 
   @Override
-  public ProjectInnovationReferenceComplementarySolution saveProjectInnovationReferenceComplementarySolution(ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolution) {
-
-    return projectInnovationReferenceComplementarySolutionDAO.save(projectInnovationReferenceComplementarySolution);
+  public List<ProjectInnovationReferenceComplementarySolution>
+    getProjectInnovationReferenceComplementarySolutionByPhaseAndInnovation(long phaseID, long innovationID) {
+    return projectInnovationReferenceComplementarySolutionDAO
+      .getProjectInnovationReferenceComplementarySolutionByPhaseAndInnovation(phaseID, innovationID);
   }
 
+  @Override
+  public ProjectInnovationReferenceComplementarySolution saveProjectInnovationReferenceComplementarySolution(
+    ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolution) {
+    ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolutionResult =
+      projectInnovationReferenceComplementarySolutionDAO.save(projectInnovationReferenceComplementarySolution);
+    Phase currentPhase = projectInnovationReferenceComplementarySolutionResult.getPhase();
+
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null) {
+      this.saveProjectInnovationReferenceComplementarySolutionPhase(currentPhase.getNext(),
+        projectInnovationReferenceComplementarySolution.getProjectInnovation().getId(),
+        projectInnovationReferenceComplementarySolution);
+    }
+
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING) && currentPhase.getNext() != null
+      && currentPhase.getNext().getNext() != null) {
+      Phase upkeepPhase = currentPhase.getNext().getNext();
+      if (upkeepPhase != null) {
+        this.saveProjectInnovationReferenceComplementarySolutionPhase(upkeepPhase,
+          projectInnovationReferenceComplementarySolution.getProjectInnovation().getId(),
+          projectInnovationReferenceComplementarySolution);
+      }
+    }
+
+    return projectInnovationReferenceComplementarySolutionResult;
+  }
+
+  public void saveProjectInnovationReferenceComplementarySolutionPhase(Phase next, long innovationID,
+    ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolution) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectInnovationReferenceComplementarySolution> projectInnovationReferenceComplementarySolutions =
+      this.getProjectInnovationReferenceComplementarySolutionByPhaseAndInnovation(innovationID, next.getId()).stream()
+        .filter(c -> c != null && c.getId() != null
+          && c.getReference().equals(projectInnovationReferenceComplementarySolution.getReference()))
+        .collect(Collectors.toList());
+
+    if (projectInnovationReferenceComplementarySolutions.isEmpty()) {
+      ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolutionAdd =
+        new ProjectInnovationReferenceComplementarySolution();
+      projectInnovationReferenceComplementarySolutionAdd
+        .setProjectInnovation(projectInnovationReferenceComplementarySolution.getProjectInnovation());
+      projectInnovationReferenceComplementarySolutionAdd.setPhase(phase);
+      projectInnovationReferenceComplementarySolutionAdd
+        .setReference(projectInnovationReferenceComplementarySolution.getReference());
+      projectInnovationReferenceComplementarySolutionAdd
+        .setLink(projectInnovationReferenceComplementarySolution.getLink());
+      projectInnovationReferenceComplementarySolutionAdd
+        .setEvidenceByDeliverable(projectInnovationReferenceComplementarySolution.getEvidenceByDeliverable());
+      projectInnovationReferenceComplementarySolutionDAO.save(projectInnovationReferenceComplementarySolutionAdd);
+    } else {
+      ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolutionAdd =
+        new ProjectInnovationReferenceComplementarySolution();
+      projectInnovationReferenceComplementarySolutionAdd
+        .setProjectInnovation(projectInnovationReferenceComplementarySolution.getProjectInnovation());
+      projectInnovationReferenceComplementarySolutionAdd.setPhase(phase);
+      projectInnovationReferenceComplementarySolutionAdd
+        .setReference(projectInnovationReferenceComplementarySolution.getReference());
+      projectInnovationReferenceComplementarySolutionAdd
+        .setLink(projectInnovationReferenceComplementarySolution.getLink());
+      projectInnovationReferenceComplementarySolutionAdd
+        .setEvidenceByDeliverable(projectInnovationReferenceComplementarySolution.getEvidenceByDeliverable());
+      projectInnovationReferenceComplementarySolutionDAO.save(projectInnovationReferenceComplementarySolutionAdd);
+
+      for (ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolutionDel : projectInnovationReferenceComplementarySolutions) {
+        try {
+          projectInnovationReferenceComplementarySolutionDAO.deleteProjectInnovationReferenceComplementarySolution(
+            projectInnovationReferenceComplementarySolutionDel.getId());
+        } catch (Exception e) {
+          // TODO: handle exception
+        }
+      }
+    }
+
+    if (phase.getNext() != null) {
+      this.saveProjectInnovationReferenceComplementarySolutionPhase(phase.getNext(), innovationID,
+        projectInnovationReferenceComplementarySolution);
+    }
+  }
 
 }

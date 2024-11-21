@@ -55,11 +55,16 @@ public interface ProjectInnovationReferenceUrlDAO {
   public List<ProjectInnovationReferenceUrl> findAll();
 
 
+  public List<ProjectInnovationReferenceUrl> getProjectInnovationReferenceUrlByPhaseAndInnovation(long phaseID,
+    long innovationID);
+
   /**
    * This method saves the information of the given projectInnovationReferenceUrl
    * 
-   * @param projectInnovationReferenceUrl - is the projectInnovationReferenceUrl object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationReferenceUrl was
+   * @param projectInnovationReferenceUrl - is the projectInnovationReferenceUrl object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectInnovationReferenceUrl was
    *         updated
    *         or -1 is some error occurred.
    */

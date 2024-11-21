@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationActorManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceLeversManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
@@ -99,6 +100,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationActor;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
@@ -244,6 +246,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ActorManager actorManager;
   private InstitutionTypeManager institutionTypeManager;
   private ProjectInnovationAllianceOrganizationManager projectInnovationAllianceOrganizationManager;
+  private ProjectInnovationActorManager projectInnovationActorManager;
 
   // Variables
   private long projectID;
@@ -345,7 +348,8 @@ public class ProjectInnovationAction extends BaseAction {
     InstitutionTypeManager institutionTypeManager,
     ProjectInnovationAllianceOrganizationManager projectInnovationAllianceOrganizationManager,
     ProjectInnovationReferenceUrlManager projectInnovationReferenceUrlManager,
-    ProjectInnovationReferenceComplementarySolutionManager projectInnovationReferenceComplementarySolutionManager) {
+    ProjectInnovationReferenceComplementarySolutionManager projectInnovationReferenceComplementarySolutionManager,
+    ProjectInnovationActorManager projectInnovationActorManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -411,6 +415,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationReferenceUrlManager = projectInnovationReferenceUrlManager;
     this.projectInnovationReferenceComplementarySolutionManager =
       projectInnovationReferenceComplementarySolutionManager;
+    this.projectInnovationActorManager = projectInnovationActorManager;
   }
 
   /**
@@ -1215,10 +1220,17 @@ public class ProjectInnovationAction extends BaseAction {
           innovation.setImpactAreas(new ArrayList<>(innovation.getProjectInnovationImpactAreas().stream()
             .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
+
         // Innovations alliance organizations
         if (innovation.getProjectInnovationAllianceOrganizations() != null) {
           innovation.setAllianceOrganizations(new ArrayList<>(innovation.getProjectInnovationAllianceOrganizations()
             .stream().filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
+        // Innovations actors
+        if (innovation.getProjectInnovationActors() != null) {
+          innovation.setActors(new ArrayList<>(innovation.getProjectInnovationActors().stream()
+            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovations references
@@ -1703,6 +1715,9 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getAllianceOrganizations() != null) {
         innovation.getAllianceOrganizations().clear();
       }
+      if (innovation.getActors() != null) {
+        innovation.getActors().clear();
+      }
       // HTTP Post info Values
       // innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
       // innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
@@ -1763,6 +1778,7 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveReferenceUrls(innovationDB, phase);
       this.saveReferenceComplementarySolution(innovationDB, phase);
       this.saveAllianceOrganizations(innovationDB, phase);
+      this.saveActors(innovationDB, phase);
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -1958,6 +1974,51 @@ public class ProjectInnovationAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+  }
+
+  /**
+   * Save Project Innovation Actors
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  public void saveActors(ProjectInnovation projectInnovation, Phase phase) {
+    // Search and deleted form Information
+    if (projectInnovation.getProjectInnovationActors() != null
+      && !projectInnovation.getProjectInnovationActors().isEmpty()) {
+
+      List<ProjectInnovationActor> actorPrev = new ArrayList<>(projectInnovation.getProjectInnovationActors().stream()
+        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectInnovationActor actor : actorPrev) {
+        if (innovation.getActors() == null || !innovation.getActors().contains(actor)) {
+          projectInnovationActorManager.deleteProjectInnovationActor(actor.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (innovation.getActors() != null) {
+      for (ProjectInnovationActor innovationActor : innovation.getActors()) {
+        if (innovationActor.getId() == null) {
+          ProjectInnovationActor innovationActorSave = new ProjectInnovationActor();
+          innovationActorSave.setWomenYouth(innovationActor.getWomenYouth());
+          innovationActorSave.setWomenNotYouth(innovationActor.getWomenNotYouth());
+          innovationActorSave.setMenYouth(innovationActor.getMenYouth());
+          innovationActorSave.setMenNotYouth(innovationActor.getMenNotYouth());
+          innovationActorSave.setNonbinaryYouth(innovationActor.getNonbinaryYouth());
+          innovationActorSave.setNonbinaryNotYouth(innovationActor.getNonbinaryNotYouth());
+          innovationActorSave.setActor(innovationActor.getActor());
+          innovationActorSave.setProjectInnovation(projectInnovation);
+          innovationActorSave.setPhase(phase);
+
+          projectInnovationActorManager.saveProjectInnovationActor(innovationActorSave);
+          // This is to add innovationActorSave to generate correct auditlog.
+          innovation.getProjectInnovationActors().add(innovationActorSave);
+        }
+      }
+    }
+
   }
 
   /**

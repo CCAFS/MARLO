@@ -63,7 +63,7 @@ public interface ProjectInnovationReferenceManager {
   /**
    * This method gets a projectInnovationReference list by a given projectInnovationReference identifier.
    * 
-   * @param projectInnovationReferenceID is the projectInnovationReference identifier.
+   * @param projectInnovationID is the projectInnovationReference identifier.
    * @param PhaseID is the phase identifier.
    * @return a ProjectInnovationReference object.
    */

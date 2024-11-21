@@ -29,19 +29,24 @@ public interface ProjectInnovationReferenceComplementarySolutionManager {
   /**
    * This method removes a specific projectInnovationReferenceComplementarySolution value from the database.
    * 
-   * @param projectInnovationReferenceComplementarySolutionId is the projectInnovationReferenceComplementarySolution identifier.
+   * @param projectInnovationReferenceComplementarySolutionId is the projectInnovationReferenceComplementarySolution
+   *        identifier.
    * @return true if the projectInnovationReferenceComplementarySolution was successfully deleted, false otherwise.
    */
-  public void deleteProjectInnovationReferenceComplementarySolution(long projectInnovationReferenceComplementarySolutionId);
+  public void
+    deleteProjectInnovationReferenceComplementarySolution(long projectInnovationReferenceComplementarySolutionId);
 
 
   /**
-   * This method validate if the projectInnovationReferenceComplementarySolution identify with the given id exists in the system.
+   * This method validate if the projectInnovationReferenceComplementarySolution identify with the given id exists in
+   * the system.
    * 
-   * @param projectInnovationReferenceComplementarySolutionID is a projectInnovationReferenceComplementarySolution identifier.
+   * @param projectInnovationReferenceComplementarySolutionID is a projectInnovationReferenceComplementarySolution
+   *        identifier.
    * @return true if the projectInnovationReferenceComplementarySolution exists, false otherwise.
    */
-  public boolean existProjectInnovationReferenceComplementarySolution(long projectInnovationReferenceComplementarySolutionID);
+  public boolean
+    existProjectInnovationReferenceComplementarySolution(long projectInnovationReferenceComplementarySolutionID);
 
 
   /**
@@ -53,22 +58,37 @@ public interface ProjectInnovationReferenceComplementarySolutionManager {
 
 
   /**
-   * This method gets a projectInnovationReferenceComplementarySolution object by a given projectInnovationReferenceComplementarySolution identifier.
+   * This method gets a projectInnovationReferenceComplementarySolution object by a given
+   * projectInnovationReferenceComplementarySolution identifier.
    * 
-   * @param projectInnovationReferenceComplementarySolutionID is the projectInnovationReferenceComplementarySolution identifier.
+   * @param projectInnovationReferenceComplementarySolutionID is the projectInnovationReferenceComplementarySolution
+   *        identifier.
    * @return a ProjectInnovationReferenceComplementarySolution object.
    */
-  public ProjectInnovationReferenceComplementarySolution getProjectInnovationReferenceComplementarySolutionById(long projectInnovationReferenceComplementarySolutionID);
+  public ProjectInnovationReferenceComplementarySolution
+    getProjectInnovationReferenceComplementarySolutionById(long projectInnovationReferenceComplementarySolutionID);
+
+  /**
+   * This method gets a projectInnovationReferenceComplementarySolution list by a given projectInnovation.
+   * 
+   * @param projectInnovationID is the projectInnovation identifier.
+   * @param PhaseID is the phase identifier.
+   * @return a ProjectInnovationReference object.
+   */
+  public List<ProjectInnovationReferenceComplementarySolution>
+    getProjectInnovationReferenceComplementarySolutionByPhaseAndInnovation(long phaseID, long innovationID);
 
   /**
    * This method saves the information of the given projectInnovationReferenceComplementarySolution
    * 
-   * @param projectInnovationReferenceComplementarySolution - is the projectInnovationReferenceComplementarySolution object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationReferenceComplementarySolution was
+   * @param projectInnovationReferenceComplementarySolution - is the projectInnovationReferenceComplementarySolution
+   *        object with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectInnovationReferenceComplementarySolution was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectInnovationReferenceComplementarySolution saveProjectInnovationReferenceComplementarySolution(ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolution);
-
+  public ProjectInnovationReferenceComplementarySolution saveProjectInnovationReferenceComplementarySolution(
+    ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolution);
 
 }
