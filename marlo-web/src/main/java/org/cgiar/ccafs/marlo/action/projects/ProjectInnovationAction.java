@@ -78,6 +78,7 @@ import org.cgiar.ccafs.marlo.data.manager.ScalingReadinessManager;
 import org.cgiar.ccafs.marlo.data.manager.SdgManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
+import org.cgiar.ccafs.marlo.data.manager.ToolFunctionCategoryManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Actor;
 import org.cgiar.ccafs.marlo.data.model.AllianceLever;
@@ -143,6 +144,7 @@ import org.cgiar.ccafs.marlo.data.model.ScalingReadiness;
 import org.cgiar.ccafs.marlo.data.model.Sdg;
 import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
+import org.cgiar.ccafs.marlo.data.model.ToolFunctionCategory;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -247,6 +249,7 @@ public class ProjectInnovationAction extends BaseAction {
   private InstitutionTypeManager institutionTypeManager;
   private ProjectInnovationAllianceOrganizationManager projectInnovationAllianceOrganizationManager;
   private ProjectInnovationActorManager projectInnovationActorManager;
+  private ToolFunctionCategoryManager toolFunctionCategoryManager;
 
   // Variables
   private long projectID;
@@ -303,6 +306,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<ScalingReadiness> scalingReadinessList;
   private List<Actor> actorList;
   private List<InstitutionType> institutionTypeList;
+  private List<ToolFunctionCategory> toolCategoryList;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -349,7 +353,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationAllianceOrganizationManager projectInnovationAllianceOrganizationManager,
     ProjectInnovationReferenceUrlManager projectInnovationReferenceUrlManager,
     ProjectInnovationReferenceComplementarySolutionManager projectInnovationReferenceComplementarySolutionManager,
-    ProjectInnovationActorManager projectInnovationActorManager) {
+    ProjectInnovationActorManager projectInnovationActorManager,
+    ToolFunctionCategoryManager toolFunctionCategoryManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -416,6 +421,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationReferenceComplementarySolutionManager =
       projectInnovationReferenceComplementarySolutionManager;
     this.projectInnovationActorManager = projectInnovationActorManager;
+    this.toolFunctionCategoryManager = toolFunctionCategoryManager;
   }
 
   /**
@@ -693,6 +699,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<SrfSubIdo> getSubIdos() {
     return subIdos;
+  }
+
+  public List<ToolFunctionCategory> getToolCategoryList() {
+    return toolCategoryList;
   }
 
   public String getTransaction() {
@@ -1289,10 +1299,13 @@ public class ProjectInnovationAction extends BaseAction {
       this.intellectualInstitutionsList = this.intellectualPropertyRightsInstitutionManager.findAll();
       this.scalingReadinessList = this.scalingReadinessManager.findAll();
       this.actorList = this.actorManager.findAll();
+      this.toolCategoryList = this.toolFunctionCategoryManager.findAll();
+
       try {
         this.institutionTypeList =
           Optional.ofNullable(this.institutionTypeManager.findAll()).orElse(Collections.emptyList()).stream()
-            .filter(it -> it != null && it.getSource() != null && it.getSource() == 1).collect(Collectors.toList());
+            .filter(it -> it != null && it.getSource() != null && it.getSource() == 1 && it.getParent() == null)
+            .collect(Collectors.toList());
       } catch (Exception e) {
         Log.error("error getting institution types " + e);
       }
@@ -1601,30 +1614,30 @@ public class ProjectInnovationAction extends BaseAction {
      * get feedback comments
      */
     try {
+      if (this.hasSpecificities(this.feedbackModule())) {
+        feedbackComments = new ArrayList<>();
+        feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
+          .filter(f -> f.getSectionName() != null && f.getSectionName().equals("innovation"))
+          .collect(Collectors.toList());
+        if (feedbackComments != null) {
+          for (FeedbackQACommentableFields field : feedbackComments) {
+            List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
+            feedbackQACommentManager.findAllByPhase(this.getActualPhase().getId()).stream()
+              .filter(f -> f != null && f.getParentId() == innovation.getId() && f.getField() != null
+                && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
+              .collect(Collectors.toList());
 
-      feedbackComments = new ArrayList<>();
-      feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
-        .filter(f -> f.getSectionName() != null && f.getSectionName().equals("innovation"))
-        .collect(Collectors.toList());
-      if (feedbackComments != null) {
-        for (FeedbackQACommentableFields field : feedbackComments) {
-          List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
-          feedbackQACommentManager.findAllByPhase(this.getActualPhase().getId()).stream()
-            .filter(f -> f != null && f.getParentId() == innovation.getId() && f.getField() != null
-              && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
-            .collect(Collectors.toList());
-
-          /*
-           * comments = feedbackQACommentManager.findAll().stream()
-           * .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
-           * && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == innovation.getId()
-           * && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
-           * .collect(Collectors.toList());
-           */
-          field.setQaComments(comments);
+            /*
+             * comments = feedbackQACommentManager.findAll().stream()
+             * .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+             * && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == innovation.getId()
+             * && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
+             * .collect(Collectors.toList());
+             */
+            field.setQaComments(comments);
+          }
         }
       }
-
     } catch (Exception e) {
     }
 
@@ -3418,6 +3431,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setSubIdos(List<SrfSubIdo> subIdos) {
     this.subIdos = subIdos;
+  }
+
+  public void setToolCategoryList(List<ToolFunctionCategory> toolCategoryList) {
+    this.toolCategoryList = toolCategoryList;
   }
 
   public void setTransaction(String transaction) {

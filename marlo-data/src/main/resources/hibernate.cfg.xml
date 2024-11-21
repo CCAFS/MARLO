@@ -465,5 +465,6 @@
   <mapping resource="xmls/ProjectInnovationReferenceUrls.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationReferenceComplementarySolutions.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationActors.hbm.xml"/>
+  <mapping resource="xmls/ToolFunctionCategories.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>

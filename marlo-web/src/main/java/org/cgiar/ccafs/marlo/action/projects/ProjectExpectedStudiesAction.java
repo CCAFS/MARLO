@@ -2019,28 +2019,29 @@ public class ProjectExpectedStudiesAction extends BaseAction {
        * get feedback comments
        */
       try {
-
-        this.feedbackComments = new ArrayList<>();
-        this.feedbackComments = this.feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(f -> (f.getSectionName() != null) && f.getSectionName().equals("study")).collect(Collectors.toList());
-        if (this.feedbackComments != null) {
-          final List<FeedbackQAComment> FeedbackQACommentToSearchComments =
-            this.feedbackQACommentManager.findAllByPhase(this.getActualPhase().getId());
-          if (FeedbackQACommentToSearchComments != null) {
-            for (final FeedbackQACommentableFields field : this.feedbackComments) {
-              List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
-              // cgamboa 08/05/2024 feedbackQACommentManager.findAll() is changed by FeedbackQACommentToSearchComments
-              comments = FeedbackQACommentToSearchComments.stream()
-                .filter(f -> (f != null) && (f.getPhase() != null) && (f.getPhase().getId() != null)
-                  && f.getPhase().getId().equals(this.getActualPhase().getId())
-                  && (f.getParentId() == this.expectedStudy.getId()) && (f.getField() != null)
-                  && (f.getField().getId() != null) && f.getField().getId().equals(field.getId()))
-                .collect(Collectors.toList());
-              field.setQaComments(comments);
+        if (this.hasSpecificities(this.feedbackModule())) {
+          this.feedbackComments = new ArrayList<>();
+          this.feedbackComments = this.feedbackQACommentableFieldsManager.findAll().stream()
+            .filter(f -> (f.getSectionName() != null) && f.getSectionName().equals("study"))
+            .collect(Collectors.toList());
+          if (this.feedbackComments != null) {
+            final List<FeedbackQAComment> FeedbackQACommentToSearchComments =
+              this.feedbackQACommentManager.findAllByPhase(this.getActualPhase().getId());
+            if (FeedbackQACommentToSearchComments != null) {
+              for (final FeedbackQACommentableFields field : this.feedbackComments) {
+                List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
+                // cgamboa 08/05/2024 feedbackQACommentManager.findAll() is changed by FeedbackQACommentToSearchComments
+                comments = FeedbackQACommentToSearchComments.stream()
+                  .filter(f -> (f != null) && (f.getPhase() != null) && (f.getPhase().getId() != null)
+                    && f.getPhase().getId().equals(this.getActualPhase().getId())
+                    && (f.getParentId() == this.expectedStudy.getId()) && (f.getField() != null)
+                    && (f.getField().getId() != null) && f.getField().getId().equals(field.getId()))
+                  .collect(Collectors.toList());
+                field.setQaComments(comments);
+              }
             }
           }
         }
-
       } catch (final Exception e) {
       }
 

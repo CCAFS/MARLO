@@ -80,6 +80,11 @@ public class FeedbackQACommentManagerImpl implements FeedbackQACommentManager {
   }
 
   @Override
+  public List<FeedbackQAComment> getFeedbackQACommentsByPhaseAndParentId(long phaseID, long parentID) {
+    return feedbackQACommentDAO.getFeedbackQACommentsByPhaseAndParentId(phaseID, parentID);
+  }
+
+  @Override
   public FeedbackQAComment saveFeedbackQAComment(FeedbackQAComment feedbackQAComment) {
 
     return feedbackQACommentDAO.save(feedbackQAComment);
