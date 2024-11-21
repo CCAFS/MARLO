@@ -29,7 +29,7 @@ $(document).ready(function() {
   deliverablePartnersModule.init();
 
   // Add image to SDG Targets
-  $('select.elementType-sdgTarget').on("change", addImageToSelectSDGTargets);
+  $('select.elementType-sdg').on("change", addImageToSelectSDGTargets);
   addImageToSelectSDGTargets();
   // Add image to Impact Areas
   $('select.elementType-impactArea').on("change", addImageToSelectImpactAreas);
@@ -352,12 +352,15 @@ function onDisplayItemsInOneCGIAR(){
   const $selectImpactArea = $('.linkToImpactAreas');
   const $radioButton = $('input.radioType-contributionToCGIAR:checked');
 
+  const content = $selectImpactArea.find('.form-group');
+
   if($radioButton.val() === "false"){
-    $selectImpactArea.slideUp();
-    $commentBox.slideDown();
+    $selectImpactArea.not(content).slideUp(400);
+    $commentBox.slideDown("slow");
+
   } else {
-    $selectImpactArea.slideDown();
-    $commentBox.slideUp();
+    $selectImpactArea.not(content).slideDown("slow");
+    $commentBox.slideUp(400);
     
   }
 }

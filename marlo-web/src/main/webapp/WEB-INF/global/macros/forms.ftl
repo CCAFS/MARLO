@@ -641,7 +641,7 @@
       <span class="hint" style="display:none" title="${nameValue}"> [HINT] </span>
     [#else]
       [#if isNote]
-        <div class="note--2 note--2__margin-none"><p>${nameValue}</p></div>
+        <div class="note--2 note--2__margin-none col-md-12"><p>${nameValue}</p></div>
       [#else]
         <br /><i class="helpLabel">${nameValue}</i>
       [/#if]

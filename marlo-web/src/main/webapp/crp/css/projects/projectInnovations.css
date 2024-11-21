@@ -2,6 +2,14 @@
   padding-left: 0;
 }
 
+.containerAlert .col-md-12{
+  padding-left: 15px;
+}
+
+.note--2.col-md-12{
+  padding-left: 15px;
+}
+
 .col-md-1 {
   padding-left: 0;
   margin-bottom: 15px;
