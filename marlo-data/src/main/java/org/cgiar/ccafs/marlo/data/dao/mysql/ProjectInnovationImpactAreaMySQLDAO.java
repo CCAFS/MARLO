@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationImpactAreaDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationImpactArea;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,8 +28,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectInnovationImpactAreaMySQLDAO extends AbstractMarloDAO<ProjectInnovationImpactArea, Long> implements ProjectInnovationImpactAreaDAO {
-
+public class ProjectInnovationImpactAreaMySQLDAO extends AbstractMarloDAO<ProjectInnovationImpactArea, Long>
+  implements ProjectInnovationImpactAreaDAO {
 
   @Inject
   public ProjectInnovationImpactAreaMySQLDAO(SessionFactory sessionFactory) {
@@ -49,24 +50,33 @@ public class ProjectInnovationImpactAreaMySQLDAO extends AbstractMarloDAO<Projec
       return false;
     }
     return true;
-
   }
 
   @Override
   public ProjectInnovationImpactArea find(long id) {
     return super.find(ProjectInnovationImpactArea.class, id);
-
   }
 
   @Override
   public List<ProjectInnovationImpactArea> findAll() {
     String query = "from " + ProjectInnovationImpactArea.class.getName() + " where is_active=1";
     List<ProjectInnovationImpactArea> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
-    return null;
+    return Collections.emptyList();
+  }
 
+  @Override
+  public List<ProjectInnovationImpactArea> getProjectInnovationImpactAreaByInnovationAndPhase(long innovationID,
+    long phaseID) {
+    String query = "from " + ProjectInnovationImpactArea.class.getName() + " where is_active=1 and innovation_id="
+      + innovationID + " and id_phase=" + phaseID;
+    List<ProjectInnovationImpactArea> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
   }
 
   @Override

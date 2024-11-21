@@ -61,6 +61,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSDGManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationToolCategoryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
@@ -125,6 +126,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSDG;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationToolCategory;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -249,6 +251,7 @@ public class ProjectInnovationAction extends BaseAction {
   private InstitutionTypeManager institutionTypeManager;
   private ProjectInnovationAllianceOrganizationManager projectInnovationAllianceOrganizationManager;
   private ProjectInnovationActorManager projectInnovationActorManager;
+  private ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager;
   private ToolFunctionCategoryManager toolFunctionCategoryManager;
 
   // Variables
@@ -354,7 +357,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationReferenceUrlManager projectInnovationReferenceUrlManager,
     ProjectInnovationReferenceComplementarySolutionManager projectInnovationReferenceComplementarySolutionManager,
     ProjectInnovationActorManager projectInnovationActorManager,
-    ToolFunctionCategoryManager toolFunctionCategoryManager) {
+    ToolFunctionCategoryManager toolFunctionCategoryManager,
+    ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -422,6 +426,7 @@ public class ProjectInnovationAction extends BaseAction {
       projectInnovationReferenceComplementarySolutionManager;
     this.projectInnovationActorManager = projectInnovationActorManager;
     this.toolFunctionCategoryManager = toolFunctionCategoryManager;
+    this.projectInnovationToolCategoryManager = projectInnovationToolCategoryManager;
   }
 
   /**
@@ -862,15 +867,13 @@ public class ProjectInnovationAction extends BaseAction {
             .getProjectInnovationContributingOrganization()) {
 
             if (projectInnovationContributingOrganization.getInstitution() != null
-              && projectInnovationContributingOrganization.getInstitution().getId() != null) {
-
-              if (institutionManager
+              && projectInnovationContributingOrganization.getInstitution().getId() != null && institutionManager
                 .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId()) != null) {
-                Institution institution = institutionManager
-                  .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId());
-                projectInnovationContributingOrganization.setInstitution(institution);
-              }
+              Institution institution = institutionManager
+                .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId());
+              projectInnovationContributingOrganization.setInstitution(institution);
             }
+
           }
         }
       }
@@ -1243,6 +1246,12 @@ public class ProjectInnovationAction extends BaseAction {
             .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
+        // Innovations tool categories
+        if (innovation.getProjectInnovationToolCategories() != null) {
+          innovation.setToolCategories(new ArrayList<>(innovation.getProjectInnovationToolCategories().stream()
+            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
         // Innovations references
         if (innovation.getProjectInnovationReferences() != null) {
           innovation.setReferences(new ArrayList<>(innovation.getProjectInnovationReferences().stream()
@@ -1527,7 +1536,6 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
-
       /*
        * Get the milestone List
        */
@@ -1792,6 +1800,7 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveReferenceComplementarySolution(innovationDB, phase);
       this.saveAllianceOrganizations(innovationDB, phase);
       this.saveActors(innovationDB, phase);
+      this.saveToolCategories(innovationDB, phase);
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -2031,7 +2040,6 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     }
-
   }
 
   /**
@@ -2171,7 +2179,7 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationContributingOrganization() != null
-      && projectInnovation.getProjectInnovationContributingOrganization().size() > 0) {
+      && !projectInnovation.getProjectInnovationContributingOrganization().isEmpty()) {
 
       List<ProjectInnovationContributingOrganization> organizationPrev =
         new ArrayList<>(projectInnovation.getProjectInnovationContributingOrganization().stream()
@@ -2329,7 +2337,7 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationDeliverables() != null
-      && projectInnovation.getProjectInnovationDeliverables().size() > 0) {
+      && !projectInnovation.getProjectInnovationDeliverables().isEmpty()) {
 
       List<ProjectInnovationDeliverable> deliverablePrev =
         new ArrayList<>(projectInnovation.getProjectInnovationDeliverables().stream()
@@ -2374,7 +2382,7 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationGeographicScopes() != null
-      && projectInnovation.getProjectInnovationGeographicScopes().size() > 0) {
+      && !projectInnovation.getProjectInnovationGeographicScopes().isEmpty()) {
 
       List<ProjectInnovationGeographicScope> scopePrev =
         new ArrayList<>(projectInnovation.getProjectInnovationGeographicScopes().stream()
@@ -2458,7 +2466,7 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationMilestones() != null
-      && projectInnovation.getProjectInnovationMilestones().size() > 0) {
+      && !projectInnovation.getProjectInnovationMilestones().isEmpty()) {
 
       List<ProjectInnovationMilestone> milestonePrev =
         new ArrayList<>(projectInnovation.getProjectInnovationMilestones().stream()
@@ -2472,7 +2480,7 @@ public class ProjectInnovationAction extends BaseAction {
     }
     // Save policy milestones only if boolean 'has milestones' selection is true
     if (innovation.getProjectInnovationInfo().getHasMilestones() != null
-      && innovation.getProjectInnovationInfo().getHasMilestones() == true) {
+      && innovation.getProjectInnovationInfo().getHasMilestones()) {
 
       // Save form Information
       if (innovation.getMilestones() != null) {
@@ -2552,7 +2560,7 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationOrganizations() != null
-      && projectInnovation.getProjectInnovationOrganizations().size() > 0) {
+      && !projectInnovation.getProjectInnovationOrganizations().isEmpty()) {
 
       List<ProjectInnovationOrganization> organizationPrev =
         new ArrayList<>(projectInnovation.getProjectInnovationOrganizations().stream()
@@ -2765,7 +2773,7 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationProjectOutcomes() != null
-      && projectInnovation.getProjectInnovationProjectOutcomes().size() > 0) {
+      && !projectInnovation.getProjectInnovationProjectOutcomes().isEmpty()) {
 
       List<ProjectInnovationProjectOutcome> outcomePrev =
         new ArrayList<>(projectInnovation.getProjectInnovationProjectOutcomes().stream()
@@ -2814,7 +2822,7 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationShareds() != null
-      && projectInnovation.getProjectInnovationShareds().size() > 0) {
+      && !projectInnovation.getProjectInnovationShareds().isEmpty()) {
 
       List<ProjectInnovationShared> projectPrev =
         new ArrayList<>(projectInnovation.getProjectInnovationShareds().stream()
@@ -3060,7 +3068,7 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationRegions() != null
-      && projectInnovation.getProjectInnovationRegions().size() > 0) {
+      && !projectInnovation.getProjectInnovationRegions().isEmpty()) {
 
       List<ProjectInnovationRegion> regionPrev =
         new ArrayList<>(projectInnovation.getProjectInnovationRegions().stream()
@@ -3145,7 +3153,7 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectExpectedStudyInnovations() != null
-      && projectInnovation.getProjectExpectedStudyInnovations().size() > 0) {
+      && !projectInnovation.getProjectExpectedStudyInnovations().isEmpty()) {
       List<ProjectExpectedStudyInnovation> studyPrev =
         new ArrayList<>(projectInnovation.getProjectExpectedStudyInnovations().stream()
           .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
@@ -3189,7 +3197,7 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationSubIdos() != null
-      && projectInnovation.getProjectInnovationSubIdos().size() > 0) {
+      && !projectInnovation.getProjectInnovationSubIdos().isEmpty()) {
 
       List<ProjectInnovationSubIdo> subIdoPrev =
         new ArrayList<>(projectInnovation.getProjectInnovationSubIdos().stream()
@@ -3243,6 +3251,46 @@ public class ProjectInnovationAction extends BaseAction {
           // This is to add innovationCrpSave to generate correct auditlog.
           innovation.getProjectInnovationSubIdos().add(innovationSubIdoSave);
 
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Project Innovation ToolCategories
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  public void saveToolCategories(ProjectInnovation projectInnovation, Phase phase) {
+    // Search and deleted form Information
+    if (projectInnovation.getProjectInnovationToolCategories() != null
+      && !projectInnovation.getProjectInnovationToolCategories().isEmpty()) {
+
+      List<ProjectInnovationToolCategory> toolPrev =
+        new ArrayList<>(projectInnovation.getProjectInnovationToolCategories().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectInnovationToolCategory actor : toolPrev) {
+        if (innovation.getToolCategories() == null || !innovation.getToolCategories().contains(actor)) {
+          projectInnovationToolCategoryManager.deleteProjectInnovationToolCategory(actor.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (innovation.getToolCategories() != null) {
+      for (ProjectInnovationToolCategory innovationToolCategory : innovation.getToolCategories()) {
+        if (innovationToolCategory.getId() == null) {
+          ProjectInnovationToolCategory innovationToolCategorySave = new ProjectInnovationToolCategory();
+          innovationToolCategorySave.setToolCategory(innovationToolCategory.getToolCategory());
+          innovationToolCategorySave.setProjectInnovation(projectInnovation);
+          innovationToolCategorySave.setPhase(phase);
+          innovationToolCategorySave.setOtherNarrative(innovationToolCategory.getOtherNarrative());
+
+          projectInnovationToolCategoryManager.saveProjectInnovationToolCategory(innovationToolCategorySave);
+          // This is to add innovationToolCategorySave to generate correct auditlog.
+          innovation.getProjectInnovationToolCategories().add(innovationToolCategorySave);
         }
       }
     }

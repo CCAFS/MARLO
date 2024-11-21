@@ -19,7 +19,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import com.google.gson.annotations.Expose;
 
-public class ProjectInnovationActor extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
+public class ProjectInnovationToolCategory extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -963914989396761020L;
 
@@ -28,21 +28,11 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
   @Expose
   private Phase phase;
   @Expose
-  private Actor actor;
+  private ToolFunctionCategory toolCategory;
   @Expose
-  private Boolean womenYouth;
-  @Expose
-  private Boolean womenNotYouth;
-  @Expose
-  private Boolean menYouth;
-  @Expose
-  private Boolean menNotYouth;
-  @Expose
-  private Boolean nonbinaryYouth;
-  @Expose
-  private Boolean nonbinaryNotYouth;
+  private String otherNarrative;
 
-  public ProjectInnovationActor() {
+  public ProjectInnovationToolCategory() {
   }
 
   @Override
@@ -54,7 +44,7 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
       return false;
     }
 
-    ProjectInnovationActor other = (ProjectInnovationActor) obj;
+    ProjectInnovationToolCategory other = (ProjectInnovationToolCategory) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
         return false;
@@ -65,11 +55,6 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
     return true;
   }
 
-
-  public Actor getActor() {
-    return actor;
-  }
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -77,85 +62,36 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
     return sb.toString();
   }
 
-  public Boolean getMenNotYouth() {
-    return menNotYouth;
-  }
-
-  public Boolean getMenYouth() {
-    return menYouth;
-  }
-
-  public Boolean getNonbinaryNotYouth() {
-    return nonbinaryNotYouth;
-  }
-
-
-  public Boolean getNonbinaryYouth() {
-    return nonbinaryYouth;
+  public String getOtherNarrative() {
+    return otherNarrative;
   }
 
   public Phase getPhase() {
     return phase;
   }
 
-
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
   }
 
-
-  public Boolean getWomenNotYouth() {
-    return womenNotYouth;
+  public ToolFunctionCategory getToolCategory() {
+    return toolCategory;
   }
 
-
-  public Boolean getWomenYouth() {
-    return womenYouth;
+  public void setOtherNarrative(String otherNarrative) {
+    this.otherNarrative = otherNarrative;
   }
-
-
-  public void setActor(Actor actor) {
-    this.actor = actor;
-  }
-
-
-  public void setMenNotYouth(Boolean menNotYouth) {
-    this.menNotYouth = menNotYouth;
-  }
-
-
-  public void setMenYouth(Boolean menYouth) {
-    this.menYouth = menYouth;
-  }
-
-
-  public void setNonbinaryNotYouth(Boolean nonbinaryNotYouth) {
-    this.nonbinaryNotYouth = nonbinaryNotYouth;
-  }
-
-
-  public void setNonbinaryYouth(Boolean nonbinaryYouth) {
-    this.nonbinaryYouth = nonbinaryYouth;
-  }
-
 
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
 
-
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
   }
 
-
-  public void setWomenNotYouth(Boolean womenNotYouth) {
-    this.womenNotYouth = womenNotYouth;
-  }
-
-
-  public void setWomenYouth(Boolean womenYouth) {
-    this.womenYouth = womenYouth;
+  public void setToolCategory(ToolFunctionCategory toolCategory) {
+    this.toolCategory = toolCategory;
   }
 
   @Override
@@ -163,4 +99,3 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
     return "Actors [id=" + this.getId() + ", innovationId=" + projectInnovation.getId() + "]";
   }
 }
-

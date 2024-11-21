@@ -171,5 +171,4 @@ public class ProjectInnovationAllianceLeversManagerImpl implements ProjectInnova
     }
   }
 
-
 }

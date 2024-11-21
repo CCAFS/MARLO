@@ -51,7 +51,6 @@ public interface ProjectInnovationImpactAreaManager {
    */
   public List<ProjectInnovationImpactArea> findAll();
 
-
   /**
    * This method gets a projectInnovationImpactArea object by a given projectInnovationImpactArea identifier.
    * 
@@ -61,14 +60,27 @@ public interface ProjectInnovationImpactAreaManager {
   public ProjectInnovationImpactArea getProjectInnovationImpactAreaById(long projectInnovationImpactAreaID);
 
   /**
+   * This method gets a list of projectInnovationImpactArea that are active
+   * 
+   * @param projectInnovationID is the projectInnovation identifier.
+   * @param phaseID is the phase identifier.
+   * @return a list from ProjectInnovationImpactArea null if no exist records
+   */
+  public List<ProjectInnovationImpactArea> getProjectInnovationImpactAreaByInnovationAndPhase(long innovationID,
+    long phaseID);
+
+  /**
    * This method saves the information of the given projectInnovationImpactArea
    * 
-   * @param projectInnovationImpactArea - is the projectInnovationImpactArea object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationImpactArea was
+   * @param projectInnovationImpactArea - is the projectInnovationImpactArea object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectInnovationImpactArea was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectInnovationImpactArea saveProjectInnovationImpactArea(ProjectInnovationImpactArea projectInnovationImpactArea);
+  public ProjectInnovationImpactArea
+    saveProjectInnovationImpactArea(ProjectInnovationImpactArea projectInnovationImpactArea);
 
 
 }

@@ -74,7 +74,7 @@ public class ProjectInnovationAllianceLeversMySQLDAO extends AbstractMarloDAO<Pr
   public List<ProjectInnovationAllianceLevers> getProjectInnovationAllianceLeversByInnovationAndPhase(long innovationID,
     long phaseID) {
     String query = "from " + ProjectInnovationAllianceLevers.class.getName() + " where is_active=1 and id_phase="
-      + phaseID + " innovation_id=" + innovationID;
+      + phaseID + " and innovation_id=" + innovationID;
     List<ProjectInnovationAllianceLevers> list = super.findAll(query);
     if (!list.isEmpty()) {
       return list;
