@@ -71,6 +71,11 @@ function attachEvents() {
         e.name = (e.name).replace("_TEMPLATE_", "");
         e.id = (e.id).replace("_TEMPLATE_", "");
       });
+
+      $newItem.find('label').each(function(_i,e) {
+        e.htmlFor = (e.htmlFor).replace("_TEMPLATE_", "");
+      });
+
       // Add select2 to select2 library
       $template.find('select').select2();
       $newItem.find('select').select2();
@@ -92,7 +97,18 @@ function attachEvents() {
       });
     }
 
-    function updateIndexes() {}
+    function updateIndexes() {
+      $('.actorsList').find('.actorsInnovation').each(function(i, actor) {
+        $(actor).find('.indexTag').text(i);
+        $(actor).find('.indexTag').attr('value', i);
+        $(actor).setNameIndexes(1, i);
+        
+        $(actor).find('label').each(function(_i,e) {
+          const newForValue = $(e).prev('input').attr('id');
+          $(e).attr('for', newForValue);
+        });
+      });
+    }
 
   })();
 
@@ -151,7 +167,6 @@ function attachEvents() {
         $(organization).setNameIndexes(1, i);
 
         const newForValue = $(organization).find('label').prev('input').attr('id');
-        console.log(newForValue);
         $(organization).find('label').attr('for', newForValue);
         
 
