@@ -349,6 +349,9 @@
                   <label for="">[@s.text name="projectInnovations.anticipatedUsers.actors" /]:[@customForm.req required=false /]</label>
                   [#-- list of items --]
                   <div class="actorsList">
+                    [#list (element.actors)![] as actor]
+                      [@actorsMacro name="innovation.actors" element=actor index=actor_index template=false /]
+                    [/#list]
                   </div>
                   [#if editable]
                     <div class="addActors bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add actor </div>
@@ -360,6 +363,9 @@
                   <label for="">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=false /]</label>
                   [#-- list of items --]
                   <div class="organizationsList">
+                    [#list (element.organizations)![] as organization]
+                      [@organizationsMacro name="innovation.organizations" element=organization index=organization_index template=false /]
+                    [/#list]
                   </div>
                   [#if editable]
                     <div class="addOrganizations bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add organization </div>
@@ -369,7 +375,7 @@
                 [#-- Element item Template --]
                 <div style="display:none">
                   [@actorsMacro name="innovation.actors" element={} index=-1 template=true /]
-                  [@organizationsMacro name="innovation.allianceOrganizations" element=innovation.allianceOrganizations index=-1 template=true /]
+                  [@organizationsMacro name="innovation.allianceOrganizations" element={} index=-1 template=true /]
                 </div>
 
               </div>
@@ -815,18 +821,18 @@
     <div class="col-md-12">
       <div class="col-md-4">
         <label>[@s.text name="projectInnovations.anticipatedUsers.actors.women" /]:</label>
-        [@customForm.checkBoxFlat id="innovation_actors_women_${index}" name="${customName}.actors.women" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
-        [@customForm.checkBoxFlat id="innovation_actors_women_${index}" name="${customName}.actors.women" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="false" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="${customName}.womenYouth" name="${customName}.womenYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="${customName}.womenNotYouth" name="${customName}.womenNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="true" checked=false editable=true /]
       </div>
       <div class="col-md-4">
         <label>[@s.text name="projectInnovations.anticipatedUsers.actors.men" /]:</label>
-        [@customForm.checkBoxFlat id="innovation_actors_men_${index}" name="${customName}.actors.men" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
-        [@customForm.checkBoxFlat id="innovation_actors_men_${index}" name="${customName}.actors.men" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="false" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="${customName}.menYouth" name="${customName}.actors.menYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="${customName}.menNotYouth" name="${customName}.menNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="true" checked=false editable=true /]
       </div>
       <div class="col-md-4">
         <label>[@s.text name="projectInnovations.anticipatedUsers.actors.noBinary" /]:</label>
-        [@customForm.checkBoxFlat id="innovation_actors_noBinary_${index}" name="${customName}.actors.noBinary" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
-        [@customForm.checkBoxFlat id="innovation_actors_noBinary_${index}" name="${customName}.actors.noBinary" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="false" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="${customName}.nonbinaryYouth" name="${customName}.nonbinaryYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="${customName}.nonbinaryNotYouth" name="${customName}.nonbinaryNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="true" checked=false editable=true /]
       </div>
     </div>
 
