@@ -821,18 +821,18 @@
     <div class="col-md-12">
       <div class="col-md-4">
         <label>[@s.text name="projectInnovations.anticipatedUsers.actors.women" /]:</label>
-        [@customForm.checkBoxFlat id="${customName}.womenYouth" name="${customName}.actors.womenYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
-        [@customForm.checkBoxFlat id="${customName}.womenNotYouth" name="${customName}.actors.womenNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="false" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="${customName}.womenYouth" name="${customName}.womenYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="${customName}.womenNotYouth" name="${customName}.womenNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="true" checked=false editable=true /]
       </div>
       <div class="col-md-4">
         <label>[@s.text name="projectInnovations.anticipatedUsers.actors.men" /]:</label>
         [@customForm.checkBoxFlat id="${customName}.menYouth" name="${customName}.actors.menYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
-        [@customForm.checkBoxFlat id="${customName}.menNotYouth" name="${customName}.actors.menNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="false" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="${customName}.menNotYouth" name="${customName}.menNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="true" checked=false editable=true /]
       </div>
       <div class="col-md-4">
         <label>[@s.text name="projectInnovations.anticipatedUsers.actors.noBinary" /]:</label>
-        [@customForm.checkBoxFlat id="${customName}.nonbinaryYouth" name="${customName}.actors.nonbinaryYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
-        [@customForm.checkBoxFlat id="${customName}.nonbinaryNotYouth" name="${customName}.actors.nonbinaryNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="false" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="${customName}.nonbinaryYouth" name="${customName}.nonbinaryYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=false editable=true /]
+        [@customForm.checkBoxFlat id="${customName}.nonbinaryNotYouth" name="${customName}.nonbinaryNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="true" checked=false editable=true /]
       </div>
     </div>
 
