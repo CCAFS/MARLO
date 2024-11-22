@@ -1017,7 +1017,6 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
 
-
         // Innovation Shared Projects List Autosave
         if (this.innovation.getSharedInnovations() != null) {
           for (ProjectInnovationShared projectInnovationShared : this.innovation.getSharedInnovations()) {
@@ -1108,7 +1107,7 @@ public class ProjectInnovationAction extends BaseAction {
                 && p.getPrimary() && p.getPhase() != null && p.getPhase().getId().equals(phase.getId()))
               .collect(Collectors.toList());
 
-            if (projectPolicies != null && projectPolicies.size() > 0 && projectPolicies.get(0) != null) {
+            if (projectPolicies != null && !projectPolicies.isEmpty() && projectPolicies.get(0) != null) {
               milestonePrimaryId = projectPolicies.get(0).getCrpMilestone().getId(); //
               crpMilestonePrimary = projectPolicies.get(0).getCrpMilestone().getId(); //
             }
@@ -1139,7 +1138,7 @@ public class ProjectInnovationAction extends BaseAction {
               .filter(p -> p != null && p.isActive() && p.getPrimary() != null && p.getPrimary())
               .collect(Collectors.toList());
 
-            if (projectPolicies != null && projectPolicies.size() > 0 && projectPolicies.get(0) != null) {
+            if (projectPolicies != null && !projectPolicies.isEmpty() && projectPolicies.get(0) != null) {
               subIdoPrimaryId = projectPolicies.get(0).getSrfSubIdo().getId(); //
               srfSubIdoPrimary = projectPolicies.get(0).getSrfSubIdo().getId(); //
             }
@@ -1215,7 +1214,6 @@ public class ProjectInnovationAction extends BaseAction {
          * }
          */
 
-
         // Innovations Alliance levers
         if (innovation.getProjectInnovationAllianceLevers() != null) {
           innovation.setAllianceLevers(new ArrayList<>(innovation.getProjectInnovationAllianceLevers().stream()
@@ -1290,13 +1288,12 @@ public class ProjectInnovationAction extends BaseAction {
                 && p.getPrimary() && p.getPhase() != null && p.getPhase().getId().equals(phase.getId()))
               .collect(Collectors.toList());
 
-            if (projectPolicies != null && projectPolicies.size() > 0 && projectPolicies.get(0) != null) {
+            if (projectPolicies != null && !projectPolicies.isEmpty() && projectPolicies.get(0) != null) {
               milestonePrimaryId = projectPolicies.get(0).getCrpMilestone().getId(); //
               crpMilestonePrimary = projectPolicies.get(0).getCrpMilestone().getId(); //
             }
           }
         }
-
       }
 
       this.allianceLeverList = this.allianceLeverManager.findAll();
@@ -1393,8 +1390,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
       centers = centersTemp;
 
-      List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
-
+      List<ProjectExpectedStudy> allProjectStudies = new ArrayList<>();
       // SubIdos List
       subIdos = srfSubIdoManager.findAll();
       this.expectedStudyList = new ArrayList<>();
@@ -1413,7 +1409,7 @@ public class ProjectInnovationAction extends BaseAction {
           && px.getProjectExpectedStudy().isActive()
           && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
         .collect(Collectors.toList()));
-      if (expectedStudyProject != null && expectedStudyProject.size() > 0) {
+      if (expectedStudyProject != null && !expectedStudyProject.isEmpty()) {
         for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
           if (!allProjectStudies.contains(expectedStudy.getProjectExpectedStudy())) {
             allProjectStudies.add(expectedStudy.getProjectExpectedStudy());
@@ -1514,10 +1510,10 @@ public class ProjectInnovationAction extends BaseAction {
 
 
         // Get deliverable list for shared innovations projects
-        if (projectSharedList != null && projectSharedList.size() > 0) {
+        if (projectSharedList != null && !projectSharedList.isEmpty()) {
           for (Project projectInnovationShared : projectSharedList) {
             if (phase != null && phase.getDeliverableInfos() != null && projectInnovationShared != null
-              && phase.getDeliverableInfos().size() > 0) {
+              && !phase.getDeliverableInfos().isEmpty()) {
               List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
                 .filter(c -> c != null && c.getDeliverable() != null && c.getDeliverable().getProject() != null
                   && c.getDeliverable().getProject().equals(projectInnovationShared) && c.getDeliverable().isActive())
@@ -1526,9 +1522,7 @@ public class ProjectInnovationAction extends BaseAction {
               for (DeliverableInfo deliverableInfo : infos) {
                 Deliverable deliverable = deliverableInfo.getDeliverable();
                 deliverable.setDeliverableInfo(deliverableInfo);
-
                 deliverable.setTagTitle(deliverable.getComposedName());
-
                 deliverableList.add(deliverable);
               }
             }
@@ -1647,6 +1641,7 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     } catch (Exception e) {
+      Log.error("error getting feedback comments " + e);
     }
 
     innovationDB = projectInnovationManager.getProjectInnovationById(innovationID);
@@ -1658,51 +1653,39 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getCountries() != null) {
         innovation.getCountries().clear();
       }
-
       if (innovation.getOrganizations() != null) {
         innovation.getOrganizations().clear();
       }
-
       if (innovation.getCrps() != null) {
         innovation.getCrps().clear();
       }
-
       if (innovation.getDeliverables() != null) {
         innovation.getDeliverables().clear();
       }
-
       if (innovation.getContributingOrganizations() != null) {
         innovation.getContributingOrganizations().clear();
       }
-
       if (innovation.getGeographicScopes() != null) {
         innovation.getGeographicScopes().clear();
       }
-
       if (innovation.getRegions() != null) {
         innovation.getRegions().clear();
       }
-
       if (innovation.getSharedInnovations() != null) {
         innovation.getSharedInnovations().clear();
       }
-
       if (innovation.getCenters() != null) {
         innovation.getCenters().clear();
       }
-
       if (innovation.getMilestones() != null) {
         innovation.getMilestones().clear();
       }
-
       if (innovation.getSubIdos() != null) {
         innovation.getSubIdos().clear();
       }
-
       if (innovation.getStudies() != null) {
         innovation.getStudies().clear();
       }
-
       if (innovation.getProjectOutcomes() != null) {
         innovation.getProjectOutcomes().clear();
       }
@@ -1868,67 +1851,56 @@ public class ProjectInnovationAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INNOVATION_PROJECT_OUTCOMES);
 
       innovation.setModificationJustification(this.getJustification());
-
       innovation.getProjectInnovationInfo().setPhase(this.getActualPhase());
       innovation.getProjectInnovationInfo().setProjectInnovation(innovation);
 
       // Setup focusLevel
-      if (innovation.getProjectInnovationInfo().getGenderFocusLevel() != null) {
-        if (innovation.getProjectInnovationInfo().getGenderFocusLevel().getId() == -1) {
-          innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
-        }
+      if (innovation.getProjectInnovationInfo().getGenderFocusLevel() != null
+        && innovation.getProjectInnovationInfo().getGenderFocusLevel().getId() == -1) {
+        innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
       }
 
-      if (innovation.getProjectInnovationInfo().getYouthFocusLevel() != null) {
-        if (innovation.getProjectInnovationInfo().getYouthFocusLevel().getId() == -1) {
-          innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
-        }
+      if (innovation.getProjectInnovationInfo().getYouthFocusLevel() != null
+        && innovation.getProjectInnovationInfo().getYouthFocusLevel().getId() == -1) {
+        innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
       }
       // End
 
       // Validate negative Values
-      if (innovation.getProjectInnovationInfo().getProjectExpectedStudy() != null) {
-        if (innovation.getProjectInnovationInfo().getProjectExpectedStudy().getId() == -1) {
-          innovation.getProjectInnovationInfo().setProjectExpectedStudy(null);
-        }
+      if (innovation.getProjectInnovationInfo().getProjectExpectedStudy() != null
+        && innovation.getProjectInnovationInfo().getProjectExpectedStudy().getId() == -1) {
+        innovation.getProjectInnovationInfo().setProjectExpectedStudy(null);
       }
 
-      if (innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership() != null) {
-        if (innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership().getId() == -1) {
-          innovation.getProjectInnovationInfo().setRepIndPhaseResearchPartnership(null);
-        }
+      if (innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership() != null
+        && innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership().getId() == -1) {
+        innovation.getProjectInnovationInfo().setRepIndPhaseResearchPartnership(null);
       }
 
-      if (innovation.getProjectInnovationInfo().getRepIndStageInnovation() != null) {
-        if (innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() == -1) {
-          innovation.getProjectInnovationInfo().setRepIndStageInnovation(null);
-        }
+      if (innovation.getProjectInnovationInfo().getRepIndStageInnovation() != null
+        && innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() == -1) {
+        innovation.getProjectInnovationInfo().setRepIndStageInnovation(null);
       }
 
-      if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null) {
-        if (innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() == -1) {
-          innovation.getProjectInnovationInfo().setRepIndInnovationType(null);
-        }
+      if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
+        && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() == -1) {
+        innovation.getProjectInnovationInfo().setRepIndInnovationType(null);
       }
 
-      if (innovation.getProjectInnovationInfo().getRepIndInnovationNature() != null) {
-        if (innovation.getProjectInnovationInfo().getRepIndInnovationNature().getId() == -1) {
-          innovation.getProjectInnovationInfo().setRepIndInnovationNature(null);
-        }
+      if (innovation.getProjectInnovationInfo().getRepIndInnovationNature() != null
+        && innovation.getProjectInnovationInfo().getRepIndInnovationNature().getId() == -1) {
+        innovation.getProjectInnovationInfo().setRepIndInnovationNature(null);
       }
 
-      if (innovation.getProjectInnovationInfo().getRepIndRegion() != null) {
-        if (innovation.getProjectInnovationInfo().getRepIndRegion().getId() == -1) {
-          innovation.getProjectInnovationInfo().setRepIndRegion(null);
-        }
+      if (innovation.getProjectInnovationInfo().getRepIndRegion() != null
+        && innovation.getProjectInnovationInfo().getRepIndRegion().getId() == -1) {
+        innovation.getProjectInnovationInfo().setRepIndRegion(null);
       }
 
-      if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation() != null) {
-        if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() == -1) {
-          innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
-        }
+      if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation() != null
+        && innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() == -1) {
+        innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
       }
-
 
       if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
         && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
@@ -1948,11 +1920,11 @@ public class ProjectInnovationAction extends BaseAction {
       // NOTE -> FOR SOME REASON "CLEAR LEAD" MEANS "NOT A CLEAR LEAD", SO WE HAVE TO REVERSE THE CONDITIONAL
       if (/* NO */clearLead == null || /* NO */clearLead == false) {
         innovation.getProjectInnovationInfo().setClearLead(false);
-        if (innovation.getProjectInnovationInfo().getLeadOrganization() != null) {
-          if (innovation.getProjectInnovationInfo().getLeadOrganization().getId() == -1) {
-            innovation.getProjectInnovationInfo().setLeadOrganization(null);
-          }
+        if (innovation.getProjectInnovationInfo().getLeadOrganization() != null
+          && innovation.getProjectInnovationInfo().getLeadOrganization().getId() == -1) {
+          innovation.getProjectInnovationInfo().setLeadOrganization(null);
         }
+
       } else {
         innovation.getProjectInnovationInfo().setClearLead(true);
         innovation.getProjectInnovationInfo().setLeadOrganization(null);
@@ -2187,12 +2159,11 @@ public class ProjectInnovationAction extends BaseAction {
 
       if (organizationPrev != null) {
         for (ProjectInnovationContributingOrganization innovationOrganization : organizationPrev) {
-          if (innovationOrganization != null && innovation.getContributingOrganizations() != null) {
-            if (!innovation.getContributingOrganizations().contains(innovationOrganization)
-              && innovationOrganization.getId() != -1) {
-              projectInnovationContributingOrganizationManager
-                .deleteProjectInnovationContributingOrganization(innovationOrganization.getId());
-            }
+          if (innovationOrganization != null && innovation.getContributingOrganizations() != null
+            && !innovation.getContributingOrganizations().contains(innovationOrganization)
+            && innovationOrganization.getId() != -1) {
+            projectInnovationContributingOrganizationManager
+              .deleteProjectInnovationContributingOrganization(innovationOrganization.getId());
           }
         }
       }
@@ -2301,7 +2272,7 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationCrps() != null
-      && projectInnovation.getProjectInnovationCrps().size() > 0) {
+      && !projectInnovation.getProjectInnovationCrps().isEmpty()) {
 
       List<ProjectInnovationCrp> crpPrev = new ArrayList<>(projectInnovation.getProjectInnovationCrps().stream()
         .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
@@ -2531,7 +2502,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
     } else {
       // Delete all milestones for this policy
-      if (innovation.getMilestones() != null && innovation.getMilestones().size() > 0) {
+      if (innovation.getMilestones() != null && !innovation.getMilestones().isEmpty()) {
         for (ProjectInnovationMilestone innovationMilestone : innovation.getMilestones()) {
           try {
             CrpMilestone milestone = milestoneManager.getCrpMilestoneById(innovationMilestone.getId());
@@ -2619,7 +2590,6 @@ public class ProjectInnovationAction extends BaseAction {
           .findByInnovationAndPhase(projectInnovation.getId(), this.getActualPhase().getId());
 
       } catch (final Exception e) {
-        // TODO: handle exception
         this.logger.info(e.getMessage());
       }
       List<ProjectInnovationPartnership> projectInnovationPartnershipPrev = null;
@@ -2644,7 +2614,6 @@ public class ProjectInnovationAction extends BaseAction {
         this.logger.error("unable to delete deliverable user partnership in saveProjectExpectedPartnership function  ",
           e.getMessage());
       }
-
     }
 
     final ProjectInnovationPartnerType projectInnovationPartnerType = this.projectInnovationPartnerTypeManager
@@ -2683,30 +2652,27 @@ public class ProjectInnovationAction extends BaseAction {
           projectInnovationPartnershipSave.setProjectInnovationPartnerType(projectInnovationPartnerType);
 
           if ((projectInnovationPartnership.getInstitution() != null)
-            && (projectInnovationPartnership.getInstitution().getId() != null)) {
-            if (projectInnovationPartnership.getInstitution().getId() != -1) {
-              final Institution institution =
-                this.institutionManager.getInstitutionById(projectInnovationPartnership.getInstitution().getId());
-              projectInnovationPartnershipSave.setInstitution(institution);
+            && (projectInnovationPartnership.getInstitution().getId() != null)
+            && projectInnovationPartnership.getInstitution().getId() != -1) {
+            final Institution institution =
+              this.institutionManager.getInstitutionById(projectInnovationPartnership.getInstitution().getId());
+            projectInnovationPartnershipSave.setInstitution(institution);
 
 
-              if (projectInnovationPartnership.getPartnershipPersons() != null) {
-                projectInnovationPartnershipSave
-                  .setPartnershipPersons(projectInnovationPartnership.getPartnershipPersons());
-              }
-
-              projectInnovationPartnershipSave = this.projectInnovationPartnershipManager
-                .saveProjectInnovationPartnership(projectInnovationPartnershipSave);
-              this.saveProjectInnovationPartnershipsPersons(projectInnovationPartnership,
-                projectInnovationPartnershipSave);
+            if (projectInnovationPartnership.getPartnershipPersons() != null) {
+              projectInnovationPartnershipSave
+                .setPartnershipPersons(projectInnovationPartnership.getPartnershipPersons());
             }
+
+            projectInnovationPartnershipSave = this.projectInnovationPartnershipManager
+              .saveProjectInnovationPartnership(projectInnovationPartnershipSave);
+            this.saveProjectInnovationPartnershipsPersons(projectInnovationPartnership,
+              projectInnovationPartnershipSave);
           }
 
         }
       }
-
     }
-
   }
 
   /*
@@ -2730,8 +2696,8 @@ public class ProjectInnovationAction extends BaseAction {
             .deleteProjectInnovationPartnershipPerson(projectInnovationPartnershipsPerson.getId());
         }
       }
-
     }
+
     if (projectInnovationPartnership.getPartnershipPersons() != null) {
       for (final ProjectInnovationPartnershipPerson person : projectInnovationPartnership.getPartnershipPersons()) {
         if (person.getId() != null) {

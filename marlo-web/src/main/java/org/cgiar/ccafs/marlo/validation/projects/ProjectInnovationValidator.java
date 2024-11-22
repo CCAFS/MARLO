@@ -22,6 +22,9 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReference;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReferenceComplementarySolution;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReferenceUrl;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -557,12 +560,49 @@ public class ProjectInnovationValidator extends BaseValidator {
       ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
 
       if (!(this.isValidString(innovationInfo.getReadinessReason()))) {
-        action.addMessage(action.getText("innovation.projectInnovationInfo.readinessReason"));
+        action.addMessage("innovation.projectInnovationInfo.readinessReason");
         action.getInvalidFields().put("input-innovation.projectInnovationInfo.readinessReason",
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
+      // Validate References Cited
+      if (projectInnovation.getReferences() != null && !projectInnovation.getReferences().isEmpty()) {
+        if (projectInnovation.getReferences().size() < 3) {
+          action.addMessage("References Cited");
+          action.getInvalidFields().put("input-innovation.references", InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        for (int i = 0; i < projectInnovation.getReferences().size(); i++) {
+          ProjectInnovationReference reference = projectInnovation.getReferences().get(i);
+          if (reference != null) {
+            if (reference.getEvidenceByDeliverable() != null) {
+              if (!reference.getEvidenceByDeliverable()
+                && (reference.getReference() == null || !this.isValidString(reference.getReference()))) {
+                action.addMessage("References Cited");
+                action.getInvalidFields().put("input-innovation.references[" + i + "].reference",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+
+              if (reference.getEvidenceByDeliverable() && reference.getDeliverable() == null) {
+                action.addMessage("References Cited Link");
+                action.getInvalidFields().put("input-innovation.references[" + i + "].deliverable.id",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+
+            } else {
+              // TODO: Validate reference by deliverables
+            }
+          }
+        }
+
+      } else {
+        // validate when reference is null or references size is < 3
+        action.addMessage("References Cited");
+        action.getInvalidFields().put("innovation.references", InvalidFieldsMessages.EMPTYFIELD);
+      }
+
     }
+
     innovationReadiness = action.getMissingFields().toString();
     if (projectInnovation.getId() != null && (innovationAlliance.length() > 0)) {
       BaseAction.getIsInnovationReadinessCompleteMap().put("" + projectInnovation.getId(), "1");
@@ -582,19 +622,101 @@ public class ProjectInnovationValidator extends BaseValidator {
     if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
       ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
 
-      if (!(this.isValidString(innovationInfo.getReasonNotKnowledgePotential()))) {
+      if (innovationInfo.getHasKnowledgePotential() != null && !innovationInfo.getHasKnowledgePotential()
+        && !(this.isValidString(innovationInfo.getReasonNotKnowledgePotential()))) {
         action.addMessage(action.getText("innovation.projectInnovationInfo.reasonNotKnowledgePotential"));
         action.getInvalidFields().put("input-innovation.projectInnovationInfo.reasonNotKnowledgePotential",
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
+      if (!(this.isValidString(innovationInfo.getKnowledgeResultsNarrative()))) {
+        action.addMessage(action.getText("innovation.projectInnovationInfo.knowledgeResultsNarrative"));
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.knowledgeResultsNarrative",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      // Validate References URL
+      if (projectInnovation.getReferenceUrls() != null && !projectInnovation.getReferenceUrls().isEmpty()) {
+        if (projectInnovation.getReferenceUrls().size() < 3) {
+          action.addMessage("References Cited");
+          action.getInvalidFields().put("input-innovation.referenceURL", InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        for (int i = 0; i < projectInnovation.getReferenceUrls().size(); i++) {
+          ProjectInnovationReferenceUrl reference = projectInnovation.getReferenceUrls().get(i);
+          if (reference != null) {
+            if (reference.getEvidenceByDeliverable() != null) {
+              if (!reference.getEvidenceByDeliverable()
+                && (reference.getReference() == null || !this.isValidString(reference.getReference()))) {
+                action.addMessage("References Cited");
+                action.getInvalidFields().put("input-innovation.referenceURL[" + i + "].reference",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+
+              if (reference.getEvidenceByDeliverable() && reference.getDeliverable() == null) {
+                action.addMessage("References Cited Link");
+                action.getInvalidFields().put("input-innovation.referenceURL[" + i + "].deliverable.id",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+
+            } else {
+              // TODO: Validate reference by deliverables
+            }
+          }
+        }
+
+      } else {
+        // validate when reference is null or references size is < 3
+        action.addMessage("References Cited");
+        action.getInvalidFields().put("innovation.referenceURL", InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      // Validate Reference Complementary Solutions
+      if (projectInnovation.getReferenceComplementarySolutions() != null
+        && !projectInnovation.getReferenceComplementarySolutions().isEmpty()) {
+        if (projectInnovation.getReferenceComplementarySolutions().size() < 3) {
+          action.addMessage("References Cited");
+          action.getInvalidFields().put("input-innovation.referenceURL", InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        for (int i = 0; i < projectInnovation.getReferenceComplementarySolutions().size(); i++) {
+          ProjectInnovationReferenceComplementarySolution reference =
+            projectInnovation.getReferenceComplementarySolutions().get(i);
+          if (reference != null) {
+            if (reference.getEvidenceByDeliverable() != null) {
+              if (!reference.getEvidenceByDeliverable()
+                && (reference.getReference() == null || !this.isValidString(reference.getReference()))) {
+                action.addMessage("References Cited");
+                action.getInvalidFields().put("input-innovation.referenceComplementarySolution[" + i + "].reference",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+
+              if (reference.getEvidenceByDeliverable() && reference.getDeliverable() == null) {
+                action.addMessage("References Cited Link");
+                action.getInvalidFields().put(
+                  "input-innovation.referenceComplementarySolution[" + i + "].deliverable.id",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+
+            } else {
+              // TODO: Validate reference by deliverables
+            }
+          }
+        }
+
+      } else {
+        // validate when reference is null or references size is < 3
+        action.addMessage("References Cited");
+        action.getInvalidFields().put("innovation.referenceComplementarySolution", InvalidFieldsMessages.EMPTYFIELD);
+      }
+
     }
+
     innovationRights = action.getMissingFields().toString();
     if (projectInnovation.getId() != null && (innovationAlliance.length() > 0)) {
       BaseAction.getIsInnovationRightsCompleteMap().put("" + projectInnovation.getId(), "1");
     }
   }
-
 
   /**
    * Validate if the current phase is progress
