@@ -626,7 +626,7 @@
         <div class="col-md-12 padding-left-2">
           [#-- Objetive --]
           <div class="col-md-12">
-            [@customForm.select name="${customName}.knowledgeToolObjetive" label="" i18nkey="projectInnovations.sharing.aboutTheTool.objetive" listName="knowledgeToolObjetive" keyFieldName="id" displayFieldName="name" editable=editable required=false /]
+            [@customForm.select name="${customName}.knowledgeToolObjetive" label="" i18nkey="projectInnovations.sharing.aboutTheTool.objetive" listName="toolCategoryList" keyFieldName="id" displayFieldName="name" editable=editable required=false /]
           </div>
           [#-- knowledgeToolUsesNarrative --]
           <div class="col-md-12">
@@ -805,6 +805,8 @@
 [#macro actorsMacro name element index=-1 template=false class=""]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   <div id="actorsInnovation-${(template?string('template', ''))}" class="actorsInnovation form-group grayBlueBox ${class}">
+    [#-- Hidden not saved - id --]
+    [@customForm.input name="${customName}.hidden.id" value=(element.id)!"-1" editable=false display=false /]
     [#-- Dropdown Actors - Type --]
     <div class="col-md-12">
       [@customForm.elementsListComponent name="${customName}.actors" showTitle=false elementType="actor" elementList=(element.actors)![] label="projectInnovations.actors" listName="actorList" keyFieldName="id" displayFieldName="name" required=false /]
@@ -837,9 +839,11 @@
 [#macro organizationsMacro name element index=-1 template=false class=""]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   <div id="organizationsInnovation-${(template?string('template', ''))}" class="organizationsInnovation form-group grayBlueBox ${class}">
+    [#-- Hidden not saved - id --]
+    [@customForm.input name="${customName}.hidden.id" className="indexTag" value=(element.id)!"-1" editable=false display=false /]
     [#-- "Dropdown Organizations - Type --]
     <div class="col-md-12">
-      [@customForm.elementsListComponent name="${customName}.institutionType" showTitle=false elementType="organization" elementList=(element.organizations)![] label="projectInnovations.organizations" listName="institutionTypeList" keyFieldName="id" displayFieldName="name" required=false /]
+      [@customForm.elementsListComponent name="${customName}.institutionType" showTitle=false elementType="institutionType" elementList=(element.institutionType)![] label="projectInnovations.organizations" listName="institutionTypeList" keyFieldName="id" displayFieldName="name" required=false /]
     </div>
     [#-- Input Organization name --]
     <div class="col-md-12">
@@ -848,7 +852,7 @@
     </div>
     [#-- Checkbox - is a co-development --]
     <div class="col-md-12">
-      [@customForm.checkBoxFlat id="innovation_organizations_coDevelopment_${index}" name="${customName}.scalingPartner" label="projectInnovations.anticipatedUsers.organizations.coDevelopment" value="true" checked=false editable=true /]
+      [@customForm.checkBoxFlat id="${customName}.scalingPartner" name="${customName}.scalingPartner" label="projectInnovations.anticipatedUsers.organizations.coDevelopment" value="true" checked=false editable=true /]
     </div>
 
     [#-- Remove --]

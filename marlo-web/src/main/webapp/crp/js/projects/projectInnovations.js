@@ -116,9 +116,12 @@ function attachEvents() {
       }
 
       const $newItem = $template.clone(true).removeAttr('id');
-      $newItem.find('input, select').each(function(_i,e) {
+      $newItem.find('input, select, input[type="checkbox"]').each(function(_i,e) {
         e.name = (e.name).replace("_TEMPLATE_", "");
         e.id = (e.id).replace("_TEMPLATE_", "");
+      });
+      $newItem.find('label').each(function(_i,e) {
+        e.htmlFor = (e.htmlFor).replace("_TEMPLATE_", "");
       });
       // Add select2 to select2 library
       $template.find('select').select2();
@@ -142,8 +145,15 @@ function attachEvents() {
     }
 
     function updateIndexes() {
-      $('organizationsList').find('.organizationsInnovation').each(function(i, organization) {
+      $('.organizationsList').find('.organizationsInnovation').each(function(i, organization) {
+        $(organization).find('.indexTag').text(i);
+        $(organization).find('.indexTag').attr('value', i);
         $(organization).setNameIndexes(1, i);
+
+        const newForValue = $(organization).find('label').prev('input').attr('id');
+        console.log(newForValue);
+        $(organization).find('label').attr('for', newForValue);
+        
 
       });
     }
@@ -367,7 +377,6 @@ function onDisplayItemsInOneCGIAR(){
 
 function changeDisplayMessageInScaling() {
   const $readinessScale = $('input[name="innovation.projectInnovationInfo.readinessScale"]:checked').val();
-  console.log('readiness value',$readinessScale);
 
   const $scalingMessageContainer = $('.scaling__message');
   const $listScalingHiddenInfo = $('.scaling__hiddenInfo .scaling__hiddenInfo__item');
