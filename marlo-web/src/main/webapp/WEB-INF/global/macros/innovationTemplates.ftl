@@ -111,7 +111,17 @@
             
             [#-- Innovation nature --]
             <div class="form-group ">  
-              [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationNature.id" label="" i18nkey="projectInnovations.innovationNature" listName="innovationNatureList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationNature.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable isMainTitle=true /]
+              [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationNature.id" label="" i18nkey="projectInnovations.innovationNature" listName="innovationNatureList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationNature.helpText" isNote=true helpIcon=false className="innovationNatureSelect" editable=editable isMainTitle=true /]
+            </div>
+
+            <div class="form-group">
+              [#-- Other Innovation Nature --]
+              [#local isNatureFour = (innovation.projectInnovationInfo.repIndInnovationNature.id == 4)!false]
+              <div class="col-md-12">
+                <div class="form-group natureFourBlock" style="display:${isNatureFour?string('block','none')}">              
+                  [@customForm.input name="innovation.projectInnovationInfo.otherInnovationNature"  type="text" i18nkey="projectInnovations.otherInnovationNature" helpIcon=false required=!isProgressActive editable=editable  /]
+                </div>
+              </div>
             </div>
 
             [#-- Innovation Type --]
@@ -119,12 +129,10 @@
               [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label="" i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationType.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable isMainTitle=true /]
             </div>
 
-            [#-- Contribution of CRP --] 
-            <div class="form-group row">
-            
+            <div class="form-group">
               [#-- Other Innovation Type --]
               [#local isTypeSix = (innovation.projectInnovationInfo.repIndInnovationType.id == 6)!false]
-              <div class="col-md-6 ">
+              <div class="col-md-12">
                 <div class="form-group typeSixBlock" style="display:${isTypeSix?string('block','none')}">              
                   [@customForm.input name="innovation.projectInnovationInfo.otherInnovationType"  type="text" i18nkey="projectInnovations.otherInnovation" helpIcon=false required=!isProgressActive editable=editable  /]
                 </div>
@@ -343,7 +351,7 @@
                   [@customForm.radioFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.undetermined" value="false" checked=(!areUsersDetermined) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
                 </div>
               </div>
-              <div class="col-md-12">
+              <div class="col-md-12 block-anticipatedUsers" style="display: ${areUsersDetermined?then('block','none')}">
                 [#-- Actors --]
                 <div class="col-md-6 actorsBlock">
                   <label for="">[@s.text name="projectInnovations.anticipatedUsers.actors" /]:[@customForm.req required=false /]</label>

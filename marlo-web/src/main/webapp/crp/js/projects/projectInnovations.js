@@ -178,8 +178,8 @@ function attachEvents() {
   // 
   $('#isClearLeadToAddRequired').on('click', AddRequired);
 
-  // Check the stage of innovation
-  $('select.stageInnovationSelect').on('change', function() {
+  // Check the stage of innovation - DEPRECATED
+/*   $('select.stageInnovationSelect').on('change', function() {
     var isStageFour = this.value == 4;
     if(isStageFour) {
       $('.stageFourBlock-true').slideDown();
@@ -188,21 +188,25 @@ function attachEvents() {
       $('.stageFourBlock-true').slideUp();
       $('.stageFourBlock-false').slideDown();
     }
-  });
+  }); */
 
-  // Check the stage of innovation
+  // If select other in innovation type
   $('select.innovationTypeSelect').on('change', function() {
-    console.log(this.value)
     var id = this.value;
     if(id == 6) {
       $('.typeSixBlock').slideDown();
-      $('.numberInnovations-block').slideUp();
-    } else if(id == 1) {
-      $('.numberInnovations-block').slideDown();
-      $('.typeSixBlock').slideUp();
     } else {
       $('.typeSixBlock').slideUp();
-      $('.numberInnovations-block').slideUp();
+    }
+  });
+
+  // If select other in innovation nature
+  $('select.innovationNatureSelect').on('change', function() {
+    var id = this.value;
+    if(id == 4) {
+      $('.natureFourBlock').slideDown();
+    } else {
+      $('.natureFourBlock').slideUp();
     }
   });
 
