@@ -277,6 +277,26 @@ div.nationalBlock div.selectList span.selection span.select2-selection ul{
   margin: 0.5rem 1.5rem 0.5rem 0;
 }
 
+.radioToCheckbox .containerRadioToCheckbox--other {
+  display: flex;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other .radioFlat {
+  width: 10% !important;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other .inputsFlat {
+  width: 10% !important;
+  margin-top: 0;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other .inputOther {
+  width: -webkit-fill-available;
+  width: -moz-available;
+}
+
 .impactAreaImage{
   width: 40px;
   height: 40px;

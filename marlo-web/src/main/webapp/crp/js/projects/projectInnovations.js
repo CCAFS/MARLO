@@ -210,6 +210,16 @@ function attachEvents() {
     }
   });
 
+  // If select other in innovation property rights
+  $('select.innovationPropertyRightsSelect').on('change', function() {
+    var id = this.value;
+    if(id == 4) {
+      $('.otherIntellectualProperty').slideDown();
+    } else {
+      $('.otherIntellectualProperty').slideUp();
+    }
+  });
+  
   $('input.isClearLead').on('change', function() {
     var selected = $('input.isClearLead').is(":checked");
 
@@ -223,6 +233,10 @@ function attachEvents() {
 
   //On change radio buttons
   $('input[class*="radioType-"]').on('change', onChangeRadioButton);
+
+  // On change checkbox buttons in alliance lever display other field
+  displayInnerOtherInput();
+  $('.containerRadioToCheckbox--other input[id*="radioCheckDisplay_"]').on('change',displayInnerOtherInput);
 
   //On change radio buttons - One CGIAR
   $('input.radioType-contributionToCGIAR').on('change', onDisplayItemsInOneCGIAR);
@@ -341,6 +355,25 @@ function addImageToSelectSDGTargets() {
 
   });
   
+}
+
+function displayInnerOtherInput() {
+  const $containerrMacro = $('.containerRadioToCheckbox--other');
+  const $inputButton = $containerrMacro.find('input[id*="radioCheckDisplay_"]');
+
+  $inputButton.each(function(i) {
+
+    const $parentContainer = $($inputButton[i]).closest('.containerRadioToCheckbox--other');
+    const $inputOther = $parentContainer.find('.inputOther');
+
+    if($inputButton[i].checked) {
+      $inputOther.slideDown();
+    } else {
+      $inputOther.slideUp();
+    }
+
+  })
+
 }
 
 function addImageToSelectImpactAreas() {

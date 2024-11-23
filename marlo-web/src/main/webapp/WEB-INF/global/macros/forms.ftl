@@ -1100,7 +1100,7 @@
   [#local customName = "${name}"]
 
   [#if listName?has_content]
-    <div class="form-group radioToCheckbox ${isPrimaryLever?then('containerPrimaryLever','')} ${className}">
+    <div class="form-group selectableCheckToCheckboxMacro radioToCheckbox ${isPrimaryLever?then('containerPrimaryLever','')} ${className}">
       <label for="">[@s.text name=label /][@req required=required && editable /]</label>
       <input type="hidden" name="${customName}.${fieldName}.isPrimary" value="${isPrimaryLever?c}" />
       [#list listName as radioItem]
@@ -1109,10 +1109,6 @@
           [#local radioItemName = "${radioItem.name}: ${radioItem.description}" /]
         [#else]
           [#local radioItemName = "${radioItem.name}" /]
-        [/#if]
-
-        [#if fieldName == "impactArea"]
-          [#local radioItemName = "Impact Area ${radioItem_index+1}: ${radioItem.name}" /]
         [/#if]
       
         [#local isChecked = false]

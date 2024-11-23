@@ -441,14 +441,7 @@
       <label class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.researchTheme" /]:</label>
       <label>[@s.text name="projectInnovations.alliance.researchTheme.subtitle" /]</label>
       [#if allianceLeverList?has_content]
-        [#list allianceLeverList as lever]
-          [#if lever.description?has_content]
-            [#local customLabel = "${lever.name} : ${lever.description}" /]
-          [#else]
-            [#local customLabel = "${lever.name}" /]
-          [/#if]
-          [@customForm.checkBoxFlat id="lever-${lever.id}" name="${customName}.allianceLevers" label="${customLabel}" value="${lever.id}" checked=(element.allianceLevers?seq_contains(lever.id)) editable=editable /]
-        [/#list]
+        [@customForm.selectableCheckToCheckboxMacro name="${customName}" fieldName="allianceLevers" listName=allianceLeverList keyFieldName="id" element=(element)![] required=false editable=editable hasInnerCheckbox=false isRadioButton=false /]
       [#else]
         <p>No information available</p>
       [/#if]
@@ -459,7 +452,17 @@
       <label class="note--2">
         <p>[@s.text name="projectInnovations.alliance.intellectualProperty.subtitle" /]</p>
       </label>
-      [@customForm.elementsListComponent name="${customName}.projectInnovationInfo.intellectualPropertyInstitution" elementType="intellectualProperty" elementList=(innovation.projectInnovationInfo.intellectualPropertyInstitution)![] helpIcon=false listName="intellectualInstitutionsList" keyFieldName="id" displayFieldName="customName" required=false showTitle=true label="projectInnovations.alliance.intellectualProperty.description" /]
+      [#-- Intellectual property rights - Owner --]
+      <div class="form-group">
+        [@customForm.select name="${customName}.projectInnovationInfo.intellectualPropertyType.id" i18nkey="projectInnovations.alliance.intellectualProperty.description" listName="intellectualInstitutionsList" keyFieldName="id" className="innovationPropertyRightsSelect" displayFieldName="customName" required=false editable=editable /]
+        [#local otherIntellectualProperty = (element.projectInnovationInfo.intellectualPropertyType.id == 4)!false  /]
+        <div class="col-md-12 margin-top-10">
+          <div class="form-group otherIntellectualProperty" style="display: ${otherIntellectualProperty?then('block','none')}">
+            [@customForm.input name="${customName}.projectInnovationInfo.otherIntellectualProperty" type="text" i18nkey="projectInnovations.alliance.intellectualProperty.other" helpIcon=false required=false editable=editable /]
+          </div>
+        </div>
+        
+      </div>
       [#-- Intellectual property rights - Legal Restrictions --]
       <div class="form-group">
         <div class="col-md-12">
