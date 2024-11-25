@@ -99,8 +99,6 @@ function attachEvents() {
 
     function updateIndexes() {
       $('.actorsList').find('.actorsInnovation').each(function(i, actor) {
-        $(actor).find('.indexTag').text(i);
-        $(actor).find('.indexTag').attr('value', i);
         $(actor).setNameIndexes(1, i);
         
         $(actor).find('label').each(function(_i,e) {
@@ -161,9 +159,8 @@ function attachEvents() {
     }
 
     function updateIndexes() {
+
       $('.organizationsList').find('.organizationsInnovation').each(function(i, organization) {
-        $(organization).find('.indexTag').text(i);
-        $(organization).find('.indexTag').attr('value', i);
         $(organization).setNameIndexes(1, i);
 
         const newForValue = $(organization).find('label').prev('input').attr('id');

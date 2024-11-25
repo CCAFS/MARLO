@@ -441,8 +441,10 @@
       <label class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.researchTheme" /]:</label>
       <label>[@s.text name="projectInnovations.alliance.researchTheme.subtitle" /]</label>
       [#if allianceLeverList?has_content]
-        [@customForm.selectableCheckToCheckboxMacro name="${customName}" fieldName="allianceLevers" listName=allianceLeverList keyFieldName="id" element=(element)![] required=false editable=editable hasInnerCheckbox=false isRadioButton=false /]
-      [#else]
+        
+[#--          [@customForm.selectableCheckToCheckboxMacro name="${customName}" fieldName="allianceLevers" listName=allianceLeverList keyFieldName="id" element=(element)![] required=false editable=editable hasInnerCheckbox=false isRadioButton=false /]
+  --]
+        [#else]
         <p>No information available</p>
       [/#if]
     </div>
@@ -823,7 +825,7 @@
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   <div id="actorsInnovation-${(template?string('template', ''))}" class="actorsInnovation form-group grayBlueBox ${class}">
     [#-- Hidden not saved - id --]
-    [@customForm.input name="${customName}.hidden.id" value=((element.id)?string)!"-1" editable=false display=false /]
+    [@customForm.input name="${customName}.id" value=((element.id)?string)!"" editable=false display=false /]
     [#-- Dropdown Actors - Type --]
     <div class="col-md-12">
       [@customForm.select name="${customName}.actor.id" showTitle=false  i18nkey="projectInnovations.actors" listName="actorList" keyFieldName="id" displayFieldName="name" required=false editable=true /]
@@ -841,7 +843,7 @@
         <label>[@s.text name="projectInnovations.anticipatedUsers.actors.men" /]:</label>
         [#local isMenWithYouth = ((element.menYouth??) && (element.menYouth == true)) /] 
         [#local isMenNotYouth = ((element.menNotYouth??) && (element.menNotYouth == true)) /]
-        [@customForm.checkBoxFlat id="${customName}.menYouth" name="${customName}.actors.menYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=isMenWithYouth editable=true /]
+        [@customForm.checkBoxFlat id="${customName}.menYouth" name="${customName}.menYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=isMenWithYouth editable=true /]
         [@customForm.checkBoxFlat id="${customName}.menNotYouth" name="${customName}.menNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="true" checked=isMenNotYouth editable=true /]
       </div>
       <div class="col-md-4">
@@ -863,7 +865,7 @@
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   <div id="organizationsInnovation-${(template?string('template', ''))}" class="organizationsInnovation form-group grayBlueBox ${class}">
     [#-- Hidden not saved - id --]
-    [@customForm.input name="${customName}.hidden.id" className="indexTag" value=((element.id)?string)!"-1" editable=false display=false /]
+    [@customForm.input name="${customName}.id" className="indexTag" value=((element.id)?string)!"" editable=false display=false /]
     [#-- "Dropdown Organizations - Type --]
     <div class="col-md-12">
       [@customForm.select name="${customName}.institutionType.id" showTitle=false  i18nkey="projectInnovations.organizations" listName="institutionTypeList" keyFieldName="id" displayFieldName="name" required=false editable=true /]
