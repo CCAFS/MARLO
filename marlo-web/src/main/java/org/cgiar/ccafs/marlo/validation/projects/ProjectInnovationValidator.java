@@ -422,8 +422,8 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
 
       if (innovationInfo.getRepIndInnovationNature() != null
-        && (innovationInfo.getRepIndInnovationNature().getName() != null
-          && innovationInfo.getRepIndInnovationNature().getName().equalsIgnoreCase("Other"))
+        && (innovationInfo.getRepIndInnovationNature().getId() != null
+          && innovationInfo.getRepIndInnovationNature().getId() == 4)
         && !(this.isValidString(innovationInfo.getOtherInnovationNature()))) {
         action.addMessage(action.getText("innovation.projectInnovationInfo.otherInnovationNature"));
         action.getInvalidFields().put("input-innovation.projectInnovationInfo.otherInnovationNature",
@@ -635,6 +635,13 @@ public class ProjectInnovationValidator extends BaseValidator {
       // Validate only when the scaling readiness is >= 7
       if (innovationInfo.getReadinessScale() != null && innovationInfo.getReadinessScale() >= 7) {
 
+        if (projectInnovation.getToolCategories() != null && projectInnovation.getToolCategories().get(0) != null
+          && projectInnovation.getToolCategories().get(0).getId() != null
+          && projectInnovation.getToolCategories().get(0).getId() == 6) {
+          action.addMessage(action.getText("innovation.projectInnovationInfo.otherToolNarrative"));
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.otherToolNarrative",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
         if (innovationInfo.getHasKnowledgePotential() != null && !innovationInfo.getHasKnowledgePotential()
           && !(this.isValidString(innovationInfo.getReasonNotKnowledgePotential()))) {
           action.addMessage(action.getText("innovation.projectInnovationInfo.reasonNotKnowledgePotential"));

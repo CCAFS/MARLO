@@ -135,6 +135,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   private String otherInnovationNature;
   @Expose
   private String otherAllianceLever;
+  @Expose
+  private String otherToolNarrative;
 
   public ProjectInnovationInfo() {
   }
@@ -242,7 +244,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return hasMilestones;
   }
 
-
   public Boolean getHasToolUrl() {
     return hasToolUrl;
   }
@@ -251,11 +252,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return innovationImportance;
   }
 
-
   public Long getInnovationNumber() {
     return innovationNumber;
   }
-
 
   public IntellectualPropertyRightsInstitution getIntellectualPropertyInstitution() {
     return intellectualPropertyInstitution;
@@ -265,21 +264,17 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return knowledgeCollaboration;
   }
 
-
   public String getKnowledgeResultsNarrative() {
     return knowledgeResultsNarrative;
   }
-
 
   public String getKnowledgeToolUsesNarrative() {
     return knowledgeToolUsesNarrative;
   }
 
-
   public Institution getLeadOrganization() {
     return leadOrganization;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -288,12 +283,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -301,7 +294,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     u.setId(new Long(3));
     return u;
   }
-
 
   public String getNarrative() {
     return narrative;
@@ -311,11 +303,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return otherAllianceLever;
   }
 
-
   public String getOtherInnovationNature() {
     return otherInnovationNature;
   }
-
 
   public String getOtherInnovationType() {
     return otherInnovationType;
@@ -323,6 +313,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public String getOtherIntellectualProperty() {
     return otherIntellectualProperty;
+  }
+
+  public String getOtherToolNarrative() {
+    return otherToolNarrative;
   }
 
   public Phase getPhase() {
@@ -349,7 +343,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return reasonNotCgiarContribution;
   }
 
-
   public String getReasonNotKnowledgePotential() {
     return reasonNotKnowledgePotential;
   }
@@ -374,15 +367,14 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return repIndInnovationType;
   }
 
+
   public RepIndPhaseResearchPartnership getRepIndPhaseResearchPartnership() {
     return repIndPhaseResearchPartnership;
   }
 
-
   public RepIndRegion getRepIndRegion() {
     return repIndRegion;
   }
-
 
   public RepIndStageInnovation getRepIndStageInnovation() {
     return repIndStageInnovation;
@@ -391,7 +383,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public String getShortTitle() {
     return shortTitle;
   }
-
 
   public String getTitle() {
     return title;
@@ -536,6 +527,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.otherIntellectualProperty = otherIntellectualProperty;
   }
 
+  public void setOtherToolNarrative(String otherToolNarrative) {
+    this.otherToolNarrative = otherToolNarrative;
+  }
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
@@ -678,6 +673,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setAreUsersDetermined(projectInnovationInfoUpdate.isAreUsersDetermined());
     this.setOtherInnovationNature(projectInnovationInfoUpdate.getOtherInnovationNature());
     this.setOtherAllianceLever(projectInnovationInfoUpdate.getOtherAllianceLever());
+    this.setOtherToolNarrative(projectInnovationInfoUpdate.getOtherToolNarrative());
   }
 }
 
