@@ -622,7 +622,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
       ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
       // Validate only when the scaling readiness is >= 7
-      if (innovationInfo.getReadinessScale() >= 7) {
+      if (innovationInfo.getReadinessScale() != null && innovationInfo.getReadinessScale() >= 7) {
 
         if (innovationInfo.getHasKnowledgePotential() != null && !innovationInfo.getHasKnowledgePotential()
           && !(this.isValidString(innovationInfo.getReasonNotKnowledgePotential()))) {
