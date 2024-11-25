@@ -151,6 +151,8 @@ public class ProjectInnovationValidator extends BaseValidator {
    */
   public void validateAllianceAlignment(BaseAction action, Project project, ProjectInnovation projectInnovation,
     boolean saving) {
+
+    ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
     innovationAlliance = action.getMissingFields().toString();
     if (projectInnovation != null && projectInnovation.getId() != null && (innovationAlliance.length() > 0)) {
       BaseAction.getIsInnovationAllianceAlignmentCompleteMap().put("" + projectInnovation.getId(), "1");
@@ -271,7 +273,7 @@ public class ProjectInnovationValidator extends BaseValidator {
         // Validate primary Sub-IDOS
         int count = 0;
         for (ProjectInnovationSubIdo subido : projectInnovation.getSubIdos()) {
-          if (subido.getPrimary() != null && subido.getPrimary() == true) {
+          if (subido.getPrimary() != null && subido.getPrimary()) {
             count++;
           }
         }
@@ -417,6 +419,15 @@ public class ProjectInnovationValidator extends BaseValidator {
           action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndInnovationNature.id",
             InvalidFieldsMessages.EMPTYFIELD);
         }
+      }
+
+      if (innovationInfo.getRepIndInnovationNature() != null
+        && (innovationInfo.getRepIndInnovationNature().getName() != null
+          && innovationInfo.getRepIndInnovationNature().getName().equalsIgnoreCase("Other"))
+        && !(this.isValidString(innovationInfo.getOtherInnovationNature()))) {
+        action.addMessage(action.getText("innovation.projectInnovationInfo.otherInnovationNature"));
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.otherInnovationNature",
+          InvalidFieldsMessages.EMPTYFIELD);
       }
 
       // Validate Innovation Type

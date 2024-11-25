@@ -132,9 +132,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   @Expose
   private Boolean areUsersDetermined;
   @Expose
-  private Boolean otherInnovationNature;
+  private String otherInnovationNature;
   @Expose
-  private Boolean otherAllianceLever;
+  private String otherAllianceLever;
 
   public ProjectInnovationInfo() {
   }
@@ -307,13 +307,12 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return narrative;
   }
 
-
-  public Boolean getOtherAllianceLever() {
+  public String getOtherAllianceLever() {
     return otherAllianceLever;
   }
 
 
-  public Boolean getOtherInnovationNature() {
+  public String getOtherInnovationNature() {
     return otherInnovationNature;
   }
 
@@ -322,11 +321,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return otherInnovationType;
   }
 
-
   public String getOtherIntellectualProperty() {
     return otherIntellectualProperty;
   }
-
 
   public Phase getPhase() {
     return phase;
@@ -352,6 +349,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return reasonNotCgiarContribution;
   }
 
+
   public String getReasonNotKnowledgePotential() {
     return reasonNotKnowledgePotential;
   }
@@ -359,7 +357,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public String getReasonNotToolUrl() {
     return reasonNotToolUrl;
   }
-
 
   public RepIndDegreeInnovation getRepIndDegreeInnovation() {
     return repIndDegreeInnovation;
@@ -381,14 +378,15 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return repIndPhaseResearchPartnership;
   }
 
+
   public RepIndRegion getRepIndRegion() {
     return repIndRegion;
   }
 
+
   public RepIndStageInnovation getRepIndStageInnovation() {
     return repIndStageInnovation;
   }
-
 
   public String getShortTitle() {
     return shortTitle;
@@ -402,7 +400,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public Long getYear() {
     return year;
   }
-
 
   public String getYouthExplaniation() {
     return youthExplaniation;
@@ -523,11 +520,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.narrative = narrative;
   }
 
-  public void setOtherAllianceLever(Boolean otherAllianceLever) {
+  public void setOtherAllianceLever(String otherAllianceLever) {
     this.otherAllianceLever = otherAllianceLever;
   }
 
-  public void setOtherInnovationNature(Boolean otherInnovationNature) {
+  public void setOtherInnovationNature(String otherInnovationNature) {
     this.otherInnovationNature = otherInnovationNature;
   }
 
