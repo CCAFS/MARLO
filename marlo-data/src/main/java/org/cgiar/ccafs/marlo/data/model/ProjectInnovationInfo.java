@@ -131,6 +131,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   private String knowledgeCollaboration;
   @Expose
   private Boolean areUsersDetermined;
+  @Expose
+  private Boolean otherInnovationNature;
+  @Expose
+  private Boolean otherAllianceLever;
 
   public ProjectInnovationInfo() {
   }
@@ -304,6 +308,16 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   }
 
 
+  public Boolean getOtherAllianceLever() {
+    return otherAllianceLever;
+  }
+
+
+  public Boolean getOtherInnovationNature() {
+    return otherInnovationNature;
+  }
+
+
   public String getOtherInnovationType() {
     return otherInnovationType;
   }
@@ -318,11 +332,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return phase;
   }
 
-
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
   }
-
 
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
@@ -348,6 +360,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return reasonNotToolUrl;
   }
 
+
   public RepIndDegreeInnovation getRepIndDegreeInnovation() {
     return repIndDegreeInnovation;
   }
@@ -355,7 +368,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public RepIndGeographicScope getRepIndGeographicScope() {
     return repIndGeographicScope;
   }
-
 
   public RepIndInnovationNature getRepIndInnovationNature() {
     return repIndInnovationNature;
@@ -377,14 +389,15 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return repIndStageInnovation;
   }
 
+
   public String getShortTitle() {
     return shortTitle;
   }
 
+
   public String getTitle() {
     return title;
   }
-
 
   public Long getYear() {
     return year;
@@ -398,7 +411,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public RepIndGenderYouthFocusLevel getYouthFocusLevel() {
     return youthFocusLevel;
   }
-
 
   @Override
   public boolean isActive() {
@@ -509,6 +521,14 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public void setNarrative(String narrative) {
     this.narrative = narrative;
+  }
+
+  public void setOtherAllianceLever(Boolean otherAllianceLever) {
+    this.otherAllianceLever = otherAllianceLever;
+  }
+
+  public void setOtherInnovationNature(Boolean otherInnovationNature) {
+    this.otherInnovationNature = otherInnovationNature;
   }
 
   public void setOtherInnovationType(String otherInnovationType) {
@@ -659,6 +679,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setReasonNotToolUrl(projectInnovationInfoUpdate.getReasonNotToolUrl());
     this.setKnowledgeCollaboration(projectInnovationInfoUpdate.getKnowledgeCollaboration());
     this.setAreUsersDetermined(projectInnovationInfoUpdate.isAreUsersDetermined());
+    this.setOtherInnovationNature(projectInnovationInfoUpdate.getOtherInnovationNature());
+    this.setOtherAllianceLever(projectInnovationInfoUpdate.getOtherAllianceLever());
   }
 }
 

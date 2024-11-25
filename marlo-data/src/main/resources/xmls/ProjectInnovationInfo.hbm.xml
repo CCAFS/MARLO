@@ -105,6 +105,12 @@
 		<property name="otherInnovationType" type="string">
 			<column name="other_innovation_type" sql-type="TEXT" />
 		</property>
+		<property name="otherInnovationNature" type="string">
+			<column name="other_innovation_nature" sql-type="TEXT" />
+		</property>
+		<property name="otherAllianceLever" type="string">
+			<column name="other_alliance_lever" sql-type="TEXT" />
+		</property>
 		<property name="hasMilestones" type="boolean">
             <column name="has_milestones" not-null="true" />
         </property>

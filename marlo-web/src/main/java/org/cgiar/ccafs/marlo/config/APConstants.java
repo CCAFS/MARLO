@@ -278,6 +278,7 @@ public final class APConstants {
   public static final String FIELD_VALUE = "fieldValue";
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
   public static final String PARTNER_REQUEST_ID = "requestID";
+  public static final String SDG_ID = "sdgID";
   public static final String PARTNER_REQUEST_SEND_NOTIFICATION = "sendNotification";
   public static final String IPLIAISON_INDICATORS_REPORT =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution.crpIndicatorReportses)";
