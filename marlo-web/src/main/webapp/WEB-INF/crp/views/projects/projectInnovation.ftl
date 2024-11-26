@@ -94,6 +94,14 @@
         
         [#assign isProgressActive = action.isProgressActive() /]
 
+        [#assign isAllianceContribution = false /]
+        [#list innovation.centers as center]
+        [#if center.institution.name?lower_case?contains("alliance")]
+          [#assign isAllianceContribution = true /]
+          [#break /]
+        [/#if]
+        [/#list]
+
         [#-- Innovation Description --]
         [@innovations.innovationDescription element=(innovation)!{} name="innovation" index=0 /]          
 
@@ -108,7 +116,7 @@
               <a href="#innovationGeneral" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.general" /]</a>
             </li>
 
-            <li role="presentation" class="[#if indexTab==2]active[/#if] col-md">
+            <li role="presentation" class="[#if indexTab==2]active[/#if] col-md" style="display:${isAllianceContribution?then('block','none')}" id="allianceTab">
               <a href="#innovationAlliance" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.allianceAlignment" /]</a>
             </li>
 

@@ -39,6 +39,11 @@ $(document).ready(function() {
   $('input[name="innovation.projectInnovationInfo.readinessScale"]').on('change', changeDisplayMessageInScaling);
   changeDisplayMessageInScaling();
 
+  // Update the dynamic visualization of the "Alliance" Tab after selecting in Key Contributors
+  updateAllianceTab();
+  $('select.elementType-institution').on('change',updateAllianceTab);
+  $('div.removeElementType-institution').on('click',updateAllianceTab);
+
 
 
   feedbackAutoImplementation();
@@ -323,6 +328,24 @@ function dynamicMarginToSelectedRender(){
 
 }
 
+function updateAllianceTab() {
+  var $selectCenters = $('div[listname="innovation.centers"] select.elementType-institution');
+
+    setTimeout(() => {
+      $option = $selectCenters.find('option[disabled]');
+
+        if($option.toArray().some((item) => item.innerHTML.toLowerCase().includes("alliance"))) {
+          //remove disabled class alliance tab
+          $('#allianceTab').slideDown();
+        } else {
+          //add disabled class alliance tab
+          $('#allianceTab').slideUp();
+        }
+
+    }, 1000);
+
+}  
+
 function addImageToSelectSDGTargets() {
 
   const $listRender = $('div[listname="innovation.sdgs"] .panel-body li.relationElement');
@@ -400,8 +423,6 @@ function displayInnerOtherInput() {
   const $inputButtons = $('.containerRadioToCheckbox--other .inputOther');
   const $inputOther = $('.containerRadioToCheckbox--other input[id*="lever-"]');
 
-  console.log($inputOther.is(':checked'));
-  console.log($inputButtons);
   if ($inputOther.is(':checked')) {
     $inputButtons.slideDown();
   } else {
