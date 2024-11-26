@@ -437,13 +437,41 @@
       [@customForm.elementsListComponent name="${customName}.sdgs" elementType="sdg" elementList=(innovation.sdgs)![] helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=false showTitle=false /]
     </div>
     [#-- Alliance Research Theme --]
-    <div class="form-group">
+    <div class="form-group radioToCheckbox ">
       <label class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.researchTheme" /]:</label>
       <label>[@s.text name="projectInnovations.alliance.researchTheme.subtitle" /]</label>
       [#if allianceLeverList?has_content]
-        
-[#--          [@customForm.selectableCheckToCheckboxMacro name="${customName}" fieldName="allianceLevers" listName=allianceLeverList keyFieldName="id" element=(element)![] required=false editable=editable hasInnerCheckbox=false isRadioButton=false /]
-  --]
+          [#list allianceLeverList as lever]
+            [#if lever.description?has_content]
+              [#local customLabel = "${lever.name} : ${lever.description}" /]
+            [#else]
+              [#local customLabel = "${lever.name}" /]
+            [/#if]
+
+            [#local isOther = (lever.name == "Other")!false /]
+
+            [#local isChecked = false /]
+
+            <div class="containerRadioToCheckbox ${isOther?then('containerRadioToCheckbox--other','')}">
+              [#list element.allianceLevers as elementLever]
+                [#if elementLever.allianceLever.id == lever.id]
+                  <div class="form-group hiddenIdReference">
+                      [@customForm.input name="${customName}.allianceLevers[${elementLever_index}].id" editable=false display=false value="${elementLever.id}" /]
+                  </div>
+                  [#local isChecked = true /]
+                  [#break /]
+                [/#if]
+
+              [/#list]
+ 
+              [@customForm.checkBoxFlat id="lever-${lever.id}" name="${customName}.allianceLevers[${lever_index}].allianceLever.id" label="${customLabel}" value="${lever.id}" checked=isChecked editable=editable /]
+              [#if isOther]
+                <div class="form-group inputOther">
+                  [@customForm.input name="${customName}.allianceLevers.otherAllianceLever" placeholder="Other" editable=editable showTitle=false /]
+                </div>
+              [/#if]
+            </div>
+          [/#list]
         [#else]
         <p>No information available</p>
       [/#if]

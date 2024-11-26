@@ -233,7 +233,10 @@ function attachEvents() {
 
   // On change checkbox buttons in alliance lever display other field
   displayInnerOtherInput();
-  $('.containerRadioToCheckbox--other input[id*="radioCheckDisplay_"]').on('change',displayInnerOtherInput);
+  $('.containerRadioToCheckbox--other input[type="checkbox"][id*="lever-"]').on('change',displayInnerOtherInput);
+  //On change checkbox buttons - alliance
+  updateIndexListCheckbox();
+  $('input[type="checkbox"][id*="lever-"]').on('change', updateIndexListCheckbox);
 
   //On change radio buttons - One CGIAR
   $('input.radioType-contributionToCGIAR').on('change', onDisplayItemsInOneCGIAR);
@@ -334,7 +337,7 @@ function addImageToSelectSDGTargets() {
         url: baseURL + '/getSdgImage.do',
         async: true,
         data: {
-          requestID: Number.parseInt(Number.parseInt($elementId))
+          sdgID: Number.parseInt(Number.parseInt($elementId))
         },
         success: function(data) {
   
@@ -354,23 +357,56 @@ function addImageToSelectSDGTargets() {
   
 }
 
-function displayInnerOtherInput() {
-  const $containerrMacro = $('.containerRadioToCheckbox--other');
-  const $inputButton = $containerrMacro.find('input[id*="radioCheckDisplay_"]');
+function updateIndexListCheckbox() {
+  const $list = $('input[type="checkbox"][id*="lever-"]');
+  const $listChecked = $list.filter(':checked');
+  const $listUnchecked = $list.filter(':not(:checked)');
+  
+  $listChecked.each(function(index, element) {
+    
+    const $element = $(element);
 
-  $inputButton.each(function(i) {
+    const newValueForLever = "innovation.allianceLevers[" + index + "].allianceLever.id";
+    const newValueForReference = "innovation.allianceLevers[" + index + "].id";
 
-    const $parentContainer = $($inputButton[i]).closest('.containerRadioToCheckbox--other');
-    const $inputOther = $parentContainer.find('.inputOther');
+    $element.attr('name', newValueForLever);
 
-    if($inputButton[i].checked) {
-      $inputOther.slideDown();
-    } else {
-      $inputOther.slideUp();
+    if($element.parent('.inputsFlat').prev('.hiddenIdReference')){
+      const $hiddenIdReferenceInput = $element.parent('.inputsFlat').prev('.hiddenIdReference').find('input[type="hidden"]');
+      const $hiddenIdReferenceLabel = $hiddenIdReferenceInput.prevAll('label');
+
+      $hiddenIdReferenceInput.attr('name', newValueForReference);
+      $hiddenIdReferenceInput.attr('id', newValueForReference);
+      $hiddenIdReferenceLabel.attr('for', newValueForReference);
+    }
+  });
+
+  $listUnchecked.each(function(index, element) {
+    const $element = $(element);
+
+    if($element.parent('.inputsFlat').prev('.hiddenIdReference')){
+      const $hiddenIdReferenceInput = $element.parent('.inputsFlat').prev('.hiddenIdReference').find('input[type="hidden"]');
+      const $hiddenIdReferenceLabel = $hiddenIdReferenceInput.prevAll('label');
+
+      $hiddenIdReferenceInput.attr('name', "");
+      $hiddenIdReferenceInput.attr('id', "");
+      $hiddenIdReferenceLabel.attr('for', "");
     }
 
-  })
+  });
+}
 
+function displayInnerOtherInput() {
+  const $inputButtons = $('.containerRadioToCheckbox--other .inputOther');
+  const $inputOther = $('.containerRadioToCheckbox--other input[id*="lever-"]');
+
+  console.log($inputOther.is(':checked'));
+  console.log($inputButtons);
+  if ($inputOther.is(':checked')) {
+    $inputButtons.slideDown();
+  } else {
+    $inputButtons.slideUp();
+  }
 }
 
 function addImageToSelectImpactAreas() {
