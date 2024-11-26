@@ -573,9 +573,6 @@
 
     [#-- Innovation importance --]
     <div class="form-group linkToImpactAreas" style="display:${(((hasContributionToCGIAR?c) == 'true')&& (element.projectInnovationInfo.hasCgiarContribution??))?string('block','none')};" >
-      <div class="form-group col-md-12">
-        [@customForm.textArea name="${customName}.projectInnovationInfo.innovationImportance" i18nkey="projectInnovations.oneCGIARAligment.innovationImportance" help="projectInnovations.oneCGIARAligment.innovationImportance.help" helpIcon=false className="limitWords-200" required=(editable) editable=editable isNote=true /]
-      </div>
 
       [#-- Impact Areas --]
       <div class="form-group  col-md-12">
@@ -604,6 +601,12 @@
       [#-- Innovation Readiness reason --]
       <div class="form-group">
         [@customForm.textArea name="${name}.projectInnovationInfo.readinessReason" i18nkey="projectInnovations.readiness.reason" help="projectInnovations.readiness.reason.help" helpIcon=false className="limitWords-80" required=true isNote=true showTitle=true isMainTitle=true editable=editable /]
+      </div>
+
+
+      [#-- Innovation importance --]
+      <div class="form-group col-md-12">
+        [@customForm.textArea name="innovation.projectInnovationInfo.innovationImportance" i18nkey="projectInnovations.oneCGIARAligment.innovationImportance" help="projectInnovations.oneCGIARAligment.innovationImportance.help" helpIcon=false className="limitWords-200" required=(editable) editable=editable isNote=true /]
       </div>
       [#-- Evidence and Reference --]
       <div class="form-group">
