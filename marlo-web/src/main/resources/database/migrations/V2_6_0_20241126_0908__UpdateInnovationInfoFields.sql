@@ -1,0 +1,2 @@
+ALTER TABLE project_innovation_info DROP FOREIGN KEY project_innovation_info_ibfk_14;
+ALTER TABLE project_innovation_info ADD CONSTRAINT project_innovation_info_institutions_FK FOREIGN KEY (intellectual_property_institution_id) REFERENCES institutions(id) ON DELETE RESTRICT ON UPDATE RESTRICT;

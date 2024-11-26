@@ -98,7 +98,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   @Expose
   private String beneficiariesNarrative;
   @Expose
-  private IntellectualPropertyRightsInstitution intellectualPropertyInstitution;
+  private Institution intellectualPropertyInstitution;
   @Expose
   private Boolean hasLegalRestrictions;
   @Expose
@@ -256,7 +256,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return innovationNumber;
   }
 
-  public IntellectualPropertyRightsInstitution getIntellectualPropertyInstitution() {
+  public Institution getIntellectualPropertyInstitution() {
     return intellectualPropertyInstitution;
   }
 
@@ -363,10 +363,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return repIndInnovationNature;
   }
 
+
   public RepIndInnovationType getRepIndInnovationType() {
     return repIndInnovationType;
   }
-
 
   public RepIndPhaseResearchPartnership getRepIndPhaseResearchPartnership() {
     return repIndPhaseResearchPartnership;
@@ -481,8 +481,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.innovationNumber = innovationNumber;
   }
 
-  public void
-    setIntellectualPropertyInstitution(IntellectualPropertyRightsInstitution intellectualPropertyInstitution) {
+  public void setIntellectualPropertyInstitution(Institution intellectualPropertyInstitution) {
     this.intellectualPropertyInstitution = intellectualPropertyInstitution;
   }
 

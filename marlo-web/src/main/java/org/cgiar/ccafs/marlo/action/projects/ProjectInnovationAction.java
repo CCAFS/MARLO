@@ -1903,6 +1903,11 @@ public class ProjectInnovationAction extends BaseAction {
         innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
       }
 
+      if (innovation.getProjectInnovationInfo().getIntellectualPropertyInstitution() != null
+        && innovation.getProjectInnovationInfo().getIntellectualPropertyInstitution().getId() == -1) {
+        innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(null);
+      }
+
       if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
         && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
         && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != 6) {
