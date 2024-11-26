@@ -112,23 +112,28 @@
           [#-- Tabs Navigation --]
           <ul class="nav nav-tabs" role="tablist">
 
-            <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if] col-md">
+            [#assign isInnovationGeneralInformationComplete = (action.isInnovationGeneralInformationCompleteMap())!false /]
+            <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if] col-md ${isInnovationGeneralInformationComplete?then('submitted','toSubmit')}">
               <a href="#innovationGeneral" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.general" /]</a>
             </li>
 
-            <li role="presentation" class="[#if indexTab==2]active[/#if] col-md" style="display:${isAllianceContribution?then('block','none')}" id="allianceTab">
+            [#assign isInnovationAllianceAlignmentComplete = (action.isInnovationAllianceAlignmentCompleteMap())!false /]
+            <li role="presentation" class="[#if indexTab==2]active[/#if] col-md ${isInnovationAllianceAlignmentComplete?then('submitted','toSubmit')}" style="display:${isAllianceContribution?then('block','none')}" id="allianceTab">
               <a href="#innovationAlliance" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.allianceAlignment" /]</a>
             </li>
 
-            <li role="presentation" class="[#if indexTab==3]active[/#if] col-md">
+            [#assign isInnovationOneCgiarAlignmentComplete = (action.isInnovationOneCgiarAlignmentCompleteMap())!false /]
+            <li role="presentation" class="[#if indexTab==3]active[/#if] col-md ${isInnovationOneCgiarAlignmentComplete?then('submitted','toSubmit')}">
               <a href="#innovationOneCGIAR" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.oneCGIARAlignment" /]</a>
             </li>
 
-            <li role="presentation" class="[#if indexTab==4]active[/#if] col-md">
+            [#assign isInnovationReadinessComplete = (action.isInnovationReadinessCompleteMap())!false /]
+            <li role="presentation" class="[#if indexTab==4]active[/#if] col-md ${isInnovationReadinessComplete?then('submitted','toSubmit')}">
               <a href="#innovationReadiness" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.innovationReadiness" /]</a>
             </li>
 
-            <li role="presentation" class="[#if indexTab==5]active[/#if] col-md">
+            [#assign isInnovationRightsComplete = (action.isInnovationRightsCompleteMap())!false /]
+            <li role="presentation" class="[#if indexTab==5]active[/#if] col-md ${isInnovationRightsComplete?then('submitted','toSubmit')}">
               <a href="#innovationSharing" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.innovationSharing" /]</a>
             </li>
           </ul>
