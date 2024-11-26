@@ -71,18 +71,25 @@
         
         <div id="general" class="borderBox clearfix">   
 
+          [#--
             <div class="form-group row">
-            [#--  
+              
               <div class="col-md-4">
                 [@customForm.select name="innovation.projectInnovationInfo.year" className="setSelect2" i18nkey="policy.year" listName="getInnovationsYears(${innovationID})" header=false required=true editable=editable /]
               </div>
-              --]
+            
               <div class="col-md-12">
                 [#local guideSheetURL = "https://drive.google.com/file/d/1JvceA0bdvqS5Een056ctL7zJr3hidToe/view" /]
                 <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #C1 Innovations  -  Guideline </a> </small>
               </div>
             </div>
-            <hr />
+            <hr /> --] 
+
+            <div class="col-md-12">
+              <label class="note--2">
+                <p>[@s.text name="projectInnovations.generalInformation.help" /]</p>
+              </label>
+            </div>
           
             [#-- Title --]
             <div class="form-group">
@@ -354,7 +361,10 @@
               <div class="col-md-12 block-anticipatedUsers" style="display: ${areUsersDetermined?then('block','none')}">
                 [#-- Actors --]
                 <div class="col-md-6 actorsBlock">
-                  <label for="">[@s.text name="projectInnovations.anticipatedUsers.actors" /]:[@customForm.req required=false /]</label>
+                  <label for="">[@s.text name="projectInnovations.anticipatedUsers.actors" /]:[@customForm.req required=true /]</label>
+                  <label class="note--2">
+                    <p>[@s.text name="projectInnovations.anticipatedUsers.actors.help" /]</p>
+                  </label>
                   [#-- list of items --]
                   <div class="actorsList">
                     [#list (element.actors)![] as actor]
@@ -368,11 +378,11 @@
                 </div>
                 [#-- Organizations --]
                 <div class="col-md-6 organizationsBlock">
-                  <label for="">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=false /]</label>
+                  <label for="">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=true /]</label>
                   [#-- list of items --]
                   <div class="organizationsList">
-                    [#list (element.organizations)![] as organization]
-                      [@organizationsMacro name="innovation.organizations" element=organization index=organization_index template=false /]
+                    [#list (element.allianceOrganizations)![] as organization]
+                      [@organizationsMacro name="innovation.allianceOrganizations" element=organization index=organization_index template=false /]
                     [/#list]
                   </div>
                   [#if editable]
