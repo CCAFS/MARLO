@@ -185,6 +185,16 @@ public class ProjectInnovationAction extends BaseAction {
 
   private static final long serialVersionUID = 2025842196563364380L;
   private static final long[] EMPTY_ARRAY = {};
+  private static HashMap<String, String> isSaving = new HashMap<>();
+
+  public static HashMap<String, String> getIsSaving() {
+    return isSaving;
+  }
+
+  public static void setIsSaving(HashMap<String, String> isSaving) {
+    ProjectInnovationAction.isSaving = isSaving;
+  }
+
   // Logger
   private final Logger logger = LoggerFactory.getLogger(ProjectInnovationAction.class);
   // Managers
@@ -250,25 +260,25 @@ public class ProjectInnovationAction extends BaseAction {
   private ActorManager actorManager;
   private InstitutionTypeManager institutionTypeManager;
   private ProjectInnovationAllianceOrganizationManager projectInnovationAllianceOrganizationManager;
+
   private ProjectInnovationActorManager projectInnovationActorManager;
   private ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager;
   private ToolFunctionCategoryManager toolFunctionCategoryManager;
-
   // Variables
   private long projectID;
   private long innovationID;
   private long subIdoPrimaryId;
   private long srfSubIdoPrimary;
+
   private long milestonePrimaryId;
+
   private long crpMilestonePrimary;
+
   private Project project;
 
   private ProjectInnovation innovation;
-
   private ProjectInnovation innovationDB;
-
   private GlobalUnit loggedCrp;
-
   private List<RepIndPhaseResearchPartnership> phaseResearchList;
   private List<RepIndStageInnovation> stageInnovationList;
   private String transaction;
@@ -307,8 +317,11 @@ public class ProjectInnovationAction extends BaseAction {
   private List<ImpactArea> impactAreaList;
   private List<IntellectualPropertyRightsInstitution> intellectualInstitutionsList;
   private List<ScalingReadiness> scalingReadinessList;
+
   private List<Actor> actorList;
+
   private List<InstitutionType> institutionTypeList;
+
   private List<ToolFunctionCategory> toolCategoryList;
 
   @Inject
@@ -1750,11 +1763,65 @@ public class ProjectInnovationAction extends BaseAction {
       srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       srfIdos.add(srfIdo);
     }
+
+    // the next code allows execute the validation process
+    String valueSaving;
+    valueSaving = ProjectInnovationAction.getIsSaving().get(innovationID + "");
+    if (valueSaving != null) {
+
+      String value = "0";
+      value = BaseAction.getIsInnovationGeneralInformationCompleteMap().get(innovationID + "");
+      if (value != null && value.equals("1")) {
+        this.setInnovationGeneralInformationComplete(false);
+      } else {
+        this.setInnovationGeneralInformationComplete(true);
+      }
+
+      value = BaseAction.getIsInnovationAllianceAlignmentCompleteMap().get(innovationID + "");
+      if (value != null && value.equals("1")) {
+        this.setInnovationAllianceAlignmentComplete(false);
+      } else {
+        this.setInnovationAllianceAlignmentComplete(true);
+      }
+
+      value = BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().get(innovationID + "");
+      if (value != null && value.equals("1")) {
+        this.setInnovationOneCgiarAlignmentComplete(false);
+      } else {
+        this.setInnovationOneCgiarAlignmentComplete(true);
+      }
+
+      value = BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().get(innovationID + "");
+      if (value != null && value.equals("1")) {
+        this.setInnovationOneCgiarAlignmentComplete(false);
+      } else {
+        this.setInnovationOneCgiarAlignmentComplete(true);
+      }
+
+      value = BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().get(innovationID + "");
+      if (value != null && value.equals("1")) {
+        this.setInnovationOneCgiarAlignmentComplete(false);
+      } else {
+        this.setInnovationOneCgiarAlignmentComplete(true);
+      }
+
+      value = BaseAction.getIsInnovationRightsCompleteMap().get(innovationID + "");
+      if (value != null && value.equals("1")) {
+        this.setInnovationRightsComplete(false);
+      } else {
+        this.setInnovationRightsComplete(true);
+      }
+
+      ProjectInnovationAction.getIsSaving().remove(innovationID + "");
+    }
   }
+
 
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
+
+      ProjectExpectedStudiesAction.getIsSaving().put("" + innovationID, "1");
 
       Phase phase = this.getActualPhase();
 
@@ -2043,7 +2110,6 @@ public class ProjectInnovationAction extends BaseAction {
       Log.error("Error saving actors " + e);
     }
   }
-
 
   /**
    * Save Project Innovation Alliance Levers

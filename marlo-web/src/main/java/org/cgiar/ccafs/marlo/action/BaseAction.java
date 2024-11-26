@@ -583,6 +583,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private boolean isOicrCommunicationsComplete;
 
+  private boolean isInnovationGeneralInformationComplete;
+  private boolean isInnovationAllianceAlignmentComplete;
+  private boolean isInnovationOneCgiarAlignmentComplete;
+  private boolean isInnovationReadinessComplete;
+  private boolean isInnovationRightsComplete;
 
   public BaseAction() {
     this.saveable = true;
@@ -9313,5 +9318,43 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  public boolean isInnovationGeneralInformationComplete() {
+    return isInnovationGeneralInformationComplete;
+  }
 
+  public void setInnovationGeneralInformationComplete(boolean isInnovationGeneralInformationComplete) {
+    this.isInnovationGeneralInformationComplete = isInnovationGeneralInformationComplete;
+  }
+
+  public boolean isInnovationAllianceAlignmentComplete() {
+    return isInnovationAllianceAlignmentComplete;
+  }
+
+  public void setInnovationAllianceAlignmentComplete(boolean isInnovationAllianceAlignmentComplete) {
+    this.isInnovationAllianceAlignmentComplete = isInnovationAllianceAlignmentComplete;
+  }
+
+  public boolean isInnovationOneCgiarAlignmentComplete() {
+    return isInnovationOneCgiarAlignmentComplete;
+  }
+
+  public void setInnovationOneCgiarAlignmentComplete(boolean isInnovationOneCgiarAlignmentComplete) {
+    this.isInnovationOneCgiarAlignmentComplete = isInnovationOneCgiarAlignmentComplete;
+  }
+
+  public boolean isInnovationReadinessComplete() {
+    return isInnovationReadinessComplete;
+  }
+
+  public void setInnovationReadinessComplete(boolean isInnovationReadinessComplete) {
+    this.isInnovationReadinessComplete = isInnovationReadinessComplete;
+  }
+
+  public boolean isInnovationRightsComplete() {
+    return isInnovationRightsComplete;
+  }
+
+  public void setInnovationRightsComplete(boolean isInnovationRightsComplete) {
+    this.isInnovationRightsComplete = isInnovationRightsComplete;
+  }
 }
