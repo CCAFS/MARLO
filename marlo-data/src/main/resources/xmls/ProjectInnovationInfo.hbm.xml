@@ -111,7 +111,7 @@
 		<property name="otherAllianceLever" type="string">
 			<column name="other_alliance_lever" sql-type="TEXT" />
 		</property>
-		<property name="otherToolNarrtavive" type="string">
+		<property name="otherToolNarrative" type="string">
 			<column name="other_tool_narrative" sql-type="TEXT" />
 		</property>
 		<property name="hasMilestones" type="boolean">
