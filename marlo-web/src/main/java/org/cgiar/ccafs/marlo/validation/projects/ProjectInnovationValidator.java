@@ -154,7 +154,7 @@ public class ProjectInnovationValidator extends BaseValidator {
 
     ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
     innovationAlliance = action.getMissingFields().toString();
-    if (projectInnovation != null && projectInnovation.getId() != null && (innovationAlliance.length() > 0)) {
+    if (projectInnovation.getId() != null && (innovationAlliance.length() > innovationGeneral.length())) {
       BaseAction.getIsInnovationAllianceAlignmentCompleteMap().put("" + projectInnovation.getId(), "1");
     }
   }
@@ -529,14 +529,13 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     // Validate Innovation Centers
-    if (!resultProgessValidate) {
-      if (projectInnovation.getCenters() == null || projectInnovation.getCenters().isEmpty()) {
-        action.addMessage(action.getText("projectInnovations.contributingCenters"));
-        action.addMissingField("innovation.centers");
-        action.getInvalidFields().put("list-innovation.centers",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"centers"}));
-      }
+    if (projectInnovation.getCenters() == null || projectInnovation.getCenters().isEmpty()) {
+      action.addMessage(action.getText("projectInnovations.contributingCenters"));
+      action.addMissingField("innovation.centers");
+      action.getInvalidFields().put("list-innovation.centers",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"centers"}));
     }
+
 
     innovationGeneral = action.getMissingFields().toString();
     if (projectInnovation != null && projectInnovation.getId() != null && (innovationGeneral.length() > 0)) {
@@ -615,7 +614,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     innovationReadiness = action.getMissingFields().toString();
-    if (projectInnovation.getId() != null && (innovationAlliance.length() > 0)) {
+    if (projectInnovation.getId() != null && (innovationReadiness.length() > innovationOneCgiar.length())) {
       BaseAction.getIsInnovationReadinessCompleteMap().put("" + projectInnovation.getId(), "1");
     }
   }
@@ -633,7 +632,8 @@ public class ProjectInnovationValidator extends BaseValidator {
     if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
       ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
 
-      if (projectInnovation.getToolCategories() != null && projectInnovation.getToolCategories().get(0) != null
+      if (projectInnovation.getToolCategories() != null && !projectInnovation.getToolCategories().isEmpty()
+        && projectInnovation.getToolCategories().get(0) != null
         && projectInnovation.getToolCategories().get(0).getId() != null
         && projectInnovation.getToolCategories().get(0).getId() == 6) {
         action.addMessage(action.getText("innovation.projectInnovationInfo.otherToolNarrative"));
@@ -754,7 +754,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     innovationRights = action.getMissingFields().toString();
-    if (projectInnovation.getId() != null && (innovationAlliance.length() > 0)) {
+    if (projectInnovation.getId() != null && (innovationRights.length() > innovationReadiness.length())) {
       BaseAction.getIsInnovationRightsCompleteMap().put("" + projectInnovation.getId(), "1");
     }
   }
@@ -814,7 +814,7 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     }
     innovationOneCgiar = action.getMissingFields().toString();
-    if (projectInnovation.getId() != null && (innovationAlliance.length() > 0)) {
+    if (projectInnovation.getId() != null && (innovationOneCgiar.length() > innovationAlliance.length())) {
       BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().put("" + projectInnovation.getId(), "1");
     }
   }

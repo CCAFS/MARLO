@@ -1749,6 +1749,7 @@ public class ProjectInnovationAction extends BaseAction {
         innovation.getProjectInnovationInfo().setRepIndRegion(null);
         innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
         innovation.getProjectInnovationInfo().setLeadOrganization(null);
+        innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(null);
       } catch (Exception e) {
         logger.error("unable to clean info properties", e);
       }
@@ -1764,58 +1765,8 @@ public class ProjectInnovationAction extends BaseAction {
       srfIdos.add(srfIdo);
     }
 
-    // the next code allows execute the validation process
-    String valueSaving;
-    valueSaving = ProjectInnovationAction.getIsSaving().get(innovationID + "");
-    if (valueSaving != null) {
-
-      String value = "0";
-      value = BaseAction.getIsInnovationGeneralInformationCompleteMap().get(innovationID + "");
-      if (value != null && value.equals("1")) {
-        this.setInnovationGeneralInformationComplete(false);
-      } else {
-        this.setInnovationGeneralInformationComplete(true);
-      }
-
-      value = BaseAction.getIsInnovationAllianceAlignmentCompleteMap().get(innovationID + "");
-      if (value != null && value.equals("1")) {
-        this.setInnovationAllianceAlignmentComplete(false);
-      } else {
-        this.setInnovationAllianceAlignmentComplete(true);
-      }
-
-      value = BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().get(innovationID + "");
-      if (value != null && value.equals("1")) {
-        this.setInnovationOneCgiarAlignmentComplete(false);
-      } else {
-        this.setInnovationOneCgiarAlignmentComplete(true);
-      }
-
-      value = BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().get(innovationID + "");
-      if (value != null && value.equals("1")) {
-        this.setInnovationOneCgiarAlignmentComplete(false);
-      } else {
-        this.setInnovationOneCgiarAlignmentComplete(true);
-      }
-
-      value = BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().get(innovationID + "");
-      if (value != null && value.equals("1")) {
-        this.setInnovationOneCgiarAlignmentComplete(false);
-      } else {
-        this.setInnovationOneCgiarAlignmentComplete(true);
-      }
-
-      value = BaseAction.getIsInnovationRightsCompleteMap().get(innovationID + "");
-      if (value != null && value.equals("1")) {
-        this.setInnovationRightsComplete(false);
-      } else {
-        this.setInnovationRightsComplete(true);
-      }
-
-      ProjectInnovationAction.getIsSaving().remove(innovationID + "");
-    }
+    this.validateTabs();
   }
-
 
   @Override
   public String save() {
@@ -2042,6 +1993,7 @@ public class ProjectInnovationAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
+
 
   /**
    * Save Project Innovation Actors
@@ -3592,6 +3544,59 @@ public class ProjectInnovationAction extends BaseAction {
       // Change the parameters for the new way to validate the data
       validator.validate(this, project, innovation, clearLead, true, true, this.getActualPhase().getYear(),
         this.getActualPhase().getUpkeep());
+    }
+  }
+
+  public void validateTabs() {
+    // the next code allows execute the validation process
+    String valueSaving;
+    valueSaving = ProjectInnovationAction.getIsSaving().get(innovationID + "");
+    if (valueSaving != null) {
+
+      String value = "0";
+      value = BaseAction.getIsInnovationGeneralInformationCompleteMap().get(innovationID + "");
+      if (value != null && value.equals("1")) {
+        this.setInnovationGeneralInformationComplete(false);
+      } else {
+        this.setInnovationGeneralInformationComplete(true);
+      }
+
+      value = BaseAction.getIsInnovationAllianceAlignmentCompleteMap().get(innovationID + "");
+      if (value != null && value.equals("1")) {
+        this.setInnovationAllianceAlignmentComplete(false);
+      } else {
+        this.setInnovationAllianceAlignmentComplete(true);
+      }
+
+      value = BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().get(innovationID + "");
+      if (value != null && value.equals("1")) {
+        this.setInnovationOneCgiarAlignmentComplete(false);
+      } else {
+        this.setInnovationOneCgiarAlignmentComplete(true);
+      }
+
+      value = BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().get(innovationID + "");
+      if (value != null && value.equals("1")) {
+        this.setInnovationOneCgiarAlignmentComplete(false);
+      } else {
+        this.setInnovationOneCgiarAlignmentComplete(true);
+      }
+
+      value = BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().get(innovationID + "");
+      if (value != null && value.equals("1")) {
+        this.setInnovationOneCgiarAlignmentComplete(false);
+      } else {
+        this.setInnovationOneCgiarAlignmentComplete(true);
+      }
+
+      value = BaseAction.getIsInnovationRightsCompleteMap().get(innovationID + "");
+      if (value != null && value.equals("1")) {
+        this.setInnovationRightsComplete(false);
+      } else {
+        this.setInnovationRightsComplete(true);
+      }
+
+      ProjectInnovationAction.getIsSaving().remove(innovationID + "");
     }
   }
 }

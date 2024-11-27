@@ -116,6 +116,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   @Expose
   private Boolean hasKnowledgeMethodsAndTools;
   @Expose
+  private String knowledgeMethodsAndToolsNarrative;
+  @Expose
   private String knowledgeToolUsesNarrative;
   @Expose
   private String knowledgeResultsNarrative;
@@ -264,6 +266,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return knowledgeCollaboration;
   }
 
+  public String getKnowledgeMethodsAndToolsNarrative() {
+    return knowledgeMethodsAndToolsNarrative;
+  }
+
   public String getKnowledgeResultsNarrative() {
     return knowledgeResultsNarrative;
   }
@@ -359,10 +365,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return repIndGeographicScope;
   }
 
+
   public RepIndInnovationNature getRepIndInnovationNature() {
     return repIndInnovationNature;
   }
-
 
   public RepIndInnovationType getRepIndInnovationType() {
     return repIndInnovationType;
@@ -487,6 +493,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public void setKnowledgeCollaboration(String knowledgeCollaboration) {
     this.knowledgeCollaboration = knowledgeCollaboration;
+  }
+
+  public void setKnowledgeMethodsAndToolsNarrative(String knowledgeMethodsAndToolsNarrative) {
+    this.knowledgeMethodsAndToolsNarrative = knowledgeMethodsAndToolsNarrative;
   }
 
   public void setKnowledgeResultsNarrative(String knowledgeResultsNarrative) {
@@ -673,6 +683,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setOtherInnovationNature(projectInnovationInfoUpdate.getOtherInnovationNature());
     this.setOtherAllianceLever(projectInnovationInfoUpdate.getOtherAllianceLever());
     this.setOtherToolNarrative(projectInnovationInfoUpdate.getOtherToolNarrative());
+    this.setKnowledgeMethodsAndToolsNarrative(projectInnovationInfoUpdate.getKnowledgeMethodsAndToolsNarrative());
   }
 }
 
