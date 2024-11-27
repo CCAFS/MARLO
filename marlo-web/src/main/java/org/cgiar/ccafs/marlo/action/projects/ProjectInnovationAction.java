@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -87,6 +88,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
@@ -164,6 +166,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -264,6 +267,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationActorManager projectInnovationActorManager;
   private ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager;
   private ToolFunctionCategoryManager toolFunctionCategoryManager;
+  private DeliverableTypeManager deliverableTypeManager;
   // Variables
   private long projectID;
   private long innovationID;
@@ -323,6 +327,8 @@ public class ProjectInnovationAction extends BaseAction {
   private List<InstitutionType> institutionTypeList;
 
   private List<ToolFunctionCategory> toolCategoryList;
+  private List<DeliverableType> deliverableTypeParent;
+  private List<DeliverableType> deliverableSubTypes;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -371,7 +377,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationReferenceComplementarySolutionManager projectInnovationReferenceComplementarySolutionManager,
     ProjectInnovationActorManager projectInnovationActorManager,
     ToolFunctionCategoryManager toolFunctionCategoryManager,
-    ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager) {
+    ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager,
+    DeliverableTypeManager deliverableTypeManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -440,6 +447,8 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationActorManager = projectInnovationActorManager;
     this.toolFunctionCategoryManager = toolFunctionCategoryManager;
     this.projectInnovationToolCategoryManager = projectInnovationToolCategoryManager;
+    this.deliverableTypeManager = deliverableTypeManager;
+
   }
 
   /**
@@ -555,6 +564,36 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<Deliverable> getDeliverableList() {
     return deliverableList;
+  }
+
+  public List<Map<String, Object>> getDeliverablesSubTypes(long deliverableTypeID) {
+    List<Map<String, Object>> subTypes = new ArrayList<>();
+    Map<String, Object> keyOutput;
+
+    DeliverableType deliverableType = deliverableTypeManager.getDeliverableTypeById(deliverableTypeID);
+    if (deliverableType != null) {
+      if (deliverableType.getDeliverableTypes() != null) {
+        for (DeliverableType deliverableSubType : deliverableType.getDeliverableTypes().stream()
+          .collect(Collectors.toList())) {
+          keyOutput = new HashMap<String, Object>();
+          keyOutput.put("id", deliverableSubType.getId());
+          keyOutput.put("name", deliverableSubType.getName());
+          keyOutput.put("description", deliverableSubType.getDescription());
+          keyOutput.put("fair", deliverableSubType.getFair());
+          subTypes.add(keyOutput);
+        }
+      }
+    }
+    return subTypes;
+
+  }
+
+  public List<DeliverableType> getDeliverableSubTypes() {
+    return deliverableSubTypes;
+  }
+
+  public List<DeliverableType> getDeliverableTypeParent() {
+    return deliverableTypeParent;
   }
 
   public List<ProjectExpectedStudy> getExpectedStudyList() {
@@ -1321,6 +1360,22 @@ public class ProjectInnovationAction extends BaseAction {
       this.actorList = this.actorManager.findAll();
       this.toolCategoryList = this.toolFunctionCategoryManager.findAll();
 
+      deliverableTypeParent = new ArrayList<>(
+        deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null
+          && dt.getCrp() == null && !dt.getAdminType().booleanValue()).collect(Collectors.toList()));
+
+      deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
+        .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() != null
+          && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && !dt.getAdminType().booleanValue())
+        .collect(Collectors.toList())));
+      /*
+       * deliverableSubTypes = new ArrayList<>(
+       * deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() != null
+       * && dt.getDeliverableCategory().getId() == deliverableTypeParentId).collect(Collectors.toList()));
+       */
+      deliverableSubTypes = new ArrayList<>(deliverableTypeManager.findAll().stream()
+        .filter(dt -> dt.isActive() && dt.getDeliverableCategory() != null).collect(Collectors.toList()));
+
       try {
         this.institutionTypeList =
           Optional.ofNullable(this.institutionTypeManager.findAll()).orElse(Collections.emptyList()).stream()
@@ -1993,7 +2048,6 @@ public class ProjectInnovationAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
-
 
   /**
    * Save Project Innovation Actors
@@ -3387,6 +3441,14 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setDeliverableList(List<Deliverable> deliverableList) {
     this.deliverableList = deliverableList;
+  }
+
+  public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
+    this.deliverableSubTypes = deliverableSubTypes;
+  }
+
+  public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
+    this.deliverableTypeParent = deliverableTypeParent;
   }
 
   public void setExpectedStudyList(List<ProjectExpectedStudy> expectedStudyList) {
