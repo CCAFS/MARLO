@@ -624,7 +624,10 @@
         <p class="note--2">[@s.text name="projectInnovations.readiness.evidence.help" /]</p>
         <div class="col-md-12">
           <div class="referenceBlock">
-            <div class="referenceList">
+            <div class="referenceListReadiness">
+              [#list element.references as reference]
+                [@customForm.evidence name="innovation.references" element=reference index=reference_index template=false /]
+              [/#list]
             </div>
             [#if editable]
             <div class="addButtonReference bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>

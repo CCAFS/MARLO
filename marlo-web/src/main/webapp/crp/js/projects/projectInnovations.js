@@ -189,13 +189,8 @@ function attachEvents() {
     // Functions
     function addReference() {
 
-      console.log('addReference');
-
-      const $listBlock = $('.referenceList');
+      const $listBlock = $('.referenceListReadiness');
       const $template = $('#evidences-template');
-
-      console.log($template);
-      console.log($listBlock);
 
       // remove select2 data to avoid corruption in clone process
       if ($template.find('select').data('select2')) {
@@ -217,7 +212,7 @@ function attachEvents() {
       // Show the element
       $newItem.appendTo($listBlock).hide().show(350);
       // Update indexes
-
+      updateIndexes();
     }
 
     function removeReference() {
@@ -225,6 +220,28 @@ function attachEvents() {
       $parent.hide(500, function() {
         // Remove DOM element
         $parent.remove();
+        // Update indexes
+        updateIndexes();
+      });
+    }
+
+    function updateIndexes() {
+
+      $('.referenceListReadiness').find('.evidences').each(function(i, reference) {
+        $(reference).setNameIndexes(1, i);
+
+        $(reference).find('label').each(function(_i,e) {
+          let newForValue = $(e).prev('input').attr('id');
+          $(e).attr('for', newForValue);
+
+          if($(e).prev('input').attr('type') == 'radio'){
+            newForValue = $(e).prev('input').attr('id') + '.' + $(e).prev('input').attr('value');
+            $(e).attr('for', newForValue);
+            $(e).prev('input').attr('id', newForValue);
+          }
+        });
+
+
       });
     }
 

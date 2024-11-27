@@ -991,14 +991,14 @@
     [#local evidenceByDeliverable = ((element.evidenceByDeliverable??) && (element.evidenceByDeliverable == true)) /]
 
     <div class="col-md-4">
-      [@customForm.radioFlat id="${customName}.evidenceByDeliverable" name="${customName}.evidenceByDeliverable" i18nkey="projectInnovations.evidence.evidenceByDeliverable" value="true" checked=evidenceByDeliverable editable=true /]
+      [@customForm.radioFlat id="${customName}.evidenceByDeliverable.true" name="${customName}.evidenceByDeliverable" i18nkey="projectInnovations.evidence.evidenceByDeliverable" value="true" checked=evidenceByDeliverable editable=true /]
     </div>
     <div class="col-md-4">
-      [@customForm.radioFlat id="${customName}.evidenceByDeliverable" name="${customName}.evidenceByDeliverable" i18nkey="projectInnovations.evidence.evidenceByLink" value="false" checked=!evidenceByDeliverable editable=true /] 
+      [@customForm.radioFlat id="${customName}.evidenceByDeliverable.false" name="${customName}.evidenceByDeliverable" i18nkey="projectInnovations.evidence.evidenceByLink" value="false" checked=!evidenceByDeliverable editable=true /] 
     </div>
 
     <div class="evidenceByDeliverable col-md-12" style="display:${evidenceByDeliverable?string('block','none')}">
-      [@customForm.select name="${customName}.deliverable" label="projectInnovations.evidence.deliverable" editable=true required=true listName="deliverables" keyFieldName="id" displayFieldName="name" /]
+      [@customForm.select name="${customName}.deliverable" i18nkey="projectInnovations.evidence.deliverable" editable=true required=true listName="deliverables" keyFieldName="id" displayFieldName="name" /]
     </div>
     <div class="evidenceByLink col-md-12" style="display:${evidenceByDeliverable?string('none','block')}">
       <div class="col-md-12 row">
@@ -1016,7 +1016,7 @@
         </div>
       </div>
       <div class="col-md-12">
-        <div class="col-md-12">
+        <div class="col-md-12 evidenceType">
           <label for="${customName}.evidenceType" class="col-md-12">[@s.text name="projectInnovations.evidence.evidenceType" /]</label>
             <div class="col-md-12 row">
             <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">[@s.text name="projectInnovations.evidence.category" /][@customForm.req required=true  /]
@@ -1025,10 +1025,10 @@
             </div>
           </div>
           <div class="col-md-6">
-            [@customForm.select name="${customName}.category" label="projectInnovations.evidence.category" showTitle=false editable=true required=true listName="deliverableTypeParent" keyFieldName="id" displayFieldName="name" /]
+            [@customForm.select name="${customName}.category.id" label="projectInnovations.evidence.category" showTitle=false editable=true required=true listName="deliverableTypeParent" keyFieldName="id" displayFieldName="name" /]
           </div>
           <div class="col-md-6">
-            [@customForm.select name="${customName}.subCategory" label="projectInnovations.evidence.subCategory" showTitle=false editable=true required=true listName="deliverableSubTypes" keyFieldName="id" displayFieldName="name" /]
+            [@customForm.select name="${customName}.subCategory.id" label="projectInnovations.evidence.subCategory" showTitle=false editable=true required=true listName="deliverableSubTypes" keyFieldName="id" displayFieldName="name" /]
           </div>            
         </div>
       </div>

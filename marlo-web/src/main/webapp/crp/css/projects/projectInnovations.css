@@ -407,3 +407,25 @@ div.nationalBlock div.selectList span.selection span.select2-selection ul{
 .scaling__item input[type="radio"].radio-input.scalingInnovation__item__value +.radio-label:before{
   display: none;
 }
+
+.evidences label{
+  color: #0A2842;
+  font-size: 12px;
+}
+
+.evidences .col-md-4{
+  padding-left: 0;
+  margin-bottom: 1rem;
+} 
+
+.evidences .col-md-4 .radioFlat{
+  padding-left: 0;
+}
+
+.evidences .evidenceByDeliverable,.evidences .evidenceByLink {
+  margin-bottom: 1rem;
+}
+
+.evidences .evidenceByLink label{
+  margin-top: 1rem;
+}
