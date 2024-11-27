@@ -608,16 +608,16 @@
         [@scalingMacro name="innovation.projectInnovationInfo.readinessScale" element=innovation.projectInnovationInfo.readinessScale!-1 editable=true label="projectInnovations.readiness.scale" helpLabel="projectInnovations.readiness.scale.help" listName=scalingReadinessList class="innovationScaling" /]
       </div>
 
+      [#-- Innovation importance --]
+      <div class="form-group col-md-12">
+        [@customForm.textArea name="innovation.projectInnovationInfo.innovationImportance" i18nkey="projectInnovations.oneCGIARAligment.innovationImportance" help="projectInnovations.oneCGIARAligment.innovationImportance.help" helpIcon=false className="limitWords-200" required=(editable) editable=editable isNote=true /]
+      </div>
+
       [#-- Innovation Readiness reason --]
       <div class="form-group">
         [@customForm.textArea name="${name}.projectInnovationInfo.readinessReason" i18nkey="projectInnovations.readiness.reason" help="projectInnovations.readiness.reason.help" helpIcon=false className="limitWords-80" required=true isNote=true showTitle=true isMainTitle=true editable=editable /]
       </div>
 
-
-      [#-- Innovation importance --]
-      <div class="form-group col-md-12">
-        [@customForm.textArea name="innovation.projectInnovationInfo.innovationImportance" i18nkey="projectInnovations.oneCGIARAligment.innovationImportance" help="projectInnovations.oneCGIARAligment.innovationImportance.help" helpIcon=false className="limitWords-200" required=(editable) editable=editable isNote=true /]
-      </div>
       [#-- Evidence and Reference --]
       <div class="form-group">
         <label class="label--2">[@s.text name="projectInnovations.readiness.evidence" /]:</label>
@@ -625,12 +625,6 @@
         <div class="col-md-12">
           <div class="referenceBlock">
             <div class="referenceList">
-              <div class="row">
-                <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Evidence/Reference[@customForm.req required=true  /]
-                </div>
-                <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=true  /]
-                </div>
-              </div>
             </div>
             [#if editable]
             <div class="addButtonReference bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>
@@ -639,7 +633,7 @@
           </div>
           [#-- Element item Template --]
           <div style="display:none">
-            [@customForm.references name="innovation.references" element={} index=-1 template=true /]
+            [@customForm.evidence name="innovation.references" element={} index=-1 template=true /]
           </div>
         </div>
           

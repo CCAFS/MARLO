@@ -177,6 +177,60 @@ function attachEvents() {
 
   })();
 
+  /**
+   * Evidences and Reference
+   * 
+   */
+  ( function () {
+    // Events
+    $('.addButtonReference').on('click', addReference);
+    $('.removeButtonReference').on('click', removeReference);
+
+    // Functions
+    function addReference() {
+
+      console.log('addReference');
+
+      const $listBlock = $('.referenceList');
+      const $template = $('#evidences-template');
+
+      console.log($template);
+      console.log($listBlock);
+
+      // remove select2 data to avoid corruption in clone process
+      if ($template.find('select').data('select2')) {
+        $template.find('select').select2("destroy");
+      }
+
+      const $newItem = $template.clone(true).removeAttr('id');
+      $newItem.find('input, select').each(function(_i,e) {
+        e.name = (e.name).replace("_TEMPLATE_", "");
+        e.id = (e.id).replace("_TEMPLATE_", "");
+      });
+      $newItem.find('label').each(function(_i,e) {
+        e.htmlFor = (e.htmlFor).replace("_TEMPLATE_", "");
+      });
+      // Add select2 to select2 library
+      $template.find('select').select2();
+      $newItem.find('select').select2();
+
+      // Show the element
+      $newItem.appendTo($listBlock).hide().show(350);
+      // Update indexes
+
+    }
+
+    function removeReference() {
+      var $parent = $(this).parents('.evidences');
+      $parent.hide(500, function() {
+        // Remove DOM element
+        $parent.remove();
+      });
+    }
+
+  } )();
+
+
   // 
   $('#isClearLeadToAddRequired').on('click', AddRequired);
 

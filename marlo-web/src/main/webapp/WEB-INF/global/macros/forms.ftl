@@ -982,6 +982,65 @@
   </div>
 [/#macro]
 
+[#macro evidence name element index=-1 template=false class=""]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div id="evidences${class?has_content?string('-${class}', '')}-${(template?string('template', ''))}" class="evidences form-group grayBox ${class}">
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <label for="${customName}.reference" class="col-md-12">[@s.text name="projectInnovations.evidence.title" /]</label>
+
+    [#local evidenceByDeliverable = ((element.evidenceByDeliverable??) && (element.evidenceByDeliverable == true)) /]
+
+    <div class="col-md-4">
+      [@customForm.radioFlat id="${customName}.evidenceByDeliverable" name="${customName}.evidenceByDeliverable" i18nkey="projectInnovations.evidence.evidenceByDeliverable" value="true" checked=evidenceByDeliverable editable=true /]
+    </div>
+    <div class="col-md-4">
+      [@customForm.radioFlat id="${customName}.evidenceByDeliverable" name="${customName}.evidenceByDeliverable" i18nkey="projectInnovations.evidence.evidenceByLink" value="false" checked=!evidenceByDeliverable editable=true /] 
+    </div>
+
+    <div class="evidenceByDeliverable col-md-12" style="display:${evidenceByDeliverable?string('block','none')}">
+      [@customForm.select name="${customName}.deliverable" label="projectInnovations.evidence.deliverable" editable=true required=true listName="deliverables" keyFieldName="id" displayFieldName="name" /]
+    </div>
+    <div class="evidenceByLink col-md-12" style="display:${evidenceByDeliverable?string('none','block')}">
+      <div class="col-md-12 row">
+        <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Evidence/Reference[@customForm.req required=true  /]
+        </div>
+        <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=true  /]
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-6">
+          [@customForm.input name="${customName}.reference" placeholder="projectInnovations.evidence.reference" showTitle=false i18nkey=""  editable=editable required=true /]
+        </div>
+        <div class="col-md-6">
+          [@customForm.input name="${customName}.link" placeholder="projectInnovations.evidence.link" showTitle=false i18nkey="" editable=editable required=true /]
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-12">
+          <label for="${customName}.evidenceType" class="col-md-12">[@s.text name="projectInnovations.evidence.evidenceType" /]</label>
+            <div class="col-md-12 row">
+            <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">[@s.text name="projectInnovations.evidence.category" /][@customForm.req required=true  /]
+            </div>
+            <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">[@s.text name="projectInnovations.evidence.subCategory" /][@customForm.req required=true  /]
+            </div>
+          </div>
+          <div class="col-md-6">
+            [@customForm.select name="${customName}.category" label="projectInnovations.evidence.category" showTitle=false editable=true required=true listName="deliverableTypeParent" keyFieldName="id" displayFieldName="name" /]
+          </div>
+          <div class="col-md-6">
+            [@customForm.select name="${customName}.subCategory" label="projectInnovations.evidence.subCategory" showTitle=false editable=true required=true listName="deliverableSubTypes" keyFieldName="id" displayFieldName="name" /]
+          </div>            
+        </div>
+      </div>
+    </div>
+
+    [#if editable]<div class="removeElement sm removeIcon removeButtonReference ${class}" title="Remove"></div>[/#if]
+    <div class="clearfix"></div>
+
+  </div>
+    
+[/#macro]
+
 [#macro textAreaReferences name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false oldReference=true isNote=false isMainTitle=false]
   <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
