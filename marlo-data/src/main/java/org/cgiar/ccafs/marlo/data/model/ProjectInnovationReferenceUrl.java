@@ -28,6 +28,8 @@ public class ProjectInnovationReferenceUrl extends MarloAuditableEntity implemen
   private Boolean datasetType;
   @Expose
   private Deliverable deliverable;
+  @Expose
+  private DeliverableType deliverableType;
 
   public ProjectInnovationReferenceUrl() {
   }
@@ -71,19 +73,23 @@ public class ProjectInnovationReferenceUrl extends MarloAuditableEntity implemen
     return deliverable;
   }
 
+  public DeliverableType getDeliverableType() {
+    return deliverableType;
+  }
+
+
   public Boolean getEvidenceByDeliverable() {
     return evidenceByDeliverable;
   }
-
 
   public Boolean getInnovationType() {
     return innovationType;
   }
 
+
   public String getLink() {
     return link;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -146,17 +152,24 @@ public class ProjectInnovationReferenceUrl extends MarloAuditableEntity implemen
     this.deliverable = deliverable;
   }
 
+  public void setDeliverableType(DeliverableType deliverableType) {
+    this.deliverableType = deliverableType;
+  }
+
   public void setEvidenceByDeliverable(Boolean evidenceByDeliverable) {
     this.evidenceByDeliverable = evidenceByDeliverable;
   }
+
 
   public void setInnovationType(Boolean innovationType) {
     this.innovationType = innovationType;
   }
 
+
   public void setLink(String link) {
     this.link = link;
   }
+
 
   @Override
   public void setModifiedBy(User modifiedBy) {

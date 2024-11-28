@@ -152,18 +152,17 @@ public class ProjectInnovationAllianceLeversManagerImpl implements ProjectInnova
     ProjectInnovationAllianceLevers projectInnovationAllianceLevers) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<ProjectInnovationAllianceLevers> innovationAllianceLevers =
-
-      projectInnovationAllianceLeversDAO
-        .getProjectInnovationAllianceLeversByInnovationAndPhase(innovationid, phase.getId()).stream()
-        .filter(c -> c.getAllianceLever().getId().equals(projectInnovationAllianceLevers.getAllianceLever().getId()))
-        .collect(Collectors.toList());
+    List<ProjectInnovationAllianceLevers> innovationAllianceLevers = projectInnovationAllianceLeversDAO
+      .getProjectInnovationAllianceLeversByInnovationAndPhase(innovationid, phase.getId()).stream()
+      .filter(c -> c.getAllianceLever().getId().equals(projectInnovationAllianceLevers.getAllianceLever().getId()))
+      .collect(Collectors.toList());
 
     if (innovationAllianceLevers.isEmpty()) {
       ProjectInnovationAllianceLevers projectInnovationAllianceLeversAdd = new ProjectInnovationAllianceLevers();
       projectInnovationAllianceLeversAdd.setProjectInnovation(projectInnovationAllianceLevers.getProjectInnovation());
       projectInnovationAllianceLeversAdd.setPhase(phase);
       projectInnovationAllianceLeversAdd.setAllianceLever(projectInnovationAllianceLevers.getAllianceLever());
+      projectInnovationAllianceLeversAdd.setId(null);
       projectInnovationAllianceLeversDAO.save(projectInnovationAllianceLeversAdd);
     }
     if (phase.getNext() != null) {

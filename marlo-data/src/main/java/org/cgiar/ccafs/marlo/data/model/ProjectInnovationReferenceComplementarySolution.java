@@ -23,6 +23,8 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
   private Boolean evidenceByDeliverable;
   @Expose
   private Deliverable deliverable;
+  @Expose
+  private DeliverableType deliverableType;
 
   public ProjectInnovationReferenceComplementarySolution() {
   }
@@ -58,6 +60,10 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
     return deliverable;
   }
 
+  public DeliverableType getDeliverableType() {
+    return deliverableType;
+  }
+
   public Boolean getEvidenceByDeliverable() {
     return evidenceByDeliverable;
   }
@@ -66,6 +72,7 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
     return link;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -73,11 +80,11 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return "";
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -85,7 +92,6 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
     u.setId(new Long(3));
     return u;
   }
-
 
   public Phase getPhase() {
     return phase;
@@ -119,6 +125,10 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
 
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
+  }
+
+  public void setDeliverableType(DeliverableType deliverableType) {
+    this.deliverableType = deliverableType;
   }
 
   public void setEvidenceByDeliverable(Boolean evidenceByDeliverable) {

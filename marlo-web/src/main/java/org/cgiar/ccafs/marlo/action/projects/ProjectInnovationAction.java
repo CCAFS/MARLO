@@ -1827,7 +1827,7 @@ public class ProjectInnovationAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      ProjectExpectedStudiesAction.getIsSaving().put("" + innovationID, "1");
+      ProjectInnovationAction.getIsSaving().put("" + innovationID, "1");
 
       Phase phase = this.getActualPhase();
 
@@ -2081,21 +2081,19 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getActors() != null) {
         for (ProjectInnovationActor innovationActor : innovation.getActors()) {
           ProjectInnovationActor innovationActorSave = new ProjectInnovationActor();
-
-          if (innovationActor.getId() == null || innovationActor.getId() == -1) {
-            if (innovationActor.getId() != null && innovationActor.getId() == -1) {
-              innovationActor.setId(null);
-            }
-          } else {
-            try {
-              if (innovationActor.getId() != null) {
-                innovationActorSave =
-                  projectInnovationActorManager.getProjectInnovationActorById(innovationActor.getId());
-              }
-            } catch (Exception e) {
-              logger.error("unable to get old actors", e);
-            }
+          if (innovationActor.getId() != null && innovationActor.getId() == -1) {
+            innovationActor.setId(null);
           }
+
+          try {
+            if (innovationActor.getId() != null) {
+              innovationActorSave =
+                projectInnovationActorManager.getProjectInnovationActorById(innovationActor.getId());
+            }
+          } catch (Exception e) {
+            logger.error("unable to get old actors", e);
+          }
+
           innovationActorSave.setWomenYouth(innovationActor.getWomenYouth());
           innovationActorSave.setWomenNotYouth(innovationActor.getWomenNotYouth());
           innovationActorSave.setMenYouth(innovationActor.getMenYouth());
@@ -2148,21 +2146,20 @@ public class ProjectInnovationAction extends BaseAction {
 
       // Save form Information
       if (innovation.getAllianceLevers() != null) {
-        ProjectInnovationAllianceLevers innovationAllianceLeverSave = new ProjectInnovationAllianceLevers();
         for (ProjectInnovationAllianceLevers innovationAllianceLever : innovation.getAllianceLevers()) {
-          if (innovationAllianceLever.getId() == null || innovationAllianceLever.getId() == -1) {
-            if (innovationAllianceLever.getId() != null && innovationAllianceLever.getId() == -1) {
-              innovationAllianceLever.setId(null);
+
+          if (innovationAllianceLever.getId() != null && innovationAllianceLever.getId() == -1) {
+            innovationAllianceLever.setId(null);
+          }
+          ProjectInnovationAllianceLevers innovationAllianceLeverSave = new ProjectInnovationAllianceLevers();
+
+          try {
+            if (innovationAllianceLever.getId() != null) {
+              innovationAllianceLeverSave = projectInnovationAllianceLeversManager
+                .getProjectInnovationAllianceLeversById(innovationAllianceLever.getId());
             }
-          } else {
-            try {
-              if (innovationAllianceLever.getId() != null) {
-                innovationAllianceLever = projectInnovationAllianceLeversManager
-                  .getProjectInnovationAllianceLeversById(innovationAllianceLever.getId());
-              }
-            } catch (Exception e) {
-              logger.error("unable to get old innovation alliance lever", e);
-            }
+          } catch (Exception e) {
+            logger.error("unable to get old actors", e);
           }
           innovationAllianceLeverSave.setAllianceLever(innovationAllianceLever.getAllianceLever());
           innovationAllianceLeverSave.setProjectInnovation(projectInnovation);
@@ -2681,20 +2678,19 @@ public class ProjectInnovationAction extends BaseAction {
     if (innovation.getOrganizations() != null) {
       for (ProjectInnovationOrganization innovationOrganization : innovation.getOrganizations()) {
         ProjectInnovationOrganization innovationOrganizationSave = new ProjectInnovationOrganization();
-        if (innovationOrganization.getId() == null || innovationOrganization.getId() == -1) {
-          if (innovationOrganization.getId() != null && innovationOrganization.getId() == -1) {
-            innovationOrganization.setId(null);
-          }
-        } else {
-          try {
-            if (innovationOrganization.getId() != null) {
-              innovationOrganizationSave = projectInnovationOrganizationManager
-                .getProjectInnovationOrganizationById(innovationOrganization.getId());
-            }
-          } catch (Exception e) {
-            logger.error("unable to get old innovation", e);
-          }
+        if (innovationOrganization.getId() != null && innovationOrganization.getId() == -1) {
+          innovationOrganization.setId(null);
         }
+
+        try {
+          if (innovationOrganization.getId() != null) {
+            innovationOrganizationSave =
+              projectInnovationOrganizationManager.getProjectInnovationOrganizationById(innovationOrganization.getId());
+          }
+        } catch (Exception e) {
+          logger.error("unable to get old innovation", e);
+        }
+
         innovationOrganizationSave.setProjectInnovation(projectInnovation);
         innovationOrganizationSave.setPhase(phase);
 
@@ -2994,6 +2990,13 @@ public class ProjectInnovationAction extends BaseAction {
           innovationReferenceSave.setReference(innovationReference.getReference());
           innovationReferenceSave.setLink(innovationReference.getLink());
           innovationReferenceSave.setEvidenceByDeliverable(innovationReference.getEvidenceByDeliverable());
+          innovationReferenceSave.setDeliverable(innovationReference.getDeliverable());
+          if (innovationReference.getDeliverableType() != null
+            && innovationReference.getDeliverableType().getId() != null
+            && innovationReference.getDeliverableType().getId() == -1) {
+            innovationReference.getDeliverableType().setId(null);
+          }
+          innovationReferenceSave.setDeliverableType(innovationReference.getDeliverableType());
 
           this.projectInnovationReferenceComplementarySolutionManager
             .saveProjectInnovationReferenceComplementarySolution(innovationReferenceSave);
@@ -3011,6 +3014,13 @@ public class ProjectInnovationAction extends BaseAction {
               innovationReferenceSave.setReference(innovationReference.getReference());
               innovationReferenceSave.setLink(innovationReference.getLink());
               innovationReferenceSave.setEvidenceByDeliverable(innovationReference.getEvidenceByDeliverable());
+              innovationReferenceSave.setDeliverable(innovationReference.getDeliverable());
+              if (innovationReference.getDeliverableType() != null
+                && innovationReference.getDeliverableType().getId() != null
+                && innovationReference.getDeliverableType().getId() == -1) {
+                innovationReference.getDeliverableType().setId(null);
+              }
+              innovationReferenceSave.setDeliverableType(innovationReference.getDeliverableType());
             }
 
             this.projectInnovationReferenceComplementarySolutionManager
@@ -3060,6 +3070,12 @@ public class ProjectInnovationAction extends BaseAction {
           }
           studyReferenceSave.setExternalAuthor(externalAutor);
           studyReferenceSave.setEvidenceByDeliverable(studyReference.getEvidenceByDeliverable());
+          studyReferenceSave.setDeliverable(studyReference.getDeliverable());
+          if (studyReference.getDeliverableType() != null && studyReference.getDeliverableType().getId() != null
+            && studyReference.getDeliverableType().getId() == -1) {
+            studyReference.getDeliverableType().setId(null);
+          }
+          studyReferenceSave.setDeliverableType(studyReference.getDeliverableType());
 
           this.projectInnovationReferenceManager.saveProjectInnovationReference(studyReferenceSave);
           // This is to add studyReferenceSave to generate correct
@@ -3075,6 +3091,12 @@ public class ProjectInnovationAction extends BaseAction {
               studyReferenceSave.setReference(studyReference.getReference());
               studyReferenceSave.setLink(studyReference.getLink());
               studyReferenceSave.setEvidenceByDeliverable(studyReference.getEvidenceByDeliverable());
+              studyReferenceSave.setDeliverable(studyReference.getDeliverable());
+              if (studyReference.getDeliverableType() != null && studyReference.getDeliverableType().getId() != null
+                && studyReference.getDeliverableType().getId() == -1) {
+                studyReference.getDeliverableType().setId(null);
+              }
+              studyReferenceSave.setDeliverableType(studyReferenceSave.getDeliverableType());
               boolean externalAutor = false;
               if (studyReference.getEvidenceByDeliverable() != null) {
                 externalAutor = true;
@@ -3128,6 +3150,13 @@ public class ProjectInnovationAction extends BaseAction {
           innovationReferenceUrlSave.setAdditionalArticleType(innovationReferenceUrl.getAdditionalArticleType());
           innovationReferenceUrlSave.setDatasetType(innovationReferenceUrl.getDatasetType());
           innovationReferenceUrlSave.setEvidenceByDeliverable(innovationReferenceUrl.getEvidenceByDeliverable());
+          innovationReferenceUrlSave.setDeliverable(innovationReferenceUrl.getDeliverable());
+          if (innovationReferenceUrl.getDeliverableType() != null
+            && innovationReferenceUrl.getDeliverableType().getId() != null
+            && innovationReferenceUrl.getDeliverableType().getId() == -1) {
+            innovationReferenceUrl.getDeliverableType().setId(null);
+          }
+          innovationReferenceUrlSave.setDeliverableType(innovationReferenceUrl.getDeliverableType());
 
           this.projectInnovationReferenceUrlManager.saveProjectInnovationReferenceUrl(innovationReferenceUrlSave);
           // This is to add innovationReferenceUrlSave to generate correct
@@ -3148,6 +3177,13 @@ public class ProjectInnovationAction extends BaseAction {
               innovationReferenceUrlSave.setAdditionalArticleType(innovationReferenceUrl.getAdditionalArticleType());
               innovationReferenceUrlSave.setDatasetType(innovationReferenceUrl.getDatasetType());
               innovationReferenceUrlSave.setEvidenceByDeliverable(innovationReferenceUrl.getEvidenceByDeliverable());
+              innovationReferenceUrlSave.setDeliverable(innovationReferenceUrl.getDeliverable());
+              if (innovationReferenceUrl.getDeliverableType() != null
+                && innovationReferenceUrl.getDeliverableType().getId() != null
+                && innovationReferenceUrl.getDeliverableType().getId() == -1) {
+                innovationReferenceUrl.getDeliverableType().setId(null);
+              }
+              innovationReferenceUrlSave.setDeliverableType(innovationReferenceUrl.getDeliverableType());
             }
 
             this.projectInnovationReferenceUrlManager.saveProjectInnovationReferenceUrl(innovationReferenceUrlSave);

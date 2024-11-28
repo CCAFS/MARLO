@@ -24,6 +24,8 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
   private Boolean externalAuthor;
   @Expose
   private Deliverable deliverable;
+  @Expose
+  private DeliverableType deliverableType;
 
   public ProjectInnovationReference() {
   }
@@ -59,6 +61,10 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
     return deliverable;
   }
 
+  public DeliverableType getDeliverableType() {
+    return deliverableType;
+  }
+
   public Boolean getEvidenceByDeliverable() {
     return evidenceByDeliverable;
   }
@@ -78,11 +84,11 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -123,6 +129,10 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
 
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
+  }
+
+  public void setDeliverableType(DeliverableType deliverableType) {
+    this.deliverableType = deliverableType;
   }
 
   public void setEvidenceByDeliverable(Boolean evidenceByDeliverable) {
