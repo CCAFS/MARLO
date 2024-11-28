@@ -70,8 +70,8 @@ public class ProjectInnovationImpactAreaMySQLDAO extends AbstractMarloDAO<Projec
   @Override
   public List<ProjectInnovationImpactArea> getProjectInnovationImpactAreaByInnovationAndPhase(long innovationID,
     long phaseID) {
-    String query = "from " + ProjectInnovationImpactArea.class.getName() + " where is_active=1 and innovation_id="
-      + innovationID + " and id_phase=" + phaseID;
+    String query = "from " + ProjectInnovationImpactArea.class.getName()
+      + " where is_active=1 and project_innovation_id=" + innovationID + " and id_phase=" + phaseID;
     List<ProjectInnovationImpactArea> list = super.findAll(query);
     if (!list.isEmpty()) {
       return list;

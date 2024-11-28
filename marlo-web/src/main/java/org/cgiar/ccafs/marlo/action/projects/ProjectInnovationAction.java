@@ -509,6 +509,16 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
+  public void fillDeliverableSubTypes(int deliverableType) {
+    DeliverableType typeDB = deliverableTypeManager.getDeliverableTypeById(deliverableType);
+    // deliverable.getDeliverableInfo(this.getActualPhase()).setDeliverableType(typeDB);
+    Long deliverableTypeParentId = typeDB.getDeliverableCategory().getId();
+
+    deliverableSubTypes = new ArrayList<>(
+      deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() != null
+        && dt.getDeliverableCategory().getId() == deliverableTypeParentId).collect(Collectors.toList()));
+  }
+
   public List<Actor> getActorList() {
     return actorList;
   }
@@ -1360,6 +1370,9 @@ public class ProjectInnovationAction extends BaseAction {
       this.actorList = this.actorManager.findAll();
       this.toolCategoryList = this.toolFunctionCategoryManager.findAll();
 
+      boolean has_specific_management_deliverables =
+        this.hasSpecificities(APConstants.CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES);
+
       deliverableTypeParent = new ArrayList<>(
         deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null
           && dt.getCrp() == null && !dt.getAdminType().booleanValue()).collect(Collectors.toList()));
@@ -1368,6 +1381,21 @@ public class ProjectInnovationAction extends BaseAction {
         .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() != null
           && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && !dt.getAdminType().booleanValue())
         .collect(Collectors.toList())));
+
+      if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
+        && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
+
+        deliverableTypeParent
+          .addAll(deliverableTypeManager.findAll().stream()
+            .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() == null
+              && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
+            .collect(Collectors.toList()));
+
+        deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
+          .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() != null
+            && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && dt.getAdminType().booleanValue())
+          .collect(Collectors.toList())));
+      }
       /*
        * deliverableSubTypes = new ArrayList<>(
        * deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() != null
@@ -1790,6 +1818,9 @@ public class ProjectInnovationAction extends BaseAction {
       }
       if (innovation.getActors() != null) {
         innovation.getActors().clear();
+      }
+      if (deliverableTypeParent != null) {
+        deliverableTypeParent.clear();
       }
       // HTTP Post info Values
       // innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
