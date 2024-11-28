@@ -40,8 +40,8 @@ public class ProjectInnovationSDGMySQLDAO extends AbstractMarloDAO<ProjectInnova
   @Override
   public void deleteProjectInnovationSDG(long projectInnovationSDGId) {
     ProjectInnovationSDG projectInnovationSDG = this.find(projectInnovationSDGId);
-    projectInnovationSDG.setActive(false);
-    this.update(projectInnovationSDG);
+    // projectInnovationSDG.setActive(false);
+    this.delete(projectInnovationSDG);
   }
 
   @Override

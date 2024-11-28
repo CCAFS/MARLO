@@ -3278,38 +3278,41 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveSDGs(ProjectInnovation projectInnovation, Phase phase) {
+    try {
+      // Search and deleted form Information
+      if (projectInnovation.getProjectInnovationSDGs() != null
+        && !projectInnovation.getProjectInnovationSDGs().isEmpty()) {
 
-    // Search and deleted form Information
-    if (projectInnovation.getProjectInnovationSDGs() != null
-      && !projectInnovation.getProjectInnovationSDGs().isEmpty()) {
+        List<ProjectInnovationSDG> sdgPrev = new ArrayList<>(projectInnovation.getProjectInnovationSDGs().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
-      List<ProjectInnovationSDG> sdgPrev = new ArrayList<>(projectInnovation.getProjectInnovationSDGs().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-
-      for (ProjectInnovationSDG sdg : sdgPrev) {
-        if (innovation.getSdgs() == null || !innovation.getSdgs().contains(sdg)) {
-          projectInnovationSDGManager.deleteProjectInnovationSDG(sdg.getId());
-        }
-      }
-    }
-
-    // Save form Information
-    if (innovation.getSdgs() != null) {
-      for (ProjectInnovationSDG innovationSdg : innovation.getSdgs()) {
-        if (innovationSdg.getId() == null) {
-          ProjectInnovationSDG innovationSdgSave = new ProjectInnovationSDG();
-          innovationSdgSave.setPhase(this.getActualPhase());
-          if (innovationSdg.getSdg() != null) {
-            innovationSdgSave.setSdg(innovationSdg.getSdg());
+        for (ProjectInnovationSDG sdg : sdgPrev) {
+          if ((innovation.getSdgs() == null || !innovation.getSdgs().contains(sdg)) && sdg.getId() != null) {
+            projectInnovationSDGManager.deleteProjectInnovationSDG(sdg.getId());
           }
-          innovationSdgSave.setProjectInnovation(projectInnovation);
-          innovationSdgSave.setPhase(phase);
-
-          projectInnovationSDGManager.saveProjectInnovationSDG(innovationSdgSave);
-          // This is to add innovationSdgSave to generate correct auditlog.
-          innovation.getProjectInnovationSDGs().add(innovationSdgSave);
         }
       }
+
+      // Save form Information
+      if (innovation.getSdgs() != null) {
+        for (ProjectInnovationSDG innovationSdg : innovation.getSdgs()) {
+          if (innovationSdg.getId() == null) {
+            if (innovationSdg.getSdg() != null) {
+              ProjectInnovationSDG innovationSdgSave = new ProjectInnovationSDG();
+              innovationSdgSave.setSdg(innovationSdg.getSdg());
+              innovationSdgSave.setPhase(this.getActualPhase());
+              innovationSdgSave.setProjectInnovation(projectInnovation);
+              innovationSdgSave.setPhase(phase);
+
+              projectInnovationSDGManager.saveProjectInnovationSDG(innovationSdgSave);
+              // This is to add innovationSdgSave to generate correct auditlog.
+              innovation.getProjectInnovationSDGs().add(innovationSdgSave);
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      Log.error("error in sdg save process " + e);
     }
   }
 

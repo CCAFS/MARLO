@@ -22,17 +22,23 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSDGManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSDG;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author CCAFS
  */
 @Named
 public class ProjectInnovationSDGManagerImpl implements ProjectInnovationSDGManager {
+
+  private final Logger logger = LoggerFactory.getLogger(ProjectInnovationSDGManagerImpl.class);
 
   // Managers
   private ProjectInnovationSDGDAO projectInnovationSDGDAO;
@@ -66,6 +72,7 @@ public class ProjectInnovationSDGManagerImpl implements ProjectInnovationSDGMana
         }
       }
     }
+    System.out.println("projectInnovationSDGId " + projectInnovationSDGId);
     projectInnovationSDGDAO.deleteProjectInnovationSDG(projectInnovationSDGId);
   }
 
@@ -73,13 +80,17 @@ public class ProjectInnovationSDGManagerImpl implements ProjectInnovationSDGMana
     ProjectInnovationSDG projectInnovationSDG) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<ProjectInnovationSDG> projectInnovationSDGs = projectInnovationSDGDAO
-      .getProjectInnovationSDGByInnovationAndPhase(innovationID, phase.getId()).stream().filter(c -> c.getSdg() != null
-        && projectInnovationSDG.getSdg() != null && c.getSdg().getId().equals(projectInnovationSDG.getSdg().getId()))
-      .collect(Collectors.toList());
+    List<ProjectInnovationSDG> projectInnovationSDGs =
+      projectInnovationSDGDAO.getProjectInnovationSDGByInnovationAndPhase(innovationID, phase.getId()).stream()
+        .filter(c -> c.getSdg() != null && projectInnovationSDG.getSdg() != null
+          && projectInnovationSDG.getSdg().getId() != null && c.getSdg().getId() != null
+          && c.getSdg().getId().equals(projectInnovationSDG.getSdg().getId()))
+        .collect(Collectors.toList());
 
     for (ProjectInnovationSDG projectInnovationSDGDB : projectInnovationSDGs) {
-      projectInnovationSDGDAO.deleteProjectInnovationSDG(projectInnovationSDGDB.getId());
+      if (projectInnovationSDGDB.getId() != null) {
+        projectInnovationSDGDAO.deleteProjectInnovationSDG(projectInnovationSDGDB.getId());
+      }
     }
 
     if (phase.getNext() != null) {
@@ -119,11 +130,15 @@ public class ProjectInnovationSDGManagerImpl implements ProjectInnovationSDGMana
   public void saveInnovationSDGPhase(Phase next, long innovationID, ProjectInnovationSDG projectInnovationSDG) {
 
     Phase phase = phaseDAO.find(next.getId());
-
-    List<ProjectInnovationSDG> projectInnovationSDGs =
-      projectInnovationSDGDAO.getProjectInnovationSDGByInnovationAndPhase(innovationID, phase.getId()).stream()
-        .filter(c -> c.getSdg().getId().equals(projectInnovationSDG.getSdg().getId())).collect(Collectors.toList());
-
+    List<ProjectInnovationSDG> projectInnovationSDGs = new ArrayList<>();
+    try {
+      projectInnovationSDGs =
+        projectInnovationSDGDAO.getProjectInnovationSDGByInnovationAndPhase(innovationID, phase.getId()).stream()
+          .filter(c -> c.getSdg().getId().equals(projectInnovationSDG.getSdg().getId())).collect(Collectors.toList());
+    } catch (Exception e) {
+      logger.error("error getting project InnovationSDGs " + e);
+    }
+    // }
     if (projectInnovationSDGs.isEmpty()) {
       ProjectInnovationSDG projectInnovationSDGAdd = new ProjectInnovationSDG();
       projectInnovationSDGAdd.setProjectInnovation(projectInnovationSDG.getProjectInnovation());
