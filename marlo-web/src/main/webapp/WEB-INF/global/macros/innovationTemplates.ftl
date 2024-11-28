@@ -71,7 +71,7 @@
         
         <div id="general" class="borderBox clearfix">   
 
-          [#--
+            [#--
             <div class="form-group row">
               
               <div class="col-md-4">
@@ -231,7 +231,7 @@
               <label class="label--2">[@s.text name="projectInnovations.contributingCenters" /]: [@customForm.req required=true /]</label>
               <div class="note">
                 <span class="glyphicon glyphicon-question-sign"></span> [@s.text name="study.generalInformation.ppapartner.note"][@s.param] 
-                <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]
+                <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">&nbsp; clicking here</a>[/@][/@]
               </div>
               
               [#-- Contributing Centers --]
@@ -477,7 +477,7 @@
               [@customForm.checkBoxFlat id="lever-${lever.id}" name="${customName}.allianceLevers[${lever_index}].allianceLever.id" label="${customLabel}" value="${lever.id}" checked=isChecked editable=editable /]
               [#if isOther]
                 <div class="form-group inputOther">
-                  [@customForm.input name="${customName}.allianceLevers.otherAllianceLever" placeholder="Other" editable=editable showTitle=false /]
+                  [@customForm.input name="${customName}.projectInnovationInfo.otherAllianceLever" placeholder="Other" editable=editable showTitle=false /]
                 </div>
               [/#if]
             </div>
