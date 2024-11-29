@@ -1369,6 +1369,16 @@ public class ProjectInnovationAction extends BaseAction {
       this.scalingReadinessList = this.scalingReadinessManager.findAll();
       this.actorList = this.actorManager.findAll();
       this.toolCategoryList = this.toolFunctionCategoryManager.findAll();
+      this.toolCategoryList.sort((o1, o2) -> {
+        try {
+          int num1 = Integer.parseInt(o1.getDescription());
+          int num2 = Integer.parseInt(o2.getDescription());
+          return Integer.compare(num1, num2);
+        } catch (NumberFormatException | NullPointerException e) {
+          // Handle invalid or null descriptions; treat as "infinite" for sorting.
+          return 0;
+        }
+      });
 
       boolean has_specific_management_deliverables =
         this.hasSpecificities(APConstants.CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES);

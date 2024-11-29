@@ -606,12 +606,13 @@ public class ProjectInnovationValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
-      if (!(this.isValidString(innovationInfo.getInnovationImportance()))) {
-        action.addMessage(action.getText("innovation.projectInnovationInfo.innovationImportance"));
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.innovationImportance",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-
+      /*
+       * if (!(this.isValidString(innovationInfo.getInnovationImportance()))) {
+       * action.addMessage(action.getText("innovation.projectInnovationInfo.innovationImportance"));
+       * action.getInvalidFields().put("input-innovation.projectInnovationInfo.innovationImportance",
+       * InvalidFieldsMessages.EMPTYFIELD);
+       * }
+       */
       // Validate References Cited
 
       if (projectInnovation.getReferences() == null) {
