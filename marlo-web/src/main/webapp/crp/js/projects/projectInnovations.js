@@ -177,76 +177,14 @@ function attachEvents() {
 
   })();
 
-  /**
-   * Evidences and Reference
-   * 
-   */
-  ( function () {
-    // Events
-    $('.addButtonReference').on('click', addReference);
-    $('.removeButtonReference').on('click', removeReference);
+  const readinessModule = evidencesModule();
+  readinessModule.init('Readiness');
 
-    // Functions
-    function addReference() {
+  const urlModule = evidencesModule();
+  urlModule.init('Url');
 
-      const $listBlock = $('.referenceListReadiness');
-      const $template = $('#evidences-template');
-
-      // remove select2 data to avoid corruption in clone process
-      if ($template.find('select').data('select2')) {
-        $template.find('select').select2("destroy");
-      }
-
-      const $newItem = $template.clone(true).removeAttr('id');
-      $newItem.find('input, select').each(function(_i,e) {
-        e.name = (e.name).replace("_TEMPLATE_", "");
-        e.id = (e.id).replace("_TEMPLATE_", "");
-      });
-      $newItem.find('label').each(function(_i,e) {
-        e.htmlFor = (e.htmlFor).replace("_TEMPLATE_", "");
-      });
-      // Add select2 to select2 library
-      $template.find('select').select2();
-      $newItem.find('select').select2();
-
-      // Show the element
-      $newItem.appendTo($listBlock).hide().show(350);
-      // Update indexes
-      updateIndexes();
-    }
-
-    function removeReference() {
-      var $parent = $(this).parents('.evidences');
-      $parent.hide(500, function() {
-        // Remove DOM element
-        $parent.remove();
-        // Update indexes
-        updateIndexes();
-      });
-    }
-
-    function updateIndexes() {
-
-      $('.referenceListReadiness').find('.evidences').each(function(i, reference) {
-        $(reference).setNameIndexes(1, i);
-
-        $(reference).find('label').each(function(_i,e) {
-          let newForValue = $(e).prev('input').attr('id');
-          $(e).attr('for', newForValue);
-
-          if($(e).prev('input').attr('type') == 'radio'){
-            newForValue = $(e).prev('input').attr('id') + '.' + $(e).prev('input').attr('value');
-            $(e).attr('for', newForValue);
-            $(e).prev('input').attr('id', newForValue);
-          }
-        });
-
-
-      });
-    }
-
-  } )();
-
+  const complementaryModule = evidencesModule();
+  complementaryModule.init('Complementary');
 
   // 
   $('#isClearLeadToAddRequired').on('click', AddRequired);
@@ -580,7 +518,7 @@ function changeDisplayMessageInScaling() {
   });
 }
 
-var deliverablePartnersModule = (function () {
+const deliverablePartnersModule = (function () {
 
   function init() {
     console.log('Starting deliverablePartnersModule');
@@ -712,3 +650,105 @@ var deliverablePartnersModule = (function () {
     init: init
   }
 })();
+
+const evidencesModule = function () {
+
+  let nameReference = '';
+
+  function init(nameReferenceParam) {
+    // Update indexes
+    nameReference = nameReferenceParam;
+    $(`.addButtonReference${nameReference}`).on('click', addReference);
+    $(`.removeButtonReference${nameReference}`).on('click', removeReference);
+  }
+
+  // Functions
+  function addReference() {
+    
+    const $listBlock = $(`.referenceList${nameReference}`);
+    const $template = $(`#evidences-${nameReference}-template`);
+
+    // remove select2 data to avoid corruption in clone process
+    if ($template.find('select').data('select2')) {
+      $template.find('select').select2("destroy");
+    }
+
+    const $newItem = $template.clone(true).removeAttr('id');
+    $newItem.find('input, select').each(function(_i,e) {
+      e.name = (e.name).replace("_TEMPLATE_", "");
+      e.id = (e.id).replace("_TEMPLATE_", "");
+    });
+    $newItem.find('label').each(function(_i,e) {
+      e.htmlFor = (e.htmlFor).replace("_TEMPLATE_", "");
+    });
+
+    // Remove class _TEMPLATE_ from divs blocks inner display option
+    $newItem.find('div[class^="block-"]').each(function(_i,e) {
+      e.className = (e.className).replace("_TEMPLATE_", "");
+    });
+    // Add select2 to select2 library
+    $template.find('select').select2();
+    $newItem.find('select').select2();
+
+    // Show the element
+    $newItem.appendTo($listBlock).hide().show(350);
+    // Update indexes
+    updateIndexes();
+  }
+
+  function removeReference() {
+    var $parent = $(this).parents('.evidences');
+    $parent.hide(500, function() {
+      // Remove DOM element
+      $parent.remove();
+      // Update indexes
+      updateIndexes();
+    });
+  }
+
+  function updateIndexes() {
+
+    $(`.referenceList${nameReference}`).find('.evidences').each(function(i, reference) {
+      $(reference).setNameIndexes(1, i);
+
+      $(reference).find('label').each(function(_i,e) {
+        let newForValue = $(e).prev('input').attr('id');
+        $(e).attr('for', newForValue);
+
+        // change radioType- based on the reference and index
+        if($(e).prev('input').attr('type') == 'radio'){
+          newForValue = $(e).prev('input').attr('id') + '.' + $(e).prev('input').attr('value');
+          $(e).attr('for', newForValue);
+          $(e).prev('input').attr('id', newForValue);
+          $(e).prev('input').attr('class').split(/\s+/).forEach(function(cls) {
+            if (cls.startsWith('radioType-')) {
+              $(e).prev('input').removeClass(cls);
+              const splitCurrentValue = cls.split('-');
+              const newRadioType = splitCurrentValue[0] + '-' + $(reference).attr('data-reference') + `_${i}`;
+              $(e).prev('input').addClass(newRadioType);
+            }
+          });
+        }
+      });
+
+      // Update indexes of blocks to match with the radioType- indexes
+      $(reference).find('div[class*="block-"]').each(function(_i,e) {
+        $(e).attr('class').split(/\s+/).forEach(function(cls) {
+          if (cls.startsWith('block-')) {
+            $(e).removeClass(cls);
+
+            const splitCurrentValue = cls.split('-');
+            const newValue = splitCurrentValue[0] + '-' + splitCurrentValue[1] + '-' + $(reference).attr('data-reference') + `_${i}`;
+            $(e).addClass(newValue);
+          }
+      });
+      });
+
+    });
+  }
+
+  return {
+    init: init
+  }
+
+}
