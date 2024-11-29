@@ -75,11 +75,15 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
 
     List<ProjectInnovationActor> innovationActors =
       projectInnovationActorDAO.getProjectInnovationActorByInnovationAndPhase(innovationID, phase.getId()).stream()
-        .filter(c -> c.getActor().getId().equals(projectInnovationActors.getActor().getId()))
+        .filter(c -> c.getActor() != null && c.getActor().getId() != null && projectInnovationActors.getActor() != null
+          && projectInnovationActors.getActor().getId() != null
+          && c.getActor().getId().equals(projectInnovationActors.getActor().getId()))
         .collect(Collectors.toList());
 
     for (ProjectInnovationActor projectInnovationActorsDB : innovationActors) {
-      projectInnovationActorDAO.deleteProjectInnovationActor(projectInnovationActorsDB.getId());
+      if (projectInnovationActorsDB.getId() != null) {
+        projectInnovationActorDAO.deleteProjectInnovationActor(projectInnovationActorsDB.getId());
+      }
     }
 
     if (phase.getNext() != null) {

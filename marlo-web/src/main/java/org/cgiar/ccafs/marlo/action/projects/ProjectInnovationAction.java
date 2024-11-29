@@ -2099,22 +2099,33 @@ public class ProjectInnovationAction extends BaseAction {
          */
         List<ProjectInnovationActor> actorPrev = projectInnovationActorManager
           .getProjectInnovationActorByInnovationAndPhase(innovationID, this.getActualPhase().getId());
+        try {
+          for (ProjectInnovationActor actor : actorPrev) {
 
-        for (ProjectInnovationActor actor : actorPrev) {
-          if ((actor.getId() != null && actor.getId() != -1)
-            && (innovation.getActors() == null || !innovation.getActors().contains(actor))) {
-            projectInnovationActorManager.deleteProjectInnovationActor(actor.getId());
+            if ((actor.getId() != null)
+              && (innovation.getActors() == null || !innovation.getActors().contains(actor))) {
+              if (projectInnovationActorManager.existProjectInnovationActor(actor.getId())) {
+                projectInnovationActorManager.deleteProjectInnovationActor(actor.getId());
+              }
+            }
           }
+        } catch (Exception e) {
+          Log.error("error deleting actor " + e);
         }
       }
 
       // Save form Information
-      if (innovation.getActors() != null) {
+      if (innovation.getActors() != null && !innovation.getActors().isEmpty()) {
         for (ProjectInnovationActor innovationActor : innovation.getActors()) {
-          ProjectInnovationActor innovationActorSave = new ProjectInnovationActor();
           if (innovationActor.getId() != null && innovationActor.getId() == -1) {
             innovationActor.setId(null);
           }
+
+          if (innovationActor.getActor() != null && innovationActor.getActor().getId() != null
+            && innovationActor.getActor().getId() == -1) {
+            innovationActor.setActor(null);
+          }
+          ProjectInnovationActor innovationActorSave = new ProjectInnovationActor();
 
           try {
             if (innovationActor.getId() != null) {
@@ -2167,11 +2178,15 @@ public class ProjectInnovationAction extends BaseAction {
             .filter(a -> a != null && a.getAllianceLever() != null && a.getAllianceLever().getId() != null)
             .collect(Collectors.toList());
 
-        for (ProjectInnovationAllianceLevers allianceLever : allianceLeverPrev) {
-          if (allianceLeverPrev != null && (allianceLever.getId() != null || allianceLever.getId() != -1)
-            && (innovation.getAllianceLevers() == null || !innovation.getAllianceLevers().contains(allianceLever))) {
-            projectInnovationAllianceLeversManager.deleteProjectInnovationAllianceLevers(allianceLever.getId());
+        try {
+          for (ProjectInnovationAllianceLevers allianceLever : allianceLeverPrev) {
+            if (allianceLeverPrev != null && (allianceLever.getId() != null || allianceLever.getId() != -1)
+              && (innovation.getAllianceLevers() == null || !innovation.getAllianceLevers().contains(allianceLever))) {
+              projectInnovationAllianceLeversManager.deleteProjectInnovationAllianceLevers(allianceLever.getId());
+            }
           }
+        } catch (Exception e) {
+          Log.error("error deleting alliance levers " + e);
         }
       }
 
@@ -2215,30 +2230,50 @@ public class ProjectInnovationAction extends BaseAction {
    */
   public void saveAllianceOrganizations(ProjectInnovation projectInnovation, Phase phase) {
     // Search and deleted form Information
-    if (projectInnovation.getProjectInnovationAllianceOrganizations() != null
-      && !projectInnovation.getProjectInnovationAllianceOrganizations().isEmpty()) {
+    try {
+      if (projectInnovation.getProjectInnovationAllianceOrganizations() != null
+        && !projectInnovation.getProjectInnovationAllianceOrganizations().isEmpty()) {
 
-      List<ProjectInnovationAllianceOrganization> allianceOrganizationPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationAllianceOrganizations().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        List<ProjectInnovationAllianceOrganization> allianceOrganizationPrev =
+          new ArrayList<>(projectInnovation.getProjectInnovationAllianceOrganizations().stream()
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
-      for (ProjectInnovationAllianceOrganization allianceOrganization : allianceOrganizationPrev) {
-        if ((allianceOrganization.getId() != null || allianceOrganization.getId() != -1)
-          && (innovation.getAllianceOrganizations() == null
-            || !innovation.getAllianceOrganizations().contains(allianceOrganization))) {
-          projectInnovationAllianceOrganizationManager
-            .deleteProjectInnovationAllianceOrganization(allianceOrganization.getId());
+        for (ProjectInnovationAllianceOrganization allianceOrganization : allianceOrganizationPrev) {
+          if ((allianceOrganization.getId() != null || allianceOrganization.getId() != -1)
+            && (innovation.getAllianceOrganizations() == null
+              || !innovation.getAllianceOrganizations().contains(allianceOrganization))) {
+            projectInnovationAllianceOrganizationManager
+              .deleteProjectInnovationAllianceOrganization(allianceOrganization.getId());
+          }
         }
       }
-    }
 
-    // Save form Information
-    if (innovation.getAllianceOrganizations() != null) {
-      for (ProjectInnovationAllianceOrganization innovationAllianceOrganization : innovation
-        .getAllianceOrganizations()) {
-        if (innovationAllianceOrganization.getId() == null) {
+      // Save form Information
+      if (innovation.getAllianceOrganizations() != null) {
+        for (ProjectInnovationAllianceOrganization innovationAllianceOrganization : innovation
+          .getAllianceOrganizations()) {
+
+          if (innovationAllianceOrganization.getId() != null && innovationAllianceOrganization.getId() == -1) {
+            innovationAllianceOrganization.setId(null);
+          }
+
+          if (innovationAllianceOrganization.getInstitutionType() != null
+            && innovationAllianceOrganization.getInstitutionType().getId() != null
+            && innovationAllianceOrganization.getInstitutionType().getId() == -1) {
+            innovationAllianceOrganization.setInstitutionType(null);
+          }
+
           ProjectInnovationAllianceOrganization innovationAllianceOrganizationSave =
             new ProjectInnovationAllianceOrganization();
+          try {
+            if (innovationAllianceOrganization.getId() != null) {
+              innovationAllianceOrganizationSave = projectInnovationAllianceOrganizationManager
+                .getProjectInnovationAllianceOrganizationById(innovationAllianceOrganization.getId());
+            }
+          } catch (Exception e) {
+            logger.error("unable to get old actors", e);
+          }
+
           innovationAllianceOrganizationSave.setInstitutionType(innovationAllianceOrganization.getInstitutionType());
           innovationAllianceOrganizationSave.setOrganizationName(innovationAllianceOrganization.getOrganizationName());
           innovationAllianceOrganizationSave.setScalingPartner(innovationAllianceOrganization.getScalingPartner());
@@ -2249,8 +2284,11 @@ public class ProjectInnovationAction extends BaseAction {
             .saveProjectInnovationAllianceOrganization(innovationAllianceOrganizationSave);
           // This is to add innovationAllianceOrganizationSave to generate correct auditlog.
           innovation.getProjectInnovationAllianceOrganizations().add(innovationAllianceOrganizationSave);
+
         }
       }
+    } catch (Exception e) {
+      Log.error("error saving actors " + e);
     }
 
   }
@@ -2708,11 +2746,15 @@ public class ProjectInnovationAction extends BaseAction {
     // Save form Information
     if (innovation.getOrganizations() != null) {
       for (ProjectInnovationOrganization innovationOrganization : innovation.getOrganizations()) {
-        ProjectInnovationOrganization innovationOrganizationSave = new ProjectInnovationOrganization();
         if (innovationOrganization.getId() != null && innovationOrganization.getId() == -1) {
           innovationOrganization.setId(null);
         }
-
+        if (innovationOrganization.getRepIndOrganizationType() != null
+          && innovationOrganization.getRepIndOrganizationType().getId() != null
+          && innovationOrganization.getRepIndOrganizationType().getId() == -1) {
+          innovationOrganization.setRepIndOrganizationType(null);
+        }
+        ProjectInnovationOrganization innovationOrganizationSave = new ProjectInnovationOrganization();
         try {
           if (innovationOrganization.getId() != null) {
             innovationOrganizationSave =
