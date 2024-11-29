@@ -346,9 +346,19 @@ function onChangeRadioButton() {
 	  var thisValue = this.value === "true";
 	  var radioType = $(this).classParam('radioType');
 	  if (thisValue) {
+      //if just is one block
 	    $('.block-' + radioType).slideDown();
+
+      //if is a block with two different blocks
+      $('.block-yes-'+radioType).slideDown();
+      $('.block-no-'+radioType).slideUp();
 	  } else {
+      //if just is one block
 	    $('.block-' + radioType).slideUp();
+
+      //if is a block with two different blocks
+      $('.block-yes-'+radioType).slideUp();
+      $('.block-no-'+radioType).slideDown();
 	  }
 }
 

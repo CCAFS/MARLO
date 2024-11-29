@@ -657,25 +657,15 @@
       <div class="form-group">
         <div class="col-md-12">
           <label class="col-md-12 label--2">[@s.text name="projectInnovations.sharing.knowledge" /]:</label>
-          <label>
-            [@s.text name="projectInnovations.sharing.knowledge.help" /]
-          </label> 
         </div>
         [#local hasKnowledgeMethodsAndToolsText = "hasKnowledgeMethodsAndTools" /]    
-
-        <div class="col-md-1">
-          [@customForm.radioFlat id="${hasKnowledgeMethodsAndToolsText}-yes" name="${customName}.projectInnovationInfo.sharing.knowledge" label="Yes" value="true" checked=((element.projectInnovationInfo.hasLegalRestrictions??) &&(hasKnowledgeMethodsAndTools)) cssClass="radioType-${hasKnowledgeMethodsAndToolsText}" cssClassLabel="radio-label-yes" editable=editable /]
-        </div>
-        <div class="col-md-1">
-          [@customForm.radioFlat id="${hasKnowledgeMethodsAndToolsText}-no" name="${customName}.projectInnovationInfo.sharing.knowledge" label="No" value="false" checked=((element.projectInnovationInfo.hasLegalRestrictions??) &&(!hasKnowledgeMethodsAndTools)) cssClass="radioType-${hasKnowledgeMethodsAndToolsText}" cssClassLabel="radio-label-no" editable=editable /]
-        </div>
       </div>
 
       [#if hasKnowledgeMethodsAndTools]
 
       [/#if]
 
-      [#-- About the tool --]
+      [#-- About the innovation --]
       <div class="form-group">
         <label class="label--2 col-md-12">
           [@s.text name="projectInnovations.sharing.aboutTheTool" /]:
@@ -683,7 +673,7 @@
         <div class="col-md-12 padding-left-2">
           [#-- Objetive --]
           <div class="col-md-12">
-            [@customForm.select name="${customName}.knowledgeToolObjetive" label="" i18nkey="projectInnovations.sharing.aboutTheTool.objetive" listName="toolCategoryList" keyFieldName="id" displayFieldName="name" editable=editable required=false /]
+            [@customForm.elementsListComponent name="${customName}.knowledgeToolObjetive" elementType="knowledgeToolObjetive"  label="projectInnovations.sharing.aboutTheTool.objetive" listName="toolCategoryList" keyFieldName="id" displayFieldName="name" required=false /]
           </div>
           [#-- knowledgeToolUsesNarrative --]
           <div class="col-md-12">
@@ -691,13 +681,13 @@
           </div>
           [#-- knowledgeResultsNarrative --]
           <div class="col-md-12">
-            [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeResultsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.results" helpIcon=false className="limitWords-500" required=false editable=editable /]
+            [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeResultsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.results" helpIcon=false className="limitWords-500" required=true editable=editable /]
           </div>
           [#-- hasKnowledgePotential --]
           <div class="col-md-12">
             <label class="col-md-12">[@s.text name="projectInnovations.sharing.aboutTheTool.potential" /]:</label>
             [#local hasKnowledgePotentialText = "hasKnowledgePotential" /]
-            [#local hasKnowledgePotential = (element.projectInnovationInfo.hasKnowledgePotential)!false /]    
+            [#local hasKnowledgePotential = (element.projectInnovationInfo.hasKnowledgePotential)! /]    
 
             <div class="col-md-1">
               [@customForm.radioFlat id="${hasKnowledgePotentialText}-yes" name="${customName}.projectInnovationInfo.sharing.knowledge" label="Yes" value="true" checked=((element.projectInnovationInfo.hasKnowledgePotential??) &&(hasKnowledgePotential)) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-yes" editable=editable /]
@@ -706,9 +696,16 @@
               [@customForm.radioFlat id="${hasKnowledgePotentialText}-no" name="${customName}.projectInnovationInfo.sharing.knowledge" label="No" value="false" checked=((element.projectInnovationInfo.hasKnowledgePotential??) &&(!hasKnowledgePotential)) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-no" editable=editable /]
             </div>
 
-            <div class="col-md-12" style="">
-              [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotKnowledgePotential" i18nkey="projectInnovations.sharing.aboutTheTool.reasonNoProvided"  helpIcon=false className="limitWords-500" required=(editable) editable=editable /]
+            <div class="col-md-12 block-yes-${hasKnowledgePotentialText} padding-left-2" style="display:${((element.projectInnovationInfo.hasKnowledgePotential??)&&(hasKnowledgePotential))?then('block','none')};">
+              [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotKnowledgePotential" i18nkey="projectInnovations.sharing.aboutTheTool.reasonProvided"  helpIcon=false className="limitWords-500" required=(editable) editable=editable /]
             </div>
+            <div class="col-md-12 block-no-${hasKnowledgePotentialText} padding-left-2" style="display:${((element.projectInnovationInfo.hasKnowledgePotential??)&&(!hasKnowledgePotential))?then('block','none')};">
+             [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotKnowledgePotential" i18nkey="projectInnovations.sharing.aboutTheTool.reasonNoProvided" helpIcon=false className="limitWords-500" required=(editable) editable=editable /] 
+            </div>
+          </div>
+          [#-- knowledge support the outreach --]
+          <div class="col-md-12">
+            [@customForm.textArea name="${customName}.projectInnovationInfo.supportTheOutreach" i18nkey="projectInnovations.sharing.aboutTheTool.supportTheOutreach" helpIcon=false className="limitWords-500" required=false editable=editable /]
           </div>
         </div>
       </div>
@@ -720,7 +717,7 @@
         <div class="col-md-12 padding-left-2">
           <label class="col-md-12">[@s.text name="projectInnovations.sharing.urls.tool" /]:</label>
           [#local hasToolUrlText = "hasToolUrl" /]
-          [#local hasToolUrl = (element.projectInnovationInfo.hasToolUrl)!false /]    
+          [#local hasToolUrl = (element.projectInnovationInfo.hasToolUrl)! /]    
 
           <div class="col-md-1">
             [@customForm.radioFlat id="${hasToolUrlText}-yes" name="${customName}.projectInnovationInfo.sharing.knowledge" label="Yes" value="true" checked=((element.projectInnovationInfo.hasToolUrl??) &&(hasToolUrl)) cssClass="radioType-${hasToolUrlText}" cssClassLabel="radio-label-yes" editable=editable /]
@@ -729,17 +726,16 @@
             [@customForm.radioFlat id="${hasToolUrlText}-no" name="${customName}.projectInnovationInfo.sharing.knowledge" label="No" value="false" checked=((element.projectInnovationInfo.hasToolUrl??) &&(!hasToolUrl)) cssClass="radioType-${hasToolUrlText}" cssClassLabel="radio-label-no" editable=editable /]
           </div>
 
-          <label class="note--2" style="width:100%"><p class="col-md-12">[@s.text name="projectInnovations.sharing.urls.tool.help" /]</p></label>
-
           [#-- If yes - Evidence/Reference --]
-          <div class="col-md-12" style="">
-            [#-- Direct Evidence --]
+          <div class="col-md-12 block-yes-${hasToolUrlText}" style="display:${((element.projectInnovationInfo.hasToolUrl??) && (hasToolUrl))?then('block','none')};">
+            <label class="note--2" style="width:100%"><p class="col-md-12">[@s.text name="projectInnovations.sharing.urls.tool.help" /]</p></label>
+            [#-- List URLs --]
             <div class="form-group">
               <div class="col-md-12">
                 <div class="referenceBlock">
                   <div class="referenceList">
                     <div class="row">
-                      <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Direct Evidence/Reference[@customForm.req required=true  /]
+                      <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Evidence/Reference[@customForm.req required=true  /]
                       </div>
                       <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=true  /]
                       </div>
@@ -752,62 +748,14 @@
                 </div>
                 [#-- Element item Template --]
                 <div style="display:none">
-                  [@customForm.references name="innovation.directEvidence" element={} index=-1 template=true /]
-                </div>
-              </div>
-            </div>
-            [#-- Additional Evidence --]
-            <div class="form-group">
-              <label >[@s.text name="projectInnovations.sharing.urls.additionalEvidence" /]:</label>
-              <div class="col-md-12">
-                <div class="referenceBlock">
-                  <div class="referenceList">
-                    <div class="row">
-                      <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Additional Evidence/Reference[@customForm.req required=true  /]
-                      </div>
-                      <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=true  /]
-                      </div>
-                    </div>
-                  </div>
-                  [#if editable]
-                  <div class="addButtonReference bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>
-                  <div class="clearfix"></div>
-                  [/#if]
-                </div>
-                [#-- Element item Template --]
-                <div style="display:none">
-                  [@customForm.references name="innovation.additionalEvidence" element={} index=-1 template=true /]
-                </div>
-              </div>
-            </div>
-            [#-- Datasets Evidence --]
-            <div class="form-group">
-              <label >[@s.text name="projectInnovations.sharing.urls.datasetsEvidence" /]:</label>
-              <div class="col-md-12">
-                <div class="referenceBlock">
-                  <div class="referenceList">
-                    <div class="row">
-                      <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Datasets Evidence/Reference[@customForm.req required=true  /]
-                      </div>
-                      <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=true  /]
-                      </div>
-                    </div>
-                  </div>
-                  [#if editable]
-                  <div class="addButtonReference bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>
-                  <div class="clearfix"></div>
-                  [/#if]
-                </div>
-                [#-- Element item Template --]
-                <div style="display:none">
-                  [@customForm.references name="innovation.datasetsEvidence" element={} index=-1 template=true /]
+                  [@customForm.evidence name="innovation.referenceUrls" element={} index=-1 template=true /]
                 </div>
               </div>
             </div>
           </div>
             
           [#-- If not - reasonNotToolUrl --]
-          <div class="col-md-12" style="">
+          <div class="col-md-12 block-no-${hasToolUrlText}" style="display:${((element.projectInnovationInfo.hasToolUrl??) && (!hasToolUrl))?then('block','none')};">
             [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotToolUrl" i18nkey="projectInnovations.sharing.urls.reasonNoProvided"  helpIcon=false className="limitWords-500" required=(editable) editable=editable /]
           </div>
         </div>
@@ -829,7 +777,7 @@
               <div class="referenceBlock">
                 <div class="referenceList">
                   <div class="row">
-                    <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Complementary Solutions Evidence[@customForm.req required=true  /]
+                    <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Evidence/Reference[@customForm.req required=true  /]
                     </div>
                     <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=true  /]
                     </div>
@@ -842,7 +790,7 @@
               </div>
               [#-- Element item Template --]
               <div style="display:none">
-                [@customForm.references name="innovation.complementarySolutions" element={} index=-1 template=true /]
+                [@customForm.evidence name="innovation.referenceComplementarySolutions" element={} index=-1 template=true /]
               </div>
             </div>
           </div>
