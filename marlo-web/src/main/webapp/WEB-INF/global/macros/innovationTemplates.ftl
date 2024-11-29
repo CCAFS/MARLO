@@ -626,17 +626,17 @@
           <div class="referenceBlock">
             <div class="referenceListReadiness">
               [#list element.references as reference]
-                [@customForm.evidence name="innovation.references" element=reference index=reference_index template=false /]
+                [@customForm.evidence name="innovation.references" element=reference index=reference_index template=false class="Readiness" /]
               [/#list]
             </div>
             [#if editable]
-            <div class="addButtonReference bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>
+            <div class="addButtonReferenceReadiness bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>
             <div class="clearfix"></div>
             [/#if]
           </div>
           [#-- Element item Template --]
           <div style="display:none">
-            [@customForm.evidence name="innovation.references" element={} index=-1 template=true /]
+            [@customForm.evidence name="innovation.references" element={} index=-1 template=true class="Readiness" /]
           </div>
         </div>
           
@@ -652,7 +652,6 @@
   <div id="funding" class="borderBox clearfix">
     <div class="form-group">
 
-      [#local hasKnowledgeMethodsAndTools = (element.projectInnovationInfo.hasKnowledgeMethodsAndTools)!false /]
       [#-- Knowledge Sharing and Scaling Potential --]
       <div class="form-group">
         <div class="col-md-12">
@@ -661,13 +660,9 @@
         [#local hasKnowledgeMethodsAndToolsText = "hasKnowledgeMethodsAndTools" /]    
       </div>
 
-      [#if hasKnowledgeMethodsAndTools]
-
-      [/#if]
-
       [#-- About the innovation --]
       <div class="form-group">
-        <label class="label--2 col-md-12">
+        <label class="label--2 col-md-12 blueLightColor">
           [@s.text name="projectInnovations.sharing.aboutTheTool" /]:
         </label>
         <div class="col-md-12 padding-left-2">
@@ -712,7 +707,7 @@
 
       [#-- URLs: Tool website, publications, stories and more  --]
       <div class="form-group">
-        <label class="label--2 col-md-12">[@s.text name="projectInnovations.sharing.urls" /]:</label>
+        <label class="label--2 col-md-12 blueLightColor">[@s.text name="projectInnovations.sharing.urls" /]:</label>
         [#-- hasToolUrl ---]
         <div class="col-md-12 padding-left-2">
           <label class="col-md-12">[@s.text name="projectInnovations.sharing.urls.tool" /]:</label>
@@ -733,22 +728,19 @@
             <div class="form-group">
               <div class="col-md-12">
                 <div class="referenceBlock">
-                  <div class="referenceList">
-                    <div class="row">
-                      <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Evidence/Reference[@customForm.req required=true  /]
-                      </div>
-                      <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=true  /]
-                      </div>
-                    </div>
+                  <div class="referenceListUrl">
+                    [#list element.referenceUrls as referenceUrl]
+                      [@customForm.evidence name="innovation.referenceUrls" element=referenceUrl index=referenceUrl_index template=false class="Url" /]
+                    [/#list]
                   </div>
                   [#if editable]
-                  <div class="addButtonReference bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>
+                  <div class="addButtonReferenceUrl bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>
                   <div class="clearfix"></div>
                   [/#if]
                 </div>
                 [#-- Element item Template --]
                 <div style="display:none">
-                  [@customForm.evidence name="innovation.referenceUrls" element={} index=-1 template=true /]
+                  [@customForm.evidence name="innovation.referenceUrls" element={} index=-1 template=true class="Url" /]
                 </div>
               </div>
             </div>
@@ -763,7 +755,7 @@
 
       [#-- Collaboration with other innovations --]
       <div class="form-group">
-        <label class="label--2 col-md-12">[@s.text name="projectInnovations.sharing.collaboration" /]:</label>
+        <label class="label--2 col-md-12 blueLightColor">[@s.text name="projectInnovations.sharing.collaboration" /]:</label>
         <div class="col-md-12 padding-left-2">
           [#-- knowledgeCollaboration --]
           <div class="col-md-12">
@@ -775,22 +767,19 @@
             <label class="col-md-12">[@s.text name="projectInnovations.sharing.collaboration.complementarySolutions" /]:</label>
             <div class="col-md-12">
               <div class="referenceBlock">
-                <div class="referenceList">
-                  <div class="row">
-                    <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Evidence/Reference[@customForm.req required=true  /]
-                    </div>
-                    <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=true  /]
-                    </div>
-                  </div>
+                <div class="referenceListComplementary">
+                  [#list element.referenceComplementarySolutions as referenceComplementary]
+                    [@customForm.evidence name="innovation.referenceComplementarySolutions" element=referenceComplementary index=referenceComplementary_index template=false class="Complementary" /]
+                  [/#list]
                 </div>
                 [#if editable]
-                <div class="addButtonReference bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>
+                <div class="addButtonReferenceComplementary bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>
                 <div class="clearfix"></div>
                 [/#if]
               </div>
               [#-- Element item Template --]
               <div style="display:none">
-                [@customForm.evidence name="innovation.referenceComplementarySolutions" element={} index=-1 template=true /]
+                [@customForm.evidence name="innovation.referenceComplementarySolutions" element={} index=-1 template=true  class="Complementary" /]
               </div>
             </div>
           </div>

@@ -5339,6 +5339,10 @@ ul#deliverablesFilesMessages>li {
 	overflow: hidden;
 }
 
+.blueLightColor {
+	color: #337AB7 !important;
+}
+
 .borderBox {
 	border: 1px solid #D1D1D1;
 	padding: 9px 22px 9px 22px;
