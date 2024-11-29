@@ -63,7 +63,7 @@
       { 'slug': 'activities',  'name': 'projects.menu.activities',  'action': 'activities',  'active': true  ,'show': true, "showCheck": isGlobalUnitProject }
       ]
     },
-    { 'title': 'Budget', 'show': true,
+    { 'title': 'Budget', 'show': false,
       'items': [
       { 'slug': 'budgetByPartners',  'name': 'projects.menu.budgetByPartners',  'action': 'budgetByPartners',  'active': false, 'show':false, "showCheck": false },      
       { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': false, 'show': action.getCountProjectFlagships(project.id) && !reportingActive && isCrpProject, "showCheck": false},
