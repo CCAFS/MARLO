@@ -536,6 +536,13 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     // Validate actors
+    if (projectInnovation.getActors() == null && projectInnovation.getActors().isEmpty()) {
+      action.addMessage(action.getText("innovation.actors"));
+      action.addMissingField("innovation.actors");
+      action.getInvalidFields().put("list-innovation.actors",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"actors"}));
+    }
+
     try {
       if (projectInnovation.getActors() != null || !projectInnovation.getActors().isEmpty()) {
         int count = 0;
@@ -565,6 +572,15 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     } catch (Exception e) {
       Log.error("error validating actors " + e);
+    }
+
+    // Validate organizations
+    if (projectInnovation.getAllianceOrganizations() == null
+      && projectInnovation.getAllianceOrganizations().isEmpty()) {
+      action.addMessage(action.getText("innovation.allianceOrganizations"));
+      action.addMissingField("innovation.allianceOrganizations");
+      action.getInvalidFields().put("list-innovation.allianceOrganizations",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"allianceOrganizations"}));
     }
 
 
@@ -838,10 +854,9 @@ public class ProjectInnovationValidator extends BaseValidator {
         // When the has CGIAR contribution question is true
         if (innovationInfo.getHasCgiarContribution()) {
 
-          if (projectInnovation.getImpactAreas() == null) {
-            action.addMessage(action.getText("innovation.projectInnovationInfo.hasCgiarContribution"));
-            action.getInvalidFields().put("input-innovation.projectInnovationInfo.hasCgiarContribution",
-              InvalidFieldsMessages.EMPTYFIELD);
+          if (projectInnovation.getImpactAreas() == null || projectInnovation.getImpactAreas().isEmpty()) {
+            action.addMessage(action.getText("innovation.impactArea.id"));
+            action.getInvalidFields().put("input-innovation.impactArea.id", InvalidFieldsMessages.EMPTYFIELD);
           }
           // When the CGIAR contribution is false
         } else if (!innovationInfo.getHasCgiarContribution()

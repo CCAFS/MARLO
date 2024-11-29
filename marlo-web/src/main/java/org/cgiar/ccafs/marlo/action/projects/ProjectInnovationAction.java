@@ -3506,17 +3506,24 @@ public class ProjectInnovationAction extends BaseAction {
     // Save form Information
     if (innovation.getToolCategories() != null) {
       for (ProjectInnovationToolCategory innovationToolCategory : innovation.getToolCategories()) {
-        if (innovationToolCategory.getId() == null) {
-          ProjectInnovationToolCategory innovationToolCategorySave = new ProjectInnovationToolCategory();
-          innovationToolCategorySave.setToolCategory(innovationToolCategory.getToolCategory());
-          innovationToolCategorySave.setProjectInnovation(projectInnovation);
-          innovationToolCategorySave.setPhase(phase);
-          innovationToolCategorySave.setOtherNarrative(innovationToolCategory.getOtherNarrative());
-
-          projectInnovationToolCategoryManager.saveProjectInnovationToolCategory(innovationToolCategorySave);
-          // This is to add innovationToolCategorySave to generate correct auditlog.
-          innovation.getProjectInnovationToolCategories().add(innovationToolCategorySave);
+        ProjectInnovationToolCategory innovationToolCategorySave = new ProjectInnovationToolCategory();
+        try {
+          if (innovationToolCategory.getId() != null) {
+            innovationToolCategorySave =
+              projectInnovationToolCategoryManager.getProjectInnovationToolCategoryById(innovationToolCategory.getId());
+          }
+        } catch (Exception e) {
+          logger.error("unable to get old actors", e);
         }
+        innovationToolCategorySave.setToolCategory(innovationToolCategory.getToolCategory());
+        innovationToolCategorySave.setProjectInnovation(projectInnovation);
+        innovationToolCategorySave.setPhase(phase);
+        innovationToolCategorySave.setOtherNarrative(innovationToolCategory.getOtherNarrative());
+
+        projectInnovationToolCategoryManager.saveProjectInnovationToolCategory(innovationToolCategorySave);
+        // This is to add innovationToolCategorySave to generate correct auditlog.
+        innovation.getProjectInnovationToolCategories().add(innovationToolCategorySave);
+
       }
     }
   }
