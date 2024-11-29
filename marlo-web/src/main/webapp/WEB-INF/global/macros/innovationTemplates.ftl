@@ -586,7 +586,7 @@
 
       [#-- Impact Areas --]
       <div class="form-group  col-md-12">
-        <label class="label--2 col-md-12">[@s.text name="projectInnovations.oneCGIARAligment.impactAreas" /]:</label>
+        <label class="label--2 col-md-12">[@s.text name="projectInnovations.oneCGIARAligment.impactAreas" /]:[@customForm.req required=true /]</label>
         <label>[@s.text name="projectInnovations.oneCGIARAligment.impactAreas.subtitle" /]</label>
         [@customForm.elementsListComponent name="${customName}.impactAreas" elementType="impactArea" elementList=(element.impactAreas)![] helpIcon=false listName="impactAreaList" keyFieldName="id" displayFieldName="name" required=false showTitle=false /]
       </div>
@@ -610,7 +610,7 @@
 
       [#-- Innovation importance --]
       <div class="form-group col-md-12">
-        [@customForm.textArea name="innovation.projectInnovationInfo.innovationImportance" i18nkey="projectInnovations.oneCGIARAligment.innovationImportance" help="projectInnovations.oneCGIARAligment.innovationImportance.help" helpIcon=false className="limitWords-200" required=(editable) editable=editable isNote=true /]
+        [@customForm.textArea name="innovation.projectInnovationInfo.innovationImportance" i18nkey="projectInnovations.oneCGIARAligment.innovationImportance" help="projectInnovations.oneCGIARAligment.innovationImportance.help" helpIcon=false className="limitWords-200" required=false editable=editable isNote=true /]
       </div>
 
       [#-- Innovation Readiness reason --]

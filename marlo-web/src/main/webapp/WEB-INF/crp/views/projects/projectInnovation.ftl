@@ -95,12 +95,16 @@
         [#assign isProgressActive = action.isProgressActive() /]
 
         [#assign isAllianceContribution = false /]
-        [#list innovation.centers as center]
-        [#if center.institution.name?lower_case?contains("alliance")]
-          [#assign isAllianceContribution = true /]
-          [#break /]
+        [#if innovation.centers?size > 0]
+          [#list innovation.centers as center]
+
+          [#if (center.institution??)&&(center.institution.name??)&&(center.institution.name?lower_case?contains("alliance"))]
+            [#assign isAllianceContribution = true /]
+            [#break /]
+          [/#if]
+          [/#list]
         [/#if]
-        [/#list]
+
 
         [#-- Innovation Description --]
         [@innovations.innovationDescription element=(innovation)!{} name="innovation" index=0 /]          
