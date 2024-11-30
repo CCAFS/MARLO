@@ -1028,10 +1028,10 @@
             </div>
           </div>
           <div class="col-md-6">
-            [@customForm.select name="${customName}.category.id" label="projectInnovations.evidence.category" showTitle=false editable=true required=true listName="deliverableTypeParent" keyFieldName="id" displayFieldName="name" /]
+            [@customForm.select name="${customName}.category.id" label="projectInnovations.evidence.category" showTitle=false editable=true required=true listName="deliverableTypeParent" keyFieldName="id" displayFieldName="name" className=" form-control input-sm typeSelect" /]
           </div>
           <div class="col-md-6">
-            [@customForm.select name="${customName}.subCategory.id" label="projectInnovations.evidence.subCategory" showTitle=false editable=true required=true listName="deliverableSubTypes" keyFieldName="id" displayFieldName="name" /]
+            [@customForm.select name="${customName}.subCategory.id" label="projectInnovations.evidence.subCategory" showTitle=false editable=true required=true listName="deliverableSubTypes" keyFieldName="id" displayFieldName="name" className=" form-control input-sm subTypeSelect" /]
           </div>            
         </div>
       </div>

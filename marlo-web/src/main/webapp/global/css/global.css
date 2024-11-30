@@ -3452,8 +3452,14 @@ button.ipGraph-btn {
 }
 
 .note span {
+	margin-right: 0.5rem;
+	margin-left: 0.5rem;
+}
+
+.form-group .note span {
 	color: #40AAD4;
 	font-size: 20px;
+	margin-left: 0;
 	margin-right: 1rem;
 }
 

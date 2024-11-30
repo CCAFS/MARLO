@@ -660,6 +660,9 @@ const evidencesModule = function () {
     nameReference = nameReferenceParam;
     $(`.addButtonReference${nameReference}`).on('click', addReference);
     $(`.removeButtonReference${nameReference}`).on('click', removeReference);
+
+    // Change deliverable type
+    $(".typeSelect").on("change", changeDeliverableType);
   }
 
   // Functions
@@ -745,6 +748,40 @@ const evidencesModule = function () {
       });
 
     });
+  }
+
+  function changeDeliverableType() {
+    const typeID = $(this).val();
+
+    const $parentDeliverableType = $(this).parents('.evidenceType');
+    const $subTypeSelect = $parentDeliverableType.find('select.subTypeSelect');
+    
+    if (typeID == -1){
+      return
+    }
+    
+    $.ajax({
+        url: baseURL + '/centerDeliverableSubType.do',
+        data: {
+          deliverableTypeId: typeID,
+          phaseID: phaseID
+        },
+        beforeSend: function() {
+          $(".loading.subtype").fadeIn();
+          $subTypeSelect.empty();
+          $subTypeSelect.addOption("-1", "Select a sub type...");
+        },
+        success: function(data) {
+          $.each(data.deliverableSubTypes, function(i,type) {
+            $subTypeSelect.addOption(type.id, type.name);
+          });
+        },
+        complete: function() {
+          $(".loading.subtype").fadeOut();
+          $subTypeSelect.select2();
+        }
+    });
+  
   }
 
   return {
