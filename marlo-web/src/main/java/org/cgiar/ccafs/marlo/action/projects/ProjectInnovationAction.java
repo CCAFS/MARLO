@@ -2115,6 +2115,16 @@ public class ProjectInnovationAction extends BaseAction {
         innovation.getProjectInnovationInfo().setLeadOrganization(null);
       }
 
+      try {
+        String reasonNotKnowledgePotential = innovation.getProjectInnovationInfo().getReasonNotKnowledgePotential();
+        if (reasonNotKnowledgePotential != null && !reasonNotKnowledgePotential.isEmpty()
+          && reasonNotKnowledgePotential.length() > 50000) {
+          innovation.getProjectInnovationInfo().setReasonNotKnowledgePotential(reasonNotKnowledgePotential);
+        }
+      } catch (Exception e) {
+        Log.error("error getting know potential " + e);
+      }
+
       // End
 
       projectInnovationInfoManager.saveProjectInnovationInfo(innovation.getProjectInnovationInfo());
