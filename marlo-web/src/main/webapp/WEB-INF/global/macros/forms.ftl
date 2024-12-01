@@ -1,8 +1,8 @@
 [#ftl]
 [#macro text name="" readText=false param=""][#assign customName][#if readText]${name}.readText[#else]${name}[/#if][/#assign][@s.text name="${customName}"][@s.param]${param}[/@s.param][/@s.text][/#macro]
 
-[#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" helpIcon=true display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder="" inputGroupText="" maxlength="" id="" isMainTitle=false]
-  <div class="feedback-flex-items"></div>
+[#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" helpIcon=true display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder="" inputGroupText="" maxlength="" id="" isMainTitle=false isWidthFull=false]
+  <div class="feedback-flex-items" [#if isWidthFull] style="width:100%;" [/#if]></div>
   <div class="input fieldReference ${changedField(name)}" style="display:${display?string('block','none')};">
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#if showTitle]
@@ -53,8 +53,8 @@
   </div>
 [/#macro]
 
-[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false isNote=false isMainTitle=false]
-  <div class="feedback-flex-items"></div>
+[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false isNote=false isMainTitle=false isWidthFull=false]
+  <div class="feedback-flex-items" [#if isWidthFull] style="width:100%;" [/#if]></div>
   <div class="textArea fieldReference ${changedField(name)}" [#if !display]style="display: none;"[#else]style="width: 100%;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
@@ -158,8 +158,8 @@
   </div>
 [/#macro]
 
-[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" help="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true isNote=false header=true display=true showTitle=true stringKey=false placeholder="" isFlex=false editable=true isMainTitle=false]
-  <div class="feedback-flex-items"></div>
+[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" help="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true isNote=false header=true display=true showTitle=true stringKey=false placeholder="" isFlex=false editable=true isMainTitle=false isWidthFull=false]
+  <div class="feedback-flex-items" [#if isWidthFull] style="width:100%;" [/#if]></div>
   <div class="select fieldReference ${isFlex?then('select--flex','')} ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]

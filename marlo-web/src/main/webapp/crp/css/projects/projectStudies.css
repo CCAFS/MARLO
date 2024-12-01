@@ -229,6 +229,10 @@ div.stfTargets .col-md-1:last-of-type{
   margin-top: 12px;
 }
 
+.projectExpectedStudyPartners .removePartnerItem{
+  display: none;
+}
+
 .radioToCheckbox .containerRadioToCheckbox .radioFlat {
   padding-left: 0;
   margin-bottom: 12px;

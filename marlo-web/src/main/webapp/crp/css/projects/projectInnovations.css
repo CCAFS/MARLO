@@ -318,6 +318,10 @@ div.nationalBlock div.selectList span.selection span.select2-selection ul{
   display: none;
 }
 
+div.projectInnovationsPartners div.usersBlock{
+  display: initial;
+}
+
 .sdgImage{
   width: 40px;
   height: 40px;
