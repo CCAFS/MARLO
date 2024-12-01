@@ -40,8 +40,8 @@ public class ProjectInnovationReferenceUrlMySQLDAO extends AbstractMarloDAO<Proj
   @Override
   public void deleteProjectInnovationReferenceUrl(long projectInnovationReferenceUrlId) {
     ProjectInnovationReferenceUrl projectInnovationReferenceUrl = this.find(projectInnovationReferenceUrlId);
-    projectInnovationReferenceUrl.setActive(false);
-    this.update(projectInnovationReferenceUrl);
+    // projectInnovationReferenceUrl.setActive(false);
+    this.delete(projectInnovationReferenceUrl);
   }
 
   @Override
