@@ -44,7 +44,7 @@ public class ProjectInnovationReferenceComplementarySolutionMySQLDAO
     ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolution =
       this.find(projectInnovationReferenceComplementarySolutionId);
     projectInnovationReferenceComplementarySolution.setActive(false);
-    this.update(projectInnovationReferenceComplementarySolution);
+    this.delete(projectInnovationReferenceComplementarySolution);
   }
 
   @Override
@@ -80,7 +80,7 @@ public class ProjectInnovationReferenceComplementarySolutionMySQLDAO
   public List<ProjectInnovationReferenceComplementarySolution>
     getProjectInnovationReferenceComplementarySolutionByPhaseAndInnovation(long phaseID, long innovationID) {
     String query = "from " + ProjectInnovationReferenceComplementarySolution.class.getName()
-      + " where project_innovation_id=" + innovationID + " and id_phase=" + phaseID;
+      + " where is_active=1 and project_innovation_id=" + innovationID + " and id_phase=" + phaseID;
     List<ProjectInnovationReferenceComplementarySolution> list = super.findAll(query);
     if (!list.isEmpty()) {
       return list;

@@ -40,8 +40,11 @@ public class ProjectInnovationReferenceMySQLDAO extends AbstractMarloDAO<Project
   @Override
   public void deleteProjectInnovationReference(long projectInnovationReferenceId) {
     ProjectInnovationReference projectInnovationReference = this.find(projectInnovationReferenceId);
-    projectInnovationReference.setActive(false);
-    this.update(projectInnovationReference);
+    /*
+     * projectInnovationReference.setActive(false);
+     * this.update(projectInnovationReference);
+     */
+    this.delete(projectInnovationReference);
   }
 
   @Override
@@ -74,8 +77,8 @@ public class ProjectInnovationReferenceMySQLDAO extends AbstractMarloDAO<Project
   @Override
   public List<ProjectInnovationReference> getProjectInnovationReferenceByPhaseAndInnovation(long phaseID,
     long innovationID) {
-    String query = "from " + ProjectInnovationReference.class.getName() + " where project_innovation_id=" + innovationID
-      + " and id_phase=" + phaseID;
+    String query = "from " + ProjectInnovationReference.class.getName()
+      + " where is_active=1 and project_innovation_id=" + innovationID + " and id_phase=" + phaseID;
     List<ProjectInnovationReference> list = super.findAll(query);
     if (!list.isEmpty()) {
       return list;

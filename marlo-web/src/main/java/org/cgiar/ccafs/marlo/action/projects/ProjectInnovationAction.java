@@ -3113,16 +3113,29 @@ public class ProjectInnovationAction extends BaseAction {
   private void saveReferenceComplementarySolution(ProjectInnovation projectInnovation, Phase phase) {
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationReferenceComplementarySolutions() != null) {
-      final List<ProjectInnovationReferenceComplementarySolution> referencesPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationReferenceComplementarySolutions().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-
-      for (final ProjectInnovationReferenceComplementarySolution innovationReference : referencesPrev) {
-        if ((this.innovation.getProjectInnovationReferenceComplementarySolutions() == null)
-          || !this.innovation.getReferenceComplementarySolutions().contains(innovationReference)) {
-          this.projectInnovationReferenceComplementarySolutionManager
-            .deleteProjectInnovationReferenceComplementarySolution(innovationReference.getId());
+      /*
+       * final List<ProjectInnovationReferenceComplementarySolution> referencesPrev =
+       * new ArrayList<>(projectInnovation.getProjectInnovationReferenceComplementarySolutions().stream()
+       * .filter(nu -> nu.isActive() && nu.getProjectInnovation() != null && nu.getProjectInnovation().getId() != null
+       * && nu.getProjectInnovation().getId() == projectInnovation.getId()
+       * && nu.getPhase().getId().equals(phase.getId()))
+       * .collect(Collectors.toList()));
+       */
+      try {
+        List<ProjectInnovationReferenceComplementarySolution> referencesPrev =
+          projectInnovationReferenceComplementarySolutionManager
+            .getProjectInnovationReferenceComplementarySolutionByPhaseAndInnovation(this.getActualPhase().getId(),
+              innovationID);
+        for (ProjectInnovationReferenceComplementarySolution innovationReference : referencesPrev) {
+          if ((innovation.getProjectInnovationReferenceComplementarySolutions() == null
+            || innovation.getProjectInnovationReferenceComplementarySolutions().isEmpty())
+            || !innovation.getReferenceComplementarySolutions().contains(innovationReference)) {
+            this.projectInnovationReferenceComplementarySolutionManager
+              .deleteProjectInnovationReferenceComplementarySolution(innovationReference.getId());
+          }
         }
+      } catch (Exception e) {
+        Log.error("error deleting reference complementary solution " + e);
       }
     }
 
@@ -3176,15 +3189,28 @@ public class ProjectInnovationAction extends BaseAction {
    */
   private void saveReferences(ProjectInnovation projectInnovation, Phase phase) {
     // Search and deleted form Information
-    if (projectInnovation.getProjectInnovationReferences() != null) {
-      final List<ProjectInnovationReference> referencesPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationReferences().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+    if (projectInnovation.getProjectInnovationReferences() != null
+      && !projectInnovation.getProjectInnovationReferences().isEmpty()) {
+      /*
+       * final List<ProjectInnovationReference> referencesPrev =
+       * new ArrayList<>(projectInnovation.getProjectInnovationReferences().stream()
+       * .filter(nu -> nu.isActive() && nu.getProjectInnovation() != null && nu.getProjectInnovation().getId() != null
+       * && nu.getProjectInnovation().getId() == projectInnovation.getId()
+       * && nu.getPhase().getId().equals(phase.getId()))
+       * .collect(Collectors.toList()));
+       */
+      try {
+        List<ProjectInnovationReference> referencesPrev = projectInnovationReferenceManager
+          .getProjectInnovationReferenceByPhaseAndInnovation(this.getActualPhase().getId(), innovationID);
 
-      for (final ProjectInnovationReference studyReference : referencesPrev) {
-        if ((this.innovation.getReferences() == null) || !this.innovation.getReferences().contains(studyReference)) {
-          this.projectInnovationReferenceManager.deleteProjectInnovationReference(studyReference.getId());
+        for (ProjectInnovationReference studyReference : referencesPrev) {
+          if ((innovation.getReferences() == null || innovation.getReferences().isEmpty())
+            || !innovation.getReferences().contains(studyReference)) {
+            this.projectInnovationReferenceManager.deleteProjectInnovationReference(studyReference.getId());
+          }
         }
+      } catch (Exception e) {
+        Log.error("error deleting reference " + e);
       }
     }
 
@@ -3240,15 +3266,27 @@ public class ProjectInnovationAction extends BaseAction {
   private void saveReferenceUrls(ProjectInnovation projectInnovation, Phase phase) {
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationReferenceUrls() != null) {
-      final List<ProjectInnovationReferenceUrl> referencesPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationReferenceUrls().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      /*
+       * final List<ProjectInnovationReferenceUrl> referencesPrev =
+       * new ArrayList<>(projectInnovation.getProjectInnovationReferenceUrls().stream()
+       * .filter(nu -> nu.isActive() && nu.getProjectInnovation() != null && nu.getProjectInnovation().getId() != null
+       * && nu.getProjectInnovation().getId() == projectInnovation.getId()
+       * && nu.getPhase().getId().equals(phase.getId()))
+       * .collect(Collectors.toList()));
+       */
+      try {
+        List<ProjectInnovationReferenceUrl> referencesPrev = projectInnovationReferenceUrlManager
+          .getProjectInnovationReferenceUrlByPhaseAndInnovation(this.getActualPhase().getId(), innovationID);
 
-      for (final ProjectInnovationReferenceUrl innovationReferenceUrl : referencesPrev) {
-        if ((this.innovation.getReferenceUrls() == null)
-          || !this.innovation.getReferenceUrls().contains(innovationReferenceUrl)) {
-          this.projectInnovationReferenceUrlManager.deleteProjectInnovationReferenceUrl(innovationReferenceUrl.getId());
+        for (ProjectInnovationReferenceUrl innovationReferenceUrl : referencesPrev) {
+          if ((innovation.getReferenceUrls() == null || innovation.getReferenceUrls().isEmpty())
+            || innovation.getReferenceUrls().contains(innovationReferenceUrl)) {
+            this.projectInnovationReferenceUrlManager
+              .deleteProjectInnovationReferenceUrl(innovationReferenceUrl.getId());
+          }
         }
+      } catch (Exception e) {
+        Log.error("error deleting reference URL " + e);
       }
     }
 

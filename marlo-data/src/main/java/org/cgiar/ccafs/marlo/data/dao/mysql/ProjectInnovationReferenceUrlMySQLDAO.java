@@ -74,8 +74,8 @@ public class ProjectInnovationReferenceUrlMySQLDAO extends AbstractMarloDAO<Proj
   @Override
   public List<ProjectInnovationReferenceUrl> getProjectInnovationReferenceUrlByPhaseAndInnovation(long phaseID,
     long innovationID) {
-    String query = "from " + ProjectInnovationReferenceUrl.class.getName() + " where project_innovation_id="
-      + innovationID + " and id_phase=" + phaseID;
+    String query = "from " + ProjectInnovationReferenceUrl.class.getName()
+      + " where is_active=1 and project_innovation_id=" + innovationID + " and id_phase=" + phaseID;
     List<ProjectInnovationReferenceUrl> list = super.findAll(query);
     if (!list.isEmpty()) {
       return list;
