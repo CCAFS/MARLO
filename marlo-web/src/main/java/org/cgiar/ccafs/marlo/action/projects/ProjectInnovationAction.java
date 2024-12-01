@@ -1556,7 +1556,10 @@ public class ProjectInnovationAction extends BaseAction {
         && !phase.getDeliverableInfos().isEmpty()) {
         List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
           .filter(c -> c != null && c.getDeliverable() != null && c.getDeliverable().getProject() != null
-            && c.getDeliverable().getProject().equals(project) && c.getDeliverable().isActive())
+            && c.getDeliverable().getProject().equals(project) && c.getDeliverable().isActive()
+            && c.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+            && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != null
+            && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != 5)
           .collect(Collectors.toList());
         deliverableList = new ArrayList<>();
         for (DeliverableInfo deliverableInfo : infos) {
@@ -1622,7 +1625,10 @@ public class ProjectInnovationAction extends BaseAction {
               && !phase.getDeliverableInfos().isEmpty()) {
               List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
                 .filter(c -> c != null && c.getDeliverable() != null && c.getDeliverable().getProject() != null
-                  && c.getDeliverable().getProject().equals(projectInnovationShared) && c.getDeliverable().isActive())
+                  && c.getDeliverable().getProject().equals(projectInnovationShared) && c.getDeliverable().isActive()
+                  && c.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+                  && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                  && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != 5)
                 .collect(Collectors.toList());
 
               for (DeliverableInfo deliverableInfo : infos) {
@@ -1633,6 +1639,66 @@ public class ProjectInnovationAction extends BaseAction {
               }
             }
           }
+        }
+      }
+
+      /**
+       * Add additional information
+       */
+      if (deliverableList != null && !deliverableList.isEmpty()) {
+        String handle = "", disseminationChannel = "", disseminationURL = "", deliverableType = "";
+        for (Deliverable deliverable : deliverableList) {
+          DeliverableInfo deliverableInfo = new DeliverableInfo();
+          deliverableInfo = deliverable.getDeliverableInfo(this.getActualPhase());
+          if (deliverableInfo != null) {
+
+            if (deliverableInfo.getDeliverableType() != null
+              && deliverableInfo.getDeliverableType().getName() != null) {
+              deliverableType = deliverableInfo.getDeliverableType().getName();
+              if (deliverableType == null || deliverableType.isEmpty()) {
+                deliverableType = "Not defined";
+              }
+            }
+
+            try {
+              handle = deliverable.getDeliverableMetadataElements().stream()
+                .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+                  && me.getMetadataElement().getId().longValue() == 35L && me.getPhase().equals(this.getActualPhase())
+                  && me.getDeliverable().getId().equals(deliverable.getId())
+                  && !StringUtils.isBlank(me.getElementValue()))
+                .findFirst().orElse(null).getElementValue();
+              if (handle == null || handle.isEmpty()) {
+                handle = "Not defined";
+              }
+
+            } catch (Exception e) {
+              Log.error("error getting metadata elements " + e);
+            }
+            try {
+              if (deliverable.getDissemination() != null
+                && deliverable.getDissemination().getDisseminationChannelName() != null) {
+                disseminationChannel = deliverable.getDissemination().getDisseminationChannelName();
+                if (disseminationChannel == null || disseminationChannel.isEmpty()) {
+                  disseminationChannel = "Dissemination channel Not defined";
+                }
+              }
+            } catch (Exception e) {
+              Log.error("error getting dissemination info " + e);
+            }
+
+            if (deliverable.getDissemination() != null && deliverable.getDissemination().getDisseminationUrl() != null
+              && !deliverable.getDissemination().getDisseminationUrl().isEmpty()) {
+              disseminationURL = deliverable.getDissemination().getDisseminationUrl();
+            }
+            deliverable.setHandle(handle);
+            deliverable.setDisseminationChannel(disseminationChannel);
+            deliverable.setDisseminationURL(disseminationURL);
+            deliverable.setDeliverableType(deliverableType);
+            String composedInfo = "D" + deliverable.getId() + " " + deliverableInfo.getTitle() + " ("
+              + disseminationChannel + ")" + "\nHandle: " + handle + "\nType: " + deliverableType;
+            deliverable.setComposedInfo(composedInfo);
+          }
+
         }
       }
 
