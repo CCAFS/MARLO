@@ -807,56 +807,68 @@ function setCustomEvent(event_category,eventName,event_label) {
 /**
  * Sets the format for input fields with numbers to have commas and separators.
  */
-function setFormatInput() {
-  
-    $("input.targetValueNumber").each(function (i, ele) {
+function setFormatInput(inputSelector = "input.targetValueNumber") {
 
-      const $parentAvailable = $(ele).closest('.targetValue-block');
-      let targetUnitSelected;
+  $(inputSelector).each(function (i, ele) {
 
-      if($parentAvailable.length > 0) {
-        $brotherContent = $parentAvailable.siblings('.targetUnit-block');
-        let $select = ($brotherContent.find('select').length > 0) ? $brotherContent.find('select') : null;
-        console.log($select);
-        targetUnitSelected = ($select !== null) ? $select.val() : '-1';
-      } else {
-        $brotherContent = $('.targetUnit-block');
-        targetUnitSelected = $brotherContent.attr('data-targetunit');
+    const $parentAvailable = $(ele).closest('.targetValue-block');
+    let targetUnitSelected;
+
+    if ($parentAvailable.length > 0) {
+      $brotherContent = $parentAvailable.siblings('.targetUnit-block');
+      let $select = ($brotherContent.find('select').length > 0) ? $brotherContent.find('select') : null;
+      targetUnitSelected = ($select !== null) ? $select.val() : '-1';
+    } else {
+      $brotherContent = $('.targetUnit-block');
+      targetUnitSelected = $brotherContent.attr('data-targetunit');
+    }
+
+    const modifiedMask = (targetUnit) => {
+      const typeTargetUnit = {
+        "129": '999.99',
+        "42": '999,999,000',
+        "35": '999.99',
+        "1": "999.99",
+        "-1": "999,999,000"
       }
+      return typeTargetUnit[targetUnit] || "999,999,000";
+    }
 
-      const modifiedMask = (targetUnit) => {
-        const typeTargetUnit = {
-          "129": '900.99',
-          "42": '999,999,000',
-          "35": '900.99',
-          "1": "900.99",
-          "-1": "999,999,000"
-        }
-        return typeTargetUnit[targetUnit] || "999,999,000";
+    const modifiedIcon = (targetUnit) => {
+      const typeTargetUnit = {
+        "129": '%',
+        "42": '#',
+        "35": '%',
+        "1": "%",
+        "-1": "#"
       }
+      return typeTargetUnit[targetUnit] || "?";
+    }
 
-      const options = {
-        reverse: true,
-        clearIfNotMatch: false
-      };
+    const options = {
+      reverse: true,
+      clearIfNotMatch: false
+    };
 
-      $(ele).mask(modifiedMask(targetUnitSelected), options);
+    $(ele).mask(modifiedMask(targetUnitSelected), options);
 
-      
-      if($(ele).attr("value") === "") {
-        $(ele).empty();
-        $(ele).unmask();
-        $(ele).val("");
+    if ($(ele).attr("value") === "") {
+      $(ele).empty();
+      $(ele).unmask();
+      $(ele).val("");
+    }
+
+    $(ele).on("focus", function () {
+      if ($(ele).attr("value") === "") {
+        $(ele).mask(modifiedMask(targetUnitSelected), options);
       }
-
-      $(ele).on("focus", function () {
-        if($(ele).attr("value") === "") {
-          $(ele).mask(modifiedMask(targetUnitSelected),options);
-        }
-        
-      });
-
     });
+
+    //add icon to after parent .input to visualize the unit
+    const $parent = $(ele).closest('.input');
+    $parent.attr('data-targetunit', modifiedIcon(targetUnitSelected));
+
+  });
 
 }
 
