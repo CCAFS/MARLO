@@ -2125,6 +2125,15 @@ public class ProjectInnovationAction extends BaseAction {
         Log.error("error getting know potential " + e);
       }
 
+      if (innovation.getProjectInnovationInfo().getHasKnowledgePotential() != null
+        && innovation.getProjectInnovationInfo().getHasKnowledgePotential()) {
+        innovation.getProjectInnovationInfo().setReasonNotKnowledgePotential(null);
+      }
+      if (innovation.getProjectInnovationInfo().getHasKnowledgePotential() != null
+        && innovation.getProjectInnovationInfo().getHasKnowledgePotential() == false) {
+        innovation.getProjectInnovationInfo().setReasonKnowledgePotential(null);
+      }
+
       // End
 
       projectInnovationInfoManager.saveProjectInnovationInfo(innovation.getProjectInnovationInfo());

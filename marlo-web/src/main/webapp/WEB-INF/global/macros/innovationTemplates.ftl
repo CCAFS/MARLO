@@ -692,7 +692,7 @@
             </div>
 
             <div class="col-md-12 block-yes-${hasKnowledgePotentialText} padding-left-2" style="display:${((element.projectInnovationInfo.hasKnowledgePotential??)&&(hasKnowledgePotential))?then('block','none')};">
-              [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotKnowledgePotential" i18nkey="projectInnovations.sharing.aboutTheTool.reasonProvided"  helpIcon=false className="limitWords-500" required=(editable) editable=editable /]
+              [@customForm.textArea name="${customName}.projectInnovationInfo.reasonKnowledgePotential" i18nkey="projectInnovations.sharing.aboutTheTool.reasonProvided"  helpIcon=false className="limitWords-500" required=(editable) editable=editable /]
             </div>
             <div class="col-md-12 block-no-${hasKnowledgePotentialText} padding-left-2" style="display:${((element.projectInnovationInfo.hasKnowledgePotential??)&&(!hasKnowledgePotential))?then('block','none')};">
              [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotKnowledgePotential" i18nkey="projectInnovations.sharing.aboutTheTool.reasonNoProvided" helpIcon=false className="limitWords-500" required=(editable) editable=editable /] 

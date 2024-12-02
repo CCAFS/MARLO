@@ -169,6 +169,9 @@
         <property name="hasKnowledgePotential" type="java.lang.Boolean">
             <column name="has_knowledge_potential" not-null="true" />
         </property>
+        <property name="reasonKnowledgePotential" type="string">
+            <column name="reason_knowledge_potential" sql-type="TEXT" />
+        </property>
         <property name="reasonNotKnowledgePotential" type="string">
             <column name="reason_not_knowledge_potential" sql-type="TEXT" />
         </property>

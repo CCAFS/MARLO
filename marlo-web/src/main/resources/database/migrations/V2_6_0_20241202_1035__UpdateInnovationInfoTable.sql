@@ -1,0 +1,1 @@
+ALTER TABLE project_innovation_info ADD reason_knowledge_potential text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL;

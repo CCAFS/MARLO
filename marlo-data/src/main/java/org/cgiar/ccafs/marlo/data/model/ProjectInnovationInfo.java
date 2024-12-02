@@ -126,6 +126,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   @Expose
   private String reasonNotKnowledgePotential;
   @Expose
+  private String reasonKnowledgePotential;
+  @Expose
   private Boolean hasToolUrl;
   @Expose
   private String reasonNotToolUrl;
@@ -345,6 +347,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return readinessScale;
   }
 
+  public String getReasonKnowledgePotential() {
+    return reasonKnowledgePotential;
+  }
+
   public String getReasonNotCgiarContribution() {
     return reasonNotCgiarContribution;
   }
@@ -361,10 +367,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return repIndDegreeInnovation;
   }
 
+
   public RepIndGeographicScope getRepIndGeographicScope() {
     return repIndGeographicScope;
   }
-
 
   public RepIndInnovationNature getRepIndInnovationNature() {
     return repIndInnovationNature;
@@ -560,6 +566,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.readinessScale = readinessScale;
   }
 
+  public void setReasonKnowledgePotential(String reasonKnowledgePotential) {
+    this.reasonKnowledgePotential = reasonKnowledgePotential;
+  }
+
   public void setReasonNotCgiarContribution(String reasonNotCgiarContribution) {
     this.reasonNotCgiarContribution = reasonNotCgiarContribution;
   }
@@ -676,6 +686,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setKnowledgeResultsNarrative(projectInnovationInfoUpdate.getKnowledgeResultsNarrative());
     this.setHasKnowledgePotential(projectInnovationInfoUpdate.getHasKnowledgePotential());
     this.setReasonNotKnowledgePotential(projectInnovationInfoUpdate.getReasonNotKnowledgePotential());
+    this.setReasonKnowledgePotential(projectInnovationInfoUpdate.getReasonKnowledgePotential());
     this.setHasToolUrl(projectInnovationInfoUpdate.getHasToolUrl());
     this.setReasonNotToolUrl(projectInnovationInfoUpdate.getReasonNotToolUrl());
     this.setKnowledgeCollaboration(projectInnovationInfoUpdate.getKnowledgeCollaboration());
