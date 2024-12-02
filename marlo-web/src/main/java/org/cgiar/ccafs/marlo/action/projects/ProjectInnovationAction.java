@@ -2125,15 +2125,22 @@ public class ProjectInnovationAction extends BaseAction {
         Log.error("error getting know potential " + e);
       }
 
+      // Clean text fields according to the boolean selection
+      // Has knowledge potential true
       if (innovation.getProjectInnovationInfo().getHasKnowledgePotential() != null
         && innovation.getProjectInnovationInfo().getHasKnowledgePotential()) {
         innovation.getProjectInnovationInfo().setReasonNotKnowledgePotential(null);
       }
+      // Has knowledge potential false
       if (innovation.getProjectInnovationInfo().getHasKnowledgePotential() != null
         && innovation.getProjectInnovationInfo().getHasKnowledgePotential() == false) {
         innovation.getProjectInnovationInfo().setReasonKnowledgePotential(null);
       }
-
+      // Has tool URL true
+      if (innovation.getProjectInnovationInfo().getHasToolUrl() != null
+        && innovation.getProjectInnovationInfo().getHasToolUrl()) {
+        innovation.getProjectInnovationInfo().setReasonNotToolUrl(null);
+      }
       // End
 
       projectInnovationInfoManager.saveProjectInnovationInfo(innovation.getProjectInnovationInfo());
