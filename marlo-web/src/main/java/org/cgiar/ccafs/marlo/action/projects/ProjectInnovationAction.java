@@ -1313,22 +1313,40 @@ public class ProjectInnovationAction extends BaseAction {
         }
 
         // Innovations references
-        if (innovation.getProjectInnovationReferences() != null) {
-          innovation.setReferences(new ArrayList<>(innovation.getProjectInnovationReferences().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        if (innovation.getProjectInnovationReferences() != null
+          && !innovation.getProjectInnovationReferences().isEmpty()) {
+          try {
+            innovation.setReferences(innovation.getProjectInnovationReferences().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+              .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
         }
 
         // Innovations references URL
-        if (innovation.getProjectInnovationReferenceUrls() != null) {
-          innovation.setReferenceUrls(new ArrayList<>(innovation.getProjectInnovationReferenceUrls().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        if (innovation.getProjectInnovationReferenceUrls() != null
+          && !innovation.getProjectInnovationReferenceUrls().isEmpty()) {
+          try {
+            innovation.setReferenceUrls(innovation.getProjectInnovationReferenceUrls().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+              .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
         }
 
         // Innovations references Complementary solutions
-        if (innovation.getProjectInnovationReferenceComplementarySolutions() != null) {
-          innovation.setReferenceComplementarySolutions(
-            new ArrayList<>(innovation.getProjectInnovationReferenceComplementarySolutions().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        if (innovation.getProjectInnovationReferenceComplementarySolutions() != null
+          && !innovation.getProjectInnovationReferenceComplementarySolutions().isEmpty()) {
+          try {
+            innovation
+              .setReferenceComplementarySolutions(innovation.getProjectInnovationReferenceComplementarySolutions()
+                .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+                .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
         }
 
         // Innovation shared Projects List
