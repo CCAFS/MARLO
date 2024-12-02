@@ -281,19 +281,15 @@ function addSelect2() {
 
   $(".evidenceByDeliverable select").select2({
     data: function (data) {
-      console.log(data);
       return data;
     },
     escapeMarkup: function(markup) {
-      console.log(markup);
       return markup;
     },
     templateResult: function(data) {
-      console.log(data);
       return data.html;
     },
     templateSelection: function(data) {
-      console.log(data);
       return data.text;
     }
   });
