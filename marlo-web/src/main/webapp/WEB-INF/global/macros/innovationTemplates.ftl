@@ -685,10 +685,10 @@
             [#local hasKnowledgePotential = (element.projectInnovationInfo.hasKnowledgePotential)! /]    
 
             <div class="col-md-1">
-              [@customForm.radioFlat id="${hasKnowledgePotentialText}-yes" name="${customName}.projectInnovationInfo.sharing.knowledge" label="Yes" value="true" checked=((element.projectInnovationInfo.hasKnowledgePotential??) &&(hasKnowledgePotential)) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-yes" editable=editable /]
+              [@customForm.radioFlat id="${hasKnowledgePotentialText}-yes" name="${customName}.projectInnovationInfo.hasKnowledgePotential" label="Yes" value="true" checked=((element.projectInnovationInfo.hasKnowledgePotential??) &&(hasKnowledgePotential)) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-yes" editable=editable /]
             </div>
             <div class="col-md-1">
-              [@customForm.radioFlat id="${hasKnowledgePotentialText}-no" name="${customName}.projectInnovationInfo.sharing.knowledge" label="No" value="false" checked=((element.projectInnovationInfo.hasKnowledgePotential??) &&(!hasKnowledgePotential)) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-no" editable=editable /]
+              [@customForm.radioFlat id="${hasKnowledgePotentialText}-no" name="${customName}.projectInnovationInfo.hasKnowledgePotential" label="No" value="false" checked=((element.projectInnovationInfo.hasKnowledgePotential??) &&(!hasKnowledgePotential)) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-no" editable=editable /]
             </div>
 
             <div class="col-md-12 block-yes-${hasKnowledgePotentialText} padding-left-2" style="display:${((element.projectInnovationInfo.hasKnowledgePotential??)&&(hasKnowledgePotential))?then('block','none')};">
@@ -715,10 +715,10 @@
           [#local hasToolUrl = (element.projectInnovationInfo.hasToolUrl)! /]    
 
           <div class="col-md-1">
-            [@customForm.radioFlat id="${hasToolUrlText}-yes" name="${customName}.projectInnovationInfo.sharing.knowledge" label="Yes" value="true" checked=((element.projectInnovationInfo.hasToolUrl??) &&(hasToolUrl)) cssClass="radioType-${hasToolUrlText}" cssClassLabel="radio-label-yes" editable=editable /]
+            [@customForm.radioFlat id="${hasToolUrlText}-yes" name="${customName}.projectInnovationInfo.hasToolUrl" label="Yes" value="true" checked=((element.projectInnovationInfo.hasToolUrl??) &&(hasToolUrl)) cssClass="radioType-${hasToolUrlText}" cssClassLabel="radio-label-yes" editable=editable /]
           </div>
           <div class="col-md-1">
-            [@customForm.radioFlat id="${hasToolUrlText}-no" name="${customName}.projectInnovationInfo.sharing.knowledge" label="No" value="false" checked=((element.projectInnovationInfo.hasToolUrl??) &&(!hasToolUrl)) cssClass="radioType-${hasToolUrlText}" cssClassLabel="radio-label-no" editable=editable /]
+            [@customForm.radioFlat id="${hasToolUrlText}-no" name="${customName}.projectInnovationInfo.hasToolUrl" label="No" value="false" checked=((element.projectInnovationInfo.hasToolUrl??) &&(!hasToolUrl)) cssClass="radioType-${hasToolUrlText}" cssClassLabel="radio-label-no" editable=editable /]
           </div>
 
           [#-- If yes - Evidence/Reference --]
