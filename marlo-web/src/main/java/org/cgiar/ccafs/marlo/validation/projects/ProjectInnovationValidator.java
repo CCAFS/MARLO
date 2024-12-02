@@ -702,6 +702,17 @@ public class ProjectInnovationValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
+      /*
+       * Is there potential for actors, such as fellow researchers or policymakers, to expand the innovation more
+       * generally in new contexts and for new purposes
+       */
+      if (innovationInfo.getHasKnowledgePotential() != null && !innovationInfo.getHasKnowledgePotential()
+        && !(this.isValidString(innovationInfo.getReasonNotToolUrl()))) {
+        action.addMessage(action.getText("innovation.projectInnovationInfo.reasonNotToolUrl"));
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.reasonNotToolUrl",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
       if (!(this.isValidString(innovationInfo.getKnowledgeResultsNarrative()))) {
         action.addMessage(action.getText("innovation.projectInnovationInfo.knowledgeResultsNarrative"));
         action.getInvalidFields().put("input-innovation.projectInnovationInfo.knowledgeResultsNarrative",
@@ -710,10 +721,6 @@ public class ProjectInnovationValidator extends BaseValidator {
 
       // Validate References URL
       if (projectInnovation.getReferenceUrls() != null && !projectInnovation.getReferenceUrls().isEmpty()) {
-        if (projectInnovation.getReferenceUrls().size() < 3) {
-          action.addMessage("References Cited");
-          action.getInvalidFields().put("input-innovation.referenceURL", InvalidFieldsMessages.EMPTYFIELD);
-        }
 
         for (int i = 0; i < projectInnovation.getReferenceUrls().size(); i++) {
           ProjectInnovationReferenceUrl reference = projectInnovation.getReferenceUrls().get(i);
@@ -756,7 +763,7 @@ public class ProjectInnovationValidator extends BaseValidator {
         }
 
       } else {
-        // validate when reference is null or references size is < 3
+        // validate when reference is null
         action.addMessage("References url - not enought references");
         action.getInvalidFields().put("innovation.referenceURL", InvalidFieldsMessages.EMPTYFIELD);
       }
@@ -764,10 +771,6 @@ public class ProjectInnovationValidator extends BaseValidator {
       // Validate Reference Complementary Solutions
       if (projectInnovation.getReferenceComplementarySolutions() != null
         && !projectInnovation.getReferenceComplementarySolutions().isEmpty()) {
-        if (projectInnovation.getReferenceComplementarySolutions().size() < 3) {
-          action.addMessage("References Cited");
-          action.getInvalidFields().put("input-innovation.referenceURL", InvalidFieldsMessages.EMPTYFIELD);
-        }
 
         for (int i = 0; i < projectInnovation.getReferenceComplementarySolutions().size(); i++) {
           ProjectInnovationReferenceComplementarySolution reference =
@@ -801,7 +804,7 @@ public class ProjectInnovationValidator extends BaseValidator {
         }
 
       } else {
-        // validate when reference is null or references size is < 3
+        // validate when reference is null
         action.addMessage("References Cited");
         action.getInvalidFields().put("innovation.referenceComplementarySolution", InvalidFieldsMessages.EMPTYFIELD);
       }

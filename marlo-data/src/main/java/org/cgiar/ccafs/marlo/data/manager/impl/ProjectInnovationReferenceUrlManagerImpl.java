@@ -167,30 +167,31 @@ public class ProjectInnovationReferenceUrlManagerImpl implements ProjectInnovati
       projectInnovationReferenceUrlAdd.setDatasetType(projectInnovationReferenceUrl.getDatasetType());
       projectInnovationReferenceUrlAdd.setInnovationType(projectInnovationReferenceUrl.getInnovationType());
       projectInnovationReferenceUrlDAO.save(projectInnovationReferenceUrlAdd);
-    } else {
-      ProjectInnovationReferenceUrl projectInnovationReferenceUrlAdd = new ProjectInnovationReferenceUrl();
-      projectInnovationReferenceUrlAdd.setProjectInnovation(projectInnovationReferenceUrl.getProjectInnovation());
-      projectInnovationReferenceUrlAdd.setPhase(phase);
-      projectInnovationReferenceUrlAdd.setReference(projectInnovationReferenceUrl.getReference());
-      projectInnovationReferenceUrlAdd.setLink(projectInnovationReferenceUrl.getLink());
-      projectInnovationReferenceUrlAdd
-        .setEvidenceByDeliverable(projectInnovationReferenceUrl.getEvidenceByDeliverable());
-      projectInnovationReferenceUrlAdd
-        .setAdditionalArticleType(projectInnovationReferenceUrl.getAdditionalArticleType());
-      projectInnovationReferenceUrlAdd.setDatasetType(projectInnovationReferenceUrl.getDatasetType());
-      projectInnovationReferenceUrlAdd.setInnovationType(projectInnovationReferenceUrl.getInnovationType());
-      projectInnovationReferenceUrlDAO.save(projectInnovationReferenceUrlAdd);
-
-      for (ProjectInnovationReferenceUrl projectInnovationReferenceUrlDel : projectInnovationReferenceUrls) {
-        try {
-          projectInnovationReferenceUrlDAO
-            .deleteProjectInnovationReferenceUrl(projectInnovationReferenceUrlDel.getId());
-        } catch (Exception e) {
-          // TODO: handle exception
-        }
-      }
     }
-
+    /*
+     * else {
+     * ProjectInnovationReferenceUrl projectInnovationReferenceUrlAdd = new ProjectInnovationReferenceUrl();
+     * projectInnovationReferenceUrlAdd.setProjectInnovation(projectInnovationReferenceUrl.getProjectInnovation());
+     * projectInnovationReferenceUrlAdd.setPhase(phase);
+     * projectInnovationReferenceUrlAdd.setReference(projectInnovationReferenceUrl.getReference());
+     * projectInnovationReferenceUrlAdd.setLink(projectInnovationReferenceUrl.getLink());
+     * projectInnovationReferenceUrlAdd
+     * .setEvidenceByDeliverable(projectInnovationReferenceUrl.getEvidenceByDeliverable());
+     * projectInnovationReferenceUrlAdd
+     * .setAdditionalArticleType(projectInnovationReferenceUrl.getAdditionalArticleType());
+     * projectInnovationReferenceUrlAdd.setDatasetType(projectInnovationReferenceUrl.getDatasetType());
+     * projectInnovationReferenceUrlAdd.setInnovationType(projectInnovationReferenceUrl.getInnovationType());
+     * projectInnovationReferenceUrlDAO.save(projectInnovationReferenceUrlAdd);
+     * for (ProjectInnovationReferenceUrl projectInnovationReferenceUrlDel : projectInnovationReferenceUrls) {
+     * try {
+     * projectInnovationReferenceUrlDAO
+     * .deleteProjectInnovationReferenceUrl(projectInnovationReferenceUrlDel.getId());
+     * } catch (Exception e) {
+     * // TODO: handle exception
+     * }
+     * }
+     * }
+     */
     if (phase.getNext() != null) {
       this.saveProjectInnovationReferenceUrlPhase(phase.getNext(), innovationID, projectInnovationReferenceUrl);
     }

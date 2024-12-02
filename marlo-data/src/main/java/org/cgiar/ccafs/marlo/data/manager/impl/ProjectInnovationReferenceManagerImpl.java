@@ -54,23 +54,19 @@ public class ProjectInnovationReferenceManagerImpl implements ProjectInnovationR
       this.getProjectInnovationReferenceById(projectInnovationReferenceId);
     Phase currentPhase = projectInnovationReference.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.deleteProjectInnovationReferencePhase(currentPhase.getNext(),
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null) {
+      this.deleteProjectInnovationReferencePhase(currentPhase.getNext(),
+        projectInnovationReference.getProjectInnovation().getId(), projectInnovationReference);
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING) && currentPhase.getNext() != null
+      && currentPhase.getNext().getNext() != null) {
+      Phase upkeepPhase = currentPhase.getNext().getNext();
+      if (upkeepPhase != null) {
+        this.deleteProjectInnovationReferencePhase(upkeepPhase,
           projectInnovationReference.getProjectInnovation().getId(), projectInnovationReference);
       }
     }
-
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.deleteProjectInnovationReferencePhase(upkeepPhase,
-            projectInnovationReference.getProjectInnovation().getId(), projectInnovationReference);
-        }
-      }
-    }
-
     projectInnovationReferenceDAO.deleteProjectInnovationReference(projectInnovationReferenceId);
   }
 
@@ -163,26 +159,30 @@ public class ProjectInnovationReferenceManagerImpl implements ProjectInnovationR
       projectInnovationReferenceAdd.setLink(projectInnovationReference.getLink());
       projectInnovationReferenceAdd.setEvidenceByDeliverable(projectInnovationReference.getEvidenceByDeliverable());
       projectInnovationReferenceAdd.setExternalAuthor(projectInnovationReference.getExternalAuthor());
+      projectInnovationReferenceAdd.setDeliverableType(projectInnovationReference.getDeliverableType());
       projectInnovationReferenceDAO.save(projectInnovationReferenceAdd);
-    } else {
-      ProjectInnovationReference projectInnovationReferenceAdd = new ProjectInnovationReference();
-      projectInnovationReferenceAdd.setProjectInnovation(projectInnovationReference.getProjectInnovation());
-      projectInnovationReferenceAdd.setPhase(phase);
-      projectInnovationReferenceAdd.setReference(projectInnovationReference.getReference());
-      projectInnovationReferenceAdd.setLink(projectInnovationReference.getLink());
-      projectInnovationReferenceAdd.setEvidenceByDeliverable(projectInnovationReference.getEvidenceByDeliverable());
-      projectInnovationReferenceAdd.setExternalAuthor(projectInnovationReference.getExternalAuthor());
-      projectInnovationReferenceDAO.save(projectInnovationReferenceAdd);
-
-      for (ProjectInnovationReference projectInnovationReferenceDel : projectInnovationReferences) {
-        try {
-          projectInnovationReferenceDAO.deleteProjectInnovationReference(projectInnovationReferenceDel.getId());
-        } catch (Exception e) {
-          // TODO: handle exception
-        }
-      }
     }
 
+    /*
+     * else {
+     * ProjectInnovationReference projectInnovationReferenceAdd = new ProjectInnovationReference();
+     * projectInnovationReferenceAdd.setProjectInnovation(projectInnovationReference.getProjectInnovation());
+     * projectInnovationReferenceAdd.setPhase(phase);
+     * projectInnovationReferenceAdd.setReference(projectInnovationReference.getReference());
+     * projectInnovationReferenceAdd.setLink(projectInnovationReference.getLink());
+     * projectInnovationReferenceAdd.setEvidenceByDeliverable(projectInnovationReference.getEvidenceByDeliverable());
+     * projectInnovationReferenceAdd.setExternalAuthor(projectInnovationReference.getExternalAuthor());
+     * projectInnovationReferenceAdd.setDeliverableType(projectInnovationReference.getDeliverableType());
+     * projectInnovationReferenceDAO.save(projectInnovationReferenceAdd);
+     * for (ProjectInnovationReference projectInnovationReferenceDel : projectInnovationReferences) {
+     * try {
+     * projectInnovationReferenceDAO.deleteProjectInnovationReference(projectInnovationReferenceDel.getId());
+     * } catch (Exception e) {
+     * // TODO: handle exception
+     * }
+     * }
+     * }
+     */
     if (phase.getNext() != null) {
       this.saveProjectInnovationReferencePhase(phase.getNext(), innovationID, projectInnovationReference);
     }

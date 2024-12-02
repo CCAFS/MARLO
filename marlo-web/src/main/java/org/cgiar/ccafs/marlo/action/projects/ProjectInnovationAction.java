@@ -176,7 +176,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.exception.LockAcquisitionException;
 import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1557,7 +1556,10 @@ public class ProjectInnovationAction extends BaseAction {
         && !phase.getDeliverableInfos().isEmpty()) {
         List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
           .filter(c -> c != null && c.getDeliverable() != null && c.getDeliverable().getProject() != null
-            && c.getDeliverable().getProject().equals(project) && c.getDeliverable().isActive())
+            && c.getDeliverable().getProject().equals(project) && c.getDeliverable().isActive()
+            && c.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+            && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != null
+            && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != 5)
           .collect(Collectors.toList());
         deliverableList = new ArrayList<>();
         for (DeliverableInfo deliverableInfo : infos) {
@@ -1623,7 +1625,10 @@ public class ProjectInnovationAction extends BaseAction {
               && !phase.getDeliverableInfos().isEmpty()) {
               List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
                 .filter(c -> c != null && c.getDeliverable() != null && c.getDeliverable().getProject() != null
-                  && c.getDeliverable().getProject().equals(projectInnovationShared) && c.getDeliverable().isActive())
+                  && c.getDeliverable().getProject().equals(projectInnovationShared) && c.getDeliverable().isActive()
+                  && c.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+                  && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                  && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != 5)
                 .collect(Collectors.toList());
 
               for (DeliverableInfo deliverableInfo : infos) {
@@ -1634,6 +1639,66 @@ public class ProjectInnovationAction extends BaseAction {
               }
             }
           }
+        }
+      }
+
+      /**
+       * Add additional information
+       */
+      if (deliverableList != null && !deliverableList.isEmpty()) {
+        String handle = "", disseminationChannel = "", disseminationURL = "", deliverableType = "";
+        for (Deliverable deliverable : deliverableList) {
+          DeliverableInfo deliverableInfo = new DeliverableInfo();
+          deliverableInfo = deliverable.getDeliverableInfo(this.getActualPhase());
+          if (deliverableInfo != null) {
+
+            if (deliverableInfo.getDeliverableType() != null
+              && deliverableInfo.getDeliverableType().getName() != null) {
+              deliverableType = deliverableInfo.getDeliverableType().getName();
+              if (deliverableType == null || deliverableType.isEmpty()) {
+                deliverableType = "Not defined";
+              }
+            }
+
+            try {
+              handle = deliverable.getDeliverableMetadataElements().stream()
+                .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+                  && me.getMetadataElement().getId().longValue() == 35L && me.getPhase().equals(this.getActualPhase())
+                  && me.getDeliverable().getId().equals(deliverable.getId())
+                  && !StringUtils.isBlank(me.getElementValue()))
+                .findFirst().orElse(null).getElementValue();
+              if (handle == null || handle.isEmpty()) {
+                handle = "Not defined";
+              }
+
+            } catch (Exception e) {
+              Log.error("error getting metadata elements " + e);
+            }
+            try {
+              if (deliverable.getDissemination() != null
+                && deliverable.getDissemination().getDisseminationChannelName() != null) {
+                disseminationChannel = deliverable.getDissemination().getDisseminationChannelName();
+                if (disseminationChannel == null || disseminationChannel.isEmpty()) {
+                  disseminationChannel = "Dissemination channel Not defined";
+                }
+              }
+            } catch (Exception e) {
+              Log.error("error getting dissemination info " + e);
+            }
+
+            if (deliverable.getDissemination() != null && deliverable.getDissemination().getDisseminationUrl() != null
+              && !deliverable.getDissemination().getDisseminationUrl().isEmpty()) {
+              disseminationURL = deliverable.getDissemination().getDisseminationUrl();
+            }
+            deliverable.setHandle(handle);
+            deliverable.setDisseminationChannel(disseminationChannel);
+            deliverable.setDisseminationURL(disseminationURL);
+            deliverable.setDeliverableType(deliverableType);
+            String composedInfo = "D" + deliverable.getId() + " " + deliverableInfo.getTitle() + " ("
+              + disseminationChannel + ")" + "\nHandle: " + handle + "\nType: " + deliverableType;
+            deliverable.setComposedInfo(composedInfo);
+          }
+
         }
       }
 
@@ -2048,6 +2113,16 @@ public class ProjectInnovationAction extends BaseAction {
       } else {
         innovation.getProjectInnovationInfo().setClearLead(true);
         innovation.getProjectInnovationInfo().setLeadOrganization(null);
+      }
+
+      try {
+        String reasonNotKnowledgePotential = innovation.getProjectInnovationInfo().getReasonNotKnowledgePotential();
+        if (reasonNotKnowledgePotential != null && !reasonNotKnowledgePotential.isEmpty()
+          && reasonNotKnowledgePotential.length() > 50000) {
+          innovation.getProjectInnovationInfo().setReasonNotKnowledgePotential(reasonNotKnowledgePotential);
+        }
+      } catch (Exception e) {
+        Log.error("error getting know potential " + e);
       }
 
       // End
@@ -3048,72 +3123,70 @@ public class ProjectInnovationAction extends BaseAction {
   private void saveReferenceComplementarySolution(ProjectInnovation projectInnovation, Phase phase) {
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationReferenceComplementarySolutions() != null) {
-      final List<ProjectInnovationReferenceComplementarySolution> referencesPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationReferenceComplementarySolutions().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-
-      for (final ProjectInnovationReferenceComplementarySolution innovationReference : referencesPrev) {
-        if ((this.innovation.getReferences() == null)
-          || !this.innovation.getReferences().contains(innovationReference)) {
-          this.projectInnovationReferenceComplementarySolutionManager
-            .deleteProjectInnovationReferenceComplementarySolution(innovationReference.getId());
+      /*
+       * final List<ProjectInnovationReferenceComplementarySolution> referencesPrev =
+       * new ArrayList<>(projectInnovation.getProjectInnovationReferenceComplementarySolutions().stream()
+       * .filter(nu -> nu.isActive() && nu.getProjectInnovation() != null && nu.getProjectInnovation().getId() != null
+       * && nu.getProjectInnovation().getId() == projectInnovation.getId()
+       * && nu.getPhase().getId().equals(phase.getId()))
+       * .collect(Collectors.toList()));
+       */
+      try {
+        List<ProjectInnovationReferenceComplementarySolution> referencesPrev =
+          projectInnovationReferenceComplementarySolutionManager
+            .getProjectInnovationReferenceComplementarySolutionByPhaseAndInnovation(this.getActualPhase().getId(),
+              innovationID);
+        for (ProjectInnovationReferenceComplementarySolution innovationReference : referencesPrev) {
+          if ((innovation.getProjectInnovationReferenceComplementarySolutions() == null
+            || innovation.getProjectInnovationReferenceComplementarySolutions().isEmpty())
+            || !innovation.getReferenceComplementarySolutions().contains(innovationReference)) {
+            this.projectInnovationReferenceComplementarySolutionManager
+              .deleteProjectInnovationReferenceComplementarySolution(innovationReference.getId());
+          }
         }
+      } catch (Exception e) {
+        Log.error("error deleting reference complementary solution " + e);
       }
     }
 
     // Save form Information
-    if (this.innovation.getReferences() != null) {
+    if (this.innovation.getReferenceComplementarySolutions() != null) {
       for (final ProjectInnovationReferenceComplementarySolution innovationReference : this.innovation
         .getReferenceComplementarySolutions()) {
-        if (innovationReference.getId() == null) {
-          final ProjectInnovationReferenceComplementarySolution innovationReferenceSave =
-            new ProjectInnovationReferenceComplementarySolution();
-          innovationReferenceSave.setProjectInnovation(projectInnovation);
-          innovationReferenceSave.setPhase(phase);
-          innovationReferenceSave.setReference(innovationReference.getReference());
-          innovationReferenceSave.setLink(innovationReference.getLink());
-          innovationReferenceSave.setEvidenceByDeliverable(innovationReference.getEvidenceByDeliverable());
-          innovationReferenceSave.setDeliverable(innovationReference.getDeliverable());
-          if (innovationReference.getDeliverableType() != null
-            && innovationReference.getDeliverableType().getId() != null
-            && innovationReference.getDeliverableType().getId() == -1) {
-            innovationReference.getDeliverableType().setId(null);
-          }
-          innovationReferenceSave.setDeliverableType(innovationReference.getDeliverableType());
 
-          this.projectInnovationReferenceComplementarySolutionManager
-            .saveProjectInnovationReferenceComplementarySolution(innovationReferenceSave);
-          // This is to add innovationReferenceSave to generate correct
-          // auditlog.
-          this.innovation.getProjectInnovationReferenceComplementarySolutions().add(innovationReferenceSave);
-        } else {
-          try {
-            final ProjectInnovationReferenceComplementarySolution innovationReferenceSave =
-              this.projectInnovationReferenceComplementarySolutionManager
-                .getProjectInnovationReferenceComplementarySolutionById(innovationReference.getId());
-            if ((innovationReferenceSave != null) && (projectInnovation != null)) {
-              innovationReferenceSave.setProjectInnovation(projectInnovation);
-              innovationReferenceSave.setPhase(phase);
-              innovationReferenceSave.setReference(innovationReference.getReference());
-              innovationReferenceSave.setLink(innovationReference.getLink());
-              innovationReferenceSave.setEvidenceByDeliverable(innovationReference.getEvidenceByDeliverable());
-              innovationReferenceSave.setDeliverable(innovationReference.getDeliverable());
-              if (innovationReference.getDeliverableType() != null
-                && innovationReference.getDeliverableType().getId() != null
-                && innovationReference.getDeliverableType().getId() == -1) {
-                innovationReference.getDeliverableType().setId(null);
-              }
-              innovationReferenceSave.setDeliverableType(innovationReference.getDeliverableType());
-            }
-
-            this.projectInnovationReferenceComplementarySolutionManager
-              .saveProjectInnovationReferenceComplementarySolution(innovationReferenceSave);
-            // This is to add innovationReferenceSave to generate correct
-            // auditlog.
-            this.innovation.getProjectInnovationReferenceComplementarySolutions().add(innovationReferenceSave);
-          } catch (final LockAcquisitionException lae) {
-          }
+        if (innovationReference.getId() != null && innovationReference.getId() == -1) {
+          innovationReference.setId(null);
         }
+
+        ProjectInnovationReferenceComplementarySolution innovationReferenceSave =
+          new ProjectInnovationReferenceComplementarySolution();
+        if (innovationReference.getId() != null) {
+          innovationReferenceSave = this.projectInnovationReferenceComplementarySolutionManager
+            .getProjectInnovationReferenceComplementarySolutionById(innovationReference.getId());
+        }
+
+        innovationReferenceSave.setProjectInnovation(projectInnovation);
+        innovationReferenceSave.setPhase(phase);
+        innovationReferenceSave.setReference(innovationReference.getReference());
+        innovationReferenceSave.setLink(innovationReference.getLink());
+        innovationReferenceSave.setEvidenceByDeliverable(innovationReference.getEvidenceByDeliverable());
+        if (innovationReference.getDeliverable() != null && innovationReference.getDeliverable().getId() != null
+          && innovationReference.getDeliverable().getId() == -1) {
+          innovationReference.setDeliverable(null);
+        }
+        innovationReferenceSave.setDeliverable(innovationReference.getDeliverable());
+        if (innovationReference.getDeliverableType() != null && innovationReference.getDeliverableType().getId() != null
+          && innovationReference.getDeliverableType().getId() == -1) {
+          innovationReference.setDeliverableType(null);
+        }
+        innovationReferenceSave.setDeliverableType(innovationReference.getDeliverableType());
+
+        this.projectInnovationReferenceComplementarySolutionManager
+          .saveProjectInnovationReferenceComplementarySolution(innovationReferenceSave);
+        // This is to add innovationReferenceSave to generate correct
+        // auditlog.
+        this.innovation.getProjectInnovationReferenceComplementarySolutions().add(innovationReferenceSave);
+
       }
     }
   }
@@ -3126,74 +3199,70 @@ public class ProjectInnovationAction extends BaseAction {
    */
   private void saveReferences(ProjectInnovation projectInnovation, Phase phase) {
     // Search and deleted form Information
-    if (projectInnovation.getProjectInnovationReferences() != null) {
-      final List<ProjectInnovationReference> referencesPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationReferences().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+    if (projectInnovation.getProjectInnovationReferences() != null
+      && !projectInnovation.getProjectInnovationReferences().isEmpty()) {
+      /*
+       * final List<ProjectInnovationReference> referencesPrev =
+       * new ArrayList<>(projectInnovation.getProjectInnovationReferences().stream()
+       * .filter(nu -> nu.isActive() && nu.getProjectInnovation() != null && nu.getProjectInnovation().getId() != null
+       * && nu.getProjectInnovation().getId() == projectInnovation.getId()
+       * && nu.getPhase().getId().equals(phase.getId()))
+       * .collect(Collectors.toList()));
+       */
+      try {
+        List<ProjectInnovationReference> referencesPrev = projectInnovationReferenceManager
+          .getProjectInnovationReferenceByPhaseAndInnovation(this.getActualPhase().getId(), innovationID);
 
-      for (final ProjectInnovationReference studyReference : referencesPrev) {
-        if ((this.innovation.getReferences() == null) || !this.innovation.getReferences().contains(studyReference)) {
-          this.projectInnovationReferenceManager.deleteProjectInnovationReference(studyReference.getId());
+        for (ProjectInnovationReference studyReference : referencesPrev) {
+          if ((innovation.getReferences() == null || innovation.getReferences().isEmpty())
+            || !innovation.getReferences().contains(studyReference)) {
+            this.projectInnovationReferenceManager.deleteProjectInnovationReference(studyReference.getId());
+          }
         }
+      } catch (Exception e) {
+        Log.error("error deleting reference " + e);
       }
     }
 
     // Save form Information
     if (this.innovation.getReferences() != null) {
       for (final ProjectInnovationReference studyReference : this.innovation.getReferences()) {
-        if (studyReference.getId() == null) {
-          final ProjectInnovationReference studyReferenceSave = new ProjectInnovationReference();
-          studyReferenceSave.setProjectInnovation(projectInnovation);
-          studyReferenceSave.setPhase(phase);
-          studyReferenceSave.setReference(studyReference.getReference());
-          studyReferenceSave.setLink(studyReference.getLink());
-          boolean externalAutor = false;
-          if (studyReference.getEvidenceByDeliverable() != null) {
-            externalAutor = true;
-          }
-          studyReferenceSave.setExternalAuthor(externalAutor);
-          studyReferenceSave.setEvidenceByDeliverable(studyReference.getEvidenceByDeliverable());
-          studyReferenceSave.setDeliverable(studyReference.getDeliverable());
-          if (studyReference.getDeliverableType() != null && studyReference.getDeliverableType().getId() != null
-            && studyReference.getDeliverableType().getId() == -1) {
-            studyReference.getDeliverableType().setId(null);
-          }
-          studyReferenceSave.setDeliverableType(studyReference.getDeliverableType());
-
-          this.projectInnovationReferenceManager.saveProjectInnovationReference(studyReferenceSave);
-          // This is to add studyReferenceSave to generate correct
-          // auditlog.
-          this.innovation.getProjectInnovationReferences().add(studyReferenceSave);
+        if (studyReference.getId() != null && studyReference.getId() == -1) {
+          studyReference.setId(null);
+        }
+        ProjectInnovationReference studyReferenceSave = new ProjectInnovationReference();
+        if (studyReference.getId() != null) {
+          studyReferenceSave =
+            this.projectInnovationReferenceManager.getProjectInnovationReferenceById(studyReference.getId());
+        }
+        studyReferenceSave.setProjectInnovation(projectInnovation);
+        studyReferenceSave.setPhase(phase);
+        studyReferenceSave.setReference(studyReference.getReference());
+        studyReferenceSave.setLink(studyReference.getLink());
+        boolean externalAutor = false;
+        if (studyReference.getEvidenceByDeliverable() != null) {
+          externalAutor = true;
+        }
+        studyReferenceSave.setExternalAuthor(externalAutor);
+        studyReferenceSave.setEvidenceByDeliverable(studyReference.getEvidenceByDeliverable());
+        if (studyReference.getDeliverable() != null && studyReference.getDeliverable().getId() != null
+          && studyReference.getDeliverable().getId() == -1) {
+          studyReference.setDeliverable(null);
+        }
+        studyReferenceSave.setDeliverable(studyReference.getDeliverable());
+        if (studyReference.getDeliverableType() != null && studyReference.getDeliverableType().getId() != null
+          && studyReference.getDeliverableType().getId() == -1) {
+          studyReference.setDeliverableType(null);
         } else {
-          try {
-            final ProjectInnovationReference studyReferenceSave =
-              this.projectInnovationReferenceManager.getProjectInnovationReferenceById(studyReference.getId());
-            if ((studyReferenceSave != null) && (projectInnovation != null)) {
-              studyReferenceSave.setProjectInnovation(projectInnovation);
-              studyReferenceSave.setPhase(phase);
-              studyReferenceSave.setReference(studyReference.getReference());
-              studyReferenceSave.setLink(studyReference.getLink());
-              studyReferenceSave.setEvidenceByDeliverable(studyReference.getEvidenceByDeliverable());
-              studyReferenceSave.setDeliverable(studyReference.getDeliverable());
-              if (studyReference.getDeliverableType() != null && studyReference.getDeliverableType().getId() != null
-                && studyReference.getDeliverableType().getId() == -1) {
-                studyReference.getDeliverableType().setId(null);
-              }
-              studyReferenceSave.setDeliverableType(studyReferenceSave.getDeliverableType());
-              boolean externalAutor = false;
-              if (studyReference.getEvidenceByDeliverable() != null) {
-                externalAutor = true;
-              }
-              studyReferenceSave.setExternalAuthor(externalAutor);
-            }
-
-            this.projectInnovationReferenceManager.saveProjectInnovationReference(studyReferenceSave);
-            // This is to add studyReferenceSave to generate correct
-            // auditlog.
-            this.innovation.getProjectInnovationReferences().add(studyReferenceSave);
-          } catch (final LockAcquisitionException lae) {
+          if (studyReference.getDeliverableType() != null && studyReference.getDeliverableType().getId() != null
+            && deliverableTypeManager.existDeliverableType(studyReference.getDeliverableType().getId())) {
+            studyReferenceSave.setDeliverableType(studyReference.getDeliverableType());
           }
         }
+        this.projectInnovationReferenceManager.saveProjectInnovationReference(studyReferenceSave);
+        // This is to add studyReferenceSave to generate correct
+        // auditlog.
+        this.innovation.getProjectInnovationReferences().add(studyReferenceSave);
       }
     }
   }
@@ -3207,75 +3276,72 @@ public class ProjectInnovationAction extends BaseAction {
   private void saveReferenceUrls(ProjectInnovation projectInnovation, Phase phase) {
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationReferenceUrls() != null) {
-      final List<ProjectInnovationReferenceUrl> referencesPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationReferenceUrls().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      /*
+       * final List<ProjectInnovationReferenceUrl> referencesPrev =
+       * new ArrayList<>(projectInnovation.getProjectInnovationReferenceUrls().stream()
+       * .filter(nu -> nu.isActive() && nu.getProjectInnovation() != null && nu.getProjectInnovation().getId() != null
+       * && nu.getProjectInnovation().getId() == projectInnovation.getId()
+       * && nu.getPhase().getId().equals(phase.getId()))
+       * .collect(Collectors.toList()));
+       */
+      try {
+        List<ProjectInnovationReferenceUrl> referencesPrev = projectInnovationReferenceUrlManager
+          .getProjectInnovationReferenceUrlByPhaseAndInnovation(this.getActualPhase().getId(), innovationID);
 
-      for (final ProjectInnovationReferenceUrl innovationReferenceUrl : referencesPrev) {
-        if ((this.innovation.getReferenceUrls() == null)
-          || !this.innovation.getReferenceUrls().contains(innovationReferenceUrl)) {
-          this.projectInnovationReferenceUrlManager.deleteProjectInnovationReferenceUrl(innovationReferenceUrl.getId());
+        for (ProjectInnovationReferenceUrl innovationReferenceUrl : referencesPrev) {
+          if ((innovation.getReferenceUrls() == null || innovation.getReferenceUrls().isEmpty())
+            || innovation.getReferenceUrls().contains(innovationReferenceUrl)) {
+            this.projectInnovationReferenceUrlManager
+              .deleteProjectInnovationReferenceUrl(innovationReferenceUrl.getId());
+          }
         }
+      } catch (Exception e) {
+        Log.error("error deleting reference URL " + e);
       }
     }
 
     // Save form Information
     if (this.innovation.getReferenceUrls() != null) {
       for (final ProjectInnovationReferenceUrl innovationReferenceUrl : this.innovation.getReferenceUrls()) {
-        if (innovationReferenceUrl.getId() == null) {
-          final ProjectInnovationReferenceUrl innovationReferenceUrlSave = new ProjectInnovationReferenceUrl();
-          innovationReferenceUrlSave.setProjectInnovation(projectInnovation);
-          innovationReferenceUrlSave.setPhase(phase);
-          innovationReferenceUrlSave.setReference(innovationReferenceUrl.getReference());
-          innovationReferenceUrlSave.setLink(innovationReferenceUrl.getLink());
 
-          innovationReferenceUrlSave.setInnovationType(innovationReferenceUrl.getInnovationType());
-          innovationReferenceUrlSave.setAdditionalArticleType(innovationReferenceUrl.getAdditionalArticleType());
-          innovationReferenceUrlSave.setDatasetType(innovationReferenceUrl.getDatasetType());
-          innovationReferenceUrlSave.setEvidenceByDeliverable(innovationReferenceUrl.getEvidenceByDeliverable());
-          innovationReferenceUrlSave.setDeliverable(innovationReferenceUrl.getDeliverable());
-          if (innovationReferenceUrl.getDeliverableType() != null
-            && innovationReferenceUrl.getDeliverableType().getId() != null
-            && innovationReferenceUrl.getDeliverableType().getId() == -1) {
-            innovationReferenceUrl.getDeliverableType().setId(null);
-          }
-          innovationReferenceUrlSave.setDeliverableType(innovationReferenceUrl.getDeliverableType());
-
-          this.projectInnovationReferenceUrlManager.saveProjectInnovationReferenceUrl(innovationReferenceUrlSave);
-          // This is to add innovationReferenceUrlSave to generate correct
-          // auditlog.
-          this.innovation.getProjectInnovationReferenceUrls().add(innovationReferenceUrlSave);
-        } else {
-          try {
-            final ProjectInnovationReferenceUrl innovationReferenceUrlSave = this.projectInnovationReferenceUrlManager
-              .getProjectInnovationReferenceUrlById(innovationReferenceUrl.getId());
-            if ((innovationReferenceUrlSave != null) && (projectInnovation != null)) {
-              innovationReferenceUrlSave.setProjectInnovation(projectInnovation);
-              innovationReferenceUrlSave.setPhase(phase);
-              innovationReferenceUrlSave.setReference(innovationReferenceUrl.getReference());
-              innovationReferenceUrlSave.setLink(innovationReferenceUrl.getLink());
-              innovationReferenceUrlSave.setEvidenceByDeliverable(innovationReferenceUrl.getEvidenceByDeliverable());
-
-              innovationReferenceUrlSave.setInnovationType(innovationReferenceUrl.getInnovationType());
-              innovationReferenceUrlSave.setAdditionalArticleType(innovationReferenceUrl.getAdditionalArticleType());
-              innovationReferenceUrlSave.setDatasetType(innovationReferenceUrl.getDatasetType());
-              innovationReferenceUrlSave.setEvidenceByDeliverable(innovationReferenceUrl.getEvidenceByDeliverable());
-              innovationReferenceUrlSave.setDeliverable(innovationReferenceUrl.getDeliverable());
-              if (innovationReferenceUrl.getDeliverableType() != null
-                && innovationReferenceUrl.getDeliverableType().getId() != null
-                && innovationReferenceUrl.getDeliverableType().getId() == -1) {
-                innovationReferenceUrl.getDeliverableType().setId(null);
-              }
-              innovationReferenceUrlSave.setDeliverableType(innovationReferenceUrl.getDeliverableType());
-            }
-
-            this.projectInnovationReferenceUrlManager.saveProjectInnovationReferenceUrl(innovationReferenceUrlSave);
-            // This is to add innovationReferenceUrlSave to generate correct
-            // auditlog.
-            this.innovation.getProjectInnovationReferenceUrls().add(innovationReferenceUrlSave);
-          } catch (final LockAcquisitionException lae) {
-          }
+        if (innovationReferenceUrl.getId() != null && innovationReferenceUrl.getId() == -1) {
+          innovationReferenceUrl.setId(null);
         }
+
+        ProjectInnovationReferenceUrl innovationReferenceUrlSave = new ProjectInnovationReferenceUrl();
+        if (innovationReferenceUrl.getId() != null) {
+          innovationReferenceUrlSave = this.projectInnovationReferenceUrlManager
+            .getProjectInnovationReferenceUrlById(innovationReferenceUrl.getId());
+        }
+
+        innovationReferenceUrlSave.setProjectInnovation(projectInnovation);
+        innovationReferenceUrlSave.setPhase(phase);
+        innovationReferenceUrlSave.setReference(innovationReferenceUrl.getReference());
+        innovationReferenceUrlSave.setLink(innovationReferenceUrl.getLink());
+
+        // innovationReferenceUrlSave.setInnovationType(innovationReferenceUrl.getInnovationType());
+        // innovationReferenceUrlSave.setAdditionalArticleType(innovationReferenceUrl.getAdditionalArticleType());
+        // innovationReferenceUrlSave.setDatasetType(innovationReferenceUrl.getDatasetType());
+        innovationReferenceUrlSave.setEvidenceByDeliverable(innovationReferenceUrl.getEvidenceByDeliverable());
+        if (innovationReferenceUrl.getDeliverable() != null && innovationReferenceUrl.getDeliverable().getId() != null
+          && innovationReferenceUrl.getDeliverable().getId() == -1) {
+          innovationReferenceUrl.setDeliverable(null);
+        }
+        innovationReferenceUrlSave.setDeliverable(innovationReferenceUrl.getDeliverable());
+
+        if (innovationReferenceUrl.getDeliverableType() != null
+          && innovationReferenceUrl.getDeliverableType().getId() != null
+          && innovationReferenceUrl.getDeliverableType().getId() == -1) {
+          innovationReferenceUrl.setDeliverableType(null);
+        }
+
+        innovationReferenceUrlSave.setDeliverableType(innovationReferenceUrl.getDeliverableType());
+
+        this.projectInnovationReferenceUrlManager.saveProjectInnovationReferenceUrl(innovationReferenceUrlSave);
+        // This is to add innovationReferenceUrlSave to generate correct
+        // auditlog.
+        this.innovation.getProjectInnovationReferenceUrls().add(innovationReferenceUrlSave);
+
       }
     }
   }

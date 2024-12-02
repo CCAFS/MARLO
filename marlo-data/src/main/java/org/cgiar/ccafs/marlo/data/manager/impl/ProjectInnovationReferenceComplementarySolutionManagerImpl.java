@@ -176,30 +176,32 @@ public class ProjectInnovationReferenceComplementarySolutionManagerImpl
       projectInnovationReferenceComplementarySolutionAdd
         .setEvidenceByDeliverable(projectInnovationReferenceComplementarySolution.getEvidenceByDeliverable());
       projectInnovationReferenceComplementarySolutionDAO.save(projectInnovationReferenceComplementarySolutionAdd);
-    } else {
-      ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolutionAdd =
-        new ProjectInnovationReferenceComplementarySolution();
-      projectInnovationReferenceComplementarySolutionAdd
-        .setProjectInnovation(projectInnovationReferenceComplementarySolution.getProjectInnovation());
-      projectInnovationReferenceComplementarySolutionAdd.setPhase(phase);
-      projectInnovationReferenceComplementarySolutionAdd
-        .setReference(projectInnovationReferenceComplementarySolution.getReference());
-      projectInnovationReferenceComplementarySolutionAdd
-        .setLink(projectInnovationReferenceComplementarySolution.getLink());
-      projectInnovationReferenceComplementarySolutionAdd
-        .setEvidenceByDeliverable(projectInnovationReferenceComplementarySolution.getEvidenceByDeliverable());
-      projectInnovationReferenceComplementarySolutionDAO.save(projectInnovationReferenceComplementarySolutionAdd);
-
-      for (ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolutionDel : projectInnovationReferenceComplementarySolutions) {
-        try {
-          projectInnovationReferenceComplementarySolutionDAO.deleteProjectInnovationReferenceComplementarySolution(
-            projectInnovationReferenceComplementarySolutionDel.getId());
-        } catch (Exception e) {
-          // TODO: handle exception
-        }
-      }
     }
-
+    /*
+     * else {
+     * ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolutionAdd =
+     * new ProjectInnovationReferenceComplementarySolution();
+     * projectInnovationReferenceComplementarySolutionAdd
+     * .setProjectInnovation(projectInnovationReferenceComplementarySolution.getProjectInnovation());
+     * projectInnovationReferenceComplementarySolutionAdd.setPhase(phase);
+     * projectInnovationReferenceComplementarySolutionAdd
+     * .setReference(projectInnovationReferenceComplementarySolution.getReference());
+     * projectInnovationReferenceComplementarySolutionAdd
+     * .setLink(projectInnovationReferenceComplementarySolution.getLink());
+     * projectInnovationReferenceComplementarySolutionAdd
+     * .setEvidenceByDeliverable(projectInnovationReferenceComplementarySolution.getEvidenceByDeliverable());
+     * projectInnovationReferenceComplementarySolutionDAO.save(projectInnovationReferenceComplementarySolutionAdd);
+     * for (ProjectInnovationReferenceComplementarySolution projectInnovationReferenceComplementarySolutionDel :
+     * projectInnovationReferenceComplementarySolutions) {
+     * try {
+     * projectInnovationReferenceComplementarySolutionDAO.deleteProjectInnovationReferenceComplementarySolution(
+     * projectInnovationReferenceComplementarySolutionDel.getId());
+     * } catch (Exception e) {
+     * // TODO: handle exception
+     * }
+     * }
+     * }
+     */
     if (phase.getNext() != null) {
       this.saveProjectInnovationReferenceComplementarySolutionPhase(phase.getNext(), innovationID,
         projectInnovationReferenceComplementarySolution);
