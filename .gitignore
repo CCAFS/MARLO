@@ -28,4 +28,4 @@ marlo-web/src/main/java/org/cgiar/ccafs/marlo/validation/WelcomeEmail.java
 .history/*
 
 #Deploymet files
-!jenkins-trigger.yml
+!.github/workflows/jenkins-trigger.yml
