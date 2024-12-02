@@ -430,6 +430,22 @@ div.projectInnovationsPartners div.usersBlock{
   margin-bottom: 1rem;
 }
 
+.evidences .evidenceByDeliverable .select2-container .select2-selection--single {
+  height: auto!important;
+  padding: 5px 0;
+}
+.evidences .evidenceByDeliverable .select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: normal!important;
+}
+.evidences .evidenceByDeliverable .select2-container .select2-selection--single .select2-selection__rendered {
+  white-space: normal!important;
+}
+
+.evidences .evidenceByDeliverable .option_deliverable_inner_select_innovation small{
+  display: block;
+  width: 100%;
+}
+
 .evidences .evidenceByLink label{
   margin-top: 1rem;
 }

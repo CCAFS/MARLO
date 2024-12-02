@@ -1001,7 +1001,7 @@
     [#local blockNoName = "block-no-${class}_${index}" /]
 
     <div class="evidenceByDeliverable col-md-12 ${blockYesName}" style="display:${((element.evidenceByDeliverable??) && (evidenceByDeliverable))?then('block','none')}">
-      [@customForm.select name="${customName}.deliverable.id" i18nkey="projectInnovations.evidence.deliverable" editable=true required=true listName="deliverableList" keyFieldName="id" displayFieldName="composedName" /]
+      [@customForm.select name="${customName}.deliverable.id" i18nkey="projectInnovations.evidence.deliverable" editable=true required=true listName="deliverableList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence" /]
     </div>
     <div class="evidenceByLink col-md-12 ${blockNoName}" style="display:${(((element.evidenceByDeliverable??) && (!evidenceByDeliverable)))?then('block','none')}">
       <div class="col-md-12 row">
@@ -1028,10 +1028,10 @@
             </div>
           </div>
           <div class="col-md-6">
-            [@customForm.select name="${customName}.category.id" label="projectInnovations.evidence.category" showTitle=false editable=true required=true listName="deliverableTypeParent" keyFieldName="id" displayFieldName="name" className=" form-control input-sm typeSelect" /]
+            [@customForm.select name="${customName}.deliverableType.deliverableCategory.id" label="projectInnovations.evidence.category" showTitle=false editable=true required=true listName="deliverableTypeParent" keyFieldName="id" displayFieldName="name" className=" form-control input-sm typeSelect" /]
           </div>
           <div class="col-md-6">
-            [@customForm.select name="${customName}.subCategory.id" label="projectInnovations.evidence.subCategory" showTitle=false editable=true required=true listName="deliverableSubTypes" keyFieldName="id" displayFieldName="name" className=" form-control input-sm subTypeSelect" /]
+            [@customForm.select name="${customName}.deliverableType.id" label="projectInnovations.evidence.subCategory" showTitle=false editable=true required=true listName="deliverableSubTypes" keyFieldName="id" displayFieldName="name" className=" form-control input-sm subTypeSelect" /]
           </div>            
         </div>
       </div>

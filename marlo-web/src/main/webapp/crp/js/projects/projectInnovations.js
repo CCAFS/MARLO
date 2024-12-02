@@ -278,6 +278,26 @@ function addSelect2() {
       templateSelection: formatStateCountries,
       width: '100%'
   });
+
+  $(".evidenceByDeliverable select").select2({
+    data: function (data) {
+      console.log(data);
+      return data;
+    },
+    escapeMarkup: function(markup) {
+      console.log(markup);
+      return markup;
+    },
+    templateResult: function(data) {
+      console.log(data);
+      return data.html;
+    },
+    templateSelection: function(data) {
+      console.log(data);
+      return data.text;
+    }
+  });
+
 }
 
 function onChangeRadioButton() {
@@ -656,7 +676,7 @@ const evidencesModule = function () {
   let nameReference = '';
 
   function init(nameReferenceParam) {
-    // Update indexes
+
     nameReference = nameReferenceParam;
     $(`.addButtonReference${nameReference}`).on('click', addReference);
     $(`.removeButtonReference${nameReference}`).on('click', removeReference);
@@ -691,7 +711,20 @@ const evidencesModule = function () {
     });
     // Add select2 to select2 library
     $template.find('select').select2();
-    $newItem.find('select').select2();
+    $newItem.find('select').select2({
+      data: function (data) {
+        return data;
+      },
+      escapeMarkup: function(markup) {
+        return markup;
+      },
+      templateResult: function(data) {
+        return data.text;
+      },
+      templateSelection: function(data) {
+        return data.text;
+      }
+    });
 
     // Show the element
     $newItem.appendTo($listBlock).hide().show(350);
