@@ -537,7 +537,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     // Validate actors
-    if (projectInnovation.getActors() == null && projectInnovation.getActors().isEmpty()) {
+    if (projectInnovation.getActors() == null || projectInnovation.getActors().isEmpty()) {
       action.addMessage(action.getText("innovation.actors"));
       action.addMissingField("innovation.actors");
       action.getInvalidFields().put("list-innovation.actors",
@@ -585,10 +585,18 @@ public class ProjectInnovationValidator extends BaseValidator {
 
     // Validate organizations
     if (projectInnovation.getAllianceOrganizations() == null
-      && projectInnovation.getAllianceOrganizations().isEmpty()) {
+      || projectInnovation.getAllianceOrganizations().isEmpty()) {
       action.addMessage(action.getText("innovation.allianceOrganizations"));
       action.addMissingField("innovation.allianceOrganizations");
       action.getInvalidFields().put("list-innovation.allianceOrganizations",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"allianceOrganizations"}));
+    }
+
+    // Beneficiaries narrative
+    if (!(this.isValidString(innovationInfo.getBeneficiariesNarrative()))) {
+      action.addMessage(action.getText("innovation.projectInnovationInfo.beneficiariesNarrative"));
+      action.addMissingField("innovation.projectInnovationInfo.beneficiariesNarrative");
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.beneficiariesNarrative",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"allianceOrganizations"}));
     }
 

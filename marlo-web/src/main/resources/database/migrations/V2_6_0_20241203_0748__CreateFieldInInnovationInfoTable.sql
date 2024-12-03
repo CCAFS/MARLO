@@ -1,0 +1,1 @@
+ALTER TABLE project_innovation_info ADD beneficiaries_narrative text NULL;
