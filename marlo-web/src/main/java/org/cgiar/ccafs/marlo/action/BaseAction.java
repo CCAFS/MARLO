@@ -140,6 +140,7 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -3171,9 +3172,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (clazz == ProjectOutcome.class) {
         if (this.isAiccra()) {
           deliverables = new ArrayList<>();
+          List<Deliverable> deliverablesTemp = null;
+
           try {
             ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
-            List<Deliverable> deliverablesTemp = null;
 
             deliverablesTemp = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
 
