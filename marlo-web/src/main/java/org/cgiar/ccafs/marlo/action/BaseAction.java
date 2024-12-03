@@ -3173,9 +3173,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (this.isAiccra()) {
           deliverables = new ArrayList<>();
           List<Deliverable> deliverablesTemp = null;
+          ProjectOutcome projectOutcome = null;
 
           try {
-            ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
+            projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
 
             deliverablesTemp = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
 
