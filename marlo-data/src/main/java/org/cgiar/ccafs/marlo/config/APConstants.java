@@ -140,6 +140,7 @@ public final class APConstants {
   public static final String FEEDBACK_COMMENT_REACTION = "feedback_comment_reaction";
   public static final String FEEDBACK_RESPONSE = "feedback_response";
   public static final String TIP_NOTIFICATION_EMAIL_ACTIVE = "tip_notification_email_active";
+  public static final String INNOVATION_SECTION_ACTIVE = "innovation_section_active";
 
   public static final String SECTION_ID = "section_id";
   public static final String PREVIOUS_PROJECT_ID_ACTIVE = "previous_project_id_field_active";
