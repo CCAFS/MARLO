@@ -536,6 +536,14 @@ public class ProjectInnovationValidator extends BaseValidator {
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"centers"}));
     }
 
+    // Validate beneficiaries
+    if (!(this.isValidString(innovationInfo.getBeneficiariesNarrative()))) {
+      action.addMessage(action.getText("projectInnovations.beneficiariesNarrative"));
+      action.addMissingField("projectInnovations.beneficiariesNarrative");
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.beneficiariesNarrative",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
     // Validate actors
     if (projectInnovation.getActors() == null && projectInnovation.getActors().isEmpty()) {
       action.addMessage(action.getText("innovation.actors"));
