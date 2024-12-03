@@ -625,9 +625,11 @@
         <div class="col-md-12">
           <div class="referenceBlock">
             <div class="referenceListReadiness">
-              [#list element.references as reference]
-                [@customForm.evidence name="innovation.references" element=reference index=reference_index template=false class="Readiness" /]
-              [/#list]
+              [#if element.references?has_content]
+                [#list element.references as reference]
+                  [@customForm.evidence name="innovation.references" element=reference index=reference_index template=false class="Readiness" /]
+                [/#list]
+              [/#if]
             </div>
             [#if editable]
             <div class="addButtonReferenceReadiness bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>
@@ -729,9 +731,11 @@
               <div class="col-md-12">
                 <div class="referenceBlock">
                   <div class="referenceListUrl">
-                    [#list element.referenceUrls as referenceUrl]
-                      [@customForm.evidence name="innovation.referenceUrls" element=referenceUrl index=referenceUrl_index template=false class="Url" /]
-                    [/#list]
+                    [#if element.referenceUrls?has_content]
+                      [#list element.referenceUrls as referenceUrl]
+                        [@customForm.evidence name="innovation.referenceUrls" element=referenceUrl index=referenceUrl_index template=false class="Url" /]
+                      [/#list]
+                    [/#if]
                   </div>
                   [#if editable]
                   <div class="addButtonReferenceUrl bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>
@@ -768,9 +772,11 @@
             <div class="col-md-12">
               <div class="referenceBlock">
                 <div class="referenceListComplementary">
-                  [#list element.referenceComplementarySolutions as referenceComplementary]
-                    [@customForm.evidence name="innovation.referenceComplementarySolutions" element=referenceComplementary index=referenceComplementary_index template=false class="Complementary" /]
-                  [/#list]
+                  [#if element.referenceComplementarySolutions?has_content]
+                    [#list element.referenceComplementarySolutions as referenceComplementary]
+                      [@customForm.evidence name="innovation.referenceComplementarySolutions" element=referenceComplementary index=referenceComplementary_index template=false class="Complementary" /]
+                    [/#list]
+                  [/#if]
                 </div>
                 [#if editable]
                 <div class="addButtonReferenceComplementary bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>
