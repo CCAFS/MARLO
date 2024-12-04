@@ -555,7 +555,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     if (projectInnovation.getActors() == null || projectInnovation.getActors().isEmpty()) {
       action.addMessage(action.getText("innovation.actors"));
       action.addMissingField("innovation.actors");
-      action.getInvalidFields().put("input-innovation.actors",
+      action.getInvalidFields().put("add-innovation.actors",
         action.getText(InvalidFieldsMessages.EMPTYFIELD, new String[] {"actors"}));
     }
 
@@ -603,7 +603,7 @@ public class ProjectInnovationValidator extends BaseValidator {
       || projectInnovation.getAllianceOrganizations().isEmpty()) {
       action.addMessage(action.getText("innovation.allianceOrganizations"));
       action.addMissingField("innovation.allianceOrganizations");
-      action.getInvalidFields().put("input-innovation.allianceOrganizations",
+      action.getInvalidFields().put("add-innovation.allianceOrganizations",
         action.getText(InvalidFieldsMessages.EMPTYFIELD, new String[] {"allianceOrganizations"}));
     }
 

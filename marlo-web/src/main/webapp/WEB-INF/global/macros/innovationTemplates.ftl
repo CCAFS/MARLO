@@ -673,7 +673,7 @@
         <div class="col-md-12 padding-left-2">
           [#-- Objetive --]
           <div class="col-md-12">
-            [@customForm.elementsListComponent name="${customName}.toolCategories" elementType="toolCategory"  label="projectInnovations.sharing.aboutTheTool.objetive" listName="toolCategoryList" keyFieldName="id" displayFieldName="name" required=false /]
+            [@customForm.elementsListComponent name="${customName}.toolCategories" elementType="toolCategory" elementList=(element.toolCategories)![] label="projectInnovations.sharing.aboutTheTool.objetive" listName="toolCategoryList" keyFieldName="id" displayFieldName="name" required=false /]
           </div>
           [#-- knowledgeToolUsesNarrative --]
           <div class="col-md-12">
