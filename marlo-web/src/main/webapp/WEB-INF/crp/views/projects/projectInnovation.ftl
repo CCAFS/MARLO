@@ -69,13 +69,6 @@
       [#-- Section Messages --]
       [#include "/WEB-INF/crp/views/projects/messages-innovation.ftl" /]
 
-      [#-- Back --]
-      <small class="pull-right">
-        <a href="[@s.url action='${crpSession}/innovationsList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-          <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectInnovations.back" /]
-        </a>
-      </small>
-
       [#if action.hasSpecificities('feedback_active') ]
         <div class="form-group col-md-12 legendContent-global">
           <div class="colors-global">
@@ -86,9 +79,6 @@
           </div>
         </div>
       [/#if]
-      
-      [#--  Innovation Title --]
-      <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3> 
 
       [@s.form action=actionName cssClass="pure-form" enctype="multipart/form-data" ]
         
@@ -104,6 +94,16 @@
           [/#if]
           [/#list]
         [/#if]
+
+        [#-- Back --]
+        <small class="pull-right">
+          <a href="[@s.url action='${crpSession}/innovationsList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+            <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectInnovations.back" /]
+          </a>
+        </small>
+
+        [#--  Innovation Title --]
+        <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3> 
 
 
         [#-- Innovation Description --]

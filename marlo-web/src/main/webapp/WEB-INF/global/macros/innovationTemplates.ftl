@@ -191,7 +191,7 @@
               [#local isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
               [#local isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
               
-              <label for="" class="label--2">[@s.text name="study.generalInformation.geographicScopeTopic" /]:[@customForm.req required=(editable && reportingActive) /]
+              <label for="" class="label--2">[@s.text name="projectInnovations.geographicScopeTopic" /]:[@customForm.req required=(editable && reportingActive) /]
                 <div>
                     [@customForm.helpLabel name="study.generalInformation.geographicScopeTopic.note" showIcon=false isNote=true editable=editable/]
                 </div>
@@ -413,18 +413,21 @@
                 </div>
               [/#list]
             </div>
+
+            [#-- Beneficiries --]
+            <div class="form-group col-md-12">
+              [@customForm.textArea name="innovation.projectInnovationInfo.beneficiariesNarrative"  i18nkey="projectInnovations.beneficiaries"  placeholder="" className="limitWords-80" help="projectInnovations.beneficiaries.helpText" isNote=true helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]
+            </div>
       
 
             [#--  Contact person    --]
             <div class="form-group stageProcessOne col-md-12">
-              <label class="label--2">[@s.text name="study.communications.contacts" /]:</label>
+              <label class="label--2">[@s.text name="projectInnovations.communications.contacts" /]:</label>
               <div id="addPartnerText" class="note--2">
-                <p>
-                  [@s.text name="study.communications.contacts.help" /]
+                  [@s.text name="projectInnovations.communications.contacts.help" /]
                   <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave'][@s.param name='expectedID']${(expectedID)!}[/@s.param][/@s.url]">
-                    [@s.text name="study.communications.contacts.help2" /]
+                    [@s.text name="projectInnovations.communications.contacts.help2" /]
                   </a>
-                </p>
               </div>
               <div class="projectInnovationsPartners">
                 [@deliverableMacros.deliverablePartnerMacro element=(element.partnerships[0])!{} name="innovation.partnerships" index=0 defaultType=2 /]
