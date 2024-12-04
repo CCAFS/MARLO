@@ -232,6 +232,13 @@ public class ProjectInnovationValidator extends BaseValidator {
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"crpOutcomes"}));
     }
 
+    if (innovationInfo != null && (innovationInfo.getAreUsersDetermined() == null)) {
+      action.addMessage(action.getText("areUsersDetermined"));
+      action.addMissingField("innovation.areUsersDetermined");
+      action.getInvalidFields().put("list-innovation.projectInnovationInfo.areUsersDetermined",
+        action.getText(InvalidFieldsMessages.EMPTYFIELD));
+    }
+
 
     if (innovationInfo != null && (innovationInfo.getHasMilestones() == null)) {
       action.addMessage(action.getText("projectOutcomes"));
@@ -549,7 +556,7 @@ public class ProjectInnovationValidator extends BaseValidator {
       action.addMessage(action.getText("innovation.actors"));
       action.addMissingField("innovation.actors");
       action.getInvalidFields().put("input-innovation.actors",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"actors"}));
+        action.getText(InvalidFieldsMessages.EMPTYFIELD, new String[] {"actors"}));
     }
 
     try {
@@ -596,8 +603,8 @@ public class ProjectInnovationValidator extends BaseValidator {
       || projectInnovation.getAllianceOrganizations().isEmpty()) {
       action.addMessage(action.getText("innovation.allianceOrganizations"));
       action.addMissingField("innovation.allianceOrganizations");
-      action.getInvalidFields().put("list-innovation.allianceOrganizations",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"allianceOrganizations"}));
+      action.getInvalidFields().put("input-innovation.allianceOrganizations",
+        action.getText(InvalidFieldsMessages.EMPTYFIELD, new String[] {"allianceOrganizations"}));
     }
 
     try {
