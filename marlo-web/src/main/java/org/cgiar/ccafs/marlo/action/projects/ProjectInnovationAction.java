@@ -1311,7 +1311,17 @@ public class ProjectInnovationAction extends BaseAction {
           innovation.setToolCategories(new ArrayList<>(innovation.getProjectInnovationToolCategories().stream()
             .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
-
+        try {
+          if (innovation.getToolCategories() == null || innovation.getToolCategories().isEmpty()) {
+            List<ProjectInnovationToolCategory> innovationToolCategoryList = projectInnovationToolCategoryManager
+              .getProjectInnovationToolCategoryByInnovationAndPhase(innovation.getId(), this.getPhaseID());
+            if (innovationToolCategoryList != null && !innovationToolCategoryList.isEmpty()) {
+              innovation.setToolCategories(innovationToolCategoryList);
+            }
+          }
+        } catch (Exception e) {
+          Log.error("error getting tool categories " + e);
+        }
         // Innovations references
         if (innovation.getProjectInnovationReferences() != null
           && !innovation.getProjectInnovationReferences().isEmpty()) {
@@ -1911,6 +1921,9 @@ public class ProjectInnovationAction extends BaseAction {
       }
       if (innovation.getActors() != null) {
         innovation.getActors().clear();
+      }
+      if (innovation.getToolCategories() != null) {
+        innovation.getToolCategories().clear();
       }
       if (deliverableTypeParent != null) {
         deliverableTypeParent.clear();
@@ -3630,7 +3643,7 @@ public class ProjectInnovationAction extends BaseAction {
               projectInnovationToolCategoryManager.getProjectInnovationToolCategoryById(innovationToolCategory.getId());
           }
         } catch (Exception e) {
-          logger.error("unable to get old actors", e);
+          logger.error("unable to get old tool categories", e);
         }
         innovationToolCategorySave.setToolCategory(innovationToolCategory.getToolCategory());
         innovationToolCategorySave.setProjectInnovation(projectInnovation);
