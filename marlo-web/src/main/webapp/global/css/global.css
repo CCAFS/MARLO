@@ -805,7 +805,6 @@ input.target {
 input.targetValueNumber{
 	text-align: right;
 	position: relative;
-	padding-right: 12.5%;
 }
 
 .input:has(input[type="text"].targetValueNumber)::after {
@@ -814,7 +813,6 @@ input.targetValueNumber{
 	width: 27px;
 	background-color: #a39e9e1c;
 	position: absolute;
-	right: 5%;
 	bottom: 0;
 	display: flex;
 	align-items: center;
