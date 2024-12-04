@@ -545,10 +545,10 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     // Validate actors
-    if (projectInnovation.getActors() == null && projectInnovation.getActors().isEmpty()) {
+    if (projectInnovation.getActors() == null || projectInnovation.getActors().isEmpty()) {
       action.addMessage(action.getText("innovation.actors"));
       action.addMissingField("innovation.actors");
-      action.getInvalidFields().put("list-innovation.actors",
+      action.getInvalidFields().put("input-innovation.actors",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"actors"}));
     }
 
@@ -670,12 +670,12 @@ public class ProjectInnovationValidator extends BaseValidator {
          * }
          */
         // Validate References Cited
-
-        if (projectInnovation.getReferences() == null) {
-          action.addMessage("References Cited");
-          action.getInvalidFields().put("input-innovation.references", InvalidFieldsMessages.EMPTYFIELD);
-        }
-
+        /*
+         * if (projectInnovation.getReferences() == null) {
+         * action.addMessage("References Cited");
+         * action.getInvalidFields().put("input-innovation.references", InvalidFieldsMessages.EMPTYFIELD);
+         * }
+         */
         if (projectInnovation.getReferences() != null && !projectInnovation.getReferences().isEmpty()) {
           for (int i = 0; i < projectInnovation.getReferences().size(); i++) {
             ProjectInnovationReference reference = projectInnovation.getReferences().get(i);
@@ -731,10 +731,6 @@ public class ProjectInnovationValidator extends BaseValidator {
             }
           }
 
-        } else {
-          // validate when reference is null or references size is < 3
-          action.addMessage("References Cited");
-          action.getInvalidFields().put("innovation.references", InvalidFieldsMessages.EMPTYFIELD);
         }
 
       }
@@ -858,10 +854,6 @@ public class ProjectInnovationValidator extends BaseValidator {
                 }
               }
 
-            } else {
-              // validate when reference is null
-              action.addMessage("References url");
-              action.getInvalidFields().put("innovation.referenceURLs", InvalidFieldsMessages.EMPTYFIELD);
             }
           }
         }
@@ -927,10 +919,6 @@ public class ProjectInnovationValidator extends BaseValidator {
             }
           }
 
-        } else {
-          // validate when reference is null
-          action.addMessage("References Cited");
-          action.getInvalidFields().put("innovation.referenceComplementarySolutions", InvalidFieldsMessages.EMPTYFIELD);
         }
 
       }
