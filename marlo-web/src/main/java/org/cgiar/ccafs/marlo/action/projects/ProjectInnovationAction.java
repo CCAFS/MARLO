@@ -3890,11 +3890,11 @@ public class ProjectInnovationAction extends BaseAction {
         this.setInnovationOneCgiarAlignmentComplete(true);
       }
 
-      value = BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().get(innovationID + "");
+      value = BaseAction.getIsInnovationReadinessCompleteMap().get(innovationID + "");
       if (value != null && value.equals("1")) {
-        this.setInnovationOneCgiarAlignmentComplete(false);
+        this.setInnovationReadinessComplete(false);
       } else {
-        this.setInnovationOneCgiarAlignmentComplete(true);
+        this.setInnovationReadinessComplete(true);
       }
 
       value = BaseAction.getIsInnovationRightsCompleteMap().get(innovationID + "");
