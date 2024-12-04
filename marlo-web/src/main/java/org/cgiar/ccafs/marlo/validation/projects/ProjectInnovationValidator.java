@@ -553,7 +553,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     try {
-      if (projectInnovation.getActors() != null || !projectInnovation.getActors().isEmpty()) {
+      if (projectInnovation.getActors() != null && !projectInnovation.getActors().isEmpty()) {
         int count = 0;
         for (ProjectInnovationActor actor : projectInnovation.getActors()) {
           if (actor.getActor() == null || actor.getActor().getId() == null || actor.getActor().getId() == -1) {
@@ -593,7 +593,7 @@ public class ProjectInnovationValidator extends BaseValidator {
 
     // Validate organizations
     if (projectInnovation.getAllianceOrganizations() == null
-      && projectInnovation.getAllianceOrganizations().isEmpty()) {
+      || projectInnovation.getAllianceOrganizations().isEmpty()) {
       action.addMessage(action.getText("innovation.allianceOrganizations"));
       action.addMissingField("innovation.allianceOrganizations");
       action.getInvalidFields().put("list-innovation.allianceOrganizations",
@@ -602,7 +602,7 @@ public class ProjectInnovationValidator extends BaseValidator {
 
     try {
       if (projectInnovation.getAllianceOrganizations() != null
-        || !projectInnovation.getAllianceOrganizations().isEmpty()) {
+        && !projectInnovation.getAllianceOrganizations().isEmpty()) {
         int count = 0;
         for (ProjectInnovationAllianceOrganization allianceOrganizations : projectInnovation
           .getAllianceOrganizations()) {
