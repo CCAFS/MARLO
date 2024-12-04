@@ -349,19 +349,19 @@
             [#-- Anticipated users --]
             <div class="form-group col-md-12 block-innovationAnticipatedUsers">
               <label class="label--2">[@s.text name="projectInnovations.anticipatedUsers" /][@customForm.req required=true /]</label>
-              [#local areUsersDetermined = (innovation.projectInnovationInfo.areUsersDetermined)!false /]
+              [#local areUsersDetermined = (innovation.projectInnovationInfo.areUsersDetermined)! /]
               <div class="col-md-12">
                 <div class="col-md-4">
-                  [@customForm.radioFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.determined" value="true" checked=(areUsersDetermined) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=editable /]
+                  [@customForm.radioFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.determined" value="true" checked=((innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=editable /]
                 </div>
                 <div class="col-md-4">
-                  [@customForm.radioFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.undetermined" value="false" checked=(!areUsersDetermined) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
+                  [@customForm.radioFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.undetermined" value="false" checked=((innovation.projectInnovationInfo.areUsersDetermined??)&&(!areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
                 </div>
               </div>
-              <div class="col-md-12 block-anticipatedUsers" style="display: ${areUsersDetermined?then('block','none')}">
+              <div class="col-md-12 block-anticipatedUsers" style="display: ${((innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined))?then('block','none')}">
                 [#-- Actors --]
                 <div class="col-md-6 actorsBlock">
-                  <label for="">[@s.text name="projectInnovations.anticipatedUsers.actors" /]:[@customForm.req required=true /]</label>
+                  <label for="innovation.actors">[@s.text name="projectInnovations.anticipatedUsers.actors" /]:[@customForm.req required=true /]</label>
                   <label class="note--2">
                     <p>[@s.text name="projectInnovations.anticipatedUsers.actors.help" /]</p>
                   </label>
@@ -378,7 +378,7 @@
                 </div>
                 [#-- Organizations --]
                 <div class="col-md-6 organizationsBlock">
-                  <label for="">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=true /]</label>
+                  <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=true /]</label>
                   [#-- list of items --]
                   <div class="organizationsList">
                     [#list (element.allianceOrganizations)![] as organization]
@@ -673,7 +673,7 @@
         <div class="col-md-12 padding-left-2">
           [#-- Objetive --]
           <div class="col-md-12">
-            [@customForm.elementsListComponent name="${customName}.knowledgeToolObjetive" elementType="knowledgeToolObjetive"  label="projectInnovations.sharing.aboutTheTool.objetive" listName="toolCategoryList" keyFieldName="id" displayFieldName="name" required=false /]
+            [@customForm.elementsListComponent name="${customName}.toolCategories" elementType="toolCategory"  label="projectInnovations.sharing.aboutTheTool.objetive" listName="toolCategoryList" keyFieldName="id" displayFieldName="name" required=false /]
           </div>
           [#-- knowledgeToolUsesNarrative --]
           <div class="col-md-12">
@@ -705,7 +705,7 @@
           </div>
           [#-- knowledge support the outreach --]
           <div class="col-md-12">
-            [@customForm.textArea name="${customName}.projectInnovationInfo.supportTheOutreach" i18nkey="projectInnovations.sharing.aboutTheTool.supportTheOutreach" helpIcon=false className="limitWords-500" required=false editable=editable /]
+            [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeMethodsAndToolsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.supportTheOutreach" helpIcon=false className="limitWords-500" required=false editable=editable /]
           </div>
         </div>
       </div>
