@@ -34,6 +34,8 @@ public class ProjectInnovationAllianceOrganization extends MarloAuditableEntity
   private String organizationName;
   @Expose
   private Boolean scalingPartner;
+  @Expose
+  private Institution institution;
 
   public ProjectInnovationAllianceOrganization() {
   }
@@ -56,6 +58,10 @@ public class ProjectInnovationAllianceOrganization extends MarloAuditableEntity
       return false;
     }
     return true;
+  }
+
+  public Institution getInstitution() {
+    return institution;
   }
 
   public InstitutionType getInstitutionType() {
@@ -85,6 +91,10 @@ public class ProjectInnovationAllianceOrganization extends MarloAuditableEntity
     return scalingPartner;
   }
 
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
+  }
+
   public void setInstitutionType(InstitutionType institutionType) {
     this.institutionType = institutionType;
   }
@@ -112,4 +122,3 @@ public class ProjectInnovationAllianceOrganization extends MarloAuditableEntity
   }
 
 }
-

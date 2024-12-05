@@ -183,7 +183,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     // Validate Short Title
-    if (!(this.isValidString(innovationInfo.getShortTitle()) && this.wordCount(innovationInfo.getShortTitle()) <= 30)) {
+    if (!(this.isValidString(innovationInfo.getShortTitle()) && this.wordCount(innovationInfo.getShortTitle()) <= 15)) {
       if (struts) {
         action.addMessage(action.getText("projectInnovations.shortTitle"));
         action.addMissingField("projectInnovations.shortTitle");
@@ -569,27 +569,7 @@ public class ProjectInnovationValidator extends BaseValidator {
             action.getInvalidFields().put("list-innovation.actors[" + count + "].actor.id",
               action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"actors"}));
           }
-          /*
-           * int emptyFields = 0;
-           * if (actor.getMenNotYouth() == null && actor.getMenYouth() == null) {
-           * emptyFields = 1;
-           * }
-           * if (actor.getWomenNotYouth() == null && actor.getWomenYouth() == null) {
-           * emptyFields = 1;
-           * }
-           * if (actor.getNonbinaryNotYouth() == null && actor.getNonbinaryYouth() == null) {
-           * emptyFields = 1;
-           * }
-           * if (actor.getActor() == null || (actor.getActor().getId() == null || actor.getActor().getId() == -1)) {
-           * emptyFields = 1;
-           * }
-           * if (emptyFields == 1) {
-           * action.addMessage(action.getText("innovation.actors[" + count + "].id"));
-           * action.addMissingField("innovation.actors[" + count + "].id");
-           * action.getInvalidFields().put("list-innovation.actors[" + count + "].id",
-           * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"actors"}));
-           * }
-           */
+
           count++;
         }
 

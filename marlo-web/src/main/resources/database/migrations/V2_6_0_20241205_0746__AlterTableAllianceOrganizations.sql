@@ -1,0 +1,2 @@
+ALTER TABLE project_innovation_alliance_organizations ADD institution_id bigint(20) NULL;
+ALTER TABLE project_innovation_alliance_organizations ADD CONSTRAINT project_innovation_alliance_organizations_institutions_FK FOREIGN KEY (institution_id) REFERENCES institutions(id) ON DELETE RESTRICT ON UPDATE RESTRICT;

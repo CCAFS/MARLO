@@ -2407,6 +2407,11 @@ public class ProjectInnovationAction extends BaseAction {
             && innovationAllianceOrganization.getInstitutionType().getId() == -1) {
             innovationAllianceOrganization.setInstitutionType(null);
           }
+          if (innovationAllianceOrganization.getInstitution() != null
+            && innovationAllianceOrganization.getInstitution().getId() != null
+            && innovationAllianceOrganization.getInstitution().getId() == -1) {
+            innovationAllianceOrganization.setInstitution(null);
+          }
 
           ProjectInnovationAllianceOrganization innovationAllianceOrganizationSave =
             new ProjectInnovationAllianceOrganization();
@@ -2420,6 +2425,7 @@ public class ProjectInnovationAction extends BaseAction {
           }
 
           innovationAllianceOrganizationSave.setInstitutionType(innovationAllianceOrganization.getInstitutionType());
+          innovationAllianceOrganizationSave.setInstitution(innovationAllianceOrganization.getInstitution());
           innovationAllianceOrganizationSave.setOrganizationName(innovationAllianceOrganization.getOrganizationName());
           innovationAllianceOrganizationSave.setScalingPartner(innovationAllianceOrganization.getScalingPartner());
           innovationAllianceOrganizationSave.setProjectInnovation(projectInnovation);
