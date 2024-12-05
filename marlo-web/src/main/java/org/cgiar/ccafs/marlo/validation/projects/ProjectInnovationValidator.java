@@ -222,16 +222,15 @@ public class ProjectInnovationValidator extends BaseValidator {
      * }
      */
     // validate crp outcomes
-
-    if (innovationInfo.getHasMilestones() == null) {
-      action.addMessage(action.getText("innovation.projectInnovationInfo.hasMilestones"));
-      action.addMissingField("innovation.projectInnovationInfo.hasMilestones");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.hasMilestones",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    if (innovationInfo.getHasMilestones() != null && innovationInfo.getHasMilestones()
-      && (projectInnovation.getCrpOutcomes() == null || projectInnovation.getCrpOutcomes().isEmpty())) {
+    /*
+     * if (innovationInfo.getHasMilestones() == null) {
+     * action.addMessage(action.getText("innovation.projectInnovationInfo.hasMilestones"));
+     * action.addMissingField("innovation.projectInnovationInfo.hasMilestones");
+     * action.getInvalidFields().put("input-innovation.projectInnovationInfo.hasMilestones",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     */
+    if ((projectInnovation.getCrpOutcomes() == null || projectInnovation.getCrpOutcomes().isEmpty())) {
       action.addMessage(action.getText("crpOutcomes"));
       action.addMissingField("innovation.crpOutcomes");
       action.getInvalidFields().put("list-innovation.crpOutcomes",

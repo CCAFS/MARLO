@@ -313,6 +313,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<FeedbackQACommentableFields> feedbackComments;
   private List<CrpProgramOutcome> crpOutcomes;
   private List<ProjectPartner> partners;
+  private List<ProjectPartner> contributingPartnerList;
   private List<ProjectPartnerPerson> partnerPersons;
   private List<Institution> partnerInstitutions;
   private List<AllianceLever> allianceLeverList;
@@ -545,6 +546,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<Institution> getCenters() {
     return centers;
+  }
+
+  public List<ProjectPartner> getContributingPartnerList() {
+    return contributingPartnerList;
   }
 
   public List<RepIndContributionOfCrp> getContributionCrpList() {
@@ -1514,9 +1519,24 @@ public class ProjectInnovationAction extends BaseAction {
       phaseResearchList = repIndPhaseResearchPartnershipManager.findAll();
       stageInnovationList = repIndStageInnovationManager.findAll();
       geographicScopeList = repIndGeographicScopeManager.findAll();
-      if (geographicScopeList != null && !geographicScopeList.isEmpty()) {
-        geographicScopeList = geographicScopeList.stream().sorted((o1, o2) -> o1.getId().compareTo(o2.getId()))
-          .collect(Collectors.toList());
+      try {
+        if (geographicScopeList != null && !geographicScopeList.isEmpty()) {
+          geographicScopeList = geographicScopeList.stream().sorted(Comparator.comparing(RepIndGeographicScope::getId))
+            .collect(Collectors.toList());
+          RepIndGeographicScope geographicDelete;
+          // Remove multi-national
+          geographicDelete = repIndGeographicScopeManager.getRepIndGeographicScopeById(3);
+          if (geographicDelete != null) {
+            geographicScopeList.remove(geographicDelete);
+          }
+          // Remove sub-national
+          geographicDelete = repIndGeographicScopeManager.getRepIndGeographicScopeById(6);
+          if (geographicDelete != null) {
+            geographicScopeList.remove(geographicDelete);
+          }
+        }
+      } catch (Exception e) {
+        Log.error("error deleting elements from " + e);
       }
       innovationTypeList = repIndInnovationTypeManager.findAll();
       innovationNatureList = repIndInnovationNatureManager.findAll();
@@ -3715,6 +3735,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setClearLead(Boolean clearLead) {
     this.clearLead = clearLead;
+  }
+
+  public void setContributingPartnerList(List<ProjectPartner> contributingPartnerList) {
+    this.contributingPartnerList = contributingPartnerList;
   }
 
   public void setContributionCrpList(List<RepIndContributionOfCrp> contributionCrpList) {
