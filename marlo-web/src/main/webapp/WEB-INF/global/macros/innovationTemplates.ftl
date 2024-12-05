@@ -98,7 +98,7 @@
             
             [#-- Short Title --]
             <div class="form-group">
-              [@customForm.input name="innovation.projectInnovationInfo.shortTitle" type="text" i18nkey="projectInnovations.shortTitle"  placeholder="" className="limitWords-30" help="projectInnovations.shortTitle.helpText" helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]
+              [@customForm.input name="innovation.projectInnovationInfo.shortTitle" type="text" i18nkey="projectInnovations.shortTitle"  placeholder="" className="limitWords-15" help="projectInnovations.shortTitle.helpText" helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]
             </div>
           
             [#-- Narrative --] 
@@ -624,7 +624,7 @@
       [#-- Evidence and Reference --]
       <div class="form-group">
         <label class="label--2">[@s.text name="projectInnovations.readiness.evidence" /]:</label>
-        <p class="note--2">[@s.text name="projectInnovations.readiness.evidence.help" /]</p>
+        <label class="note--2"><p>[@s.text name="projectInnovations.readiness.evidence.help" /]</p></label>
         <div class="col-md-12">
           <div class="referenceBlock">
             <div class="referenceListReadiness">
