@@ -328,6 +328,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<ToolFunctionCategory> toolCategoryList;
   private List<DeliverableType> deliverableTypeParent;
   private List<DeliverableType> deliverableSubTypes;
+  private List<ProjectInnovation> innovationList;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -635,6 +636,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public long getInnovationID() {
     return innovationID;
+  }
+
+  public List<ProjectInnovation> getInnovationList() {
+    return innovationList;
   }
 
   public List<RepIndInnovationNature> getInnovationNatureList() {
@@ -1386,27 +1391,34 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
-      this.allianceLeverList = this.allianceLeverManager.findAll();
-      this.partners = new ArrayList<>();
-      this.partnerInstitutions = new ArrayList<>();
-      this.isManagingPartnerPersonRequerid = this.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
-      this.sdgList = this.sdgManager.findAll();
-      this.impactAreaList = this.impactAreaManager.findAll();
-      this.intellectualInstitutionsList = this.intellectualPropertyRightsInstitutionManager.findAll();
-      this.scalingReadinessList = this.scalingReadinessManager.findAll();
-      this.actorList = this.actorManager.findAll();
-      this.toolCategoryList = this.toolFunctionCategoryManager.findAll();
-      this.toolCategoryList.sort((o1, o2) -> {
-        try {
-          int num1 = Integer.parseInt(o1.getDescription());
-          int num2 = Integer.parseInt(o2.getDescription());
-          return Integer.compare(num1, num2);
-        } catch (NumberFormatException | NullPointerException e) {
-          // Handle invalid or null descriptions; treat as "infinite" for sorting.
-          return 0;
-        }
-      });
-
+      try {
+        this.allianceLeverList = this.allianceLeverManager.findAll();
+        this.innovationList = this.projectInnovationManager.getInnovationsByPhase(this.getActualPhase()).stream()
+          .filter(i -> i != null && i.isActive() && i.getProjectInnovationInfo(this.getActualPhase()) != null
+            && i.getProjectInnovationInfo(this.getActualPhase()).isActive())
+          .collect(Collectors.toList());
+        this.partners = new ArrayList<>();
+        this.partnerInstitutions = new ArrayList<>();
+        this.isManagingPartnerPersonRequerid = this.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
+        this.sdgList = this.sdgManager.findAll();
+        this.impactAreaList = this.impactAreaManager.findAll();
+        this.intellectualInstitutionsList = this.intellectualPropertyRightsInstitutionManager.findAll();
+        this.scalingReadinessList = this.scalingReadinessManager.findAll();
+        this.actorList = this.actorManager.findAll();
+        this.toolCategoryList = this.toolFunctionCategoryManager.findAll();
+        this.toolCategoryList.sort((o1, o2) -> {
+          try {
+            int num1 = Integer.parseInt(o1.getDescription());
+            int num2 = Integer.parseInt(o2.getDescription());
+            return Integer.compare(num1, num2);
+          } catch (NumberFormatException | NullPointerException e) {
+            // Handle invalid or null descriptions; treat as "infinite" for sorting.
+            return 0;
+          }
+        });
+      } catch (Exception e) {
+        Log.error("error getting list " + e);
+      }
       boolean has_specific_management_deliverables =
         this.hasSpecificities(APConstants.CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES);
 
@@ -3189,14 +3201,7 @@ public class ProjectInnovationAction extends BaseAction {
   private void saveReferenceComplementarySolution(ProjectInnovation projectInnovation, Phase phase) {
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationReferenceComplementarySolutions() != null) {
-      /*
-       * final List<ProjectInnovationReferenceComplementarySolution> referencesPrev =
-       * new ArrayList<>(projectInnovation.getProjectInnovationReferenceComplementarySolutions().stream()
-       * .filter(nu -> nu.isActive() && nu.getProjectInnovation() != null && nu.getProjectInnovation().getId() != null
-       * && nu.getProjectInnovation().getId() == projectInnovation.getId()
-       * && nu.getPhase().getId().equals(phase.getId()))
-       * .collect(Collectors.toList()));
-       */
+
       try {
         List<ProjectInnovationReferenceComplementarySolution> referencesPrev =
           projectInnovationReferenceComplementarySolutionManager
@@ -3224,6 +3229,10 @@ public class ProjectInnovationAction extends BaseAction {
           innovationReference.setId(null);
         }
 
+        if (innovationReference.getInnovation() != null && innovationReference.getInnovation().getId() == -1) {
+          innovationReference.setInnovation(null);
+        }
+
         ProjectInnovationReferenceComplementarySolution innovationReferenceSave =
           new ProjectInnovationReferenceComplementarySolution();
         if (innovationReference.getId() != null) {
@@ -3236,9 +3245,9 @@ public class ProjectInnovationAction extends BaseAction {
         innovationReferenceSave.setReference(innovationReference.getReference());
         innovationReferenceSave.setLink(innovationReference.getLink());
         innovationReferenceSave.setEvidenceByDeliverable(innovationReference.getEvidenceByDeliverable());
-        if (innovationReference.getDeliverable() != null && innovationReference.getDeliverable().getId() != null
-          && innovationReference.getDeliverable().getId() == -1) {
-          innovationReference.setDeliverable(null);
+        if (innovationReference.getInnovation() != null && innovationReference.getInnovation().getId() != null
+          && innovationReference.getInnovation().getId() == -1) {
+          innovationReference.setInnovation(null);
         }
         innovationReferenceSave.setDeliverable(innovationReference.getDeliverable());
         if (innovationReference.getDeliverableType() != null && innovationReference.getDeliverableType().getId() != null
@@ -3746,6 +3755,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setInnovationID(long innovationID) {
     this.innovationID = innovationID;
+  }
+
+  public void setInnovationList(List<ProjectInnovation> innovationList) {
+    this.innovationList = innovationList;
   }
 
   public void setInnovationNatureList(List<RepIndInnovationNature> innovationNatureList) {

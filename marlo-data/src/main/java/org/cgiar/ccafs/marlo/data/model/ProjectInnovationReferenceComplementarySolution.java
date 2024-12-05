@@ -24,6 +24,8 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
   @Expose
   private Deliverable deliverable;
   @Expose
+  private ProjectInnovation innovation;
+  @Expose
   private DeliverableType deliverableType;
 
   public ProjectInnovationReferenceComplementarySolution() {
@@ -68,10 +70,14 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
     return evidenceByDeliverable;
   }
 
+  public ProjectInnovation getInnovation() {
+    return innovation;
+  }
+
+
   public String getLink() {
     return link;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -80,11 +86,11 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -133,6 +139,10 @@ public class ProjectInnovationReferenceComplementarySolution extends MarloAudita
 
   public void setEvidenceByDeliverable(Boolean evidenceByDeliverable) {
     this.evidenceByDeliverable = evidenceByDeliverable;
+  }
+
+  public void setInnovation(ProjectInnovation innovation) {
+    this.innovation = innovation;
   }
 
   public void setLink(String link) {

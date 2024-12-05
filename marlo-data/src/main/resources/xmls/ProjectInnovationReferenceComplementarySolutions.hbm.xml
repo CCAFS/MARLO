@@ -40,6 +40,10 @@
             fetch="select">
             <column name="deliverable_id" />
         </many-to-one>
+        <many-to-one name="innovation" class="org.cgiar.ccafs.marlo.data.model.ProjectInnovation"
+            fetch="select">
+            <column name="innovation_id" />
+        </many-to-one>
         <many-to-one name="deliverableType"
             class="org.cgiar.ccafs.marlo.data.model.DeliverableType" fetch="select">
             <column name="type_id" />
