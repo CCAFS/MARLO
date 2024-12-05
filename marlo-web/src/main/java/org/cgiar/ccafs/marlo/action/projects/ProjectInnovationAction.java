@@ -1514,6 +1514,10 @@ public class ProjectInnovationAction extends BaseAction {
       phaseResearchList = repIndPhaseResearchPartnershipManager.findAll();
       stageInnovationList = repIndStageInnovationManager.findAll();
       geographicScopeList = repIndGeographicScopeManager.findAll();
+      if (geographicScopeList != null && !geographicScopeList.isEmpty()) {
+        geographicScopeList = geographicScopeList.stream().sorted((o1, o2) -> o1.getId().compareTo(o2.getId()))
+          .collect(Collectors.toList());
+      }
       innovationTypeList = repIndInnovationTypeManager.findAll();
       innovationNatureList = repIndInnovationNatureManager.findAll();
       focusLevelList = focusLevelManager.findAll();
@@ -2364,6 +2368,12 @@ public class ProjectInnovationAction extends BaseAction {
           } catch (Exception e) {
             logger.error("unable to get old actors", e);
           }
+          boolean isSelectedId3 = false;
+          if (innovationAllianceLever.getAllianceLever() != null
+            && innovationAllianceLever.getAllianceLever().getId() != null
+            && innovationAllianceLever.getAllianceLever().getId() == 3) {
+            isSelectedId3 = true;
+          }
           innovationAllianceLeverSave.setAllianceLever(innovationAllianceLever.getAllianceLever());
           innovationAllianceLeverSave.setProjectInnovation(projectInnovation);
           innovationAllianceLeverSave.setPhase(phase);
@@ -2371,10 +2381,27 @@ public class ProjectInnovationAction extends BaseAction {
           projectInnovationAllianceLeversManager.saveProjectInnovationAllianceLevers(innovationAllianceLeverSave);
           // This is to add innovationAllianceLeverSave to generate correct auditlog.
           innovation.getProjectInnovationAllianceLevers().add(innovationAllianceLeverSave);
+
+          // Additional save
+          try {
+            if (isSelectedId3) {
+              innovationAllianceLeverSave = new ProjectInnovationAllianceLevers();
+              AllianceLever allianceLeverTemp = allianceLeverManager.getAllianceLeverById(3);
+              innovationAllianceLeverSave.setAllianceLever(allianceLeverTemp);
+              innovationAllianceLeverSave.setProjectInnovation(projectInnovation);
+              innovationAllianceLeverSave.setPhase(phase);
+              projectInnovationAllianceLeversManager.saveProjectInnovationAllianceLevers(innovationAllianceLeverSave);
+            }
+          } catch (Exception e) {
+            Log.error("error saving other alliance lever " + e);
+          }
+
         }
       }
 
-    } catch (Exception e) {
+    } catch (
+
+    Exception e) {
       Log.error("Error saving alliance levers " + e);
     }
   }
@@ -3245,9 +3272,10 @@ public class ProjectInnovationAction extends BaseAction {
         innovationReferenceSave.setReference(innovationReference.getReference());
         innovationReferenceSave.setLink(innovationReference.getLink());
         innovationReferenceSave.setEvidenceByDeliverable(innovationReference.getEvidenceByDeliverable());
+        innovationReferenceSave.setInnovation(innovationReference.getInnovation());
         if (innovationReference.getInnovation() != null && innovationReference.getInnovation().getId() != null
           && innovationReference.getInnovation().getId() == -1) {
-          innovationReference.setInnovation(null);
+          innovationReferenceSave.setInnovation(null);
         }
         innovationReferenceSave.setDeliverable(innovationReference.getDeliverable());
         if (innovationReference.getDeliverableType() != null && innovationReference.getDeliverableType().getId() != null

@@ -155,6 +155,12 @@ public class ProjectInnovationValidator extends BaseValidator {
   public void validateAllianceAlignment(BaseAction action, Project project, ProjectInnovation projectInnovation,
     boolean saving) {
 
+    if (projectInnovation.getSdgs() == null || projectInnovation.getSdgs().isEmpty()) {
+      action.addMessage(action.getText("innovation.sdg"));
+      action.addMissingField("innovation.sdg");
+      action.getInvalidFields().put("input-innovation.sdg", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
     ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
     innovationAlliance = action.getMissingFields().toString();
     if (projectInnovation.getId() != null && (innovationAlliance.length() > innovationGeneral.length())) {
@@ -886,12 +892,12 @@ public class ProjectInnovationValidator extends BaseValidator {
               } else {
                 // Evidence by deliverable true
                 if (reference.getEvidenceByDeliverable() != null && reference.getEvidenceByDeliverable()
-                  && reference.getDeliverable() == null
-                  || (reference.getDeliverable() != null && reference.getDeliverable().getId() != null
-                    && reference.getDeliverable().getId() == -1)) {
+                  && reference.getInnovation() == null
+                  || (reference.getInnovation() != null && reference.getInnovation().getId() != null
+                    && reference.getInnovation().getId() == -1)) {
                   action.addMessage("References Complementary solutions Cited Link");
                   action.getInvalidFields().put(
-                    "input-innovation.referenceComplementarySolutions[" + i + "].deliverable.id",
+                    "input-innovation.referenceComplementarySolutions[" + i + "].innovation.id",
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
               }
