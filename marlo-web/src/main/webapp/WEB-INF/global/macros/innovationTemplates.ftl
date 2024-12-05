@@ -198,13 +198,6 @@
               </label>
               <div class="form-group ('','simpleBox') geographicScopeInput">
                 <div class="form-group row">
-                  <div class="col-md-12 margin-top-10">
-                    [#local isDisplayTitleScope = ((isMultiNational || isNational || isSubNational || isRegional) || (isGlobal && (geographicScopeList.length >1)))!false /]
-                    <label for="innovation.geographicScopes" class="col-md-4">[@s.text name="study.generalInformation.geographicScope" /]: [@customForm.req required=(editable && reportingActive) /] </label>
-                    <label for="" name="study.generalInformation.geographicImpact" class="col-md-8" style="display:${isDisplayTitleScope?string('block','none')}">[@s.text name="projectInnovations.geographicImpact" /]: [@customForm.req required=(editable && reportingActive) /]</label>
-                  </div>
-                </div>
-                <div class="form-group row">
                   <div class="form-group col-md-4">
                     [#-- Geographic Scope --]
                     [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes maxLimit=1 label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=!isProgressActive /]
@@ -299,28 +292,9 @@
               [@customForm.elementsListComponent name="innovation.deliverables" elementType="deliverable" elementList=innovation.deliverables label="projectInnovations.deliverableId"  listName="deliverableList" required=false keyFieldName="id" displayFieldName="tagTitle"/]
             </div> --]
             
-            [#-- Milestones Contribution or Performance Indicators --]
-            <div class="form-group">
-                <div class="col-md-12">
-                  <label class="label--2" style="width:100%;">[@s.text name="innovation.outcomes" /]:[@customForm.req required=(editable && !isProgressActive) /]
-                  </label>
-                  <label>
-                    [@s.text name="innovation.outcomes.help" /]
-                  </label> 
-                </div>    
-                [#local innovationMilestoneLink = "innovationMilestoneLink"]
-                [#local showMilestoneIndicator = (innovation.projectInnovationInfo.hasMilestones?string)!"" /]
-                <div class="col-md-1">
-                  [@customForm.radioFlat id="${innovationMilestoneLink}-yes" name="innovation.projectInnovationInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
-                </div>
-                <div class="col-md-1">
-                  [@customForm.radioFlat id="${innovationMilestoneLink}-no" name="innovation.projectInnovationInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${innovationMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
-                </div>
-            </div> 
-
-          
-            <div class="form-group col-md-12 block-${innovationMilestoneLink}" style="display:${(showMilestoneIndicator == 'true')?string('block','none')}">
-              [@customForm.elementsListComponent name="innovation.crpOutcomes" elementType="crpOutcome" elementList=(innovation.crpOutcomes)![] label="innovation.outcomes" helpIcon=false listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=!isProgressActive /]
+            [#-- Link to Performance Indicators --]
+            <div class="form-group col-md-12">
+              [@customForm.elementsListComponent name="innovation.crpOutcomes" elementType="crpOutcome" elementList=(innovation.crpOutcomes)![] label="innovation.outcomes" helpIcon=false listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=!isProgressActive isMainTitle=true /]
               <div class="note left">
                 <span class="glyphicon glyphicon-question-sign"></span>
                 [@s.text name="project.deliverable.generalInformation.keyOutputNotice2"][@s.param] <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">&nbsp;clicking here</a>[/@] [/@]  
