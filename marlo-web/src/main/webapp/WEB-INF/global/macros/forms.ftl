@@ -982,16 +982,17 @@
   </div>
 [/#macro]
 
-[#macro evidence name element index=-1 template=false class=""]
+[#macro evidence name element index=-1 template=false class="" isDeliverable=true ]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   <div id="evidences${class?has_content?string('-${class}', '')}-${(template?string('template', ''))}" class="evidences form-group grayBox ${class}" data-reference="${class}">
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <label for="${customName}.reference" class="col-md-12">[@s.text name="projectInnovations.evidence.title" /]</label>
 
     [#local evidenceByDeliverable = (element.evidenceByDeliverable)! /]
+    [#local labelName = isDeliverable?then("projectInnovations.evidence.evidenceByDeliverable","projectInnovations.evidence.evidenceByInnovation") /]
 
     <div class="col-md-4">
-      [@customForm.radioFlat id="${customName}.evidenceByDeliverable.true" name="${customName}.evidenceByDeliverable" i18nkey="projectInnovations.evidence.evidenceByDeliverable" value="true" checked=((element.evidenceByDeliverable??) && (evidenceByDeliverable)) cssClass="radioType-${class}[${index}]" editable=true /]
+      [@customForm.radioFlat id="${customName}.evidenceByDeliverable.true" name="${customName}.evidenceByDeliverable" i18nkey=labelName value="true" checked=((element.evidenceByDeliverable??) && (evidenceByDeliverable)) cssClass="radioType-${class}[${index}]" editable=true /]
     </div>
     <div class="col-md-4">
       [@customForm.radioFlat id="${customName}.evidenceByDeliverable.false" name="${customName}.evidenceByDeliverable" i18nkey="projectInnovations.evidence.evidenceByLink" value="false" checked=((element.evidenceByDeliverable??) && (!evidenceByDeliverable)) cssClass="radioType-${class}_${index}" editable=true /] 
@@ -999,10 +1000,16 @@
 
     [#local blockYesName = "block-yes-${class}_${index}" /]
     [#local blockNoName = "block-no-${class}_${index}" /]
-
-    <div class="evidenceByDeliverable col-md-12 ${blockYesName}" style="display:${((element.evidenceByDeliverable??) && (evidenceByDeliverable))?then('block','none')}">
-      [@customForm.select name="${customName}.deliverable.id" i18nkey="projectInnovations.evidence.deliverable" editable=true required=true listName="deliverableList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence" /]
-    </div>
+    
+    [#if isDeliverable]
+      <div class="evidenceByDeliverable col-md-12 ${blockYesName}" style="display:${((element.evidenceByDeliverable??) && (evidenceByDeliverable))?then('block','none')}">
+        [@customForm.select name="${customName}.deliverable.id" i18nkey="projectInnovations.evidence.deliverable" editable=true required=true listName="deliverableList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence" /]
+      </div>
+    [#else]
+      <div class="evidenceByInnovation col-md-12 ${blockYesName}" style="display:${((element.evidenceByDeliverable??) && (evidenceByDeliverable))?then('block','none')}">
+        [@customForm.select name="${customName}.innovation.id" i18nkey="projectInnovations.evidence.innovation" editable=true required=true listName="innovationList" keyFieldName="id" displayFieldName="composedName" className="evidence" /]
+      </div>
+    [/#if]
     <div class="evidenceByLink col-md-12 ${blockNoName}" style="display:${(((element.evidenceByDeliverable??) && (!evidenceByDeliverable)))?then('block','none')}">
       <div class="col-md-12 row">
         <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Evidence/Reference[@customForm.req required=true  /]

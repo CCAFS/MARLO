@@ -777,7 +777,7 @@
                 <div class="referenceListComplementary">
                   [#if element.referenceComplementarySolutions?has_content]
                     [#list element.referenceComplementarySolutions as referenceComplementary]
-                      [@customForm.evidence name="innovation.referenceComplementarySolutions" element=referenceComplementary index=referenceComplementary_index template=false class="Complementary" /]
+                      [@customForm.evidence name="innovation.referenceComplementarySolutions" element=referenceComplementary index=referenceComplementary_index template=false class="Complementary" isDeliverable=false /]
                     [/#list]
                   [/#if]
                 </div>
@@ -788,7 +788,7 @@
               </div>
               [#-- Element item Template --]
               <div style="display:none">
-                [@customForm.evidence name="innovation.referenceComplementarySolutions" element={} index=-1 template=true  class="Complementary" /]
+                [@customForm.evidence name="innovation.referenceComplementarySolutions" element={} index=-1 template=true  class="Complementary" isDeliverable=false /]
               </div>
             </div>
           </div>
@@ -857,7 +857,7 @@
     [#-- Input Organization name --]
     <div class="col-md-12">
       <label>[@s.text name="projectInnovations.anticipatedUsers.organizations.name" /]:</label>
-      [@customForm.input name="${customName}.organizationName" type="text" i18nkey="projectInnovations.anticipatedUsers.organizations" helpIcon=false required=false editable=true showTitle=false /]
+      [@customForm.select name="${customName}.institution.id" showTitle=false  i18nkey="projectInnovations.anticipatedUsers.organizations" listName="institutions" keyFieldName="id" displayFieldName="name" required=false editable=true /]
     </div>
     [#-- Checkbox - is a co-development --]
     <div class="col-md-12">
