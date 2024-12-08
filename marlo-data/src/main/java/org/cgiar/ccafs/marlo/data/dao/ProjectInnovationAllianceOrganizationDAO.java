@@ -40,7 +40,8 @@ public interface ProjectInnovationAllianceOrganizationDAO {
   public boolean existProjectInnovationAllianceOrganization(long projectInnovationAllianceOrganizationID);
 
   /**
-   * This method gets a projectInnovationAllianceOrganization object by a given projectInnovationAllianceOrganization identifier.
+   * This method gets a projectInnovationAllianceOrganization object by a given projectInnovationAllianceOrganization
+   * identifier.
    * 
    * @param projectInnovationAllianceOrganizationID is the projectInnovationAllianceOrganization identifier.
    * @return a ProjectInnovationAllianceOrganization object.
@@ -56,12 +57,25 @@ public interface ProjectInnovationAllianceOrganizationDAO {
 
 
   /**
+   * This method gets a projectInnovationAllianceOrganization object by a given projectInnovationAllianceOrganization
+   * identifier.
+   * 
+   * @param projectInnovationAllianceOrganizationID is the projectInnovationAllianceOrganization identifier.
+   * @return a ProjectInnovationAllianceOrganization object.
+   */
+  public List<ProjectInnovationAllianceOrganization>
+    getProjectInnovationAllianceOrganizationsByInnovationAndPhase(long innovationID, long phaseID);
+
+  /**
    * This method saves the information of the given projectInnovationAllianceOrganization
    * 
-   * @param projectInnovationAllianceOrganization - is the projectInnovationAllianceOrganization object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationAllianceOrganization was
+   * @param projectInnovationAllianceOrganization - is the projectInnovationAllianceOrganization object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectInnovationAllianceOrganization was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectInnovationAllianceOrganization save(ProjectInnovationAllianceOrganization projectInnovationAllianceOrganization);
+  public ProjectInnovationAllianceOrganization
+    save(ProjectInnovationAllianceOrganization projectInnovationAllianceOrganization);
 }

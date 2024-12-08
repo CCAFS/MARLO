@@ -21,8 +21,8 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -64,6 +64,12 @@ public class InstitutionLocationManagerImpl implements InstitutionLocationManage
   @Override
   public InstitutionLocation findByLocation(long locationID, long institutionID) {
     return institutionLocationDAO.findByLocation(locationID, institutionID);
+  }
+
+  @Override
+  public InstitutionLocation findHeadquaterByInstitutionID(long institutionID) {
+    return institutionLocationDAO.findHeadquaterByInstitutionID(institutionID);
+
   }
 
   @Override

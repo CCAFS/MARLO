@@ -51,24 +51,38 @@ public interface ProjectInnovationAllianceOrganizationManager {
    */
   public List<ProjectInnovationAllianceOrganization> findAll();
 
-
   /**
-   * This method gets a projectInnovationAllianceOrganization object by a given projectInnovationAllianceOrganization identifier.
+   * This method gets a projectInnovationAllianceOrganization object by a given projectInnovationAllianceOrganization
+   * identifier.
    * 
    * @param projectInnovationAllianceOrganizationID is the projectInnovationAllianceOrganization identifier.
    * @return a ProjectInnovationAllianceOrganization object.
    */
-  public ProjectInnovationAllianceOrganization getProjectInnovationAllianceOrganizationById(long projectInnovationAllianceOrganizationID);
+  public ProjectInnovationAllianceOrganization
+    getProjectInnovationAllianceOrganizationById(long projectInnovationAllianceOrganizationID);
+
+
+  /**
+   * This method gets a list of projectInnovationAllianceOrganization by a given innovationID and phaseID that are
+   * active
+   * 
+   * @return a list from ProjectInnovationAllianceOrganization null if no exist records
+   */
+  public List<ProjectInnovationAllianceOrganization>
+    getProjectInnovationAllianceOrganizationsByInnovationAndPhase(long innovationID, long phaseID);
 
   /**
    * This method saves the information of the given projectInnovationAllianceOrganization
    * 
-   * @param projectInnovationAllianceOrganization - is the projectInnovationAllianceOrganization object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationAllianceOrganization was
+   * @param projectInnovationAllianceOrganization - is the projectInnovationAllianceOrganization object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectInnovationAllianceOrganization was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectInnovationAllianceOrganization saveProjectInnovationAllianceOrganization(ProjectInnovationAllianceOrganization projectInnovationAllianceOrganization);
+  public ProjectInnovationAllianceOrganization saveProjectInnovationAllianceOrganization(
+    ProjectInnovationAllianceOrganization projectInnovationAllianceOrganization);
 
 
 }

@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ImpactAreaManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.IntellectualPropertyRightsInstitutionManager;
@@ -95,6 +96,7 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.IntellectualPropertyRightsInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -262,6 +264,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ActorManager actorManager;
   private InstitutionTypeManager institutionTypeManager;
   private ProjectInnovationAllianceOrganizationManager projectInnovationAllianceOrganizationManager;
+  private InstitutionLocationManager institutionLocationManager;
 
   private ProjectInnovationActorManager projectInnovationActorManager;
   private ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager;
@@ -379,7 +382,7 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationActorManager projectInnovationActorManager,
     ToolFunctionCategoryManager toolFunctionCategoryManager,
     ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager,
-    DeliverableTypeManager deliverableTypeManager) {
+    DeliverableTypeManager deliverableTypeManager, InstitutionLocationManager institutionLocationManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -449,6 +452,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.toolFunctionCategoryManager = toolFunctionCategoryManager;
     this.projectInnovationToolCategoryManager = projectInnovationToolCategoryManager;
     this.deliverableTypeManager = deliverableTypeManager;
+    this.institutionLocationManager = institutionLocationManager;
 
   }
 
@@ -1501,6 +1505,24 @@ public class ProjectInnovationAction extends BaseAction {
 
         this.partnerPersons =
           this.partners.stream().flatMap(e -> e.getProjectPartnerPersons().stream()).collect(Collectors.toList());
+
+        try {
+          if (contributingPartnerList != null && !contributingPartnerList.isEmpty()) {
+            for (Institution contributingPartner : contributingPartnerList) {
+              if (contributingPartner.getId() != null) {
+                InstitutionLocation loc =
+                  institutionLocationManager.findHeadquaterByInstitutionID(contributingPartner.getId());
+                if (loc != null && loc.getLocElement() != null && loc.getLocElement().getName() != null
+                  && !loc.getLocElement().getName().isEmpty()) {
+                  contributingPartner
+                    .setNameWithCountry(contributingPartner.getName() + " (" + loc.getLocElement().getName() + ")");
+                }
+              }
+            }
+          }
+        } catch (Exception e) {
+          Log.error("error getting headquaters: " + e);
+        }
       }
 
       if (!this.isDraft()) {

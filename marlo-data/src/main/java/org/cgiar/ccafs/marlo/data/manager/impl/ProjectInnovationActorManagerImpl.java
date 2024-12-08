@@ -159,9 +159,9 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
       projectInnovationActorAdd.setNonbinaryNotYouth(projectInnovationActor.getNonbinaryNotYouth());
       projectInnovationActorAdd.setActor(projectInnovationActor.getActor());
       projectInnovationActorAdd.setProjectInnovation(projectInnovationActor.getProjectInnovation());
+      projectInnovationActorAdd.setSexAgeNotApply(projectInnovationActor.getSexAgeNotApply());
       projectInnovationActorAdd.setPhase(phase);
       projectInnovationActorDAO.save(projectInnovationActorAdd);
-
     }
     if (phase.getNext() != null) {
       this.saveProjectInnovationActorPhase(phase.getNext(), innovationID, projectInnovationActor);

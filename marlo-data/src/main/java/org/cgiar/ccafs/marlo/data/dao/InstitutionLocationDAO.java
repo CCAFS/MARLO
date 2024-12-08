@@ -58,6 +58,14 @@ public interface InstitutionLocationDAO {
 
 
   /**
+   * This method gets a institutionLocation object by a given institutionID identifier.
+   * 
+   * @param institutionID is the institution identifier.
+   * @return a InstitutionLocation object.
+   */
+  public InstitutionLocation findHeadquaterByInstitutionID(long institutionID);
+
+  /**
    * This method saves the information of the given institutionLocation
    * 
    * @param institutionLocation - is the institutionLocation object with the new information to be added/updated.

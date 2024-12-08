@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectInnovationAllianceOrganizationMySQLDAO extends AbstractMarloDAO<ProjectInnovationAllianceOrganization, Long> implements ProjectInnovationAllianceOrganizationDAO {
+public class ProjectInnovationAllianceOrganizationMySQLDAO extends
+  AbstractMarloDAO<ProjectInnovationAllianceOrganization, Long> implements ProjectInnovationAllianceOrganizationDAO {
 
 
   @Inject
@@ -37,19 +38,20 @@ public class ProjectInnovationAllianceOrganizationMySQLDAO extends AbstractMarlo
 
   @Override
   public void deleteProjectInnovationAllianceOrganization(long projectInnovationAllianceOrganizationId) {
-    ProjectInnovationAllianceOrganization projectInnovationAllianceOrganization = this.find(projectInnovationAllianceOrganizationId);
+    ProjectInnovationAllianceOrganization projectInnovationAllianceOrganization =
+      this.find(projectInnovationAllianceOrganizationId);
     projectInnovationAllianceOrganization.setActive(false);
     this.update(projectInnovationAllianceOrganization);
   }
 
   @Override
   public boolean existProjectInnovationAllianceOrganization(long projectInnovationAllianceOrganizationID) {
-    ProjectInnovationAllianceOrganization projectInnovationAllianceOrganization = this.find(projectInnovationAllianceOrganizationID);
+    ProjectInnovationAllianceOrganization projectInnovationAllianceOrganization =
+      this.find(projectInnovationAllianceOrganizationID);
     if (projectInnovationAllianceOrganization == null) {
       return false;
     }
     return true;
-
   }
 
   @Override
@@ -62,23 +64,35 @@ public class ProjectInnovationAllianceOrganizationMySQLDAO extends AbstractMarlo
   public List<ProjectInnovationAllianceOrganization> findAll() {
     String query = "from " + ProjectInnovationAllianceOrganization.class.getName() + " where is_active=1";
     List<ProjectInnovationAllianceOrganization> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
-
   }
 
   @Override
-  public ProjectInnovationAllianceOrganization save(ProjectInnovationAllianceOrganization projectInnovationAllianceOrganization) {
+  public List<ProjectInnovationAllianceOrganization>
+    getProjectInnovationAllianceOrganizationsByInnovationAndPhase(long innovationID, long phaseID) {
+    String query = "from " + ProjectInnovationAllianceOrganization.class.getName()
+      + " where is_active=1 and project_innovation_id=" + innovationID + " id_phase=" + phaseID;
+    List<ProjectInnovationAllianceOrganization> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return null;
+  }
+
+  @Override
+  public ProjectInnovationAllianceOrganization
+    save(ProjectInnovationAllianceOrganization projectInnovationAllianceOrganization) {
     if (projectInnovationAllianceOrganization.getId() == null) {
       super.saveEntity(projectInnovationAllianceOrganization);
     } else {
       projectInnovationAllianceOrganization = super.update(projectInnovationAllianceOrganization);
     }
 
-
     return projectInnovationAllianceOrganization;
+
   }
 
 
