@@ -313,7 +313,6 @@ public class ProjectInnovationAction extends BaseAction {
   private List<FeedbackQACommentableFields> feedbackComments;
   private List<CrpProgramOutcome> crpOutcomes;
   private List<ProjectPartner> partners;
-  private List<ProjectPartner> contributingPartnerList;
   private List<ProjectPartnerPerson> partnerPersons;
   private List<Institution> partnerInstitutions;
   private List<AllianceLever> allianceLeverList;
@@ -330,6 +329,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<DeliverableType> deliverableTypeParent;
   private List<DeliverableType> deliverableSubTypes;
   private List<ProjectInnovation> innovationList;
+  private List<Institution> contributingPartnerList;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -548,7 +548,7 @@ public class ProjectInnovationAction extends BaseAction {
     return centers;
   }
 
-  public List<ProjectPartner> getContributingPartnerList() {
+  public List<Institution> getContributingPartnerList() {
     return contributingPartnerList;
   }
 
@@ -1403,6 +1403,7 @@ public class ProjectInnovationAction extends BaseAction {
             && i.getProjectInnovationInfo(this.getActualPhase()).isActive())
           .collect(Collectors.toList());
         this.partners = new ArrayList<>();
+        this.contributingPartnerList = new ArrayList<>();
         this.partnerInstitutions = new ArrayList<>();
         this.isManagingPartnerPersonRequerid = this.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
         this.sdgList = this.sdgManager.findAll();
@@ -1489,6 +1490,12 @@ public class ProjectInnovationAction extends BaseAction {
               this.partnerInstitutions.add(partner.getInstitution());
             }
           }
+
+          // Validate if its ppa
+          if (!partner.getInstitution().isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())) {
+            this.contributingPartnerList.add(partner.getInstitution());
+          }
+
         }
         this.partnerPersons = new ArrayList<>();
 
@@ -2324,6 +2331,7 @@ public class ProjectInnovationAction extends BaseAction {
           innovationActorSave.setNonbinaryYouth(innovationActor.getNonbinaryYouth());
           innovationActorSave.setNonbinaryNotYouth(innovationActor.getNonbinaryNotYouth());
           innovationActorSave.setActor(innovationActor.getActor());
+          innovationActorSave.setSexAgeNotApply(innovationActor.getSexAgeNotApply());
           innovationActorSave.setProjectInnovation(projectInnovation);
           innovationActorSave.setPhase(phase);
 
@@ -3737,7 +3745,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.clearLead = clearLead;
   }
 
-  public void setContributingPartnerList(List<ProjectPartner> contributingPartnerList) {
+  public void setContributingPartnerList(List<Institution> contributingPartnerList) {
     this.contributingPartnerList = contributingPartnerList;
   }
 

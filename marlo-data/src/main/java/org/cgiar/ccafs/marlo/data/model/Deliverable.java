@@ -674,9 +674,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
         if (deliverableTemp.getDissemination() != null
           && deliverableTemp.getDissemination().getDisseminationChannelName() != null) {
           disseminationChannel = deliverableTemp.getDissemination().getDisseminationChannelName();
-          if (disseminationChannel == null || disseminationChannel.isEmpty()) {
-            disseminationChannel = "Dissemination channel Not defined";
-          }
         }
       } catch (Exception e) {
         // error
@@ -737,10 +734,15 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
         if (statusInfo != null && !statusInfo.isEmpty()) {
           statusInfo = statusInfo.trim();
         }
-
-        return "<div class=option_deliverable_inner_select_innovation>" + "<p>D" + this.getId() + " - "
-          + this.getDeliverableInfo().getTitle() + "(" + disseminationChannel + ")</p>" + "<small>Handle: " + handle
-          + "</small>" + "<small>Type: " + deliverableType + "</small>" + "</div>";
+        if (disseminationChannel.isEmpty()) {
+          return "<div class=option_deliverable_inner_select_innovation>" + "<p>D" + this.getId() + " - "
+            + this.getDeliverableInfo().getTitle() + "</p>" + "<small>Handle: " + handle + "</small>" + "<small>Type: "
+            + deliverableType + "</small>" + "</div>";
+        } else {
+          return "<div class=option_deliverable_inner_select_innovation>" + "<p>D" + this.getId() + " - "
+            + this.getDeliverableInfo().getTitle() + "(" + disseminationChannel + ")</p>" + "<small>Handle: " + handle
+            + "</small>" + "<small>Type: " + deliverableType + "</small>" + "</div>";
+        }
       } catch (Exception e) {
         return "<b> (D" + this.getId() + ") </b> - " + this.getDeliverableInfo().getTitle();
 

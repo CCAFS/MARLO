@@ -41,6 +41,8 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
   private Boolean nonbinaryYouth;
   @Expose
   private Boolean nonbinaryNotYouth;
+  @Expose
+  private Boolean sexAgeNotApply;
 
   public ProjectInnovationActor() {
   }
@@ -89,7 +91,6 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
     return nonbinaryNotYouth;
   }
 
-
   public Boolean getNonbinaryYouth() {
     return nonbinaryYouth;
   }
@@ -98,61 +99,57 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
     return phase;
   }
 
-
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
   }
 
+  public Boolean getSexAgeNotApply() {
+    return sexAgeNotApply;
+  }
 
   public Boolean getWomenNotYouth() {
     return womenNotYouth;
   }
 
-
   public Boolean getWomenYouth() {
     return womenYouth;
   }
-
 
   public void setActor(Actor actor) {
     this.actor = actor;
   }
 
-
   public void setMenNotYouth(Boolean menNotYouth) {
     this.menNotYouth = menNotYouth;
   }
-
 
   public void setMenYouth(Boolean menYouth) {
     this.menYouth = menYouth;
   }
 
-
   public void setNonbinaryNotYouth(Boolean nonbinaryNotYouth) {
     this.nonbinaryNotYouth = nonbinaryNotYouth;
   }
-
 
   public void setNonbinaryYouth(Boolean nonbinaryYouth) {
     this.nonbinaryYouth = nonbinaryYouth;
   }
 
-
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
-
 
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
   }
 
+  public void setSexAgeNotApply(Boolean sexAgeNotApply) {
+    this.sexAgeNotApply = sexAgeNotApply;
+  }
 
   public void setWomenNotYouth(Boolean womenNotYouth) {
     this.womenNotYouth = womenNotYouth;
   }
-
 
   public void setWomenYouth(Boolean womenYouth) {
     this.womenYouth = womenYouth;

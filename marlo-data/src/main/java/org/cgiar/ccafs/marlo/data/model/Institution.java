@@ -155,6 +155,30 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return this.getName();
   }
 
+  public String getComposedNameWithCountry() {
+    if (this.getAcronym() != null && this.getAcronym().length() != 0) {
+      if (this.getLocations() != null) {
+        String locationText = null;
+        for (InstitutionLocation location : this.getLocations()) {
+          if (location.isHeadquater() && location.getComposedName() != null) {
+            locationText = location.getComposedName();
+          }
+        }
+        try {
+          if (locationText == null || locationText.isEmpty()) {
+            return this.getAcronym() + " - " + this.getName();
+          } else {
+            return this.getAcronym() + " - " + this.getName() + "(" + locationText + ")";
+          }
+        } catch (Exception e) {
+          return this.getName();
+        }
+
+      }
+    }
+    return this.getName();
+  }
+
   public Set<CrpPpaPartner> getCrpPpaPartners() {
     return crpPpaPartners;
   }

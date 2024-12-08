@@ -668,6 +668,13 @@ public class ProjectInnovationValidator extends BaseValidator {
          * action.getInvalidFields().put("input-innovation.references", InvalidFieldsMessages.EMPTYFIELD);
          * }
          */
+        // Validate Readiness scale
+        if (innovationInfo.getReadinessScale() == null) {
+          action.addMessage("Readiness scale");
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.readinessScale",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
         if (projectInnovation.getReferences() != null && !projectInnovation.getReferences().isEmpty()) {
           for (int i = 0; i < projectInnovation.getReferences().size(); i++) {
             ProjectInnovationReference reference = projectInnovation.getReferences().get(i);

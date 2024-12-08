@@ -17,6 +17,14 @@ public class RepIndInnovationNature extends MarloAuditableEntity implements java
   public RepIndInnovationNature() {
   }
 
+  public String getComposedName() {
+    if (name != null && definition != null) {
+      return this.getName() + ": " + this.getDefinition();
+    } else {
+      return "";
+    }
+  }
+
   public String getDefinition() {
     return this.definition;
   }

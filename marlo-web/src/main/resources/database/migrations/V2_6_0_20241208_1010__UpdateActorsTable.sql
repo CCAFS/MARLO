@@ -1,0 +1,1 @@
+ALTER TABLE project_innovation_actors ADD is_sex_age_not_apply tinyint(1) NULL;

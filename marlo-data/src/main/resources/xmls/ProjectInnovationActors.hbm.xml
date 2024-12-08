@@ -29,7 +29,10 @@
 		</property>		
 		<property name="nonbinaryNotYouth" type="java.lang.Boolean" >
 			<column name="is_nonbinary_not_youth" />
-		</property>				
+		</property>			
+		<property name="sexAgeNotApply" type="java.lang.Boolean" >
+            <column name="is_sex_age_not_apply"/>
+        </property>     	
 		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
