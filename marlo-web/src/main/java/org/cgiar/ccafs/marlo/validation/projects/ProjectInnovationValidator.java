@@ -154,6 +154,8 @@ public class ProjectInnovationValidator extends BaseValidator {
    */
   public void validateAllianceAlignment(BaseAction action, Project project, ProjectInnovation projectInnovation,
     boolean saving) {
+    ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
+
 
     if (projectInnovation.getSdgs() == null || projectInnovation.getSdgs().isEmpty()) {
       action.addMessage(action.getText("innovation.sdgs"));
@@ -161,7 +163,12 @@ public class ProjectInnovationValidator extends BaseValidator {
       action.getInvalidFields().put("list-innovation.sdgs", InvalidFieldsMessages.EMPTYLIST);
     }
 
-    ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
+    if (projectInnovation.getAllianceLevers() == null || projectInnovation.getAllianceLevers().isEmpty()) {
+      action.addMessage(action.getText("innovation.allianceLevers"));
+      action.addMissingField("innovation.allianceLevers");
+      action.getInvalidFields().put("list-innovation.allianceLevers", InvalidFieldsMessages.EMPTYLIST);
+    }
+
     innovationAlliance = action.getMissingFields().toString();
     if (projectInnovation.getId() != null && (innovationAlliance.length() > innovationGeneral.length())) {
       BaseAction.getIsInnovationAllianceAlignmentCompleteMap().put("" + projectInnovation.getId(), "1");

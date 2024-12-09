@@ -240,14 +240,10 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return this.name;
   }
 
-
   public String getNameWithCountry() {
-    if (this.getNameWithCountry() == null || this.getNameWithCountry().isEmpty()) {
-      return name;
-    } else {
-      return nameWithCountry;
-    }
+    return nameWithCountry;
   }
+
 
   public Long getProgramId() {
     return this.programId;
@@ -267,7 +263,6 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
   public Set<ProjectPartner> getProjectPartners() {
     return projectPartners;
   }
-
 
   public String getWebsiteLink() {
     return this.websiteLink;
@@ -319,10 +314,10 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     this.fundingSourcesOriginalDonor = fundingSourcesOriginalDonor;
   }
 
+
   public void setGlobalUnits(Set<GlobalUnit> globalUnits) {
     this.globalUnits = globalUnits;
   }
-
 
   public void setInstitutionsLocations(Set<InstitutionLocation> institutionsLocations) {
     this.institutionsLocations = institutionsLocations;

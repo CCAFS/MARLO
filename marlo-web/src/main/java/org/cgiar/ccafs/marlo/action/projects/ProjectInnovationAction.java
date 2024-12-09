@@ -1516,6 +1516,8 @@ public class ProjectInnovationAction extends BaseAction {
                   && !loc.getLocElement().getName().isEmpty()) {
                   contributingPartner
                     .setNameWithCountry(contributingPartner.getName() + " (" + loc.getLocElement().getName() + ")");
+                } else {
+                  contributingPartner.setNameWithCountry(contributingPartner.getName());
                 }
               }
             }
