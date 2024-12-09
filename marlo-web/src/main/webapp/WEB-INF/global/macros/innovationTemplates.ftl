@@ -398,7 +398,7 @@
                   </a>
               </div>
               <div class="projectInnovationsPartners">
-                [@deliverableMacros.deliverablePartnerMacro element=(element.partnerships[0])!{} name="innovation.partnerships" index=0 defaultType=2 /]
+                [@deliverableMacros.deliverablePartnerMacro element=(element.partnerships[0])!{} name="innovation.partnerships" index=0 defaultType=1 /]
               </div>
             </div>
           
@@ -419,7 +419,7 @@
     </div>
     [#-- Alliance Research Theme --]
     <div class="form-group radioToCheckbox ">
-      <label class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.researchTheme" /]:[@customForm.req required=true /]</label>
+      <label for="innovation.allianceLevers" class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.researchTheme" /]:[@customForm.req required=true /]</label>
       <label>[@s.text name="projectInnovations.alliance.researchTheme.subtitle" /]</label>
       [#if allianceLeverList?has_content]
           [#list allianceLeverList as lever]
@@ -782,8 +782,11 @@
     <div class="col-md-12">
       [@customForm.select name="${customName}.actor.id" showTitle=false  i18nkey="projectInnovations.actors" listName="actorList" keyFieldName="id" displayFieldName="name" required=false editable=true /]
     </div>
+
+    [#local sexAgeNotApply = ((element.sexAgeNotApply??) && (element.sexAgeNotApply == true)) /]
+
     [#-- Checkbox Actors - Genders --]
-    <div class="col-md-12">
+    <div class="block-sexAgeNotApply col-md-12">
       <div class="col-md-4">
         <label>[@s.text name="projectInnovations.anticipatedUsers.actors.women" /]:</label>
         [#local isWomanWithYouth = ((element.womenYouth??) && (element.womenYouth == true)) /] 
@@ -805,6 +808,10 @@
         [@customForm.checkBoxFlat id="${customName}.nonbinaryYouth" name="${customName}.nonbinaryYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=isNonbinaryWithYouth editable=true /]
         [@customForm.checkBoxFlat id="${customName}.nonbinaryNotYouth" name="${customName}.nonbinaryNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="true" checked=isNonbinaryNotYouth editable=true /]
       </div>
+    </div>
+
+    <div class="col-md-12 checkbox-sexAgeNotApply">
+      [@customForm.checkBoxFlat id="${customName}.sexAgeNotApply" name="${customName}.sexAgeNotApply" label="projectInnovations.anticipatedUsers.actors.sexAgeNotApply" value="true" checked=sexAgeNotApply editable=true cssClass="sexAgeNotApply" /]
     </div>
 
     [#-- Remove --]
