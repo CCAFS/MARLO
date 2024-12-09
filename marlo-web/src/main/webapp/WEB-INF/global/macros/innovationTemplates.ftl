@@ -28,7 +28,7 @@
         </button>
 
         [#-- Copy --]
-        <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px;">
+        <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px; display: none;">
           <p><span class="glyphicon glyphicon-duplicate"></span>[@s.text name="projectInnovations.copylink" /]</p> 
         </button>
         [#local summaryPDF = "${baseUrl}/projects/${crpSession}/projectInnovationsSummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
@@ -84,12 +84,6 @@
               </div>
             </div>
             <hr /> --] 
-
-            <div class="col-md-12">
-              <label class="note--2">
-                <p>[@s.text name="projectInnovations.generalInformation.help" /]</p>
-              </label>
-            </div>
           
             [#-- Title --]
             <div class="form-group">
@@ -118,7 +112,7 @@
             
             [#-- Innovation nature --]
             <div class="form-group ">  
-              [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationNature.id" label="" i18nkey="projectInnovations.innovationNature" listName="innovationNatureList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationNature.helpText" isNote=true helpIcon=false className="innovationNatureSelect" editable=editable isMainTitle=true /]
+              [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationNature.id" label="" i18nkey="projectInnovations.innovationNature" listName="innovationNatureList" keyFieldName="id" displayFieldName="composedName" required=true help="projectInnovations.innovationNature.helpText" isNote=true helpIcon=false className="innovationNatureSelect" editable=editable isMainTitle=true /]
             </div>
 
             <div class="form-group">
@@ -234,7 +228,7 @@
 
               [#-- External Contributing Centers --]
               <div class="col-md-6 top-five-contributing">
-                [@customForm.elementsListComponent name="innovation.contributingOrganizations" i18nkey="innovation.contributingOrganizations" maxLimit=5 elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations"  listName="institutions" keyFieldName="id" displayFieldName="composedName" /]
+                [@customForm.elementsListComponent name="innovation.contributingOrganizations" i18nkey="innovation.contributingOrganizations" maxLimit=5 elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations"  listName="contributingPartnerList" keyFieldName="id" displayFieldName="nameWithCountry" /]
 
                 [#-- Request partner adition --]
                 [#if editable]
@@ -419,13 +413,13 @@
   <div id="alliance" class="borderBox clearfix">
     [#-- SDG Targets --]
     <div class="form-group">
-      <label class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.sdgTargets" /]:</label>
+      <label class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.sdgTargets" /]:[@customForm.req required=true /]</label>
       <label>[@s.text name="projectInnovations.alliance.sdgTargets.subtitle" /]</label>
-      [@customForm.elementsListComponent name="${customName}.sdgs" elementType="sdg" elementList=(innovation.sdgs)![] helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=false showTitle=false /]
+      [@customForm.elementsListComponent name="${customName}.sdgs" elementType="sdg" elementList=(innovation.sdgs)![] helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=true showTitle=false /]
     </div>
     [#-- Alliance Research Theme --]
     <div class="form-group radioToCheckbox ">
-      <label class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.researchTheme" /]:</label>
+      <label class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.researchTheme" /]:[@customForm.req required=true /]</label>
       <label>[@s.text name="projectInnovations.alliance.researchTheme.subtitle" /]</label>
       [#if allianceLeverList?has_content]
           [#list allianceLeverList as lever]
@@ -848,7 +842,7 @@
 [#macro scalingMacro name element editable label="" helpLabel="" listName=[] class=""]
   [#local customName = "${name}"]
   <div id="scalingInnovation" class="scaling form-group ${class}">
-    <label class="label--2" style="width:100%">[@s.text name=label /]:</label>
+    <label class="label--2" style="width:100%">[@s.text name=label /]:[@customForm.req required=true /]</label>
     <label class="note--2">
       <p>[@s.text name=helpLabel /]</p>
     </label>

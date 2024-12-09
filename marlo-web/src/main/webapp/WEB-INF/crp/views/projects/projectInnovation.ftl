@@ -56,7 +56,7 @@
 
 
 [#-- Helptext --]
-[@utilities.helpBox name="projectInnovations.help" /]
+[@utilities.helpBox name="projectInnovations.generalInformation.help" /]
 
 <section class="container">
   <div class="row">
