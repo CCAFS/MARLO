@@ -156,9 +156,9 @@ public class ProjectInnovationValidator extends BaseValidator {
     boolean saving) {
 
     if (projectInnovation.getSdgs() == null || projectInnovation.getSdgs().isEmpty()) {
-      action.addMessage(action.getText("innovation.sdg"));
-      action.addMissingField("innovation.sdg");
-      action.getInvalidFields().put("list-innovation.sdg", InvalidFieldsMessages.EMPTYLIST);
+      action.addMessage(action.getText("innovation.sdgs"));
+      action.addMissingField("innovation.sdgs");
+      action.getInvalidFields().put("list-innovation.sdgs", InvalidFieldsMessages.EMPTYLIST);
     }
 
     ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
