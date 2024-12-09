@@ -1,5 +1,4 @@
 [#ftl]
-[#import "/WEB-INF/global/macros/deliverableMacros.ftl" as deliverableMacros /]
 
 [#macro innovationDescription element name index=-1 template=false ]
   <div class="borderBox generalInformationInnovations">    
@@ -368,25 +367,10 @@
                 
             </div>
 
-            [#-- Partner users TEMPLATE --]
-            <div id="partnerUsers" style="display:none">
-              [#list partners as partner]
-                <div class="institution-${partner.institution.id}">
-                  [#assign usersList = (action.getUserList(partner.institution.id))![]]
-                  <div class="users-2">
-                    [#list usersList as user]
-                      [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="_TEMPLATE_innovation.partnerships[0].partnershipPersons" isUserChecked=false isResponsable=false /]
-                    [/#list]
-                  </div>
-                </div>
-              [/#list]
-            </div>
-
             [#-- Beneficiries --]
             <div class="form-group col-md-12">
               [@customForm.textArea name="innovation.projectInnovationInfo.beneficiariesNarrative"  i18nkey="projectInnovations.beneficiaries"  placeholder="" className="limitWords-80" help="projectInnovations.beneficiaries.helpText" isNote=true helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]
-            </div>
-      
+            </div>      
 
             [#--  Contact person    --]
             <div class="form-group stageProcessOne col-md-12">
