@@ -74,7 +74,7 @@ public class ProjectInnovationAllianceOrganizationMySQLDAO extends
   public List<ProjectInnovationAllianceOrganization>
     getProjectInnovationAllianceOrganizationsByInnovationAndPhase(long innovationID, long phaseID) {
     String query = "from " + ProjectInnovationAllianceOrganization.class.getName()
-      + " where is_active=1 and project_innovation_id=" + innovationID + " id_phase=" + phaseID;
+      + " where is_active=1 and project_innovation_id=" + innovationID + " and id_phase=" + phaseID;
     List<ProjectInnovationAllianceOrganization> list = super.findAll(query);
     if (!list.isEmpty()) {
       return list;
