@@ -1514,8 +1514,11 @@ public class ProjectInnovationAction extends BaseAction {
                   institutionLocationManager.findHeadquaterByInstitutionID(contributingPartner.getId());
                 if (loc != null && loc.getLocElement() != null && loc.getLocElement().getName() != null
                   && !loc.getLocElement().getName().isEmpty()) {
-                  contributingPartner
-                    .setNameWithCountry(contributingPartner.getName() + " (" + loc.getLocElement().getName() + ")");
+                  String tempName = " (" + loc.getLocElement().getName() + ")";
+                  if (contributingPartner.getNameWithCountry() != null
+                    && !contributingPartner.getNameWithCountry().contains(tempName)) {
+                    contributingPartner.setNameWithCountry(contributingPartner.getName() + tempName);
+                  }
                 } else {
                   contributingPartner.setNameWithCountry(contributingPartner.getName());
                 }
