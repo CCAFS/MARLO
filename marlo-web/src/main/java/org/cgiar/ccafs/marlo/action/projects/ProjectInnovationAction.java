@@ -1510,23 +1510,42 @@ public class ProjectInnovationAction extends BaseAction {
           if (contributingPartnerList != null && !contributingPartnerList.isEmpty()) {
             for (Institution contributingPartner : contributingPartnerList) {
               if (contributingPartner.getId() != null) {
+                // Retrieve the location of the institution
                 InstitutionLocation loc =
                   institutionLocationManager.findHeadquaterByInstitutionID(contributingPartner.getId());
-                if (loc != null && loc.getLocElement() != null && loc.getLocElement().getName() != null
-                  && !loc.getLocElement().getName().isEmpty()) {
-                  String tempName = " (" + loc.getLocElement().getName() + ")";
-                  if (contributingPartner.getNameWithCountry() != null
-                    && !contributingPartner.getNameWithCountry().contains(tempName)) {
-                    contributingPartner.setNameWithCountry(contributingPartner.getName() + tempName);
-                  }
+
+                // Check if there is a valid location with a name
+                String locationName =
+                  (loc != null && loc.getLocElement() != null) ? loc.getLocElement().getName() : null;
+
+                // Build the name with the country
+                String tempName = (locationName != null && !locationName.isEmpty()) ? " (" + locationName + ")" : "";
+
+                // Default name (only the institution name)
+                String defaultName = contributingPartner.getName();
+
+                // Assign nameWithCountry if it is null or does not contain the country name
+                if (contributingPartner.getName() != null || !contributingPartner.getName().contains(tempName)) {
+                  contributingPartner.setNameWithCountry(defaultName + tempName);
                 } else {
-                  contributingPartner.setNameWithCountry(contributingPartner.getName());
+                  // Ensure nameWithCountry is not empty
+                  contributingPartner.setNameWithCountry(contributingPartner.getNameWithCountry().isEmpty()
+                    ? defaultName : contributingPartner.getNameWithCountry());
                 }
+              } else {
+                // Handle institutions without a valid ID
+                Log.warn("Institution without a valid ID.");
+                contributingPartner.setNameWithCountry("Unknown Institution");
+              }
+
+              // Ensure nameWithCountry is assigned if it is still null after all checks
+              if (contributingPartner.getNameWithCountry() == null) {
+                contributingPartner.setNameWithCountry(contributingPartner.getName());
               }
             }
           }
         } catch (Exception e) {
-          Log.error("error getting headquaters: " + e);
+          Log.error("Error getting headquarters: ", e);
         }
       }
 
