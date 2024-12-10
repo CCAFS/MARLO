@@ -166,7 +166,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     if (projectInnovation.getAllianceLevers() == null || projectInnovation.getAllianceLevers().isEmpty()) {
       action.addMessage(action.getText("innovation.allianceLevers"));
       action.addMissingField("innovation.allianceLevers");
-      action.getInvalidFields().put("list-innovation.allianceLevers", InvalidFieldsMessages.EMPTYLIST);
+      action.getInvalidFields().put("input-innovation.allianceLevers", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     innovationAlliance = action.getMissingFields().toString();
