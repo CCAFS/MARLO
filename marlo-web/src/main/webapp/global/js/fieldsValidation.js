@@ -75,6 +75,7 @@ function getListElement(fieldName,message) {
 
 function getInputElement(fieldName,message) {
   var elementQuery = $("input[name='" + fieldName + "']");
+  console.log(elementQuery);
 
   // validate if it's input
   if(elementQuery.length == 0) {
@@ -86,6 +87,12 @@ function getInputElement(fieldName,message) {
       if($(elementQuery).exists()) {
         $(elementQuery).parent().addClass("missingSelect");
       }
+    }
+
+    const associateLabel = $("label[for='" + fieldName + "']");
+    if(associateLabel.exists()) {
+      $(associateLabel).attr("title", message);
+      $(associateLabel).addClass("fieldError");
     }
   } else {
     // VALIDATE IF IT'S CHECKBOX

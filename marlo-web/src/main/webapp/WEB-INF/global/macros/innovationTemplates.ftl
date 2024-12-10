@@ -233,7 +233,7 @@
                 [#if editable]
                   <p id="addPartnerText" class="helpMessage">
                     If you cannot find the organization you are looking for, please 
-                    <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='projectID']${(projectID)!}[/@s.param][@s.param name='context'](${(actionName)!}: ID-${(innovation.id)!})[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                    <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave'][@s.param name='expectedID']${(expectedID)!}[/@s.param][/@s.url]">
                       click here to [@s.text name="projectPartners.addPartnerMessage.second" /]
                     </a>
                   </p>
@@ -429,7 +429,7 @@
 
               [/#list]
  
-              [@customForm.checkBoxFlat id="lever-${lever.id}" name="${customName}.allianceLevers[${lever_index}].allianceLever.id" label="${customLabel}" value="${lever.id}" checked=isChecked editable=editable /]
+              [@customForm.checkBoxFlat id="lever-${lever.id}" name="${customName}.allianceLevers[${lever_index}].allianceLever.id" label="${customLabel}" value="${lever.id}" checked=((isChecked)||(lever.id == 3)) editable=editable disabled=(lever.id == 3) /]
               [#if isOther]
                 <div class="form-group inputOther">
                   [@customForm.input name="${customName}.projectInnovationInfo.otherAllianceLever" placeholder="Other" editable=editable showTitle=false /]
