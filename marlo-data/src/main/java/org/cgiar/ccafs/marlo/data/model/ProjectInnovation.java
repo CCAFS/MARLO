@@ -135,7 +135,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return commentStatus;
   }
 
-
   public String getComposedName() {
     if ((this.projectInnovationInfo != null) && (this.projectInnovationInfo.getTitle() != null)
       && (this.projectInnovationInfo.getTitle().trim().length() > 0)) {
@@ -211,6 +210,17 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return impactAreas;
   }
 
+  public String getInnovationsComposedName() {
+    if (this.projectInnovationInfo.getRepIndInnovationType() != null
+      && this.projectInnovationInfo.getRepIndInnovationType().getName() != null) {
+      return "<div class=\"option_deliverable_inner_select_innovation\">" + "<p>" + this.getId() + " - "
+        + this.projectInnovationInfo.getTitle() + "</p>" + "<small style=\"width: 100%;\">Type: "
+        + this.projectInnovationInfo.getRepIndInnovationType().getName() + "</small>" + "</div>";
+    } else {
+      return "<div class=\"option_deliverable_inner_select_innovation\">" + "<p>" + this.getId() + " - "
+        + this.projectInnovationInfo.getTitle() + "</p>" + "</div>";
+    }
+  }
 
   @Override
   public String getLogDeatil() {
