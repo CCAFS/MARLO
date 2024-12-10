@@ -201,11 +201,11 @@ public class ProjectInnovationValidator extends BaseValidator {
         action.addMissingField("innovation.allianceLevers");
         action.getInvalidFields().put("input-innovation.allianceLevers", InvalidFieldsMessages.EMPTYFIELD);
       }
+    }
 
-      innovationAlliance = action.getMissingFields().toString();
-      if (projectInnovation.getId() != null && (innovationAlliance.length() > innovationGeneral.length())) {
-        BaseAction.getIsInnovationAllianceAlignmentCompleteMap().put("" + projectInnovation.getId(), "1");
-      }
+    innovationAlliance = action.getMissingFields().toString();
+    if (projectInnovation.getId() != null && (innovationAlliance.length() > innovationGeneral.length())) {
+      BaseAction.getIsInnovationAllianceAlignmentCompleteMap().put("" + projectInnovation.getId(), "1");
     }
   }
 
@@ -286,7 +286,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
 
-    if (innovationInfo != null && (innovationInfo.getHasMilestones() == null)) {
+    if (!action.isAiccra() && innovationInfo != null && (innovationInfo.getHasMilestones() == null)) {
       action.addMessage(action.getText("projectOutcomes"));
       action.addMissingField("innovation.projectOutcomes");
       action.getInvalidFields().put("list-innovation.projectOutcomes",
