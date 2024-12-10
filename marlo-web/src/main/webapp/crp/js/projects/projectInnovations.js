@@ -58,7 +58,10 @@ function attachEvents() {
     // Events
     $('.addActors').on('click', addActor);
     $('.removeActor').on('click', removeActor);
-
+    $('.actorsList .actorsInnovation').each(function(_i,e) {
+      $(e).find('input[type="checkbox"].sexAgeNotApply').on('change', onChangeCheckboxSexAndAge);
+    });
+    
     // Function
     function addActor() {
 
