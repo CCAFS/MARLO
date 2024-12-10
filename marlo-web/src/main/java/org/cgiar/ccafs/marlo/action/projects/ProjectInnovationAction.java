@@ -2491,23 +2491,29 @@ public class ProjectInnovationAction extends BaseAction {
     try {
       if (projectInnovation.getProjectInnovationAllianceOrganizations() != null
         && !projectInnovation.getProjectInnovationAllianceOrganizations().isEmpty()) {
-
+        /*
+         * List<ProjectInnovationAllianceOrganization> allianceOrganizationPrev =
+         * new ArrayList<>(projectInnovation.getProjectInnovationAllianceOrganizations().stream()
+         * .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+         */
         List<ProjectInnovationAllianceOrganization> allianceOrganizationPrev =
-          new ArrayList<>(projectInnovation.getProjectInnovationAllianceOrganizations().stream()
-            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-
-        for (ProjectInnovationAllianceOrganization allianceOrganization : allianceOrganizationPrev) {
-          if ((allianceOrganization.getId() != null || allianceOrganization.getId() != -1)
-            && (innovation.getAllianceOrganizations() == null
+          projectInnovationAllianceOrganizationManager
+            .getProjectInnovationAllianceOrganizationsByInnovationAndPhase(innovationID, this.getActualPhase().getId());
+        try {
+          for (ProjectInnovationAllianceOrganization allianceOrganization : allianceOrganizationPrev) {
+            if ((allianceOrganization.getId() != null) && (innovation.getAllianceOrganizations() == null
               || !innovation.getAllianceOrganizations().contains(allianceOrganization))) {
-            projectInnovationAllianceOrganizationManager
-              .deleteProjectInnovationAllianceOrganization(allianceOrganization.getId());
+              projectInnovationAllianceOrganizationManager
+                .deleteProjectInnovationAllianceOrganization(allianceOrganization.getId());
+            }
           }
+        } catch (Exception e) {
+          Log.error("error deleting alliance organization " + e);
         }
       }
 
       // Save form Information
-      if (innovation.getAllianceOrganizations() != null) {
+      if (innovation.getAllianceOrganizations() != null && !innovation.getAllianceOrganizations().isEmpty()) {
         for (ProjectInnovationAllianceOrganization innovationAllianceOrganization : innovation
           .getAllianceOrganizations()) {
 
@@ -2534,7 +2540,7 @@ public class ProjectInnovationAction extends BaseAction {
                 .getProjectInnovationAllianceOrganizationById(innovationAllianceOrganization.getId());
             }
           } catch (Exception e) {
-            logger.error("unable to get old actors", e);
+            logger.error("unable to get old alliance organizations", e);
           }
 
           innovationAllianceOrganizationSave.setInstitutionType(innovationAllianceOrganization.getInstitutionType());
