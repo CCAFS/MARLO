@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationAllianceOrganizationDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -79,7 +80,7 @@ public class ProjectInnovationAllianceOrganizationMySQLDAO extends
     if (!list.isEmpty()) {
       return list;
     }
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
