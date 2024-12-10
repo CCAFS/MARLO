@@ -21,12 +21,14 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
-public class InstitutionLocationMySQLDAO extends AbstractMarloDAO<InstitutionLocation, Long> implements InstitutionLocationDAO {
+public class InstitutionLocationMySQLDAO extends AbstractMarloDAO<InstitutionLocation, Long>
+  implements InstitutionLocationDAO {
 
 
   @Inject
@@ -37,7 +39,6 @@ public class InstitutionLocationMySQLDAO extends AbstractMarloDAO<InstitutionLoc
   @Override
   public void deleteInstitutionLocation(long institutionLocationId) {
     InstitutionLocation institutionLocation = this.find(institutionLocationId);
-
     super.delete(institutionLocation);
   }
 
@@ -48,24 +49,21 @@ public class InstitutionLocationMySQLDAO extends AbstractMarloDAO<InstitutionLoc
       return false;
     }
     return true;
-
   }
 
   @Override
   public InstitutionLocation find(long id) {
     return super.find(InstitutionLocation.class, id);
-
   }
 
   @Override
   public List<InstitutionLocation> findAll() {
     String query = "from " + InstitutionLocation.class.getName() + " ";
     List<InstitutionLocation> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
-
   }
 
   @Override
@@ -73,11 +71,21 @@ public class InstitutionLocationMySQLDAO extends AbstractMarloDAO<InstitutionLoc
     String query = "from " + InstitutionLocation.class.getName() + "  where institution_id=" + institutionID
       + " and loc_element_id= " + locationID;
     List<InstitutionLocation> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list.get(0);
     }
     return null;
+  }
 
+  @Override
+  public InstitutionLocation findHeadquaterByInstitutionID(long institutionID) {
+    String query = "from " + InstitutionLocation.class.getName() + "  where institution_id=" + institutionID
+      + " and is_headquater= " + 1;
+    List<InstitutionLocation> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list.get(0);
+    }
+    return null;
   }
 
   @Override
@@ -87,10 +95,7 @@ public class InstitutionLocationMySQLDAO extends AbstractMarloDAO<InstitutionLoc
     } else {
       institutionLocation = super.update(institutionLocation);
     }
-
-
     return institutionLocation;
   }
-
 
 }

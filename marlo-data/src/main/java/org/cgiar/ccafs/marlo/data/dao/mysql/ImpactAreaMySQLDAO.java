@@ -38,8 +38,7 @@ public class ImpactAreaMySQLDAO extends AbstractMarloDAO<ImpactArea, Long> imple
   @Override
   public void deleteImpactArea(long impactAreaId) {
     ImpactArea impactArea = this.find(impactAreaId);
-    impactArea.setActive(false);
-    this.update(impactArea);
+    this.delete(impactArea);
   }
 
   @Override
@@ -60,9 +59,9 @@ public class ImpactAreaMySQLDAO extends AbstractMarloDAO<ImpactArea, Long> imple
 
   @Override
   public List<ImpactArea> findAll() {
-    String query = "from " + ImpactArea.class.getName() + " where is_active=1";
+    String query = "from " + ImpactArea.class.getName();
     List<ImpactArea> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
@@ -73,11 +72,10 @@ public class ImpactAreaMySQLDAO extends AbstractMarloDAO<ImpactArea, Long> imple
   public List<ImpactArea> findAllCustom() {
     String query = "from " + ImpactArea.class.getName();
     List<ImpactArea> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
-
   }
 
 

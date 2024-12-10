@@ -733,6 +733,15 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnership" />
     </set>
+    <set name="projectInnovationPartnerships"
+      table="project_innovation_partnerships" inverse="true" order-by="id"
+      lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationPartnership" />
+    </set>
     <set name="projectExpectedStudyImpactAreas"
       table="project_expected_study_impact_areas" inverse="true" order-by="id"
       lazy="true" fetch="select">

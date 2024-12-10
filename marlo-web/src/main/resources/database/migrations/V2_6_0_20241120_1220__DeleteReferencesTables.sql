@@ -1,0 +1,2 @@
+DROP TABLE project_innovation_reference_additional_articles;
+DROP TABLE project_innovation_reference_datasets;

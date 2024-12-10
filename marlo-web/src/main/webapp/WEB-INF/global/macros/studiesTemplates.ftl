@@ -691,10 +691,10 @@
         [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="getExpectedStudiesYears(${(expectedID)!})" header=false required=true editable=editable /]
           --]  
         
-        <div class="block-extendedYear" style="display:${isStatusExtended?string('block', 'none')}">
+        [#-- <div class="block-extendedYear" style="display:${isStatusExtended?string('block', 'none')}">
           [@customForm.select name="newExpectedYear" className="setSelect2" i18nkey="study.general.year" listName="project.projectInfo.getYears(${currentCycleYear})" header=false required=true editable=editable /]
-        </div>
-        <div class="block-year" style="display:${(!isStatusExtended && isOtherStatus)?string('block', 'none')}">
+        </div> --]
+        <div class="block-year" >
           [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.general.year" listName="getExpectedStudiesYears(${(expectedID)!})" header=false required=true editable=editable /]
         </div>
       </div>

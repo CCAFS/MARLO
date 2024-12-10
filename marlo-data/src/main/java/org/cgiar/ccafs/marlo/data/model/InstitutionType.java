@@ -43,10 +43,12 @@ public class InstitutionType extends MarloBaseEntity implements java.io.Serializ
 
   @Expose
   private RepIndOrganizationType repIndOrganizationType;
-
+  @Expose
+  private Long source;
+  @Expose
+  private Long parent;
 
   private Set<Institution> institutions = new HashSet<Institution>(0);
-
 
   public InstitutionType() {
   }
@@ -118,8 +120,16 @@ public class InstitutionType extends MarloBaseEntity implements java.io.Serializ
     return old;
   }
 
+  public Long getParent() {
+    return parent;
+  }
+
   public RepIndOrganizationType getRepIndOrganizationType() {
     return repIndOrganizationType;
+  }
+
+  public Long getSource() {
+    return source;
   }
 
   public Boolean getSubDepartmentActive() {
@@ -165,8 +175,16 @@ public class InstitutionType extends MarloBaseEntity implements java.io.Serializ
     this.old = old;
   }
 
+  public void setParent(Long parent) {
+    this.parent = parent;
+  }
+
   public void setRepIndOrganizationType(RepIndOrganizationType repIndOrganizationType) {
     this.repIndOrganizationType = repIndOrganizationType;
+  }
+
+  public void setSource(Long source) {
+    this.source = source;
   }
 
   public void setSubDepartmentActive(Boolean subDepartmentActive) {
@@ -178,6 +196,4 @@ public class InstitutionType extends MarloBaseEntity implements java.io.Serializ
     return "InstitutionType [id=" + this.getId() + ", name=" + name + ", acronym=" + acronym + ", subDepartmentActive="
       + subDepartmentActive + ", repIndOrganizationType=" + repIndOrganizationType + "]";
   }
-
-
 }

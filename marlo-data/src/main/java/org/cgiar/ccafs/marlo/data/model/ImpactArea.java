@@ -21,20 +21,24 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import java.util.List;
 
+import com.google.gson.annotations.Expose;
+
 public class ImpactArea extends MarloAuditableEntity implements java.io.Serializable {
 
 
   private static final long serialVersionUID = -3622915554137211843L;
 
+  @Expose
   private String name;
+  @Expose
   private String description;
+  @Expose
+  private String icon;
   private List<GlobalTarget> globalTargets;
-
 
   public ImpactArea() {
     super();
   }
-
 
   public ImpactArea(String name, String description) {
     super();
@@ -42,16 +46,17 @@ public class ImpactArea extends MarloAuditableEntity implements java.io.Serializ
     this.description = description;
   }
 
-
   public String getDescription() {
     return description;
   }
-
 
   public List<GlobalTarget> getGlobalTargets() {
     return globalTargets;
   }
 
+  public String getIcon() {
+    return icon;
+  }
 
   public String getName() {
     return name;
@@ -65,9 +70,12 @@ public class ImpactArea extends MarloAuditableEntity implements java.io.Serializ
     this.globalTargets = globalTargets;
   }
 
+  public void setIcon(String icon) {
+    this.icon = icon;
+  }
+
   public void setName(String name) {
     this.name = name;
   }
-
 
 }

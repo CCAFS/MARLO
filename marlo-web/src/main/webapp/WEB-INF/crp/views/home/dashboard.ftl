@@ -173,11 +173,13 @@
             <img class="itemgifstudies" src="${baseUrlCdn}/global/images/oicrs_icon.gif" style="display:none;">
             <p class="textOICRs">OICRs & MELIAs</p>
           </div>
-          <div class="itemsTablet" id="innovations">
-            <img class="itemimginnovations" src="${baseUrlCdn}/global/images/innovationDashboard.png" width="70">
-            <img class="itemgifinnovations" src="${baseUrlCdn}/global/images/innovationDashboard.gif" style="display:none;" width="70">
-            <p>Innovations</p>
-          </div>
+          [#if action.hasSpecificities('innovation_section_active') ]
+            <div class="itemsTablet" id="innovations">
+              <img class="itemimginnovations" src="${baseUrlCdn}/global/images/innovationDashboard.png" width="70">
+              <img class="itemgifinnovations" src="${baseUrlCdn}/global/images/innovationDashboard.gif" style="display:none;" width="70">
+              <p>Innovations</p>
+            </div>
+          [/#if]
         </div>
       </div>
       <div id="dashboardContent" class="">

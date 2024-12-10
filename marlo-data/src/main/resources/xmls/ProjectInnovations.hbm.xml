@@ -164,5 +164,85 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrpOutcome" />
     </set>
+    <set name="projectInnovationPartnerships" table="project_innovation_partnerships"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationPartnership" />
+    </set>
+    <set name="projectInnovationAllianceLevers" table="project_innovation_alliance_levers"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers" />
+    </set>
+    <set name="projectInnovationReferences" table="project_innovation_references"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationReference" />
+    </set>
+    <set name="projectInnovationReferenceUrls" table="project_innovation_reference_urls"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationReferenceUrl" />
+    </set>
+    <set name="projectInnovationReferenceComplementarySolutions" table="project_innovation_reference_complementary_solutions"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationReferenceComplementarySolution" />
+    </set>
+    <set name="projectInnovationImpactAreas" table="project_innovation_impact_areas"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationImpactArea" />
+    </set>
+    <set name="projectInnovationAllianceOrganizations" table="project_innovation_alliance_organizations"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization" />
+    </set>
+    <set name="projectInnovationActors" table="project_innovation_actors"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationActor" />
+    </set>
+    <set name="projectInnovationToolCategories" table="project_innovation_tool_categories"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationToolCategory" />
+    </set>
+    <set name="projectInnovationSDGs" table="project_innovation_sdgs"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationSDG" />
+    </set>
 	</class>
 </hibernate-mapping>

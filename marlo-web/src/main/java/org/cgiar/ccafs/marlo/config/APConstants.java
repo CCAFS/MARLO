@@ -279,6 +279,7 @@ public final class APConstants {
   public static final String FIELD_VALUE = "fieldValue";
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
   public static final String PARTNER_REQUEST_ID = "requestID";
+  public static final String SDG_ID = "sdgID";
   public static final String PARTNER_REQUEST_SEND_NOTIFICATION = "sendNotification";
   public static final String IPLIAISON_INDICATORS_REPORT =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution.crpIndicatorReportses)";
@@ -878,6 +879,8 @@ public final class APConstants {
   // 01/10/2024 Expected study Partnerships Types
   public static final Long EXPECTED_STUDIES_PARTNERSHIP_TYPE_INSTITUION = new Long(2L);
   public static final Long EXPECTED_STUDIES_PARTNERSHIP_TYPE_CENTER = new Long(3L);
+  public static final Long INNOVATION_PARTNERSHIP_TYPE_INSTITUTION = new Long(2L);
+  public static final Long INNOVATION_PARTNERSHIP_TYPE_CENTER = new Long(3L);
 
   public static String getFilterBy() {
     return FILTER_BY;

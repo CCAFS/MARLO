@@ -52,6 +52,14 @@ public interface InstitutionLocationManager {
 
   public InstitutionLocation findByLocation(long locationID, long institutionID);
 
+  /**
+   * This method gets a institutionLocation object by a given institutionID identifier.
+   * 
+   * @param institutionID is the institution identifier.
+   * @return a InstitutionLocation object.
+   */
+  public InstitutionLocation findHeadquaterByInstitutionID(long institutionID);
+
 
   /**
    * This method gets a institutionLocation object by a given institutionLocation identifier.

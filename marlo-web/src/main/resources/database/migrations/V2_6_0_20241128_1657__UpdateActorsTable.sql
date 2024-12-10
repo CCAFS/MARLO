@@ -1,0 +1,1 @@
+ALTER TABLE project_innovation_actors MODIFY COLUMN actor_id bigint NULL;

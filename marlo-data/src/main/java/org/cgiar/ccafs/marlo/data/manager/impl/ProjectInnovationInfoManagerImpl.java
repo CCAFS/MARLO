@@ -134,5 +134,4 @@ public class ProjectInnovationInfoManagerImpl implements ProjectInnovationInfoMa
     return sourceInfo;
   }
 
-
 }
