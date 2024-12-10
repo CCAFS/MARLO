@@ -470,3 +470,14 @@ div.projectInnovationsPartners div.usersBlock{
 .evidences .evidenceByLink label{
   margin-top: 1rem;
 }
+
+.evidences .evidenceByInnovation .select2-container .select2-selection--single {
+  height: auto!important;
+  padding: 5px 0;
+}
+.evidences .evidenceByInnovation .select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: normal!important;
+}
+.evidences .evidenceByInnovation .select2-container .select2-selection--single .select2-selection__rendered {
+  white-space: normal!important;
+}

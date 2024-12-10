@@ -1007,7 +1007,7 @@
       </div>
     [#else]
       <div class="evidenceByInnovation col-md-12 ${blockYesName}" style="display:${((element.evidenceByDeliverable??) && (evidenceByDeliverable))?then('block','none')}">
-        [@customForm.select name="${customName}.innovation.id" i18nkey="projectInnovations.evidence.innovation" editable=true required=true listName="innovationList" keyFieldName="id" displayFieldName="composedName" className="evidence" /]
+        [@customForm.select name="${customName}.innovation.id" i18nkey="projectInnovations.evidence.innovation" editable=true required=true listName="innovationList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence" /]
       </div>
     [/#if]
     <div class="evidenceByLink col-md-12 ${blockNoName}" style="display:${(((element.evidenceByDeliverable??) && (!evidenceByDeliverable)))?then('block','none')}">
