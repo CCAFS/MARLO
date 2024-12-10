@@ -16,12 +16,16 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationActor;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReference;
@@ -56,6 +60,7 @@ public class ProjectInnovationValidator extends BaseValidator {
   private boolean resultProgessValidate = false;
   private boolean struts = true;
   private Boolean clearLead = false;
+  private InstitutionManager institutionManager;
 
   String innovationGeneral = "";
   String innovationAlliance = "";
@@ -64,9 +69,10 @@ public class ProjectInnovationValidator extends BaseValidator {
   String innovationRights = "";
 
   @Inject
-  public ProjectInnovationValidator(GlobalUnitManager crpManager) {
+  public ProjectInnovationValidator(GlobalUnitManager crpManager, InstitutionManager institutionManager) {
     super();
     this.crpManager = crpManager;
+    this.institutionManager = institutionManager;
   }
 
   private Path getAutoSaveFilePath(ProjectInnovation innovation, long crpID, BaseAction action) {
@@ -76,6 +82,33 @@ public class ProjectInnovationValidator extends BaseValidator {
     String autoSaveFile = innovation.getId() + "_" + composedClassName + "_" + action.getActualPhase().getName() + "_"
       + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+
+  /**
+   * Validate the Alliance center selection
+   *
+   * @param projectInnovation An specific projectInnovation
+   * @param saving related action
+   */
+  public boolean isAllianceSelected(ProjectInnovation projectInnovation) {
+    // Validate if the Alliance institution is selected
+    if (projectInnovation != null && projectInnovation.getCenters() != null) {
+      for (ProjectInnovationCenter center : projectInnovation.getCenters()) {
+        if (center != null && center.getInstitution() != null && center.getInstitution().getId() != null) {
+          Institution institutiontmp = this.institutionManager.getInstitutionById(center.getInstitution().getId());
+          if (institutiontmp != null && institutiontmp.getName() != null) {
+            center.getInstitution().setName(institutiontmp.getName());
+          }
+        }
+        if (center != null && center.getInstitution() != null && center.getInstitution().getId() != null
+          && center.getInstitution().getName() != null
+          && center.getInstitution().getName().toLowerCase().contains(APConstants.ALLIANCE_INSTITUTION_NAME)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
 
@@ -143,7 +176,6 @@ public class ProjectInnovationValidator extends BaseValidator {
       ProjectSectionStatusEnum.INNOVATIONS.getStatus(), action);
   }
 
-
   /**
    * Validate the data of the AllianceAlignment tab
    *
@@ -155,18 +187,20 @@ public class ProjectInnovationValidator extends BaseValidator {
   public void validateAllianceAlignment(BaseAction action, Project project, ProjectInnovation projectInnovation,
     boolean saving) {
     ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
+    // Validate if the Alliance institution is selected in center section to validate the Alliance Tab
+    if (this.isAllianceSelected(projectInnovation)) {
 
+      if (projectInnovation.getSdgs() == null || projectInnovation.getSdgs().isEmpty()) {
+        action.addMessage(action.getText("innovation.sdgs"));
+        action.addMissingField("innovation.sdgs");
+        action.getInvalidFields().put("list-innovation.sdgs", InvalidFieldsMessages.EMPTYLIST);
+      }
 
-    if (projectInnovation.getSdgs() == null || projectInnovation.getSdgs().isEmpty()) {
-      action.addMessage(action.getText("innovation.sdgs"));
-      action.addMissingField("innovation.sdgs");
-      action.getInvalidFields().put("list-innovation.sdgs", InvalidFieldsMessages.EMPTYLIST);
-    }
-
-    if (projectInnovation.getAllianceLevers() == null || projectInnovation.getAllianceLevers().isEmpty()) {
-      action.addMessage(action.getText("innovation.allianceLevers"));
-      action.addMissingField("innovation.allianceLevers");
-      action.getInvalidFields().put("input-innovation.allianceLevers", InvalidFieldsMessages.EMPTYFIELD);
+      if (projectInnovation.getAllianceLevers() == null || projectInnovation.getAllianceLevers().isEmpty()) {
+        action.addMessage(action.getText("innovation.allianceLevers"));
+        action.addMissingField("innovation.allianceLevers");
+        action.getInvalidFields().put("input-innovation.allianceLevers", InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
 
     innovationAlliance = action.getMissingFields().toString();
@@ -252,7 +286,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
 
-    if (innovationInfo != null && (innovationInfo.getHasMilestones() == null)) {
+    if (!action.isAiccra() && innovationInfo != null && (innovationInfo.getHasMilestones() == null)) {
       action.addMessage(action.getText("projectOutcomes"));
       action.addMissingField("innovation.projectOutcomes");
       action.getInvalidFields().put("list-innovation.projectOutcomes",
