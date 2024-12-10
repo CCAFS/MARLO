@@ -1,0 +1,2 @@
+ALTER TABLE project_innovation_references DROP FOREIGN KEY project_innovation_references_deliverable_types_FK;
+ALTER TABLE project_innovation_references ADD CONSTRAINT project_innovation_references_deliverable_types_FK FOREIGN KEY (type_id) REFERENCES deliverable_types(id) ON DELETE RESTRICT ON UPDATE RESTRICT;

@@ -1,0 +1,2 @@
+ALTER TABLE project_innovation_info ADD other_innovation_nature text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL;
+ALTER TABLE project_innovation_info ADD other_alliance_lever text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL;

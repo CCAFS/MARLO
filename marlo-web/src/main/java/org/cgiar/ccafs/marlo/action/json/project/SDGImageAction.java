@@ -43,6 +43,7 @@ public class SDGImageAction extends BaseAction {
   private final Logger logger = LoggerFactory.getLogger(SDGImageAction.class);
   private Map<String, Object> image;
   private Long sdgContributionID;
+  private Long sdgID;
   private SDGContributionManager sdgContributionManager;
   private SdgManager sdgManager;
 
@@ -76,8 +77,22 @@ public class SDGImageAction extends BaseAction {
       } catch (Exception e) {
         logger.error("unable to get imagen path", e);
       }
+    } else {
+      if (sdgID != null) {
+        Sdg sdg = new Sdg();
+        // get existing object from database
+        try {
+          sdg = sdgManager.getSDGById(sdgID);
+          if (sdg != null && sdg.getId() != null && sdg.getIcon() != null) {
+            String imagePath = "global/images/sdg/" + sdg.getIcon();
+            image.put("adsoluteURL", this.getBaseUrl() + "/" + imagePath);
+            image.put("relativeURL", imagePath);
+          }
+        } catch (Exception e) {
+          logger.error("unable to get imagen path", e);
+        }
+      }
     }
-
     return SUCCESS;
   }
 
@@ -101,6 +116,18 @@ public class SDGImageAction extends BaseAction {
       logger.error("Unable to convert to Long", e);
     } catch (Exception e) {
       logger.error("An unexpected error occurred", e);
+    }
+    try {
+      if (parameters.get(APConstants.SDG_ID).isDefined()) {
+        String value = StringUtils.trim(parameters.get(APConstants.SDG_ID).getMultipleValues()[0]);
+        if (StringUtils.isNumeric(value)) {
+          sdgID = Long.parseLong(value);
+        } else {
+          logger.error("The value is not a valid number: " + value);
+        }
+      }
+    } catch (Exception e) {
+      logger.error("Unable to get SDGID", e);
     }
   }
 

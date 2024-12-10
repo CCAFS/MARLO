@@ -38,6 +38,11 @@
 			fetch="select">
 			<column name="innovation_type_id" />
 		</many-to-one>
+		<many-to-one name="repIndInnovationNature"
+			class="org.cgiar.ccafs.marlo.data.model.RepIndInnovationNature"
+			fetch="select">
+			<column name="innovation_nature_id" />
+		</many-to-one>
 		<many-to-one name="repIndGeographicScope"
 			class="org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope"
 			fetch="select">
@@ -65,6 +70,9 @@
 		</many-to-one>
 		<property name="title" type="string">
 			<column name="title" sql-type="TEXT" />
+		</property>
+		<property name="shortTitle" type="string">
+			<column name="short_title" sql-type="TEXT" />
 		</property>
 		<property name="narrative" type="string">
 			<column name="narrative" sql-type="TEXT" />
@@ -97,11 +105,87 @@
 		<property name="otherInnovationType" type="string">
 			<column name="other_innovation_type" sql-type="TEXT" />
 		</property>
-		 <property name="hasMilestones" type="boolean">
+		<property name="otherInnovationNature" type="string">
+			<column name="other_innovation_nature" sql-type="TEXT" />
+		</property>
+		<property name="otherAllianceLever" type="string">
+			<column name="other_alliance_lever" sql-type="TEXT" />
+		</property>
+		<property name="otherToolNarrative" type="string">
+			<column name="other_tool_narrative" sql-type="TEXT" />
+		</property>
+		<property name="knowledgeMethodsAndToolsNarrative" type="string">
+			<column name="knowledge_methods_and_tools_narrative" sql-type="TEXT" />
+		</property>
+		<property name="hasMilestones" type="boolean">
             <column name="has_milestones" not-null="true" />
         </property>
         <property name="innovationNumber" type="java.lang.Long">
 			<column name="number_of_innovations" />
 		</property>
+		<property name="hasCgiarContribution" type="java.lang.Boolean">
+            <column name="has_cgiar_contribution" />
+	    </property>
+	    <property name="reasonNotCgiarContribution" type="string">
+	         <column name="reason_not_cgiar_contribution" sql-type="TEXT" />
+	    </property>
+	    <property name="beneficiariesNarrative" type="string">
+	         <column name="beneficiaries_narrative" sql-type="TEXT" />
+	    </property>
+	    <many-to-one name="intellectualPropertyInstitution"
+            class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+            <column name="intellectual_property_institution_id" />
+        </many-to-one>
+        <property name="hasLegalRestrictions" type="java.lang.Boolean">
+            <column name="has_legal_restrictions" not-null="true" />
+        </property>
+        <property name="hasAssetPotential" type="java.lang.Boolean">
+            <column name="has_asset_potential" not-null="true" />
+        </property>
+        <property name="hasFurtherDevelopment" type="java.lang.Boolean">
+            <column name="has_further_development" not-null="true" />
+        </property>
+        <property name="otherIntellectualProperty" type="string">
+            <column name="other_intellectual_property" sql-type="TEXT" />
+        </property>
+        <property name="innovationImportance" type="string">
+            <column name="innovation_importance" sql-type="TEXT" />
+        </property>
+        <property name="readinessScale" type="java.lang.Integer">
+            <column name="readiness_scale" sql-type="TEXT" />
+        </property>
+        <property name="readinessReason" type="string">
+            <column name="readiness_reason" sql-type="TEXT" />
+        </property>
+        <property name="hasKnowledgeMethodsAndTools" type="java.lang.Boolean">
+            <column name="has_knowledge_methods_and_tools" not-null="true" />
+        </property>
+        <property name="knowledgeToolUsesNarrative" type="string">
+            <column name="knowledge_tool_uses_narrative" sql-type="TEXT" />
+        </property>
+        <property name="knowledgeResultsNarrative" type="string">
+            <column name="knowledge_results_narrative" sql-type="TEXT" />
+        </property>
+        <property name="hasKnowledgePotential" type="java.lang.Boolean">
+            <column name="has_knowledge_potential" not-null="true" />
+        </property>
+        <property name="reasonKnowledgePotential" type="string">
+            <column name="reason_knowledge_potential" sql-type="TEXT" />
+        </property>
+        <property name="reasonNotKnowledgePotential" type="string">
+            <column name="reason_not_knowledge_potential" sql-type="TEXT" />
+        </property>
+        <property name="hasToolUrl" type="java.lang.Boolean">
+            <column name="has_tool_url" not-null="true" />
+        </property>
+        <property name="reasonNotToolUrl" type="string">
+            <column name="reason_not_tool_url" sql-type="TEXT" />
+        </property>
+        <property name="knowledgeCollaboration" type="string">
+            <column name="knowledge_collaboration" sql-type="TEXT" />
+        </property>
+        <property name="areUsersDetermined" type="java.lang.Boolean">
+            <column name="are_users_determined" not-null="true" />
+        </property>
 	</class>
 </hibernate-mapping>

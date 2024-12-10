@@ -71,11 +71,12 @@ public class ProjectInnovationContributingOrganizationMySQLDAO
     return null;
   }
 
+  @Override
   public ProjectInnovationContributingOrganization getProjectInnovationContributingOrganization(long idInnovation,
     long idInstitution, long idPhase) {
-    String query =
-      "from " + ProjectInnovationContributingOrganization.class.getName() + " WHERE project_innovation_id='"
-        + idInnovation + "' AND institution_id='" + idInstitution + "' AND id_phase='" + idPhase + "'";
+    String query = "from " + ProjectInnovationContributingOrganization.class.getName()
+      + " WHERE is_active=1 and project_innovation_id='" + idInnovation + "' AND institution_id='" + idInstitution
+      + "' AND id_phase='" + idPhase + "'";
     List<ProjectInnovationContributingOrganization> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);

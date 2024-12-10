@@ -1,0 +1,2 @@
+ALTER TABLE project_innovation_reference_complementary_solutions ADD innovation_id bigint(20) NULL;
+ALTER TABLE project_innovation_reference_complementary_solutions ADD CONSTRAINT complementary_solutions_project_innovations_FK FOREIGN KEY (innovation_id) REFERENCES project_innovations(id) ON DELETE RESTRICT ON UPDATE RESTRICT;

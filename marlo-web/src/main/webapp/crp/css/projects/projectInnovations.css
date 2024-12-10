@@ -1,3 +1,85 @@
+.col-md-12, .col-md-6 {
+  padding-left: 0;
+}
+
+.containerAlert .col-md-12{
+  padding-left: 15px;
+}
+
+.note--2.col-md-12{
+  padding-left: 15px;
+  margin-bottom: 8px;
+}
+
+.col-md-1 {
+  padding-left: 0;
+  margin-bottom: 15px;
+}
+
+.col-md-1 .radioFlat {
+  padding-left: 0;
+}
+
+.block-innovationAnticipatedUsers .col-md-4{
+  padding-left: 0;
+  margin-bottom: 15px;
+}
+
+.block-innovationAnticipatedUsers .col-md-4 .radioFlat{
+  padding-left: 0;
+}
+
+.innovationsTab{
+  margin-top: 2rem;
+}
+
+li[role="presentation"] {
+  margin-right: 0;
+  padding: 0;
+}
+
+ul.nav li a {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+}
+
+.nav-tabs>li>a {
+  color: #6f6f6f;
+  border-radius: 0 0 0;
+  padding: 7px 19px !important;
+  padding-left: 10px !important;
+  padding-right: 32px !important;
+  border: 1px solid #f1f1f1;
+}
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+  border-top: 4px solid #1882aa;
+  border-bottom-color: transparent;
+  font-weight: bold;
+}
+
+.tab-content>.active {
+  display: block;
+  /* background-color: #f5f5f5; */
+  padding: 12px 14px;
+  border-bottom: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+
+.nav-tabs li.submitted a {
+  background-image: url(../../../global/images/submitted.png?20190411);
+  background-repeat: no-repeat;
+  /* background-size: 15px; */
+  background-position: 97% -20%;
+}
+
+.nav-tabs li.toSubmit a {
+  background-image: url(../../../global/images/submitted.png?20190411);
+  background-repeat: no-repeat;
+  background-position: 97% 110%;
+}
+
 table tr {
   list-style: none;
   padding-bottom: 9px;
@@ -105,4 +187,297 @@ form .form-group.margin-panel {
 }
 #guide-button{
   display: block;
+}
+
+div.nationalBlock div.selectList span.selection{
+  height: 50px;
+}
+
+div.nationalBlock div.selectList span.selection span.select2-selection{
+  position: relative;
+}
+
+div.nationalBlock div.selectList span.selection span.select2-selection::before{
+  content: "Select a Country";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+div.nationalBlock div.selectList .select2-container--default .select2-selection__arrow {
+  height: 26px;
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 20px;
+}
+
+div.nationalBlock div.selectList .select2-container--default .select2-selection__arrow b {
+  border-color: #888 transparent transparent transparent;
+  border-style: solid;
+  border-width: 5px 4px 0 4px;
+  height: 0;
+  left: 50%;
+  margin-left: -4px;
+  margin-top: -2px;
+  position: absolute;
+  top: 50%;
+  width: 0;
+}
+
+div.nationalBlock div.selectList span.selection span.select2-selection ul{
+  position: absolute;
+  top: 30px;
+  overflow:visible;
+  padding: 0;
+  width: 130%;
+}
+
+.generalInformationInnovations {
+  position: relative;
+}
+
+.generalInformationInnovations .form-group {
+  position: relative;
+}
+
+.generalInformationInnovations .form-group .line-hr{
+  position: absolute; 
+  top: 14%;
+  height: 2px;
+  background-color: #CCC;
+  width: 63%;
+  left: 15px;
+}
+
+@media screen and (max-width: 768px) {
+  .generalInformationInnovations .form-group .line-hr{
+    width: 100%;
+  }
+  
+}
+
+@media screen and (min-width: 1366px) {
+  .generalInformationInnovations .form-group .line-hr{
+    width: 64%;
+  }
+  
+}
+
+@media screen and (min-width: 1978){
+  .generalInformationInnovations .form-group .line-hr{
+    width: 65%;
+  }
+}
+
+.generalInformationInnovations .form-group .feedback-flex-items{
+  align-items: flex-end;
+}
+
+.generalInformationInnovations label{
+  font-size: 12px;
+  margin-bottom: 1.25rem;
+  max-width: 180%;
+  width: 180%;
+}
+
+.generalInnovationsOptions{
+  position: absolute;
+  right: 0;
+  padding: 0 15px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.generalInnovationsOptions button{
+  width: 100%;
+  color: #fff;
+  border-radius: 0.3125rem;
+  background: #337AB7;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.generalInnovationsOptions button p{
+  margin: 0;
+}
+
+.generalInnovationsOptions button p span{
+  margin-right: 0.25rem;
+}
+
+#modalCounterShared{
+  background-color: #fff;
+  color: #337AB7;
+  width: 16px;
+  border-radius: 100%;
+}
+
+.copyButton{
+  position: relative;
+  top: 11px;
+}
+
+.grayBlueBox .elementsListComponent {
+  background-color: transparent;
+}
+
+.grayBlueBox .elementsListComponent .panel-head{
+  display: none;
+}
+
+.grayBlueBox .elementsListComponent .panel-body{
+  border-left: none;
+}
+
+.projectInnovationsPartners .removePartnerItem{
+  display: none;
+}
+
+div.projectInnovationsPartners div.usersBlock{
+  display: initial;
+}
+
+.sdgImage{
+  width: 40px;
+  height: 40px;
+  margin: 0.5rem 1.5rem 0.5rem 0;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other {
+  display: flex;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other .radioFlat {
+  width: 10% !important;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other .inputsFlat {
+  width: 10% !important;
+  margin-top: 0;
+}
+
+.radioToCheckbox .containerRadioToCheckbox--other .inputOther {
+  width: -webkit-fill-available;
+  width: -moz-available;
+}
+
+.impactAreaImage{
+  width: 40px;
+  height: 40px;
+  margin: 0.5rem 1.5rem 0.5rem 0;
+}
+
+.inputsFlat {
+  margin-bottom: 6px;
+}
+
+.inputsFlat:first-of-type{
+  margin-top: 12px;
+}
+
+.scaling__container {
+  display: flex;
+  height: 100%;
+  min-height: -webkit-fill-available;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+.scaling__line {
+  position: absolute;
+  height: 1rem;
+  background-color: #f5f5f5;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: auto;
+  margin-right: auto;
+  left: -5%;
+  padding: 0;
+}
+
+.scaling__item {
+  position: relative;
+}
+
+.scaling__item input[type="radio"].radio-input.scalingInnovation__item__value +.radio-label{
+  width: 4rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  border-radius: 100%;
+  transition: all 400ms ease;
+}
+
+.scaling__item input[type="radio"].radio-input.scalingInnovation__item__value:checked +.radio-label{
+  background-color: #7AB800;
+  color: #FFFFFF;
+  transition: all 400ms ease;
+}
+
+.scaling__item input[type="radio"].radio-input.scalingInnovation__item__value +.radio-label:before{
+  display: none;
+}
+
+.evidences label{
+  color: #0A2842;
+  font-size: 12px;
+}
+
+.evidences .col-md-4{
+  padding-left: 0;
+  margin-bottom: 1rem;
+} 
+
+.evidences .col-md-4 .radioFlat{
+  padding-left: 0;
+}
+
+.evidences .evidenceByDeliverable,.evidences .evidenceByLink {
+  margin-bottom: 1rem;
+}
+
+.evidences .evidenceByDeliverable .select2-container .select2-selection--single {
+  height: auto!important;
+  padding: 5px 0;
+}
+.evidences .evidenceByDeliverable .select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: normal!important;
+}
+.evidences .evidenceByDeliverable .select2-container .select2-selection--single .select2-selection__rendered {
+  white-space: normal!important;
+}
+
+.evidences .evidenceByDeliverable .option_deliverable_inner_select_innovation small{
+  display: block;
+  width: 100%;
+}
+
+.evidences .evidenceByLink label{
+  margin-top: 1rem;
+}
+
+.evidences .evidenceByInnovation .select2-container .select2-selection--single {
+  height: auto!important;
+  padding: 5px 0;
+}
+.evidences .evidenceByInnovation .select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: normal!important;
+}
+.evidences .evidenceByInnovation .select2-container .select2-selection--single .select2-selection__rendered {
+  white-space: normal!important;
 }

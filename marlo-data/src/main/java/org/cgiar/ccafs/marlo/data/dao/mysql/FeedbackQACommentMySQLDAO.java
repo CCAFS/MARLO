@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.FeedbackQACommentDAO;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -62,7 +63,7 @@ public class FeedbackQACommentMySQLDAO extends AbstractMarloDAO<FeedbackQACommen
   public List<FeedbackQAComment> findAll() {
     String query = "from " + FeedbackQAComment.class.getName();
     List<FeedbackQAComment> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
@@ -73,7 +74,7 @@ public class FeedbackQACommentMySQLDAO extends AbstractMarloDAO<FeedbackQACommen
   public List<FeedbackQAComment> findAllByPhase(long phaseId) {
     String query = "from " + FeedbackQAComment.class.getName() + " where id_phase = " + phaseId;
     List<FeedbackQAComment> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
@@ -88,6 +89,17 @@ public class FeedbackQACommentMySQLDAO extends AbstractMarloDAO<FeedbackQACommen
       return list;
     }
     return null;
+  }
+
+  @Override
+  public List<FeedbackQAComment> getFeedbackQACommentsByPhaseAndParentId(long phaseID, long parentID) {
+    String query =
+      "from " + FeedbackQAComment.class.getName() + " where parent_id=" + parentID + " and id_phase =" + phaseID;
+    List<FeedbackQAComment> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
   }
 
   @Override

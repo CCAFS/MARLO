@@ -1,0 +1,1 @@
+ALTER TABLE project_innovation_info ADD short_title text NULL;

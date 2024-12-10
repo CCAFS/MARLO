@@ -140,6 +140,7 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -189,51 +190,92 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private static HashMap<String, String> isOicrOneCgiarAlignmentCompleteMap = new HashMap<>();
   private static HashMap<String, String> isOicrCommunicationsCompleteMap = new HashMap<>();
 
+  // Innovation tabs validators
+  private static HashMap<String, String> isInnovationGeneralInformationCompleteMap = new HashMap<>();
+  private static HashMap<String, String> isInnovationAllianceAlignmentCompleteMap = new HashMap<>();
+  private static HashMap<String, String> isInnovationOneCgiarAlignmentCompleteMap = new HashMap<>();
+  private static HashMap<String, String> isInnovationReadinessCompleteMap = new HashMap<>();
+  private static HashMap<String, String> isInnovationRightsCompleteMap = new HashMap<>();
+
+
+  public static HashMap<String, String> getIsInnovationAllianceAlignmentCompleteMap() {
+    return isInnovationAllianceAlignmentCompleteMap;
+  }
+
+  public static HashMap<String, String> getIsInnovationGeneralInformationCompleteMap() {
+    return isInnovationGeneralInformationCompleteMap;
+  }
+
+  public static HashMap<String, String> getIsInnovationOneCgiarAlignmentCompleteMap() {
+    return isInnovationOneCgiarAlignmentCompleteMap;
+  }
+
+  public static HashMap<String, String> getIsInnovationReadinessCompleteMap() {
+    return isInnovationReadinessCompleteMap;
+  }
+
+  public static HashMap<String, String> getIsInnovationRightsCompleteMap() {
+    return isInnovationRightsCompleteMap;
+  }
 
   public static HashMap<String, String> getIsOicrAllianceAlignmentCompleteMap() {
     return isOicrAllianceAlignmentCompleteMap;
   }
 
-
   public static HashMap<String, String> getIsOicrCommunicationsCompleteMap() {
     return isOicrCommunicationsCompleteMap;
   }
-
 
   public static HashMap<String, String> getIsOicrGeneralInformationCompleteMap() {
     return isOicrGeneralInformationCompleteMap;
   }
 
-
   public static HashMap<String, String> getIsOicrOneCgiarAlignmentCompleteMap() {
     return isOicrOneCgiarAlignmentCompleteMap;
   }
 
+  public static void
+    setIsInnovationAllianceAlignmentCompleteMap(HashMap<String, String> isInnovationAllianceAlignmentCompleteMap) {
+    BaseAction.isInnovationAllianceAlignmentCompleteMap = isInnovationAllianceAlignmentCompleteMap;
+  }
+
+  public static void
+    setIsInnovationGeneralInformationCompleteMap(HashMap<String, String> isInnovationGeneralInformationCompleteMap) {
+    BaseAction.isInnovationGeneralInformationCompleteMap = isInnovationGeneralInformationCompleteMap;
+  }
+
+  public static void
+    setIsInnovationOneCgiarAlignmentCompleteMap(HashMap<String, String> isInnovationOneCgiarAlignmentCompleteMap) {
+    BaseAction.isInnovationOneCgiarAlignmentCompleteMap = isInnovationOneCgiarAlignmentCompleteMap;
+  }
+
+  public static void setIsInnovationReadinessCompleteMap(HashMap<String, String> isInnovationReadinessCompleteMap) {
+    BaseAction.isInnovationReadinessCompleteMap = isInnovationReadinessCompleteMap;
+  }
+
+  public static void setIsInnovationRightsCompleteMap(HashMap<String, String> isInnovationRightsCompleteMap) {
+    BaseAction.isInnovationRightsCompleteMap = isInnovationRightsCompleteMap;
+  }
 
   public static void setIsOicrAllianceAlignmentCompleteMap(HashMap<String, String> isOicrAllianceAlignmentCompleteMap) {
     BaseAction.isOicrAllianceAlignmentCompleteMap = isOicrAllianceAlignmentCompleteMap;
   }
 
-
   public static void setIsOicrCommunicationsCompleteMap(HashMap<String, String> isOicrCommunicationsCompleteMap) {
     BaseAction.isOicrCommunicationsCompleteMap = isOicrCommunicationsCompleteMap;
   }
-
 
   public static void
     setIsOicrGeneralInformationCompleteMap(HashMap<String, String> isOicrGeneralInformationCompleteMap) {
     BaseAction.isOicrGeneralInformationCompleteMap = isOicrGeneralInformationCompleteMap;
   }
 
-
   public static void setIsOicrOneCgiarAlignmentCompleteMap(HashMap<String, String> isOicrOneCgiarAlignmentCompleteMap) {
     BaseAction.isOicrOneCgiarAlignmentCompleteMap = isOicrOneCgiarAlignmentCompleteMap;
   }
 
-
   // OICR validation variables
   private boolean isOicrGeneralInformationComplete;
-
 
   private List<HistoryDifference> differences;
   // Years available per CRPs (used in Summaries)
@@ -542,6 +584,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private boolean isOicrCommunicationsComplete;
 
+  private boolean isInnovationGeneralInformationComplete;
+  private boolean isInnovationAllianceAlignmentComplete;
+  private boolean isInnovationOneCgiarAlignmentComplete;
+  private boolean isInnovationReadinessComplete;
+  private boolean isInnovationRightsComplete;
 
   public BaseAction() {
     this.saveable = true;
@@ -3171,14 +3218,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (clazz == ProjectOutcome.class) {
         if (this.isAiccra()) {
           deliverables = new ArrayList<>();
-          ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
           List<Deliverable> deliverablesTemp = null;
+          ProjectOutcome projectOutcome = null;
 
-          deliverablesTemp = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
+          try {
+            projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
 
-          if (this.getActualPhase().isReporting()) {
-            deliverablesTemp = deliverablesTemp.stream().filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
-              && d.getDeliverableInfo(this.getActualPhase()).getStatus() == 3).collect(Collectors.toList());
+            deliverablesTemp = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
+
+            if (this.getActualPhase().isReporting() && deliverablesTemp != null && !deliverablesTemp.isEmpty()) {
+              deliverablesTemp =
+                deliverablesTemp.stream().filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
+                  && d.getDeliverableInfo(this.getActualPhase()).getStatus() == 3).collect(Collectors.toList());
+            }
+          } catch (Exception e) {
+            Log.error("error getting deliverables temp " + e);
           }
 
           // Shared with others
@@ -3980,67 +4034,71 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public List<ProjectExpectedStudy> getexpectedCrpOutcomes(Long id) {
     List<ProjectExpectedStudy> expectedStudies = new ArrayList<>();
-    ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
-
     try {
-      for (ProjectExpectedStudy expectedStudy : projectOutcome.getProject().getProjectExpectedStudies().stream()
-        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
-          && ps.getProjectExpectedStudyInfo(this.getActualPhase()).isActive())
-        .collect(Collectors.toList())) {
-        if (expectedStudy.getProjectExpectedStudyCrpOutcomes() != null) {
-          expectedStudy.setCrpOutcomes(new ArrayList<>(expectedStudy.getProjectExpectedStudyCrpOutcomes().stream()
-            .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
-        }
-        if (expectedStudy != null && expectedStudy.getCrpOutcomes() != null
-          && !expectedStudy.getCrpOutcomes().isEmpty()) {
-          for (ProjectExpectedStudyCrpOutcome expectedStudyCrpOutcome : expectedStudy.getCrpOutcomes()) {
-            if (expectedStudyCrpOutcome != null && expectedStudyCrpOutcome.getCrpOutcome() != null
-              && expectedStudyCrpOutcome.getCrpOutcome().getId() != null && projectOutcome != null
-              && projectOutcome.getCrpProgramOutcome() != null && expectedStudyCrpOutcome.getCrpOutcome().getId()
-                .compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
-              expectedStudies.add(expectedStudy);
-            }
+      ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
+
+      try {
+        for (ProjectExpectedStudy expectedStudy : projectOutcome.getProject().getProjectExpectedStudies().stream()
+          .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+            && ps.getProjectExpectedStudyInfo(this.getActualPhase()).isActive())
+          .collect(Collectors.toList())) {
+          if (expectedStudy.getProjectExpectedStudyCrpOutcomes() != null) {
+            expectedStudy.setCrpOutcomes(new ArrayList<>(expectedStudy.getProjectExpectedStudyCrpOutcomes().stream()
+              .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
           }
-        }
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    try {
-      // Load Shared studies
-      List<ExpectedStudyProject> expectedStudyProject =
-        expectedStudyProjectManager.getByProjectAndPhase(projectOutcome.getProject().getId(), this.getPhaseID());
-      if (expectedStudyProject != null && !expectedStudyProject.isEmpty()) {
-        for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
-          ProjectExpectedStudy projectExpectedStudy = expectedStudy.getProjectExpectedStudy();
-          projectExpectedStudy
-            .setProjectExpectedStudyInfo(projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()));
-          if (projectExpectedStudy != null && projectExpectedStudy.getProjectExpectedStudyCrpOutcomes() != null) {
-            List<ProjectExpectedStudyCrpOutcome> filteredCrpOutcomes =
-              projectExpectedStudy.getProjectExpectedStudyCrpOutcomes().stream()
-                .filter(o -> o.getCrpOutcome() != null && o.getCrpOutcome().getId() != null
-                  && o.getCrpOutcome().getId().equals(projectOutcome.getCrpProgramOutcome().getId())
-                  && o.getPhase().getId().equals(this.getActualPhase().getId()))
-                .collect(Collectors.toList());
-            if (filteredCrpOutcomes != null && !filteredCrpOutcomes.isEmpty()) {
-              projectExpectedStudy.setCrpOutcomes(new ArrayList<>(filteredCrpOutcomes));
-              if (!expectedStudies.contains(projectExpectedStudy)) {
-                expectedStudies.add(projectExpectedStudy);
+          if (expectedStudy != null && expectedStudy.getCrpOutcomes() != null
+            && !expectedStudy.getCrpOutcomes().isEmpty()) {
+            for (ProjectExpectedStudyCrpOutcome expectedStudyCrpOutcome : expectedStudy.getCrpOutcomes()) {
+              if (expectedStudyCrpOutcome != null && expectedStudyCrpOutcome.getCrpOutcome() != null
+                && expectedStudyCrpOutcome.getCrpOutcome().getId() != null && projectOutcome != null
+                && projectOutcome.getCrpProgramOutcome() != null && expectedStudyCrpOutcome.getCrpOutcome().getId()
+                  .compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
+                expectedStudies.add(expectedStudy);
               }
             }
           }
         }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+
+      try {
+        // Load Shared studies
+        List<ExpectedStudyProject> expectedStudyProject =
+          expectedStudyProjectManager.getByProjectAndPhase(projectOutcome.getProject().getId(), this.getPhaseID());
+        if (expectedStudyProject != null && !expectedStudyProject.isEmpty()) {
+          for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
+            ProjectExpectedStudy projectExpectedStudy = expectedStudy.getProjectExpectedStudy();
+            projectExpectedStudy
+              .setProjectExpectedStudyInfo(projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()));
+            if (projectExpectedStudy != null && projectExpectedStudy.getProjectExpectedStudyCrpOutcomes() != null) {
+              List<ProjectExpectedStudyCrpOutcome> filteredCrpOutcomes =
+                projectExpectedStudy.getProjectExpectedStudyCrpOutcomes().stream()
+                  .filter(o -> o.getCrpOutcome() != null && o.getCrpOutcome().getId() != null
+                    && o.getCrpOutcome().getId().equals(projectOutcome.getCrpProgramOutcome().getId())
+                    && o.getPhase().getId().equals(this.getActualPhase().getId()))
+                  .collect(Collectors.toList());
+              if (filteredCrpOutcomes != null && !filteredCrpOutcomes.isEmpty()) {
+                projectExpectedStudy.setCrpOutcomes(new ArrayList<>(filteredCrpOutcomes));
+                if (!expectedStudies.contains(projectExpectedStudy)) {
+                  expectedStudies.add(projectExpectedStudy);
+                }
+              }
+            }
+          }
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+
+      // 10/10/2024 add functionality to avoid no active oicr
+      try {
+        expectedStudies = expectedStudies.stream().filter(o -> o.isActive()).collect(Collectors.toList());
+      } catch (Exception e) {
+        LOG.error(" error in function getexpectedCrpOutcomes - unable to extract inactive oicr");
       }
     } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    // 10/10/2024 add functionality to avoid no active oicr
-    try {
-      expectedStudies = expectedStudies.stream().filter(o -> o.isActive()).collect(Collectors.toList());
-    } catch (Exception e) {
-      LOG.error(" error in function getexpectedCrpOutcomes - unable to extract inactive oicr");
+      Log.error("error in getexpectedCrpOutcomes " + e);
     }
     return expectedStudies;
   }
@@ -9272,5 +9330,43 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  public boolean isInnovationGeneralInformationComplete() {
+    return isInnovationGeneralInformationComplete;
+  }
 
+  public void setInnovationGeneralInformationComplete(boolean isInnovationGeneralInformationComplete) {
+    this.isInnovationGeneralInformationComplete = isInnovationGeneralInformationComplete;
+  }
+
+  public boolean isInnovationAllianceAlignmentComplete() {
+    return isInnovationAllianceAlignmentComplete;
+  }
+
+  public void setInnovationAllianceAlignmentComplete(boolean isInnovationAllianceAlignmentComplete) {
+    this.isInnovationAllianceAlignmentComplete = isInnovationAllianceAlignmentComplete;
+  }
+
+  public boolean isInnovationOneCgiarAlignmentComplete() {
+    return isInnovationOneCgiarAlignmentComplete;
+  }
+
+  public void setInnovationOneCgiarAlignmentComplete(boolean isInnovationOneCgiarAlignmentComplete) {
+    this.isInnovationOneCgiarAlignmentComplete = isInnovationOneCgiarAlignmentComplete;
+  }
+
+  public boolean isInnovationReadinessComplete() {
+    return isInnovationReadinessComplete;
+  }
+
+  public void setInnovationReadinessComplete(boolean isInnovationReadinessComplete) {
+    this.isInnovationReadinessComplete = isInnovationReadinessComplete;
+  }
+
+  public boolean isInnovationRightsComplete() {
+    return isInnovationRightsComplete;
+  }
+
+  public void setInnovationRightsComplete(boolean isInnovationRightsComplete) {
+    this.isInnovationRightsComplete = isInnovationRightsComplete;
+  }
 }

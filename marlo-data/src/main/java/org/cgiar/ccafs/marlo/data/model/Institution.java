@@ -50,7 +50,7 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
 
   @Expose
   private Date added;
-
+  private String nameWithCountry;
 
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
 
@@ -69,10 +69,8 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
 
   private Set<Institution> branches = new HashSet<Institution>(0);
 
-
   private List<InstitutionLocation> locations;
   private Set<GlobalUnit> globalUnits = new HashSet<GlobalUnit>(0);
-
 
   public Institution() {
   }
@@ -169,10 +167,10 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return fundingSourcesOriginalDonor;
   }
 
-
   public Set<GlobalUnit> getGlobalUnits() {
     return globalUnits;
   }
+
 
   public Set<InstitutionLocation> getInstitutionsLocations() {
     return institutionsLocations;
@@ -183,8 +181,13 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return institutionType;
   }
 
+
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
+  }
+
+  public List<InstitutionLocation> getLocations() {
+    return locations;
   }
 
   /*
@@ -209,10 +212,6 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
    * }
    */
 
-  public List<InstitutionLocation> getLocations() {
-    return locations;
-  }
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -229,7 +228,6 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -241,6 +239,11 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
   public String getName() {
     return this.name;
   }
+
+  public String getNameWithCountry() {
+    return nameWithCountry;
+  }
+
 
   public Long getProgramId() {
     return this.programId;
@@ -260,7 +263,6 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
   public Set<ProjectPartner> getProjectPartners() {
     return projectPartners;
   }
-
 
   public String getWebsiteLink() {
     return this.websiteLink;
@@ -304,7 +306,6 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     this.crpPpaPartners = crpPpaPartners;
   }
 
-
   public void setFundingSourcesDirectDonor(Set<FundingSource> fundingSourcesDirectDonor) {
     this.fundingSourcesDirectDonor = fundingSourcesDirectDonor;
   }
@@ -313,6 +314,7 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     this.fundingSourcesOriginalDonor = fundingSourcesOriginalDonor;
   }
 
+
   public void setGlobalUnits(Set<GlobalUnit> globalUnits) {
     this.globalUnits = globalUnits;
   }
@@ -320,7 +322,6 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
   public void setInstitutionsLocations(Set<InstitutionLocation> institutionsLocations) {
     this.institutionsLocations = institutionsLocations;
   }
-
 
   public void setInstitutionType(InstitutionType institutionType) {
     this.institutionType = institutionType;
@@ -341,6 +342,10 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setNameWithCountry(String nameWithCountry) {
+    this.nameWithCountry = nameWithCountry;
   }
 
   public void setProgramId(Long programId) {

@@ -1,0 +1,2 @@
+ALTER TABLE project_innovation_info ADD has_cgiar_contribution tinyint(1) NULL;
+ALTER TABLE project_innovation_info ADD reason_not_cgiar_contribution text CHARACTER SET utf8 COLLATE utf8_general_ci NULL;

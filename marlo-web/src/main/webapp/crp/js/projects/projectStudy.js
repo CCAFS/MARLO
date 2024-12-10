@@ -107,7 +107,7 @@ function validateURL(item) {
 function attachEvents() {
 
   //Expected Year
-  $('select.statusSelect').on('change', function() {
+/*   $('select.statusSelect').on('change', function() {
     console.log(this.value);
     if(this.value == 4) {
       $('.block-extendedYear').slideDown();
@@ -116,7 +116,7 @@ function attachEvents() {
       $('.block-extendedYear').slideUp();
       $('.block-year').slideDown();
     }
-  });
+  }); */
 
 
     $('textarea[name="expectedStudy.projectExpectedStudyInfo.referencesText"]').before('<label style="margin-top: 5px;">References reported in previous years:</label>');

@@ -1,0 +1,1 @@
+ALTER TABLE project_innovation_info ADD knowledge_methods_and_tools_narrative TEXT NULL;

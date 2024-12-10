@@ -1,8 +1,8 @@
 [#ftl]
 [#macro text name="" readText=false param=""][#assign customName][#if readText]${name}.readText[#else]${name}[/#if][/#assign][@s.text name="${customName}"][@s.param]${param}[/@s.param][/@s.text][/#macro]
 
-[#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" helpIcon=true display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder="" inputGroupText="" maxlength="" id="" isMainTitle=false]
-  <div class="feedback-flex-items"></div>
+[#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" helpIcon=true display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder="" inputGroupText="" maxlength="" id="" isMainTitle=false isWidthFull=false]
+  <div class="feedback-flex-items" [#if isWidthFull] style="width:100%;" [/#if]></div>
   <div class="input fieldReference ${changedField(name)}" style="display:${display?string('block','none')};">
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#if showTitle]
@@ -53,8 +53,8 @@
   </div>
 [/#macro]
 
-[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false isNote=false isMainTitle=false]
-  <div class="feedback-flex-items"></div>
+[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false isNote=false isMainTitle=false isWidthFull=false]
+  <div class="feedback-flex-items" [#if isWidthFull] style="width:100%;" [/#if]></div>
   <div class="textArea fieldReference ${changedField(name)}" [#if !display]style="display: none;"[#else]style="width: 100%;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
@@ -158,8 +158,8 @@
   </div>
 [/#macro]
 
-[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" isFlex=false editable=true isMainTitle=false]
-  <div class="feedback-flex-items"></div>
+[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" help="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true isNote=false header=true display=true showTitle=true stringKey=false placeholder="" isFlex=false editable=true isMainTitle=false isWidthFull=false]
+  <div class="feedback-flex-items" [#if isWidthFull] style="width:100%;" [/#if]></div>
   <div class="select fieldReference ${isFlex?then('select--flex','')} ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
@@ -167,7 +167,7 @@
     <label for="" class="${isMainTitle?string('label--2','')}">
       [#if labelTitle != ""]${labelTitle}:[/#if][@req required=required && editable /]
       [#--  Help Text --]
-      [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+      [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon isNote=isNote editable=editable/]
     </label>
     [/#if]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
@@ -641,7 +641,7 @@
       <span class="hint" style="display:none" title="${nameValue}"> [HINT] </span>
     [#else]
       [#if isNote]
-        <div class="note--2 note--2__margin-none"><p>${nameValue}</p></div>
+        <div class="note--2 note--2__margin-none col-md-12"><p>${nameValue}</p></div>
       [#else]
         <br /><i class="helpLabel">${nameValue}</i>
       [/#if]
@@ -982,6 +982,75 @@
   </div>
 [/#macro]
 
+[#macro evidence name element index=-1 template=false class="" isDeliverable=true ]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div id="evidences${class?has_content?string('-${class}', '')}-${(template?string('template', ''))}" class="evidences form-group grayBox ${class}" data-reference="${class}">
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <label for="${customName}.reference" class="col-md-12">[@s.text name="projectInnovations.evidence.title" /]</label>
+
+    [#local evidenceByDeliverable = (element.evidenceByDeliverable)! /]
+    [#local labelName = isDeliverable?then("projectInnovations.evidence.evidenceByDeliverable","projectInnovations.evidence.evidenceByInnovation") /]
+
+    <div class="col-md-4">
+      [@customForm.radioFlat id="${customName}.evidenceByDeliverable.true" name="${customName}.evidenceByDeliverable" i18nkey=labelName value="true" checked=((element.evidenceByDeliverable??) && (evidenceByDeliverable)) cssClass="radioType-${class}[${index}]" editable=true /]
+    </div>
+    <div class="col-md-4">
+      [@customForm.radioFlat id="${customName}.evidenceByDeliverable.false" name="${customName}.evidenceByDeliverable" i18nkey="projectInnovations.evidence.evidenceByLink" value="false" checked=((element.evidenceByDeliverable??) && (!evidenceByDeliverable)) cssClass="radioType-${class}_${index}" editable=true /] 
+    </div>
+
+    [#local blockYesName = "block-yes-${class}_${index}" /]
+    [#local blockNoName = "block-no-${class}_${index}" /]
+    
+    [#if isDeliverable]
+      <div class="evidenceByDeliverable col-md-12 ${blockYesName}" style="display:${((element.evidenceByDeliverable??) && (evidenceByDeliverable))?then('block','none')}">
+        [@customForm.select name="${customName}.deliverable.id" i18nkey="projectInnovations.evidence.deliverable" editable=true required=true listName="deliverableList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence" /]
+      </div>
+    [#else]
+      <div class="evidenceByInnovation col-md-12 ${blockYesName}" style="display:${((element.evidenceByDeliverable??) && (evidenceByDeliverable))?then('block','none')}">
+        [@customForm.select name="${customName}.innovation.id" i18nkey="projectInnovations.evidence.innovation" editable=true required=true listName="innovationList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence" /]
+      </div>
+    [/#if]
+    <div class="evidenceByLink col-md-12 ${blockNoName}" style="display:${(((element.evidenceByDeliverable??) && (!evidenceByDeliverable)))?then('block','none')}">
+      <div class="col-md-12 row">
+        <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Evidence/Reference[@customForm.req required=true  /]
+        </div>
+        <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=true  /]
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-6">
+          [@customForm.input name="${customName}.reference" placeholder="projectInnovations.evidence.reference" showTitle=false i18nkey=""  editable=editable required=true /]
+        </div>
+        <div class="col-md-6">
+          [@customForm.input name="${customName}.link" placeholder="projectInnovations.evidence.link" showTitle=false i18nkey="" editable=editable required=true /]
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-12 evidenceType">
+          <label for="${customName}.evidenceType" class="col-md-12">[@s.text name="projectInnovations.evidence.evidenceType" /]</label>
+            <div class="col-md-12 row">
+            <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">[@s.text name="projectInnovations.evidence.category" /][@customForm.req required=true  /]
+            </div>
+            <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">[@s.text name="projectInnovations.evidence.subCategory" /][@customForm.req required=true  /]
+            </div>
+          </div>
+          <div class="col-md-6">
+            [@customForm.select name="${customName}.deliverableType.deliverableCategory.id" label="projectInnovations.evidence.category" showTitle=false editable=true required=true listName="deliverableTypeParent" keyFieldName="id" displayFieldName="name" className=" form-control input-sm typeSelect" /]
+          </div>
+          <div class="col-md-6">
+            [@customForm.select name="${customName}.deliverableType.id" label="projectInnovations.evidence.subCategory" showTitle=false editable=true required=true listName="deliverableSubTypes" keyFieldName="id" displayFieldName="name" className=" form-control input-sm subTypeSelect" /]
+          </div>            
+        </div>
+      </div>
+    </div>
+
+    [#if editable]<div class="removeElement sm removeIcon removeButtonReference${class}" title="Remove"></div>[/#if]
+    <div class="clearfix"></div>
+
+  </div>
+    
+[/#macro]
+
 [#macro textAreaReferences name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false oldReference=true isNote=false isMainTitle=false]
   <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
@@ -1100,7 +1169,7 @@
   [#local customName = "${name}"]
 
   [#if listName?has_content]
-    <div class="form-group radioToCheckbox ${isPrimaryLever?then('containerPrimaryLever','')} ${className}">
+    <div class="form-group selectableCheckToCheckboxMacro radioToCheckbox ${isPrimaryLever?then('containerPrimaryLever','')} ${className}">
       <label for="">[@s.text name=label /][@req required=required && editable /]</label>
       <input type="hidden" name="${customName}.${fieldName}.isPrimary" value="${isPrimaryLever?c}" />
       [#list listName as radioItem]
@@ -1109,10 +1178,6 @@
           [#local radioItemName = "${radioItem.name}: ${radioItem.description}" /]
         [#else]
           [#local radioItemName = "${radioItem.name}" /]
-        [/#if]
-
-        [#if fieldName == "impactArea"]
-          [#local radioItemName = "Impact Area ${radioItem_index+1}: ${radioItem.name}" /]
         [/#if]
       
         [#local isChecked = false]

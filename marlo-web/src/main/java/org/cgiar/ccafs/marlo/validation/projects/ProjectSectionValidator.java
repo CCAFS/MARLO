@@ -628,7 +628,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         innovation.getProjectInnovationInfo(phase);
       }
 
-
       // Setup Geographic Scope
       if (innovation.getProjectInnovationGeographicScopes() != null) {
         innovation.setGeographicScopes(new ArrayList<>(innovation.getProjectInnovationGeographicScopes().stream()
@@ -702,6 +701,61 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       if (innovation.getProjectInnovationSubIdos() != null) {
         innovation.setSubIdos(new ArrayList<>(innovation.getProjectInnovationSubIdos().stream()
           .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
+      // Innovations Alliance levers
+      if (innovation.getProjectInnovationAllianceLevers() != null) {
+        innovation.setAllianceLevers(new ArrayList<>(innovation.getProjectInnovationAllianceLevers().stream()
+          .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
+      // Innovations SDGs
+      if (innovation.getProjectInnovationSDGs() != null) {
+        innovation.setSdgs(new ArrayList<>(innovation.getProjectInnovationSDGs().stream()
+          .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
+      // Innovations impact area
+      if (innovation.getProjectInnovationImpactAreas() != null) {
+        innovation.setImpactAreas(new ArrayList<>(innovation.getProjectInnovationImpactAreas().stream()
+          .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
+      // Innovations alliance organizations
+      if (innovation.getProjectInnovationAllianceOrganizations() != null) {
+        innovation.setAllianceOrganizations(new ArrayList<>(innovation.getProjectInnovationAllianceOrganizations()
+          .stream().filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
+      // Innovations actors
+      if (innovation.getProjectInnovationActors() != null) {
+        innovation.setActors(new ArrayList<>(innovation.getProjectInnovationActors().stream()
+          .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
+      // Innovations tool categories
+      if (innovation.getProjectInnovationToolCategories() != null) {
+        innovation.setToolCategories(new ArrayList<>(innovation.getProjectInnovationToolCategories().stream()
+          .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
+      // Innovations references
+      if (innovation.getProjectInnovationReferences() != null) {
+        innovation.setReferences(new ArrayList<>(innovation.getProjectInnovationReferences().stream()
+          .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
+      // Innovations references URL
+      if (innovation.getProjectInnovationReferenceUrls() != null) {
+        innovation.setReferenceUrls(new ArrayList<>(innovation.getProjectInnovationReferenceUrls().stream()
+          .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
+      // Innovations references Complementary solutions
+      if (innovation.getProjectInnovationReferenceComplementarySolutions() != null) {
+        innovation.setReferenceComplementarySolutions(
+          new ArrayList<>(innovation.getProjectInnovationReferenceComplementarySolutions().stream()
+            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Innovation clear lead

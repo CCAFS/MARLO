@@ -24,10 +24,12 @@ function missingFields(errorList) {
       var type = list.split(":")[0].split("-")[0];
       var message = list.split(":")[1];
 
-      // select element by input name or list name
-      if(type === "list") {
+      // select element by input name, list name or add name
+      if(type === "add") {
+        getAddElement(fieldName, message);
+      } else if(type === "list") {
         getListElement(fieldName, message);
-      } else {
+      } else  if(type === "input") {
         // INPUTS
         getInputElement(fieldName, message);
       }
@@ -168,6 +170,28 @@ function getInputElement(fieldName,message) {
   $(elementQuery).addClass("fieldError");
   $(elementQuery).attr("title", message);
 
+}
+
+function getAddElement(fieldName,message) {
+  var labelQuery = $("label[for='" + fieldName + "']");
+  if(labelQuery.length == 0) {
+    labelQuery = $("label[for='" + fieldName + "[]']");
+  }
+
+  if(labelQuery.length != 0) {
+
+    // Find Bootstrap tabs
+    var tabPane = $(labelQuery).parents('.tab-pane');
+    if(tabPane) {
+      var tabID = $(tabPane).attr('id');
+      var $tab = $('a[href="#' + tabID + '"]');
+      // Add Field error to the text
+      $tab.addClass('fieldError');
+      // Add Filed error to the label
+      $(labelQuery).addClass('fieldError');
+      $(labelQuery).attr("title", message);
+    }
+  }
 }
 
 // EVENT TO ERROR TAG
