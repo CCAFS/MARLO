@@ -75,7 +75,6 @@ function getListElement(fieldName,message) {
 
 function getInputElement(fieldName,message) {
   var elementQuery = $("input[name='" + fieldName + "']");
-  console.log(elementQuery);
 
   // validate if it's input
   if(elementQuery.length == 0) {

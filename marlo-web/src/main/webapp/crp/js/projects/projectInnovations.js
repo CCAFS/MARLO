@@ -636,6 +636,8 @@ const evidencesModule = function () {
 
     // Change deliverable type
     $(".typeSelect").on("change", changeDeliverableType);
+
+    updateIndexes();
   }
 
   // Functions
