@@ -24,9 +24,6 @@ $(document).ready(function() {
   // Change counter value of Shared Cluster
   counterSharedCluster();
 
-  //init partners methods
-  deliverablePartnersModule.init();
-
   // Add image to SDG Targets
   $('select.elementType-sdg').on("change", addImageToSelectSDGTargets);
   addImageToSelectSDGTargets();
@@ -43,7 +40,8 @@ $(document).ready(function() {
   $('select.elementType-institution').on('change',updateAllianceTab);
   $('div.removeElementType-institution').on('click',updateAllianceTab);
 
-
+  //init partners methods
+  deliverablePartnersModule.init();
 
   feedbackAutoImplementation();
 });
@@ -552,38 +550,9 @@ const deliverablePartnersModule = (function () {
   function attachEvents() {
     // On change institution
     $('select.partnerInstitutionID').on('change', changePartnerInstitution);
-    // On remove a deliverable partner item
-    $('.removePartnerItem').on('click', removePartnerItem);
-    // On add a new deliverable partner Item
-    $('.addPartnerItem').on('click', addPartnerItem);
 
     updateIndexes();
 
-  }
-
-  function addPartnerItem() {
-    var $listBlock = $('.projectInnovationsPartners');
-    var $template = $('#deliverablePartnerItem-template');
-
-    if($template.find('select').data('select2')){
-      $template.find('select').select2("destroy");
-    }
-    
-    var $newItem = $template.clone(true).removeAttr('id');
-
-    $template.find('select').select2();
-    $newItem.find('select').select2();
-    $listBlock.append($newItem);
-    $newItem.show();
-    updateIndexes();
-  }
-
-  function removePartnerItem() {
-    var $item = $(this).parents('.deliverablePartnerItem');
-    $item.hide(500, function () {
-      $item.remove();
-      updateIndexes();
-    });
   }
 
   function changePartnerInstitution() {
@@ -593,48 +562,33 @@ const deliverablePartnersModule = (function () {
     var isResponsible = (typeID == 1);
     // Clean users list
     $usersBlock.empty();
+
+    const $partnerUsersBlock = $('#partnerUsers .institution-' + this.value + ' .users-' + typeID);
+
+    $partnerUsersBlock.find('input').each(function (_i, user) {
+      user.id = user.id + '_TEMPLATE_';
+    });
+
+    $partnerUsersBlock.find('label').each(function (_i, label) {
+      label.htmlFor = label.htmlFor + '_TEMPLATE_';
+    });
     // Get new users list
-    var $newUsersBlock = $('#partnerUsers .institution-' + this.value + ' .users-' + typeID).clone(true);
-    //Remove name _TEMPLATE_ from inputs
-    $newUsersBlock.find('input').each(function(_i,e) {
-      e.name = (e.name).replace("_TEMPLATE_", "");
-      e.id = (e.id).replace("_TEMPLATE_", "");
+    var $newUsersBlock = $partnerUsersBlock.clone(true);
+
+    $newUsersBlock.find('input').each(function (_i, user) {
+      if((user.id).includes('_TEMPLATE_')){
+        user.id = user.id.replace('_TEMPLATE_', '');
+      }
+    });
+
+    $newUsersBlock.find('label').each(function (_i, label) {
+      if((label.htmlFor).includes('_TEMPLATE_')){
+        label.htmlFor = label.htmlFor.replace('_TEMPLATE_', '');
+      }
     });
 
     // Show them
     $usersBlock.append($newUsersBlock.html());
-    // Update indexes
-    if (!isResponsible) {
-      updateIndexes();
-    }
-  }
-
-  function updateIndexes() {
-    $('.projectInnovationsPartners .deliverablePartnerItem').each(function (i, partner) {
-
-      // Update deliverable partner index
-      $(partner).setNameIndexes(1, i);
-
-      $(partner).find('.deliverableUserItem').each(function (j, user) {
-        var personID = $(user).find('input[type="checkbox"]').val();
-        var customID = "jsGenerated-" + i + "-" + j + "-" + personID;
-        // Update user index
-        $(user).setNameIndexes(2, j);
-
-        //Remove name _TEMPLATE_ from inputs
-        $(user).find('input').each(function(_i,e) {
-          e.name = (e.name).replace("_TEMPLATE_", "");
-          e.id = (e.id).replace("_TEMPLATE_", "");
-        });
-
-        // Update user checks/radios labels and inputs ids
-        $(user).find('input[type="checkbox"]').attr('id', customID);
-        $(user).find('label.checkbox-label').attr('for', customID);
-      });
-
-    });
-
-    updateInstitutionSelects()
   }
 
   function updateInstitutionSelects() {
