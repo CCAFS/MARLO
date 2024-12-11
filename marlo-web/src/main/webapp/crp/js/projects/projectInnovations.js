@@ -273,7 +273,6 @@ function attachEvents() {
 
 }
 function AddRequired(){
-  console.log($('#isClearLeadToAddRequired').is(":checked"));
   if ($('#isClearLeadToAddRequired').is(":checked")) {
     $('.top-five-contributing').find('.requiredTag').show();
   }else{
@@ -293,21 +292,6 @@ function addSelect2() {
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
       width: '100%'
-  });
-
-  $(".evidenceByDeliverable select").select2({
-    data: function (data) {
-      return data;
-    },
-    escapeMarkup: function(markup) {
-      return markup;
-    },
-    templateResult: function(data) {
-      return data.html;
-    },
-    templateSelection: function(data) {
-      return data.text;
-    }
   });
 
 }
@@ -530,7 +514,6 @@ function changeDisplayMessageInScaling() {
     const $elementValue = $element.attr('id');
 
     if($elementValue == $readinessScale) {
-      console.log('elementValue',$elementValue);
       $scalingMessageContainer.find('h5').html($element.find('h5').html());
       $scalingMessageContainer.find('p').html($element.find('p').html());
     }
@@ -636,6 +619,8 @@ const evidencesModule = function () {
 
     // Change deliverable type
     $(".typeSelect").on("change", changeDeliverableType);
+
+    //$(`.evidenceInnovation${nameReference} , .evidenceDeliverable${nameReference}`).on("change", trackOptionsSelectedInAllInstances);
 
     updateIndexes();
   }
@@ -771,6 +756,54 @@ const evidencesModule = function () {
     });
   
   }
+
+/*   function trackOptionsSelectedInAllInstances() {
+    const $select = $(this);
+    const $listBlock = $(`.referenceList${nameReference}`);
+    const $template = $(`#evidences-${nameReference}-template`);
+
+    console.log('listBlock', $listBlock);
+
+    const $selectedOptions = $select.find('option:selected');
+    
+    $template.find('select.evidence').each(function(_i, select) {
+      const $select = $(select);
+      const $options = $select.find('option');
+      $options.each(function(_i, option) {
+        const $option = $(option);
+        const value = $option.val();
+        if($selectedOptions.toArray().some((item) => item.value === value)) {
+          $option.prop('disabled', true);
+        } else {
+          $option.prop('disabled', false);
+        }
+      });
+    });
+
+    $listBlock.find('select.evidence').each(function(_i, select) {
+
+
+      if($(select).is($select)) {
+        console.log('is me, Mario');
+        return;
+      }
+
+      console.log('select', select);
+
+      const $options = $(select).find('option');
+      $options.each(function(_i, option) {
+        const $option = $(option);
+        const value = $option.val();
+        if($selectedOptions.toArray().some((item) => item.value === value)) {
+          $option.prop('disabled', true);
+        } else {
+          $option.prop('disabled', false);
+        }
+      });
+    });
+
+
+  } */
 
   return {
     init: init
