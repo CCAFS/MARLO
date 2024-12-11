@@ -868,9 +868,9 @@
       [#if listName?has_content]
         [#list listName as item]
           <div class="scaling__hiddenInfo__item" class="scaling__hiddenInfo__item_${item_index}" id="${item.id}">
-            <h5>[@s.text name=item.name /]</h5>
+            <h5>${item.name}</h5>
             [#if item.description?has_content]
-              <p>[@s.text name=item.description /]</p>
+              <p>${item.description!""}</p>
             [#else]
               <p>No descripition available</p>
             [/#if]
