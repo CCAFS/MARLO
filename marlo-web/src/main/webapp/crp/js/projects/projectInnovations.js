@@ -551,8 +551,6 @@ const deliverablePartnersModule = (function () {
     // On change institution
     $('select.partnerInstitutionID').on('change', changePartnerInstitution);
 
-    updateIndexes();
-
   }
 
   function changePartnerInstitution() {

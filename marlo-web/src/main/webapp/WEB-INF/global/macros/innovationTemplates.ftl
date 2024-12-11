@@ -233,7 +233,7 @@
                 [#if editable]
                   <p id="addPartnerText" class="helpMessage">
                     If you cannot find the organization you are looking for, please 
-                    <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave'][@s.param name='expectedID']${(expectedID)!}[/@s.param][/@s.url]">
+                    <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='projectID']${(projectID)!}[/@s.param][@s.param name='context'](${(actionName)!}: ID-${(innovation.id)!})[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
                       click here to [@s.text name="projectPartners.addPartnerMessage.second" /]
                     </a>
                   </p>
@@ -377,7 +377,7 @@
               <label class="label--2">[@s.text name="projectInnovations.communications.contacts" /]:</label>
               <div id="addPartnerText" class="note--2">
                   [@s.text name="projectInnovations.communications.contacts.help" /]
-                  <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave'][@s.param name='expectedID']${(expectedID)!}[/@s.param][/@s.url]">
+                  <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='projectID']${(projectID)!}[/@s.param][@s.param name='context'](${(actionName)!}: ID-${(innovation.id)!})[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
                     [@s.text name="projectInnovations.communications.contacts.help2" /]
                   </a>
               </div>
