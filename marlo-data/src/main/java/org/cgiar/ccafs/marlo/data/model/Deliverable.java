@@ -658,22 +658,29 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
       }
 
       try {
-        handle = deliverableTemp.getDeliverableMetadataElements().stream()
-          .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-            && me.getMetadataElement().getId().longValue() == 35L && me.getDeliverable().getId().equals(this.getId())
-            && !StringUtils.isBlank(me.getElementValue()))
-          .findFirst().orElse(null).getElementValue();
-        if (handle == null || handle.isEmpty()) {
-          handle = "Not defined";
-        }
 
+        if (deliverableTemp.getDeliverableMetadataElements() != null && this.getDeliverableInfo().getPhase() != null) {
+          deliverableTemp.setMetadataElements(new ArrayList<>(deliverableTemp.getDeliverableMetadataElements().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getDeliverableInfo().getPhase())
+              && c.getMetadataElement() != null && c.getMetadataElement().getId() != null
+              && c.getMetadataElement().getId().longValue() == 35L && c.getDeliverable().getId().equals(this.getId())
+              && !StringUtils.isBlank(c.getElementValue()))
+            .collect(Collectors.toList())));
+          if (deliverableTemp.getMetadataElements() != null && deliverableTemp.getMetadataElements().get(0) != null
+            && deliverableTemp.getMetadataElements().get(0).getElementValue() != null
+            && !deliverableTemp.getMetadataElements().get(0).getElementValue().isEmpty()) {
+            handle = "<small style=\"width: 100%;\">Handle: <a href=\""
+              + deliverableTemp.getMetadataElements().get(0).getElementValue() + "\" target=\"_blank\">";
+          }
+        }
       } catch (Exception e) {
         // error
       }
       try {
         if (deliverableTemp.getDissemination() != null
-          && deliverableTemp.getDissemination().getDisseminationChannelName() != null) {
-          disseminationChannel = deliverableTemp.getDissemination().getDisseminationChannelName();
+          && deliverableTemp.getDissemination().getDisseminationChannelName() != null
+          && !deliverableTemp.getDissemination().getDisseminationChannelName().isEmpty()) {
+          disseminationChannel = " (" + deliverableTemp.getDissemination().getDisseminationChannelName() + ")";
         }
       } catch (Exception e) {
         // error
@@ -735,9 +742,9 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
           statusInfo = statusInfo.trim();
         }
         return "<div class=\"option_deliverable_inner_select_innovation\">" + "<p>D" + this.getId() + " - "
-          + this.getDeliverableInfo().getTitle() + "</p>" + "<small style=\"width: 100%;\">Handle: <a href=\""
-          + this.getDeliverableInfo().getTitle() + "\" target=\"_blank\">" + this.getDeliverableInfo().getTitle()
-          + "</a></small>" + "<small style=\"width: 100%;\">Type: " + deliverableType + "</small>" + "</div>";
+          + this.getDeliverableInfo().getTitle() + disseminationChannel + "</p>" + handle
+          + this.getDeliverableInfo().getTitle() + "</a></small>" + "<small style=\"width: 100%;\">Type: "
+          + deliverableType + "</small>" + "</div>";
 
       } catch (Exception e) {
         return "<b> (D" + this.getId() + ") </b> - " + this.getDeliverableInfo().getTitle();
