@@ -15,11 +15,15 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableActivityDAO;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -32,18 +36,58 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
 
 
   private DeliverableActivityDAO deliverableActivityDAO;
+  private PhaseDAO phaseDAO;
   // Managers
 
 
   @Inject
-  public DeliverableActivityManagerImpl(DeliverableActivityDAO deliverableActivityDAO) {
+  public DeliverableActivityManagerImpl(DeliverableActivityDAO deliverableActivityDAO, PhaseDAO phaseDAO) {
     this.deliverableActivityDAO = deliverableActivityDAO;
+    this.phaseDAO = phaseDAO;
   }
 
   @Override
   public void deleteDeliverableActivity(long deliverableActivityId) {
 
+    DeliverableActivity deliverableActivity = this.getDeliverableActivityById(deliverableActivityId);
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (deliverableActivity.getPhase().getDescription().equals(APConstants.PLANNING)
+      && deliverableActivity.getPhase().getNext() != null) {
+      this.deleteDeliverableActivityPhase(deliverableActivity.getPhase().getNext(),
+        deliverableActivity.getDeliverable().getId(), deliverableActivity);
+    }
+
+    if (deliverableActivity.getPhase().getDescription().equals(APConstants.REPORTING)
+      && deliverableActivity.getPhase().getNext() != null
+      && deliverableActivity.getPhase().getNext().getNext() != null) {
+      Phase upkeepPhase = deliverableActivity.getPhase().getNext().getNext();
+      if (upkeepPhase != null) {
+        this.deleteDeliverableActivityPhase(upkeepPhase, deliverableActivity.getDeliverable().getId(),
+          deliverableActivity);
+      }
+    }
+
     deliverableActivityDAO.deleteDeliverableActivity(deliverableActivityId);
+  }
+
+  public void deleteDeliverableActivityPhase(Phase next, long deliverableID, DeliverableActivity deliverableActivity) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<DeliverableActivity> activityPrev =
+      deliverableActivityDAO.getDeliverableActivitiesByDeliverableIDAndPhase(deliverableID, phase.getId()).stream()
+        .filter(
+          r -> r.getActivity() != null && r.getActivity().getId() != null && deliverableActivity.getActivity() != null
+            && r.getActivity().getId().equals(deliverableActivity.getActivity().getId()))
+        .collect(Collectors.toList());
+
+    for (DeliverableActivity deliverableActivityDB : activityPrev) {
+      deliverableActivityDAO.deleteDeliverableActivity(deliverableActivityDB.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deleteDeliverableActivityPhase(phase.getNext(), deliverableID, deliverableActivity);
+    }
   }
 
   @Override
@@ -84,7 +128,47 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
   @Override
   public DeliverableActivity saveDeliverableActivity(DeliverableActivity deliverableActivity) {
 
-    return deliverableActivityDAO.save(deliverableActivity);
+    DeliverableActivity activity = deliverableActivityDAO.save(deliverableActivity);
+    Phase phase = phaseDAO.find(activity.getPhase().getId());
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.saveDeliverableActivityPhase(activity.getPhase().getNext(), activity.getDeliverable().getId(),
+        deliverableActivity);
+    }
+
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveDeliverableActivityPhase(upkeepPhase, activity.getDeliverable().getId(), deliverableActivity);
+        }
+      }
+    }
+    return activity;
+  }
+
+  private void saveDeliverableActivityPhase(Phase next, Long deliverableID, DeliverableActivity deliverableActivity) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<DeliverableActivity> deliverableActivityPrev =
+      deliverableActivityDAO.getDeliverableActivitiesByDeliverableIDAndPhase(deliverableID, phase.getId()).stream()
+        .filter(
+          r -> r.getActivity() != null && r.getActivity().getId() != null && deliverableActivity.getActivity() != null
+            && r.getActivity().getId().equals(deliverableActivity.getActivity().getId()))
+        .collect(Collectors.toList());
+
+    if (deliverableActivityPrev.isEmpty()) {
+      DeliverableActivity deliverableActivitysAdd = new DeliverableActivity();
+      deliverableActivitysAdd.setDeliverable(deliverableActivity.getDeliverable());
+      deliverableActivitysAdd.setPhase(phase);
+      deliverableActivitysAdd.setActivity(deliverableActivity.getActivity());
+      deliverableActivitysAdd.setId(null);
+      deliverableActivityDAO.save(deliverableActivitysAdd);
+    }
+    if (phase.getNext() != null) {
+      this.saveDeliverableActivityPhase(phase.getNext(), deliverableID, deliverableActivity);
+    }
   }
 
 
