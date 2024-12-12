@@ -1523,6 +1523,9 @@ public class ProjectInnovationAction extends BaseAction {
 
                 // Default name (only the institution name)
                 String defaultName = contributingPartner.getName();
+                if (contributingPartner.getAcronym() != null && !contributingPartner.getAcronym().isEmpty()) {
+                  defaultName = contributingPartner.getAcronym() + " - " + defaultName;
+                }
 
                 // Assign nameWithCountry if it is null or does not contain the country name
                 if (contributingPartner.getName() != null || !contributingPartner.getName().contains(tempName)) {
