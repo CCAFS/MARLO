@@ -1603,6 +1603,39 @@
   <br>
 [/#macro]
 
+[#macro meliaStudyMacro]
+  [#local name = "deliverable.deliverableInfo"  /]
+  <div class="simpleBox form-group">
+    <div class=" row yesNoInputDeliverable">
+      <span class="col-md-9">
+        <label class="yesNoLabel" for="">[@s.text name="deliverable.meliaStudy" /] [@customForm.req required=validateIsProgressWithStatus!true /]</label>      
+        <p><small>[@s.text name="deliverable.shfrmContribution.question.help" /] </small></p>
+      </span>
+      <div class="col-md-3">
+        [@customForm.yesNoInputDeliverable name="${name}.meliaStudy"  editable=editable inverse=false cssClass="type-yesNo text-center" /] 
+      </div>  
+    </div>
+    [#local isContributingShfrm = (deliverable.deliverableInfo.contributingShfrm?string)!""]
+    <div class="block-yesNo " style="display:${(isContributingShfrm == "true")?string('block', 'none')}">
+      <hr />
+      
+
+      <br>    
+      [#-- Shfrm Priority Action --]
+      <div class="form-group">
+
+        <div id="actionsListReference">
+          [@customForm.elementsListComponent id="deliverablePriorityActions" name="deliverable.shfrmPriorityActions" elementType="shfrmPriorityAction" help="deliverable.shfrmContribution.priorityAction.help" helpIcon=false elementList=(deliverable.shfrmPriorityActions)![] label="deliverable.shfrmContribution.priorityAction" listName="shfrmPriorityActions" keyFieldName="id" displayFieldName="composedName" required=validateIsProgressWithStatus!true /]
+        </div>
+       
+      </div>
+      
+
+    </div>
+  </div>
+  <br>
+[/#macro]
+
 
 [#macro subActionItemMacro subActionItem name index=-1 isTemplate=false]
   [#assign deliverableCustomName = "${name}[${index}]" /]

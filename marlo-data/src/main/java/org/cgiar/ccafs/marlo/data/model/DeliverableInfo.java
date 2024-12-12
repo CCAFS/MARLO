@@ -53,6 +53,8 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   private String shfrmContributionNarrative;
   @Expose
   private String shfrmContributionNarrativeAR;
+  @Expose
+  private Boolean meliaStudy;
 
   public DeliverableInfo() {
   }
@@ -105,6 +107,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public Boolean getMeliaStudy() {
+    return meliaStudy;
+  }
+
   public Integer getNewExpectedYear() {
     return newExpectedYear;
   }
@@ -112,6 +118,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public Phase getPhase() {
     return phase;
   }
+
 
   public RepIndRegion getRegion() {
     return region;
@@ -121,7 +128,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public Boolean getRemainingPending() {
     return remainingPending;
   }
-
 
   public String getShfrmContributionNarrative() {
     return shfrmContributionNarrative;
@@ -172,6 +178,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public int getYear() {
     return year;
   }
+
 
   /**
    * Check if the deliverables is completed in the current cycle
@@ -363,7 +370,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return false;
   }
 
-
   public boolean requeriedFair() {
     try {
       if (this.getDeliverableType().getFair()) {
@@ -378,19 +384,19 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return false;
   }
 
+
   public void setAdoptedLicense(Boolean adoptedLicense) {
     this.adoptedLicense = adoptedLicense;
   }
-
 
   public void setContributingShfrm(Boolean contributingShfrm) {
     this.contributingShfrm = contributingShfrm;
   }
 
+
   public void setCrpClusterKeyOutput(CrpClusterKeyOutput crpClusterKeyOutput) {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
   }
-
 
   public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
     this.crpProgramOutcome = crpProgramOutcome;
@@ -418,6 +424,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
   public void setIsLocationGlobal(Boolean isLocationGlobal) {
     this.isLocationGlobal = isLocationGlobal;
+  }
+
+  public void setMeliaStudy(Boolean meliaStudy) {
+    this.meliaStudy = meliaStudy;
   }
 
   public void setNewExpectedYear(Integer newExpectedYear) {
@@ -482,6 +492,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.setContributingShfrm(update.getContributingShfrm());
     this.setShfrmContributionNarrative(update.getShfrmContributionNarrative());
     this.setShfrmContributionNarrativeAR(update.getShfrmContributionNarrativeAR());
+    this.setMeliaStudy(update.getMeliaStudy());
   }
 }
 

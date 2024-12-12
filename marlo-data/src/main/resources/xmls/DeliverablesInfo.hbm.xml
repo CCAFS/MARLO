@@ -84,6 +84,9 @@
 		<property name="contributingShfrm" type="java.lang.Boolean">
             <column name="is_contributing_shfrm" />
         </property>
+		<property name="meliaStudy" type="java.lang.Boolean">
+            <column name="is_melia_study" />
+        </property>
         <property name="shfrmContributionNarrativeAR" type="string">
             <column name="shfrm_contribution_narrative_ar" sql-type="TEXT" />
         </property>        

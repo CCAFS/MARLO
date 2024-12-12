@@ -156,7 +156,8 @@
 
     [/#if]
     
-
+      </br>
+      [@deliverableMacros.meliaStudyMacro /]
     
     
   [#-- Key Outputs select --]
