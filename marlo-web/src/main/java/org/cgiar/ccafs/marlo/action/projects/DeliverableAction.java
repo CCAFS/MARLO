@@ -3052,9 +3052,13 @@ public class DeliverableAction extends BaseAction {
   private void saveDeliverableActivities(Deliverable deliverablePrew) {
     if (deliverable.getActivities() != null) {
       if (deliverablePrew.getDeliverableActivities() != null && !deliverablePrew.getDeliverableActivities().isEmpty()) {
-        List<DeliverableActivity> activityPrew = deliverablePrew.getDeliverableActivities().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList());
+        /*
+         * List<DeliverableActivity> activityPrew = deliverablePrew.getDeliverableActivities().stream()
+         * .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase()))
+         * .collect(Collectors.toList());
+         */
+        List<DeliverableActivity> activityPrew = deliverableActivityManager
+          .getDeliverableActivitiesByDeliverableIDAndPhase(deliverableID, this.getActualPhase().getId());
 
         for (DeliverableActivity deliverableActivity : activityPrew) {
           if (!deliverable.getActivities().contains(deliverableActivity)) {
@@ -3064,15 +3068,17 @@ public class DeliverableAction extends BaseAction {
       }
 
       for (DeliverableActivity deliverableActivity : deliverable.getActivities()) {
-        if (deliverableActivity.getId() == null || deliverableActivity.getId() == -1) {
-
-          deliverableActivity.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-          deliverableActivity.setPhase(this.getActualPhase());
-          deliverableActivityManager.saveDeliverableActivity(deliverableActivity);
-          // This add projectFocus to generate correct auditlog.
-          deliverablePrew.getDeliverableActivities().add(deliverableActivity);
+        if (deliverableActivity.getId() != null && deliverableActivity.getId() != -1) {
+          deliverableActivity = deliverableActivityManager.getDeliverableActivityById(deliverableActivity.getId());
         }
+
+        deliverableActivity.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+        deliverableActivity.setPhase(this.getActualPhase());
+        deliverableActivityManager.saveDeliverableActivity(deliverableActivity);
+        // This add projectFocus to generate correct auditlog.
+        deliverablePrew.getDeliverableActivities().add(deliverableActivity);
       }
+
     }
   }
 
