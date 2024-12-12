@@ -607,10 +607,52 @@ const deliverablePartnersModule = (function () {
   }
 })();
 
+/**
+ * Module for managing evidence references in a project.
+ * 
+ * This module provides functionality to initialize event listeners, add and remove reference items,
+ * update indexes, handle changes in deliverable types, and track selected options to prevent duplication.
+ * 
+ * @module evidencesModule
+ * 
+ * @function init
+ * @description Initializes event listeners and updates indexes for the specified reference.
+ * @param {string} nameReferenceParam - The reference name used to identify elements and bind events.
+ * 
+ * @function addReference
+ * @description Adds a new reference item to the reference list. This function clones a template element,
+ * updates its attributes, and appends it to the reference list. It also initializes the select2 plugin on
+ * the new select elements and updates the indexes and options.
+ * 
+ * @function removeReference
+ * @description Removes the reference element from the DOM with a hide animation. This function hides the
+ * parent element with a class of 'evidences' of the element that triggered the event, then removes it from
+ * the DOM. After removal, it updates the selected options in all instances and updates the indexes.
+ * 
+ * @function updateIndexes
+ * @description Updates the indexes of elements within a reference list. This function iterates over each
+ * `.evidences` element within a reference list and updates their indexes. It performs tasks such as setting
+ * name indexes, updating the `for` attribute of labels, and updating the class of radio inputs and blocks.
+ * 
+ * @function changeDeliverableType
+ * @description Handles the change event for the deliverable type dropdown. Fetches and updates the sub-type
+ * options based on the selected deliverable type.
+ * 
+ * @function trackOptionsSelectedInAllInstances
+ * @description Tracks the options selected in all instances of the evidence select elements and disables
+ * the options that are already selected in other instances to prevent duplication.
+ * 
+ * @returns {Object} An object containing the `init` function to initialize the module.
+ */
 const evidencesModule = function () {
 
   let nameReference = '';
 
+  /**
+   * Initializes event listeners and updates indexes for the specified reference.
+   *
+   * @param {string} nameReferenceParam - The reference name used to identify elements and bind events.
+   */
   function init(nameReferenceParam) {
 
     nameReference = nameReferenceParam;
@@ -628,6 +670,15 @@ const evidencesModule = function () {
   }
 
   // Functions
+
+  /**
+   * Adds a new reference item to the reference list.
+   * 
+   * This function clones a template element, updates its attributes, and appends it to the reference list.
+   * It also initializes the select2 plugin on the new select elements and updates the indexes and options.
+   * 
+   * @function
+   */
   function addReference() {
     
     const $listBlock = $(`.referenceList${nameReference}`);
@@ -677,6 +728,16 @@ const evidencesModule = function () {
     updateIndexes();
   }
 
+  /**
+   * Removes the reference element from the DOM with a hide animation.
+   * 
+   * This function hides the parent element with a class of 'evidences' 
+   * of the element that triggered the event, then removes it from the DOM.
+   * After removal, it updates the selected options in all instances and 
+   * updates the indexes.
+   * 
+   * @function
+   */
   function removeReference() {
     var $parent = $(this).parents('.evidences');
     $parent.hide(500, function() {
@@ -689,6 +750,20 @@ const evidencesModule = function () {
     });
   }
 
+  /**
+   * Updates the indexes of elements within a reference list.
+   * 
+   * This function iterates over each `.evidences` element within a reference list and updates their indexes.
+   * It performs the following tasks:
+   * - Sets name indexes for each reference.
+   * - Updates the `for` attribute of labels to match the `id` of the preceding input element.
+   * - For radio inputs, updates the `id` and `for` attributes to include the reference and index.
+   * - Updates the class of radio inputs to include the reference and index.
+   * - Updates the class of blocks to match the `radioType-` indexes.
+   * 
+   * @function updateIndexes
+   * @returns {void}
+   */
   function updateIndexes() {
 
     $(`.referenceList${nameReference}`).find('.evidences').each(function(i, reference) {
@@ -730,6 +805,13 @@ const evidencesModule = function () {
     });
   }
 
+  /**
+   * Handles the change event for the deliverable type dropdown.
+   * Fetches and updates the sub-type options based on the selected deliverable type.
+   *
+   * @function changeDeliverableType
+   * @returns {void}
+   */
   function changeDeliverableType() {
     const typeID = $(this).val();
 
@@ -767,22 +849,26 @@ const evidencesModule = function () {
   /**
    * This function tracks the options selected in all instances of the evidence select elements
    * and disables the options that are already selected in other instances to prevent duplication.
+   * 
+   * @function trackOptionsSelectedInAllInstances
+   * @returns {void}
    */
   function trackOptionsSelectedInAllInstances() {
     const $listBlock = $(`.referenceList${nameReference}`);
     const selectedValues = new Set();
 
-    // Collect all selected values
+    // Collect the selected values from all select elements within the reference list
     $listBlock.find('select.evidence option:selected').each(function() {
       selectedValues.add(this.value);
     });
 
-    // Disable options in all select elements
+    // Disable options in all select elements that are already selected in other instances to prevent duplication
     $listBlock.find('select.evidence').each(function() {
       const $select = $(this);
       $select.find('option').each(function() {
         const $option = $(this);
-        if (selectedValues.has($option.val()) && !$option.is(':selected')) {
+        const isSelectedAndNotCurrent = selectedValues.has($option.val()) && !$option.is(':selected');
+        if (isSelectedAndNotCurrent) {
           $option.prop('disabled', true);
         } else {
           $option.prop('disabled', false);
