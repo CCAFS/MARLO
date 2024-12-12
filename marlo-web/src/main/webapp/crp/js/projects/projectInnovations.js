@@ -620,7 +620,9 @@ const evidencesModule = function () {
     // Change deliverable type
     $(".typeSelect").on("change", changeDeliverableType);
 
-    //$(`.evidenceInnovation${nameReference} , .evidenceDeliverable${nameReference}`).on("change", trackOptionsSelectedInAllInstances);
+    trackOptionsSelectedInAllInstances();
+
+    $(`.evidenceInnovation${nameReference} , .evidenceDeliverable${nameReference}`).on("change", trackOptionsSelectedInAllInstances);
 
     updateIndexes();
   }
@@ -668,6 +670,9 @@ const evidencesModule = function () {
 
     // Show the element
     $newItem.appendTo($listBlock).hide().show(350);
+
+    //Update options selected in all instances
+    trackOptionsSelectedInAllInstances();
     // Update indexes
     updateIndexes();
   }
@@ -677,6 +682,8 @@ const evidencesModule = function () {
     $parent.hide(500, function() {
       // Remove DOM element
       $parent.remove();
+      //Update options selected in all instances
+      trackOptionsSelectedInAllInstances();
       // Update indexes
       updateIndexes();
     });
@@ -757,53 +764,42 @@ const evidencesModule = function () {
   
   }
 
-/*   function trackOptionsSelectedInAllInstances() {
-    const $select = $(this);
+  /**
+   * This function tracks the options selected in all instances of the evidence select elements
+   * and disables the options that are already selected in other instances to prevent duplication.
+   */
+  function trackOptionsSelectedInAllInstances() {
     const $listBlock = $(`.referenceList${nameReference}`);
-    const $template = $(`#evidences-${nameReference}-template`);
+    const selectedValues = new Set();
 
-    console.log('listBlock', $listBlock);
+    // Collect all selected values
+    $listBlock.find('select.evidence option:selected').each(function() {
+      selectedValues.add(this.value);
+    });
 
-    const $selectedOptions = $select.find('option:selected');
-    
-    $template.find('select.evidence').each(function(_i, select) {
-      const $select = $(select);
-      const $options = $select.find('option');
-      $options.each(function(_i, option) {
-        const $option = $(option);
-        const value = $option.val();
-        if($selectedOptions.toArray().some((item) => item.value === value)) {
+    // Disable options in all select elements
+    $listBlock.find('select.evidence').each(function() {
+      const $select = $(this);
+      $select.find('option').each(function() {
+        const $option = $(this);
+        if (selectedValues.has($option.val()) && !$option.is(':selected')) {
           $option.prop('disabled', true);
         } else {
           $option.prop('disabled', false);
         }
       });
-    });
 
-    $listBlock.find('select.evidence').each(function(_i, select) {
-
-
-      if($(select).is($select)) {
-        console.log('is me, Mario');
-        return;
+      // Reinitialize select2 to reflect changes
+      if ($select.data('select2')) {
+        $select.select2('destroy');
       }
-
-      console.log('select', select);
-
-      const $options = $(select).find('option');
-      $options.each(function(_i, option) {
-        const $option = $(option);
-        const value = $option.val();
-        if($selectedOptions.toArray().some((item) => item.value === value)) {
-          $option.prop('disabled', true);
-        } else {
-          $option.prop('disabled', false);
-        }
+      $select.select2({
+        width: '100%',
+        templateResult: formatList,
+        templateSelection: formatList
       });
     });
-
-
-  } */
+  }
 
   return {
     init: init
