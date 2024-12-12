@@ -177,12 +177,12 @@
             --]
             [#-- Geographic scope - Countries  --]
             <div class="form-group geographicScopeBlock">
-              [#local geographicScopeList = (element.geographicScopes)![] ]
-              [#local isGlobal =        findElementID(geographicScopeList,  action.reportingIndGeographicScopeGlobal) /]
-              [#local isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
-              [#local isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
-              [#local isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
-              [#local isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
+              [#local geographicScopeElement = (element.geographicScopes)![] ]
+              [#local isGlobal =        findElementID(geographicScopeElement,  action.reportingIndGeographicScopeGlobal) /]
+              [#local isRegional =      findElementID(geographicScopeElement,  action.reportingIndGeographicScopeRegional) /]
+              [#local isMultiNational = findElementID(geographicScopeElement,  action.reportingIndGeographicScopeMultiNational) /]
+              [#local isNational =      findElementID(geographicScopeElement,  action.reportingIndGeographicScopeNational) /]
+              [#local isSubNational =   findElementID(geographicScopeElement,  action.reportingIndGeographicScopeSubNational) /]
               
               <label for="" class="label--2">[@s.text name="projectInnovations.geographicScopeTopic" /]:[@customForm.req required=(editable && reportingActive) /]
                 <div>
@@ -193,7 +193,7 @@
                 <div class="form-group row">
                   <div class="form-group col-md-4">
                     [#-- Geographic Scope --]
-                    [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes maxLimit=1 label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=!isProgressActive /]
+                    [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes maxLimit=1 label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=!isProgressActive orderById=true /]
                   </div>
                   <div class="form-group nationalBlock col-md-4" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
                     [#-- Multinational, National and Subnational scope --]

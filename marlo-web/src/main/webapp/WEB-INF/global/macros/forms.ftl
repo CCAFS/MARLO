@@ -666,9 +666,9 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey="" showTitle=true isFlex=false isNote=false isMainTitle=false]
+[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey="" showTitle=true isFlex=false isNote=false isMainTitle=false orderById=false ]
   [#attempt]
-    [#local list = ((listName?eval)?sort_by((displayFieldName?split("."))))![] /] 
+    [#local list = ((listName?eval)?sort_by(((orderById?then(keyFieldName,displayFieldName))?split("."))))![] /] 
   [#recover]
     [#local list = [] /] 
   [/#attempt]
