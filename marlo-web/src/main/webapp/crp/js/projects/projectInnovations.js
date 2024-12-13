@@ -286,9 +286,9 @@ function addSelect2() {
       templateSelection: formatList
   });
 
-  $('form select.countriesIds').select2({
+  $('form select.countriesSelect').select2({
       maximumSelectionLength: 0,
-      placeholder: "Select a country(ies)",
+      placeholder: "Select a country",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
       width: '100%'
