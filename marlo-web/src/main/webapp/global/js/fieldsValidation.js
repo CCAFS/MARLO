@@ -87,6 +87,12 @@ function getInputElement(fieldName,message) {
         $(elementQuery).parent().addClass("missingSelect");
       }
     }
+
+    const associateLabel = $("label[for='" + fieldName + "']");
+    if(associateLabel.exists()) {
+      $(associateLabel).attr("title", message);
+      $(associateLabel).addClass("fieldError");
+    }
   } else {
     // VALIDATE IF IT'S CHECKBOX
     if(elementQuery.attr("type") == "checkbox") {

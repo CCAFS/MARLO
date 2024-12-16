@@ -1523,6 +1523,9 @@ public class ProjectInnovationAction extends BaseAction {
 
                 // Default name (only the institution name)
                 String defaultName = contributingPartner.getName();
+                if (contributingPartner.getAcronym() != null && !contributingPartner.getAcronym().isEmpty()) {
+                  defaultName = contributingPartner.getAcronym() + " - " + defaultName;
+                }
 
                 // Assign nameWithCountry if it is null or does not contain the country name
                 if (contributingPartner.getName() != null || !contributingPartner.getName().contains(tempName)) {
@@ -1572,10 +1575,10 @@ public class ProjectInnovationAction extends BaseAction {
       phaseResearchList = repIndPhaseResearchPartnershipManager.findAll();
       stageInnovationList = repIndStageInnovationManager.findAll();
       geographicScopeList = repIndGeographicScopeManager.findAll();
+
       try {
         if (geographicScopeList != null && !geographicScopeList.isEmpty()) {
-          geographicScopeList = geographicScopeList.stream().sorted(Comparator.comparing(RepIndGeographicScope::getId))
-            .collect(Collectors.toList());
+
           RepIndGeographicScope geographicDelete;
           // Remove multi-national
           geographicDelete = repIndGeographicScopeManager.getRepIndGeographicScopeById(3);
@@ -1583,14 +1586,18 @@ public class ProjectInnovationAction extends BaseAction {
             geographicScopeList.remove(geographicDelete);
           }
           // Remove sub-national
-          geographicDelete = repIndGeographicScopeManager.getRepIndGeographicScopeById(6);
+          geographicDelete = repIndGeographicScopeManager.getRepIndGeographicScopeById(5);
           if (geographicDelete != null) {
             geographicScopeList.remove(geographicDelete);
           }
+
+          geographicScopeList = geographicScopeList.stream().sorted(Comparator.comparing(RepIndGeographicScope::getId))
+            .collect(Collectors.toList());
         }
       } catch (Exception e) {
         Log.error("error deleting elements from " + e);
       }
+
       innovationTypeList = repIndInnovationTypeManager.findAll();
       innovationNatureList = repIndInnovationNatureManager.findAll();
       focusLevelList = focusLevelManager.findAll();
@@ -1841,7 +1848,9 @@ public class ProjectInnovationAction extends BaseAction {
               m -> m != null && m.isActive() && m.getYear() != 0 && m.getYear() <= this.getActualPhase().getYear())
             .collect(Collectors.toList()));
 
-          if (!this.crpOutcomes.contains(projectOutcome.getCrpProgramOutcome())) {
+          if (!this.crpOutcomes.contains(projectOutcome.getCrpProgramOutcome())
+            && projectOutcome.getCrpProgramOutcome().getDescription() != null && !projectOutcome.getCrpProgramOutcome()
+              .getDescription().contains(APConstants.CRP_PROGRAM_OUTCOME_DEPRECATED)) {
             this.crpOutcomes.add(projectOutcome.getCrpProgramOutcome());
           }
 

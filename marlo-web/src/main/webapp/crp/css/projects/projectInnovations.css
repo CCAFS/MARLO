@@ -193,12 +193,18 @@ div.nationalBlock div.selectList span.selection{
   height: 50px;
 }
 
+div.nationalBlock div.selectList .select2-search__field {
+  position: absolute;
+  top: -30px;
+  left: 15px;
+}
+
 div.nationalBlock div.selectList span.selection span.select2-selection{
   position: relative;
 }
 
 div.nationalBlock div.selectList span.selection span.select2-selection::before{
-  content: "Select a Country";
+  content: "";
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
