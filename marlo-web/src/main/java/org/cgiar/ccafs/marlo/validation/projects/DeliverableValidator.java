@@ -715,7 +715,7 @@ public class DeliverableValidator extends BaseValidator {
             action.addMessage(action.getText("deliverable.deliverableInfo.studyType"));
             action.addMissingField("deliverable.deliverableInfo.studyType");
             action.getInvalidFields().put("list-deliverable.deliverableInfo.studyType",
-              InvalidFieldsMessages.EMPTYFIELD);
+              InvalidFieldsMessages.EMPTYLIST);
           }
 
           // Commissioning study validator
