@@ -696,31 +696,48 @@ public class DeliverableValidator extends BaseValidator {
       }
 
       // Validate other MELIA studies
-      if (dInfo != null && dInfo.getMeliaStudy()) {
-        // Study type validator
-        if (dInfo.getStudyType() == null
-          || (dInfo.getStudyType().getId() != null && dInfo.getStudyType().getId() == -1)) {
-          action.addMessage(action.getText("deliverable.deliverableInfo.studyType"));
-          action.addMissingField("deliverable.deliverableInfo.studyType");
-          action.getInvalidFields().put("list-deliverable.deliverableInfo.studyType", InvalidFieldsMessages.EMPTYFIELD);
-        }
+      if (action.hasSpecificities(APConstants.DELIVERABLE_MELIA_MODULE_ACTIVE) && dInfo != null) {
 
-        // Commissioning study validator
-        if (!(this.isValidString(dInfo.getCommissioningStudy()))) {
-          action.addMessage(action.getText("deliverable.deliverableInfo.commissioningStudy"));
-          action.addMissingField("deliverable.deliverableInfo.commissioningStudy");
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.commissioningStudy",
+        // Validate empty MELIA question
+        if (dInfo.getMeliaStudy() == null) {
+          action.addMessage(action.getText("deliverable.deliverableInfo.meliaStudy"));
+          action.addMissingField("deliverable.deliverableInfo.meliaStudy");
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.meliaStudy",
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
-        // Activity description validator
-        if (!(this.isValidString(dInfo.getCommissioningStudy()))) {
-          action.addMessage(action.getText("deliverable.deliverableInfo.activityDescription"));
-          action.addMissingField("deliverable.deliverableInfo.activityDescription");
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.activityDescription",
-            InvalidFieldsMessages.EMPTYFIELD);
+        // If MELIA question is true
+        if (dInfo.getMeliaStudy() != null && dInfo.getMeliaStudy()) {
+
+          // Study type validator
+          if (dInfo.getStudyType() == null
+            || (dInfo.getStudyType().getId() != null && dInfo.getStudyType().getId() == -1)) {
+            action.addMessage(action.getText("deliverable.deliverableInfo.studyType"));
+            action.addMissingField("deliverable.deliverableInfo.studyType");
+            action.getInvalidFields().put("list-deliverable.deliverableInfo.studyType",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          // Commissioning study validator
+          if (!(this.isValidString(dInfo.getCommissioningStudy())
+            && this.wordCount(dInfo.getActivityDescription()) <= 15)) {
+            action.addMessage(action.getText("deliverable.deliverableInfo.commissioningStudy"));
+            action.addMissingField("deliverable.deliverableInfo.commissioningStudy");
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.commissioningStudy",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          // Activity description validator
+          if (!(this.isValidString(dInfo.getActivityDescription())
+            && this.wordCount(dInfo.getActivityDescription()) <= 80)) {
+            action.addMessage(action.getText("deliverable.deliverableInfo.activityDescription"));
+            action.addMissingField("deliverable.deliverableInfo.activityDescription");
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.activityDescription",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
       }
+
     }
 
     // 2024/06/07 cgamboa functionality to validate activities, from the general check

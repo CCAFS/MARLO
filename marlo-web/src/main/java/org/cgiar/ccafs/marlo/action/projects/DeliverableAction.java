@@ -4862,6 +4862,15 @@ public class DeliverableAction extends BaseAction {
       deliverableInfoDb.setDeliverableType(null);
     }
 
+    try {
+      if (deliverable.getDeliverableInfo().getStudyType() == null
+        || deliverable.getDeliverableInfo().getStudyType().getId() == null
+        || deliverable.getDeliverableInfo().getStudyType().getId().longValue() == -1) {
+        deliverableInfoDb.setStudyType(null);
+      }
+    } catch (Exception e) {
+      Log.error("Validate null study type id " + e);
+    }
     // Set CrpProgramOutcome to null if has an -1 id
     if (deliverable.getDeliverableInfo().getCrpProgramOutcome() == null
       || deliverable.getDeliverableInfo().getCrpProgramOutcome().getId() == null

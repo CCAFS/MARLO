@@ -1609,14 +1609,14 @@
     <div class=" row yesNoInputDeliverable">
       <span class="col-md-9">
         <label class="yesNoLabel" for="">[@s.text name="deliverable.melia.question" /] [@customForm.req required=true /]</label>      
-        <p><small>[@s.text name="deliverable.melia.question.help" /] </small></p>
+        
       </span>
       <div class="col-md-3">
-        [@customForm.yesNoInputDeliverable name="${name}.meliaStudy"  editable=editable inverse=false cssClass="type-yesNo text-center" /] 
+        [@customForm.yesNoInputDeliverable name="${name}.meliaStudy" editable=editable inverse=false cssClass="type-yesNo text-center" /] 
       </div>  
     </div>
-    [#local isContributingShfrm = (deliverable.deliverableInfo.meliaStudy?string)!""]
-    <div class="block-yesNo " style="display:${(isContributingShfrm == "true")?string('block', 'none')}">
+    [#local isMeliaStudy = (deliverable.deliverableInfo.meliaStudy?string)!""]
+    <div class="block-yesNo " style="display:${(isMeliaStudy == "true")?string('block', 'none')}">
       <hr />
       
       <br>    
@@ -1629,14 +1629,20 @@
 
       [#-- Commissioning Study --]
       <div class="form-group">
-        [@customForm.input name="deliverable.deliverableInfo.commissioningStudy" value="${(deliverable.deliverableInfo.commissioningStudy)!}" i18nkey="deliverable.melia.commissioning"  placeholder="" className="limitWords-200" required=true!true editable=editable /]
+        [@customForm.input name="deliverable.deliverableInfo.commissioningStudy" value="${(deliverable.deliverableInfo.commissioningStudy)!}" help="deliverable.deliverableInfo.commissioningStudy.help" helpIcon=false i18nkey="deliverable.melia.commissioning"  placeholder="" className="limitWords-15" required=true!true editable=editable /]
       </div>
       
       [#-- Activity Description --]
       <div class="form-group">
-        [@customForm.textArea name="deliverable.deliverableInfo.activityDescription" value="${(deliverable.deliverableInfo.activityDescription)!}" i18nkey="deliverable.melia.activity"  placeholder="" className="limitWords-200" required=true!true editable=editable /]
+      [#--  
+        <label class="" style="width:100%">[@s.text name="deliverable.melia.activity" /]: <small>[@customForm.req required=true /]</small></label>
+      --]
+        <label class="note--2">
+          <p>[@s.text name="deliverable.melia.activity.help" /]</p>
+        </label>
+        [@customForm.textArea name="deliverable.deliverableInfo.activityDescription" value="${(deliverable.deliverableInfo.activityDescription)!}" i18nkey="deliverable.melia.activity" required=true placeholder="" className="limitWords-80" editable=editable /]
       </div>
-
+      <br>
     </div>
   </div>
   <br>
