@@ -50,6 +50,12 @@
 		<property name="year" type="int">
 			<column name="year" not-null="true" />
 		</property>
+		<property name="commissioningStudy" type="string">
+            <column name="commissioning_study" sql-type="TEXT" />
+        </property>
+		<property name="activityDescription" type="string">
+            <column name="activity_description" sql-type="TEXT" />
+        </property>
 		<property name="status" type="java.lang.Integer">
 			<column name="status" />
 		</property>
@@ -101,5 +107,9 @@
 			class="org.cgiar.ccafs.marlo.data.model.RepIndRegion" fetch="select">
 			<column name="region_id" />
 		</many-to-one>
+		<many-to-one name="studyType"
+            class="org.cgiar.ccafs.marlo.data.model.StudyType" fetch="select">
+            <column name="study_type_id" />
+        </many-to-one>
 	</class>
 </hibernate-mapping>

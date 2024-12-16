@@ -1608,28 +1608,34 @@
   <div class="simpleBox form-group">
     <div class=" row yesNoInputDeliverable">
       <span class="col-md-9">
-        <label class="yesNoLabel" for="">[@s.text name="deliverable.meliaStudy" /] [@customForm.req required=validateIsProgressWithStatus!true /]</label>      
-        <p><small>[@s.text name="deliverable.shfrmContribution.question.help" /] </small></p>
+        <label class="yesNoLabel" for="">[@s.text name="deliverable.melia.question" /] [@customForm.req required=true /]</label>      
+        <p><small>[@s.text name="deliverable.melia.question.help" /] </small></p>
       </span>
       <div class="col-md-3">
         [@customForm.yesNoInputDeliverable name="${name}.meliaStudy"  editable=editable inverse=false cssClass="type-yesNo text-center" /] 
       </div>  
     </div>
-    [#local isContributingShfrm = (deliverable.deliverableInfo.contributingShfrm?string)!""]
+    [#local isContributingShfrm = (deliverable.deliverableInfo.meliaStudy?string)!""]
     <div class="block-yesNo " style="display:${(isContributingShfrm == "true")?string('block', 'none')}">
       <hr />
       
-
       <br>    
-      [#-- Shfrm Priority Action --]
+      [#-- Study Types --]
       <div class="form-group">
-
         <div id="actionsListReference">
-          [@customForm.elementsListComponent id="deliverablePriorityActions" name="deliverable.shfrmPriorityActions" elementType="shfrmPriorityAction" help="deliverable.shfrmContribution.priorityAction.help" helpIcon=false elementList=(deliverable.shfrmPriorityActions)![] label="deliverable.shfrmContribution.priorityAction" listName="shfrmPriorityActions" keyFieldName="id" displayFieldName="composedName" required=validateIsProgressWithStatus!true /]
-        </div>
-       
+          [@customForm.select className="" name="deliverable.deliverableInfo.studyType.id" i18nkey="deliverable.melia.studyType" listName="studyTypeList" keyFieldName="id" displayFieldName="name" required=true multiple=false editable=editable/]
+        </div>      
+      </div>
+
+      [#-- Commissioning Study --]
+      <div class="form-group">
+        [@customForm.input name="deliverable.deliverableInfo.commissioningStudy" value="${(deliverable.deliverableInfo.commissioningStudy)!}" i18nkey="deliverable.melia.commissioning"  placeholder="" className="limitWords-200" required=true!true editable=editable /]
       </div>
       
+      [#-- Activity Description --]
+      <div class="form-group">
+        [@customForm.textArea name="deliverable.deliverableInfo.activityDescription" value="${(deliverable.deliverableInfo.activityDescription)!}" i18nkey="deliverable.melia.activity"  placeholder="" className="limitWords-200" required=true!true editable=editable /]
+      </div>
 
     </div>
   </div>

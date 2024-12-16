@@ -620,20 +620,16 @@ public class DeliverableValidator extends BaseValidator {
 
           // Validate contribution narrative
           if (action.isReportingActive()) {
-            if (!(this
-              .isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrativeAR())
-              && this.wordCount(
-                deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrativeAR()) <= 200)) {
+            if (!(this.isValidString(dInfo.getShfrmContributionNarrativeAR()) && this.wordCount(
+              deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrativeAR()) <= 200)) {
               action.addMessage(action.getText("deliverable.deliverableInfo.shfrmContributionNarrativeAR"));
               action.addMissingField("deliverable.deliverableInfo.shfrmContributionNarrativeAR");
               action.getInvalidFields().put("input-deliverable.deliverableInfo.shfrmContributionNarrativeAR",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           } else {
-            if (!(this
-              .isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative())
-              && this.wordCount(
-                deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative()) <= 200)) {
+            if (!(this.isValidString(dInfo.getShfrmContributionNarrative()) && this.wordCount(
+              deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative()) <= 200)) {
               action.addMessage(action.getText("deliverable.deliverableInfo.shfrmContributionNarrative"));
               action.addMissingField("deliverable.deliverableInfo.shfrmContributionNarrative");
               action.getInvalidFields().put("input-deliverable.deliverableInfo.shfrmContributionNarrative",
@@ -696,6 +692,33 @@ public class DeliverableValidator extends BaseValidator {
             action.getInvalidFields().put("input-deliverable.deliverableInfo.contributingShfrm",
               InvalidFieldsMessages.EMPTYFIELD);
           }
+        }
+      }
+
+      // Validate other MELIA studies
+      if (dInfo != null && dInfo.getMeliaStudy()) {
+        // Study type validator
+        if (dInfo.getStudyType() == null
+          || (dInfo.getStudyType().getId() != null && dInfo.getStudyType().getId() == -1)) {
+          action.addMessage(action.getText("deliverable.deliverableInfo.studyType"));
+          action.addMissingField("deliverable.deliverableInfo.studyType");
+          action.getInvalidFields().put("list-deliverable.deliverableInfo.studyType", InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // Commissioning study validator
+        if (!(this.isValidString(dInfo.getCommissioningStudy()))) {
+          action.addMessage(action.getText("deliverable.deliverableInfo.commissioningStudy"));
+          action.addMissingField("deliverable.deliverableInfo.commissioningStudy");
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.commissioningStudy",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // Activity description validator
+        if (!(this.isValidString(dInfo.getCommissioningStudy()))) {
+          action.addMessage(action.getText("deliverable.deliverableInfo.activityDescription"));
+          action.addMissingField("deliverable.deliverableInfo.activityDescription");
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.activityDescription",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     }

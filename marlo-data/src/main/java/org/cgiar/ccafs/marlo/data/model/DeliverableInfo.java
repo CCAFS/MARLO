@@ -55,12 +55,26 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   private String shfrmContributionNarrativeAR;
   @Expose
   private Boolean meliaStudy;
+  @Expose
+  private String commissioningStudy;
+  @Expose
+  private String activityDescription;
+  @Expose
+  private StudyType studyType;
 
   public DeliverableInfo() {
   }
 
+  public String getActivityDescription() {
+    return activityDescription;
+  }
+
   public Boolean getAdoptedLicense() {
     return adoptedLicense;
+  }
+
+  public String getCommissioningStudy() {
+    return commissioningStudy;
   }
 
   public Boolean getContributingShfrm() {
@@ -95,6 +109,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return geographicScope;
   }
 
+
   public Boolean getIsLocationGlobal() {
     return isLocationGlobal;
   }
@@ -105,7 +120,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   public Boolean getMeliaStudy() {
     return meliaStudy;
@@ -119,11 +133,9 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return phase;
   }
 
-
   public RepIndRegion getRegion() {
     return region;
   }
-
 
   public Boolean getRemainingPending() {
     return remainingPending;
@@ -167,6 +179,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     }
   }
 
+  public StudyType getStudyType() {
+    return studyType;
+  }
+
   public String getTitle() {
     return title;
   }
@@ -178,7 +194,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public int getYear() {
     return year;
   }
-
 
   /**
    * Check if the deliverables is completed in the current cycle
@@ -245,7 +260,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
     return false;
   }
-
 
   public Boolean isRequiredToBeReported() {
     if (this.getStatus() == null) {
@@ -342,7 +356,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return false;
   }
 
-
   /**
    * Check if the deliverable has complete status for the current cycle with the expected year >= phase.year
    * Used in BaseAction.isDeliverableComplete to know if the Deliverable is Complete
@@ -370,6 +383,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return false;
   }
 
+
   public boolean requeriedFair() {
     try {
       if (this.getDeliverableType().getFair()) {
@@ -384,15 +398,21 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return false;
   }
 
+  public void setActivityDescription(String activityDescription) {
+    this.activityDescription = activityDescription;
+  }
 
   public void setAdoptedLicense(Boolean adoptedLicense) {
     this.adoptedLicense = adoptedLicense;
   }
 
+  public void setCommissioningStudy(String commissioningStudy) {
+    this.commissioningStudy = commissioningStudy;
+  }
+
   public void setContributingShfrm(Boolean contributingShfrm) {
     this.contributingShfrm = contributingShfrm;
   }
-
 
   public void setCrpClusterKeyOutput(CrpClusterKeyOutput crpClusterKeyOutput) {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
@@ -462,6 +482,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.statusDescription = statusDescription;
   }
 
+  public void setStudyType(StudyType studyType) {
+    this.studyType = studyType;
+  }
+
   public void setTitle(String title) {
     this.title = title;
   }
@@ -493,6 +517,9 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.setShfrmContributionNarrative(update.getShfrmContributionNarrative());
     this.setShfrmContributionNarrativeAR(update.getShfrmContributionNarrativeAR());
     this.setMeliaStudy(update.getMeliaStudy());
+    this.setCommissioningStudy(update.getCommissioningStudy());
+    this.setActivityDescription(update.getActivityDescription());
+    this.setStudyType(update.getStudyType());
   }
 }
 
