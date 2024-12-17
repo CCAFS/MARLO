@@ -177,6 +177,20 @@
   </div>  
 </section>
 
+[#-- Partner users TEMPLATE --]
+<div id="partnerUsers" style="display:none">
+  [#list partners as partner]
+    <div class="institution-${partner.institution.id}">
+      [#assign usersList = (action.getUserList(partner.institution.id))![]]
+      <div class="users-1">
+        [#list usersList as user]
+          [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="innovation.partnerships[0].partnershipPersons" isUserChecked=false isResponsable=true /]
+        [/#list]
+      </div>
+    </div>
+  [/#list]
+</div>
+
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#function findElementID list id]
@@ -185,17 +199,3 @@
   [/#list]
   [#return false]
 [/#function]
-
-[#-- Partner users TEMPLATE --]
-<div id="partnerUsers" style="display:none">
-  [#list partners as partner]
-    <div class="institution-${partner.institution.id}">
-      [#assign usersList = (action.getUserList(partner.institution.id))![]]
-      <div class="users-1">
-        [#list usersList as user]
-          [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="_TEMPLATE_innovation.partnerships[0].partnershipPersons" isUserChecked=false isResponsable=true /]
-        [/#list]
-      </div>
-    </div>
-  [/#list]
-</div>

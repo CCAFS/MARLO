@@ -7069,6 +7069,22 @@ p.checkDisable:before {
 	margin-right: 0;
 }
 
+.inputsFlat input[type="checkbox"][readonly] {
+	cursor: not-allowed !important;
+	pointer-events: none !important;
+}
+
+.inputsFlat input[type="checkbox"][readonly]+.checkbox-label {
+	cursor: not-allowed !important;
+}
+
+.inputsFlat input[type="checkbox"][readonly]+.checkbox-label:before {
+	border-color: #C6C6C6 !important;
+	background: #C6C6C6 !important;
+	pointer-events: none !important;
+	cursor: not-allowed !important;
+}
+
 /* News Button */
 .newsButton a {
 	position: relative;

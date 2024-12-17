@@ -24,9 +24,6 @@ $(document).ready(function() {
   // Change counter value of Shared Cluster
   counterSharedCluster();
 
-  //init partners methods
-  deliverablePartnersModule.init();
-
   // Add image to SDG Targets
   $('select.elementType-sdg').on("change", addImageToSelectSDGTargets);
   addImageToSelectSDGTargets();
@@ -43,7 +40,8 @@ $(document).ready(function() {
   $('select.elementType-institution').on('change',updateAllianceTab);
   $('div.removeElementType-institution').on('click',updateAllianceTab);
 
-
+  //init partners methods
+  deliverablePartnersModule.init();
 
   feedbackAutoImplementation();
 });
@@ -58,7 +56,10 @@ function attachEvents() {
     // Events
     $('.addActors').on('click', addActor);
     $('.removeActor').on('click', removeActor);
-
+    $('.actorsList .actorsInnovation').each(function(_i,e) {
+      $(e).find('input[type="checkbox"].sexAgeNotApply').on('change', onChangeCheckboxSexAndAge);
+    });
+    
     // Function
     function addActor() {
 
@@ -272,7 +273,6 @@ function attachEvents() {
 
 }
 function AddRequired(){
-  console.log($('#isClearLeadToAddRequired').is(":checked"));
   if ($('#isClearLeadToAddRequired').is(":checked")) {
     $('.top-five-contributing').find('.requiredTag').show();
   }else{
@@ -286,27 +286,12 @@ function addSelect2() {
       templateSelection: formatList
   });
 
-  $('form select.countriesIds').select2({
+  $('form select.countriesSelect').select2({
       maximumSelectionLength: 0,
-      placeholder: "Select a country(ies)",
+      placeholder: "Select a country",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
       width: '100%'
-  });
-
-  $(".evidenceByDeliverable select").select2({
-    data: function (data) {
-      return data;
-    },
-    escapeMarkup: function(markup) {
-      return markup;
-    },
-    templateResult: function(data) {
-      return data.html;
-    },
-    templateSelection: function(data) {
-      return data.text;
-    }
   });
 
 }
@@ -529,7 +514,6 @@ function changeDisplayMessageInScaling() {
     const $elementValue = $element.attr('id');
 
     if($elementValue == $readinessScale) {
-      console.log('elementValue',$elementValue);
       $scalingMessageContainer.find('h5').html($element.find('h5').html());
       $scalingMessageContainer.find('p').html($element.find('p').html());
     }
@@ -549,38 +533,7 @@ const deliverablePartnersModule = (function () {
   function attachEvents() {
     // On change institution
     $('select.partnerInstitutionID').on('change', changePartnerInstitution);
-    // On remove a deliverable partner item
-    $('.removePartnerItem').on('click', removePartnerItem);
-    // On add a new deliverable partner Item
-    $('.addPartnerItem').on('click', addPartnerItem);
 
-    updateIndexes();
-
-  }
-
-  function addPartnerItem() {
-    var $listBlock = $('.projectInnovationsPartners');
-    var $template = $('#deliverablePartnerItem-template');
-
-    if($template.find('select').data('select2')){
-      $template.find('select').select2("destroy");
-    }
-    
-    var $newItem = $template.clone(true).removeAttr('id');
-
-    $template.find('select').select2();
-    $newItem.find('select').select2();
-    $listBlock.append($newItem);
-    $newItem.show();
-    updateIndexes();
-  }
-
-  function removePartnerItem() {
-    var $item = $(this).parents('.deliverablePartnerItem');
-    $item.hide(500, function () {
-      $item.remove();
-      updateIndexes();
-    });
   }
 
   function changePartnerInstitution() {
@@ -590,48 +543,33 @@ const deliverablePartnersModule = (function () {
     var isResponsible = (typeID == 1);
     // Clean users list
     $usersBlock.empty();
+
+    const $partnerUsersBlock = $('#partnerUsers .institution-' + this.value + ' .users-' + typeID);
+
+    $partnerUsersBlock.find('input').each(function (_i, user) {
+      user.id = user.id + '_TEMPLATE_';
+    });
+
+    $partnerUsersBlock.find('label').each(function (_i, label) {
+      label.htmlFor = label.htmlFor + '_TEMPLATE_';
+    });
     // Get new users list
-    var $newUsersBlock = $('#partnerUsers .institution-' + this.value + ' .users-' + typeID).clone(true);
-    //Remove name _TEMPLATE_ from inputs
-    $newUsersBlock.find('input').each(function(_i,e) {
-      e.name = (e.name).replace("_TEMPLATE_", "");
-      e.id = (e.id).replace("_TEMPLATE_", "");
+    var $newUsersBlock = $partnerUsersBlock.clone(true);
+
+    $newUsersBlock.find('input').each(function (_i, user) {
+      if((user.id).includes('_TEMPLATE_')){
+        user.id = user.id.replace('_TEMPLATE_', '');
+      }
+    });
+
+    $newUsersBlock.find('label').each(function (_i, label) {
+      if((label.htmlFor).includes('_TEMPLATE_')){
+        label.htmlFor = label.htmlFor.replace('_TEMPLATE_', '');
+      }
     });
 
     // Show them
     $usersBlock.append($newUsersBlock.html());
-    // Update indexes
-    if (!isResponsible) {
-      updateIndexes();
-    }
-  }
-
-  function updateIndexes() {
-    $('.projectInnovationsPartners .deliverablePartnerItem').each(function (i, partner) {
-
-      // Update deliverable partner index
-      $(partner).setNameIndexes(1, i);
-
-      $(partner).find('.deliverableUserItem').each(function (j, user) {
-        var personID = $(user).find('input[type="checkbox"]').val();
-        var customID = "jsGenerated-" + i + "-" + j + "-" + personID;
-        // Update user index
-        $(user).setNameIndexes(2, j);
-
-        //Remove name _TEMPLATE_ from inputs
-        $(user).find('input').each(function(_i,e) {
-          e.name = (e.name).replace("_TEMPLATE_", "");
-          e.id = (e.id).replace("_TEMPLATE_", "");
-        });
-
-        // Update user checks/radios labels and inputs ids
-        $(user).find('input[type="checkbox"]').attr('id', customID);
-        $(user).find('label.checkbox-label').attr('for', customID);
-      });
-
-    });
-
-    updateInstitutionSelects()
   }
 
   function updateInstitutionSelects() {
@@ -669,10 +607,52 @@ const deliverablePartnersModule = (function () {
   }
 })();
 
+/**
+ * Module for managing evidence references in a project.
+ * 
+ * This module provides functionality to initialize event listeners, add and remove reference items,
+ * update indexes, handle changes in deliverable types, and track selected options to prevent duplication.
+ * 
+ * @module evidencesModule
+ * 
+ * @function init
+ * @description Initializes event listeners and updates indexes for the specified reference.
+ * @param {string} nameReferenceParam - The reference name used to identify elements and bind events.
+ * 
+ * @function addReference
+ * @description Adds a new reference item to the reference list. This function clones a template element,
+ * updates its attributes, and appends it to the reference list. It also initializes the select2 plugin on
+ * the new select elements and updates the indexes and options.
+ * 
+ * @function removeReference
+ * @description Removes the reference element from the DOM with a hide animation. This function hides the
+ * parent element with a class of 'evidences' of the element that triggered the event, then removes it from
+ * the DOM. After removal, it updates the selected options in all instances and updates the indexes.
+ * 
+ * @function updateIndexes
+ * @description Updates the indexes of elements within a reference list. This function iterates over each
+ * `.evidences` element within a reference list and updates their indexes. It performs tasks such as setting
+ * name indexes, updating the `for` attribute of labels, and updating the class of radio inputs and blocks.
+ * 
+ * @function changeDeliverableType
+ * @description Handles the change event for the deliverable type dropdown. Fetches and updates the sub-type
+ * options based on the selected deliverable type.
+ * 
+ * @function trackOptionsSelectedInAllInstances
+ * @description Tracks the options selected in all instances of the evidence select elements and disables
+ * the options that are already selected in other instances to prevent duplication.
+ * 
+ * @returns {Object} An object containing the `init` function to initialize the module.
+ */
 const evidencesModule = function () {
 
   let nameReference = '';
 
+  /**
+   * Initializes event listeners and updates indexes for the specified reference.
+   *
+   * @param {string} nameReferenceParam - The reference name used to identify elements and bind events.
+   */
   function init(nameReferenceParam) {
 
     nameReference = nameReferenceParam;
@@ -681,9 +661,24 @@ const evidencesModule = function () {
 
     // Change deliverable type
     $(".typeSelect").on("change", changeDeliverableType);
+
+    trackOptionsSelectedInAllInstances();
+
+    $(`.evidenceInnovation${nameReference} , .evidenceDeliverable${nameReference}`).on("change", trackOptionsSelectedInAllInstances);
+
+    updateIndexes();
   }
 
   // Functions
+
+  /**
+   * Adds a new reference item to the reference list.
+   * 
+   * This function clones a template element, updates its attributes, and appends it to the reference list.
+   * It also initializes the select2 plugin on the new select elements and updates the indexes and options.
+   * 
+   * @function
+   */
   function addReference() {
     
     const $listBlock = $(`.referenceList${nameReference}`);
@@ -726,20 +721,49 @@ const evidencesModule = function () {
 
     // Show the element
     $newItem.appendTo($listBlock).hide().show(350);
+
+    //Update options selected in all instances
+    trackOptionsSelectedInAllInstances();
     // Update indexes
     updateIndexes();
   }
 
+  /**
+   * Removes the reference element from the DOM with a hide animation.
+   * 
+   * This function hides the parent element with a class of 'evidences' 
+   * of the element that triggered the event, then removes it from the DOM.
+   * After removal, it updates the selected options in all instances and 
+   * updates the indexes.
+   * 
+   * @function
+   */
   function removeReference() {
     var $parent = $(this).parents('.evidences');
     $parent.hide(500, function() {
       // Remove DOM element
       $parent.remove();
+      //Update options selected in all instances
+      trackOptionsSelectedInAllInstances();
       // Update indexes
       updateIndexes();
     });
   }
 
+  /**
+   * Updates the indexes of elements within a reference list.
+   * 
+   * This function iterates over each `.evidences` element within a reference list and updates their indexes.
+   * It performs the following tasks:
+   * - Sets name indexes for each reference.
+   * - Updates the `for` attribute of labels to match the `id` of the preceding input element.
+   * - For radio inputs, updates the `id` and `for` attributes to include the reference and index.
+   * - Updates the class of radio inputs to include the reference and index.
+   * - Updates the class of blocks to match the `radioType-` indexes.
+   * 
+   * @function updateIndexes
+   * @returns {void}
+   */
   function updateIndexes() {
 
     $(`.referenceList${nameReference}`).find('.evidences').each(function(i, reference) {
@@ -781,6 +805,13 @@ const evidencesModule = function () {
     });
   }
 
+  /**
+   * Handles the change event for the deliverable type dropdown.
+   * Fetches and updates the sub-type options based on the selected deliverable type.
+   *
+   * @function changeDeliverableType
+   * @returns {void}
+   */
   function changeDeliverableType() {
     const typeID = $(this).val();
 
@@ -813,6 +844,47 @@ const evidencesModule = function () {
         }
     });
   
+  }
+
+  /**
+   * This function tracks the options selected in all instances of the evidence select elements
+   * and disables the options that are already selected in other instances to prevent duplication.
+   * 
+   * @function trackOptionsSelectedInAllInstances
+   * @returns {void}
+   */
+  function trackOptionsSelectedInAllInstances() {
+    const $listBlock = $(`.referenceList${nameReference}`);
+    const selectedValues = new Set();
+
+    // Collect the selected values from all select elements within the reference list
+    $listBlock.find('select.evidence option:selected').each(function() {
+      selectedValues.add(this.value);
+    });
+
+    // Disable options in all select elements that are already selected in other instances to prevent duplication
+    $listBlock.find('select.evidence').each(function() {
+      const $select = $(this);
+      $select.find('option').each(function() {
+        const $option = $(this);
+        const isSelectedAndNotCurrent = selectedValues.has($option.val()) && !$option.is(':selected');
+        if (isSelectedAndNotCurrent) {
+          $option.prop('disabled', true);
+        } else {
+          $option.prop('disabled', false);
+        }
+      });
+
+      // Reinitialize select2 to reflect changes
+      if ($select.data('select2')) {
+        $select.select2('destroy');
+      }
+      $select.select2({
+        width: '100%',
+        templateResult: formatList,
+        templateSelection: formatList
+      });
+    });
   }
 
   return {

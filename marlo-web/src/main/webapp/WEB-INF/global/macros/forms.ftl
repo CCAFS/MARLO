@@ -568,7 +568,7 @@
 [#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" columns=0 ]
   <div class="inputsFlat [#if columns > 0]col-md-${columns}[/#if]">
     [#if editable]
-    <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] />
+    <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] [#if disabled]readonly onclick="this.checked=!this.checked;"[/#if] />
     <label for="${id}" class="checkbox-label ${cssClassLabel}"> 
       [#if label?contains(":")]
         [#local labelArray = label?split(":") /]
@@ -666,9 +666,9 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey="" showTitle=true isFlex=false isNote=false isMainTitle=false]
+[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey="" showTitle=true isFlex=false isNote=false isMainTitle=false orderById=false ]
   [#attempt]
-    [#local list = ((listName?eval)?sort_by((displayFieldName?split("."))))![] /] 
+    [#local list = ((listName?eval)?sort_by(((orderById?then(keyFieldName,displayFieldName))?split("."))))![] /] 
   [#recover]
     [#local list = [] /] 
   [/#attempt]
@@ -1003,11 +1003,11 @@
     
     [#if isDeliverable]
       <div class="evidenceByDeliverable col-md-12 ${blockYesName}" style="display:${((element.evidenceByDeliverable??) && (evidenceByDeliverable))?then('block','none')}">
-        [@customForm.select name="${customName}.deliverable.id" i18nkey="projectInnovations.evidence.deliverable" editable=true required=true listName="deliverableList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence" /]
+        [@customForm.select name="${customName}.deliverable.id" i18nkey="projectInnovations.evidence.deliverable" editable=true required=true listName="deliverableList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence evidenceDeliverable${class}" /]
       </div>
     [#else]
       <div class="evidenceByInnovation col-md-12 ${blockYesName}" style="display:${((element.evidenceByDeliverable??) && (evidenceByDeliverable))?then('block','none')}">
-        [@customForm.select name="${customName}.innovation.id" i18nkey="projectInnovations.evidence.innovation" editable=true required=true listName="innovationList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence" /]
+        [@customForm.select name="${customName}.innovation.id" i18nkey="projectInnovations.evidence.innovation" editable=true required=true listName="innovationList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence evidenceInnovation${class}" /]
       </div>
     [/#if]
     <div class="evidenceByLink col-md-12 ${blockNoName}" style="display:${(((element.evidenceByDeliverable??) && (!evidenceByDeliverable)))?then('block','none')}">

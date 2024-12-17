@@ -100,6 +100,12 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
   }
 
   @Override
+  public List<DeliverableInfo> getDeliverablesInfoByPhaseProjectAndStatus(Phase phase, long projectId, long statusId) {
+    return deliverableInfoDAO.getDeliverablesInfoByPhaseProjectAndStatus(phase, projectId, statusId);
+  }
+
+
+  @Override
   public List<DeliverableInfo> getDeliverablesInfoByProjectAndPhase(Phase phase, Project project) {
     return deliverableInfoDAO.getDeliverablesInfoByProjectAndPhase(phase, project);
   }
@@ -115,7 +121,6 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
   public List<DeliverableInfo> getDeliverablesInfoByType(Phase phase, DeliverableType deliverableType) {
     return deliverableInfoDAO.getDeliverablesInfoByType(phase, deliverableType);
   }
-
 
   @Override
   public boolean isDeliverableSubcategoryIncludedWebsite(long deliverableID, Phase phase) {

@@ -67,6 +67,13 @@ public interface DeliverableInfoManager {
   public List<DeliverableInfo> getDeliverablesInfoByPhase(Phase phase);
 
   /**
+   * This method gets a list of DeliverableInfo that are active by a given phase, project and status
+   * 
+   * @return a list from DeliverableInfo null if no exist records
+   */
+  public List<DeliverableInfo> getDeliverablesInfoByPhaseProjectAndStatus(Phase phase, long projectId, long statusId);
+
+  /**
    * This method gets a list of DeliverableInfo that are active by a given phase and type
    * 
    * @return a list from DeliverableInfo null if no exist records
@@ -80,13 +87,13 @@ public interface DeliverableInfoManager {
    */
   List<DeliverableInfo> getDeliverablesInfoByProjectAndPhaseWithSharedProjects(Phase phase, Project project);
 
+
   /**
    * This method gets a list of DeliverableInfo that are active by a given phase and type
    * 
    * @return a list from DeliverableInfo null if no exist records
    */
   public List<DeliverableInfo> getDeliverablesInfoByType(Phase phase, DeliverableType deliverableType);
-
 
   public boolean isDeliverableSubcategoryIncludedWebsite(long deliverableID, Phase phase);
 
